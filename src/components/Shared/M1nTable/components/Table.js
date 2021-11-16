@@ -73,6 +73,8 @@ import ContactDataMissingDialog from "components/ContactDetailCard/components/Co
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
 import ButtonDropDown from "./ButtonGroup";
+import ReactSelect from "react-select";
+import chroma from "chroma-js";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 
@@ -1083,6 +1085,49 @@ function SubTable(props) {
     []
   );
 
+
+const colourStyles = {
+  control: (styles) => ({ ...styles, backgroundColor: 'white' }),
+  option: (styles, { data, isDisabled, isFocused, isSelected }) => {
+    const color = chroma(data.color);
+    return {
+      ...styles,
+      backgroundColor: isDisabled
+        ? undefined
+        : isSelected
+        ? data.color
+        : isFocused
+        ? color.alpha(0.1).css()
+        : undefined,
+      color: isDisabled
+        ? '#ccc'
+        : isSelected
+        ? chroma.contrast(color, 'white') > 2
+          ? 'white'
+          : 'black'
+        : data.color,
+      cursor: isDisabled ? 'not-allowed' : 'default',
+
+      ':active': {
+        ...styles[':active'],
+        backgroundColor: !isDisabled
+          ? isSelected
+            ? data.color
+            : color.alpha(0.3).css()
+          : undefined,
+      },
+    };
+  },
+  singleValue: (styles, { data }) => {
+    debugger
+    const color = chroma(data.color);
+    return {
+      ...styles,
+      backgroundColor: color.alpha(0.1).css(),
+    };
+  },
+};
+
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
@@ -1963,6 +2008,21 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  
+                  if(column.isCustom){
+                    return (
+                      <div style={{ textAlign: "center", width: "200px" }}>
+                        <ReactSelect
+                          value={{ label: column.dropdownOptions[0].value, value: column.dropdownOptions[0].value, color: "#C5C2C2" }}
+                          menuPlacement="auto"
+                          options={column.dropdownOptions.map(op => ({...op, label: op.value, value: op.value}))}
+                          className={classes.select}
+                          styles={colourStyles}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                    )
+                  }
                   const valueFormatter = (v) => {
                     if (
                       (column.name === "status" && props.targetLabel === "deal") ||
