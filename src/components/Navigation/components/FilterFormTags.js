@@ -28,14 +28,14 @@ export default function FilterFormProduction() {
   });
 
   useEffect(() => {
-    if(isMounted.current) {
-      if(stateNav.selectedTags?.length > 0) {
+    if (isMounted.current) {
+      if (stateNav.selectedTags?.length > 0) {
         getAllTaggedWells({
           variables: {
             tagsArray: [...stateNav.selectedTags],
             userId: stateApp.user.mongoId,
           },
-        })
+        });
       }
     } else {
       isMounted.current = true;
@@ -43,8 +43,8 @@ export default function FilterFormProduction() {
   }, [stateNav.selectedTags]);
 
   useEffect(() => {
-    if(dataAllTaggedWells?.allTaggedWells) {
-      const IdsArray = [ ...new Set(dataAllTaggedWells?.allTaggedWells?.map(taggedWell => taggedWell.id)) ];
+    if (dataAllTaggedWells?.allTaggedWells) {
+      const IdsArray = [...new Set(dataAllTaggedWells?.allTaggedWells?.map((taggedWell) => taggedWell.id))];
 
       let filter = null;
 
@@ -64,20 +64,15 @@ export default function FilterFormProduction() {
 
       stateNav.filterTagsLoading(false);
     }
-  }, [dataAllTaggedWells?.allTaggedWells])
+  }, [dataAllTaggedWells?.allTaggedWells]);
 
   return (
-    <Grid
-      container
-      item
-      spacing={2}
-      style={{ padding: "8px", width: "100%", margin: "0" }}
-    >
+    <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
       <Grid item sm={12} className={classes.gridItem}>
         <FilterTags />
       </Grid>
 
-      {/* //// tracked owners commented and replaced for the next <Grid> block, as well as some css inside FilterTrackedWells component */}
+      {/* // tracked owners commented and replaced for the next <Grid> block, as well as some css inside FilterTrackedWells component */}
       {/* <Grid item sm={6} className={classes.gridItem}>
         <FilterTrackedWells />
       </Grid>

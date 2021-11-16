@@ -3,18 +3,11 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
 
-const profileList = [
-  "DIRECTIONAL",
-  "HORIZONTAL",
-  "UNKNOWN",
-  "VERTICAL",
-];
+const profileList = ["DIRECTIONAL", "HORIZONTAL", "UNKNOWN", "VERTICAL"];
 
 export default function FilterWellProfileJ() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [profileName, setProfileName] = React.useState(
-    stateNav.profileName ? stateNav.profileName : null
-  );
+  const [profileName, setProfileName] = React.useState(stateNav.profileName ? stateNav.profileName : null);
 
   const handleProfileChange = (value) => {
     let filter;
@@ -33,20 +26,13 @@ export default function FilterWellProfileJ() {
     <Autocomplete
       ChipProps={{ color: "secondary" }}
       defaultValue={stateNav.profileName}
+      value={stateNav.profileName}
       onChange={(event, newValue) => {
         handleProfileChange(newValue);
       }}
       multiple
       options={profileList}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="outlined"
-          label="Well Profile"
-          placeholder=""
-          fullWidth={true}
-        />
-      )}
+      renderInput={(params) => <TextField {...params} variant="outlined" label="Well Profile" placeholder="" fullWidth={true} />}
       disableListWrap
       id="virtualize-well-profiles"
       // style={{ maxWidth: 300, minWidth: 120 }}

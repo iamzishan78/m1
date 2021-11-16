@@ -1,4 +1,5 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
+import { get } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -19,8 +20,8 @@ const useStyles = makeStyles({
     },
   },
   input: {
-    marginLeft: "10px",
-    width: "135px",
+    marginLeft: "7px",
+    width: "143px",
     "& input": { color: "#17AADD" },
   },
   inputLabel: {
@@ -31,8 +32,9 @@ const useStyles = makeStyles({
   ownersToggle: {
     paddingLeft: "20px",
   },
-  floatRight: {
+  inputFieldsContainer: {
     float: "right",
+    marginTop: 10,
   },
 });
 
@@ -43,10 +45,7 @@ export default function FilterOwnerConfidence() {
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
   const [error, setError] = useState(false);
   const [errorText, setErrorText] = useState("");
-  const [type, setType] = useState("");
-  const [ownerConfidenceWell, setOwnerConfidenceWell] = useState(
-    stateNav.ownerConfidenceWell ? stateNav.ownerConfidenceWell : []
-  );
+  const [ownerConfidenceWell, setOwnerConfidenceWell] = useState(stateNav.ownerConfidenceWell ? stateNav.ownerConfidenceWell : []);
 
   const setFilter = useCallback(() => {
     let filter;
@@ -62,11 +61,7 @@ export default function FilterOwnerConfidence() {
       filter = ["all", [">=", ["get", "ownerMatchConfidence"], min / 100]];
     } else if (min && max) {
       if (min < max) {
-        filter = [
-          "all",
-          [">=", ["get", "ownerMatchConfidence"], min / 100],
-          ["<=", ["get", "ownerMatchConfidence"], max / 100],
-        ];
+        filter = ["all", [">=", ["get", "ownerMatchConfidence"], min / 100], ["<=", ["get", "ownerMatchConfidence"], max / 100]];
       }
     } else {
       filter = null;
@@ -90,13 +85,13 @@ export default function FilterOwnerConfidence() {
         }
       }
       if (!valueMaxDisplay) {
-        if (checkStateNav && checkStateNav[1][0] === "<=") {
+        if (checkStateNav && get(checkStateNav[1], `${0}`) === "<=") {
           const recallMax = checkStateNav[1][2];
           setValueMaxDisplay(recallMax * 100);
         }
       }
       if (!valueMinDisplay) {
-        if (checkStateNav && checkStateNav[1][0] === ">=") {
+        if (checkStateNav && get(checkStateNav[1], `${0}`) === ">=") {
           const recallMin = checkStateNav[1][2];
           setValueMinDisplay(recallMin * 100);
         }
@@ -111,6 +106,8 @@ export default function FilterOwnerConfidence() {
   useEffect(() => {
     if (stateNav.ownerConfidenceWell) {
       setFilter();
+    } else {
+      clearFilters();
     }
   }, [setFilter, stateNav.ownerConfidenceWell]);
 
@@ -163,13 +160,22 @@ export default function FilterOwnerConfidence() {
     }
   };
 
+  const clearFilters = () => {
+    handleChangeMax({
+      target: { id: "OwnerConfidenceMax", value: "" },
+    });
+    handleChangeMin({
+      target: { id: "OwnerConfidenceMin", value: "" },
+    });
+    setError(false);
+    setErrorText("");
+  };
+
   return (
     <React.Fragment>
       <div className={classes.divBordersMinMax}>
-        <FormLabel className={classes.inputLabel}>
-          Owner Confidence (0-100)
-        </FormLabel>
-        <div className={classes.floatRight}>
+        <FormLabel className={classes.inputLabel}>Owner Confidence (0-100)</FormLabel>
+        <div className={classes.inputFieldsContainer}>
           <NumberFormat
             id="OwnerConfidenceMin"
             value={valueMinDisplay}
@@ -210,27 +216,15 @@ export default function FilterOwnerConfidence() {
               },
             }}
           />
-          <IconButton
-            onClick={() => {
-              handleChangeMax({
-                target: { id: "OwnerConfidenceMax", value: "" },
-              });
-              handleChangeMin({
-                target: { id: "OwnerConfidenceMin", value: "" },
-              });
-              setError(false);
-              setErrorText("");
-            }}
-          >
+          <IconButton onClick={clearFilters}>
             <CancelIcon height={"30px"} />
           </IconButton>
         </div>
       </div>
       <div style={{ textAlign: "center" }}>
         <Typography variant="caption">
-          *M1neral’s proprietary owner confidence score enriches public and
-          consumer datasets with intelligence to attach a confidence metric on
-          owner records in relation to a well asset.
+          *M1neral’s proprietary owner confidence score enriches public and consumer datasets with intelligence to attach a confidence
+          metric on owner records in relation to a well asset.
         </Typography>
       </div>
     </React.Fragment>

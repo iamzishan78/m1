@@ -1,10 +1,5 @@
 import React, { useContext, useState } from "react";
-import {
-  InputAdornment,
-  TextField,
-  IconButton,
-  Tooltip,
-} from "@material-ui/core";
+import { InputAdornment, TextField, IconButton, Tooltip } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -22,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.15),
     marginRight: theme.spacing(2),
-    marginLeft: 5,
+    marginLeft: "425px !important",
     width: "34%",
     transition: "width 0.5s",
     [theme.breakpoints.up("sm")]: {
@@ -32,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
   toggleBtn: {
     borderRadius: 5,
-    color: "#FFFFFF",
+    color: "grey",
     transition: "200ms all",
     "&:hover": {
       backgroundColor: "#1CB6DA44",
@@ -52,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     },
 
     "& .MuiOutlinedInput-input": {
-      color: "#ffffff",
+      color: "grey",
       paddingLeft: "7px !important",
       "&::placeholder": {
         color: "##ffffffc9",
@@ -94,7 +89,7 @@ const DocumentSearch = () => {
           setTimeout(() => {
             setStateApp((stateApp) => ({
               ...stateApp,
-              documentSearchQuery: e.target.value
+              documentSearchQuery: e.target.value,
             }));
           }, 500);
         }}
@@ -111,10 +106,10 @@ const DocumentSearch = () => {
             <InputAdornment>
               <IconButton size="small">
                 <SearchIcon
-                  htmlColor="#fff"
+                  htmlColor="grey"
                   aria-controls="customized-menu"
                   aria-haspopup="true"
-                //onClick={(e) => setAnchorEl(e.currentTarget)}
+                  //onClick={(e) => setAnchorEl(e.currentTarget)}
                 />
                 {/* <div className="check">
                   <Menu
@@ -190,9 +185,7 @@ const DocumentSearch = () => {
                   <IconButton
                     size="small"
                     htmlColor="#fff"
-                    className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" &&
-                      classes.activeBtn
-                      }`}
+                    className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" && classes.activeBtn}`}
                     onClick={() => {
                       setSearch("");
                       setStateApp((stateApp) => ({

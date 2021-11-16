@@ -104,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#5f5f5f",
   },
   root: {
-    height: "42px",
+    height: "40px",
     width: "100%",
     "& .MuiAutocomplete-inputRoot": { maxHeight: "42px" },
   },
@@ -1186,7 +1186,7 @@ function Search() {
                           if (mapGridCardActivated) dispatch(toggleMapGridCardAtived());
                         }}
                       >
-                        <SearchIcon htmlColor="#fff" />
+                        <SearchIcon htmlColor="#8486af" />
                       </Button>
                     </InputAdornment>
                   ),

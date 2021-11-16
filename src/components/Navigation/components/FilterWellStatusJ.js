@@ -19,9 +19,7 @@ const statusList = [
 
 export default function FilterWellStatusJ() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [statusName, setStatusName] = React.useState(
-    stateNav.statusName ? stateNav.statusName : []
-  );
+  const [statusName, setStatusName] = React.useState(stateNav.statusName ? stateNav.statusName : []);
 
   const handleStatusChange = (value) => {
     let filter;
@@ -40,20 +38,13 @@ export default function FilterWellStatusJ() {
     <Autocomplete
       ChipProps={{ color: "secondary" }}
       defaultValue={stateNav.statusName}
+      value={stateNav.statusName}
       onChange={(event, newValue) => {
         handleStatusChange(newValue);
       }}
       multiple
       options={statusList}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="outlined"
-          label="Well Status"
-          placeholder=""
-          fullWidth={true}
-        />
-      )}
+      renderInput={(params) => <TextField {...params} variant="outlined" label="Well Status" placeholder="" fullWidth={true} />}
       disableListWrap
       id="virtualize-well-statuses"
       // style={{ maxWidth: 300, minWidth: 120 }}
