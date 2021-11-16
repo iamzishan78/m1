@@ -258,6 +258,19 @@ function DocumentsTable(props) {
     setShowFieldModal,
   };
 
+  const onCustomKeyChange = (value, index, key) => {
+    updateDocument({
+      variables: {
+        document: {
+          fileId: props.rows[index]._id,
+          custom_data: { ...props.rows[index].custom_data, [`${key}`]: value  },
+        },
+      },
+      refetchQueries: ["getESDocuments"],
+      awaitRefetchQueries: true,
+    });
+  }
+
   return (
     <>
       <Container
@@ -303,6 +316,7 @@ function DocumentsTable(props) {
           setColumnsBase={[]}
           deleteFunc={deleteFunc}
           onTableChange={onTableChange}
+          onCustomKeyChange={onCustomKeyChange}
         />
       </Container>
     </>

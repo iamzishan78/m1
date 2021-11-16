@@ -1087,21 +1087,29 @@ function SubTable(props) {
 
 
 const colourStyles = {
-  control: (styles) => ({ ...styles, backgroundColor: 'white' }),
+  control: (styles) => ({ ...styles, 
+    "&:hover": {
+      border: 'none',
+      boxShadow: "none"
+    },
+    backgroundColor: 'transparent',
+    boxShadow: "none", 
+    border: 'none' 
+  }),
   option: (styles, { data, isDisabled, isFocused, isSelected }) => {
     const color = chroma(data.color);
     return {
       ...styles,
-      backgroundColor: isDisabled
-        ? undefined
-        : isSelected
+      padding: "5px 10px",
+      borderRadius: 26,
+      alignItems: "center",
+      textAlign: "center",
+      backgroundColor: isSelected
         ? data.color
         : isFocused
-        ? color.alpha(0.1).css()
+        ? color.alpha(0.5).css()
         : undefined,
-      color: isDisabled
-        ? '#ccc'
-        : isSelected
+      color: isSelected
         ? chroma.contrast(color, 'white') > 2
           ? 'white'
           : 'black'
@@ -1118,12 +1126,32 @@ const colourStyles = {
       },
     };
   },
-  singleValue: (styles, { data }) => {
-    debugger
-    const color = chroma(data.color);
+  valueContainer: (styles) => {
     return {
       ...styles,
-      backgroundColor: color.alpha(0.1).css(),
+      padding: 0,
+    };
+  },
+  indicatorSeparator: (styles) => {
+    return {
+      ...styles,
+      display: 'none',
+    };
+  },
+  IndicatorsContainer: (styles) => {
+    return {
+      ...styles,
+      display: 'none',
+    };
+  },
+  singleValue: (styles, { data }) => {
+    return {
+      ...styles,
+      backgroundColor: data.color,
+      color: data.textColor,
+      width: "fit-content",
+      padding: "5px 10px",
+      borderRadius: 26
     };
   },
 };
@@ -2008,17 +2036,27 @@ const colourStyles = {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  
                   if(column.isCustom){
+                    console.log(props.rows)
+                    let value = null;
+                    if( props.rows[tableMeta.rowIndex].custom_data){
+                      value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
+                    }
                     return (
-                      <div style={{ textAlign: "center", width: "200px" }}>
+                      <div style={{ width: "150px" }} onClick={(e) => e.stopPropagation()}>
                         <ReactSelect
-                          value={{ label: column.dropdownOptions[0].value, value: column.dropdownOptions[0].value, color: "#C5C2C2" }}
+                          isSearchable={false}
+                          value={value}
                           menuPlacement="auto"
                           options={column.dropdownOptions.map(op => ({...op, label: op.value, value: op.value}))}
                           className={classes.select}
                           styles={colourStyles}
-                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => {
+                            props.onCustomKeyChange(e, tableMeta.rowIndex, column.name);
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                          }}
                         />
                       </div>
                     )

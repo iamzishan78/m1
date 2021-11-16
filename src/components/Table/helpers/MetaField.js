@@ -9,7 +9,7 @@ import TextField from "@material-ui/core/TextField";
 import Menu from "@material-ui/core/Menu";
 import CheckIcon from "@material-ui/icons/Check";
 import AddIcon from "@material-ui/icons/Add";
-import arrayMove from "array-move";
+import {arrayMoveImmutable} from "array-move";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { AppContext } from "AppContext";
 
@@ -115,29 +115,30 @@ const MetaField = ({ setShowFieldModal }) => {
 
   const handleSave = () => {
     const values = getValues();
-    addMetaData({
-        variables: {
-            metaData: {
-                name: values.title,
-                label: values.title,
-                esKey: '',
-                options: {
-                    display: false,
-                    filter: false,
-                    searchable: false,
-                    sort: false,
-                    download: false,
-                    print: false,
-                    viewColumns: false,
-                },
-                type: values.type,
-                category: values.category,
-                user: stateApp.user.mongoId,
-                dropdownOptions: items,
-                isCustom: true,
-            }
-        }
-    })
+    debugger
+    // addMetaData({
+    //     variables: {
+    //         metaData: {
+    //             name: values.title,
+    //             label: values.title,
+    //             esKey: '',
+    //             options: {
+    //                 display: false,
+    //                 filter: false,
+    //                 searchable: false,
+    //                 sort: false,
+    //                 download: false,
+    //                 print: false,
+    //                 viewColumns: false,
+    //             },
+    //             type: values.type,
+    //             category: values.category,
+    //             user: stateApp.user.mongoId,
+    //             dropdownOptions: items,
+    //             isCustom: true,
+    //         }
+    //     }
+    // })
   }
 
   return (
@@ -322,7 +323,7 @@ const useSortableStyles = makeStyles((theme) => ({
 
 const SortableComponent = ({setItems, items}) => {
   const onSortEnd = ({ oldIndex, newIndex }) => {
-    setItems(arrayMove(items, oldIndex, newIndex));
+    setItems(arrayMoveImmutable(items, oldIndex, newIndex));
   };
 
   return (
@@ -343,7 +344,7 @@ const SortableComponent = ({setItems, items}) => {
         }}
         onClick={() => {
           const newItems = JSON.parse(JSON.stringify(items));
-          newItems.push("");
+          newItems.push({ palleteId: colorPallete[0].id });
           setItems(newItems);
         }}
       >
@@ -426,7 +427,7 @@ const SortableItem = SortableElement(
                 marginRight: 10,
                 width: 15,
                 height: 15,
-                backgroundColor: item.color,
+                backgroundColor: colorPallete.find(pallete => pallete.id === item.palleteId),
                 display: "inline-block",
                 borderRadius: 10,
               }}
@@ -455,7 +456,7 @@ const SortableItem = SortableElement(
                       style={{ display: "inline-block" }}
                       onClick={() =>{
                         handleClose();
-                        updateIndex(itemIndex, { ...item, color: pallet.color });
+                        updateIndex(itemIndex, { ...item, palleteId: pallet.id });
                       }}
                     >
                       <div
