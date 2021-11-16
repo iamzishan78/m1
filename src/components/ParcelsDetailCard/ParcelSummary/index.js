@@ -16,6 +16,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import { Button } from "@material-ui/core";
 import { useLazyQuery } from "@apollo/client";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
+import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
+import { GET_PARCELS_AGREEMENT } from "graphQL/useQueryGetParcelAgreement";
 
 const ENTER_KEY = 13;
 
@@ -247,11 +249,23 @@ export default function ParcelSummary(props) {
 
     const classes = useStyles({ search });
 
+
+
+    // get shape wells
+    const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", skip: true });
     const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
+
+    // run sheet qurey
+    const [getParcelAgreement, { data: dataParcelAgreement }] = useLazyQuery(GET_PARCELS_AGREEMENT);
+    const runSheet = dataParcelAgreement?.getParcelAgreement;
+    console.log("runSheet", runSheet);
+    console.log("dataShapeWellsCount", dataShapeWellsCount);
 
     useEffect(() => {
         getShapeSummaryDetails({ variables: { shapeId: props.id, shapeType: 'Parcel' } })
     }, [props.id])
+
+
 
     const addCustomData = () => {
         if (!props.properties.custom_data_arr) {
@@ -268,6 +282,8 @@ export default function ParcelSummary(props) {
         props.setProperties({ ...props.properties, custom_data_arr: [...props.properties.custom_data_arr] })
     }
 
+    console.log("dataShapeSummaryDetails", dataShapeSummaryDetails)
+
     return <Grid container direction="row" className={classes.summaryCard}>
         <Grid item md={7} sm={12} className={classes.paddingLeft}>
             <Grid container spacing={1} direction="column" >
@@ -276,7 +292,7 @@ export default function ParcelSummary(props) {
                         <Grid item>
                             <Grid container spacing={2} className={classes.summaryDetailCard}>
                                 <Grid item>
-                                    <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeWells || 0} </div>
+                                    <div className={classes.summaryValue}> {dataShapeWellsCount?.dataShapeWellsCount || 0} </div>
                                     <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
                                 </Grid>
                                 <Grid item>

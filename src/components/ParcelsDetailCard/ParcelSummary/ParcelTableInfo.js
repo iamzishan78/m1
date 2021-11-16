@@ -183,16 +183,14 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
   useEffect(() => {
     setFilteredTableData(tableData.concat(properties?.originalProperties || []));
     properties?.originalProperties?.forEach((data) => {
-      Object.keys(data)?.forEach((item) => {
-        tableTempProperties[item] = data[item]
-        tableTempProperties[`${item}key`] = data[item]
-      });
-
+      tableTempProperties[data.key] = [data.value]
     });
     setTableTempProperties({ ...tableTempProperties })
     setTableDataState({})
 
   }, [properties]);
+
+  console.log("tableTempProperties", tableTempProperties);
 
   useEffect(() => {
     if (search) {
@@ -332,7 +330,7 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
                     </>
                   }
                 </> :
-                <div style={{ minWidth: '30px', cursor: "pointer" }} >
+                <div style={{ minWidth: '30px', cursor: data.edit ? "pointer" : "none" }} >
                   <Grid container direction="row" justifyContent="space-between" alignItems="center">
                     <Grid item>
                       {data.value || properties[data.key] || '-'}
