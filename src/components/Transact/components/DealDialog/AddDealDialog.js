@@ -327,7 +327,6 @@ function AddDealDialog(props) {
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   let [transactData, setTransactData] = useState(props.transactData ? { ...props.transactData } : null);
 
-  console.log("pipelineId", pipelineId, selectedPipe);
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
   const [getDeal, { data: getDealResult }] = useLazyQuery(GETDEAL, {
@@ -531,9 +530,6 @@ function AddDealDialog(props) {
   const [target, setTarget] = useState({});
 
   useEffect(() => {
-    console.log("===========");
-    console.log("FLOW TRANSACT BAR VIEW", stateApp.transactBarView);
-
     if (stateApp.transactBarView !== "Deal") {
       if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
         addUpdateDeal(null, false);
@@ -869,21 +865,7 @@ function AddDealDialog(props) {
         }
 
         ////////////////////////////////////////////
-        if (allPromises.length > 0)
-          Promise.all(allPromises)
-            .then((values) => {
-              // if (success === true)
-              // 	dispatch(
-              // 		showSuccessMessage("The Deal was successfully updated.")
-              // 	);
-              // else
-              // 	dispatch(
-              // 		showErrorMessage("An error occurred during the update.")
-              // 	);
-            })
-            .catch((reason) => {
-              console.log(reason);
-            });
+        if (allPromises.length > 0) Promise.all(allPromises);
       } else if (!addDealLoading) {
         //// add a new deal
         let variables = {
