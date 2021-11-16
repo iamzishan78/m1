@@ -115,30 +115,29 @@ const MetaField = ({ setShowFieldModal }) => {
 
   const handleSave = () => {
     const values = getValues();
-    debugger
-    // addMetaData({
-    //     variables: {
-    //         metaData: {
-    //             name: values.title,
-    //             label: values.title,
-    //             esKey: '',
-    //             options: {
-    //                 display: false,
-    //                 filter: false,
-    //                 searchable: false,
-    //                 sort: false,
-    //                 download: false,
-    //                 print: false,
-    //                 viewColumns: false,
-    //             },
-    //             type: values.type,
-    //             category: values.category,
-    //             user: stateApp.user.mongoId,
-    //             dropdownOptions: items,
-    //             isCustom: true,
-    //         }
-    //     }
-    // })
+    addMetaData({
+        variables: {
+            metaData: {
+                name: values.title,
+                label: values.title,
+                esKey: '',
+                options: {
+                    display: true,
+                    filter: true,
+                    searchable: false,
+                    sort: false,
+                    download: false,
+                    print: false,
+                    viewColumns: true,
+                },
+                type: values.type,
+                category: values.category,
+                user: stateApp.user.mongoId,
+                dropdownOptions: items,
+                isCustom: true,
+            }
+        }
+    })
   }
 
   return (
@@ -427,7 +426,7 @@ const SortableItem = SortableElement(
                 marginRight: 10,
                 width: 15,
                 height: 15,
-                backgroundColor: colorPallete.find(pallete => pallete.id === item.palleteId),
+                backgroundColor: colorPallete.find(pallete => pallete.id === item.palleteId).color,
                 display: "inline-block",
                 borderRadius: 10,
               }}

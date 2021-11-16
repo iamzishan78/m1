@@ -118,6 +118,7 @@ import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
 import { isDebuggerStatement, isPropertySignature } from "typescript";
+import { colorPallete } from "components/Table/helpers";
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -1097,7 +1098,8 @@ const colourStyles = {
     border: 'none' 
   }),
   option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    const color = chroma(data.color);
+    const pallete = colorPallete.find(pallete => pallete.id === data.palleteId)
+    const color = chroma(pallete.color);
     return {
       ...styles,
       padding: "5px 10px",
@@ -1105,25 +1107,12 @@ const colourStyles = {
       alignItems: "center",
       textAlign: "center",
       backgroundColor: isSelected
-        ? data.color
+        ? pallete.color
         : isFocused
         ? color.alpha(0.5).css()
         : undefined,
-      color: isSelected
-        ? chroma.contrast(color, 'white') > 2
-          ? 'white'
-          : 'black'
-        : data.color,
+      color: isSelected || isFocused ? pallete.textColor : 'black',
       cursor: isDisabled ? 'not-allowed' : 'default',
-
-      ':active': {
-        ...styles[':active'],
-        backgroundColor: !isDisabled
-          ? isSelected
-            ? data.color
-            : color.alpha(0.3).css()
-          : undefined,
-      },
     };
   },
   valueContainer: (styles) => {
@@ -1145,10 +1134,11 @@ const colourStyles = {
     };
   },
   singleValue: (styles, { data }) => {
+    const pallete = colorPallete.find(pallete => pallete.id === data.palleteId)
     return {
       ...styles,
-      backgroundColor: data.color,
-      color: data.textColor,
+      backgroundColor: pallete?.color,
+      color: pallete?.textColor,
       width: "fit-content",
       padding: "5px 10px",
       borderRadius: 26
@@ -2037,7 +2027,6 @@ const colourStyles = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   if(column.isCustom){
-                    console.log(props.rows)
                     let value = null;
                     if( props.rows[tableMeta.rowIndex].custom_data){
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
