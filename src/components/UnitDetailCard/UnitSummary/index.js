@@ -16,6 +16,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import { Button } from "@material-ui/core";
 import { useLazyQuery } from "@apollo/client";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
+import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 
 const ENTER_KEY = 13;
 
@@ -182,50 +183,6 @@ const useStyles = makeStyles((theme) => ({
             }
         }
     },
-
-    search: {
-        position: 'relative',
-
-        borderRadius: theme.shape.borderRadius,
-        '&:hover': {
-            backgroundColor: theme.palette.common.white,
-            // opacity: 0.15,
-        },
-        marginLeft: 0,
-        width: '100%',
-        [theme.breakpoints.up('sm')]: {
-            marginLeft: theme.spacing(1),
-            width: 'auto',
-        },
-    },
-    searchIcon: {
-        padding: theme.spacing(0, 2),
-        height: '100%',
-        position: 'absolute',
-        // pointerEvents: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    inputRoot: {
-        cursor: 'pointer',
-        color: 'inherit',
-    },
-    inputInput: {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        [theme.breakpoints.up('sm')]: {
-            width: props => props.search.length > 0 ? '15ch' : '0.9px',
-            '&:focus': {
-                backgroundColor: theme.palette.common.white,
-                opacity: 0.75,
-                width: '15ch'
-            },
-        },
-    },
     addDataButton: {
         backgroundColor: 'white',
         color: 'black',
@@ -294,21 +251,7 @@ export default function UnitSummary(props) {
                             </Grid>
                         </Grid>
                         <Grid item>
-                            <div className={classes.search}>
-                                <div className={classes.searchIcon}>
-                                    <SearchIcon />
-                                </div>
-                                <InputBase
-                                    placeholder="Search…"
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    classes={{
-                                        root: classes.inputRoot,
-                                        input: classes.inputInput,
-                                    }}
-                                    inputProps={{ 'aria-label': 'search' }}
-                                />
-                            </div>
+                            <ExpandableSearch setSearch={setSearch} search={search} />
                         </Grid>
                     </Grid>
                 </Grid>

@@ -41,6 +41,8 @@ import WellIcon from "../../Shared/svgIcons/well";
 import LeaseGrayIcon from "../../Shared/svgIcons/lease-gray";
 import OperatorIcon from "../../Shared/svgIcons/operator";
 import LeaseIcon from "../../Shared/svgIcons/lease";
+import SearchByTypeSelectField from "components/MapGridCard/components/SearchByTypeSelectField";
+import { platformDataInitialData } from "components/MapGridCard/components/data";
 
 // 3rd party components
 import Popover from "@material-ui/core/Popover";
@@ -175,6 +177,7 @@ function Search() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [value, setValue] = React.useState(null);
+  const [searchDropDown, setSearchDropDown] = React.useState(platformDataInitialData[0]);
   const [searchOption, setSearchOption] = React.useState("wells");
   const [options, setOptions] = React.useState([]);
   const [searchTop, setSearchTop] = React.useState(5);
@@ -847,6 +850,11 @@ function Search() {
     }
   };
 
+  const handleSearchPanelChange = (value) => {
+    setSearchDropDown({ ...value })
+    setSearchOption(value.label.toLocaleLowerCase());
+  }
+
   //// setting the buttons header /////
   const header = {
     Source: "header",
@@ -900,6 +908,9 @@ function Search() {
         </Accordion>
       )
       } */}
+      <SearchByTypeSelectField value={searchDropDown} handleChange={handleSearchPanelChange} backgroundColor='transparent' />
+      <div style={{ width: '10px' }}></div>
+
       <Autocomplete
         id="cognitive-search-autocomplete"
         getOptionLabel={(option, value) => option.Primary || searchInputValue}
@@ -923,7 +934,7 @@ function Search() {
 
           return option.group === "header" && location.pathname !== "/documents" ? (
             <div>
-              <Grid
+              {/* <Grid
                 key={option.group}
                 container
                 item
@@ -955,7 +966,7 @@ function Search() {
                     margin: "0 4px",
                   }}
                 >
-                  {/* <Button
+                  <Button
 
                     className={classes.headerButtons}
                     variant={searchOption === "all" ? "contained" : "outlined"}
@@ -967,7 +978,7 @@ function Search() {
                     }}
                   >
                     All
-                  </Button> */}
+                  </Button>
 
                   <Button
                     className={classes.headerButtons}
@@ -1005,18 +1016,18 @@ function Search() {
                   >
                     Operators
                   </Button>
-                  {/* <Button
-                  className={classes.headerButtons}
-                  variant={searchOption === "leases" ? "contained" : "outlined"}
-                  size="small"
-                  color={searchOption === "leases" ? "secondary" : "primary"}
-                  onClick={() => {
-                    // setSearchTop(5);
-                    setSearchOption("leases");
-                  }}
-                >
-                  Leases
-                </Button> */}
+                  <Button
+                    className={classes.headerButtons}
+                    variant={searchOption === "leases" ? "contained" : "outlined"}
+                    size="small"
+                    color={searchOption === "leases" ? "secondary" : "primary"}
+                    onClick={() => {
+                      // setSearchTop(5);
+                      setSearchOption("leases");
+                    }}
+                  >
+                    Leases
+                  </Button>
                   <Button
                     className={classes.headerButtons}
                     variant={searchOption === "contacts" ? "contained" : "outlined"}
@@ -1041,7 +1052,8 @@ function Search() {
                     Locations
                   </Button>
                 </Grid>
-              </Grid>
+              </Grid> */}
+
             </div>
           ) : (
             (searchOption === "all" || searchOption === option.group.toLowerCase()) && location.pathname !== "/documents" && (

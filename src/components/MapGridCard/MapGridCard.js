@@ -2,29 +2,17 @@ import React, { Fragment, useState, useContext, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../AppContext";
 import Card from "@material-ui/core/Card";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
 import CloseIcon from "@material-ui/icons/Close";
-import ExpandIcon from "../Shared/svgIcons/ExpandIcon";
-import ShrinkIcon from "../Shared/svgIcons/ShrinkIcon";
 import IconButton from "@material-ui/core/IconButton";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import MapGridCardSearch from "./components/MapGridCardSearch";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import Button from "@material-ui/core/Button";
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import { setMapGridCardState } from "../../actions";
 import OwnersSummaryCard from "../OwnersSummaryCard/OwnersSummaryCard";
 import TabPanels, { TabPanel } from "components/Shared/TabPanels"
-import TabButtons from "components/Shared/TabPanels/TabButtons"
 
 import ContactsHeadCells from "../Shared/constants/contacts-header-schema.js";
-import WellsHeadCells from "../Shared/constants/well-header-schema.js";
 import wellsColumnHeaders from "../Shared/constants/well-interests-header-grid-schema.js";
-import parcelsColumnHeaders from "../Shared/constants/parcel-header-grid.js";
 import {
   leasesColumnHeaders,
   locationsColumnHeaders,
@@ -34,17 +22,9 @@ import {
 import DockMenu from "./DockMenu";
 import ShapeGridWellsTable from "components/Table/Wells/ShapeGridWellsTable";
 import ShapeGridTaxOwnersTable from "components/Table/TaxOwners/ShapeGridTaxOwnersTable";
-import ViewportGridWellsTable from "components/Table/Wells/ViewportGridWellsTable";
 
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import PersonIcon from '@material-ui/icons/Person';
-import LocationOnIcon from "@material-ui/icons/LocationOn";
-import WellIcon from "components/Shared/svgIcons/well";
-import OwnershipIcon from "components/Shared/svgIcons/ownership";
-import LeaseIcon from "components/Shared/svgIcons/lease";
-import OperatorIcon from "components/Shared/svgIcons/operator";
 import SearchPanel from "./components/SearchPanel";
+import { platformDataInitialData } from "./components/data";
 
 function a11yProps(index) {
   return {
@@ -237,7 +217,7 @@ function MapGridCard(props) {
   const [stateApp] = useContext(AppContext);
 
   // function state
-  const [searchTapValue, SearchTapValue] = useState(0);
+  const [searchTapValue, SearchTapValue] = useState(platformDataInitialData[0]);
   const [viewportTapValue, ViewportTapValue] = useState(0);
   const [selectedBoundary, SelectBoundary] = useState('Shape Filter');
   const [dockMenu, SetDockMenu] = useState('bottom');
@@ -308,7 +288,7 @@ function MapGridCard(props) {
     /// this intends to set the search value that gets passed into the mapgridcardsearch.js
     /// value will control the cog api
 
-    switch (searchTapValue) {
+    switch (searchTapValue.index) {
       case 5:
         return "location";
       case 4:
@@ -364,10 +344,9 @@ function MapGridCard(props) {
     []
   );
 
-  const handleSearchPanelChange = (e) => {
-    console.log(e.target.value)
-    setSearchTapValue(e.target.value);
-    if (searchTapValue !== e.target.value) {
+  const handleSearchPanelChange = (value) => {
+    setSearchTapValue(value);
+    if (searchTapValue.index !== value.index) {
       dispatch(
         setMapGridCardState({ searchResultData: [], searchloading: true })
       );
@@ -528,7 +507,7 @@ function MapGridCard(props) {
               /> */}
               <div style={{ position: "relative" }} classes={classes.gridTables}>
                 <TabPanels
-                  value={searchTapValue}
+                  value={searchTapValue.index}
                   panels={getTaps.map((tab, index) => (
                     <Fragment key={index}>
                       <M1nTable
