@@ -267,13 +267,7 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
     backgroundColor: "#0e111a !important",
     minHeight: "53px !important",
     "&>.MuiTouchRipple-root": {
-      "&>:nth-child(0)": {
-        borderBottom: "5px solid white",
-        marginBottom: "6px",
-      },
-    },
-    "& .MuiTouchRipple-root": {
-      borderBottom: "5px solid white",
+      borderBottom: "5px solid #263451",
       marginBottom: "6px",
     },
     "& .MuiTabs-root": {
