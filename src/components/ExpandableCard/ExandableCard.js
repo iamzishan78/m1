@@ -288,7 +288,7 @@ function ExpandableCard(props) {
       setToggleExpand(false);
       setExpanded(true);
       if (parent === "table" && targetLabel === "well") setWidth("50vw");
-      else setWidth("100vw");
+      else setWidth("100%");
     }
     setHeight(cardHeightExpanded);
 
@@ -480,7 +480,7 @@ function ExpandableCard(props) {
   useEffect(() => {
     ///Set body style overflow hidden when card is fully expanded
     const disableBodyScrollBarIfExpanded = () => {
-      if (width === '100vw') {
+      if (width === '100%') {
         document.body.style.overflow = 'hidden';
       }
     };
