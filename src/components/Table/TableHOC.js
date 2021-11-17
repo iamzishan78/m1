@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 
 import { AppContext } from "AppContext";
 
@@ -15,7 +15,6 @@ export const TableHOC = (Component) => {
     return function HOC(props) {
 
         const [rows, Rows] = useState([]);
-        const [addToTable, setAddToTable] = useState(false)
         const setRows = (newState) => { setStateIfDeepEqual(Rows, newState) };
         const [searchedRows, setSearchedRows] = useState([])
 
@@ -103,7 +102,7 @@ export const TableHOC = (Component) => {
             console.log(dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks)
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
-        const initializeGenericData = (ids, actions) => {
+        const initializeGenericData = useCallback((ids, actions) => {
             if (actions.includes("comments")) {
                 getCommentsCounter({
                     query: COMMENTSCOUNTER,
@@ -131,9 +130,18 @@ export const TableHOC = (Component) => {
                     },
                 })
             }
-        }
+        }, [stateApp?.user?.mongoId, getCommentsCounter, getTagSamples, checkIfOwnersAreContacts])
 
-        const setGenricData = (data, id, actions) => {            
+        const ifAreContacts = useCallback((ids) => {
+            checkIfOwnersAreContacts({
+                query: IFARECONTACTS,
+                variables: {
+                    idsArray: ids
+                },
+            })
+        }, [checkIfOwnersAreContacts])
+
+        const setGenricData = useCallback((data, id, actions) => {
 
             if (actions.includes('tracks')) {
                 data.isTracked = false;
@@ -176,9 +184,9 @@ export const TableHOC = (Component) => {
                 }
             }
             return data
-        };
+        }, [dataTracks, dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData]);
 
-        const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView={}) => {
+        const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
             let pageESVariables = {
                 variables: {
                     search: tableState.searchText,
@@ -207,7 +215,7 @@ export const TableHOC = (Component) => {
                     pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
                 }
             })
-            if(selectedGridView?.filters && selectedGridView.type === 'Default') {
+            if (selectedGridView?.filters && selectedGridView.type === 'Default') {
                 selectedGridView.filters.forEach(filter => {
                     pageESVariables.variables.filters.push(filter)
                 })
@@ -274,6 +282,7 @@ export const TableHOC = (Component) => {
                 setRows={setRows}
                 setLoading={setLoading}
                 initializeGenericData={initializeGenericData}
+                ifAreContacts={ifAreContacts}
                 setGenricData={setGenricData}
                 dependencyUpdate={dependencyUpdate}
                 initializeTableActions={initializeTableActions}

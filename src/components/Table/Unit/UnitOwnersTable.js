@@ -69,7 +69,9 @@ function UnitOwnersTable(props) {
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
       const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
+      const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
       props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
+      props.ifAreContacts(globalOwnerIds);
     }
   }, [tableData]);
 
@@ -81,7 +83,7 @@ function UnitOwnersTable(props) {
           if (['working_interest', 'royalty_interest', 'orri', 'nri', 'nra'].includes(key))
             hit[key] = addTrailingZeros(hit[key])
         })
-        hit = props.setGenricData(hit, hit._id, ['comments', 'tracks', 'tags']);
+        hit = props.setGenricData(hit, hit._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
         return hit;
       });
       props.setRows(hits);
