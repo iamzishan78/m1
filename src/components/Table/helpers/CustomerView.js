@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import IconButton from "@material-ui/core/IconButton";
 import Checkbox from "@material-ui/core/Checkbox";
 import AddIcon from "@material-ui/icons/Add";
+import EditIcon from "@material-ui/icons/Edit";
+import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -34,7 +37,8 @@ const useStyles = makeStyles((theme) => ({
 
 const CustomerViewCol = (props) => {
   const classes = useStyles();
-  const { updateColumns, columns, setShowFieldModal } = props;
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const { updateColumns, columns, tableColumns } = props;
   return (
     <>
       <div className={classes.container}>
@@ -45,7 +49,10 @@ const CustomerViewCol = (props) => {
             onClick={() => {
               var element = document.querySelector('[aria-label="Close"]');
               element.click();
-              setShowFieldModal(true);
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                showFieldModal: true
+              }));
             }}
           >
             <AddIcon className={classes.addIcon} />{" "}
@@ -58,21 +65,34 @@ const CustomerViewCol = (props) => {
             .map((col) => {
               return (
                 <div key={col.name} className={classes.columnContainer}>
-                  <span>{col.label}</span>
-                  <Checkbox
-                    style={{ padding: 3 }}
-                    checked={col.display === "true"}
-                    onChange={(e) => {
-                      const index = columns.findIndex(
-                        (co) => co.name === col.name
-                      );
-                      col.display === "false"
-                        ? (columns[index].display = "true")
-                        : (columns[index].display = "false");
-                      updateColumns(columns);
-                    }}
-                    color="primary"
-                  />
+                  <span style={{ alignSelf: 'center' }} >{col.label}</span>
+                  <span style={{ display: 'flex' }}>
+                    {tableColumns.find(co => co.name === col.name)?.isCustom && (
+                      <IconButton style={{ padding: 6 }} onClick={() => {
+                        setStateApp((stateApp) => ({
+                          ...stateApp,
+                          selectedMeta: tableColumns.find(co => co.name === col.name),
+                          showFieldModal: true
+                        }));
+                      }}>
+                        <EditIcon style={{ alignSelf: 'center', fontSize: 20 }} />
+                      </IconButton>
+                    )}
+                    <Checkbox
+                      style={{ padding: 3 }}
+                      checked={col.display === "true"}
+                      onChange={(e) => {
+                        const index = columns.findIndex(
+                          (co) => co.name === col.name
+                        );
+                        col.display === "false"
+                          ? (columns[index].display = "true")
+                          : (columns[index].display = "false");
+                        updateColumns(columns);
+                      }}
+                      color="primary"
+                    />
+                  </span>
                 </div>
               );
             })}

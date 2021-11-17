@@ -2034,7 +2034,7 @@ const colourStyles = {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
                     }
                     return (
-                      <div style={{ width: "150px" }} onClick={(e) => e.stopPropagation()}>
+                      <div style={{ width: "150px", padding: "0px 10px" }} onClick={(e) => e.stopPropagation()}>
                         <ReactSelect
                           isSearchable={false}
                           value={value}
@@ -3419,7 +3419,7 @@ const colourStyles = {
   const CustomTableViewCol = (columnsProps) => {
     if(props.header === "Documents") {
       const ViewColumn = props.viewColumn
-      return <ViewColumn {...props.viewColumnProps} {...columnsProps} />
+      return <ViewColumn {...columnsProps} tableColumns={props.columns} />
     }else{
       return <TableViewCol {...columnsProps} />
     }

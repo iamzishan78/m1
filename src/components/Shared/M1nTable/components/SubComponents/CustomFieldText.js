@@ -13,13 +13,12 @@ const CustomFieldText = ({ value, onCustomKeyChange }) => {
         key={"fieldContentInput"}
         id={"fieldContentInput"}
         className={classes.textField}
-        variant="outlined"
+        variant="standard"
         size="small"
         autoComplete="nope"
         fullWidth
         label={null}
         value={inputValue}
-        helperText={"Return to save"}
         onChange={(e) => {
           e.persist();
           setInputValue(e.target.value);
@@ -28,15 +27,19 @@ const CustomFieldText = ({ value, onCustomKeyChange }) => {
           event.stopPropagation();
           if (event.key === "Enter") {
             event.preventDefault();
-            debugger
             onCustomKeyChange(inputValue)
           }
           if (event.key === "Escape") {
-              debugger
+              onCustomKeyChange(value)
+              setInputValue(value);
           }
         }}
         onBlur={() => {
-            debugger
+            onCustomKeyChange(value)
+            setInputValue(value);
+        }}
+        InputProps={{
+            disableUnderline: true,
         }}
       />
     </div>

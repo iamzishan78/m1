@@ -54,7 +54,6 @@ function DocumentsTable(props) {
   };
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [showFieldModal, setShowFieldModal] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState(defaultView);
 
   // queries
@@ -77,6 +76,7 @@ function DocumentsTable(props) {
   const orderByTracks = false;
   const startPaginationAt = 25;
 
+  console.log("selectedMeta", stateApp.selectedMeta);
   useEffect(() => {
     getESDocuments({
       variables: {
@@ -255,10 +255,6 @@ function DocumentsTable(props) {
     selectedFilters: selectedFilters.current,
   };
 
-  const viewColumnProps = {
-    setShowFieldModal,
-  };
-
   const onCustomKeyChange = (value, index, key) => {
     const rows = JSON.parse(JSON.stringify(props.rows))
     rows[index].custom_data = { ...props.rows[index].custom_data, [`${key}`]: value  }
@@ -296,14 +292,13 @@ function DocumentsTable(props) {
             selectedFilters={selectedFilters.current}
           />
         )}
-        {showFieldModal && <MetaField setShowFieldModal={setShowFieldModal} />}
+        {stateApp.showFieldModal && <MetaField />}
         <Table
           style={{ backgroundColor: "#fff" }}
           header={header}
           headerComponent={HeaderComponent}
           viewColumn={CustomerViewCol}
           headerProps={headerProps}
-          viewColumnProps={viewColumnProps}
           columns={columns}
           rows={props.searchedRows}
           total={total}

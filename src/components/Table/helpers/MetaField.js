@@ -9,7 +9,7 @@ import TextField from "@material-ui/core/TextField";
 import Menu from "@material-ui/core/Menu";
 import CheckIcon from "@material-ui/icons/Check";
 import AddIcon from "@material-ui/icons/Add";
-import {arrayMoveImmutable} from "array-move";
+import { arrayMoveImmutable } from "array-move";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { AppContext } from "AppContext";
 
@@ -66,19 +66,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MetaField = ({ setShowFieldModal }) => {
+const MetaField = () => {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState("new");
   const [showAddDescription, setShowAddDescription] = useState(false);
   const { control, reset, setValue, register, getValues, watch } = useForm();
 
   const [addMetaData, { data }] = useMutation(ADD_META_DATA);
-  
+
   const type = watch("type", "dropdown");
 
   const [items, setItems] = useState([]);
 
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   const options = [
     { value: "dropdown", label: "Drop-down" },
@@ -117,45 +117,60 @@ const MetaField = ({ setShowFieldModal }) => {
 
   const handleSave = () => {
     const values = getValues();
-    setShowFieldModal(false);
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      showFieldModal: false,
+    }));
     addMetaData({
-        variables: {
-            metaData: {
-                name: values.title,
-                label: values.title,
-                esKey: '',
-                options: {
-                    display: true,
-                    filter: true,
-                    searchable: false,
-                    sort: false,
-                    download: false,
-                    print: false,
-                    viewColumns: true,
-                },
-                type: values.type,
-                category: values.category,
-                user: stateApp.user.mongoId,
-                dropdownOptions: items,
-                isCustom: true,
-            }
+      variables: {
+        metaData: {
+          name: values.title,
+          label: values.title,
+          esKey: "",
+          options: {
+            display: true,
+            filter: true,
+            searchable: false,
+            sort: false,
+            download: false,
+            print: false,
+            viewColumns: true,
+          },
+          type: values.type,
+          category: values.category,
+          user: stateApp.user.mongoId,
+          dropdownOptions: items,
+          isCustom: true,
         },
-        refetchQueries: ["getMetaData"],
-        awaitRefetchQueries: true,
-    })
-  }
+      },
+      refetchQueries: ["getMetaData"],
+      awaitRefetchQueries: true,
+    });
+  };
 
   return (
     <Dialog
       fullWidth
       maxWidth="md"
       open={true}
-      onClose={() => setShowFieldModal(false)}
+      onClose={() =>
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          showFieldModal: false,
+        }))
+      }
     >
       <div>
         <div className={classes.header}>
           <h3>Add Field</h3>
-          <IconButton onClick={() => setShowFieldModal(false)}>
+          <IconButton
+            onClick={() =>
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                showFieldModal: false,
+              }))
+            }
+          >
             <CloseIcon />
           </IconButton>
         </div>
@@ -284,7 +299,7 @@ const MetaField = ({ setShowFieldModal }) => {
               </Grid>
             </Grid>
           </div>
-          {type === 'dropdown' && (
+          {type === "dropdown" && (
             <div style={{ padding: "0px 35px" }}>
               <SortableComponent setItems={setItems} items={items} />
             </div>
@@ -298,7 +313,12 @@ const MetaField = ({ setShowFieldModal }) => {
               <Button
                 style={{ margin: "25px 5px 25px 0px" }}
                 variant="outlined"
-                onClick={() => setShowFieldModal(false)}
+                onClick={() =>
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    showFieldModal: false,
+                  }))
+                }
               >
                 Cancel
               </Button>
@@ -331,7 +351,7 @@ const useSortableStyles = makeStyles((theme) => ({
   },
 }));
 
-const SortableComponent = ({setItems, items}) => {
+const SortableComponent = ({ setItems, items }) => {
   const onSortEnd = ({ oldIndex, newIndex }) => {
     setItems(arrayMoveImmutable(items, oldIndex, newIndex));
   };
@@ -437,7 +457,9 @@ const SortableItem = SortableElement(
                 marginRight: 10,
                 width: 15,
                 height: 15,
-                backgroundColor: colorPallete.find(pallete => pallete.id === item.palleteId).color,
+                backgroundColor: colorPallete.find(
+                  (pallete) => pallete.id === item.palleteId
+                ).color,
                 display: "inline-block",
                 borderRadius: 10,
               }}
@@ -464,9 +486,12 @@ const SortableItem = SortableElement(
                   return (
                     <div
                       style={{ display: "inline-block" }}
-                      onClick={() =>{
+                      onClick={() => {
                         handleClose();
-                        updateIndex(itemIndex, { ...item, palleteId: pallet.id });
+                        updateIndex(itemIndex, {
+                          ...item,
+                          palleteId: pallet.id,
+                        });
                       }}
                     >
                       <div
