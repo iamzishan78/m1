@@ -2,18 +2,16 @@ import React, { useState, useContext, useCallback, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import NumberFormat from "react-number-format";
-import Switch from "@material-ui/core/Switch";
 import { NavigationContext } from "../NavigationContext";
 import Grid from "@material-ui/core/Grid";
 import { FormLabel } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
-import OwnershipIcon from "../../Shared/svgIcons/ownership";
 import CancelIcon from "@material-ui/icons/Cancel";
 
 const useStyles = makeStyles({
   divBordersMinMax: {
     display: "flow-root",
-    padding: "3.5px 5px 5.5px 15px",
+    padding: "3.5px 5px 5.5px 10px",
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
     "&:hover": {
@@ -30,8 +28,8 @@ const useStyles = makeStyles({
     },
   },
   input: {
-    marginLeft: "30px",
-    width: "160px",
+    marginLeft: "7px",
+    width: "147px",
     "& input": { color: "#17AADD" },
   },
   inputLabel: {
@@ -59,9 +57,7 @@ export default function FilterMeasuredDistance() {
   const [valueMinDisplay, setValueMinDisplay] = useState("");
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
 
-  const [measuredDistanceWell, setMeasuredDistanceWell] = useState(
-    stateNav.measuredDistanceWell ? stateNav.measuredDistanceWell : []
-  );
+  const [measuredDistanceWell, setMeasuredDistanceWell] = useState(stateNav.measuredDistanceWell ? stateNav.measuredDistanceWell : []);
 
   const [error, setError] = useState(false);
   const [errorText, setErrorText] = useState("");
@@ -78,11 +74,7 @@ export default function FilterMeasuredDistance() {
     } else if (min && !max) {
       filter = ["all", [">=", ["get", "measuredDepth"], min]];
     } else if (min && max) {
-      filter = [
-        "all",
-        [">=", ["get", "measuredDepth"], min],
-        ["<=", ["get", "measuredDepth"], max],
-      ];
+      filter = ["all", [">=", ["get", "measuredDepth"], min], ["<=", ["get", "measuredDepth"], max]];
     } else {
       filter = null;
     }
@@ -92,7 +84,6 @@ export default function FilterMeasuredDistance() {
       filterMeasuredDistance: filter,
     }));
   }, [setStateNav, valueMaxDisplay, valueMinDisplay]);
-
 
   useEffect(() => {
     const recall = () => {
@@ -106,13 +97,13 @@ export default function FilterMeasuredDistance() {
         }
       }
       if (!valueMaxDisplay) {
-        if (checkStateNav && checkStateNav[1][0] === "<=") {
+        if (checkStateNav && checkStateNav[1]?.[0] === "<=") {
           const recallMax = checkStateNav[1][2];
           setValueMaxDisplay(recallMax);
         }
       }
       if (!valueMinDisplay) {
-        if (checkStateNav && checkStateNav[1][0] === ">=") {
+        if (checkStateNav && checkStateNav[1]?.[0] === ">=") {
           const recallMin = checkStateNav[1][2];
           setValueMinDisplay(recallMin);
         }
@@ -127,8 +118,15 @@ export default function FilterMeasuredDistance() {
   useEffect(() => {
     if (stateNav.measuredDistanceWell) {
       setFilter();
-    }
+    } else clearFilters();
   }, [setFilter, stateNav.measuredDistanceWell]);
+
+  const clearFilters = () => {
+    setValueMinDisplay("");
+    setValueMaxDisplay("");
+    setError(false);
+    setErrorText("");
+  };
 
   const handleChangeMin = (event) => {
     setValueMinDisplay(parseInt(event.target.value.replace(/,/g, "")));
@@ -179,22 +177,8 @@ export default function FilterMeasuredDistance() {
     }
   };
 
-  // const toggleOwners = () => {
-  //   if (stateNav.filterHasOwnerCount)
-  //     setStateNav((stateNav) => ({
-  //       ...stateNav,
-  //       filterHasOwnerCount: null,
-  //     }));
-  //   else
-  //     setStateNav((stateNav) => ({
-  //       ...stateNav,
-  //       filterHasOwnerCount: ["any", ["==", ["get", "hasOwner"], true]],
-  //     }));
-  // };
-
   return (
     <React.Fragment>
-
       <Grid item sm={12}>
         <div className={classes.divBordersMinMax}>
           <FormLabel className={classes.inputLabel}>MD [ft.]</FormLabel>
@@ -239,14 +223,7 @@ export default function FilterMeasuredDistance() {
                 },
               }}
             />
-            <IconButton
-              onClick={() => {
-                handleChangeMax({ target: { id: "MDMax", value: "" } });
-                handleChangeMin({ target: { id: "MDMin", value: "" } });
-                setError(false);
-                setErrorText("");
-              }}
-            >
+            <IconButton onClick={clearFilters}>
               <CancelIcon height={"30px"} />
             </IconButton>
           </div>

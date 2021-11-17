@@ -26,8 +26,9 @@ const useStyles = makeStyles({
     position: "relative",
     top: "11.5px",
   },
-  floatRight: {
+  inputFieldsContainer: {
     float: "right",
+    marginTop: 10,
   },
 });
 
@@ -38,9 +39,7 @@ export default function FilterWellAppraisal() {
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
   const [error, setError] = useState(false);
   const [errorText, setErrorText] = useState("");
-  const [appraisalWell, setAppraisalWell] = useState(
-    stateNav.appraisalWell ? stateNav.appraisalWell : []
-  );
+  const [appraisalWell, setAppraisalWell] = useState(stateNav.appraisalWell ? stateNav.appraisalWell : []);
 
   const setFilter = useCallback(() => {
     let filter;
@@ -56,11 +55,7 @@ export default function FilterWellAppraisal() {
       filter = ["all", [">=", ["get", "appraisalValueSum"], min]];
     } else if (min && max) {
       if (min < max) {
-        filter = [
-          "all",
-          [">=", ["get", "appraisalValueSum"], min],
-          ["<=", ["get", "appraisalValueSum"], max],
-        ];
+        filter = ["all", [">=", ["get", "appraisalValueSum"], min], ["<=", ["get", "appraisalValueSum"], max]];
       }
     } else {
       filter = null;
@@ -161,7 +156,7 @@ export default function FilterWellAppraisal() {
   return (
     <div className={classes.divBordersMinMax}>
       <FormLabel className={classes.inputLabel}>Well Appraisal</FormLabel>
-      <div className={classes.floatRight}>
+      <div className={classes.inputFieldsContainer}>
         <NumberFormat
           id="appraisalWellMin"
           value={valueMinDisplay}

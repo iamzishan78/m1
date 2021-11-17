@@ -2202,9 +2202,9 @@ function Map({ type, paramId, lati, longi }) {
                     };
                     let flag = 0;
                     for (let k = 0; k < shapeList.length; k++) {
-                      if (shapeList[k].type === "MultiPolygon" || shapeList[k].geometry.type === "MultiPolygon") {
+                      if (shapeList[k].type === "MultiPolygon" || shapeList[k].geometry?.type === "MultiPolygon") {
                         let flagM = 0;
-                        for (let j = 0; j < shapeList[k].geometry.coordinates.length; j++) {
+                        for (let j = 0; j < shapeList[k].geometry?.coordinates?.length; j++) {
                           let filterCoordinates = shapeList[k].geometry.coordinates[j];
                           if (filterCoordinates[0] && filterCoordinates[0].length > 2) {
                             filterCoordinates = filterCoordinates[0];
@@ -2217,7 +2217,7 @@ function Map({ type, paramId, lati, longi }) {
                             flagM++;
                           }
                         }
-                        if (flagM === shapeList[k].geometry.coordinates.length) {
+                        if (flagM === shapeList[k].geometry?.coordinates.length) {
                           flag++;
                         }
                       } else {
@@ -2233,8 +2233,8 @@ function Map({ type, paramId, lati, longi }) {
                   return true;
                 } else {
                   for (let i = 0; i < shapeList.length; i++) {
-                    if (shapeList[i] && (shapeList[i].type === "MultiPolygon" || shapeList[i].geometry.type === "MultiPolygon")) {
-                      for (let j = 0; j < shapeList[i].geometry.coordinates.length; j++) {
+                    if (shapeList[i] && (shapeList[i].type === "MultiPolygon" || shapeList[i].geometry?.type === "MultiPolygon")) {
+                      for (let j = 0; j < shapeList[i].geometry?.coordinates?.length; j++) {
                         let filterCoordinates = shapeList[i].geometry.coordinates[j];
                         if (filterCoordinates[0] && filterCoordinates[0].length > 2) {
                           filterCoordinates = filterCoordinates[0];
@@ -4681,18 +4681,6 @@ function Map({ type, paramId, lati, longi }) {
   const mouseLeaveHandler = (e) => {
     map.getCanvas().style.cursor = "";
   };
-
-  // const mapMouseMove = (e) => {
-  //   // e.lngLat is the longitude, latitude geographical position of the event
-  //   let coordinates = e.lngLat.wrap();
-  //   setLng(coordinates.lng);
-  //   setLat(coordinates.lat);
-  // };
-
-  // const mapZoom = (e) => {
-  //   let zooms = map.getZoom();
-  //   setZoom(zooms);
-  // };
 
   const onAbstactLayerClick = function (feature, action) {
     console.log("featur--", feature);

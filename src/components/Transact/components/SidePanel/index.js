@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: 36,
   },
   drawer: {
-    zIndex: 0,
+    zIndex: 2,
     width: "425px",
     top: "auto",
     backgroundColor: "#0e111a",

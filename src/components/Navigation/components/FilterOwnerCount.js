@@ -1,4 +1,5 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
+import { get } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import NumberFormat from "react-number-format";
@@ -13,7 +14,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 const useStyles = makeStyles({
   divBordersMinMax: {
     display: "flow-root",
-    padding: "3.5px 5px 5.5px 15px",
+    padding: "3.5px 5px 5.5px 10px",
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
     "&:hover": {
@@ -30,8 +31,8 @@ const useStyles = makeStyles({
     },
   },
   input: {
-    marginLeft: "30px",
-    width: "160px",
+    marginLeft: "7px",
+    width: "147px",
     "& input": { color: "#17AADD" },
   },
   inputLabel: {
@@ -48,8 +49,9 @@ const useStyles = makeStyles({
   ownersToggle: {
     marginRight: "50px",
   },
-  floatRight: {
+  inputFieldsContainer: {
     float: "right",
+    marginTop: 10,
   },
 });
 
@@ -58,11 +60,7 @@ export default function FilterOwnerCount() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [valueMinDisplay, setValueMinDisplay] = useState("");
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
-  const [noOwners, setNoOwners] = useState(false);
-  const [owners, setOwners] = useState(false);
-  const [ownerCountWell, setOwnerCountWell] = useState(
-    stateNav.ownerCountWell ? stateNav.ownerCountWell : []
-  );
+  const [ownerCountWell, setOwnerCountWell] = useState(stateNav.ownerCountWell ? stateNav.ownerCountWell : []);
   const [error, setError] = useState(false);
   const [errorText, setErrorText] = useState("");
 
@@ -78,11 +76,7 @@ export default function FilterOwnerCount() {
     } else if (min && !max) {
       filter = ["all", [">=", ["get", "ownerCount"], min]];
     } else if (min && max) {
-      filter = [
-        "all",
-        [">=", ["get", "ownerCount"], min],
-        ["<=", ["get", "ownerCount"], max],
-      ];
+      filter = ["all", [">=", ["get", "ownerCount"], min], ["<=", ["get", "ownerCount"], max]];
     } else {
       filter = null;
     }
@@ -105,13 +99,13 @@ export default function FilterOwnerCount() {
         }
       }
       if (!valueMaxDisplay) {
-        if (checkStateNav && checkStateNav[1][0] === "<=") {
+        if (checkStateNav && get(checkStateNav[1], `${0}`) === "<=") {
           const recallMax = checkStateNav[1][2];
           setValueMaxDisplay(recallMax);
         }
       }
       if (!valueMinDisplay) {
-        if (checkStateNav && checkStateNav[1][0] === ">=") {
+        if (checkStateNav && get(checkStateNav[1], `${0}`) === ">=") {
           const recallMin = checkStateNav[1][2];
           setValueMinDisplay(recallMin);
         }
@@ -126,6 +120,8 @@ export default function FilterOwnerCount() {
   useEffect(() => {
     if (stateNav.ownerCountWell) {
       setFilter();
+    } else {
+      clearFilters();
     }
   }, [setFilter, stateNav.ownerCountWell]);
 
@@ -191,13 +187,19 @@ export default function FilterOwnerCount() {
       }));
   };
 
+  const clearFilters = () => {
+    handleChangeMax({ target: { id: "OwnerCountMax", value: "" } });
+    handleChangeMin({ target: { id: "OwnerCountMin", value: "" } });
+    setError(false);
+    setErrorText("");
+  };
+
   return (
     <React.Fragment>
-
       <Grid item sm={12}>
         <div className={classes.divBordersMinMax}>
           <FormLabel className={classes.inputLabel}>Owner Count</FormLabel>
-          <div className={classes.floatRight}>
+          <div className={classes.inputFieldsContainer}>
             <NumberFormat
               id="OwnerCountMin"
               value={valueMinDisplay}
@@ -238,14 +240,7 @@ export default function FilterOwnerCount() {
                 },
               }}
             />
-            <IconButton
-              onClick={() => {
-                handleChangeMax({ target: { id: "OwnerCountMax", value: "" } });
-                handleChangeMin({ target: { id: "OwnerCountMin", value: "" } });
-                setError(false);
-                setErrorText("");
-              }}
-            >
+            <IconButton onClick={clearFilters}>
               <CancelIcon height={"30px"} />
             </IconButton>
           </div>
@@ -256,12 +251,10 @@ export default function FilterOwnerCount() {
           <IconButton className={classes.IconButton}>
             <OwnershipIcon color="#808080" opacity="1.0" />
           </IconButton>
-          <FormLabel style={{ verticalAlign: "middle", paddingRight: "25px" }}>
-            Only show wells with interest owners
-          </FormLabel>
+          <FormLabel style={{ verticalAlign: "middle", paddingRight: "25px" }}>Only show wells with interest owners</FormLabel>
           <Switch
             className={classes.ownersToggle}
-            checked={stateNav.filterHasOwnerCount ? true : false}
+            checked={!!stateNav.filterHasOwnerCount?.length}
             onChange={toggleOwners}
             color="secondary"
             name="checked"

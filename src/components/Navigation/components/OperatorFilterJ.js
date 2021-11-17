@@ -2,9 +2,8 @@ import React, { useState, useContext, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
-import {TOPOPERATORS} from "../../../graphQL/useQueryTopOperators";
+import { TOPOPERATORS } from "../../../graphQL/useQueryTopOperators";
 import { useLazyQuery } from "@apollo/client";
-
 
 export default function OperatorFilterJ() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -13,26 +12,24 @@ export default function OperatorFilterJ() {
   const [getOperators, { data: topOperatorData }] = useLazyQuery(TOPOPERATORS);
 
   useEffect(() => {
-    // use effect is querying the top operator data 
-    // top operator data is used for the autocomplete filter 
-    
+    // use effect is querying the top operator data
+    // top operator data is used for the autocomplete filter
+
     getOperators();
   }, []);
 
   useEffect(() => {
-    // this use effect is taking the top operator data response 
-    // reformatting into an array 
-    // and setting the operator list for the filter 
+    // this use effect is taking the top operator data response
+    // reformatting into an array
+    // and setting the operator list for the filter
 
     if (topOperatorData) {
       const operatorList = topOperatorData.topOperators.map((item) => item.CurrentOperator);
       setOperatorsList(operatorList);
     } else {
       setOperatorsList([]);
-     }   
+    }
   }, [topOperatorData]);
-
-
 
   const handleOperatorChange = (value) => {
     let filter;
@@ -51,20 +48,13 @@ export default function OperatorFilterJ() {
     <Autocomplete
       ChipProps={{ color: "secondary" }}
       defaultValue={stateNav.operatorName}
+      value={stateNav.operatorName}
       onChange={(event, newValue) => {
         handleOperatorChange(newValue);
       }}
       multiple
       options={operatorList}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="outlined"
-          label="Operator"
-          placeholder=""
-          fullWidth
-        />
-      )}
+      renderInput={(params) => <TextField {...params} variant="outlined" label="Operator" placeholder="" fullWidth />}
       disableListWrap
       id="virtualize-operators"
     />
