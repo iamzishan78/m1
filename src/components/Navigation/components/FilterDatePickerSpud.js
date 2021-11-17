@@ -5,8 +5,7 @@ import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
 import ClearIcon from "@material-ui/icons/Clear";
 import { IconButton } from "@material-ui/core";
-import {useForm,Controller} from 'react-hook-form';
-
+import { useForm, Controller } from "react-hook-form";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -15,9 +14,12 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
   },
   datePicker: {
-    margin: "15px",
+    margin: "5px",
     "&& span": {
       pointerEvents: "none",
+    },
+    "& .MuiIconButton-root": {
+      padding: "10px",
     },
   },
   blue: {
@@ -28,8 +30,7 @@ const useStyles = makeStyles((theme) => ({
 export default function FilterDatePickerSpud(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const { control, watch, setValue, getValues } = useForm();
-
+  const { control, watch, setValue, reset } = useForm();
 
   useEffect(() => {
     let filter = null;
@@ -43,19 +44,14 @@ export default function FilterDatePickerSpud(props) {
         ["get", "spudDate"],
         stateNav.spudDateFrom
           ? moment.parseZone(stateNav.spudDateFrom).utc(true).valueOf()
-          : moment
-              .parseZone(new Date("1900-01-01T00:00:00"))
-              .utc(true)
-              .valueOf(),
+          : moment.parseZone(new Date("1900-01-01T00:00:00")).utc(true).valueOf(),
       ]);
 
       //// spudDateTo
       filter.push([
         "<=",
         ["get", "spudDate"],
-        stateNav.spudDateTo
-          ? moment.parseZone(stateNav.spudDateTo).utc(true).valueOf()
-          : moment.parseZone(moment()).utc(true).valueOf(),
+        stateNav.spudDateTo ? moment.parseZone(stateNav.spudDateTo).utc(true).valueOf() : moment.parseZone(moment()).utc(true).valueOf(),
       ]);
     }
 
@@ -65,6 +61,17 @@ export default function FilterDatePickerSpud(props) {
         filterSpudDateRange: filter,
       }));
   }, [stateNav.spudDateFrom, stateNav.spudDateTo, setStateNav]);
+
+  useEffect(() => {
+    if (!stateNav.filterPermitDateRange?.length && (stateNav.permitDateFrom || stateNav.permitDateTo)) {
+      const resetParams = { spudDateFrom: null, spudDateTo: null };
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        ...resetParams,
+      }));
+      reset(resetParams);
+    }
+  }, [stateNav.filterSpudDateRange]);
 
   const handleStartDate = (date) => {
     setStateNav((stateNav) => ({
@@ -83,27 +90,25 @@ export default function FilterDatePickerSpud(props) {
   return (
     <div className={classes.root}>
       <div className={classes.datesRow}>
-
-
-      <Controller
-            control={control}
-            name="spudDateFrom"          
-            defaultValue={stateNav.spudDateFrom}
-            render ={({onChange, onClick, value}
-            ) => (
-
+        <Controller
+          control={control}
+          name="spudDateFrom"
+          defaultValue={stateNav.spudDateFrom}
+          render={({ onChange, onClick, value }) => (
             <KeyboardDatePicker
               label={props.labelDates + " " + "From"}
-              className={`${classes.datePicker} ${
-                stateNav.spudDateFrom ? classes.blue : ""
-              }`}
+              className={`${classes.datePicker} ${stateNav.spudDateFrom ? classes.blue : ""}`}
               variant="inline"
-              value={watch('spudDateFrom')}
+              value={watch("spudDateFrom")}
               onChange={(date) => {
-                setValue('spudDateFrom',date);
-                if(date && date.isValid()){handleStartDate(date)}
-                if(!date || !date.isValid()){handleStartDate(null)}
-                return {value: date}
+                setValue("spudDateFrom", date);
+                if (date && date.isValid()) {
+                  handleStartDate(date);
+                }
+                if (!date || !date.isValid()) {
+                  handleStartDate(null);
+                }
+                return { value: date };
               }}
               disableToolbar
               KeyboardButtonProps={{ "aria-label": "change date" }}
@@ -113,10 +118,12 @@ export default function FilterDatePickerSpud(props) {
               fullWidth={true}
               InputProps={{
                 endAdornment: (
-                  <IconButton onClick={() => {
-                    setValue('spudDateFrom',null);
-                    handleStartDate(null);
-              }}>
+                  <IconButton
+                    onClick={() => {
+                      setValue("spudDateFrom", null);
+                      handleStartDate(null);
+                    }}
+                  >
                     <ClearIcon style={{ height: "22px", width: "22px" }} />
                   </IconButton>
                 ),
@@ -125,31 +132,28 @@ export default function FilterDatePickerSpud(props) {
                 position: "start",
               }}
             />
-
-        )}
+          )}
         />
 
-
-          <Controller
-            control={control}
-            name="spudDateTo"          
-            defaultValue={stateNav.spudDateTo}
-            render ={({onChange, onClick, value}
-            ) => (
-
-
+        <Controller
+          control={control}
+          name="spudDateTo"
+          defaultValue={stateNav.spudDateTo}
+          render={({ onChange, onClick, value }) => (
             <KeyboardDatePicker
               label={props.labelDates + " " + "To"}
-              className={`${classes.datePicker} ${
-                stateNav.spudDateTo ? classes.blue : ""
-              }`}
+              className={`${classes.datePicker} ${stateNav.spudDateTo ? classes.blue : ""}`}
               variant="inline"
-              value={watch('spudDateTo')}
+              value={watch("spudDateTo")}
               onChange={(date) => {
-                setValue('spudDateTo',date);
-                if(date && date.isValid()){handleEndDate(date)}
-                if(!date || !date.isValid()){handleEndDate(null)}
-                return {value: date}
+                setValue("spudDateTo", date);
+                if (date && date.isValid()) {
+                  handleEndDate(date);
+                }
+                if (!date || !date.isValid()) {
+                  handleEndDate(null);
+                }
+                return { value: date };
               }}
               disableToolbar
               KeyboardButtonProps={{ "aria-label": "change date" }}
@@ -159,11 +163,13 @@ export default function FilterDatePickerSpud(props) {
               fullWidth={true}
               InputProps={{
                 endAdornment: (
-                  <IconButton onClick={() => {
-                    setValue('spudDateTo',null);
-                    handleEndDate(null);
-                  }}>
-                  <ClearIcon style={{ height: "22px", width: "22px" }} />
+                  <IconButton
+                    onClick={() => {
+                      setValue("spudDateTo", null);
+                      handleEndDate(null);
+                    }}
+                  >
+                    <ClearIcon style={{ height: "22px", width: "22px" }} />
                   </IconButton>
                 ),
               }}
@@ -171,10 +177,8 @@ export default function FilterDatePickerSpud(props) {
                 position: "start",
               }}
             />
-
-        )}
+          )}
         />
-
       </div>
     </div>
   );

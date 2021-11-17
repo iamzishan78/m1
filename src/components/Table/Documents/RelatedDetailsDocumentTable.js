@@ -53,6 +53,7 @@ function RelatedDetailsDocumentTable(props) {
   const tableData = dataParcelFiles?.getParcelFiles
 
   const total = false
+  const addAble = { type: "document" }
   const orderByTracks = false
 
   useEffect(() => {
@@ -70,7 +71,7 @@ function RelatedDetailsDocumentTable(props) {
 
 
   useEffect(() => {
-    if (dataParcelFiles?.getParcelFiles?.length > 0) {
+    if (dataParcelFiles?.getParcelFiles/*?.length > 0*/) {
       let wells = dataParcelFiles.getParcelFiles
       wells = wells.map((w) => {
         return { ...w, _id: w.descriptorId, documentDate: w.dateTime ? moment(w.dateTime).format('MM/DD/YYYY') : '' };
@@ -81,9 +82,9 @@ function RelatedDetailsDocumentTable(props) {
       setColumns(columns);
       props.setLoading(false);
     }
-    else if (dataParcelFiles?.getParcelFiles?.length === 0) {
-      props.setLoading(false);
-    }
+    // else if (dataParcelFiles?.getParcelFiles?.length === 0) {
+    //   props.setLoading(false);
+    // }
   }, [tableData, props.dependencyUpdate]);
 
   const count = dataParcelFiles?.paginatedContactWellInterests?.totalCount || 0
@@ -125,18 +126,16 @@ function RelatedDetailsDocumentTable(props) {
         variables: {
           id: ids[i],
         },
-        refetchQueries: [
-          "getAllFiles",
-        ],
+        refetchQueries: ["getParcelFiles"],
         awaitRefetchQueries: true,
-      }).then(() => {
+      })/*.then(() =>{
         getAllFiles({
           variables: {
             relatedObjectId: props.customLayer._id,
             relatedObjectType: props.relatedObjectType,
           },
         });
-      });
+      });*/
     }
   }
 
@@ -241,6 +240,7 @@ function RelatedDetailsDocumentTable(props) {
         dense={props.dense ? props.dense : undefined}
         startPaginationAt={null}
         options={options}
+        addAble={addAble}
         parent={props.parent}
         setColumnsBase={[]}
         onTableChange={onTableChange}

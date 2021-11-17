@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
-  table:{
+  table: {
     "& .MuiPaper-elevation1": {
       flexDirection: "row !important",
       height: "65px !important",
@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
       alignItems: "center !important",
     },
   },
-  grid:{
+  grid: {
     "& .Mui-disabled": {
       backgroundColor: "transparent",
     },
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   accordian: {
     background: "#e3eefc",
     "& .MuiAccordionSummary-content .MuiTypography-body1": { fontWeight: 600 },
-    "& .MuiCollapse-container": { background: 'white' }
+    "& .MuiCollapse-container": { background: "white" },
   },
   multiSelectionTopBarButtons: {
     margin: "0px 5px",
@@ -56,11 +56,6 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "2000",
     color: "#5f5f5f",
   },
-  /*root: {
-    height: "42px",
-    width: "100%",
-    "& .MuiAutocomplete-inputRoot": { maxHeight: "42px" },
-  },*/
   root: {
     flexGrow: 1,
     "& .MuiInput-root": {
@@ -82,10 +77,10 @@ const useStyles = makeStyles((theme) => ({
   headerButtons: {
     margin: "0 4px",
     minWidth: "max-content",
-    "float": "left",
+    float: "left",
   },
   floatRight: {
-    "float": "right",
+    float: "right",
   },
   historyPopover: {
     "& .MuiPopover-paper": {
@@ -111,5 +106,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-export default useStyles
+export default useStyles;

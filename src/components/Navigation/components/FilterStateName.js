@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import FormControl from "@material-ui/core/FormControl";
@@ -15,21 +15,27 @@ const useStyles = makeStyles((theme) => ({
   autoC: { "& input": { color: "#17AADD" } },
 }));
 
+const nullDesc = {
+  GrId1: null,
+  GrId2: null,
+  GrId3: null,
+  GrId4: null,
+  GrId5: null,
+  filterGeography: null,
+};
+
 export default function FilterStateName() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
-  const nullDesc = {
-    GrId1: null,
-    GrId2: null,
-    GrId3: null,
-    GrId4: null,
-    GrId5: null,
-    filterGeography: null,
-  };
+  useEffect(() => {
+    if (!stateNav.stateName && stateNav.displayStateName) {
+      handleStateNameChange();
+    }
+  }, [stateNav.stateName]);
 
   const handleStateNameChange = (event, newValue) => {
-    if (newValue == null) {
+    if (newValue === null) {
       setStateNav((stateNav) => ({
         ...stateNav,
         stateName: null,

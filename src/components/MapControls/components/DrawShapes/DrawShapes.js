@@ -5,63 +5,29 @@ import { get } from "lodash";
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import { AppContext } from "AppContext";
 // STYLES - Material UI Required Components
-import { AppStyles, StyledMenu, StyledMenuItem } from "../muiThemes";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import ListItemText from "@material-ui/core/ListItemText";
-// STYLES - Font Awesome Icons Required for Menu Items
-//import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-//import { faGripLines, faDrawPolygon } from "@fortawesome/free-solid-svg-icons";
-//import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
-//import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 // COMPONENTS
-import SpatialDataCard from "../spatialDataCard";
 import ShapeActionsPopup from "../popup/ShapeActionsPopup";
 import DrawShapePopup from "../popup/DrawShapesPopup";
 import ShapeAOIPopup from "../popup/ShapeAOIPopup";
 // HELPERS
-import { area, convertArea } from "@turf/turf";
-import { spatialDataAttributes } from "./constants";
-import { addCustomShapeProperties, createShapeLabelLayer } from "./drawShapesHelpers";
-import mapboxgl, { Marker } from "mapbox-gl";
-import { makeStyles, Icon } from "@material-ui/core";
-import TextField from "@material-ui/core/TextField";
+import { addCustomShapeProperties } from "./drawShapesHelpers";
+import { makeStyles } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
-import polylabel from "polylabel";
 import { useHistory } from "react-router-dom";
 
-import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
-import { CUSTOMLAYERSQUERY } from "../../../../graphQL/useQueryCustomLayers";
-import { USERBYEMAIL } from "../../../../graphQL/useQueryUserByEmail";
+import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
+import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
 
-//import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-//import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
-//import { mdiShapePolygonPlus } from '@mdi/js';
 import CloseIcon from "@material-ui/icons/Close";
-import { default as DrawPoly } from "../../../Shared/svgIcons/polygon";
-import { default as Rect } from "../../../Shared/svgIcons/rectangle";
-import ShowChartIcon from "@material-ui/icons/ShowChart";
-import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
-import { NavigationContext } from "../../../Navigation/NavigationContext";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "actions";
 import { clearMapAndCloseShapeActionsPopup, setFeatureProperty, drawShapeLayerToggle } from "components/MapControls/commonHelper";
 
-// const localStyles = makeStyles((theme) => ({
-//   label: {
-//     width: "150px",
-//     height: "15px",
-//     display: "flex",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     color: "white",
-//     fontSize: "1rem",
-//   },
-// }));
-
 const useStyles = makeStyles((theme) => ({
   mapOverlay: {
-    position: "absolute",
+    position: "fixed",
     minWidth: "320px",
     bottom: "20px",
     left: "50%",
@@ -236,9 +202,14 @@ export default function DrawShapes() {
         ...state,
         currentFeature: selectedUserDefinedLayer,
         // selectedParcel: selectedUserDefinedLayer.source === 'parcels_source' ? selectedUserDefinedLayer : null,
-        selectedAoi: selectedUserDefinedLayer.source === 'interests_source' ? selectedUserDefinedLayer : null,
+        selectedAoi: selectedUserDefinedLayer.source === "interests_source" ? selectedUserDefinedLayer : null,
       }));
-      if (selectedUserDefinedLayer.source === "interests_source" && showShapeActionsPopup === true && selectedParcel === null && selectedShape === null) {
+      if (
+        selectedUserDefinedLayer.source === "interests_source" &&
+        showShapeActionsPopup === true &&
+        selectedParcel === null &&
+        selectedShape === null
+      ) {
         toggleSpatialDataCard(true);
       }
     }
@@ -387,11 +358,11 @@ export default function DrawShapes() {
         </ClickAwayListener>
       )}
       {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
-        stateApp.currentFeature !== undefined &&
-        !stateApp.currentFeature.id?.includes("draw_polygon") &&
-        !stateApp.currentFeature.id?.includes("drag_circle") &&
-        !stateApp.currentFeature.id?.includes("draw_rectangle") &&
-        !stateApp.currentFeature.id?.includes("edit_polygon") ? (
+      stateApp.currentFeature !== undefined &&
+      !stateApp.currentFeature.id?.includes("draw_polygon") &&
+      !stateApp.currentFeature.id?.includes("drag_circle") &&
+      !stateApp.currentFeature.id?.includes("draw_rectangle") &&
+      !stateApp.currentFeature.id?.includes("edit_polygon") ? (
         <Fragment>
           {showSpatialDataCard &&
             stateApp.currentFeature?.properties?.sdType === "interest" && ( // for edit/create AOI

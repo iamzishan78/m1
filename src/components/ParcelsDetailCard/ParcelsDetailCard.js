@@ -425,7 +425,7 @@ export default function ParcelsDetailCard(props) {
           <Tags width="100%" targetSourceId={props.id} targetLabel="unit" publicLeftBottom />
         </div>
       </Grid>
-      <Grid item sm={12} container>
+      {/* <Grid item sm={12} container>
         {originalProperties && (
           <Grid item sm={12} className={classes.gridItemGrey}>
             <StateCard state={originalProperties.state} />
@@ -564,13 +564,13 @@ export default function ParcelsDetailCard(props) {
           </Grid>
         )}
 
-      </Grid>
+      </Grid> */}
       <Grid item sm={12}>
         <Taps
           tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "Documents"]}
           openTabIdex={selectedTab}
           tabPanels={[
-            <ParcelSummary properties={parcelProperties} setProperties={setProperties} updateProperties={updateParcel}
+            <ParcelSummary customLayer={parcelObj} properties={parcelProperties} setProperties={setProperties} updateProperties={updateParcel}
               updateCustomProperties={updateCustomProperties} id={props.id} />,
             <TabPanels
               value={selectedTab}

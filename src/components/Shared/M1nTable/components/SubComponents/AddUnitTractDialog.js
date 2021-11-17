@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import React, { useState, useEffect } from "react";
+import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -9,16 +9,15 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Grid from "@material-ui/core/Grid";
 import { Box, CircularProgress, Dialog, Typography } from "@material-ui/core";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
-import { WELL_INTEREST_SELECT_OPTIONS } from "graphQL/useQueryWellInterestSelectOptions";
-import { ADD_SHAPE_WELL_INTEREST } from "graphQL/useMutationAddShapeWellInterest";
-import { UPDATE_SHAPE_WELL_INTEREST } from "graphQL/useMutationUpdateShapeWellInterest";
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import { useForm, Controller } from "react-hook-form";
 
 // contexts 
-import { AppContext } from "AppContext";
 import { getParcelOriginalProperties } from "components/ParcelsDetailCard/utils/GetParcelOriginalProps";
 import AutoCompleteShapeLayer from "components/Shared/Forms/Fields/AutoCompleteShapeLayer";
+import { ADD_TRACTS_TOA_SHAPE } from "graphQL/useMutationAddTractsToAShape";
+import { UPDATE_SHAPE_TRACTS } from "graphQL/useMutationUpdateShapeTracts";
+import pick from 'lodash/pick';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -45,136 +44,89 @@ const useStyles = makeStyles((theme) => ({
 
 function AddUnitTractDialog(props) {
   const classes = useStyles();
-
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const { control, reset, register, getValues } = useForm();
+  const { control, reset, register, getValues, watch } = useForm();
 
   const [loading, setLoading] = useState(false);
   const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
-  const [wellInterestSelectOptions, setWellInterestSelectOptions] = useState({});
-  const [valid, setValid] = useState({});
 
-  const [getWellInterestsSelectOptions, { data: dataWellInterestsSelectOptions }] = useLazyQuery(WELL_INTEREST_SELECT_OPTIONS, {
-    fetchPolicy: "cache-and-network",
-  });
+  const state = watch('state', '')
 
-  const [addShapeWellInterest] = useMutation(ADD_SHAPE_WELL_INTEREST, {
+  const [addShapeTract] = useMutation(ADD_TRACTS_TOA_SHAPE, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
     },
     refetchQueries: [
-      "getESShapeWells",
-      "getESShapeWellsFilter"
+      "getESShapeTracts",
+      "getESShapeTractsFilter"
     ],
     awaitRefetchQueries: true,
   });
-  const [updateShapeWellInterest] = useMutation(UPDATE_SHAPE_WELL_INTEREST, {
+  const [updateShapeTract] = useMutation(UPDATE_SHAPE_TRACTS, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
     },
+    onError: (err) => { },
     refetchQueries: [
-      "getESShapeWells",
-      "getESShapeWellsFilter"
+      "getESShapeTracts",
+      "getESShapeTractsFilter"
     ],
     awaitRefetchQueries: true,
   });
 
   useEffect(() => {
-    getWellInterestsSelectOptions({ variables: { selectKeys: ['Operator', 'WellType', 'WellStatus', 'WellBoreProfile'] } })
-  }, []);
+    if (props.seletedTract) {
+      props.seletedTract.parcelId = props.seletedTract?.parcel?._id
+      props.seletedTract.name = props.seletedTract?.parcel?.name
+      setSelectedShapeLayer(props.seletedTract);
 
-  useEffect(() => {
-    setWellInterestSelectOptions(dataWellInterestsSelectOptions?.wellInterestsSelectOptions?.res);
-  }, dataWellInterestsSelectOptions);
-
-  const getOptions = useCallback(
-    (type) => {
-      return wellInterestSelectOptions ? wellInterestSelectOptions[type]?.map(e => e.Desc || e.Name) : []
-    },
-    [wellInterestSelectOptions],
-  );
-
-  useEffect(() => {
-    if (props.wellInterest) {
-      props.wellInterest.api = props.wellInterest.apiNumber
-      setSelectedShapeLayer({
-        Id: props.wellInterest.wellId,
-        WellName: props.wellInterest.wellName,
-        ApiNumber: props.wellInterest.api,
-        LeaseId: props.wellInterest.leaseId,
-        Lease: props.wellInterest.lease,
-        LeaseAcreage: props.wellInterest.leaseAcres
-      });
-
-      reset(props.wellInterest)
+      reset(pick(props.seletedTract, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'shapeArea', 'uAcres', 'legalDescription']))
     }
-  }, [props.wellInterest]);
+  }, [props.seletedTract]);
 
   useEffect(() => {
     // if launched from grid row set initializing based on selectedWell state
-    const originalProperties = getParcelOriginalProperties(selectedShapeLayer?.shapeJson?.properties)
-    const shapeArea = selectedShapeLayer?.shapeJson?.properties?.shapeArea;
-    reset({ ...getValues(), shapeArea, ...originalProperties })
+    if (selectedShapeLayer?.shapeJson) {
+      const originalProperties = getParcelOriginalProperties(selectedShapeLayer?.shapeJson?.properties)
+      const shapeArea = selectedShapeLayer?.shapeJson?.properties?.shapeArea;
+      const legalDescription = selectedShapeLayer?.shapeJson?.properties?.legalDescription;
+      selectedShapeLayer.parcelId = selectedShapeLayer._id
+      reset({ ...getValues(), shapeArea, legalDescription, ...originalProperties, name: selectedShapeLayer.name })
+    }
   }, [selectedShapeLayer]);
 
   const handleClose = () => {
     setSelectedShapeLayer(null);
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      wellInterestDialog: false,
-      activeWellInterest: null,
-    }));
-    setValid({});
     reset({})
     props.onClose();
   }
 
-  const handleValidate = () => {
-    const tempValid = {
-      ...valid,
-      'selectedWell.Id': !selectedShapeLayer?.Id
-    }
-    setValid(tempValid);
-
-    return !Object.values(tempValid).reduce((acc, cur) => acc + cur)
-  }
-
   const handleSave = () => {
     setLoading(true);
-    if (props.wellInterest) {
-      updateShapeWellInterest({
+    if (props.seletedTract) {
+      updateShapeTract({
         variables: {
-          wellInterest: {
-            id: props.wellInterest._id,
-            shapeType: props.shapeType,
-            globalWellId: selectedShapeLayer.Id,
-            ...getValues(),
-          },
-        },
-        refetchQueries: [
-          "getESShapeWells",
-          "getESShapeWellsFilter"
-        ],
-        awaitRefetchQueries: true,
-      });
-    } else {
-      addShapeWellInterest({
-        variables: {
-          wellInterest: {
-            globalWellId: selectedShapeLayer.Id,
-            userId: stateApp.user.mongoId,
-            shapeType: props.shapeType,
+          shapeTracts: [{
+            _id: selectedShapeLayer._id,
+            name: selectedShapeLayer.name,
             shapeId: props.shapeId,
             ...getValues(),
-          }
-        },
-        refetchQueries: [
-          "getESShapeWells",
-          "getESShapeWellsFilter"
-        ],
-        awaitRefetchQueries: true,
+          }],
+          shapeType: props.shapeType,
+        }
+      });
+    } else {
+      addShapeTract({
+        variables: {
+          shapeTracts: [{
+            parcelId: selectedShapeLayer.parcelId,
+            name: selectedShapeLayer.name,
+            shapeId: props.shapeId,
+            ...getValues(),
+          }],
+          shapeType: props.shapeType,
+        }
       });
     }
   }
@@ -191,16 +143,16 @@ function AddUnitTractDialog(props) {
   const deleteFunc = async () => {
     try {
       setLoading(true);
-      updateShapeWellInterest({
+      updateShapeTract({
         variables: {
-          wellInterest: {
-            id: props.wellInterest._id,
+          seletedTract: {
+            id: props.seletedTract._id,
             isDeleted: true
           },
         },
         refetchQueries: [
-          "getESShapeWells",
-          "getESShapeWellsFilter"
+          "getESShapeTracts",
+          "getESShapeTractsFilter"
         ],
         awaitRefetchQueries: true,
       });
@@ -208,10 +160,6 @@ function AddUnitTractDialog(props) {
       setLoading(false);
     }
   };
-
-  const setTenantWell = (well) => {
-    if (well) reset(well)
-  }
 
   return (
     <>
@@ -248,10 +196,10 @@ function AddUnitTractDialog(props) {
                 fontSize: "1.1rem",
               }}
             >
-              {props.wellInterest ? `Update ${props.shapeType} Tract` : `Add ${props.shapeType} Tract`}
+              {props.seletedTract ? `Update ${props.shapeType} Tract` : `Add ${props.shapeType} Tract`}
             </h4>
             <div style={{ "float": "right" }}>
-              {(props.wellInterest && (
+              {(props.seletedTract && (
                 <>
                   <IconButton
                     disabled={loading}
@@ -292,51 +240,55 @@ function AddUnitTractDialog(props) {
 
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='state' inputRef={register()} label={"State"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              InputLabelProps={{ shrink: true }} fullWidth disabled />
+
+
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='county' inputRef={register()} label={"County"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='survey' inputRef={register()} label={"Survey"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='block' inputRef={register()} label={"Block"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='section' inputRef={register()} label={"Section"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+            {state !== 'TX' && <>
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='meridian' inputRef={register()} label={"Meridian"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='abstract' inputRef={register()} label={"Abstract"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='township' inputRef={register()} label={"Township"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='range' inputRef={register()} label={"Range"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='altSurvey' inputRef={register()} label={"Section"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+            </>}
+
+            {state === 'TX' && <>
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='survey' inputRef={register()} label={"Survey"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='block' inputRef={register()} label={"Block"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='range' inputRef={register()} label={"Section"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='section' inputRef={register()} label={"Abstract"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+            </>}
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='altSurvey' inputRef={register()} label={"Alternate Survey"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-            <Grid container spacing={1}>
-              <Grid item xs={3}>
-                <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[0]' inputRef={register()} label={"QTR1"}
-                  InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
-              </Grid>
-              <Grid item xs={3}>
-                <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[1]' inputRef={register()} label={"QTR2"}
-                  InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
-              </Grid>
-              <Grid item xs={3}>
-                <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[2]' inputRef={register()} label={"QTR3"}
-                  InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
-              </Grid>
-              <Grid item xs={3}>
-                <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[3]' inputRef={register()} label={"QTR4"}
-                  InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
-              </Grid>
-            </Grid>
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='legalDescription' inputRef={register()} label={"Full Legal Description"}
+              InputLabelProps={{ shrink: true }} multiline rows={4} fullWidth disabled />
 
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='shapeArea' inputRef={register()} label={"Calc. Acres"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='altSurvey' inputRef={register()} label={"Unit. Acres"}
-              InputLabelProps={{ shrink: true }} fullWidth defaultValue="" />
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='uAcres' inputRef={register()} label={"Unit. Acres"}
+              InputLabelProps={{ shrink: true }} type='number' fullWidth onWheel={(e) => e.target.blur()} />
 
           </div>
 
@@ -346,8 +298,8 @@ function AddUnitTractDialog(props) {
               Cancel
             </Button>
 
-            <Button variant="contained" color="secondary" size="medium" disableElevation onClick={() => { handleValidate() && handleSave() }}
-              className={classes.footerButton} disabled={loading || !valid}>
+            <Button variant="contained" color="secondary" size="medium" disableElevation onClick={() => { handleSave() }}
+              className={classes.footerButton} disabled={!selectedShapeLayer?._id}>
               {loading ? (
                 <CircularProgress size={14} />
               ) : (

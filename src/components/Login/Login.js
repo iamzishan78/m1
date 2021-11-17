@@ -21,24 +21,29 @@ import * as msal from "@azure/msal-browser";
 import { GET_LOGGED_IN_USER } from "graphQL/useMutationLoggedInUser";
 import { USER_MAP_SETTINGS } from "graphQL/useQueryUserMapSettings";
 
+// import rock from '../../DFJ.PNG'
+import rock from '../../rock.png'
+
+
 const localStyles = makeStyles((theme) => ({
   myRoot: {
     display: "inline",
     flexDirection: "column",
-    justifyContent: "center"
+    justifyContent: "center",
     //overflowY: 'auto',
+    // backgroundColor: 'red'
   },
   height_100: {
     height: "100vh",
   },
   footer: {
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundColor: "#011133",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    paddingBottom: "1%",
+    // backgroundSize: "cover",
+    // backgroundPosition: "center",
+    backgroundColor: "#343d54",
+    // // display: "flex",
+    // flexDirection: "column",
+    // alignItems: "center",
+    // paddingBottom: "1%",
   },
   headerWords: {
     color: "#011133",
@@ -61,8 +66,9 @@ const localStyles = makeStyles((theme) => ({
   rootNewUser: {
     textAlign: "center",
     display: "flex",
-    height: "100%",
-    flexDirection: "column"
+    height: "100vh",
+    flexDirection: "column",
+    backgroundColor: '#343d54'
     // "&::-webkit-scrollbar": {
     //   width: "0 !important",
     // },
@@ -593,11 +599,11 @@ const Login = (props) => {
 
   const renderBody = (
     <>
-      <div>
+      {/* <div>
         <Typography variant="h4" className={localClass.headerWords}>
           Welcome back!
         </Typography>
-      </div>
+      </div> */}
 
       <div className={localClass.cardContainer}>
         <SignInCard
@@ -609,7 +615,34 @@ const Login = (props) => {
               : undefined}
         />
 
-        <div>
+        
+
+{/* <div
+  style={{
+    color: "#fff",
+  }}
+>
+  © 2021 M1neral, LLC. All Rights Reserved.
+</div>
+
+<div className={localClass.termsAndPrivacy}>
+  <a href="https://m1neral.com/TOS.pdf" target="_blank" rel="noreferrer">
+    Terms of Service
+  </a>
+  {" | "}
+  <a href="https://m1neral.com/Privacy.pdf" target="_blank" rel="noreferrer">
+    Privacy Policy
+  </a>
+</div>
+
+<div
+  style={{
+    marginBottom: "50px",
+  }}
+>
+</div> */}
+
+        {/* <div>
           <Paper
             elevation={0}
             square={true}
@@ -665,14 +698,14 @@ const Login = (props) => {
                 </Button>
               </a>
             </div>
-          </Paper>
-        </div>
+          </Paper> 
+        </div>*/}
       </div>
     </>
   );
 
   return loading ? (
-    <div style={{ marginTop: "20%", marginLeft: "47%" }}>
+    <div style={{ marginTop: "20%", marginLeft: "47%",  }}>
       <CircularProgress size={80} disableShrink color="secondary" />
     </div>
   ) : (
@@ -683,48 +716,32 @@ const Login = (props) => {
           : localClass.myRoot
       }
 
+      style={{backgroundImage:`url(${rock})`}}
+
     >
-      <div className={localClass.rootNewUser}
+      <div className={localClass.rootNewUser} 
+      
+      style={{
+        backgroundImage:`url(${rock})`,
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+      
+      }}
       // style={{ overflowY: "scroll !important"}}
-      >{renderBody}</div>
+      >{renderBody}
+      
 
-      <div className={localClass.rootNewUser}>
+
+      
+      </div>
+
+      {/* <div className={localClass.rootNewUser}>
         <RenderSignUpControls />
-      </div>
+      </div> */}
 
-      <div className={localClass.footer}>
-        <div>
-          <M1neralLogo2 />
-        </div>
-
-        <div
-          style={{
-            color: "#fff",
-          }}
-        >
-          © 2021 M1neral, LLC. All Rights Reserved.
-        </div>
-
-        <div className={localClass.termsAndPrivacy}>
-          <a href="https://m1neral.com/TOS.pdf" target="_blank" rel="noreferrer">
-            Terms of Service
-          </a>
-          {" | "}
-          <a href="https://m1neral.com/Privacy.pdf" target="_blank" rel="noreferrer">
-            Privacy Policy
-          </a>
-        </div>
-
-        <div
-          style={{
-            color: "#fff",
-            marginBottom: "50px",
-          }}
-        >
-          {/* Privacy Policy */}
-        </div>
-      </div>
-    </div>
+ 
+    </div> 
   );
 };
 

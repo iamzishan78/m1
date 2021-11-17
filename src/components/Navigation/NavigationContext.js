@@ -3,10 +3,10 @@ import React, { useState, createContext } from "react";
 export const DRAWING_MODES = {
   DRAW_POLYGON: "draw_polygon",
   DRAW_RECTANGLE: "draw_rectangle",
-  DRAW_CIRCLE: "drag_circle"
-}
+  DRAW_CIRCLE: "drag_circle",
+};
 
-const NavigationContext = createContext([{}, () => { }]);
+const NavigationContext = createContext([{}, () => {}]);
 const initialValue = {
   selectedMenuIndexFind: 0,
   selectedMenuIndexTrack: 0,
@@ -60,12 +60,10 @@ const initialValue = {
   filterOwnerConfidence: null,
   filterHasOwners: null,
   filterTags: null,
-  filterTagsLoading: () => { },
+  filterTagsLoading: () => {},
   filterAllInterestTypes: null,
   filterAllOwnershipTypes: null,
   filterGeography: null,
-  filterGeographyState: null,
-  filterGeographyCounty: null,
   filterGeographySurvey: null,
   filterGeographyAbstract: null,
   filterOwnerWellInterestSum: null,
@@ -147,28 +145,26 @@ const initialValue = {
   isUserManagementOpen: true,
   contactFromMap: false,
   bulkUploadFromMap: false,
-  filterIntersectingWellLines: []
-}
+  filterIntersectingWellLines: [],
+};
 
 const NavigationContextProvider = (props) => {
   const [stateNav, setStateNav] = useState(initialValue);
 
   const navResetAll = () => {
-    setStateNav(initialValue)
-  }
+    setStateNav(initialValue);
+  };
   const navResetKey = (key, value) => {
     setStateNav((state) => {
       return {
         ...state,
-        [key]: value || initialValue[key]
-      }
-    })
-    setStateNav(initialValue)
-  }
+        [key]: value || initialValue[key],
+      };
+    });
+    setStateNav(initialValue);
+  };
   return (
-    <NavigationContext.Provider value={[stateNav, setStateNav, navResetAll, navResetKey]}>
-      {props.children}
-    </NavigationContext.Provider>
+    <NavigationContext.Provider value={[stateNav, setStateNav, navResetAll, navResetKey]}>{props.children}</NavigationContext.Provider>
   );
 };
 

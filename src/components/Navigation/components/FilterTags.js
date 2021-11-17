@@ -1,4 +1,4 @@
-import React, { useState,useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
@@ -12,10 +12,7 @@ export default function FilterTags() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [filterLoading, setFilterLoading] = useState(false);
 
-  const [
-    getUserAvailableFilterTags,
-    { loading, data: dataUserAvailableTags },
-  ] = useLazyQuery(USERAVAILABLEFILTERTAGSQUERY, {
+  const [getUserAvailableFilterTags, { loading, data: dataUserAvailableTags }] = useLazyQuery(USERAVAILABLEFILTERTAGSQUERY, {
     fetchPolicy: "cache-and-network",
   });
 
@@ -30,18 +27,16 @@ export default function FilterTags() {
     }
   }, [stateApp.user]);
 
-
   const handleChange = (value) => {
     if (value && value.length) {
       setFilterLoading(true);
-      setStateNav((stateNav) => ({ 
-        ...stateNav, 
+      setStateNav((stateNav) => ({
+        ...stateNav,
         selectedTags: [...value],
         filterTagsLoading: setFilterLoading,
       }));
     } else {
-      if (!stateNav.filterTrackedWells && !stateNav.filterTrackedOwners)
-        stateApp.toggleLayersActivity("Wells", true);
+      if (!stateNav.filterTrackedWells && !stateNav.filterTrackedOwners) stateApp.toggleLayersActivity("Wells", true);
 
       stateApp.toggleLayersActivity("User Tags", false);
       setStateNav((stateNav) => ({
@@ -61,25 +56,18 @@ export default function FilterTags() {
 
   return loading ? (
     <div style={{ height: "56px" }}>
-      <CircularProgress
-        color="secondary"
-        style={{ marginLeft: "50%" }}
-        size={28}
-      />
+      <CircularProgress color="secondary" style={{ marginLeft: "50%" }} size={28} />
     </div>
   ) : (
     <Autocomplete
       ChipProps={{ color: "secondary" }}
       defaultValue={stateNav.selectedTags}
+      value={stateNav.selectedTags}
       onChange={(event, newValue) => {
         handleChange(newValue);
       }}
       multiple
-      options={
-        dataUserAvailableTags && dataUserAvailableTags.userAvailableFilterTags
-          ? dataUserAvailableTags.userAvailableFilterTags
-          : []
-      }
+      options={dataUserAvailableTags && dataUserAvailableTags.userAvailableFilterTags ? dataUserAvailableTags.userAvailableFilterTags : []}
       renderInput={(params) => (
         <TextField
           {...params}
@@ -91,9 +79,7 @@ export default function FilterTags() {
             ...params.InputProps,
             endAdornment: (
               <>
-                {filterLoading ? (
-                  <CircularProgress color="secondary" size={20} />
-                ) : null}
+                {filterLoading ? <CircularProgress color="secondary" size={20} /> : null}
                 {params.InputProps.endAdornment}
               </>
             ),

@@ -301,8 +301,39 @@ export default function RelatedFile(props) {
           fileId: fileId || newDocument.fileId,
         },
       },
-      refetchQueries: ["getAllFiles"],
+      refetchQueries: ["getParcelFiles"],
       awaitRefetchQueries: true,
+    }).then(() => {
+      if (props.relatedObjectId && props.relatedObjectType) {
+        addExistingDocument()
+      } else {
+        // props.getAllFiles({
+        //   variables: {
+        //     relatedObjectId: props.relatedObjectId,
+        //     relatedObjectType: props.relatedObjectType,
+        //   },
+        // });
+        props.setShowDocumentSlider(false);
+        setNameAutValueParty1({ name: "", _id: null });
+        setNameAutValueParty2({ name: "", _id: null });
+        setNewDocument(documentInitial);
+        setLoader(false);
+      }
+
+    });
+    // }
+  };
+
+  const addExistingDocument = () => {
+    const fileId = fileData?.addFileDescriptor?.file?.id;
+    addFile({
+      variables: {
+        fileName: newDocument.fileName || newDocument.documentName,
+        descriptorObjectId: fileId || newDocument.fileId,
+        userId: stateApp.user.mongoId,
+        relatedObjectId: props.relatedObjectId,
+        relatedObjectType: props.relatedObjectType,
+      },
     }).then(() => {
       props.getAllFiles({
         variables: {
@@ -316,8 +347,7 @@ export default function RelatedFile(props) {
       setNewDocument(documentInitial);
       setLoader(false);
     });
-    // }
-  };
+  }
 
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
@@ -890,27 +920,7 @@ export default function RelatedFile(props) {
           disabled={(!fileData && !newDocument.fileId) || (selectedType === "existing" && !newDocument.fileId)}
           onClick={() => {
             if (selectedType === "existing") {
-              addFile({
-                variables: {
-                  fileName: newDocument.fileName,
-                  descriptorObjectId: newDocument.fileId,
-                  userId: stateApp.user.mongoId,
-                  relatedObjectId: props.relatedObjectId,
-                  relatedObjectType: props.relatedObjectType,
-                },
-              }).then(() => {
-                props.getAllFiles({
-                  variables: {
-                    relatedObjectId: props.relatedObjectId,
-                    relatedObjectType: props.relatedObjectType,
-                  },
-                });
-                props.setShowDocumentSlider(false);
-                setNameAutValueParty1({ name: "", _id: null });
-                setNameAutValueParty2({ name: "", _id: null });
-                setNewDocument(documentInitial);
-                setLoader(false);
-              });
+              addExistingDocument()
             } else {
               if (fileData || newDocument.fileId) {
                 setLoader(true);

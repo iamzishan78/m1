@@ -77,7 +77,7 @@ import { PERMITDETAILQUERY } from "../../graphQL/useQueryRecentPermitDetails";
 import { drawShapeStyles, findBoundsMap } from "components/MapControls/commonHelper";
 import _ from "lodash";
 
-import parseLinkHeader from 'parse-link-header';
+import parseLinkHeader from "parse-link-header";
 import UnitCardProvider from "components/UnitDetailCard/UnitCardProvider";
 
 const useStyles = makeStyles((theme) => ({
@@ -86,16 +86,17 @@ const useStyles = makeStyles((theme) => ({
   },
   map: {
     position: "absolute",
-    top: "64px",
+    top: "0px",
     bottom: "0",
     width: "100%",
-    height: "calc(100% - 64px)",
+    height: "calc(100vh - 0px)",
     overflow: "hidden !important",
     "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib": {
       display: "none",
     },
     "& .mapboxgl-canvas-container > canvas": {
       cursor: ({ drawingCircle }) => (drawingCircle ? "crosshair" : "inherit"),
+      height: "100vh",
     },
     "& .mapboxgl-popup-close-button": { display: "none" },
   },
@@ -125,7 +126,6 @@ const random_hex_color_code = () => {
 let hoveredAbstractId = null;
 
 function Map({ type, paramId, lati, longi }) {
-
   // context states
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -398,61 +398,59 @@ function Map({ type, paramId, lati, longi }) {
   };
 
   async function getCustomLayer() {
-    const keys = { parcels: 'selectedParcel', units: 'selectedShape', wells: 'selectedWell' }
+    const keys = { parcels: "selectedParcel", units: "selectedShape", wells: "selectedWell" };
 
-    if (type === 'wells') {
+    if (type === "wells") {
       const intervalObj = setInterval(function () {
         if (map.getSource("wellsVT") && paramId?.toLowerCase() !== stateApp.selectedWellId) {
-          clearInterval(intervalObj)
+          clearInterval(intervalObj);
           setStateApp((stateApp) => ({
             ...stateApp,
             selectedWellId: paramId.toLowerCase(),
             wellSelectedCoordinates: [Number(longi), Number(lati)],
-          }))
+          }));
         }
       }, 3000);
-      return
+      return;
     }
     if (!stateApp[keys[type]] || paramId !== stateApp[keys[type]]?.id) {
-      const { data: layer } = await client.query(
-        {
-          query: CUSTOMLAYER,
-          variables: {
-            id: paramId,
-          },
-        }
-      );
+      const { data: layer } = await client.query({
+        query: CUSTOMLAYER,
+        variables: {
+          id: paramId,
+        },
+      });
       if (layer?.customLayer) {
-        let jsonLayer = JSON.parse(layer.customLayer.shape)
-        if (layer.customLayer.shapeJson)
-          jsonLayer = copy(layer.customLayer.shapeJson)
+        let jsonLayer = JSON.parse(layer.customLayer.shape);
+        if (layer.customLayer.shapeJson) jsonLayer = copy(layer.customLayer.shapeJson);
 
         jsonLayer.layer = { id: jsonLayer.layer };
-        jsonLayer.id = jsonLayer._id
+        jsonLayer.id = jsonLayer._id;
 
-        findBoundsMap([jsonLayer], map)
+        findBoundsMap([jsonLayer], map);
 
         setStateApp((stateApp) => ({
           ...stateApp,
           [keys[type]]: {
             ...jsonLayer.properties,
             feature: jsonLayer,
-            id: layer.customLayer._id
+            id: layer.customLayer._id,
           },
           shapeEdit: true,
           popupOpen: false,
           expandedCard: true,
-        }))
+        }));
       }
     }
   }
 
-
   useEffect(() => {
-    if (!loading && paramId
+    if (
+      !loading &&
+      paramId
       // parcelId !== stateApp.selectedParcel?.id
     ) {
-      getCustomLayer()
+      getCustomLayer();
     }
   }, [loading, paramId]);
 
@@ -816,12 +814,9 @@ function Map({ type, paramId, lati, longi }) {
         });
       }
 
-
       if (sourceId === "parcels_source" || sourceId === "interests_source" || sourceId === "units_source") {
-
-        let pointSource = geoJson.features.map(feature => {
-
-          var output = feature
+        let pointSource = geoJson.features.map((feature) => {
+          var output = feature;
 
           if (feature.geometry.type == "Point") {
             output = feature;
@@ -930,31 +925,13 @@ function Map({ type, paramId, lati, longi }) {
           } else if (layerId === "interest") {
             labelLayout = {
               ...labelLayout,
-              "text-size": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                9,
-                16,
-                11,
-                32,
-                15,
-                54
-              ]
-            }
-          } else if (layerId === 'unit') {
+              "text-size": ["interpolate", ["linear"], ["zoom"], 9, 16, 11, 32, 15, 54],
+            };
+          } else if (layerId === "unit") {
             labelLayout = {
               ...labelLayout,
-              "text-size": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                12,
-                12,
-                15,
-                28
-              ]
-            }
+              "text-size": ["interpolate", ["linear"], ["zoom"], 12, 12, 15, 28],
+            };
           }
 
           // add point
@@ -1176,24 +1153,22 @@ function Map({ type, paramId, lati, longi }) {
           id: filteredLayer._id,
         };
 
-
       if (feature.source === "units_source") {
         setStateApp((state) => {
-          if (state.isDrawing) return state
+          if (state.isDrawing) return state;
           const newPath = `/map/units/${feature.properties.id}`;
-          history.location.pathname !== newPath && history.replace(newPath)
-          findBoundsMap([selectedUserDefinedLayer], map)
+          history.location.pathname !== newPath && history.replace(newPath);
+          findBoundsMap([selectedUserDefinedLayer], map);
           return {
             ...state,
             expandedCard: true,
             selectedUserDefinedLayer: null,
             selectedShape: { ...feature.properties, feature: selectedUserDefinedLayer },
-          }
+          };
         });
 
         drawBoundary(map, selectedUserDefinedLayer);
-      }
-      else if (feature.source === "parcels_source") {
+      } else if (feature.source === "parcels_source") {
         setStateApp((state) => {
           if (state.isDrawing) return state;
           return {
@@ -1274,7 +1249,12 @@ function Map({ type, paramId, lati, longi }) {
         });
       }
       setStateApp((state) => {
-        if (!state.showDrawShapesPopup || feature.source === "parcels_source" || feature.source === "interests_source" || feature.source === "units_source")
+        if (
+          !state.showDrawShapesPopup ||
+          feature.source === "parcels_source" ||
+          feature.source === "interests_source" ||
+          feature.source === "units_source"
+        )
           createUDPopUp(feature.properties);
         return state;
       });
@@ -1338,11 +1318,7 @@ function Map({ type, paramId, lati, longi }) {
                 )
                   layers.push(layerId);
 
-                if (
-                  layer.identifier === "Parcels" ||
-                  layer.identifier === "Units" ||
-                  layer.identifier === "Area of Interest"
-                ) {
+                if (layer.identifier === "Parcels" || layer.identifier === "Units" || layer.identifier === "Area of Interest") {
                   udLayers.push(layerId);
                 }
               }
@@ -2047,9 +2023,9 @@ function Map({ type, paramId, lati, longi }) {
         let baseFilter;
         stateApp?.layers?.find(
           (layer) =>
-          (baseFilter =
-            Array.isArray(layer?.layerPaintProps) &&
-            layer?.layerPaintProps?.find((layerPaintProp) => layerPaintProp?.id === filterLayer)?.filter)
+            (baseFilter =
+              Array.isArray(layer?.layerPaintProps) &&
+              layer?.layerPaintProps?.find((layerPaintProp) => layerPaintProp?.id === filterLayer)?.filter)
         );
         return baseFilter || [];
       };
@@ -2226,9 +2202,9 @@ function Map({ type, paramId, lati, longi }) {
                     };
                     let flag = 0;
                     for (let k = 0; k < shapeList.length; k++) {
-                      if (shapeList[k].type === "MultiPolygon" || shapeList[k].geometry.type === "MultiPolygon") {
+                      if (shapeList[k].type === "MultiPolygon" || shapeList[k].geometry?.type === "MultiPolygon") {
                         let flagM = 0;
-                        for (let j = 0; j < shapeList[k].geometry.coordinates.length; j++) {
+                        for (let j = 0; j < shapeList[k].geometry?.coordinates?.length; j++) {
                           let filterCoordinates = shapeList[k].geometry.coordinates[j];
                           if (filterCoordinates[0] && filterCoordinates[0].length > 2) {
                             filterCoordinates = filterCoordinates[0];
@@ -2241,7 +2217,7 @@ function Map({ type, paramId, lati, longi }) {
                             flagM++;
                           }
                         }
-                        if (flagM === shapeList[k].geometry.coordinates.length) {
+                        if (flagM === shapeList[k].geometry?.coordinates.length) {
                           flag++;
                         }
                       } else {
@@ -2257,8 +2233,8 @@ function Map({ type, paramId, lati, longi }) {
                   return true;
                 } else {
                   for (let i = 0; i < shapeList.length; i++) {
-                    if (shapeList[i] && (shapeList[i].type === "MultiPolygon" || shapeList[i].geometry.type === "MultiPolygon")) {
-                      for (let j = 0; j < shapeList[i].geometry.coordinates.length; j++) {
+                    if (shapeList[i] && (shapeList[i].type === "MultiPolygon" || shapeList[i].geometry?.type === "MultiPolygon")) {
+                      for (let j = 0; j < shapeList[i].geometry?.coordinates?.length; j++) {
                         let filterCoordinates = shapeList[i].geometry.coordinates[j];
                         if (filterCoordinates[0] && filterCoordinates[0].length > 2) {
                           filterCoordinates = filterCoordinates[0];
@@ -2331,7 +2307,7 @@ function Map({ type, paramId, lati, longi }) {
           "rigs",
           "interest",
           "parcel",
-          "unit"
+          "unit",
         ];
 
         const basinShapes = stateNav.filterBasin;
@@ -2376,7 +2352,7 @@ function Map({ type, paramId, lati, longi }) {
           "recent_submitted_permit_laterals",
           "rigs",
           "parcel",
-          "unit"
+          "unit",
         ];
 
         const aoiShapes = stateNav.filterAOI;
@@ -2494,7 +2470,7 @@ function Map({ type, paramId, lati, longi }) {
           "rigs",
           "interest",
           "parcel",
-          "unit"
+          "unit",
         ];
         const filterFeature = stateNav.filterDrawing[1];
         filterShapeAction([filterFeature], filterLayers);
@@ -2658,13 +2634,7 @@ function Map({ type, paramId, lati, longi }) {
                 ["any", ["within", mergeIntoMultiPolygon(filterCustomArray[filterLayer])], intersectingPermitLinesFilter],
               ]);
             } else if (["interest", "parcel", "unit"].indexOf(filterLayer) > -1) {
-              map.setFilter(filterLayer, [
-                "match",
-                ["get", "shapeLabel"],
-                mergeArrays(filterCustomArray[filterLayer]),
-                true,
-                false,
-              ]);
+              map.setFilter(filterLayer, ["match", ["get", "shapeLabel"], mergeArrays(filterCustomArray[filterLayer]), true, false]);
               map.setFilter(filterLayer + "_point", [
                 "match",
                 ["get", "shapeLabel"],
@@ -2704,35 +2674,11 @@ function Map({ type, paramId, lati, longi }) {
                     "rigs",
                   ].indexOf(filterLayer) > -1
                 ) {
-                  map.setFilter(filterLayer, [
-                    "match",
-                    ["get", "id"],
-                    "-1",
-                    true,
-                    false,
-                  ]);
+                  map.setFilter(filterLayer, ["match", ["get", "id"], "-1", true, false]);
                 } else if (["interest", "parcel", "unit"].indexOf(filterLayer) > -1) {
-                  map.setFilter(filterLayer, [
-                    "match",
-                    ["get", "shapeLabel"],
-                    "-1",
-                    true,
-                    false,
-                  ]);
-                  map.setFilter(filterLayer + "_point", [
-                    "match",
-                    ["get", "shapeLabel"],
-                    "-1",
-                    true,
-                    false,
-                  ]);
-                  map.setFilter(filterLayer + "_labels", [
-                    "match",
-                    ["get", "shapeLabel"],
-                    "-1",
-                    true,
-                    false,
-                  ]);
+                  map.setFilter(filterLayer, ["match", ["get", "shapeLabel"], "-1", true, false]);
+                  map.setFilter(filterLayer + "_point", ["match", ["get", "shapeLabel"], "-1", true, false]);
+                  map.setFilter(filterLayer + "_labels", ["match", ["get", "shapeLabel"], "-1", true, false]);
                 } else {
                   const baseLayer = filterLayer.replace("Labels", "s");
                   map.setFilter(filterLayer, ["match", ["get", "VIEWID"], -1, true, false]);
@@ -4402,8 +4348,9 @@ function Map({ type, paramId, lati, longi }) {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
-            }`;
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
+            stateApp.mapboxglAccessToken
+          }`;
 
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
@@ -4476,8 +4423,9 @@ function Map({ type, paramId, lati, longi }) {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
-            }`;
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
+            stateApp.mapboxglAccessToken
+          }`;
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
           headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
@@ -4733,18 +4681,6 @@ function Map({ type, paramId, lati, longi }) {
   const mouseLeaveHandler = (e) => {
     map.getCanvas().style.cursor = "";
   };
-
-  // const mapMouseMove = (e) => {
-  //   // e.lngLat is the longitude, latitude geographical position of the event
-  //   let coordinates = e.lngLat.wrap();
-  //   setLng(coordinates.lng);
-  //   setLat(coordinates.lat);
-  // };
-
-  // const mapZoom = (e) => {
-  //   let zooms = map.getZoom();
-  //   setZoom(zooms);
-  // };
 
   const onAbstactLayerClick = function (feature, action) {
     console.log("featur--", feature);
@@ -6115,60 +6051,57 @@ function Map({ type, paramId, lati, longi }) {
             position="relative"
             zIndex={99}
             cardWidthExpanded="50vw"
-            cardHeightExpanded="calc(100vh - 64px)"
+            cardHeightExpanded="calc(100vh - 0px)"
             targetSourceId={stateApp.selectedWell.id}
             targetLabel="well"
           />
         </div>
       )}
 
-      {stateApp.selectedParcel !== null &&
-        stateApp.expandedCard && (
-          <div className={classes.draggable}>
-            <ExpandableCardProvider
-              expanded={true}
-              handleCloseExpandableCard={handleCloseExpandableCard}
-              component={<ParcelCardProvider></ParcelCardProvider>}
-              title={stateApp.selectedParcel.shapeLabel}
-              subTitle=""
-              parent="map"
-              position="relative"
-              cardTop={0}
-              cardLeft={0}
-              zIndex={99}
-              cardWidthExpanded="50vw"
-              cardHeightExpanded="calc(100vh - 64px)"
-              targetSourceId={stateApp.selectedParcel.id}
-              targetLabel="parcel"
-              deleteCustomLayer={deleteCustomLayer}
-            ></ExpandableCardProvider>
-          </div>
-        )
-      }
-      {stateApp.selectedShape?.shapeLabel &&
-        stateApp.expandedCard && (
-          <div className={classes.draggable}>
-            <ExpandableCardProvider
-              expanded={true}
-              handleCloseExpandableCard={handleCloseExpandableCard}
-              component={<UnitCardProvider ></UnitCardProvider >}
-              title={stateApp.selectedShape?.shapeLabel}
-              subTitle={stateApp.selectedShape?.unitInfo}
-              parent="map"
-              position="relative"
-              cardTop={0}
-              cardLeft={0}
-              zIndex={99}
-              cardWidthExpanded="50vw"
-              cardHeightExpanded="calc(100vh - 64px)"
-              targetSourceId={stateApp.selectedShape?.id}
-              targetLabel="unit"
-              deleteCustomLayer={deleteCustomLayer}
-            ></ExpandableCardProvider>
-          </div>
-        )
-      }
-      {stateApp.selectedPermit !== null && stateApp.selectedPermit.hasOwnProperty('Lease') &&
+      {stateApp.selectedParcel !== null && stateApp.expandedCard && (
+        <div className={classes.draggable}>
+          <ExpandableCardProvider
+            expanded={true}
+            handleCloseExpandableCard={handleCloseExpandableCard}
+            component={<ParcelCardProvider></ParcelCardProvider>}
+            title={stateApp.selectedParcel.shapeLabel}
+            subTitle=""
+            parent="map"
+            position="relative"
+            cardTop={0}
+            cardLeft={0}
+            zIndex={99}
+            cardWidthExpanded="50vw"
+            cardHeightExpanded="calc(100vh - 64px)"
+            targetSourceId={stateApp.selectedParcel.id}
+            targetLabel="parcel"
+            deleteCustomLayer={deleteCustomLayer}
+          ></ExpandableCardProvider>
+        </div>
+      )}
+      {stateApp.selectedShape?.shapeLabel && stateApp.expandedCard && (
+        <div className={classes.draggable}>
+          <ExpandableCardProvider
+            expanded={true}
+            handleCloseExpandableCard={handleCloseExpandableCard}
+            component={<UnitCardProvider></UnitCardProvider>}
+            title={stateApp.selectedShape?.shapeLabel}
+            subTitle={stateApp.selectedShape?.unitInfo}
+            parent="map"
+            position="relative"
+            cardTop={0}
+            cardLeft={0}
+            zIndex={99}
+            cardWidthExpanded="50vw"
+            cardHeightExpanded="calc(100vh - 64px)"
+            targetSourceId={stateApp.selectedShape?.id}
+            targetLabel="unit"
+            deleteCustomLayer={deleteCustomLayer}
+          ></ExpandableCardProvider>
+        </div>
+      )}
+      {stateApp.selectedPermit !== null &&
+        stateApp.selectedPermit.hasOwnProperty("Lease") &&
         // && stateApp.popupOpen==true
         showExpandableCard && (
           <PortalD id="popupContainer">
@@ -6187,7 +6120,7 @@ function Map({ type, paramId, lati, longi }) {
                 zIndex={3000}
                 cardWidth="375px"
                 cardWidthExpanded="50vw"
-                cardHeightExpanded="calc(100vh - 64px)"
+                cardHeightExpanded="calc(100vh - 0px)"
                 targetSourceId={stateApp.selectedPermit.Id}
                 targetLabel="recent_submitted_permits"
               ></ExpandableCardProvider>
@@ -6217,7 +6150,7 @@ function Map({ type, paramId, lati, longi }) {
                     zIndex={3000}
                     cardWidth="350px"
                     cardWidthExpanded="50vw"
-                    cardHeightExpanded="calc(100vh - 64px)"
+                    cardHeightExpanded="calc(100vh - 0px)"
                     targetSourceId={stateApp.selectedWell.id}
                     targetLabel="well"
                   />
@@ -6225,9 +6158,9 @@ function Map({ type, paramId, lati, longi }) {
               </PortalD>
             )}
             {stateApp.selectedUserDefinedLayer !== null &&
-              stateApp.currentFeature?.source !== 'parcels_source' &&
-              stateApp.currentFeature?.source !== 'units_source' &&
-              stateApp.currentFeature?.source !== 'interests_source' && (
+              stateApp.currentFeature?.source !== "parcels_source" &&
+              stateApp.currentFeature?.source !== "units_source" &&
+              stateApp.currentFeature?.source !== "interests_source" && (
                 <PortalD id="popupContainer">
                   <UdLayerCardProvider
                     parent="map"
@@ -6259,7 +6192,7 @@ function Map({ type, paramId, lati, longi }) {
                     zIndex={99}
                     cardWidth="350px"
                     cardWidthExpanded="50vw"
-                    cardHeightExpanded="calc(100vh - 64px)"
+                    cardHeightExpanded="calc(100vh - 0px)"
                     targetSourceId={stateApp.selectedParcel.id}
                     targetLabel="parcel"
                     deleteCustomLayer={deleteCustomLayer}

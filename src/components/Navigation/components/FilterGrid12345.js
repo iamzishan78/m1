@@ -87,7 +87,7 @@ export default function FilterGrid12345({ gridNumber, label }) {
   };
 
   const handleChange = (event, newValue) => {
-    if (newValue == null) {
+    if (newValue === null) {
       setStateNav({
         ...nullDesc(),
         [`GrId${gridNumber}`]: null,
@@ -112,23 +112,13 @@ export default function FilterGrid12345({ gridNumber, label }) {
     <FormControl variant="outlined" className={classes.formControl}>
       {loading ? (
         <div style={{ height: "56px" }}>
-          <CircularProgress
-            color="secondary"
-            className={classes.loader}
-            size={28}
-          />
+          <CircularProgress color="secondary" className={classes.loader} size={28} />
         </div>
       ) : (
         <Autocomplete
           className={classes.autoC}
           options={gridList}
-          getOptionLabel={(option) =>
-            option && option[`GrId${gridNumber}`]
-              ? option[`GrId${gridNumber}`]
-              : option
-              ? option
-              : ""
-          }
+          getOptionLabel={(option) => (option && option[`GrId${gridNumber}`] ? option[`GrId${gridNumber}`] : option ? option : "")}
           disabled={!stateNav.countyName || gridList.length === 0}
           autoComplete
           autoSelect
@@ -141,22 +131,11 @@ export default function FilterGrid12345({ gridNumber, label }) {
           onKeyDown={(event) => onEnterKey(event)}
           renderInput={(params) => (
             <form autoComplete="off">
-              <TextField
-                {...params}
-                fullWidth
-                label={label}
-                variant="outlined"
-              />
+              <TextField {...params} fullWidth label={label} variant="outlined" />
             </form>
           )}
           renderOption={(option) => (
-            <Typography>
-              {option && option[`GrId${gridNumber}`]
-                ? option[`GrId${gridNumber}`]
-                : option
-                ? option
-                : ""}
-            </Typography>
+            <Typography>{option && option[`GrId${gridNumber}`] ? option[`GrId${gridNumber}`] : option ? option : ""}</Typography>
           )}
         />
       )}

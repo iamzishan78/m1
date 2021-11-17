@@ -99,11 +99,10 @@ const useStyles = makeStyles((theme) => ({
   boardAndTable: {
     position: "relative",
     marginTop: "4px",
-    maxHeight: "calc(100vh - 140px) !important",
     overflowY: "auto",
     maxWidth: "100vw",
     "& .react-trello-board": {
-      height: "calc( 100vh - 140px)",
+      height: "calc(100vh - 140px)",
       "& >div": {
         overflowX: "scroll",
         overflowY: "hidden",
@@ -148,7 +147,10 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     flexGrow: 1,
-    marginLeft: "315px",
+    top: "64px",
+    left: "425px!important",
+    position: "absolute",
+    width: "calc(100% - 425px)",
   },
 }));
 
@@ -520,6 +522,7 @@ export default function Transact() {
             pipelineType: "Pipeline",
             pipeline: selectedPipe._id,
             isCurrent: true,
+            isDeleted: false,
             user: cardDetails.metadata.user?._id,
           },
         },

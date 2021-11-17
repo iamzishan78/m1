@@ -7,11 +7,7 @@ import { useMutation } from "@apollo/client";
 import { UPDATELAYER } from "../../../graphQL/useMutationUpdateLayer";
 import { AppContext } from "../../../AppContext";
 import { useDispatch } from "react-redux";
-import {
-  setMainMapState,
-  showErrorMessage,
-  showSuccessMessage,
-} from "../../../actions";
+import { setMainMapState, showErrorMessage, showSuccessMessage } from "actions";
 import { MapControlsContext } from "../MapControlsContext";
 import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 
@@ -100,11 +96,7 @@ export default function DeleteConfirmationDialog(props) {
         }}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle
-          style={{ textAlign: "center", padding: "24px 24px 0 24px" }}
-        >
-          Do you want to delete the selected layer?
-        </DialogTitle>
+        <DialogTitle style={{ textAlign: "center", padding: "24px 24px 0 24px" }}>Do you want to delete the selected layer?</DialogTitle>
 
         <DialogActions>
           <Button

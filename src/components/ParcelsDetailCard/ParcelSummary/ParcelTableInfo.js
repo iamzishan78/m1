@@ -11,6 +11,8 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { showErrorMessage } from "actions";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
+import { getParcelOriginalProperties } from '../utils/GetParcelOriginalProps'
+
 
 const tableData = [
   {
@@ -22,39 +24,67 @@ const tableData = [
   {
     label: 'State',
     type: 'text',
-    key: 'State',
+    key: 'state',
     edit: false,
   }, {
     label: 'Country',
     type: 'autocomplete',
-    key: 'County',
+    key: 'county',
+    edit: false,
+  }, {
+    label: 'Survey',
+    type: 'autocomplete',
+    key: 'survey',
+    showStateTX: true,
+    edit: false,
+  }, {
+    label: 'Block',
+    type: 'autocomplete',
+    key: 'block',
+    showStateTX: true,
+    edit: false,
+  }, {
+    label: 'Section',
+    type: 'text',
+    key: 'section',
+    showStateTX: true,
+    edit: false,
+  }, {
+    label: 'Abstract',
+    type: 'text',
+    key: 'abstract',
+    showStateTX: true,
+    edit: false,
+  }, {
+    label: 'Alt Survey',
+    type: 'text',
+    key: 'altSurvey',
+    showStateTX: true,
+    edit: false,
+  }, {
+    label: 'Meridian',
+    type: 'text',
+    key: 'meridian',
+    showStateTX: false,
     edit: false,
   }, {
     label: 'Township',
     type: 'autocomplete',
-    options: ['Held by Production'],
-    key: 'uStatus',
-    edit: true,
+    key: 'township',
+    showStateTX: false,
+    edit: false,
   }, {
     label: 'Range',
     type: 'number',
-    key: 'uAcres',
-    edit: true,
+    key: 'range',
+    showStateTX: false,
+    edit: false,
   }, {
     label: 'Section',
     type: 'text',
-    key: 'shapeArea',
-    edit: true,
-  }, {
-    label: 'Section Part',
-    type: 'text',
-    key: 'uPrimaryOperator',
-    edit: true,
-  }, {
-    label: 'Principal Meridian',
-    type: 'text',
-    key: 'uFieldName',
-    edit: true,
+    key: 'section',
+    showStateTX: false,
+    edit: false,
   }, {
     label: 'Gross Acres',
     type: 'number',
@@ -65,11 +95,6 @@ const tableData = [
     type: 'text',
     key: 'shapeArea',
     edit: false,
-  }, {
-    label: 'Legal Description',
-    type: 'textarea',
-    key: 'uNetRoyalityAcres',
-    edit: true,
   }
 ]
 
@@ -172,6 +197,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, showMessage,
 
 export default function ParcelTableInfo({ properties, updateProperties, updateCustomProperties, search }) {
   const classes = useStyles();
+  properties = { ...properties, ...getParcelOriginalProperties(properties) }
   const dispatch = useDispatch();
   const [tableDataState, setTableDataState] = useState({});
   const [editIconState, setEditIconState] = useState({});
@@ -181,9 +207,14 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
   const [tableTempProperties, setTableTempProperties] = useState(properties);
 
   useEffect(() => {
-    setFilteredTableData(tableData.concat(properties?.originalProperties || []));
-    properties?.originalProperties?.forEach((data) => {
-      tableTempProperties[data.key] = [data.value]
+    if (tableTempProperties.state === 'TX') {
+      setFilteredTableData(tableData.concat(properties?.custom_data_arr || []).filter((data) => data.showStateTX !== false))
+    } else {
+      setFilteredTableData(tableData.concat(properties?.custom_data_arr || []).filter((data) => data.showStateTX !== true))
+    }
+    properties?.custom_data_arr?.forEach((data) => {
+      tableTempProperties[data.key] = data.value
+      tableTempProperties[`${data.key}key`] = data.key
     });
     setTableTempProperties({ ...tableTempProperties })
     setTableDataState({})

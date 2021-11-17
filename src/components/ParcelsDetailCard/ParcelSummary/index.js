@@ -6,8 +6,8 @@ import TextField from "@material-ui/core/TextField";
 
 import WellIcon from "../../Shared/svgIcons/well";
 import PersonIcon from '@material-ui/icons/Person';
+import GavelIcon from '@material-ui/icons/Gavel';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
-import TodayOutlinedIcon from '@material-ui/icons/TodayOutlined';
 import CommentComponent from "components/Shared/CommentComponent";
 import ParcelTableInfo from './ParcelTableInfo'
 import InputBase from '@material-ui/core/InputBase';
@@ -17,9 +17,7 @@ import { Button } from "@material-ui/core";
 import { useLazyQuery } from "@apollo/client";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
-import { GET_PARCELS_AGREEMENT } from "graphQL/useQueryGetParcelAgreement";
-
-const ENTER_KEY = 13;
+import { getSelectedFeaturePolygonString } from "../../Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
     summaryCard: {
@@ -249,23 +247,26 @@ export default function ParcelSummary(props) {
 
     const classes = useStyles({ search });
 
-
-
     // get shape wells
     const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", skip: true });
     const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
 
     // run sheet qurey
-    const [getParcelAgreement, { data: dataParcelAgreement }] = useLazyQuery(GET_PARCELS_AGREEMENT);
-    const runSheet = dataParcelAgreement?.getParcelAgreement;
-    console.log("runSheet", runSheet);
     console.log("dataShapeWellsCount", dataShapeWellsCount);
 
     useEffect(() => {
         getShapeSummaryDetails({ variables: { shapeId: props.id, shapeType: 'Parcel' } })
     }, [props.id])
 
-
+    useEffect(() => {
+        if (props.customLayer) {
+            getShapeWellsCount({
+                variables: {
+                    polygon: getSelectedFeaturePolygonString(props.customLayer)
+                },
+            });
+        }
+    }, [props.customLayer]);
 
     const addCustomData = () => {
         if (!props.properties.custom_data_arr) {
@@ -292,7 +293,7 @@ export default function ParcelSummary(props) {
                         <Grid item>
                             <Grid container spacing={2} className={classes.summaryDetailCard}>
                                 <Grid item>
-                                    <div className={classes.summaryValue}> {dataShapeWellsCount?.dataShapeWellsCount || 0} </div>
+                                    <div className={classes.summaryValue}> {dataShapeWellsCount?.shapeWellsCount || 0} </div>
                                     <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
                                 </Grid>
                                 <Grid item>
@@ -304,8 +305,8 @@ export default function ParcelSummary(props) {
                                     <InsertDriveFileOutlinedIcon className={classes.icon} opacity="1.0" small />
                                 </Grid>
                                 <Grid item>
-                                    <div className={classes.summaryValue}> 3 </div>
-                                    <TodayOutlinedIcon className={classes.icon} opacity="1.0" small />
+                                    <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.runsheets || 0} </div>
+                                    <GavelIcon className={classes.icon} opacity="1.0" small />
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -344,23 +345,23 @@ export default function ParcelSummary(props) {
                 <Grid item className={classes.descriptionInput}>
                     <TextField
                         id="outlined-multiline-static"
-                        label="Description"
-                        defaultValue={parcelProperties.description}
-                        value={parcelProperties.description}
+                        placeholder="Full Legal Description"
+                        defaultValue={parcelProperties.legalDescription}
+                        value={parcelProperties.legalDescription}
                         multiline
                         fullWidth
                         rows={17}
                         variant="outlined"
                         onChange={(e) => {
-                            setProperties({ ...parcelProperties, description: e.target.value });
+                            setProperties({ ...parcelProperties, legalDescription: e.target.value });
                         }}
                         onKeyDown={(e) => {
                             if (e.keyCode === 13)
-                                props.updateProperties(e, 'description', parcelProperties.description);
+                                props.updateProperties(e, 'legalDescription', parcelProperties.legalDescription);
                         }}
-                        onFocus={() => { setTableDataState({ description: true }) }}
+                        onFocus={() => { setTableDataState({ legalDescription: true }) }}
                         InputProps={{
-                            endAdornment: (tableDataState.description === true &&
+                            endAdornment: (tableDataState.legalDescription === true &&
                                 <p className={classes.foodText}>
                                     <span>Return</span> to save
                                 </p>)
