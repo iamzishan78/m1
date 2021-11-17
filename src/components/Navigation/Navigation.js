@@ -514,6 +514,11 @@ export default function Navigation(props) {
                 Dashboard
               </Typography>
             )}
+            {location.pathname.startsWith("/revenue") && (
+              <Typography variant="h4" style={{ color: "black", fontWeight: "bold", marginLeft: 15 }}>
+                Revenue Statements
+              </Typography>
+            )}
 
             {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
@@ -536,42 +541,6 @@ export default function Navigation(props) {
             ) : (
               <div style={{ display: "none" }}></div>
             )}
-
-            {/* {matchTrack && (
-              <div>
-                <div ref={anchorEl} className={classes.filterTabs}>
-                  <Tabs
-                    value={valueTabsTrack}
-                    onChange={handleTabChange}
-                    variant="standard"
-                    textColor="primary"
-                    aria-label="tabs"
-                    classes={{ indicator: classes.indicator }}
-                  >
-                    <Tab
-                      value={0}
-                      className={classes.tab}
-                      icon={
-                        <Badge badgeContent={stateApp.owners ? stateApp.owners.length : 0} color="secondary">
-                          <OwnershipIcon color="#fff" opacity="1.0" />
-                        </Badge>
-                      }
-                      aria-label="well"
-                    />
-                    <Tab
-                      value={1}
-                      className={classes.tab}
-                      icon={
-                        <Badge badgeContent={stateApp.trackedwells ? stateApp.trackedwells.length : 0} color="secondary">
-                          <WellIcon color="#fff" opacity="1.0" />
-                        </Badge>
-                      }
-                      aria-label="geography"
-                    />
-                  </Tabs>
-                </div>
-              </div>
-            )} */}
             <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
               {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
             </IconButton>

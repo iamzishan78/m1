@@ -57,17 +57,18 @@ function Panel({ children }) {
         </Typography>
         <StyledMenu>
           {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((key, index) => (
-            <StyledMenuItem onClick={() => handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)} key={index}>
+            <StyledMenuItem onClick={() => handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)} key={index} isSelected>
               <ListItemText>{SIDE_PANEL_MENU_ITEMS_LIST[key].text}</ListItemText>
             </StyledMenuItem>
           ))}
         </StyledMenu>
       </Drawer>
       <div
-        className={clsx({
-          [classes.revenueRootExpanded]: expandedPanel,
-          [classes.revenueRootCollapsed]: !expandedPanel,
-        })}
+        // className={clsx({
+        //   [classes.revenueRootExpanded]: expandedPanel,
+        //   [classes.revenueRootCollapsed]: !expandedPanel,
+        // })}
+        style={{ marginTop: "52px" }}
       >
         {children}
       </div>

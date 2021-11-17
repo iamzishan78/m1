@@ -67,10 +67,11 @@ export const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   pulloutBox: {
+    position: "absolute",
+    top: "140px",
     height: "80px",
     color: "white",
     width: "20px",
-    marginTop: "103px",
     background: "#141d32",
     cursor: "pointer",
     display: "flex",

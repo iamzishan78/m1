@@ -168,7 +168,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             button
             selected={stateNav.selectedMenuIndexRevenue === 1}
             onClick={(event) => {
-              handleListItemClick("/revenue/portfolio");
+              handleListItemClick("/revenue/statements");
             }}
             key="Revenue"
           >
