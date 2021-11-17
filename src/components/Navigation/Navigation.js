@@ -157,6 +157,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
       }));
     } else if (location.pathname === "/track") {
       setStateNav((state) => ({
@@ -171,6 +172,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
       }));
     } else if (location.pathname.startsWith("/flow")) {
       setStateNav((state) => ({
@@ -185,6 +187,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
       }));
     } else if (location.pathname === "/title") {
       setStateNav((state) => ({
@@ -200,6 +203,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
       }));
     } else if (location.pathname === "/contacts") {
       setStateGrid((state) => ({
@@ -218,6 +222,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
       }));
     } else if (location.pathname === "/alerts") {
       setStateNav((state) => ({
@@ -232,6 +237,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
       }));
     } else if (location.pathname === "/dashboard") {
       setStateNav((state) => ({
@@ -246,6 +252,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
       }));
     } else if (location.pathname === "/studio") {
       setStateNav((state) => ({
@@ -260,6 +267,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 1,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
       }));
     } else if (location.pathname === "/activities") {
       setStateNav((state) => ({
@@ -274,6 +282,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 1,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
       }));
     } else if (location.pathname === "/documents") {
       setStateNav((state) => ({
@@ -288,6 +297,22 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 1,
+        selectedMenuIndexRevenue: 0,
+      }));
+    } else if (location.pathname.startsWith("/revenue")) {
+      setStateNav((state) => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 0,
+        selectedMenuIndexActivities: 0,
+        selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 1,
       }));
     }
   }, [location, setStateNav]);
