@@ -429,6 +429,8 @@ function Map({ type, paramId, lati, longi }) {
 
         findBoundsMap([jsonLayer], map);
 
+        drawBoundary(map, jsonLayer)
+
         setStateApp((stateApp) => ({
           ...stateApp,
           [keys[type]]: {
@@ -436,7 +438,6 @@ function Map({ type, paramId, lati, longi }) {
             feature: jsonLayer,
             id: layer.customLayer._id,
           },
-          shapeEdit: true,
           popupOpen: false,
           expandedCard: true,
         }));
@@ -1139,8 +1140,10 @@ function Map({ type, paramId, lati, longi }) {
         map.resize();
         return;
       }
+      drawBoundary(stateApp.map)
       setStateApp((state) => ({
         ...state,
+        selectedParcel: null,
         selectedShape: null,
         expandedCard: false,
         popupOpen: false,
@@ -5613,6 +5616,7 @@ function Map({ type, paramId, lati, longi }) {
       expandedCard: false,
       activateWellDetailsFromTable: false,
     }));
+    drawBoundary(stateApp.map)
     getCustomLayers();
   };
 
@@ -6008,7 +6012,7 @@ function Map({ type, paramId, lati, longi }) {
   }, [stateApp.selectedParcel]);
 
   useEffect(() => {
-    if (!stateApp.selectedUserDefinedLayer || stateApp.shapeEdit) {
+    if ((!stateApp.selectedUserDefinedLayer && !stateApp.selectedShape && !stateApp.selectedParcel) || stateApp.shapeEdit) {
       if (map) drawBoundary(map);
     }
   }, [stateApp.selectedUserDefinedLayer, stateApp.shapeEdit]);
