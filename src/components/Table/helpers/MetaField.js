@@ -74,6 +74,8 @@ const MetaField = ({ setShowFieldModal }) => {
 
   const [addMetaData, { data }] = useMutation(ADD_META_DATA);
   
+  const type = watch("type", "dropdown");
+
   const [items, setItems] = useState([]);
 
   const [stateApp] = useContext(AppContext);
@@ -115,6 +117,7 @@ const MetaField = ({ setShowFieldModal }) => {
 
   const handleSave = () => {
     const values = getValues();
+    setShowFieldModal(false);
     addMetaData({
         variables: {
             metaData: {
@@ -136,7 +139,9 @@ const MetaField = ({ setShowFieldModal }) => {
                 dropdownOptions: items,
                 isCustom: true,
             }
-        }
+        },
+        refetchQueries: ["getMetaData"],
+        awaitRefetchQueries: true,
     })
   }
 
@@ -213,6 +218,9 @@ const MetaField = ({ setShowFieldModal }) => {
                     <Select
                       value={options.find((op) => op.value === props.value)}
                       menuPlacement="auto"
+                      onChange={(e) => {
+                        props.onChange(e.value);
+                      }}
                       options={options}
                       className={classes.select}
                     />
@@ -276,9 +284,11 @@ const MetaField = ({ setShowFieldModal }) => {
               </Grid>
             </Grid>
           </div>
-          <div style={{ padding: "0px 35px" }}>
-            <SortableComponent setItems={setItems} items={items} />
-          </div>
+          {type === 'dropdown' && (
+            <div style={{ padding: "0px 35px" }}>
+              <SortableComponent setItems={setItems} items={items} />
+            </div>
+          )}
           <div
             style={{
               borderTop: "1px solid #EEF1F4",
@@ -288,6 +298,7 @@ const MetaField = ({ setShowFieldModal }) => {
               <Button
                 style={{ margin: "25px 5px 25px 0px" }}
                 variant="outlined"
+                onClick={() => setShowFieldModal(false)}
               >
                 Cancel
               </Button>

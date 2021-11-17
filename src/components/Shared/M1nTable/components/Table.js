@@ -97,6 +97,8 @@ import RightDialog from "../../../ContactDetailCard/components/RightDialog";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
+import CustomFieldText from "components/Shared/M1nTable/components/SubComponents/CustomFieldText";
+
 // queries
 import { OWNERSLATSLONS } from "../../../../graphQL/useQueryOwnerLatsLonsArray";
 import { OPERATORSLATSLONS } from "../../../../graphQL/useQueryOperatorLatsLonsArray";
@@ -2026,7 +2028,7 @@ const colourStyles = {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  if(column.isCustom){
+                  if(column.isCustom && column.type === 'dropdown'){
                     let value = null;
                     if( props.rows[tableMeta.rowIndex].custom_data){
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
@@ -2048,6 +2050,15 @@ const colourStyles = {
                           }}
                         />
                       </div>
+                    )
+                  }
+                  if(column.isCustom && column.type === 'text'){
+                    let value = null;
+                    if( props.rows[tableMeta.rowIndex].custom_data){
+                      value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
+                    }
+                    return (
+                      <CustomFieldText value={value} onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)} />
                     )
                   }
                   const valueFormatter = (v) => {
