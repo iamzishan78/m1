@@ -206,12 +206,17 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
 
   const [tableTempProperties, setTableTempProperties] = useState(properties);
 
-  useEffect(() => {
+  const filterStateData = (data) => {
     if (tableTempProperties.state === 'TX') {
-      setFilteredTableData(tableData.concat(properties?.custom_data_arr || []).filter((data) => data.showStateTX !== false))
+      setFilteredTableData(data.filter((data) => data.showStateTX !== false))
     } else {
-      setFilteredTableData(tableData.concat(properties?.custom_data_arr || []).filter((data) => data.showStateTX !== true))
+      setFilteredTableData(data.filter((data) => data.showStateTX !== true))
     }
+  }
+
+  useEffect(() => {
+    filterStateData(tableData.concat(properties?.custom_data_arr || []))
+
     properties?.custom_data_arr?.forEach((data) => {
       tableTempProperties[data.key] = data.value
       tableTempProperties[`${data.key}key`] = data.key
@@ -229,9 +234,9 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
       const newTableData = td.filter((row) =>
         row.key?.toLowerCase()?.startsWith(search.toLowerCase()) || row.label?.toLowerCase()?.startsWith(search.toLowerCase()) || tableTempProperties[row.key]?.toLowerCase()?.startsWith(search.toLowerCase()))
 
-      setFilteredTableData(newTableData)
+      filterStateData(newTableData)
     } else {
-      setFilteredTableData(tableData.concat(properties?.custom_data_arr || []))
+      filterStateData(tableData.concat(properties?.custom_data_arr || []))
     }
   }, [search]);
 
@@ -315,7 +320,7 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
 
             </TableCell>
             <TableCell className={classes.cell2} align="right"
-              onMouseEnter={() => { setEditIconState({ [data.key]: data.edit }) }}
+              onMouseEnter={() => { setEditIconState({ [data.key]: data.edit === false ? false : true }) }}
               onMouseLeave={() => { setEditIconState({ [data.key]: false }) }}
             >
               {tableDataState[data.key] ?
@@ -361,7 +366,7 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
                     </>
                   }
                 </> :
-                <div style={{ minWidth: '30px', cursor: data.edit ? "pointer" : "none" }} >
+                <div style={{ minWidth: '30px', cursor: data.edit !== false ? "pointer" : "none" }} >
                   <Grid container direction="row" justifyContent="space-between" alignItems="center">
                     <Grid item>
                       {data.value || properties[data.key] || '-'}
