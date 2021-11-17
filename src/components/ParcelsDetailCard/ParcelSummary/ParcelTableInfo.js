@@ -11,7 +11,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { showErrorMessage } from "actions";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
-import { getParcelOriginalProperties } from '../utils/GetParcelOriginalProps'
 
 
 const tableData = [
@@ -197,7 +196,6 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, showMessage,
 
 export default function ParcelTableInfo({ properties, updateProperties, updateCustomProperties, search }) {
   const classes = useStyles();
-  properties = { ...properties, ...getParcelOriginalProperties(properties) }
   const dispatch = useDispatch();
   const [tableDataState, setTableDataState] = useState({});
   const [editIconState, setEditIconState] = useState({});
@@ -216,14 +214,12 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
 
   useEffect(() => {
     filterStateData(tableData.concat(properties?.custom_data_arr || []))
-
     properties?.custom_data_arr?.forEach((data) => {
       tableTempProperties[data.key] = data.value
       tableTempProperties[`${data.key}key`] = data.key
     });
     setTableTempProperties({ ...tableTempProperties })
     setTableDataState({})
-
   }, [properties]);
 
   console.log("tableTempProperties", tableTempProperties);
