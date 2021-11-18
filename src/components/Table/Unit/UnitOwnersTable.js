@@ -96,6 +96,7 @@ function UnitOwnersTable(props) {
             filterOptions: {
               display: (filterList, onChange, index, column) => {
                 column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
+                column.type = TableHeader.find(el => el.name === column.name)?.type;
                 return (
                   <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
                     extendSearchQuery={extendSearchQuery} query={GET_ES_FILTER_LIST} esIndex={esIndex} />

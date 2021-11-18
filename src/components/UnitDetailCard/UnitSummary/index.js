@@ -222,7 +222,7 @@ const useStyles = makeStyles((theme) => ({
             '&:focus': {
                 backgroundColor: theme.palette.common.white,
                 opacity: 0.75,
-                width: '15ch'
+                width: '37ch'
             },
         },
     },

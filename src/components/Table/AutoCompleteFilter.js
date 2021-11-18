@@ -12,7 +12,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
     const [options, setOptions] = useState([]);
     const [value, setValue] = useState({ key: filterList[index][0] });
     const [search, setSearch] = useState(filterList[index][0]);
-    const { label, filterKey } = column
+    const { label, filterKey, type } = column
     const [getFilters, { data: filtersData, loading }] = useLazyQuery(query, { fetchPolicy: "no-cache" });
 
     useEffect(() => {
@@ -43,7 +43,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
 
     const getFiltersAction = (search) => {
         if (search)
-            search = `${search}*`
+            search = type === 'number' ? search : `${search}*`
         getFilters({
             variables: {
                 esIndex,
