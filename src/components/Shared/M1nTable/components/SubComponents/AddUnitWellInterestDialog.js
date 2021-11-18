@@ -182,8 +182,7 @@ function AddUnitInterestDialog(props) {
           },
         },
         refetchQueries: [
-          "getESShapeWells",
-          "getESShapeWellsFilter"
+          "getESPaginatedList", "getESFilterList"
         ],
         awaitRefetchQueries: true,
       });

@@ -38,8 +38,7 @@ function AssociatedTractsUnitTable(props) {
             props.setSelectedTab(0)
         },
         refetchQueries: [
-            "getESShapeTracts",
-            "getESShapeTractsFilter"
+            "getESPaginatedList", "getESFilterList"
         ],
         awaitRefetchQueries: true,
     });

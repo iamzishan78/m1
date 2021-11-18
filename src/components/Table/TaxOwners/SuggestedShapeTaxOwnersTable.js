@@ -287,7 +287,7 @@ function SuggestedShapeTaxOwnersTable(props) {
           action: "single",
           userId: stateApp.user.mongoId,
         },
-        refetchQueries: ["checkIfOwnersAreContacts", "getESShapeOwners", "getESShapeOwnersFilter"],
+        refetchQueries: ["checkIfOwnersAreContacts", "getESPaginatedList", "getESFilterList"],
         awaitRefetchQueries: true,
       }).then(
         async (res) => {
@@ -354,7 +354,7 @@ function SuggestedShapeTaxOwnersTable(props) {
             lastUpdateBy: stateApp.user.mongoId,
           },
         },
-        refetchQueries: ["getESShapeOwners", "getESShapeOwnersFilter"],
+        refetchQueries: ["getESPaginatedList", "getESFilterList"],
         awaitRefetchQueries: true,
       }).then(() => {
         props.setLoading(false);

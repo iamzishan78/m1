@@ -99,7 +99,6 @@ export const TableHOC = (Component) => {
 
         useEffect(() => {
             SetDependencyUpdate(!dependencyUpdate)
-            console.log(dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks)
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
         const initializeGenericData = useCallback((ids, actions) => {

@@ -170,8 +170,7 @@ function UnitWellInterestTable(props) {
           },
         },
         refetchQueries: [
-          "getESPaginatedList",
-          "getESShapeWellsFilter"
+          "getESPaginatedList", "getESFilterList"
         ],
         awaitRefetchQueries: true,
       });
