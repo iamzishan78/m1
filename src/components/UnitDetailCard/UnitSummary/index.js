@@ -218,7 +218,7 @@ const useStyles = makeStyles((theme) => ({
         transition: theme.transitions.create('width'),
         width: '100%',
         [theme.breakpoints.up('sm')]: {
-            width: props => props.search.length > 0 ? '15ch' : '0.9px',
+            width: props => props.search.length > 0 ? '37ch' : '0.9px',
             '&:focus': {
                 backgroundColor: theme.palette.common.white,
                 opacity: 0.75,
