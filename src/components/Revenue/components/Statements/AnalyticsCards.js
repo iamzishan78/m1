@@ -34,7 +34,7 @@ const useStyles = makeStyles(() => ({
 export default function AnalyticsCards() {
   const classes = useStyles();
   return (
-    <Grid container direction="row" display="flex" align="center" spacing={8} textAlign="left" className={classes.root}>
+    <Grid container direction="row" display="flex" align="center" spacing={4} textAlign="left" className={classes.root}>
       <Grid item md={3}>
         <Card variant="outlined" className={classes.card}>
           <CardContent className={classes.cardContent}>

@@ -146,6 +146,7 @@ const initialValue = {
   contactFromMap: false,
   bulkUploadFromMap: false,
   filterIntersectingWellLines: [],
+  expandedRevenueSidePanel: true,
 };
 
 const NavigationContextProvider = (props) => {

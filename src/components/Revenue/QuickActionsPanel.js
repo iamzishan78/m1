@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import clsx from "clsx";
 import { useHistory } from "react-router-dom";
 import { IconButton } from "@material-ui/core";
@@ -11,15 +11,19 @@ import MenuIcon from "@material-ui/icons/Menu";
 
 import { useStyles, StyledMenu, StyledMenuItem } from "./styles";
 import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
+import { NavigationContext } from "components/Navigation/NavigationContext";
 
 function Panel({ children }) {
   const classes = useStyles();
   const history = useHistory();
 
-  const [expandedPanel, setPanelState] = useState(true);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
 
-  const closeAction = () => {
-    setPanelState(false);
+  const handlePanelStateChange = () => {
+    setStateNav((stateNav) => ({
+      ...stateNav,
+      expandedRevenueSidePanel: !stateNav.expandedRevenueSidePanel,
+    }));
   };
 
   const handleMenuItemClick = (path) => {
@@ -31,7 +35,7 @@ function Panel({ children }) {
         className={classes.drawer}
         variant="persistent"
         anchor="left"
-        open={expandedPanel}
+        open={stateNav.expandedRevenueSidePanel}
         classes={{
           paper: classes.drawerPaper,
         }}
@@ -43,7 +47,7 @@ function Panel({ children }) {
             </Typography>
           </Grid>
           <Grid item>
-            <IconButton className={classes.iconArrow} color="secondary" onClick={closeAction}>
+            <IconButton className={classes.iconArrow} color="secondary" onClick={handlePanelStateChange}>
               <>
                 <ChevronLeftIcon />
                 <MenuIcon className={classes.menuIcon} />
@@ -64,16 +68,16 @@ function Panel({ children }) {
         </StyledMenu>
       </Drawer>
       <div
-        // className={clsx({
-        //   [classes.revenueRootExpanded]: expandedPanel,
-        //   [classes.revenueRootCollapsed]: !expandedPanel,
-        // })}
+        className={clsx({
+          [classes.revenueRootExpanded]: stateNav.expandedRevenueSidePanel,
+          [classes.revenueRootCollapsed]: !stateNav.expandedRevenueSidePanel,
+        })}
         style={{ marginTop: "52px" }}
       >
         {children}
       </div>
-      <div className={classes.pulloutBox} onClick={() => setPanelState(!expandedPanel)}>
-        {expandedPanel ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
+      <div className={classes.pulloutBox} onClick={handlePanelStateChange}>
+        {stateNav.expandedRevenueSidePanel ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
       </div>
     </>
   );

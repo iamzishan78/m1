@@ -4,7 +4,7 @@ import Paper from "@material-ui/core/Paper";
 import MenuItem from "@material-ui/core/MenuItem";
 import { createMuiTheme } from "@material-ui/core/styles";
 
-const drawerWidth = 300;
+const drawerWidth = 425;
 
 export const theme = createMuiTheme({
   overrides: {
@@ -57,7 +57,7 @@ export const useStyles = makeStyles((theme) => ({
     color: "#29abe0",
   },
   revenueRootExpanded: {
-    marginLeft: "320px",
+    marginLeft: "425px",
   },
   revenueRootCollapsed: {
     marginLeft: "32px",

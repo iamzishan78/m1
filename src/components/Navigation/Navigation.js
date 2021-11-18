@@ -7,7 +7,6 @@ import { MapGridContext } from "../../components/MapGridCard/MapGridContext.js";
 
 import { useHistory, useLocation } from "react-router-dom";
 import clsx from "clsx";
-import { useTheme } from "@material-ui/core/styles";
 
 //3rd party packages
 import PropTypes from "prop-types";
@@ -83,7 +82,6 @@ TabPanel.propTypes = {
 
 export default function Navigation(props) {
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
-  const theme = useTheme();
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -94,8 +92,6 @@ export default function Navigation(props) {
   const [openContactForm, setOpenContactForm] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [supportDrawer, setSupportDrawer] = useState(false);
-  const [openFilterCard, setOpenFilterCard] = useState(false);
-  const [value, setValue] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
   const [matchLocation, setMatchLocation] = useState(false);
@@ -134,14 +130,6 @@ export default function Navigation(props) {
 
   let history = useHistory();
   let location = useLocation();
-
-  const [valueTabsTrack, setValueTabsTrack] = useState(0);
-  const handleTabChange = (event, newValue) => {
-    setValueTabsTrack(newValue);
-    setStateNav((stateNav) => ({
-      trackTabsValue: newValue,
-    }));
-  };
 
   useEffect(() => {
     if (location.pathname === "/" || location.pathname.startsWith("/map/")) {
@@ -451,23 +439,6 @@ export default function Navigation(props) {
     setOpenDrawer(false);
   };
 
-  const handleFilterCardClose = () => {
-    setOpenFilterCard(false);
-    setValue(0);
-  };
-
-  const handleClickAway = () => {
-    setOpenFilterCard(false);
-    setValue(0);
-  };
-
-  const handleFilterTabChange = (event, newValue) => {
-    if (!openFilterCard) {
-      setOpenFilterCard(true);
-    }
-    setValue(newValue);
-  };
-
   const handleOpenContactForm = () => {
     setOpenSupportCenter(false);
     setOpenContactForm(true);
@@ -515,7 +486,10 @@ export default function Navigation(props) {
               </Typography>
             )}
             {location.pathname.startsWith("/revenue") && (
-              <Typography variant="h4" style={{ color: "black", fontWeight: "bold", marginLeft: 15 }}>
+              <Typography
+                variant="h4"
+                style={{ color: "black", fontWeight: "bold", marginLeft: stateNav.expandedRevenueSidePanel ? "450px" : "30px" }}
+              >
                 Revenue Statements
               </Typography>
             )}
