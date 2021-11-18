@@ -1,29 +1,52 @@
-import React from "react";
-import { Switch, Route } from "react-router-dom";
+import React, { useEffect, useContext } from "react";
+import { Switch, Route, useLocation } from "react-router-dom";
 import RevenueActionsPanel from "./QuickActionsPanel";
-import * as Components from "./components";
+import * as Components from "components/Revenue/components";
+
+import { AppContext } from "AppContext";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
-  // PORTFOLIO: {
-  //   text: "Portfolio",
-  //   link: "/revenue/portfolio",
-  //   component: "Portfolio",
-  // },
-  // PROPERTY_MASTER: {
-  //   text: "Property Master",
-  //   link: "/revenue/property-master",
-  //   component: "PropertyMaster",
-  // },
+  PORTFOLIO: {
+    title: "Portfolio",
+    link: "/revenue/portfolio",
+    component: "Portfolio",
+  },
   REVENUE_STATEMENTS: {
-    text: "Revenue Statements",
+    title: "Revenue Statements",
     link: "/revenue/statements",
     component: "RevenueStatements",
   },
 };
 
 export default function Revenue() {
+  const location = useLocation();
+  const [stateApp, setStateApp] = useContext(AppContext);
+
+  useEffect(() => {
+    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => item.link === location.pathname);
+    if (option) {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        revenueDetails: {
+          ...stateApp.revenueDetails,
+          title: option.title,
+        },
+      }));
+    }
+  }, [location.pathname, setStateApp]);
+
+  const handlePanelStateChange = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      revenueDetails: {
+        ...stateApp.revenueDetails,
+        expandedPanel: !stateApp.revenueDetails.expandedPanel,
+      },
+    }));
+  };
+
   return (
-    <RevenueActionsPanel>
+    <RevenueActionsPanel handlePanelStateChange={handlePanelStateChange} expandedPanel={stateApp.revenueDetails.expandedPanel}>
       {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
         <Switch>
           <Route

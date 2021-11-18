@@ -488,9 +488,9 @@ export default function Navigation(props) {
             {location.pathname.startsWith("/revenue") && (
               <Typography
                 variant="h4"
-                style={{ color: "black", fontWeight: "bold", marginLeft: stateNav.expandedRevenueSidePanel ? "450px" : "30px" }}
+                style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.revenueDetails.expandedPanel ? "450px" : "30px" }}
               >
-                Revenue Statements
+                {stateApp.revenueDetails.title}
               </Typography>
             )}
 
