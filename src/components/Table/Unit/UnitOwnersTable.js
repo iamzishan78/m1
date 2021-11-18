@@ -17,9 +17,9 @@ import TableHeader from 'components/Table/constants/ownersperunit-header-schema'
 // Utilities
 import { usetableStyles } from "../Styles";
 import AddUnitOwnerDialogContent from "components/Shared/M1nTable/components/SubComponents/AddUnitOwnerDialogContent";
-import { GET_ES_SHAPE_OWNERS } from "graphQL/useQueryESShapeOwners";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
-import { GET_ES_SHAPE_OWNERS_FILTER } from "graphQL/useQueryESShapeOwnersFilter";
+import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 
 
@@ -35,16 +35,13 @@ function UnitOwnersTable(props) {
 
   // queries 
 
-  const [getESShapeOwners, { data: ShapeWellsData }] = useLazyQuery(GET_ES_SHAPE_OWNERS, {
+  const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
     fetchPolicy: "no-cache", onCompleted: () => {
       props.setLoading(false);
     }
   });
 
-  const [updateOwners] = useMutation(UPDATEWELLINTEREST, {
-    refetchQueries: ["getESShapeOwners", "getESShapeOwnersFilter"], awaitRefetchQueries: true
-  });
-  const tableData = ShapeWellsData?.getESShapeOwners
+  const tableData = elasticData?.getESPaginatedList
 
   const addAble = {
     type: "wellInterest", customLayer: props.customLayer,
@@ -52,11 +49,14 @@ function UnitOwnersTable(props) {
   }
 
   const startPaginationAt = 25
+  const extendSearchQuery = `shape._id:${props.customLayer._id}`
+  const esIndex = 'shapeowners_flat'
 
   ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
-    getESShapeOwners({
+    getESPaginatedList({
       variables: {
+        esIndex,
         pagination: {
           first: startPaginationAt,
           keep_alive: "1micros"
@@ -97,7 +97,8 @@ function UnitOwnersTable(props) {
               display: (filterList, onChange, index, column) => {
                 column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
                 return (
-                  <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange} query={GET_ES_SHAPE_OWNERS_FILTER} />
+                  <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
+                    extendSearchQuery={extendSearchQuery} query={GET_ES_FILTER_LIST} esIndex={esIndex} />
                 );
               }
             }
@@ -118,18 +119,19 @@ function UnitOwnersTable(props) {
   ////////////Contact Wells end///////////////////////////////////////////////
 
   const onTableChange = (action, tableState, rows, meta) => {
-    const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESShapeOwners)
+    tableState.esIndex = esIndex
+    const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
     switch (action) {
       case "search":
       case "sort":
       case "filterChange":
       case "resetFilters":
       case "changeRowsPerPage":
-        tableActions.extendSearchQuery(`shape._id:${props.customLayer._id}`);
+        tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.genericESAction();
         break;
       case "changePage":
-        tableActions.extendSearchQuery(`shape._id:${props.customLayer._id}`);
+        tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.changeESPage();
         break;
       default:

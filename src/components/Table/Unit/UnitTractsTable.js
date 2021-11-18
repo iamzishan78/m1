@@ -19,9 +19,9 @@ import TableHeader from 'components/Table/constants/unit-tracts-header-schema.js
 // Utilities
 import { usetableStyles } from "../Styles";
 import AddUnitTractDialog from "components/Shared/M1nTable/components/SubComponents/AddUnitTractDialog";
-import { GET_ES_SHAPE_TRACTS } from "graphQL/useQueryESShapeTracts";
+import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
-import { GET_ES_SHAPE_TRACTS_FILTER } from "graphQL/useQueryESShapeTractsFilter";
 
 
 function UnitTractsTable(props) {
@@ -38,7 +38,7 @@ function UnitTractsTable(props) {
 
   // queries 
 
-  const [getESShapeTracts, { data: ShapeTractData }] = useLazyQuery(GET_ES_SHAPE_TRACTS, {
+  const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
     fetchPolicy: "no-cache", onCompleted: () => {
       props.setLoading(false);
     }
@@ -51,14 +51,10 @@ function UnitTractsTable(props) {
     },
 
     onError: (err) => { },
-    refetchQueries: [
-      "getESShapeTracts",
-      "getESShapeTractsFilter"
-    ],
-    awaitRefetchQueries: true,
+    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
 
-  const tableData = ShapeTractData?.getESShapeTracts
+  const tableData = elasticData?.getESPaginatedList
 
   const addAble = {
     type: "wellInterest", customLayer: props.customLayer,
@@ -66,11 +62,14 @@ function UnitTractsTable(props) {
   }
 
   const startPaginationAt = 25
+  const extendSearchQuery = `shape._id:${props.customLayer._id}`
+  const esIndex = 'shapetracts_flat'
 
   ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
-    getESShapeTracts({
+    getESPaginatedList({
       variables: {
+        esIndex,
         pagination: {
           first: startPaginationAt,
           keep_alive: "1micros"
@@ -114,7 +113,8 @@ function UnitTractsTable(props) {
               display: (filterList, onChange, index, column) => {
                 column.filterKey = headers.find(el => el.name === column.name)?.esKey;
                 return (
-                  <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange} query={GET_ES_SHAPE_TRACTS_FILTER} />
+                  <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
+                    extendSearchQuery={extendSearchQuery} query={GET_ES_FILTER_LIST} esIndex={esIndex} />
                 );
               }
             }
@@ -135,21 +135,22 @@ function UnitTractsTable(props) {
   ////////////Contact Wells end///////////////////////////////////////////////
 
   const onTableChange = (action, tableState, rows, meta) => {
-    const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESShapeTracts)
+    tableState.esIndex = esIndex
+    const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
     switch (action) {
       case "search":
       case "sort":
       case "filterChange":
       case "resetFilters":
       case "changeRowsPerPage":
-        tableActions.extendSearchQuery(`shape._id:${props.customLayer._id}`);
+        tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.genericESAction();
         break;
       case "rowSelectionChange":
         setSelectedRows(tableState.selectedRows.data)
         break;
       case "changePage":
-        tableActions.extendSearchQuery(`shape._id:${props.customLayer._id}`);
+        tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.changeESPage();
         break;
       default:

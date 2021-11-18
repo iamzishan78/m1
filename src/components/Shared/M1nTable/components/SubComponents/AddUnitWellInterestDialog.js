@@ -65,22 +65,14 @@ function AddUnitInterestDialog(props) {
       setLoading(false);
       handleClose();
     },
-    refetchQueries: [
-      "getESShapeWells",
-      "getESShapeWellsFilter"
-    ],
-    awaitRefetchQueries: true,
+    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
   const [updateShapeWellInterest] = useMutation(UPDATE_SHAPE_WELL_INTEREST, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
     },
-    refetchQueries: [
-      "getESShapeWells",
-      "getESShapeWellsFilter"
-    ],
-    awaitRefetchQueries: true,
+    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
 
   useEffect(() => {
@@ -152,11 +144,7 @@ function AddUnitInterestDialog(props) {
             ...getValues(),
           },
         },
-        refetchQueries: [
-          "getESShapeWells",
-          "getESShapeWellsFilter"
-        ],
-        awaitRefetchQueries: true,
+        refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
       });
     } else {
       addShapeWellInterest({
@@ -169,11 +157,7 @@ function AddUnitInterestDialog(props) {
             ...getValues(),
           }
         },
-        refetchQueries: [
-          "getESShapeWells",
-          "getESShapeWellsFilter"
-        ],
-        awaitRefetchQueries: true,
+        refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
       });
     }
   }

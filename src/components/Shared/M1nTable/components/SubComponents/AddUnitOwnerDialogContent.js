@@ -208,8 +208,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: ["getESShapeOwners", "getESShapeOwnersFilter"],
-          awaitRefetchQueries: true,
+          refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
         });
       } else {
         addOwnerToAShape({
@@ -222,8 +221,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: ["getESShapeOwners", "getESShapeOwnersFilter"],
-          awaitRefetchQueries: true,
+          refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
         });
       }
 

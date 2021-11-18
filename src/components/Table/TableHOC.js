@@ -189,7 +189,8 @@ export const TableHOC = (Component) => {
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
             let pageESVariables = {
                 variables: {
-                    search: tableState.searchText,
+                    esIndex: tableState.esIndex,
+                    search: tableState.searchText ? `${tableState.searchText}*` : '',
                     pagination: {
                         // pit: tableData?.before_pit,
                         first: tableState.rowsPerPage,

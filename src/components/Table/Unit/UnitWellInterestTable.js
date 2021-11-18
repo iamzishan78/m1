@@ -17,9 +17,9 @@ import TableHeader from 'components/Table/constants/unitperwell-header-schema.js
 // Utilities
 import { usetableStyles } from "../Styles";
 import AddUnitInterestDialog from "components/Shared/M1nTable/components/SubComponents/AddUnitWellInterestDialog";
-import { GET_ES_SHAPE_WELLS } from "graphQL/useQueryESShapeWells";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
-import { GET_ES_SHAPE_WELLS_FILTER } from "graphQL/useQueryESShapeWellsFilter";
+import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 
 function UnitWellInterestTable(props) {
@@ -34,17 +34,16 @@ function UnitWellInterestTable(props) {
 
   // queries 
 
-  const [getESShapeWells, { data: ShapeWellsData }] = useLazyQuery(GET_ES_SHAPE_WELLS, {
+  const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
     fetchPolicy: "no-cache", onCompleted: () => {
       props.setLoading(false);
     }
   });
 
   const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, {
-    refetchQueries: ["getESShapeWells",
-      "getESShapeWellsFilter"], awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
-  const tableData = ShapeWellsData?.getESShapeWells
+  const tableData = elasticData?.getESPaginatedList
 
   const addAble = {
     type: "wellInterest", customLayer: props.customLayer,
@@ -52,11 +51,14 @@ function UnitWellInterestTable(props) {
   }
 
   const startPaginationAt = 25
+  const extendSearchQuery = `shape._id:${props.customLayer._id}`
+  const esIndex = 'shapewellinterests_flat'
 
   ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
-    getESShapeWells({
+    getESPaginatedList({
       variables: {
+        esIndex,
         pagination: {
           first: startPaginationAt,
           keep_alive: "1micros"
@@ -91,7 +93,8 @@ function UnitWellInterestTable(props) {
               display: (filterList, onChange, index, column) => {
                 column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
                 return (
-                  <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange} query={GET_ES_SHAPE_WELLS_FILTER} />
+                  <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
+                    extendSearchQuery={extendSearchQuery} query={GET_ES_FILTER_LIST} esIndex={esIndex} />
                 );
               }
             }
@@ -112,18 +115,19 @@ function UnitWellInterestTable(props) {
   ////////////Contact Wells end///////////////////////////////////////////////
 
   const onTableChange = (action, tableState, rows, meta) => {
-    const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESShapeWells)
+    tableState.esIndex = esIndex
+    const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
     switch (action) {
       case "search":
       case "sort":
       case "filterChange":
       case "resetFilters":
       case "changeRowsPerPage":
-        tableActions.extendSearchQuery(`shape._id:${props.customLayer._id}`);
+        tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.genericESAction();
         break;
       case "changePage":
-        tableActions.extendSearchQuery(`shape._id:${props.customLayer._id}`);
+        tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.changeESPage();
         break;
       default:
@@ -166,7 +170,7 @@ function UnitWellInterestTable(props) {
           },
         },
         refetchQueries: [
-          "getESShapeWells",
+          "getESPaginatedList",
           "getESShapeWellsFilter"
         ],
         awaitRefetchQueries: true,
