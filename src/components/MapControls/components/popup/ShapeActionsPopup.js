@@ -525,7 +525,8 @@ const ShapeActionsPopup = (props) => {
   };
 
   const confirmEditing = () => {
-    let { currentFeature, selectedAoi } = stateApp;
+    let { currentFeature, selectedAoi, selectedParcel, selectedShape } = stateApp;
+    let selectedLayer = selectedAoi || selectedParcel?.feature || selectedShape?.feature
     const shapeJson = {
       ...currentFeature,
       shapeArea: calculateLandArea(currentFeature),
@@ -534,18 +535,18 @@ const ShapeActionsPopup = (props) => {
     const customLayerData = {
       shapeJson,
       shape: JSON.stringify(shapeJson),
-      layer: selectedAoi.layer.id,
+      layer: selectedLayer.layer.id,
       user: stateApp.user.mongoId,
     };
 
-    if (selectedAoi.layer.id === "interest") {
+    if (selectedLayer.layer.id === "interest") {
       customLayerData.name = currentFeature.properties.shapeLabel;
     }
     addCustomShapeProperties(currentFeature, stateApp.draw);
 
     updateCustomLayer({
       variables: {
-        customLayerId: selectedAoi.id || selectedAoi._id,
+        customLayerId: selectedLayer.id || selectedLayer._id,
         customLayer: customLayerData,
       },
       refetchQueries: ["getCustomLayers"],
@@ -557,7 +558,8 @@ const ShapeActionsPopup = (props) => {
     setTimeout(() => popupCloseAction(), 0);
   };
 
-  const enableEditOnly = stateApp.currentFeature?.layer?.id === "parcel" || stateApp.currentFeature?.layer?.id === "unit";
+  const enableEditOnly = stateApp.selectedParcel || stateApp.selectedShape
+  console.log('enableEditOnly:', enableEditOnly, stateApp?.currentFeature)
   const isAoi = stateApp.selectedAoi?.layer?.id === "interest";
   const isCreateParcelMenu = Boolean(anchorEl);
 
@@ -638,7 +640,7 @@ const ShapeActionsPopup = (props) => {
             </Tooltip>
           )}
 
-          {selectedAction === "edit-aoi" && (
+          {(selectedAction === "edit-aoi" || selectedAction === "edit-shape") && (
             <span className={classes.multiSelectCheck}>
               <Tooltip title="Confirm Editing">
                 <IconButton size="small" aria-label="Set Boundary" onClick={confirmEditing}>

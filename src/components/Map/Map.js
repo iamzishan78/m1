@@ -424,8 +424,8 @@ function Map({ type, paramId, lati, longi }) {
         let jsonLayer = JSON.parse(layer.customLayer.shape);
         if (layer.customLayer.shapeJson) jsonLayer = copy(layer.customLayer.shapeJson);
 
-        jsonLayer.layer = { id: jsonLayer.layer };
-        jsonLayer.id = jsonLayer._id;
+        jsonLayer.layer = { id: layer.customLayer.layer };
+        jsonLayer.id = layer.customLayer._id;
 
         findBoundsMap([jsonLayer], map);
 
@@ -436,7 +436,7 @@ function Map({ type, paramId, lati, longi }) {
             feature: jsonLayer,
             id: layer.customLayer._id,
           },
-          shapeEdit: true,
+          currentFeature: jsonLayer,
           popupOpen: false,
           expandedCard: true,
         }));
