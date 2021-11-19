@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 // context
 
-import { Container, Button } from "@material-ui/core";
+import { Container, Button, Dialog, Tooltip, IconButton } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
+import DeleteIcon from "@material-ui/icons/Delete";
 import TableHOC from "components/Table/TableHOC";
 
 // QUERIES 
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
+import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 
 import { addTrailingZeros, deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent"
 
 // Header Schemas 
 import TableHeader from 'components/Table/constants/ownersperunit-header-schema'
@@ -26,10 +28,12 @@ import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 function UnitOwnersTable(props) {
   const classes = usetableStyles();
   const [addToTable, setAddToTable] = useState(false)
+  const [openDialog, setOpenDialog] = useState(null);
 
   // function states 
   const [columns, Columns] = useState([]);
   const [selectedRow, selectRow] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
 
   const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
@@ -38,7 +42,18 @@ function UnitOwnersTable(props) {
   const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
     fetchPolicy: "no-cache", onCompleted: () => {
       props.setLoading(false);
+      setSelectedRows([])
     }
+  });
+
+  const [updateShapeOwners, { data: updateData }] = useMutation(UPDATE_SHAPE_OWNERS, {
+    onCompleted: () => {
+      props.setLoading(false);
+      setSelectedRows([])
+    },
+
+    onError: (err) => { },
+    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
 
   const tableData = elasticData?.getESPaginatedList
@@ -131,6 +146,9 @@ function UnitOwnersTable(props) {
         tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.genericESAction();
         break;
+      case "rowSelectionChange":
+        setSelectedRows(tableState.selectedRows.data)
+        break;
       case "changePage":
         tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.changeESPage();
@@ -145,6 +163,7 @@ function UnitOwnersTable(props) {
     count: count,
     serverSide: true,
     searchable: true,
+    rowsSelected: selectedRows.map((sR => sR.dataIndex)),
     filter: true,
     customToolbar: () => {
 
@@ -158,6 +177,17 @@ function UnitOwnersTable(props) {
         </Button>
       </div>
     },
+    customToolbarSelect: ({ data }) => {
+      return <div style={{ height: "48px", display: "flex" }}>
+        <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
+          <Tooltip title={"Delete"}>
+            <IconButton size="medium" style={{ margin: "0 5px" }} aria-label="delete" onClick={(e) => { setOpenDialog("delete"); }}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </div>
+      </div>
+    },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
       setAddToTable(true)
       selectRow({ ...props.rows[dataIndex] })
@@ -166,20 +196,14 @@ function UnitOwnersTable(props) {
 
 
   const deleteFunc = (ids) => {
-    for (let i = 0; i < ids.length; i++) {
-      // updateWellInterest({
-      //   variables: {
-      //     wellInterest: {
-      //       id: ids[i],
-      //       isDeleted: true
-      //     },
-      //   },
-      //   refetchQueries: [
-      //     "getESShapeOwners",
-      //     "getESShapeOwnersFilter"
-      //   ],
-      //   awaitRefetchQueries: true,
-      // });
+    if (ids.length > 0) {
+      props.setLoading(true);
+      updateShapeOwners({
+        variables: {
+          shapeType: props.shapeType,
+          shapeOwners: ids.map((_id) => ({ _id, isDeleted: true })),
+        }
+      });
     }
   }
 
@@ -202,6 +226,25 @@ function UnitOwnersTable(props) {
           setAddToTable(false)
         }
       />}
+
+      <Dialog open={openDialog ? true : false} onClose={() => setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
+        {
+          openDialog === "delete" && <DeleteConfirmationDialogContent
+            header="Delete Interest Owner(s)"
+            onClose={() => setOpenDialog(null)}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={selectedRows.map((sR => props.rows[sR.dataIndex]._id))}
+            setM1nSelectedRowsIndexes={setSelectedRows}
+          >
+            {`Do you want to permanently delete the Interest Owner${selectedRows &&
+              selectedRows.length > 1 &&
+              selectedRows.length > 1
+              ? "s"
+              : ""
+              } from  this Unit?`}
+          </DeleteConfirmationDialogContent>
+        }
+      </Dialog>
 
 
       <Table
