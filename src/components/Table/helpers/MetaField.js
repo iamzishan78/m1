@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Controller, useForm } from "react-hook-form";
 import Select from "react-select";
@@ -26,6 +26,7 @@ import {
 } from "react-sortable-hoc";
 
 import { ADD_META_DATA } from "graphQL/useMutationAddMetaData";
+import { UPDATE_META_DATA } from "graphQL/useMutationUpdateMetaData";
 import { colorPallete } from "components/Table/helpers";
 
 const useStyles = makeStyles((theme) => ({
@@ -71,14 +72,23 @@ const MetaField = () => {
   const [selectedTab, setSelectedTab] = useState("new");
   const [showAddDescription, setShowAddDescription] = useState(false);
   const { control, reset, setValue, register, getValues, watch } = useForm();
-
-  const [addMetaData, { data }] = useMutation(ADD_META_DATA);
-
-  const type = watch("type", "dropdown");
-
-  const [items, setItems] = useState([]);
-
   const [stateApp, setStateApp] = useContext(AppContext);
+  const type = watch("type", stateApp.selectedMeta? stateApp.selectedMeta.type : "dropdown");
+  
+  const [items, setItems] = useState([{ palleteId: colorPallete[0].id}]);
+  
+  useEffect(() => {
+    if(stateApp.selectedMeta){
+      setTimeout(() => {
+        setValue("type", stateApp.selectedMeta.type);
+        setValue("title", stateApp.selectedMeta.name);
+        setItems(stateApp.selectedMeta.dropdownOptions);
+      },100)
+    }
+  },[stateApp.selectedMeta])
+  
+  const [addMetaData, { data }] = useMutation(ADD_META_DATA);
+  const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
 
   const options = [
     { value: "dropdown", label: "Drop-down" },
@@ -117,37 +127,55 @@ const MetaField = () => {
 
   const handleSave = () => {
     const values = getValues();
+    if(stateApp.selectedMeta){
+      updateMetaData({
+        variables: {
+          metaData: {
+            _id: stateApp.selectedMeta._id,
+            dropdownOptions: items,
+          },
+        },
+        refetchQueries: ["getMetaData"],
+        awaitRefetchQueries: true,
+      });
+    }else{
+      addMetaData({
+        variables: {
+          metaData: {
+            name: values.title,
+            label: values.title,
+            esKey: "",
+            options: {
+              display: true,
+              filter: true,
+              searchable: false,
+              sort: false,
+              download: false,
+              print: false,
+              viewColumns: true,
+            },
+            type: values.type,
+            category: values.category,
+            user: stateApp.user.mongoId,
+            dropdownOptions: items,
+            isCustom: true,
+          },
+        },
+        refetchQueries: ["getMetaData"],
+        awaitRefetchQueries: true,
+      });
+    }
+    handleClose()
+  };
+
+  const handleClose = () => {
+    setItems([]);
     setStateApp((stateApp) => ({
       ...stateApp,
       showFieldModal: false,
-    }));
-    addMetaData({
-      variables: {
-        metaData: {
-          name: values.title,
-          label: values.title,
-          esKey: "",
-          options: {
-            display: true,
-            filter: true,
-            searchable: false,
-            sort: false,
-            download: false,
-            print: false,
-            viewColumns: true,
-          },
-          type: values.type,
-          category: values.category,
-          user: stateApp.user.mongoId,
-          dropdownOptions: items,
-          isCustom: true,
-        },
-      },
-      refetchQueries: ["getMetaData"],
-      awaitRefetchQueries: true,
-    });
-  };
-
+      selectedMeta: null
+    }))
+  }
   return (
     <Dialog
       fullWidth
@@ -162,14 +190,9 @@ const MetaField = () => {
     >
       <div>
         <div className={classes.header}>
-          <h3>Add Field</h3>
+          {stateApp.selectedMeta ? <h3>Edit Field</h3> : <h3>Add Field</h3>}
           <IconButton
-            onClick={() =>
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                showFieldModal: false,
-              }))
-            }
+            onClick={handleClose}
           >
             <CloseIcon />
           </IconButton>
@@ -219,6 +242,7 @@ const MetaField = () => {
                       placeholder="e.g. Priority, Stage, Status"
                       fullWidth
                       defaultValue=""
+                      disabled={stateApp.selectedMeta}
                     />
                   )}
                 />
@@ -231,6 +255,9 @@ const MetaField = () => {
                   defaultValue={options[0].value}
                   render={(props) => (
                     <Select
+                      styles={{
+                        menu: provided => ({ ...provided, zIndex: 9999 })
+                      }}
                       value={options.find((op) => op.value === props.value)}
                       menuPlacement="auto"
                       onChange={(e) => {
@@ -238,6 +265,7 @@ const MetaField = () => {
                       }}
                       options={options}
                       className={classes.select}
+                      isDisabled={stateApp.selectedMeta}
                     />
                   )}
                 />
@@ -287,12 +315,16 @@ const MetaField = () => {
                   defaultValue={categoryOptions[0].value}
                   render={(props) => (
                     <Select
+                      styles={{
+                        menu: provided => ({ ...provided, zIndex: 9999 })
+                      }}
                       value={categoryOptions.find(
                         (op) => op.value === props.value
                       )}
                       menuPlacement="auto"
                       options={categoryOptions}
                       className={classes.select}
+                      isDisabled={stateApp.selectedMeta}
                     />
                   )}
                 />
@@ -313,12 +345,7 @@ const MetaField = () => {
               <Button
                 style={{ margin: "25px 5px 25px 0px" }}
                 variant="outlined"
-                onClick={() =>
-                  setStateApp((stateApp) => ({
-                    ...stateApp,
-                    showFieldModal: false,
-                  }))
-                }
+                onClick={handleClose}
               >
                 Cancel
               </Button>
@@ -327,7 +354,7 @@ const MetaField = () => {
                 variant="outlined"
                 onClick={handleSave}
               >
-                Create Field
+                {stateApp.selectedMeta ? 'Updated Field' : 'Create Field' }
               </Button>
             </div>
           </div>
@@ -517,7 +544,7 @@ const SortableItem = SortableElement(
             <TextField
               type="text"
               variant="standard"
-              placeholder="Enter activity name"
+              placeholder="Enter option"
               style={{ width: "95%", marginTop: 3 }}
               value={itemValue}
               onChange={(e) => {

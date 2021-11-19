@@ -16,6 +16,7 @@ const CustomFieldText = ({ value, onCustomKeyChange }) => {
         variant="standard"
         size="small"
         autoComplete="nope"
+        placeholder="N/A"
         fullWidth
         label={null}
         value={inputValue}

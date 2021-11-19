@@ -69,6 +69,8 @@ const CustomerViewCol = (props) => {
                   <span style={{ display: 'flex' }}>
                     {tableColumns.find(co => co.name === col.name)?.isCustom && (
                       <IconButton style={{ padding: 6 }} onClick={() => {
+                        var element = document.querySelector('[aria-label="Close"]');
+                        element.click();
                         setStateApp((stateApp) => ({
                           ...stateApp,
                           selectedMeta: tableColumns.find(co => co.name === col.name),

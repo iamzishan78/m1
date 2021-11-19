@@ -263,7 +263,7 @@ function DocumentsTable(props) {
       variables: {
         document: {
           fileId: props.rows[index]._id,
-          custom_data: { ...props.rows[index].custom_data, [`${key}`]: value  },
+          custom_data: { [`${key}`]: value  },
         },
       },
       refetchQueries: ["getESDocuments"],

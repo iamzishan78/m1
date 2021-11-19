@@ -73,7 +73,7 @@ import ContactDataMissingDialog from "components/ContactDetailCard/components/Co
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
 import ButtonDropDown from "./ButtonGroup";
-import ReactSelect from "react-select";
+import ReactSelect, { components } from "react-select";
 import chroma from "chroma-js";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
@@ -126,7 +126,7 @@ import { colorPallete } from "components/Table/helpers";
 DndProvider.whyDidYouRender = false;
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
-
+const { Option } = components;
 // const customStyles = makeStyles((theme) => ({
 //   table: {
 //     "& .MuiTableCell-body": {
@@ -1101,19 +1101,16 @@ const colourStyles = {
   }),
   option: (styles, { data, isDisabled, isFocused, isSelected }) => {
     const pallete = colorPallete.find(pallete => pallete.id === data.palleteId)
-    const color = chroma(pallete.color);
+    // const color = chroma(pallete.color);
     return {
       ...styles,
+      marginTop: 2,
       padding: "5px 10px",
       borderRadius: 26,
       alignItems: "center",
       textAlign: "center",
-      backgroundColor: isSelected
-        ? pallete.color
-        : isFocused
-        ? color.alpha(0.5).css()
-        : undefined,
-      color: isSelected || isFocused ? pallete.textColor : 'black',
+      backgroundColor:pallete.color,
+      color: pallete.textColor,
       cursor: isDisabled ? 'not-allowed' : 'default',
     };
   },
@@ -2028,6 +2025,18 @@ const colourStyles = {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  const IconOption = (props) => {
+                    return (
+                      <>
+                      <Option {...props}>
+                        {props.isSelected && (
+                          <CheckIcon style={{ fontSize: 13, marginRight: 5 }} />
+                        )}
+                        {props.data.label}
+                      </Option>
+                      </>
+                    )
+                  };
                   if(column.isCustom && column.type === 'dropdown'){
                     let value = null;
                     if( props.rows[tableMeta.rowIndex].custom_data){
@@ -2036,18 +2045,23 @@ const colourStyles = {
                     return (
                       <div style={{ width: "150px", padding: "0px 10px" }} onClick={(e) => e.stopPropagation()}>
                         <ReactSelect
+                          styles={{
+                            menu: provided => ({ ...provided, zIndex: 9999 })
+                          }}
                           isSearchable={false}
                           value={value}
                           menuPlacement="auto"
                           options={column.dropdownOptions.map(op => ({...op, label: op.value, value: op.value}))}
                           className={classes.select}
                           styles={colourStyles}
+                          placeholder='N/A'
                           onChange={(e) => {
                             props.onCustomKeyChange(e, tableMeta.rowIndex, column.name);
                           }}
                           onClick={(e) => {
                             e.stopPropagation()
                           }}
+                          components={{ Option: IconOption }}
                         />
                       </div>
                     )
