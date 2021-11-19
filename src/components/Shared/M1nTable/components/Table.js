@@ -73,8 +73,6 @@ import ContactDataMissingDialog from "components/ContactDetailCard/components/Co
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
 import ButtonDropDown from "./ButtonGroup";
-import ReactSelect, { components } from "react-select";
-import chroma from "chroma-js";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 
@@ -98,6 +96,7 @@ import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 import CustomFieldText from "components/Shared/M1nTable/components/SubComponents/CustomFieldText";
+import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
 
 // queries
 import { OWNERSLATSLONS } from "../../../../graphQL/useQueryOwnerLatsLonsArray";
@@ -126,7 +125,6 @@ import { colorPallete } from "components/Table/helpers";
 DndProvider.whyDidYouRender = false;
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
-const { Option } = components;
 // const customStyles = makeStyles((theme) => ({
 //   table: {
 //     "& .MuiTableCell-body": {
@@ -1088,63 +1086,6 @@ function SubTable(props) {
     []
   );
 
-
-const colourStyles = {
-  control: (styles) => ({ ...styles, 
-    "&:hover": {
-      border: 'none',
-      boxShadow: "none"
-    },
-    backgroundColor: 'transparent',
-    boxShadow: "none", 
-    border: 'none' 
-  }),
-  option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    const pallete = colorPallete.find(pallete => pallete.id === data.palleteId)
-    // const color = chroma(pallete.color);
-    return {
-      ...styles,
-      marginTop: 2,
-      padding: "5px 10px",
-      borderRadius: 26,
-      alignItems: "center",
-      textAlign: "center",
-      backgroundColor:pallete.color,
-      color: pallete.textColor,
-      cursor: isDisabled ? 'not-allowed' : 'default',
-    };
-  },
-  valueContainer: (styles) => {
-    return {
-      ...styles,
-      padding: 0,
-    };
-  },
-  indicatorSeparator: (styles) => {
-    return {
-      ...styles,
-      display: 'none',
-    };
-  },
-  IndicatorsContainer: (styles) => {
-    return {
-      ...styles,
-      display: 'none',
-    };
-  },
-  singleValue: (styles, { data }) => {
-    const pallete = colorPallete.find(pallete => pallete.id === data.palleteId)
-    return {
-      ...styles,
-      backgroundColor: pallete?.color,
-      color: pallete?.textColor,
-      width: "fit-content",
-      padding: "5px 10px",
-      borderRadius: 26
-    };
-  },
-};
-
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
@@ -2025,45 +1966,15 @@ const colourStyles = {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  const IconOption = (props) => {
-                    return (
-                      <>
-                      <Option {...props}>
-                        {props.isSelected && (
-                          <CheckIcon style={{ fontSize: 13, marginRight: 5 }} />
-                        )}
-                        {props.data.label}
-                      </Option>
-                      </>
-                    )
-                  };
                   if(column.isCustom && column.type === 'dropdown'){
                     let value = null;
                     if( props.rows[tableMeta.rowIndex].custom_data){
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
                     }
                     return (
-                      <div style={{ width: "150px", padding: "0px 10px" }} onClick={(e) => e.stopPropagation()}>
-                        <ReactSelect
-                          styles={{
-                            menu: provided => ({ ...provided, zIndex: 9999 })
-                          }}
-                          isSearchable={false}
-                          value={value}
-                          menuPlacement="auto"
-                          options={column.dropdownOptions.map(op => ({...op, label: op.value, value: op.value}))}
-                          className={classes.select}
-                          styles={colourStyles}
-                          placeholder='N/A'
-                          onChange={(e) => {
-                            props.onCustomKeyChange(e, tableMeta.rowIndex, column.name);
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                          }}
-                          components={{ Option: IconOption }}
-                        />
-                      </div>
+                      <>
+                        <CustomFieldSelect index={tableMeta.rowIndex} column={column} value={value} onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)} />
+                      </>
                     )
                   }
                   if(column.isCustom && column.type === 'text'){

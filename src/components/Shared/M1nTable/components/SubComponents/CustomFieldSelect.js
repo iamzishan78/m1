@@ -1,0 +1,156 @@
+import React, { useState, useEffect } from "react";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { Grid } from "@material-ui/core";
+import CheckIcon from "@material-ui/icons/Check";
+import TextField from "@material-ui/core/TextField";
+import { makeStyles } from "@material-ui/core/styles";
+import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
+import { colorPallete } from "components/Table/helpers";
+
+const useStyles = makeStyles((theme) => ({
+  noBorder: {
+    border: "none",
+  },
+  search: {
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "none",
+    },
+    "& .MuiOutlinedInput-root": {
+      paddingRight: "0px !important",
+    },
+    "& .MuiAutocomplete-endAdornment": {
+      display: "none",
+    },
+    "& .MuiInputBase-input": { color: "red", caretColor: "black" },
+  },
+  textDiv: {
+    fontSize: "14px",
+    marginTop: "-32px",
+  },
+  paper: {
+    width: "175px",
+  },
+}));
+
+const CustomFieldSelect = ({ index, value, onCustomKeyChange, column }) => {
+  const classes = useStyles();
+  const defaultValue = {
+    label: "----",
+    value: "----",
+  };
+  const [showOptions, setShowOptions] = useState(false);
+
+  const options = JSON.parse(JSON.stringify(column.dropdownOptions))
+  options.unshift(defaultValue);
+
+  const onChange = (e, act) => {
+    onCustomKeyChange(act)
+  };
+
+  useEffect(() => {
+    if (value?.label) {
+      const pallete = colorPallete.find(
+        (pallete) => pallete.id === value.palleteId
+      );
+      document.getElementById(
+        `colorText_${index}`
+      ).innerHTML = `<span class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}">${value.label}</span>`;
+    } else {
+      document.getElementById(`colorText_${index}`).innerHTML = `<span class='colorText'>----</span>`;
+    }
+  }, [index, value]);
+
+  return (
+    <div
+      style={{ padding: "0px 10px" }}
+      onClick={(e) => e.stopPropagation()}
+      onMouseLeave={(e) => setShowOptions(false)}
+    >
+      <Autocomplete
+        className={classes.search}
+        style={{
+          margin: 0,
+        }}
+        classes={{ paper: classes.paper }}
+        disableClearable
+        open={showOptions}
+        defaultValue={defaultValue}
+        value={value}
+        disableListWrap
+        options={options.map((op) => ({
+          ...op,
+          label: op.value,
+          value: op.value,
+        }))}
+        getOptionLabel={(option) => option.label}
+        getOptionSelected={(option, value) => {
+          return option === value;
+        }}
+        filterOptions={(options, params) => {
+          return options;
+        }}
+        renderOption={(option) => {
+          const pallete = colorPallete.find(
+            (pallete) => pallete.id === option.palleteId
+          );
+          return (
+            <Grid className={classes.myClass} container spacing={0}>
+              <Grid container item xs={2} alignItems="center">
+                {(option.value === value?.label ||
+                  (!value && option.value === defaultValue.label)) && (
+                  <CheckIcon style={{ fontSize: 13, marginRight: 5 }} />
+                )}
+              </Grid>
+              <Grid container item xs={10} alignItems="center">
+                <Grid item xs>
+                  <span
+                    style={{
+                      fontWeight: 400,
+                      backgroundColor: pallete?.color,
+                      color: pallete?.textColor,
+                      padding: "3px 10px",
+                      borderRadius: 26,
+                      fontSize: 14,
+                    }}
+                  >
+                    {option.label}
+                  </span>
+                </Grid>
+              </Grid>
+            </Grid>
+          );
+        }}
+        renderInput={(params) => (
+          <>
+            <TextField
+              style={{ visibility: "hidden" }}
+              margin="dense"
+              {...params}
+              variant="outlined"
+            />
+            <div
+              className={`${classes.textDiv}`}
+              onClick={() => setShowOptions(!showOptions)}
+            >
+              <span
+                style={{
+                  display: "flex",
+                  width: "auto",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span id={`colorText_${index}`}></span>
+                <KeyboardArrowDownIcon
+                  style={{ marginLeft: 10, marginTop: -2 }}
+                />
+              </span>
+            </div>
+          </>
+        )}
+        onChange={onChange}
+      />
+    </div>
+  );
+};
+
+export default CustomFieldSelect;

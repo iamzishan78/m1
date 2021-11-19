@@ -81,7 +81,7 @@ const MetaField = () => {
     if(stateApp.selectedMeta){
       setTimeout(() => {
         setValue("type", stateApp.selectedMeta.type);
-        setValue("title", stateApp.selectedMeta.name);
+        setValue("title", stateApp.selectedMeta.label);
         setItems(stateApp.selectedMeta.dropdownOptions);
       },100)
     }
@@ -132,19 +132,20 @@ const MetaField = () => {
         variables: {
           metaData: {
             _id: stateApp.selectedMeta._id,
+            label: values.title,
             dropdownOptions: items,
           },
         },
         refetchQueries: ["getMetaData"],
         awaitRefetchQueries: true,
       });
-    }else{
+    } else {
       addMetaData({
         variables: {
           metaData: {
-            name: values.title,
+            name: values.title.replace(/ /g, "_").toLowerCase(),
             label: values.title,
-            esKey: "",
+            esKey: `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}.value`,
             options: {
               display: true,
               filter: true,
@@ -242,7 +243,6 @@ const MetaField = () => {
                       placeholder="e.g. Priority, Stage, Status"
                       fullWidth
                       defaultValue=""
-                      disabled={stateApp.selectedMeta}
                     />
                   )}
                 />
