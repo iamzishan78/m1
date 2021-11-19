@@ -351,6 +351,7 @@ function ExpandableCard(props) {
         popupOpen: false,
         selectedWell: null,
         selectedParcel: null,
+        selectedShape: null,
         selectedPermit: null,
         expandedCard: false,
         viewDoc: null,
@@ -470,8 +471,8 @@ function ExpandableCard(props) {
       showDrawShapesPopup: true,
       selectedUserDefinedLayer: state.selectedParcel?.feature || state.selectedShape?.feature,
       currentFeature: state.selectedParcel?.feature || state.selectedShape?.feature,
+      featureToEdit: state.selectedParcel?.feature || state.selectedShape?.feature,
       openDrawShapesControl: true,
-      editParcel: true,
       editDraw: true,
     }));
     handleClose();

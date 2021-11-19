@@ -105,7 +105,7 @@ function UnitWellInterestTable(props) {
       setColumns(TableHeader);
       props.setLoading(false);
     }
-    else if (tableData?.length === 0) {
+    else if (tableData?.hits?.length === 0) {
       props.setRows([]);
       props.setLoading(false);
     }

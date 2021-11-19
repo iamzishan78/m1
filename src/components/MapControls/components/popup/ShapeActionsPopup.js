@@ -525,8 +525,7 @@ const ShapeActionsPopup = (props) => {
   };
 
   const confirmEditing = () => {
-    let { currentFeature, selectedAoi, selectedParcel, selectedShape } = stateApp;
-    let selectedLayer = selectedAoi || selectedParcel?.feature || selectedShape?.feature
+    let { currentFeature, selectedAoi } = stateApp;
     const shapeJson = {
       ...currentFeature,
       shapeArea: calculateLandArea(currentFeature),
@@ -535,31 +534,52 @@ const ShapeActionsPopup = (props) => {
     const customLayerData = {
       shapeJson,
       shape: JSON.stringify(shapeJson),
-      layer: selectedLayer.layer.id,
+      layer: selectedAoi.layer.id,
       user: stateApp.user.mongoId,
     };
 
-    if (selectedLayer.layer.id === "interest") {
+    if (selectedAoi.layer.id === "interest") {
       customLayerData.name = currentFeature.properties.shapeLabel;
     }
     addCustomShapeProperties(currentFeature, stateApp.draw);
 
     updateCustomLayer({
       variables: {
-        customLayerId: selectedLayer.id || selectedLayer._id,
+        customLayerId: selectedAoi.id || selectedAoi._id,
         customLayer: customLayerData,
       },
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
     });
-    // setSelectedAction("");
-    // stateApp.draw.changeMode("static");
-    // setStateApp((state) => ({ ...state, shapeEdit: false, editDraw: false }));
     setTimeout(() => popupCloseAction(), 0);
   };
 
-  const enableEditOnly = stateApp.selectedParcel || stateApp.selectedShape
-  console.log('enableEditOnly:', enableEditOnly, stateApp?.currentFeature)
+  const confirmShapeEditing = () => {
+    let { featureToEdit, currentFeature } = stateApp;
+    const shapeJson = {
+      ...currentFeature,
+      shapeArea: calculateLandArea(currentFeature),
+      shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates),
+    }
+    const customLayerData = {
+      shapeJson,
+      shape: JSON.stringify(shapeJson),
+      layer: featureToEdit.layer.id,
+      user: stateApp.user.mongoId,
+    };
+    addCustomShapeProperties(currentFeature, stateApp.draw);
+    updateCustomLayer({
+      variables: {
+        customLayerId: featureToEdit.id,
+        customLayer: customLayerData,
+      },
+      refetchQueries: ["getCustomLayers"],
+      awaitRefetchQueries: true,
+    });
+    setTimeout(() => popupCloseAction(), 0);
+  };
+
+  const enableEditOnly = stateApp.featureToEdit?.layer?.id === "parcel" || stateApp.featureToEdit?.layer?.id === "unit";
   const isAoi = stateApp.selectedAoi?.layer?.id === "interest";
   const isCreateParcelMenu = Boolean(anchorEl);
 
@@ -640,10 +660,19 @@ const ShapeActionsPopup = (props) => {
             </Tooltip>
           )}
 
-          {(selectedAction === "edit-aoi" || selectedAction === "edit-shape") && (
+          {selectedAction === "edit-aoi" && (
             <span className={classes.multiSelectCheck}>
               <Tooltip title="Confirm Editing">
                 <IconButton size="small" aria-label="Set Boundary" onClick={confirmEditing}>
+                  <CheckCircle />
+                </IconButton>
+              </Tooltip>
+            </span>
+          )}
+          {selectedAction === "edit-shape" && (
+            <span className={classes.multiSelectCheck}>
+              <Tooltip title="Confirm Editing">
+                <IconButton size="small" aria-label="Set Boundary" onClick={confirmShapeEditing}>
                   <CheckCircle />
                 </IconButton>
               </Tooltip>

@@ -125,7 +125,7 @@ function UnitTractsTable(props) {
       setColumns(headers);
       props.setLoading(false);
     }
-    else if (tableData?.length === 0) {
+    else if (tableData?.hits?.length === 0) {
       props.setRows([]);
       props.setLoading(false);
     }
