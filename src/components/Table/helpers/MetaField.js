@@ -145,7 +145,7 @@ const MetaField = () => {
           metaData: {
             name: values.title.replace(/ /g, "_").toLowerCase(),
             label: values.title,
-            esKey: `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}.value`,
+            esKey: `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}.value.keyword`,
             options: {
               display: true,
               filter: true,

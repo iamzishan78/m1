@@ -108,6 +108,9 @@ function DocumentsTable(props) {
     if(metaDataRes?.getMetaData?.gridViews){
       const filterColumns = columns.filter(col => !metaDataRes.getMetaData.gridViews.find(meta => meta.name === col.name))
       const columnsData = [...metaDataRes.getMetaData.gridViews, ...filterColumns]
+      for(let i=0; i<metaDataRes.getMetaData.gridViews.length; i++){
+        TableHeader.push(metaDataRes.getMetaData.gridViews[i])
+      }
       setColumnsData(
         TableHeader,
         filters,
