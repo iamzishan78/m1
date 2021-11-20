@@ -11,6 +11,11 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/revenue/portfolio",
     component: "Portfolio",
   },
+  PROPERTIES: {
+    title: "Properties",
+    link: "/revenue/properties",
+    component: "Properties",
+  },
   REVENUE_STATEMENTS: {
     title: "Revenue Statements",
     link: "/revenue/statements",
