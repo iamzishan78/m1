@@ -131,16 +131,16 @@ export const TableHOC = (Component) => {
             }
         }, [stateApp?.user?.mongoId, getCommentsCounter, getTagSamples, checkIfOwnersAreContacts])
 
-        const ifAreContacts = useCallback((ids) => {
+        const ifAreContacts = (ids) => {
             checkIfOwnersAreContacts({
                 query: IFARECONTACTS,
                 variables: {
                     idsArray: ids
                 },
             })
-        }, [checkIfOwnersAreContacts])
+        };
 
-        const setGenricData = useCallback((data, id, actions) => {
+        const setGenricData = (data, id, actions) => {
 
             if (actions.includes('tracks')) {
                 data.isTracked = false;
@@ -174,16 +174,16 @@ export const TableHOC = (Component) => {
 
             if (actions.includes('ifAreContacts')) {
                 const ifAreContacs = checkIfOwnersAreContactsData?.ifAreContacts || []
-                for (let i = 0; i < ifAreContacs.length; i++) {
-                    if (data.id === ifAreContacs[i].globalOwner || data.globalOwnerId === ifAreContacs[i].globalOwner) {
-                        data.isContact = ifAreContacs[i].isContact;
-                        data.entity = ifAreContacs[i]._id;
-                        break;
+                if (ifAreContacs.length > 0) {
+                    const contact = ifAreContacs.find((ifc) => ifc.globalOwner === data.id || ifc.globalOwner === data.globalOwnerId)
+                    if (contact) {
+                        data.isContact = contact.isContact;
+                        data.entity = contact._id;
                     }
                 }
             }
             return data
-        }, [dataTracks, dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData]);
+        }
 
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
             let pageESVariables = {

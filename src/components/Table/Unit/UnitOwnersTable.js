@@ -10,7 +10,7 @@ import TableHOC from "components/Table/TableHOC";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 
-import { addTrailingZeros, deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
+import { addTrailingZeros, copy, deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent"
 
 // Header Schemas 
@@ -101,7 +101,7 @@ function UnitOwnersTable(props) {
         hit = props.setGenricData(hit, hit._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
         return hit;
       });
-      props.setRows(hits);
+      props.setRows(copy(hits));
       TableHeader.forEach((column) => {
         if (column?.options?.filter) {
           column.options = {
