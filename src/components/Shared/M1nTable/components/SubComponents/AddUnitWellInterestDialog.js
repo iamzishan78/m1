@@ -65,22 +65,14 @@ function AddUnitInterestDialog(props) {
       setLoading(false);
       handleClose();
     },
-    refetchQueries: [
-      "getESShapeWells",
-      "getESShapeWellsFilter"
-    ],
-    awaitRefetchQueries: true,
+    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
   const [updateShapeWellInterest] = useMutation(UPDATE_SHAPE_WELL_INTEREST, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
     },
-    refetchQueries: [
-      "getESShapeWells",
-      "getESShapeWellsFilter"
-    ],
-    awaitRefetchQueries: true,
+    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
 
   useEffect(() => {
@@ -152,11 +144,7 @@ function AddUnitInterestDialog(props) {
             ...getValues(),
           },
         },
-        refetchQueries: [
-          "getESShapeWells",
-          "getESShapeWellsFilter"
-        ],
-        awaitRefetchQueries: true,
+        refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
       });
     } else {
       addShapeWellInterest({
@@ -169,11 +157,7 @@ function AddUnitInterestDialog(props) {
             ...getValues(),
           }
         },
-        refetchQueries: [
-          "getESShapeWells",
-          "getESShapeWellsFilter"
-        ],
-        awaitRefetchQueries: true,
+        refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
       });
     }
   }
@@ -198,8 +182,7 @@ function AddUnitInterestDialog(props) {
           },
         },
         refetchQueries: [
-          "getESShapeWells",
-          "getESShapeWellsFilter"
+          "getESPaginatedList", "getESFilterList"
         ],
         awaitRefetchQueries: true,
       });
@@ -223,13 +206,13 @@ function AddUnitInterestDialog(props) {
           maxWidth="sm"
         >
           <DeleteConfirmationDialogContent
-            header={`Delete Well Interest`}
+            header={`Delete Well`}
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => { }}
           >
-            Do you want to delete the selected well interest?
+            Do you want to delete the selected well?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
@@ -247,7 +230,7 @@ function AddUnitInterestDialog(props) {
                 fontSize: "1.1rem",
               }}
             >
-              {props.wellInterest ? `Update ${props.shapeType} Well Interest` : `Add ${props.shapeType} Well Interest`}
+              {props.wellInterest ? `Update ${props.shapeType} Well` : `Add ${props.shapeType} Well`}
             </h4>
             <div style={{ "float": "right" }}>
               {(props.wellInterest && (

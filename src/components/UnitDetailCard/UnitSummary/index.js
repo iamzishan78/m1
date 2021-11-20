@@ -218,11 +218,11 @@ const useStyles = makeStyles((theme) => ({
         transition: theme.transitions.create('width'),
         width: '100%',
         [theme.breakpoints.up('sm')]: {
-            width: props => props.search.length > 0 ? '15ch' : '0.9px',
+            width: props => props.search.length > 0 ? '37ch' : '0.9px',
             '&:focus': {
                 backgroundColor: theme.palette.common.white,
                 opacity: 0.75,
-                width: '15ch'
+                width: '37ch'
             },
         },
     },
@@ -287,10 +287,10 @@ export default function UnitSummary(props) {
                                     <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.documents || 0} </div>
                                     <InsertDriveFileOutlinedIcon className={classes.icon} opacity="1.0" small />
                                 </Grid>
-                                <Grid item>
+                                {/* <Grid item>
                                     <div className={classes.summaryValue}> 3 </div>
                                     <TodayOutlinedIcon className={classes.icon} opacity="1.0" small />
-                                </Grid>
+                                </Grid> */}
                             </Grid>
                         </Grid>
                         <Grid item>

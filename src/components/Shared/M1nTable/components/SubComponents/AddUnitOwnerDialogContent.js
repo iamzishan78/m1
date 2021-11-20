@@ -10,16 +10,16 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 import { Grid } from "@material-ui/core";
 
-import { AppContext } from "../../../../../AppContext";
-import { Modals } from "../../../../../styles/Modal";
+import { AppContext } from "AppContext";
+import { Modals } from "styles/Modal";
 import { useMutation } from "@apollo/client";
 import { ADD_OWNER_TOA_SHAPE } from "graphQL/useMutationAddOwnerToAShape";
-import { UPDATE_SHAPE_OWNER } from "graphQL/useMutationUpdateShapeOwner";
+import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
-import { showErrorMessage, showSuccessMessage } from "../../../../../actions";
-import { setStateIfDeepEqual } from "../../../functions";
-import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
+import { showErrorMessage, showSuccessMessage } from "actions";
+import { setStateIfDeepEqual } from "components/Shared/functions";
+import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import { addTrailingZeros } from "components/Shared/functions";
 import { Controller, useForm } from "react-hook-form";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
 export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, ...props }) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const { control, reset, setValue, register, getValues, watch } = useForm();
+  const { control, reset, setValue, getValues } = useForm();
 
   const [newOwner, setNewOwner] = useState({
     working_interest: null,
@@ -77,10 +77,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const [changedKeys, setChangedKeys] = useState({});
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
-  const [nameAutInputValue, NameAutInputValue] = useState("");
-  const setNameAutInputValue = (newState) => {
-    setStateIfDeepEqual(NameAutInputValue, newState);
-  };
 
   useEffect(() => {
     if (selectedRow) {
@@ -125,14 +121,14 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   const [addOwnerToAShape, { data: mutationData }] = useMutation(ADD_OWNER_TOA_SHAPE);
 
-  const [updateShapeOwner, { data: updateData }] = useMutation(UPDATE_SHAPE_OWNER);
+  const [updateShapeOwners, { data: updateData }] = useMutation(UPDATE_SHAPE_OWNERS);
 
   useEffect(() => {
     let type = null;
     if (mutationData && mutationData.addOwnerToAShape) {
       type = { name: "add", success: mutationData.addOwnerToAShape.success };
-    } else if (updateData && updateData.updateShapeOwner) {
-      type = { name: "update", success: updateData.updateShapeOwner.success };
+    } else if (updateData && updateData.updateShapeOwners) {
+      type = { name: "update", success: updateData.updateShapeOwners.success };
     }
 
     if (type) {
@@ -170,7 +166,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       customLayer: props.customLayerId,
     });
     setNameAutValue(null);
-    setNameAutInputValue("");
     // setSelectedRow(null);
   };
 
@@ -198,18 +193,18 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
       if (selectedRow) {
         ownerToAdd._id = selectedRow._id;
-        updateShapeOwner({
+        updateShapeOwners({
           variables: {
             shapeType: props.shapeType,
-            shapeOwner: {
+            shapeOwners: [{
               shapeId: props.shapeId,
+              relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
               ...ownerToAdd,
               createBy: stateApp.user.mongoId,
               lastUpdateBy: stateApp.user.mongoId,
-            },
+            }],
           },
-          refetchQueries: ["getESShapeOwners", "getESShapeOwnersFilter"],
-          awaitRefetchQueries: true,
+          refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
         });
       } else {
         addOwnerToAShape({
@@ -217,13 +212,13 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             shapeType: props.shapeType,
             shapeOwner: {
               shapeId: props.shapeId,
+              relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
               ...ownerToAdd,
               createBy: stateApp.user.mongoId,
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: ["getESShapeOwners", "getESShapeOwnersFilter"],
-          awaitRefetchQueries: true,
+          refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
         });
       }
 

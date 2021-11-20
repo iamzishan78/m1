@@ -424,10 +424,12 @@ function Map({ type, paramId, lati, longi }) {
         let jsonLayer = JSON.parse(layer.customLayer.shape);
         if (layer.customLayer.shapeJson) jsonLayer = copy(layer.customLayer.shapeJson);
 
-        jsonLayer.layer = { id: jsonLayer.layer };
-        jsonLayer.id = jsonLayer._id;
+        jsonLayer.layer = { id: layer.customLayer.layer };
+        jsonLayer.id = layer.customLayer._id;
 
         findBoundsMap([jsonLayer], map);
+
+        drawBoundary(map, jsonLayer)
 
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -436,7 +438,6 @@ function Map({ type, paramId, lati, longi }) {
             feature: jsonLayer,
             id: layer.customLayer._id,
           },
-          shapeEdit: true,
           popupOpen: false,
           expandedCard: true,
         }));
@@ -1139,8 +1140,11 @@ function Map({ type, paramId, lati, longi }) {
         map.resize();
         return;
       }
+      drawBoundary(stateApp.map)
       setStateApp((state) => ({
         ...state,
+        selectedParcel: null,
+        selectedShape: null,
         expandedCard: false,
         popupOpen: false,
       }));
@@ -2023,9 +2027,9 @@ function Map({ type, paramId, lati, longi }) {
         let baseFilter;
         stateApp?.layers?.find(
           (layer) =>
-            (baseFilter =
-              Array.isArray(layer?.layerPaintProps) &&
-              layer?.layerPaintProps?.find((layerPaintProp) => layerPaintProp?.id === filterLayer)?.filter)
+          (baseFilter =
+            Array.isArray(layer?.layerPaintProps) &&
+            layer?.layerPaintProps?.find((layerPaintProp) => layerPaintProp?.id === filterLayer)?.filter)
         );
         return baseFilter || [];
       };
@@ -4348,9 +4352,8 @@ function Map({ type, paramId, lati, longi }) {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
-            stateApp.mapboxglAccessToken
-          }`;
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
+            }`;
 
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
@@ -4423,9 +4426,8 @@ function Map({ type, paramId, lati, longi }) {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
-            stateApp.mapboxglAccessToken
-          }`;
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
+            }`;
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
           headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
@@ -5614,6 +5616,7 @@ function Map({ type, paramId, lati, longi }) {
       expandedCard: false,
       activateWellDetailsFromTable: false,
     }));
+    drawBoundary(stateApp.map)
     getCustomLayers();
   };
 
@@ -6009,7 +6012,7 @@ function Map({ type, paramId, lati, longi }) {
   }, [stateApp.selectedParcel]);
 
   useEffect(() => {
-    if (!stateApp.selectedUserDefinedLayer || stateApp.shapeEdit) {
+    if ((!stateApp.selectedUserDefinedLayer && !stateApp.selectedShape && !stateApp.selectedParcel) || stateApp.shapeEdit) {
       if (map) drawBoundary(map);
     }
   }, [stateApp.selectedUserDefinedLayer, stateApp.shapeEdit]);
