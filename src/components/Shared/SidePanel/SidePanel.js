@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useMutation } from "@apollo/client";
-import AddIcon from "@material-ui/icons/Add";
 import AddLayerIcon from "@material-ui/icons/Queue";
 import { MapControlsContext } from "../../MapControls/MapControlsContext";
-import { AppContext } from "../../../AppContext";
+import { AppContext } from "AppContext";
 import Panel from "./compoennts/Panel";
-import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
-import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyLayerSettings";
-import { makeStyles } from "@material-ui/core/styles";
+import { UPDATELAYERSETTINGS } from "graphQL/useMutationUpdateLayerSettings";
+import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -85,7 +83,7 @@ export default function SidePanel() {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       addLayer: true,
-      selectedLayer: null
+      selectedLayer: null,
     }));
   };
 
@@ -395,8 +393,8 @@ export default function SidePanel() {
   //   for Marketplace Panel
   useEffect(() => {
     if (panelType === "marketplace") {
-      setDragFunction(() => { });
-      setToggleFunction(() => { });
+      setDragFunction(() => {});
+      setToggleFunction(() => {});
       // setPanelItems(stateApp.layers);
       setPanelTitle("Marketplace");
       setPanelButton(null);
