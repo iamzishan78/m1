@@ -257,7 +257,7 @@ const SignInCard = (props) => {
               marginLeft: "75px",
             }}
           >
-            Sign-in with your workspace name
+            Sign in with your workspace name
           </div>
           <BootstrapInput
             error={tenantFlags.error}
