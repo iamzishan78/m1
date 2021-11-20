@@ -1,7 +1,8 @@
 import React from "react";
-import { Grid, Button, TextField } from "@material-ui/core";
+import { Grid, Button, TextField, FormControl } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { DateRangePicker, DateRange, DateRangeDelimiter } from "@material-ui/pickers";
 
 import AnalyticsCards from "components/Revenue/components/Portfolio/AnalyticsCards";
 
@@ -20,6 +21,21 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: "bold",
     },
   },
+  dateRoot: {
+    border: "1px solid #EBEBEB",
+    backgroundColor: "#fff",
+    "&.Mui-focused fieldset": {
+      border: "1px solid black",
+      backgroundColor: "transparent",
+    },
+    "&:hover": {
+      backgroundColor: "#EBEBEB",
+    },
+    "&:active": {
+      border: "1px solid black",
+      backgroundColor: "#fff",
+    },
+  },
 }));
 
 export default function Portfolio() {
@@ -28,11 +44,12 @@ export default function Portfolio() {
   return (
     <>
       <div className={classes.actionBar}>
-        <Grid container direction="row" display="flex" justify="space-between" align="center" style={{ padding: "0px 36px" }}>
-          <Grid item xs={6}>
-            <Grid container direction="row" display="flex">
-              <Grid item xs={3}>
+        <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 78px" }}>
+          <Grid item xs={6} style={{ marginTop: "4px" }}>
+            <Grid container direction="row" display="flex" alignItems="center" spacing={3}>
+              <Grid item xs={4} style={{ marginTop: "2px" }}>
                 <Autocomplete
+                  size="small"
                   onChange={(event, newValue) => {}}
                   options={[
                     "This year-to-last-month",
@@ -47,17 +64,63 @@ export default function Portfolio() {
                     "Last Year",
                     "Last year-to-date",
                   ]}
-                  renderInput={(params) => <TextField {...params} variant="outlined" label="Custom" placeholder="" />}
+                  renderInput={(params) => (
+                    <TextField {...params} variant="outlined" label="Custom" placeholder="" style={{ backgroundColor: "white" }} />
+                  )}
                   disableListWrap
-                  id="virtualize-aoi"
+                  // id="virtualize-aoi"
                 />
               </Grid>
-
-              <Grid item xs={3}>
-                <TextField variant="outlined" label="Custom" placeholder="" />
+              <Grid item>
+                <TextField
+                  size="small"
+                  margin="dense"
+                  type="month"
+                  variant="outlined"
+                  placeholder=""
+                  fullWidth
+                  className={classes.inputFieldDate}
+                  // onChange={(e) => {
+                  //   setCloseDate(e.target.value);
+                  // }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  InputProps={{
+                    classes: {
+                      root: classes.dateRoot,
+                      focused: classes.focused,
+                      notchedOutline: classes.notchedOutline,
+                    },
+                  }}
+                />
               </Grid>
-              <Grid item xs={3}>
-                <TextField variant="outlined" label="Custom" placeholder="" />
+              <Grid>
+                <label>to</label>
+              </Grid>
+              <Grid item>
+                <TextField
+                  size="small"
+                  margin="dense"
+                  type="month"
+                  variant="outlined"
+                  placeholder="to"
+                  fullWidth
+                  className={classes.inputFieldDate}
+                  // onChange={(e) => {
+                  //   setCloseDate(e.target.value);
+                  // }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  InputProps={{
+                    classes: {
+                      root: classes.dateRoot,
+                      focused: classes.focused,
+                      notchedOutline: classes.notchedOutline,
+                    },
+                  }}
+                />
               </Grid>
             </Grid>
           </Grid>
