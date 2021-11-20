@@ -265,9 +265,11 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-start",
     backgroundColor: "#0e111a !important",
-    // backgroundColor: "#0e111a",
-
     minHeight: "53px !important",
+    "&>.MuiTouchRipple-root": {
+      borderBottom: "5px solid #263451",
+      marginBottom: "6px",
+    },
     "& .MuiTabs-root": {
       "& .MuiTabs-scroller": {
         "& .MuiTabs-flexContainer": {
@@ -285,6 +287,7 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
         height: "5px",
         width: "25px !important",
         backgroundColor: "#1CB6DA",
+        zIndex: 1,
       },
     },
   },

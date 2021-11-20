@@ -42,7 +42,7 @@ const CustomAvatar = React.memo(({ text = "", email = "", diglog }) => {
     return initials.toUpperCase();
   };
 
-  if (get(stateTransact.profilesInfo.email, "profileImage")) {
+  if (get(stateTransact, "profilesInfo.email.profileImage")) {
     return <img className={classes.customAvatarImg} src={get(stateTransact.profilesInfo.email, "profileImage")} alt="owner img" />;
   } else {
     return (
