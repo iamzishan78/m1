@@ -22,7 +22,7 @@ import {
 } from "components/Shared/functions";
 
 // Header Schemas
-import TableHeader from "components/Table/constants/suggested-owners-header-schema";
+import TableHeader from "components/Table/constants/potential-parcel-owners-header-schema";
 import { handleTagColumn } from "../helpers";
 
 // Utilities

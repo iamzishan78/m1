@@ -288,7 +288,7 @@ function ExpandableCard(props) {
       setToggleExpand(false);
       setExpanded(true);
       if (parent === "table" && targetLabel === "well") setWidth("50vw");
-      else setWidth("100vw");
+      else setWidth("100%");
     }
     setHeight(cardHeightExpanded);
 
@@ -351,6 +351,7 @@ function ExpandableCard(props) {
         popupOpen: false,
         selectedWell: null,
         selectedParcel: null,
+        selectedShape: null,
         selectedPermit: null,
         expandedCard: false,
         viewDoc: null,
@@ -470,8 +471,8 @@ function ExpandableCard(props) {
       showDrawShapesPopup: true,
       selectedUserDefinedLayer: state.selectedParcel?.feature || state.selectedShape?.feature,
       currentFeature: state.selectedParcel?.feature || state.selectedShape?.feature,
+      featureToEdit: state.selectedParcel?.feature || state.selectedShape?.feature,
       openDrawShapesControl: true,
-      editParcel: true,
       editDraw: true,
     }));
     handleClose();
@@ -480,7 +481,7 @@ function ExpandableCard(props) {
   useEffect(() => {
     ///Set body style overflow hidden when card is fully expanded
     const disableBodyScrollBarIfExpanded = () => {
-      if (width === '100vw') {
+      if (width === '100%') {
         document.body.style.overflow = 'hidden';
       }
     };
@@ -547,6 +548,7 @@ function ExpandableCard(props) {
               }
               {targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
+                !stateApp?.selectedShape &&
                 (
                   <CommentsWithIcon
                     objectId={targetSourceId.toLowerCase()}
@@ -557,6 +559,7 @@ function ExpandableCard(props) {
 
               {targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
+                !stateApp?.selectedShape &&
                 targetLabel !== "recent_submitted_permits" && (
                   <TaggerWithIcon
                     objectId={targetSourceId.toLowerCase()}

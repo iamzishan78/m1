@@ -166,7 +166,6 @@ const Documents = memo((props) => {
     onCompleted: ({ getFileDescriptors }) => {
       let allActive = true;
 
-      console.log("File descriptors: ", getFileDescriptors);
       if (getFileDescriptors)
         for (let i = 0; i < getFileDescriptors.length; i++) {
           if (getFileDescriptors[i].fileState !== "active") {
@@ -298,12 +297,8 @@ const Documents = memo((props) => {
           />
 
           <Grid container spacing={0}>
-            {console.log(recentFiles, "Files data in Adddialog")}
             {recentFiles?.map((value, key) => {
               let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
-
-              console.log("VALUE TEST GOOD ONE", value);
-
               if (key <= 2) {
                 return (
                   <Grid item xs={3} key={key} className="">
