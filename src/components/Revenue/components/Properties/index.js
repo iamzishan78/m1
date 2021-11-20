@@ -131,7 +131,7 @@ export default function Properties() {
                 </Button>
               </Grid>
               <Grid item>
-                <Button variant="contained">Run Report</Button>
+                <Button variant="contained">Filter</Button>
               </Grid>
             </Grid>
           </Grid>
