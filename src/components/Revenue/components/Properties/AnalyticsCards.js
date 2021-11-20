@@ -45,10 +45,10 @@ export default function AnalyticsCards() {
         <Card variant="outlined" className={classes.card}>
           <CardContent className={classes.cardContent}>
             <Typography variant="h6" component="div" className={classes.cardHeaderTypography}>
-              Active
+              Inactive
             </Typography>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
-              992
+              471
             </Typography>
           </CardContent>
         </Card>
