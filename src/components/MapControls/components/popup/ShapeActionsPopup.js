@@ -596,9 +596,10 @@ const ShapeActionsPopup = (props) => {
         className={classes.parcelPopover}
       >
         <MenuItem disabled>Shape Layer Type</MenuItem>
-        <MenuItem onClick={saveAndOpenParcelDetail}>Ownership</MenuItem>
-        <MenuItem onClick={saveAndOpenUnitDetail}>Unit Boundary</MenuItem>
         <MenuItem>Agreement</MenuItem>
+        <MenuItem onClick={saveAndOpenParcelDetail}>Tract</MenuItem>
+        <MenuItem onClick={saveAndOpenUnitDetail}>Unit Boundary</MenuItem>
+        
       </Menu>
       <Fragment>
         <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span> {calculateLandArea()}
