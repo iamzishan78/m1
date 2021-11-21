@@ -1,8 +1,7 @@
 import React from "react";
-import { Grid, Button, TextField, FormControl } from "@material-ui/core";
+import { Grid, Button, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { DateRangePicker, DateRange, DateRangeDelimiter } from "@material-ui/pickers";
 
 import AnalyticsCards from "components/Revenue/components/Portfolio/AnalyticsCards";
 
@@ -100,7 +99,7 @@ export default function Portfolio() {
     <>
       <div className={classes.actionBar}>
         <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 78px" }}>
-          <Grid item xs={6} style={{ marginTop: "4px" }}>
+          <Grid item xs={6} md={8} style={{ marginTop: "4px" }}>
             <Grid container direction="row" display="flex" alignItems="center" spacing={3}>
               <Grid item xs={4} style={{ marginTop: "2px" }}>
                 <Autocomplete
@@ -165,7 +164,7 @@ export default function Portfolio() {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={6} md={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
               <Grid item>
                 <Button variant="contained" color="secondary">
