@@ -32,6 +32,7 @@ import { AppContext } from "../../AppContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
 import { Avatar, Box, Grid } from "@material-ui/core";
 import FolderIcon from '@material-ui/icons/Folder';
+import { modifyExandableCardStyle } from "components/Shared/functions/shapeLayer";
 
 
 
@@ -98,45 +99,10 @@ function ExpandableCard(props) {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
-    if (props.targetLabel === "activity" || props.targetLabel === "parcel" || props.targetLabel === "unit") {
-      setTitle(props.title);
-    }
+    setTitle(props.title);
   }, [props.title, props.targetLabel]);
 
-  let backgroundColor = '#112040'
-  let headerIcons = {}
-  let icons = {}
-  let headerLabelColor = '#ababab'
-  if (targetLabel === "unit") {
-    backgroundColor = 'white'
-    headerIcons = {
-      '& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary, & .MuiIconButton-label ': {
-        // "&:hover": {
-        //   backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
-        // },
-        color: '#7f7f7f !important',
-        'svg': {
-          fill: '#7f7f7f !important'
-        }
-
-      },
-      '& .MuiIconButton-root, & .MuiButtonBase-root': {
-        "&:hover": {
-          backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
-        },
-      },
-      '& .MuiIconButton-label svg': {
-        color: '#7f7f7f !important',
-        fill: '#7f7f7f !important'
-      }
-    }
-    icons = {
-      "&:hover": {
-        backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
-      }
-    }
-  }
-
+  const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(stateApp.selectedShape)
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -377,8 +343,8 @@ function ExpandableCard(props) {
           marginRight: "48px",
         }}
       >
-        {(targetLabel === "unit"
-        ) &&
+        {(stateApp.selectedShape
+        ) ?
           <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
             <Grid item><Avatar color='#1a2341'>
               <FolderIcon fontColor='#1a2341' />
@@ -389,30 +355,29 @@ function ExpandableCard(props) {
                 {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
               </Box>
               <Box className='description'>{subTitle}</Box>
-              <Box className='type' >Unit</Box>
+              {stateApp.selectedShape.type === 'unit' && <Box className='type' >Unit</Box>}
+              {stateApp.selectedShape.type === 'agreement' && <Box className='type' >{stateApp.selectedShape?.agreementType}</Box>}
             </Grid>
-          </Grid>
-        }
+          </Grid> : <> {
+            (targetLabel !== "contact"
+            ) &&
+            <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
+          }
 
-        {
-          (targetLabel !== "contact" && targetLabel !== "unit"
-          ) &&
-          <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
-        }
+            {
+              (targetLabel === "contact"
+                && parent !== 'table'
+              ) && <ContactSearch />
+            }
 
-        {
-          (targetLabel === "contact"
-            && parent !== 'table'
-          ) && <ContactSearch />
+            {
+              (targetLabel === "contact"
+                && parent !== 'table'
+              ) &&
+              <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
+            }
+          </>
         }
-
-        {
-          (targetLabel === "contact"
-            && parent !== 'table'
-          ) &&
-          <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
-        }
-
       </div >
     );
   };
@@ -428,7 +393,7 @@ function ExpandableCard(props) {
   };
 
   const deleteFunc = async () => {
-    if (targetLabel === "parcel" || targetLabel === "unit" || targetLabel === "expandedParcel") {
+    if (targetLabel === "parcel" || stateApp.selectedShape || targetLabel === "expandedParcel") {
       setDeleteLoading(true);
       await deleteCustomLayer();
       setDeleteLoading(false);
@@ -531,7 +496,7 @@ function ExpandableCard(props) {
           action={
             <div className={classes.headerIcons}>
               {
-                (targetLabel === 'parcel' || targetLabel === 'unit') && (
+                (targetLabel === 'parcel' || stateApp.selectedShape) && (
                   <Tooltip title={`Edit ${targetLabel}`} placement="top">
                     <IconButton
                       // size="small"
@@ -609,7 +574,8 @@ function ExpandableCard(props) {
 
 
               {stateExpandableCard.expanded &&
-                ["activity", "parcel", "expandedParcel", "unit"].includes(targetLabel) &&
+                (["activity", "parcel", "expandedParcel"].includes(targetLabel) || stateApp.selectedShape) &&
+
                 title !== "Add Activity" && (
                   <Tooltip title={`Delete ${targetLabel}`} placement="top">
                     {isDeletingCustomLayer || deleteLoading ? (
@@ -636,7 +602,7 @@ function ExpandableCard(props) {
                   && targetLabel !== "well"
                   && targetLabel !== "expandedWell"
                   && targetLabel !== "parcel"
-                  && targetLabel !== "unit"
+                  && !stateApp.selectedShape
                   && targetLabel !== "expandedParcel"
                   && targetLabel !== "recent_submitted_permits"
                   ? (

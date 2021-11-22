@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { makeStyles } from "@material-ui/core/styles";
+import set from 'lodash/set'
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
+import GavelIcon from '@material-ui/icons/Gavel';
 import { useDispatch } from "react-redux";
-import Taps from "../Shared/Taps";
+import Taps from "components/Shared/Taps";
 import TabPanels from "components/Shared/TabPanels"
-import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
-import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
+import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
+import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import SuggestedShapeTaxOwnersTable from "components/Table/TaxOwners/SuggestedShapeTaxOwnersTable";
 import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
 import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import TabButtons from "components/Shared/TabPanels/TabButtons"
-import GavelIcon from '@material-ui/icons/Gavel';
 import UnitSummary from "./UnitSummary";
 import UnitOwnersTable from "components/Table/Unit/UnitOwnersTable";
 import UnitWellInterestTable from "components/Table/Unit/UnitWellInterestTable";
@@ -21,108 +21,11 @@ import AssociatedWellsUnitTable from "components/Table/Wells/AssociatedWellsUnit
 import UnitTractsTable from "components/Table/Unit/UnitTractsTable";
 import AssociatedTractsUnitTable from "components/Table/Wells/AssociatedTractsUnitTable";
 import Tags from "components/Shared/Tagger";
-import { showSuccessMessage, showErrorMessage } from "../../actions";
-import { AppContext } from "../../AppContext";
-import set from 'lodash/set'
+import { showSuccessMessage, showErrorMessage } from "actions";
+import { AppContext } from "AppContext";
+
 import { copy } from "components/Shared/functions";
-
-
-const useStyles = makeStyles((theme) => ({
-  summaryCard: {
-    backgroundColor: 'white', paddingLeft: "10px",
-    paddingRight: "10px", paddingTop: '8px',
-    paddingBottom: '40px'
-  },
-  summaryDetailCard: {
-    paddingLeft: '18px', paddingTop: '8px'
-  },
-  summaryValue: {
-    display: "inline-flex",
-    bottom: "5px",
-    position: "relative",
-    marginRight: "5px",
-    fontWeight: "bold",
-    color: '#848484'
-  },
-  descriptionInput: {
-    width: '100%',
-    '& .MuiTextField-root': {
-      backgroundColor: '#fffcdc'
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      border: 'none'
-    }
-  },
-  tags: {
-    '& .MuiOutlinedInput-notchedOutline': {
-      border: 'none'
-    }
-  },
-
-  ///////////////////////
-  gridWidthScroll: {
-    maxHeight: "100%",
-    overflowX: "auto",
-    overflowY: "hidden",
-    // overflow: "auto",
-
-    "& .MuiTabs-indicator": {
-      // marginLeft: "14px !important",
-      bottom: '10px !important'
-    },
-    "& .MuiTab-root": {
-      padding: "15px 12px !important"
-    },
-    "& .MuiAppBar-root": {
-      height: "60px"
-    },
-
-    "&::-webkit-scrollbar": {
-      height: "0.4em",
-      width: "0.4em"
-    },
-    "&::-webkit-scrollbar-track": {
-      "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#929292",
-      borderRadius: 5,
-    },
-  },
-  subContent: {
-    "& div": {
-      "&>.MuiPaper-root": {
-        "&>:nth-child(3)": {
-          height: "calc(100vh - 53vh ) !important",
-          "& .MuiTableCell-paddingCheckbox": {
-            position: 'unset',
-          },
-        },
-      },
-    },
-  },
-  subContent2: {
-    "& div": {
-      "&>.MuiPaper-root": {
-        "&>:nth-child(3)": {
-          height: "calc(100vh - 35vh ) !important",
-          "& .MuiTableCell-paddingCheckbox": {
-            position: 'unset',
-          },
-        },
-      },
-    },
-  },
-  parcelDocument: {
-    "& .MuiTableRow-root": {
-      "&>:nth-child(2) ": {
-        "& .fileName": {
-          width: "375px !important"
-        }
-      }
-    }
-  }
-}));
+import { detailCardStyles } from "../style";
 
 export default function UnitDetailCard(props) {
 
@@ -137,7 +40,7 @@ export default function UnitDetailCard(props) {
     UPDATECUSTOMLAYER,
   );
 
-  const classes = useStyles();
+  const classes = detailCardStyles();
   const showSummary = true
 
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
@@ -249,7 +152,7 @@ export default function UnitDetailCard(props) {
   );
 
   const DocumentHeader = () => {
-    const classes = useStyles();
+    const classes = detailCardStyles();
     return (
 
       <div className={classes.documentHeader}>
@@ -260,7 +163,7 @@ export default function UnitDetailCard(props) {
   };
 
   const RunsheetHeader = () => {
-    const classes = useStyles();
+    const classes = detailCardStyles();
     return (
       <div className={classes.documentHeader}>
         <GavelIcon />
