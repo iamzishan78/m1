@@ -344,7 +344,7 @@ export default function ParcelSummary(props) {
                 <Grid item className={classes.descriptionInput}>
                     <TextField
                         id="outlined-multiline-static"
-                        placeholder="Full Legal Description"
+                        placeholder="Description"
                         defaultValue={parcelProperties.legalDescription}
                         value={parcelProperties.legalDescription}
                         multiline
