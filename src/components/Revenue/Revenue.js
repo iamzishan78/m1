@@ -21,6 +21,11 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/revenue/statements",
     component: "RevenueStatements",
   },
+  REVENUE_STATEMENT_DETAILS: {
+    title: "Revenue Statement",
+    link: "/revenue/statement/details",
+    component: "RevenueStatementDetails",
+  },
 };
 
 export default function Revenue() {
