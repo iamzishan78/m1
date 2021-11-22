@@ -50,11 +50,13 @@ function Panel({ children, handlePanelStateChange, expandedPanel }) {
           Quick Actions
         </Typography>
         <StyledMenu>
-          {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((key, index) => (
-            <StyledMenuItem onClick={() => handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)} key={index} isSelected>
-              <ListItemText>{SIDE_PANEL_MENU_ITEMS_LIST[key].title}</ListItemText>
-            </StyledMenuItem>
-          ))}
+          {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST)
+            .filter((key) => !SIDE_PANEL_MENU_ITEMS_LIST[key].isExcluded)
+            .map((key, index) => (
+              <StyledMenuItem onClick={() => handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)} key={index} isSelected>
+                <ListItemText>{SIDE_PANEL_MENU_ITEMS_LIST[key].title}</ListItemText>
+              </StyledMenuItem>
+            ))}
         </StyledMenu>
       </Drawer>
       <div
@@ -62,7 +64,7 @@ function Panel({ children, handlePanelStateChange, expandedPanel }) {
           [classes.revenueRootExpanded]: expandedPanel,
           [classes.revenueRootCollapsed]: !expandedPanel,
         })}
-        style={{ marginTop: "52px" }}
+        style={{ marginTop: "62px" }}
       >
         {children}
       </div>

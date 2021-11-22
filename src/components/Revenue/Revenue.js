@@ -22,6 +22,7 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     component: "RevenueStatements",
   },
   REVENUE_STATEMENT_DETAILS: {
+    isExcluded: true,
     title: "Revenue Statement",
     link: "/revenue/statement/details",
     component: "RevenueStatementDetails",

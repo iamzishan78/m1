@@ -99,9 +99,9 @@ export default function Portfolio() {
     <>
       <div className={classes.actionBar}>
         <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 78px" }}>
-          <Grid item xs={6} md={8} style={{ marginTop: "4px" }}>
+          <Grid item xs={7} md={8} style={{ marginTop: "4px" }}>
             <Grid container direction="row" display="flex" alignItems="center" spacing={3}>
-              <Grid item xs={4} style={{ marginTop: "2px" }}>
+              <Grid item xs={3} style={{ marginTop: "2px" }}>
                 <Autocomplete
                   size="small"
                   onChange={(event, newValue) => {
@@ -164,7 +164,7 @@ export default function Portfolio() {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={6} md={4}>
+          <Grid item xs={5} md={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
               <Grid item>
                 <Button variant="contained" color="secondary">

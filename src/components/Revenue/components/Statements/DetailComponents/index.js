@@ -5,7 +5,7 @@ import { LocalAtm as CurrencyIcon } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "95.2vh !important",
+    height: "calc(100vh - 62px)",
     backgroundColor: "#f3f3f3",
     padding: "55px",
   },
