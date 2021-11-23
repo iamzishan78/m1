@@ -1,13 +1,11 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import clsx from "clsx";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { FormControl, Grid, InputLabel } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Grid } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import moment from "moment";
-import get from 'lodash/get'
-import Avatar from "react-avatar";
-import Badge from "@material-ui/core/Badge";
+import get from "lodash/get";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useHistory } from "react-router-dom";
@@ -15,48 +13,31 @@ import { useHistory } from "react-router-dom";
 import { AppContext } from "../../../AppContext";
 import Dialog from "@material-ui/core/Dialog";
 import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
-import Toolbar from "@material-ui/core/Toolbar";
-import { useDispatch, useSelector } from "react-redux";
-import Card from "@material-ui/core/Card";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
+
 import CallIcon from "@material-ui/icons/Call";
 import MeetingIcon from "@material-ui/icons/Group";
 import TaskIcon from "@material-ui/icons/WatchLater";
 import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
-import DefaultIcon from "@material-ui/icons/Event";
 import ContactMailIcon from "@material-ui/icons/ContactMail";
 
-import DotsIcon from "@material-ui/icons/MoreHoriz";
 import DocumentIcon from "@material-ui/icons/DescriptionOutlined";
 import PersonIcon from "@material-ui/icons/Person";
-import RecentActorsIcon from '@material-ui/icons/RecentActors';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
-import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
-import BusinessIcon from "@material-ui/icons/Business";
+import RecentActorsIcon from "@material-ui/icons/RecentActors";
+import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
-import { CONTACT } from "../../../graphQL/useQueryContact";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
-import gql from "graphql-tag";
 import { setStateIfDeepEqual } from "../../Shared/functions";
-import { Calendar, momentLocalizer, Views } from "react-big-calendar";
+import { Calendar, momentLocalizer } from "react-big-calendar";
 import ActivitiesEvent from "./ActivitiesEvent";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
-import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { OPENDEALS } from "../../../graphQL/useQueryOpenDeals";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
 import Typography from "@material-ui/core/Typography";
-import {
-  ADDACTIVITY,
-  DELETEACTIVITY,
-  UPDATEACTIVITY,
-} from "../../../graphQL/useMutationActivity";
+import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from "../../../graphQL/useMutationActivity";
 
 const useStyles = makeStyles((theme) => ({
   dialogExpCard: {
@@ -212,11 +193,7 @@ const initialErrors = {
 
 const localizer = momentLocalizer(moment);
 
-export default function ActivitiesModal({
-  selectedActivity,
-  events,
-  setSelectedActivityId,
-}) {
+export default function ActivitiesModal({ selectedActivity, events, setSelectedActivityId }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const history = useHistory();
@@ -232,7 +209,6 @@ export default function ActivitiesModal({
   const [notes, setNotes] = useState("");
   const [owner, setOwner] = useState({ name: "", id: null });
   const [dealId, setDealId] = useState(null);
-  const [contact, setContact] = useState({});
   const [errors, setErrors] = useState({ ...initialErrors });
   const [users, setUsers] = useState([]);
 
@@ -255,43 +231,31 @@ export default function ActivitiesModal({
     }
   }, [userLists]);
 
-  const [addActivityMutation, { loading: addLoading }] = useMutation(
-    ADDACTIVITY,
-    {
-      onCompleted: () => {
-        onModalClose();
-      },
-      refetchQueries: ["getAllActivities"],
-      awaitRefetchQueries: true,
-    }
-  );
+  const [addActivityMutation, { loading: addLoading }] = useMutation(ADDACTIVITY, {
+    onCompleted: () => {
+      onModalClose();
+    },
+    refetchQueries: ["getAllActivities"],
+    awaitRefetchQueries: true,
+  });
 
-  const [updateActivityMutation, { loading: updateLoading }] = useMutation(
-    UPDATEACTIVITY,
-    {
-      onCompleted: () => {
-        onModalClose();
-      },
-      refetchQueries: ["getAllActivities"],
-      awaitRefetchQueries: true,
-    }
-  );
+  const [updateActivityMutation, { loading: updateLoading }] = useMutation(UPDATEACTIVITY, {
+    onCompleted: () => {
+      onModalClose();
+    },
+    refetchQueries: ["getAllActivities"],
+    awaitRefetchQueries: true,
+  });
 
-  const [deleteActivityMutation, { loading: deleteLoading }] = useMutation(
-    DELETEACTIVITY,
-    {
-      onCompleted: () => {
-        onModalClose();
-      },
-      refetchQueries: ["getAllActivities"],
-      awaitRefetchQueries: true,
-    }
-  );
+  const [deleteActivityMutation] = useMutation(DELETEACTIVITY, {
+    onCompleted: () => {
+      onModalClose();
+    },
+    refetchQueries: ["getAllActivities"],
+    awaitRefetchQueries: true,
+  });
 
-  const [
-    getPaginatedContacts,
-    { data: allContacts, fetchMore: fetchMorePaginatedContacts },
-  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+  const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
@@ -307,7 +271,6 @@ export default function ActivitiesModal({
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
 
   useEffect(() => {
-
     //will also run during initial mount
     setIsNextPageLoading(true);
     getPaginatedContacts({
@@ -318,10 +281,10 @@ export default function ActivitiesModal({
   }, [nameAutInputValue]);
 
   useEffect(() => {
-    if (get(addContactData, 'addContact.contact')) {
-      setNameAutValue({ name: addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id })
+    if (get(addContactData, "addContact.contact")) {
+      setNameAutValue({ name: addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id });
     }
-  }, [addContactData])
+  }, [addContactData]);
 
   const loadNextPage = async (pageVariables) => {
     setIsNextPageLoading(true);
@@ -331,14 +294,11 @@ export default function ActivitiesModal({
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray([
-        ...allContacts?.paginatedContacts?.edges?.map((el) => el.node),
-      ]);
+      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
       setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
     }
     setIsNextPageLoading(false);
   }, [allContacts]);
-
 
   useEffect(() => {
     const date = mergeDateAndTime(startDate, startTime);
@@ -361,15 +321,12 @@ export default function ActivitiesModal({
         name: selectedActivity.contactName,
         _id: selectedActivity.contactId,
       });
-      setStartDate(
-        moment.parseZone(selectedActivity.start).format("yyyy-MM-DD")
-      );
+      setStartDate(moment.parseZone(selectedActivity.start).format("yyyy-MM-DD"));
       setStartTime(moment.parseZone(selectedActivity.start).format("HH:mm"));
       setCalenderDate(selectedActivity.start);
 
       setEndDate(moment.parseZone(selectedActivity.end).format("yyyy-MM-DD"));
       setEndTime(moment.parseZone(selectedActivity.end).format("HH:mm"));
-
     } else {
       setAddNew(true);
       setNameAutValue({ name: "", _id: null });
@@ -391,17 +348,9 @@ export default function ActivitiesModal({
   }, [selectedActivity]);
 
   const [openDeals, setOpenDeals] = useState([]);
-  // const [getTransactionData, { loading: tloading, data: tdata }] = useLazyQuery(
-  //   TRANSACTIONDATA
-  // );
-
-  const [getOpenDeals, { loading: tloading, data: dealsData }] = useLazyQuery(
-    OPENDEALS,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
-
+  const [getOpenDeals, { data: dealsData }] = useLazyQuery(OPENDEALS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
@@ -416,7 +365,7 @@ export default function ActivitiesModal({
   }, [dealsData]);
 
   const onModalClose = () => {
-    window.history.pushState('', '', `/activities`);
+    window.history.pushState("", "", `/activities`);
     clearFields();
     setSelectedActivityId(null);
     setStateApp((stateApp) => ({
@@ -483,15 +432,7 @@ export default function ActivitiesModal({
       owner: ownerErr,
     });
 
-    return (
-      activityNameErr ||
-      activityTypeErr ||
-      startDataErr ||
-      startTimeErr ||
-      endDateErr ||
-      endTimeErr ||
-      ownerErr
-    );
+    return activityNameErr || activityTypeErr || startDataErr || startTimeErr || endDateErr || endTimeErr || ownerErr;
   };
 
   const addActivity = async () => {
@@ -553,14 +494,13 @@ export default function ActivitiesModal({
     });
   };
 
-  const handleOnContactView = () =>
-    nameAutValue._id && history.push(`/contact/details/${nameAutValue._id}`);
-    
-  const handleOnDealClick = () => {
-    // handle Deal Click we need to get lane id 
-  }
+  const handleOnContactView = () => nameAutValue._id && history.push(`/contact/details/${nameAutValue._id}`);
 
-  const dealValue = openDeals.find((deal) => deal._id === dealId) || null
+  const handleOnDealClick = () => {
+    // handle Deal Click we need to get lane id
+  };
+
+  const dealValue = openDeals.find((deal) => deal._id === dealId) || null;
 
   return (
     <Dialog
@@ -570,20 +510,20 @@ export default function ActivitiesModal({
       open={stateApp.activityDialog ? true : false}
       onClose={
         addLoading && updateLoading
-          ? () => { }
+          ? () => {}
           : () => {
-            onModalClose();
-          }
+              onModalClose();
+            }
       }
     >
       <ExpandableCardProvider
         expanded={true}
         handleCloseExpandableCard={
           addLoading && updateLoading
-            ? () => { }
+            ? () => {}
             : () => {
-              onModalClose();
-            }
+                onModalClose();
+              }
         }
         title={addNew ? "Add Activity" : "Activity Details"}
         subTitle={""}
@@ -621,17 +561,9 @@ export default function ActivitiesModal({
               </div>
               <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
-                <div
-                  className={clsx(
-                    classes.typeDisplay,
-                    activityType === "" && errors.activityType && classes.error
-                  )}
-                >
+                <div className={clsx(classes.typeDisplay, activityType === "" && errors.activityType && classes.error)}>
                   <span
-                    className={clsx(
-                      classes.filterDisplay,
-                      activityType === "call" && classes.active
-                    )}
+                    className={clsx(classes.filterDisplay, activityType === "call" && classes.active)}
                     onClick={() => setActivityType("call")}
                   >
                     <CallIcon /> <span>Call</span>
@@ -647,37 +579,25 @@ export default function ActivitiesModal({
                     <MeetingIcon /> <span>Meeting</span>
                   </span>
                   <span
-                    className={clsx(
-                      classes.filterDisplay,
-                      activityType === "task" && classes.active
-                    )}
+                    className={clsx(classes.filterDisplay, activityType === "task" && classes.active)}
                     onClick={() => setActivityType("task")}
                   >
                     <TaskIcon /> <span>Task</span>
                   </span>
                   <span
-                    className={clsx(
-                      classes.filterDisplay,
-                      activityType === "deadline" && classes.active
-                    )}
+                    className={clsx(classes.filterDisplay, activityType === "deadline" && classes.active)}
                     onClick={() => setActivityType("deadline")}
                   >
                     <DeadlineIcon /> <span>Deadline</span>
                   </span>
                   <span
-                    className={clsx(
-                      classes.filterDisplay,
-                      activityType === "email" && classes.active
-                    )}
+                    className={clsx(classes.filterDisplay, activityType === "email" && classes.active)}
                     onClick={() => setActivityType("email")}
                   >
                     <EmailIcon /> <span>Email</span>
                   </span>
                   <span
-                    className={clsx(
-                      classes.filterDisplay,
-                      activityType === "mailer" && classes.active
-                    )}
+                    className={clsx(classes.filterDisplay, activityType === "mailer" && classes.active)}
                     onClick={() => setActivityType("mailer")}
                   >
                     <ContactMailIcon /> <span>Mailer Campaign</span>
@@ -690,10 +610,7 @@ export default function ActivitiesModal({
                 </span>
                 <div className={classes.dateTimeRow}>
                   <TextField
-                    className={clsx(
-                      classes.dateTimeField,
-                      !startDate && errors.startDate && classes.error
-                    )}
+                    className={clsx(classes.dateTimeField, !startDate && errors.startDate && classes.error)}
                     value={startDate}
                     type="date"
                     variant="outlined"
@@ -705,11 +622,7 @@ export default function ActivitiesModal({
                     }}
                   />
                   <TextField
-                    className={clsx(
-                      classes.dateTimeField,
-                      classes.marginLeft,
-                      !startTime && errors.startTime && classes.error
-                    )}
+                    className={clsx(classes.dateTimeField, classes.marginLeft, !startTime && errors.startTime && classes.error)}
                     value={startTime}
                     type="time"
                     variant="outlined"
@@ -723,10 +636,7 @@ export default function ActivitiesModal({
                   <span className={classes.line} />
 
                   <TextField
-                    className={clsx(
-                      classes.dateTimeField,
-                      !endDate && errors.endDate && classes.error
-                    )}
+                    className={clsx(classes.dateTimeField, !endDate && errors.endDate && classes.error)}
                     value={endDate}
                     type="date"
                     variant="outlined"
@@ -737,11 +647,7 @@ export default function ActivitiesModal({
                     }}
                   />
                   <TextField
-                    className={clsx(
-                      classes.dateTimeField,
-                      classes.marginLeft,
-                      !endTime && errors.endTime && classes.error
-                    )}
+                    className={clsx(classes.dateTimeField, classes.marginLeft, !endTime && errors.endTime && classes.error)}
                     value={endTime}
                     type="time"
                     variant="outlined"
@@ -753,21 +659,6 @@ export default function ActivitiesModal({
                   />
                 </div>
               </div>
-              {/* <div className={classes.row}>
-                <span className={classes.rowIcon}></span>
-                Add{" "}
-                <span style={{ color: "#48A8ED", marginLeft: 8 }}>
-                  guests, location, video call, description
-                </span>
-              </div> */}
-              {/* <div className={classes.row}>
-                <span className={classes.rowIcon}>
-                  <DotsIcon />
-                </span>
-                <Select disabled variant="outlined" value="free">
-                  <MenuItem value="free">Free</MenuItem>
-                </Select>
-              </div> */}
               <div className={classes.row}>
                 <span className={classes.rowIcon}>
                   <DocumentIcon />
@@ -784,48 +675,30 @@ export default function ActivitiesModal({
                       setNotes(e.target.value);
                     }}
                   />
-                  {/* <small>
-                    Notes are private and visible only within your Pipedrive
-                    account
-                  </small> */}
                 </div>
               </div>
               <div className={classes.row}>
                 <span className={classes.rowIcon}>
                   <PersonIcon />
                 </span>
-                <div
-                  style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}
-                >
+                <div style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}>
                   <Autocomplete
-                    className={clsx(
-                      classes.fieldWidth,
-                      !owner.id && errors.owner && classes.error
-                    )}
-                    options={users.filter(u => u.text)}
+                    className={clsx(classes.fieldWidth, !owner.id && errors.owner && classes.error)}
+                    options={users.filter((u) => u.text)}
                     onChange={(e, user) => {
                       setOwner({ name: user?.text, id: user?.value });
                     }}
-                    value={
-                      users.find((user) => user.value === owner.id) || null
-                    }
+                    value={users.find((user) => user.value === owner.id) || null}
                     getOptionLabel={(option) => option.text}
                     getOptionSelected={(option) => option.value === owner.id}
-                    renderInput={(params) => (
-                      <TextField
-                        margin="dense"
-                        {...params}
-                        variant="outlined"
-                        label="Activity Owner"
-                      />
-                    )}
+                    renderInput={(params) => <TextField margin="dense" {...params} variant="outlined" label="Activity Owner" />}
                   />
                 </div>
               </div>
 
               <div className={classes.row}>
                 <span className={classes.rowIcon}>
-                <MonetizationOnIcon  onClick={handleOnDealClick} color={dealValue ? "secondary" : "disabled"} />
+                  <MonetizationOnIcon onClick={handleOnDealClick} color={dealValue ? "secondary" : "disabled"} />
                 </span>
                 <div style={{ width: "76%", marginRight: 24 }}>
                   <Autocomplete
@@ -842,9 +715,7 @@ export default function ActivitiesModal({
                         <Grid container spacing={0}>
                           <Grid container item xs={12} alignItems="center">
                             <Grid item xs>
-                              <span style={{ fontWeight: 400 }}>
-                                {option.name}
-                              </span>
+                              <span style={{ fontWeight: 400 }}>{option.name}</span>
 
                               <Typography variant="body2" color="textSecondary">
                                 {option.label}
@@ -854,20 +725,13 @@ export default function ActivitiesModal({
                         </Grid>
                       );
                     }}
-                    renderInput={(params) => (
-                      <TextField
-                        margin="dense"
-                        {...params}
-                        label="Associated Deal"
-                        variant="outlined"
-                      />
-                    )}
+                    renderInput={(params) => <TextField margin="dense" {...params} label="Associated Deal" variant="outlined" />}
                   />
                 </div>
               </div>
               <div className={classes.row}>
                 <span className={classes.rowIcon}>
-                  <RecentActorsIcon  onClick={handleOnContactView} color={nameAutValue._id ? "secondary" : "disabled"} />
+                  <RecentActorsIcon onClick={handleOnContactView} color={nameAutValue?._id ? "secondary" : "disabled"} />
                 </span>
                 <div className={classes.fieldWidth}>
                   <AutocompEntityNamesVirtualizeList
@@ -884,7 +748,7 @@ export default function ActivitiesModal({
                     loadNextPage={loadNextPage}
                     addNew={true}
                     addNewOnClick={(value) => {
-                      const contact = {name: value};
+                      const contact = { name: value };
                       addContact({
                         variables: {
                           contact: {
@@ -907,30 +771,17 @@ export default function ActivitiesModal({
                   <TextField
                     type="text"
                     variant="outlined"
-                    className={clsx(
-                      classes.marginBottom,
-                      classes.inputField,
-                      classes.fieldWidth
-                    )}
+                    className={clsx(classes.marginBottom, classes.inputField, classes.fieldWidth)}
                     placeholder="Organization"
                   />
                 </div>
               </div>
               <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
-                <div
-                  className={classes.btnGroup}
-                  style={{ width: "76%", marginRight: 24 }}
-                >
+                <div className={classes.btnGroup} style={{ width: "76%", marginRight: 24 }}>
                   <FormControlLabel
                     enabled
-                    control={
-                      <Checkbox
-                        checked={closed}
-                        onChange={(e) => setClosed(e.target.checked)}
-                        color="primary"
-                      />
-                    }
+                    control={<Checkbox checked={closed} onChange={(e) => setClosed(e.target.checked)} color="primary" />}
                     label="Mark as done"
                   />
                   <Button
@@ -954,13 +805,7 @@ export default function ActivitiesModal({
                       else updateActivity();
                     }}
                   >
-                    {(addLoading || updateLoading) && (
-                      <CircularProgress
-                        style={{ marginRight: 8 }}
-                        color="#fff"
-                        size={20}
-                      />
-                    )}
+                    {(addLoading || updateLoading) && <CircularProgress style={{ marginRight: 8 }} color="#fff" size={20} />}
                     {addNew ? "Add" : "Save"}
                   </Button>
                 </div>

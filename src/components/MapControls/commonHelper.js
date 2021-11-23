@@ -17,6 +17,7 @@ export const clearMapAndCloseShapeActionsPopup = (stateApp, setStateApp) => {
         editDraw: false,
         shapeEdit: false,
         currentFeature: undefined,
+        featureToEdit: undefined,
         selectedUserDefinedLayer: null,
         isAbstractedLayersPolygon: false,
         multiSelectLandGrids: false,

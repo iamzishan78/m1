@@ -14,6 +14,7 @@ export const PAGINATEDOWNERSQUERY = gql`
         City
         Id
         OwnerName
+        OwnerType
         State
         StreetAddress
         SysStartTime

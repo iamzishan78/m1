@@ -7,18 +7,15 @@ import TextField from "@material-ui/core/TextField";
 import WellIcon from "../../Shared/svgIcons/well";
 import PersonIcon from '@material-ui/icons/Person';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
-import TodayOutlinedIcon from '@material-ui/icons/TodayOutlined';
+// import TodayOutlinedIcon from '@material-ui/icons/TodayOutlined';
 import CommentComponent from "components/Shared/CommentComponent";
 import UnitTableInfo from './UnitTableInfo'
-import InputBase from '@material-ui/core/InputBase';
 import AddIcon from '@material-ui/icons/Add';
-import SearchIcon from '@material-ui/icons/Search';
 import { Button } from "@material-ui/core";
 import { useLazyQuery } from "@apollo/client";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 
-const ENTER_KEY = 13;
 
 const useStyles = makeStyles((theme) => ({
     summaryCard: {
@@ -244,10 +241,10 @@ export default function UnitSummary(props) {
                                     <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.documents || 0} </div>
                                     <InsertDriveFileOutlinedIcon className={classes.icon} opacity="1.0" small />
                                 </Grid>
-                                <Grid item>
+                                {/* <Grid item>
                                     <div className={classes.summaryValue}> 3 </div>
                                     <TodayOutlinedIcon className={classes.icon} opacity="1.0" small />
-                                </Grid>
+                                </Grid> */}
                             </Grid>
                         </Grid>
                         <Grid item>

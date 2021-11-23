@@ -159,7 +159,6 @@ export default function Transact() {
   let history = useHistory();
   const dispatch = useDispatch();
   const { pipeToShow, pipeToShowTab, selectedPipe } = useSelector(({ Flow }) => Flow);
-  console.log("PIPETOSHOW: ", pipeToShow);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateTransact] = useContext(TransactContext);
   const [filteredBoardTransactData, setFilteredBoardTransactData] = useState({

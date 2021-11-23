@@ -551,13 +551,35 @@ const ShapeActionsPopup = (props) => {
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
     });
-    // setSelectedAction("");
-    // stateApp.draw.changeMode("static");
-    // setStateApp((state) => ({ ...state, shapeEdit: false, editDraw: false }));
     setTimeout(() => popupCloseAction(), 0);
   };
 
-  const enableEditOnly = stateApp.currentFeature?.layer?.id === "parcel" || stateApp.currentFeature?.layer?.id === "unit";
+  const confirmShapeEditing = () => {
+    let { featureToEdit, currentFeature } = stateApp;
+    const shapeJson = {
+      ...currentFeature,
+      shapeArea: calculateLandArea(currentFeature),
+      shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates),
+    }
+    const customLayerData = {
+      shapeJson,
+      shape: JSON.stringify(shapeJson),
+      layer: featureToEdit.layer.id,
+      user: stateApp.user.mongoId,
+    };
+    addCustomShapeProperties(currentFeature, stateApp.draw);
+    updateCustomLayer({
+      variables: {
+        customLayerId: featureToEdit.id,
+        customLayer: customLayerData,
+      },
+      refetchQueries: ["getCustomLayers"],
+      awaitRefetchQueries: true,
+    });
+    setTimeout(() => popupCloseAction(), 0);
+  };
+
+  const enableEditOnly = stateApp.featureToEdit?.layer?.id === "parcel" || stateApp.featureToEdit?.layer?.id === "unit";
   const isAoi = stateApp.selectedAoi?.layer?.id === "interest";
   const isCreateParcelMenu = Boolean(anchorEl);
 
@@ -574,9 +596,10 @@ const ShapeActionsPopup = (props) => {
         className={classes.parcelPopover}
       >
         <MenuItem disabled>Shape Layer Type</MenuItem>
-        <MenuItem onClick={saveAndOpenParcelDetail}>Ownership</MenuItem>
-        <MenuItem onClick={saveAndOpenUnitDetail}>Unit Boundary</MenuItem>
         <MenuItem>Agreement</MenuItem>
+        <MenuItem onClick={saveAndOpenParcelDetail}>Tract</MenuItem>
+        <MenuItem onClick={saveAndOpenUnitDetail}>Unit Boundary</MenuItem>
+        
       </Menu>
       <Fragment>
         <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span> {calculateLandArea()}
@@ -642,6 +665,15 @@ const ShapeActionsPopup = (props) => {
             <span className={classes.multiSelectCheck}>
               <Tooltip title="Confirm Editing">
                 <IconButton size="small" aria-label="Set Boundary" onClick={confirmEditing}>
+                  <CheckCircle />
+                </IconButton>
+              </Tooltip>
+            </span>
+          )}
+          {selectedAction === "edit-shape" && (
+            <span className={classes.multiSelectCheck}>
+              <Tooltip title="Confirm Editing">
+                <IconButton size="small" aria-label="Set Boundary" onClick={confirmShapeEditing}>
                   <CheckCircle />
                 </IconButton>
               </Tooltip>

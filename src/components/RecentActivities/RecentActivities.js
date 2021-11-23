@@ -6,7 +6,7 @@ import ActivitiesList from "./components/ActivitiesList";
 import ActivitySummary from "./components/ActivitySummary";
 import RightDialog from "../ContactDetailCard/components/RightDialog";
 import AddActivityDialog from "../ContactDetailCard/components/AddActivityDialog";
-import {grey} from "@material-ui/core/colors";
+import { grey } from "@material-ui/core/colors";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -106,15 +106,14 @@ const useStyles = makeStyles((theme) => ({
     color: "grey",
     fontWeight: "normal",
     marginTop: "10px",
-
-  }
+  },
 }));
 
-export default ({
+export default function RecentActivities({
   header,
   // dataList,
   ...props
-}) => {
+}) {
   const classes = useStyles();
   let history = useHistory();
   const [activityModalOpen, setActivityModalOpen] = useState(false);
@@ -129,7 +128,7 @@ export default ({
     setSelectedActivity(null);
     setActivityModalOpen(true);
   };
-console.log(props);
+  console.log(props);
   return (
     <div className={classes.root}>
       {/* <AddActivityModal
@@ -139,11 +138,7 @@ console.log(props);
         activityLog={props.activityLog}
         selectedActivity={selectedActivity}
       /> */}
-      <RightDialog
-        open={activityModalOpen ? true : false}
-        handleClickDialogClose={() => setActivityModalOpen(false)}
-        width="450px"
-      >
+      <RightDialog open={activityModalOpen ? true : false} handleClickDialogClose={() => setActivityModalOpen(false)} width="450px">
         <AddActivityDialog
           onClose={() => setActivityModalOpen(false)}
           id={props.id}
@@ -156,16 +151,12 @@ console.log(props);
           <h4 style={{ margin: "0px 12px 8px 0px" }}>Recent Activities</h4>
           <h4 className={classes.addNew} onClick={addActivity}>
             Add New
-            {props.activityLog.length > 0 ? <h4 className={classes.contact}>contact created</h4>: null}
           </h4>
-
         </div>
         <h4
           className={classes.viewAll}
           onClick={() => {
-            history.push(
-              `/contact/details/${props.contactData._id}/recentActivites`
-            );
+            history.push(`/contact/details/${props.contactData._id}/recentActivites`);
           }}
         >
           View All
@@ -175,12 +166,7 @@ console.log(props);
       <Grid item xs={12}>
         <Grid container spacing={3} style={{ flexWrap: "nowrap" }}>
           <Grid item xs={7}>
-            <ActivitiesList
-              id={props.id}
-              user_id={props.user_id}
-              activityLog={props.activityLog}
-              updateActivity={updateActivity}
-            />
+            <ActivitiesList id={props.id} user_id={props.user_id} activityLog={props.activityLog} updateActivity={updateActivity} />
           </Grid>
           <Grid item xs={6} style={{ minWidth: "fit-content" }}>
             <ActivitySummary activityLog={props.activityLog} />
@@ -189,4 +175,4 @@ console.log(props);
       </Grid>
     </div>
   );
-};
+}

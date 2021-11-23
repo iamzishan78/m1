@@ -1707,7 +1707,7 @@ function SubTable(props) {
                       ? tableMeta.rowData[2]
                       : props.parent === "owner_WellInterests"
                         ? tableMeta.rowData[1]
-                        : props.parent === "ownersPerParcel" || props.parent === "ownersPerUnit"
+                        : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
 
@@ -1782,11 +1782,11 @@ function SubTable(props) {
                       </IconButton>
 
                       {/* BEGINNING OF SHITTY CODE === this find the file type and if pdf will show the icon */}
-                      {row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1] === "pdf" && (
+                      {row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase() === "pdf" && (
                         <IconButton
                           onClick={(e) => {
                             e.stopPropagation();
-                            const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1];
+                            const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
                             if (type === "pdf") {
                               if (props.addAble.type === 'document') {
                                 window.history.pushState('', '', `/documents/${row_line._id}/view`);
@@ -1822,7 +1822,7 @@ function SubTable(props) {
                   if (row_line && row_line.uploadedDate) {
                     dateTime = row_line.uploadedDate;
                   }
-                  const fileExtension = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1];
+                  const fileExtension = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
                   const file = row_line?.fileName;
                   const uri = row_line?.fileUrl;
 
@@ -1878,7 +1878,7 @@ function SubTable(props) {
                             onClick={(e) => {
                               e.stopPropagation();
                               //  console.log(,'value Div click')
-                              const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1];
+                              const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
                               if (type === "pdf") {
                                 if (props.addAble.type === 'document') {
                                   window.history.pushState('', '', `/documents/${row_line._id}/view`);

@@ -72,11 +72,11 @@ function RelatedDetailsDocumentTable(props) {
 
   useEffect(() => {
     if (dataParcelFiles?.getParcelFiles/*?.length > 0*/) {
-      let wells = dataParcelFiles.getParcelFiles
-      wells = wells.map((w) => {
+      let documents = dataParcelFiles.getParcelFiles
+      documents = documents.map((w) => {
         return { ...w, _id: w.descriptorId, documentDate: w.dateTime ? moment(w.dateTime).format('MM/DD/YYYY') : '' };
       })
-      props.setRows(wells);
+      props.setRows(documents);
       const cleanAvailableTags = [];
       const columns = handleTagColumn(TableHeader, cleanAvailableTags);
       setColumns(columns);

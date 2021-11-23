@@ -23,7 +23,7 @@ import {
 import { addTrailingZeros } from "components/Shared/functions";
 
 // Header Schemas
-import TableHeader from "components/Table/constants/suggested-owners-header-schema";
+import TableHeader from "components/Table/constants/potential-owners-header-schema";
 import { handleTagColumn } from "../helpers";
 
 // Utilities
@@ -287,7 +287,7 @@ function SuggestedShapeTaxOwnersTable(props) {
           action: "single",
           userId: stateApp.user.mongoId,
         },
-        refetchQueries: ["checkIfOwnersAreContacts", "getESShapeOwners", "getESShapeOwnersFilter"],
+        refetchQueries: ["checkIfOwnersAreContacts", "getESPaginatedList", "getESFilterList"],
         awaitRefetchQueries: true,
       }).then(
         async (res) => {
@@ -307,6 +307,7 @@ function SuggestedShapeTaxOwnersTable(props) {
                 const selectedRow = selectedOwners.find((row) => row.globalOwnerId === contact.globalOwner)
                 return {
                   ...contact,
+                  globalOwnerId: selectedRow.globalOwnerId,
                   interestType: selectedRow.interestType,
                   ownershipPercentage: selectedRow.ownershipPercentage
                 }
@@ -336,6 +337,7 @@ function SuggestedShapeTaxOwnersTable(props) {
       const ownerToAdd = {
         shapeId: props.customLayer._id,
         entity: "",
+        globalOwnerId: selectedRows[i].globalOwnerId,
         royalty_interest: selectedRows[i].interestType === 'ROYALTY INTEREST' ? ownershipPercentage : "",
         orri: selectedRows[i].interestType === 'OVERRIDING ROYALTY' ? ownershipPercentage : "",
         nra: addTrailingZeros(nra.toFixed(8)),
@@ -352,7 +354,7 @@ function SuggestedShapeTaxOwnersTable(props) {
             lastUpdateBy: stateApp.user.mongoId,
           },
         },
-        refetchQueries: ["getESShapeOwners", "getESShapeOwnersFilter"],
+        refetchQueries: ["getESPaginatedList", "getESFilterList"],
         awaitRefetchQueries: true,
       }).then(() => {
         props.setLoading(false);

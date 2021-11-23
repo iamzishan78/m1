@@ -11,7 +11,7 @@ import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    position: "absolute",
+    position: "fixed",
     bottom: "55px",
     left: "50%",
     transform: "translate(-50%, -50%)",

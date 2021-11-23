@@ -31,15 +31,15 @@ const OwnersPerUnitHeadCells = [
     esKey: 'contact.entityDetail.name.keyword',
     options: { filter: true, setCellProps: () => ({ style: { minWidth: "270px" } }) }
   },
-  { name: "working_interest", esKey: 'working_interest', label: "Working Interest", options: { filter: true } },
-  { name: "royalty_interest", esKey: 'royalty_interest', label: "Royalty Interest", options: { filter: true } },
-  { name: "orri", esKey: 'orri', label: "ORRI", options: { filter: true } },
-  { name: "nri", esKey: 'nri', label: "NRI", options: { filter: true } },
-  { name: "nra", esKey: 'nra', label: "NRA", editable: true, options: { filter: true } },
-  { name: "seller_asking_price", esKey: 'seller_asking_price', label: "Seller Asking Price", options: { filter: true, customBodyRender: (value) => vf_currency(value) } },
-  { name: "competitor_offer_price", esKey: 'competitor_offer_price', label: "Competitor Offer Price", options: { filter: true, customBodyRender: (value) => vf_currency(value) } },
+  { name: "working_interest", esKey: 'working_interest', type: "number", label: "Working Interest", options: { filter: true } },
+  { name: "royalty_interest", esKey: 'royalty_interest', type: "number", label: "Royalty Interest", options: { filter: true } },
+  { name: "orri", esKey: 'orri', label: "ORRI", type: "number", options: { filter: true } },
+  { name: "nri", esKey: 'nri', label: "NRI", type: "number", options: { filter: true } },
+  { name: "nra", esKey: 'nra', label: "NRA", type: "number", editable: true, options: { filter: true } },
+  { name: "seller_asking_price", esKey: 'seller_asking_price', type: "number", label: "Seller Asking Price", options: { filter: true, customBodyRender: (value) => vf_currency(value) } },
+  { name: "competitor_offer_price", esKey: 'competitor_offer_price', type: "number", label: "Competitor Offer Price", options: { filter: true, customBodyRender: (value) => vf_currency(value) } },
   {
-    name: "offer_price", esKey: 'offer_price', label: "Offer Price", options: {
+    name: "offer_price", esKey: 'offer_price', label: "Offer Price", type: "number", options: {
       filter: true, customBodyRender: (value) => vf_currency(value),
     }
   },
