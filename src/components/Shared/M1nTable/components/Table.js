@@ -2255,6 +2255,7 @@ function SubTable(props) {
   }, [props.targetLabel]);
 
   useEffect(() => {
+    console.log("rows", rows);
     setSearchedRows(rows);
   }, [rows]);
 

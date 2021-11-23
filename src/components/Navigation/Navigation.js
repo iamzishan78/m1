@@ -459,7 +459,7 @@ export default function Navigation(props) {
     <div className={classes.root}>
       <CssBaseline />
       <AppBar
-        position="fixed"
+        position="absolute"
         className={clsx(classes.appBar, {
           [classes.appBarShift]: openDrawer,
         })}
