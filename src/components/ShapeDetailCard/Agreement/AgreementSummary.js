@@ -100,6 +100,9 @@ export default function AgreementSummary(props) {
         </Grid>
         <Grid item md={5} sm={12}>
             <Grid container spacing={2} direction="row">
+                <Grid item md={12}>
+                    {/* <CommentComponent targetLabel={'unit'} targetSourceId={props.id} /> */}
+                </Grid>
                 <Grid item className={classes.descriptionInput}>
                     <TextField
                         id="outlined-multiline-static"

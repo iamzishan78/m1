@@ -14,7 +14,8 @@ import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetai
 import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import TabButtons from "components/Shared/TabPanels/TabButtons"
-import UnitSummary from "./AgreementSummary";
+import AgreementSummary from "./AgreementSummary";
+import ProvisionsTab from "./ProvisionsTab";
 import UnitOwnersTable from "components/Table/Unit/UnitOwnersTable";
 import UnitWellInterestTable from "components/Table/Unit/UnitWellInterestTable";
 import AssociatedWellsUnitTable from "components/Table/Wells/AssociatedWellsUnitTable";
@@ -208,35 +209,9 @@ export default function AgreementDetailCard(props) {
           tabLabels={["Summary", "Provisions", "Tracts", "Wells", "Documents", "Related Info"]}
           openTabIdex={selectedTab}
           tabPanels={[
-            <UnitSummary properties={properties} setProperties={setProperties} updateProperties={updateProperties}
+            <AgreementSummary properties={properties} setProperties={setProperties} updateProperties={updateProperties}
               updateCustomProperties={updateCustomProperties} id={props.id} />,
-            <TabPanels
-              value={selectedTab}
-              panels={[
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <UnitOwnersTable
-                    customLayer={uniObj}
-                    parent="ownersPerUnit"
-                    shapeType='Unit'
-                    targetLabel="Unit Ownership"
-                    header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
-                    setSelectedTab={setSelectedTab}
-                    dense
-                  />
-                </div>,
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <SuggestedShapeTaxOwnersTable
-                    customLayer={uniObj}
-                    parent="potentialOwnersPerUnit"
-                    shapeType='Unit'
-                    targetLabel="well"
-                    header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
-                    setSelectedTab={setSelectedTab}
-                    dense
-                  />
-                </div>
-              ]}
-            />,
+            <ProvisionsTab />,
 
             <div className={showSummary ? classes.subContent : classes.subContent2}>
               <ParcelDetailsRunsheetTable
