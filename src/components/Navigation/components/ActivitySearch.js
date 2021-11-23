@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: fade(theme.palette.common.white, 0.15),
     marginRight: theme.spacing(2),
     marginLeft: "-7px !important",
-    width: "47%",
+    width: "35%",
     transition: "width 0.5s",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
