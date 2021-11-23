@@ -2923,6 +2923,7 @@ function M1nTable(props) {
         orderByTracks={orderByTracks}
         startPaginationAt={startPaginationAt}
         contactId={props.contact?._id}
+        options={props.options}
         contactsPageProps={{
           getPaginatedContacts,
           getContactsFilterOptions,
