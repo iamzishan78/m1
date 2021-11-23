@@ -1,13 +1,25 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useHistory } from "react-router-dom";
+
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, Tabs, Tab } from "@material-ui/core";
-import { LocalAtm as CurrencyIcon } from "@material-ui/icons";
+import { Typography, IconButton, Tabs, Tab, Grid, Breadcrumbs } from "@material-ui/core";
+import { LocalAtm as CurrencyIcon, NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
+import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "calc(100vh - 62px)",
+    position: "absolute",
+    top: 0,
+    zIndex: 1,
+    height: "100vh",
     backgroundColor: "#f3f3f3",
-    padding: "55px",
+    width: "100%",
+  },
+  navSection: {
+    minHeight: "52px",
+    padding: "10px 20px",
+    backgroundColor: "#fff",
+    width: "100%",
   },
   detailHeader: {
     backgroundColor: "#fff",
@@ -45,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AntTabs = withStyles({
+const StyledTabs = withStyles({
   root: {
     borderBottom: "1px solid #e8e8e8",
   },
@@ -54,7 +66,7 @@ const AntTabs = withStyles({
   },
 })(Tabs);
 
-const AntTab = withStyles((theme) => ({
+const StyledTab = withStyles((theme) => ({
   root: {
     textTransform: "none",
     minWidth: 72,
@@ -88,6 +100,7 @@ const AntTab = withStyles((theme) => ({
 }))((props) => <Tab disableRipple {...props} />);
 
 export default function DetailComponents() {
+  const history = useHistory();
   const classes = useStyles();
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
@@ -104,40 +117,67 @@ export default function DetailComponents() {
   return (
     <div className={classes.root}>
       {/**
-       * Detail title section
+       * Detail Header
        */}
-      <div className={classes.detailHeader}>
-        <div className={classes.title}>
-          <IconButton className={classes.icon}>
-            <CurrencyIcon />
-          </IconButton>
-          <div className={classes.titleText}>
-            <Typography style={{ fontWeight: "bold", fontSize: "large" }}>43736848334 - Exxon Mobile Corp</Typography>
-            <Typography variant="caption">10/3/2021</Typography>
+      <div className={classes.navSection}>
+        <Grid container alignItems="center" direction="row" display="flex" justify="space-between">
+          <Grid item>
+            <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+              <Link
+                style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer", fontWeight: "bold" }}
+                color="inherit"
+                onClick={() => history.push("/revenue/statements")}
+              >
+                Revenue Statements
+              </Link>
+
+              <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>Sample Statement</Typography>
+            </Breadcrumbs>
+          </Grid>
+          <Grid item>
+            <IconButton onClick={() => history.push("/revenue/statements")}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Grid>
+        </Grid>
+      </div>
+      <div style={{ padding: "20px" }}>
+        {/**
+         * Detail title section
+         */}
+        <div className={classes.detailHeader}>
+          <div className={classes.title}>
+            <IconButton className={classes.icon}>
+              <CurrencyIcon />
+            </IconButton>
+            <div className={classes.titleText}>
+              <Typography style={{ fontWeight: "bold", fontSize: "large" }}>43736848334 - Exxon Mobile Corp</Typography>
+              <Typography variant="caption">10/3/2021</Typography>
+            </div>
           </div>
         </div>
-      </div>
-      {/**
-       * Detail tabs section
-       */}
-      <div className={classes.tabsSection}>
-        <div className={classes.tabsHeader}>
-          <AntTabs value={tab} onChange={(event, tab) => setTab(tab)} aria-label="ant example">
-            <AntTab label="Header" />
-            <AntTab label="Summary" />
-            <AntTab label="Check Details" />
-          </AntTabs>
-        </div>
-        <div style={{ maxHeight: "719px", overflow: "overlay" }}>
-          <div style={{ padding: "0px 10px" }}>
-            <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-              <Typography varient="h6">Header</Typography>
-            </div>
-            <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
-              <Typography varient="h6">Summary</Typography>
-            </div>
-            <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
-              <Typography varient="h6">Check Details</Typography>
+        {/**
+         * Detail tabs section
+         */}
+        <div className={classes.tabsSection}>
+          <div className={classes.tabsHeader}>
+            <StyledTabs value={tab} onChange={(event, tab) => setTab(tab)} aria-label="ant example">
+              <StyledTab label="Header" />
+              <StyledTab label="Summary" />
+              <StyledTab label="Check Details" />
+            </StyledTabs>
+          </div>
+          <div style={{ maxHeight: "719px", overflow: "overlay" }}>
+            <div style={{ padding: "0px 10px" }}>
+              <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
+                <Typography varient="h6">Header</Typography>
+              </div>
+              <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
+                <Typography varient="h6">Summary</Typography>
+              </div>
+              <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
+                <Typography varient="h6">Check Details</Typography>
+              </div>
             </div>
           </div>
         </div>
