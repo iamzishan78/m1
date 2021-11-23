@@ -17,8 +17,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.15),
     marginRight: theme.spacing(2),
-    marginLeft: "425px !important",
-    width: "34%",
+    width: "47%",
     transition: "width 0.5s",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,

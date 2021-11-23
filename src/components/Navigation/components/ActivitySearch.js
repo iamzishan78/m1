@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery } from "@apollo/client";
-import { Button, Grid, InputAdornment, TextField, Tooltip, IconButton } from "@material-ui/core";
+import { Grid, InputAdornment, TextField, Tooltip, IconButton } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import debounce from "lodash/debounce";
 
@@ -8,9 +8,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import Typography from "@material-ui/core/Typography";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import List from "@material-ui/icons/List";
-import GridOn from "@material-ui/icons/GridOn";
 import EventIcon from "@material-ui/icons/Event";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 
@@ -23,8 +21,8 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.15),
     marginRight: theme.spacing(2),
-    marginLeft: "425px !important",
-    width: "34%",
+    marginLeft: "-7px !important",
+    width: "47%",
     transition: "width 0.5s",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
@@ -83,8 +81,7 @@ const ActivitySearch = () => {
     }));
   };
 
-  const [getAllActivitiesForSearch, { data: activitiesData, loading: activitiesLoading, error: activitiesError }] =
-    useLazyQuery(GETALLACTIVITIESFORSEARCH);
+  const [getAllActivitiesForSearch, { data: activitiesData }] = useLazyQuery(GETALLACTIVITIESFORSEARCH);
 
   useEffect(() => {
     getAllActivitiesForSearch();
