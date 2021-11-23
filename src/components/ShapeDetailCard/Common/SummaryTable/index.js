@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import TextField from "@material-ui/core/TextField";
-
+import moment from "moment";
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { IconButton, Grid, Table, TableCell, TableBody, FormControl } from "@material-ui/core";
@@ -10,9 +10,10 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { showErrorMessage } from "actions";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
+import { KeyboardDatePicker } from "@material-ui/pickers";
 import { summaryTableStyles } from "components/ShapeDetailCard/style";
 
-function TableTextField({ data, value, onChange, onKeyDown, onBlur, showMessage, type }) {
+function TableTextField({ data, value, onChange, onKeyDown, onBlur, showMessage, type, InputProps }) {
     const classes = summaryTableStyles();
     return (
         <TextField
@@ -34,6 +35,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, showMessage,
 
             onBlur={() => { onBlur(data, type) }}
             InputProps={{
+                ...InputProps,
                 endAdornment: (showMessage &&
                     <p className={classes.foodText}>
                         <span>Return</span> to save
@@ -182,7 +184,25 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                                         </FormControl>
                                     }  {(data.type === 'text' || data.type === 'number') &&
                                         <TableTextField data={data} value={tableTempProperties[data.key]} showMessage={tableDataState[data.key] === true}
-                                            onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} type='value' />
+                                            onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} onWheel={(e) => e.target.blur()} type='value' InputProps={data.InputProps} />
+                                    }
+
+                                    {data.type === 'date' &&
+                                        <KeyboardDatePicker
+                                            className={classes.maxWidth}
+                                            autoFocus
+                                            disableToolbar
+                                            variant="inline"
+                                            format="MM/DD/YYYY"
+                                            margin="normal"
+                                            id="date-picker-inline"
+                                            value={properties[data.key] || null}
+                                            onBlur={() => { setTableDataState({}); setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] }) }}
+                                            onChange={(date) => {
+                                                if (date) { updateProperties(null, data.key, String(date["_d"])); }
+                                            }}
+                                            KeyboardButtonProps={{ "aria-label": "change date" }}
+                                        />
                                     }
 
                                     {data.type === 'autocomplete' &&
@@ -199,9 +219,15 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                                 </> :
                                 <div style={{ minWidth: '30px', cursor: "pointer" }} >
                                     <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                                        <Grid item>
-                                            {data.value || properties[data.key] || '-'}
-                                        </Grid>
+                                        {data.formatValue ?
+                                            <Grid item>
+                                                {data.formatValue(data.value || properties[data.key]) || '-'}
+                                            </Grid> :
+                                            <Grid item>
+                                                {(data.type === 'date') && (properties[data.key] ? moment.parseZone(new Date(properties[data.key])).format("MM-DD-yyyy") : '-')}
+                                                {data.type !== 'date' && ((data.value || properties[data.key]) || '-')}
+                                            </Grid>
+                                        }
                                         <Grid item>
                                             {editIconState[data.key] && <Tooltip title={"Edit"} placement="top">
                                                 <IconButton

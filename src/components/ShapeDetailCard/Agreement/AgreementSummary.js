@@ -66,10 +66,6 @@ export default function AgreementSummary(props) {
                                     <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.documents || 0} </div>
                                     <InsertDriveFileOutlinedIcon className={classes.icon} opacity="1.0" small />
                                 </Grid>
-                                {/* <Grid item>
-                                    <div className={classes.summaryValue}> 3 </div>
-                                    <TodayOutlinedIcon className={classes.icon} opacity="1.0" small />
-                                </Grid> */}
                             </Grid>
                         </Grid>
                         <Grid item>

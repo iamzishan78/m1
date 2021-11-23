@@ -1,3 +1,5 @@
+import { InputAdornment } from "@material-ui/core"
+
 const tableData = [
     {
         label: 'Agreement Number',
@@ -32,23 +34,47 @@ const tableData = [
     },
     {
         label: 'Agreement Date',
-        type: 'text',
+        type: 'date',
         key: 'agreementDate'
     },
     {
         label: 'Effective Date',
-        type: 'text',
+        type: 'date',
         key: 'effectiveDate'
     },
     {
         label: 'Expiration Date',
-        type: 'text',
+        type: 'date',
         key: 'expirationDate'
     },
     {
         label: 'Extension Date',
-        type: 'text',
+        type: 'date',
         key: 'extensionDate'
+    },
+    {
+        label: 'Bonus Payment',
+        type: 'text',
+        key: 'bounusPayment',
+        formatValue: (value) => `$ ${value}`,
+        InputProps: {
+            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        }
+    },
+    {
+        label: 'Report Gross Acres',
+        type: 'number',
+        key: 'reportGrossAcres'
+    },
+    {
+        label: 'Gross Acres',
+        type: 'number',
+        key: 'grossAcres'
+    },
+    {
+        label: 'Net Acres',
+        type: 'number',
+        key: 'netAcres'
     }
 ]
 export default tableData

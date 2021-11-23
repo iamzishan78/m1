@@ -93,8 +93,11 @@ export default function AgreementDetailCard(props) {
   }, [updatedUnit]);
 
   const updateProperties = (e, field, value) => {
-    e.preventDefault();
-    e.stopPropagation();
+    if (e?.preventDefault) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
     const shape = uniObj.shape;
     set(shape.properties, field, value)
     shape.properties[field] = value;
