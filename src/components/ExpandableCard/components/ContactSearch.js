@@ -12,7 +12,6 @@ import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/
 const useStyles = makeStyles((theme) => ({
   search: {
     width: "70%",
-    marginLeft: "425px !important",
     maxWidth: "400px",
     "& svg": {
       fill: "grey",
