@@ -148,11 +148,11 @@ export default function DetailComponents() {
         <div className={classes.detailHeader}>
           <div className={classes.title}>
             <IconButton className={classes.icon}>
-              <CurrencyIcon />
+              <CurrencyIcon fontSize="large" />
             </IconButton>
             <div className={classes.titleText}>
               <Typography style={{ fontWeight: "bold", fontSize: "large" }}>43736848334 - Exxon Mobile Corp</Typography>
-              <Typography variant="caption">10/3/2021</Typography>
+              <Typography variant="subtitle1">10/3/2021</Typography>
             </div>
           </div>
         </div>
