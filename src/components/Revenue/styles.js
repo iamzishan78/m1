@@ -60,7 +60,7 @@ export const useStyles = makeStyles((theme) => ({
     marginLeft: "425px",
   },
   revenueRootCollapsed: {
-    marginLeft: "0px",
+    marginLeft: "0px !important",
   },
   header: {
     paddingLeft: "10px",

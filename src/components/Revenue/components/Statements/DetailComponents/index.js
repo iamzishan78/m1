@@ -8,7 +8,7 @@ import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    position: "absolute",
+    position: "fixed",
     top: 0,
     zIndex: 1,
     height: "100vh",
@@ -174,7 +174,7 @@ export default function DetailComponents() {
             </StyledTabs>
           </div>
           <div style={{ maxHeight: "719px", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
-            <div style={{ padding: "0px 10px" }}>
+            <div>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
                 <Typography varient="h6" style={{ textTransform: "uppercase" }}>
                   Header
