@@ -278,7 +278,7 @@ function App() {
                 <DndProvider backend={HTML5Backend}>
                   <Switch>
                     <NavigationProvider>
-                      <PrivateRoute title="Map" exact path={["/", "/map/parcels/:parcelId"]} component={MapProvider} />
+                      <PrivateRoute title="Map" exact path={["/", "/map/:type/:paramId", "/map/:type/:paramId/:lati/:longi"]} component={MapProvider} />
                       <Route exact path="/signup" component={SignUpCard} />
                       <Route exact path="/forgotpassword" component={ForgotPassword} />
                       <PrivateRoute exact path="/track" component={TrackProvider} />

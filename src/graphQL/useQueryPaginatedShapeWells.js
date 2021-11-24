@@ -23,6 +23,8 @@ export const SHAPEWELLS = gql`
           coordinates
           wellName
           api
+          lease
+          leaseId
           operator
           wellType
           latitude

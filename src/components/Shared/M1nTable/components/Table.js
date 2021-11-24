@@ -120,6 +120,7 @@ import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
 import { isDebuggerStatement, isPropertySignature } from "typescript";
 import { colorPallete } from "components/Table/helpers";
+import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -255,6 +256,7 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#D4E8F1",
     },
     "& .MuiToolbar-regular > div:nth-child(2)": {
+      marginRight: (props) => props.toolbarActionMarginRight ? props.toolbarActionMarginRight : 'inherit',
       flex: "0 1 auto",
     },
     "& .MuiTableCell-body": {
@@ -488,7 +490,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SubTable(props) {
-  const classes = useStyles(props);
+  const classes = useStyles({ ...props, toolbarActionMarginRight: props?.options?.toolbarActionMarginRight });
   const wellTableClass = WellTableStyles(props);
   const parcelTableClass = ParcelOwnershipStyles(props);
   const productionClass = ProductionTableStyle(props);
@@ -1775,18 +1777,18 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           console.log("modell download");
-                          handleViewFile(props.addAble.type === "parcelRunsheet" || props.addAble.type === "parcelDocument" ? row_line.fileId : row_line?._id);
+                          handleViewFile(props.addAble.type === "parcelRunsheet" || props.addAble.type === "parcelDocument" || props.addAble.type === "wellDocument" ? row_line.fileId : row_line?._id);
                         }}
                       >
                         <GetAppIcon />
                       </IconButton>
 
                       {/* BEGINNING OF SHITTY CODE === this find the file type and if pdf will show the icon */}
-                      {row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1] === "pdf" && (
+                      {row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase() === "pdf" && (
                         <IconButton
                           onClick={(e) => {
                             e.stopPropagation();
-                            const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1];
+                            const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
                             if (type === "pdf") {
                               if (props.addAble.type === 'document') {
                                 window.history.pushState('', '', `/documents/${row_line._id}/view`);
@@ -1822,7 +1824,7 @@ function SubTable(props) {
                   if (row_line && row_line.uploadedDate) {
                     dateTime = row_line.uploadedDate;
                   }
-                  const fileExtension = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1];
+                  const fileExtension = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
                   const file = row_line?.fileName;
                   const uri = row_line?.fileUrl;
 
@@ -1878,7 +1880,7 @@ function SubTable(props) {
                             onClick={(e) => {
                               e.stopPropagation();
                               //  console.log(,'value Div click')
-                              const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1];
+                              const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
                               if (type === "pdf") {
                                 if (props.addAble.type === 'document') {
                                   window.history.pushState('', '', `/documents/${row_line._id}/view`);
@@ -1966,9 +1968,12 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  // if(column?.options?.customBodyRender){
+                  //   return column?.options?.customBodyRender
+                  // }
                   if(column.isCustom && column.type === 'dropdown'){
                     let value = null;
-                    if( props.rows[tableMeta.rowIndex].custom_data){
+                    if(props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data){
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
                     }
                     return (
@@ -2095,6 +2100,7 @@ function SubTable(props) {
                           entityId={
                             props.targetLabel === "Parcel Interest" ||
                               props.targetLabel === "Parcel Ownershipship" ||
+                              props.targetLabel === "Unit Ownershipship" ||
                               props.targetLabel === "contact"
                               ? tableMeta.rowData[1]
                               : null
@@ -2437,6 +2443,37 @@ function SubTable(props) {
               </div>
             );
           }
+          if (props.addAble.type === "wellDocument") {
+            return (
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    height: "35px",
+                    display: "flex",
+                  }}
+                >
+                  <Tooltip title={"Delete"}>
+                    <IconButton
+                      size="medium"
+                      style={{ margin: "0 5px" }}
+                      onClick={(e) => {
+                        handleExpandClick(null, null, null, "deleteWellDocument");
+                      }}
+                      aria-label="delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              </div>
+            );
+          }
           if (props.addAble.type === "parcelRunsheet") {
             return (
               <div
@@ -2698,7 +2735,7 @@ function SubTable(props) {
       if (props.addAble && props.parent === "UserManagement") {
         buttonLabel = "+ ADD USER";
       }
-      if (props.addAble.type === "ownerToParcel") {
+      if (props.addAble.type === "ownerToParcel" || props.addAble.type === "ownerToUnit") {
         buttonLabel = "+ ADD INTEREST OWNER";
         menuOptions = {
           text: "Import Interest Owners", isShow: true, action: () => {
@@ -2713,7 +2750,8 @@ function SubTable(props) {
       if (props.addAble.type === "suggestedOwnerToParcel") {
         buttonLabel = "+ ADD TO PARCEL";
       }
-      if (props.addAble.type === "parcelDocument") {
+      if (props.addAble.type === "parcelDocument" ||
+        props.addAble.type === "wellDocument") {
         buttonLabel = "ADD DOCUMENT";
       }
       if (props.addAble.type === "parcelRunsheet") {
@@ -2730,6 +2768,10 @@ function SubTable(props) {
         if (props.addAble.type && props.addAble.type === "ownerToParcel") {
           handleExpandClick(null, null, null, "addOwnerToParcel");
         }
+        if (props.addAble.type && props.addAble.type === "ownerToUnit") {
+          handleExpandClick(null, null, null, "addOwnerToUnit");
+        }
+
 
         if (props.addAble.type && props.addAble.type === "deals")
           setStateApp((stateApp) => ({
@@ -2770,7 +2812,7 @@ function SubTable(props) {
 
       return (
         <>
-          <div style={{ display: "inline", cssFloat: "left", marginRight: "15px", marginTop: "5px" }}>
+          <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
             {props.addAble.type === "parcelInterest" && (
               <Button color="secondary" className={classes.multiSelectionTopBarButtons} disabled={true} onClick={() => { }}>
                 {buttonLabel}
@@ -2785,22 +2827,23 @@ function SubTable(props) {
                 {buttonLabel}
               </Button>
             )}
-            {props.addAble.type === "parcelDocument" && (
-              <Button
-                color="secondary"
-                className={classes.multiSelectionTopBarButtons}
-                onClick={() => {
-                  setStateApp((stateApp) => ({
-                    ...stateApp,
-                    selectedDocument: {},
-                  }));
-                  props.onClickAdd();
-                }}
-              >
-                <PostAddIcon />
-                {buttonLabel}
-              </Button>
-            )}
+            {(props.addAble.type === "parcelDocument" ||
+              props.addAble.type === "wellDocument") && (
+                <Button
+                  color="secondary"
+                  className={classes.multiSelectionTopBarButtons}
+                  onClick={() => {
+                    setStateApp((stateApp) => ({
+                      ...stateApp,
+                      selectedDocument: {},
+                    }));
+                    props.onClickAdd();
+                  }}
+                >
+                  <PostAddIcon />
+                  {buttonLabel}
+                </Button>
+              )}
             {(props.addAble.type === "wellInterest" ||
               props.addAble.type === "deals" ||
               props.addAble.type === "suggestedOwnerToParcel" ||
@@ -2815,7 +2858,8 @@ function SubTable(props) {
                 </Button>
               )}
             {(props.addAble.type === "contact" ||
-              props.addAble.type === "ownerToParcel") &&
+              props.addAble.type === "ownerToParcel" ||
+              props.addAble.type === "ownerToUnit") &&
               <ButtonDropDown options={options} />}
 
             {props.header === "Documents" && (
@@ -2913,6 +2957,13 @@ function SubTable(props) {
         }
       }
 
+      if (props.targetLabel === "Unit Ownership") {
+        if (rows[dataIndex]?._id) {
+          setOpenDialog("addOwnerToUnit");
+          setSelectedRow(rows[dataIndex]);
+        }
+      }
+
       if (props.targetLabel === "contact") {
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -2932,7 +2983,8 @@ function SubTable(props) {
           selectedDocument: rows[dataIndex],
         }));
       }
-      if (props.targetLabel === "parcelDocument") {
+      if (props.targetLabel === "parcelDocument" ||
+        props.targetLabel === "wellDocument") {
         setStateApp((stateApp) => ({
           ...stateApp,
           selectedDocument: rows[dataIndex],
@@ -3232,7 +3284,7 @@ function SubTable(props) {
       }
 
       if (props.onTableChange) {
-        props.onTableChange(action, tableState, props.rows, { pageInd, setPageInd, setRowsPerPage });
+        props.onTableChange(action, tableState, props.rows, { pageInd, setPageInd, setRowsPerPage, m1nSelectedRowsIds, m1nSelectedRowsIndexes, setSelectedRow });
       }
     },
   };
@@ -3432,7 +3484,7 @@ function SubTable(props) {
               customSearchRender: (searchText, handleSearch, hideSearch, options) => {
                 registerSearchHandler(handleSearch);
                 const Component = props.headerComponent
-                return  getHeaders();
+                return getHeaders();
               },
             }),
             ...props.options,
@@ -3472,6 +3524,20 @@ function SubTable(props) {
         )}
         {openDialog && openDialog === "addOwnerToParcel" && (
           <AddParcelOwnerDialogContent
+            onClose={() => {
+              setSelectedRow(null);
+              handleCloseDialog();
+            }}
+            handleExpandClick={handleExpandClick}
+            setM1nSelectedRowsIds={setM1nSelectedRowsIds}
+            customLayerId={props.addAble.customLayerId}
+            customLayer={props.addAble.customLayer}
+            selectedRow={selectedRow}
+            setSelectedRow={setSelectedRow}
+          />
+        )}
+        {openDialog && openDialog === "addOwnerToUnit" && (
+          <AddUnitOwnerDialogContent
             onClose={() => {
               setSelectedRow(null);
               handleCloseDialog();
@@ -3534,7 +3600,8 @@ function SubTable(props) {
           openDialog !== "sendMailers" &&
           openDialog !== "buyContactsInfo" &&
           openDialog !== "buyContactsInfoData" &&
-          openDialog !== "addOwnerToParcel" && (
+          openDialog !== "addOwnerToParcel" &&
+          openDialog !== "addOwnerToUnit" && (
             <Dialog
               // style={{zIndex: 99998}}
               open={openDialog ? true : false}
@@ -3549,6 +3616,7 @@ function SubTable(props) {
                   openDialog === "deleteUser" ||
                   openDialog === "deleteWellInterest" ||
                   openDialog === "deleteParcelDocument" ||
+                  openDialog === "deleteWellDocument" ||
                   openDialog === "deleteParcelRunsheet" ||
                   openDialog === "addParcelInterestsToEntity"
                   ? true
@@ -3568,6 +3636,7 @@ function SubTable(props) {
                     openDialog === "deleteUser" ||
                     openDialog === "deleteWellInterest" ||
                     openDialog === "deleteParcelDocument" ||
+                    openDialog === "deleteWellDocument" ||
                     openDialog === "addParcelInterestsToEntity"
                     ? true
                     : false
@@ -3584,6 +3653,7 @@ function SubTable(props) {
                     ? "lg"
                     : openDialog === "addContact" ||
                       openDialog === "addOwnerToParcel" ||
+                      openDialog === "addOwnerToUnit" ||
                       openDialog === "deleteOwnersFromContact" ||
                       openDialog === "deleteContact" ||
                       openDialog === "deleteDocument" ||
@@ -3711,6 +3781,22 @@ function SubTable(props) {
                     ? "s"
                     : ""
                     } from  this parcel?`}
+                </DeleteConfirmationDialogContent>
+              )}
+              {openDialog === "deleteWellDocument" && (
+                <DeleteConfirmationDialogContent
+                  header="Delete Well Document(s)"
+                  onClose={handleCloseDialog}
+                  deleteFunc={props.deleteFunc}
+                  m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+                >
+                  {`Do you want to permanently delete the document${m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
+                    } from  this well?`}
                 </DeleteConfirmationDialogContent>
               )}
               {openDialog === "deleteParcelRunsheet" && (

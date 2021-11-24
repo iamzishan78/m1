@@ -32,11 +32,12 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     "& .MuiInput-root": {
-      height: "50px",
+      height: "41px",
       paddingRight: "8px",
+      backgroundColor: "white"
     },
     "& > div": {
-      width: "100%",
+      width: "350px",
     },
   },
   inputAdornment: {
@@ -446,7 +447,9 @@ function MapGridCardSearch(props) {
       <TextField
         id="mapGridCardSearch-basic"
         type="search"
+        placeholder={`Search across ${props.searchOption} datasets`}
         InputProps={{
+          disableUnderline: true,
           startAdornment: (
             <InputAdornment
               className={classes.inputAdornment}

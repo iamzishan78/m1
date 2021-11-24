@@ -32,7 +32,7 @@ import ParcelDetailsMap from "./components/ParcelDetailsMap";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import SuggestedTaxOwnersTable from "components/Table/TaxOwners/SuggestedTaxOwnersTable";
 import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsParcelTable";
-import ParcelDetailsDocumentTable from "components/Table/Documents/ParcelDetailsDocumentTable";
+import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
 import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
@@ -209,7 +209,7 @@ const useStyles = makeStyles((theme) => ({
   parcelDocument: {
     "& .MuiTableRow-root": {
       "&>:nth-child(2) ": {
-        "& .fileName":{
+        "& .fileName": {
           width: "375px !important"
         }
       }
@@ -324,6 +324,7 @@ export default function ParcelsDetailCard(props) {
       shape.properties[field] = value;
 
       const customLayer = {
+        shapeJson: shape,
         shape: JSON.stringify(shape),
       }
 
@@ -430,7 +431,7 @@ export default function ParcelsDetailCard(props) {
               sm={12}
               container>
               <div className={classes.calcSummary}>
-                <p className={classes.parcelSummmary}>Parcel Name</p>
+                <p className={classes.parcelSummmary}>Tract Name</p>
                 <TextField
                   size="small"
                   value={parcelName}
@@ -570,8 +571,9 @@ export default function ParcelsDetailCard(props) {
               />
             </div>,
             <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
-              <ParcelDetailsDocumentTable
+              <RelatedDetailsDocumentTable
                 customLayer={parcelObj}
+                relatedObjectType='Parcel'
                 parent="associatedDocumentsPerParcel"
                 targetLabel="parcelDocument"
                 header={<DocumentHeader />}

@@ -42,10 +42,7 @@ export const useStyles = makeStyles((theme) => ({
     // this is the top header on the layer manager which contains the word "layesrs" and teh button "manager"
     // backgroundColor: "#141d32 !important",
     // backgroundColor: "red",
-    backgroundColor: "#0e111a",
-
-
-    // opacity: "0.94",
+    backgroundColor: "#0e111a !important",
     minWidth: "400px",
     height: "50px",
   },
@@ -135,7 +132,7 @@ export const useStyles = makeStyles((theme) => ({
     // for layer panel
     backgroundColor: "#0e111a",
     overflow: "auto",
-    height: "calc(100vh - 167px)",
+    height: "calc(100vh - 103px)",
     maxheight: "calc(100vh - 167px)",
     paddingTop: 10,
     paddingBottom: 10,
@@ -174,7 +171,7 @@ export const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       width: "auto",
     },
-    "& .MuiInputBase-root": { width: "93% !important" }
+    "& .MuiInputBase-root": { width: "93% !important" },
   },
   iconSearch: {
     height: "100%",
@@ -268,13 +265,15 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-start",
     backgroundColor: "#0e111a !important",
-    // backgroundColor: "#0e111a",
-
     minHeight: "53px !important",
+    "&>.MuiTouchRipple-root": {
+      borderBottom: "5px solid #263451",
+      marginBottom: "6px",
+    },
     "& .MuiTabs-root": {
       "& .MuiTabs-scroller": {
         "& .MuiTabs-flexContainer": {
-          width: "115px",
+          width: "150px",
           "& .MuiButtonBase-root": {
             minWidth: "0px !important",
           },
@@ -284,18 +283,18 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
         },
       },
       "& .MuiTabs-indicator": {
-        marginLeft: "7px",
+        marginLeft: "6px",
         height: "5px",
         width: "25px !important",
         backgroundColor: "#1CB6DA",
+        zIndex: 1,
       },
     },
   },
 }))(MenuItem);
 
 export const StyledMenuItem = withStyles((theme) => ({
-
-  // outdoors, satellite, dark, light, etc. list item background 
+  // outdoors, satellite, dark, light, etc. list item background
   root: {
     fontFamily: "Poppins",
     display: "block",
@@ -314,8 +313,7 @@ export const StyledMenuItem = withStyles((theme) => ({
 }))(MenuItem);
 
 export const StyledListItemSecondaryAction = withStyles((theme) => ({
-
-  // this is the layer "manager" button styling 
+  // this is the layer "manager" button styling
 
   root: {
     "& .MuiButton-textPrimary": {
@@ -331,9 +329,8 @@ export const StyledListItemSecondaryAction = withStyles((theme) => ({
 }))(ListItemSecondaryAction);
 
 export const StyledListItem2 = withStyles((theme) => ({
-
   // this is the "Base Map Layers header"
-  
+
   root: {
     fontFamily: "Poppins",
     "&:hover": {

@@ -1,6 +1,18 @@
 
 const WellsHeadCells = [
   {
+    name: "wellId",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
     name: "id",
     options: {
       display: false,
@@ -16,6 +28,8 @@ const WellsHeadCells = [
   // { name: "state", label: "State" },
   // { name: "county", label: "County" },
   { name: "wellName", label: "Well Name" },
+  { name: "leaseId", label: "Lease Number" },
+  { name: "lease", label: "Lease Name" },
   { name: "operator", label: "Operator", options: { dbName: "currentOperator" } },
   { name: "wellType", label: "Type" },
   { name: "wellBoreProfile", label: "Profile", },

@@ -25,10 +25,13 @@ import HeatmapIcon from "@material-ui/icons/Gradient";
 import BasemapIcon from "@material-ui/icons/Language";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
+import FilterAltIcon from "components/Shared/svgIcons/FilterAltIcon";
 import SecondaryPanel from "components/Shared/SecondaryPanel";
+import LayerFilters from "components/Shared/SidePanel/compoennts/Filters/LayerFilters";
 
 import { deepEqualObjects } from "../../functions";
 import Layer from "./Layer";
+
 import {
   useStyles,
   StyledMenu,
@@ -143,6 +146,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
         action: "base",
         icon: <BasemapIcon fontSize="medium" />,
       },
+      {
+        action: "filter",
+        icon: <FilterAltIcon fontSize="medium" />,
+      },
     ];
   }, []);
 
@@ -185,6 +192,12 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
       </>
     );
   };
+
+  const filterList = (
+    // <StyledMenuItem>
+    <LayerFilters />
+    // </StyledMenuItem>
+  );
 
   const displayList = (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -240,7 +253,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           maxWidth: "425px",
           left: stateMapControls.expandedPanel ? "0px" : type === "marketplace" ? "-567px" : "0px",
           listStyleType: "none",
-          zIndex: "1240",
+          zIndex: "2",
         }}
       >
         <StyledMenu
@@ -314,33 +327,24 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
               </Grid>
             </Grid>
           </StyledMenuHActionHeader>
-
           {/* base Stuff */}
           {type === "base" && getBasemapImageBox()}
 
-          {type === "layer" ? (
-            layerMap && layerMap[0]?.type ? (
+          {type === "layer" &&
+            (layerMap && layerMap[0]?.type ? (
               <SortableLayer layerMap={layerMap} panelItems={panelItems} />
             ) : (
-              <Box
-                height="calc(100vh - 50px - 64px)"
-                bgcolor= "#0e111a"
-                // bgcolor="#040e24"
-                // bgcolor="red"
-
-                display="flex"
-                justifyContent="center"
-              >
+              <Box height="calc(100vh - 50px - 64px)" bgcolor="#0e111a" display="flex" justifyContent="center">
                 <CircularProgress style={{ top: "50%", position: "absolute" }} size={40} color="secondary" />
               </Box>
-            )
-          ) : type === "base" ? (
+            ))}
+          {type === "base" && (
             <Collapse in={true} timeout="auto" unmountOnExit>
               {displayList}
             </Collapse>
-          ) : (
-            displayList
           )}
+          {type === "heatMaps" && displayList}
+          {type === "filter" && filterList}
         </StyledMenu>
         <StyledMenu
           id="layer-secondary-panel"

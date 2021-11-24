@@ -11,7 +11,7 @@ import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    position: "absolute",
+    position: "fixed",
     bottom: "55px",
     left: "50%",
     transform: "translate(-50%, -50%)",
@@ -109,6 +109,7 @@ export default function ShapeAOIPopup(props) {
       drawBoundary(stateApp.map, stateApp.currentFeature)
       if (user._id !== "") {
         const customLayerData = {
+          shapeJson: stateApp.currentFeature,
           shape: JSON.stringify(stateApp.currentFeature),
           layer: dataType,
           name: spatialData.shapeLabel,
@@ -150,6 +151,7 @@ export default function ShapeAOIPopup(props) {
       const customLayerId = stateApp.selectedAoi.id;
 
       const customLayerData = {
+        shapeJson: currentFeature,
         shape: JSON.stringify(currentFeature),
         layer: dataType,
         name: spatialData.shapeLabel,

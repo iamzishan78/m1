@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 
 import { AppContext } from "AppContext";
 
@@ -64,13 +64,13 @@ export const TableHOC = (Component) => {
         // }, [stateApp.user, props.targetLabel, props.showTracks]);
 
 
-        useEffect (() => {
-            if(constDataTracks?.tracksByObjectType){
+        useEffect(() => {
+            if (constDataTracks?.tracksByObjectType) {
                 const tracksIdArray = constDataTracks.tracksByObjectType.map((track) => track.trackOn);
                 setDataTracksIds(tracksIdArray);
                 setDataTracks(constDataTracks);
             }
-        },[constDataTracks])
+        }, [constDataTracks])
 
         useEffect(() => {
             setSearchedRows(rows)
@@ -101,7 +101,7 @@ export const TableHOC = (Component) => {
             SetDependencyUpdate(!dependencyUpdate)
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
-        const initializeGenericData = (ids, actions) => {
+        const initializeGenericData = useCallback((ids, actions) => {
             if (actions.includes("comments")) {
                 getCommentsCounter({
                     query: COMMENTSCOUNTER,
@@ -129,9 +129,18 @@ export const TableHOC = (Component) => {
                     },
                 })
             }
-        }
+        }, [stateApp?.user?.mongoId, getCommentsCounter, getTagSamples, checkIfOwnersAreContacts])
 
-        const setGenricData = (data, id, actions) => {            
+        const ifAreContacts = (ids) => {
+            checkIfOwnersAreContacts({
+                query: IFARECONTACTS,
+                variables: {
+                    idsArray: ids
+                },
+            })
+        };
+
+        const setGenricData = (data, id, actions) => {
 
             if (actions.includes('tracks')) {
                 data.isTracked = false;
@@ -165,21 +174,22 @@ export const TableHOC = (Component) => {
 
             if (actions.includes('ifAreContacts')) {
                 const ifAreContacs = checkIfOwnersAreContactsData?.ifAreContacts || []
-                for (let i = 0; i < ifAreContacs.length; i++) {
-                    if (data.id === ifAreContacs[i].globalOwner || data.globalOwnerId === ifAreContacs[i].globalOwner) {
-                        data.isContact = ifAreContacs[i].isContact;
-                        data.entity = ifAreContacs[i]._id;
-                        break;
+                if (ifAreContacs.length > 0) {
+                    const contact = ifAreContacs.find((ifc) => ifc.globalOwner === data.id || ifc.globalOwner === data.globalOwnerId)
+                    if (contact) {
+                        data.isContact = contact.isContact;
+                        data.entity = contact._id;
                     }
                 }
             }
             return data
-        };
+        }
 
-        const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView={}) => {
+        const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
             let pageESVariables = {
                 variables: {
-                    search: tableState.searchText,
+                    esIndex: tableState.esIndex,
+                    search: tableState.searchText ? `${tableState.searchText}*` : '',
                     pagination: {
                         // pit: tableData?.before_pit,
                         first: tableState.rowsPerPage,
@@ -205,7 +215,7 @@ export const TableHOC = (Component) => {
                     pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
                 }
             })
-            if(selectedGridView?.filters && selectedGridView.type === 'Default') {
+            if (selectedGridView?.filters && selectedGridView.type === 'Default') {
                 selectedGridView.filters.forEach(filter => {
                     pageESVariables.variables.filters.push(filter)
                 })
@@ -251,6 +261,12 @@ export const TableHOC = (Component) => {
                         }
                     }
                     setSearchedRows(searchRows.filter(row => row.isFiltered !== false))
+                },
+                extendSearchQuery: (extraSearch) => {
+                    if (pageESVariables.variables.search)
+                        pageESVariables.variables.search = `${pageESVariables.variables.search} AND ${extraSearch}`
+                    else
+                        pageESVariables.variables.search = `${extraSearch}`
                 }
             }
         }
@@ -266,6 +282,7 @@ export const TableHOC = (Component) => {
                 setRows={setRows}
                 setLoading={setLoading}
                 initializeGenericData={initializeGenericData}
+                ifAreContacts={ifAreContacts}
                 setGenricData={setGenricData}
                 dependencyUpdate={dependencyUpdate}
                 initializeTableActions={initializeTableActions}

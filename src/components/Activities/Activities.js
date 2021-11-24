@@ -47,8 +47,7 @@ const ActivitiesCalendar = ({
         startAccessor={"start"}
         view={view}
         defaultDate={new Date()}
-        //style={{ height: "calc(100vh - 64px - 80px)" }}
-        style={{ height: "calc(100vh - 70px)" }}
+        style={{ height: "calc(100vh - 65px)", position: "relative", top: 63 }}
         step={60}
         onSelectEvent={(e) => onEventClick(e)}
         showMultiDayTimes
@@ -85,16 +84,10 @@ const useStyles = makeStyles((theme) => ({
       width: "0.75em",
       height: "0.75em",
     },
-    // "&:hover::-webkit-scrollbar": {
-    //     width: "1.0em",
-    // },
-    // "&::-webkit-scrollbar-track": {
-    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    // },
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
       borderRadius: 10,
-  },
+    },
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": { minHeight: "calc(100vh - 265px) !important" },
@@ -104,8 +97,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
-  const filterByTypeCondition =
-    e.type === activityFilterByType || activityFilterByType === "all";
+  const filterByTypeCondition = e.type === activityFilterByType || activityFilterByType === "all";
   let filterByTimeCondition;
   const today = new Date();
   // const tomorrow = moment().add(1, "d");
@@ -137,14 +129,7 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
 const Activities = () => {
   const classes = useStyles();
   let history = useHistory();
-  const [
-    getAllActivities,
-    {
-      data: activitiesData,
-      loading: activitiesLoading,
-      error: activitiesError,
-    },
-  ] = useLazyQuery(GETALLACTIVITIES, {
+  const [getAllActivities, { data: activitiesData, loading: activitiesLoading, error: activitiesError }] = useLazyQuery(GETALLACTIVITIES, {
     fetchPolicy: `network-only`,
   });
 
@@ -162,22 +147,20 @@ const Activities = () => {
   }, []);
 
   useEffect(() => {
-    if(events.length > 0 ){
-      const eventId = history.location.pathname.split('/')[2]
-      if(eventId){
+    if (events.length > 0) {
+      const eventId = history.location.pathname.split("/")[2];
+      if (eventId) {
         setSelectedActivityId(eventId);
         onModalOpen();
       }
     }
-  }, [events])
+  }, [events]);
   useEffect(() => {
     if (activitiesData) {
       setEvents(
         activitiesData?.activities?.map((act) => {
           const start = new Date(Number(act.dateTime));
-          const end = act.endDateTime
-            ? new Date(Number(act.endDateTime))
-            : start;
+          const end = act.endDateTime ? new Date(Number(act.endDateTime)) : start;
           return {
             id: uniqueId(),
             ...act,
@@ -196,13 +179,8 @@ const Activities = () => {
   }, [activitiesData]);
 
   useEffect(() => {
-    setFilteredEvents(
-      events.filter((e) =>
-        getFilterCondition(e, activityFilterByType, activityFilterByTime)
-      )
-    );
+    setFilteredEvents(events.filter((e) => getFilterCondition(e, activityFilterByType, activityFilterByTime)));
   }, [events, activityFilterByType, activityFilterByTime, view]);
-
 
   const onModalClose = () => {
     setStateApp((stateApp) => ({
@@ -227,16 +205,14 @@ const Activities = () => {
 
   useEffect(() => {
     if (stateApp.selectedActivityId) {
-      setSelectedActivity(
-        events.find((act) => act._id === stateApp.selectedActivityId)
-      );
+      setSelectedActivity(events.find((act) => act._id === stateApp.selectedActivityId));
     } else {
       setSelectedActivity(null);
     }
   }, [stateApp.selectedActivityId]);
 
   const onEventClick = (event) => {
-    window.history.pushState('', '', `/activities/${event._id}`);
+    window.history.pushState("", "", `/activities/${event._id}`);
     setSelectedActivityId(event._id);
     onModalOpen();
   };
@@ -244,12 +220,7 @@ const Activities = () => {
   return (
     <div className={classes.root}>
       {activitiesLoading ? (
-        <CircularProgress
-          className={classes.progress}
-          size={80}
-          disableShrink
-          color="secondary"
-        />
+        <CircularProgress className={classes.progress} size={80} disableShrink color="secondary" />
       ) : (
         <>
           <ActivitiesAppBar onAddActivityClick={onModalOpen} />
@@ -283,19 +254,11 @@ const Activities = () => {
                 />
               </div>
               <div className={classes.table}>
-                <M1nTable
-                  dense
-                  activities={filteredEvents}
-                  parent="Activities"
-                />
+                <M1nTable dense activities={filteredEvents} parent="Activities" />
               </div>
             </div>
           )}
-          <ActivitiesModal
-            selectedActivity={selectedActivity}
-            setSelectedActivityId={setSelectedActivityId}
-            events={events}
-          />
+          <ActivitiesModal selectedActivity={selectedActivity} setSelectedActivityId={setSelectedActivityId} events={events} />
         </>
       )}
     </div>

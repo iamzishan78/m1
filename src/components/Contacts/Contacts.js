@@ -11,16 +11,18 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         "flex-direction": "column",
         height: "calc(100vh - 65px)",
+        top: "65px",
+        position: "relative",
         "align-items": "stretch",
-        "&>.MuiPaper-root": { 
+        "&>.MuiPaper-root": {
           display: "contents",
         },
-        "&>:nth-child(3)": { 
+        "&>:nth-child(3)": {
           height: "inherit !important",
         },
         "&> table": {
           bottom: 0,
-        }
+        },
       },
     },
   },

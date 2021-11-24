@@ -273,6 +273,7 @@ function DocumentsTable(props) {
     })
   }
 
+  console.log('rows', props.searchedRows)
   return (
     <>
       <Container

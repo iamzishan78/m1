@@ -241,16 +241,13 @@ const RenderSignUpControls = () => {
 
   return (
     <>
-      <div>
+      {/* <div>
         <Typography className={localClass.headerWords}>
           Don't have an account?
         </Typography>
-        {/* <Typography className={localClass.smallerWords}>
-          Select your role to learn more now
-        </Typography> */}
-      </div>
+      </div> */}
 
-      <div className={localClass.cardContainer}>
+      {/* <div className={localClass.cardContainer}>
         <div className={localClass.signInCardContainer}>
           <Paper
             elevation={0}
@@ -291,13 +288,6 @@ const RenderSignUpControls = () => {
               </Typography>
             </div>
             <Link
-              // to="/signup"
-              // onClick={() => {
-              //   setStateApp((stateApp) => ({
-              //     ...stateApp,
-              //     signUpUserType: "LandOwner",
-              //   }));
-              // }}
             >
               <Button
                 variant="outlined"
@@ -429,7 +419,7 @@ const RenderSignUpControls = () => {
             </Link>
           </Paper>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

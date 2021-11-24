@@ -10,14 +10,16 @@ import { AppContext } from "../../../AppContext";
 export default function BasinFilterJ() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [basinName, setBasinName] = React.useState(
-    stateNav.basinName ? stateNav.basinName : []
-  );
+  const [basinName, setBasinName] = React.useState(stateNav.basinName ? stateNav.basinName : []);
   const [basinNameList, setBasinNameList] = useState([]);
-
   const [getBasinNames, { data: basinList }] = useLazyQuery(BASINNAMESQUERY);
-
   const [getBasinShapes, { data: basinShapes }] = useLazyQuery(GETBASINSHAPES);
+
+  useEffect(() => {
+    if (!stateNav.filterBasin?.length && basinName.length) {
+      setBasinName([]);
+    }
+  }, [stateNav.filterBasin]);
 
   useEffect(() => {
     getBasinNames();
@@ -25,9 +27,7 @@ export default function BasinFilterJ() {
 
   useEffect(() => {
     if (basinList && basinList.basinNames) {
-      setBasinNameList(
-        basinList.basinNames.map((basinName) => basinName.name).sort()
-      );
+      setBasinNameList(basinList.basinNames.map((basinName) => basinName.name).sort());
     }
   }, [basinList]);
 
@@ -42,11 +42,9 @@ export default function BasinFilterJ() {
 
   const handleBasinChange = (value) => {
     let filter;
-    
+
     const currentLayers = [...stateApp.layers];
-    const index = currentLayers.findIndex(
-      (l) => l.identifier == "Basins"
-    );
+    const index = currentLayers.findIndex((l) => l.identifier == "Basins");
 
     if (value && value.length) {
       getBasinShapes({
@@ -57,9 +55,9 @@ export default function BasinFilterJ() {
       // filter = ["match", ["get", "basin"], value, true, false];
       setStateNav((stateNav) => ({ ...stateNav, basinName: value }));
       setBasinName(value);
-      
+
       // set prev visibility
-      setStateApp((stateApp) => ({ ...stateApp, prevBasinVisible: currentLayers[index].layerSettings.visiable }))
+      setStateApp((stateApp) => ({ ...stateApp, prevBasinVisible: currentLayers[index].layerSettings.visiable }));
     } else {
       filter = null;
       setStateNav((stateNav) => ({ ...stateNav, basinName: null }));
@@ -72,21 +70,14 @@ export default function BasinFilterJ() {
   return (
     <Autocomplete
       defaultValue={basinName}
+      value={basinName}
       onChange={(event, newValue) => {
         handleBasinChange(newValue);
       }}
       multiple
       ChipProps={{ color: "secondary" }}
       options={basinNameList}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="outlined"
-          label="Basin"
-          placeholder=""
-          fullWidth
-        />
-      )}
+      renderInput={(params) => <TextField {...params} variant="outlined" label="Basin" placeholder="" fullWidth />}
       disableListWrap
       id="virtualize-basins"
     />

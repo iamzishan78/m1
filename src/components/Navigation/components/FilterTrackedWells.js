@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import { NavigationContext } from "../NavigationContext";
@@ -11,9 +11,9 @@ import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles({
   mainDiv: {
-    //// tracked owners commented, replaced for the padding line
-    // padding: "0px 15px",
-    padding: "0px 160px",
+    padding: "0px 25%",
+    display: "flex",
+    alignItems: "center",
 
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
@@ -45,11 +45,7 @@ export default function FilterTrackedWells() {
     setStateNav((stateNav) => {
       if (stateNav.filterTrackedWells) {
         stateApp.toggleLayersActivity("Tracked Wells", false);
-        if (
-          !stateNav.filterTrackedOwners &&
-          stateNav.selectedTags &&
-          stateNav.selectedTags.length == 0
-        )
+        if (!stateNav.filterTrackedOwners && stateNav.selectedTags && stateNav.selectedTags.length == 0)
           stateApp.toggleLayersActivity("Wells", true);
       } else {
         stateApp.toggleLayersActivity("Tracked Wells", true);

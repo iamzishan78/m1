@@ -56,7 +56,6 @@ export default function UploadZone(props) {
 
   useEffect(() => {
     if (addFileData && addFileData?.addFileDescriptor?.success) {
-      console.log("File added: ", addFileData);
       const uri = addFileData.addFileDescriptor.file.uri;
       const interal_key = addFileData.addFileDescriptor.file.internalKey;
       const file_id = addFileData.addFileDescriptor.file.id;
@@ -75,7 +74,6 @@ export default function UploadZone(props) {
             },
           })
           .then((res) => {
-            console.log(res);
             if (res?._response?.status === 201) {
               // props.getRecentFiles();
               if (!props.relatedObjectId && props.setUploadedFileData) {

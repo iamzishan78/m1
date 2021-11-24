@@ -52,22 +52,6 @@ export default function FilterCountyName() {
     if (data) {
       if (data.counties) {
         setCountyList(data.counties);
-
-        const countyBelongState = () => {
-          for (let i = 0; i < data.counties.length; i++) {
-            if (data.counties[i].county === stateNav.countyName) return true;
-          }
-
-          return false;
-        };
-
-        // if (stateNav.countyName === false && !countyBelongState()) {
-        //   setStateNav((stateNav) => ({
-        //     ...stateNav,
-        //     countyName: data.counties[0].county,
-        //   }));
-        // }
-        
       } else {
         setCountyList([]);
         setStateNav((stateNav) => ({
@@ -107,19 +91,13 @@ export default function FilterCountyName() {
     <FormControl variant="outlined" className={classes.formControl}>
       {loading ? (
         <div style={{ height: "56px" }}>
-          <CircularProgress
-            color="secondary"
-            className={classes.loader}
-            size={28}
-          />
+          <CircularProgress color="secondary" className={classes.loader} size={28} />
         </div>
       ) : (
         <Autocomplete
           className={classes.autoC}
           options={countyList}
-          getOptionLabel={(option) =>
-            option && option.county ? option.county : option ? option : ""
-          }
+          getOptionLabel={(option) => (option && option.county ? option.county : option ? option : "")}
           disabled={!stateNav.stateName || countyList.length === 0}
           autoComplete
           autoSelect
@@ -132,19 +110,10 @@ export default function FilterCountyName() {
           onKeyDown={(event) => onEnterKey(event)}
           renderInput={(params) => (
             <form autoComplete="off">
-              <TextField
-                {...params}
-                fullWidth
-                label="County"
-                variant="outlined"
-              />
+              <TextField {...params} fullWidth label="County" variant="outlined" />
             </form>
           )}
-          renderOption={(option) => (
-            <Typography>
-              {option && option.county ? option.county : option ? option : ""}
-            </Typography>
-          )}
+          renderOption={(option) => <Typography>{option && option.county ? option.county : option ? option : ""}</Typography>}
         />
       )}
     </FormControl>
