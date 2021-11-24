@@ -193,11 +193,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     );
   };
 
-  const filterList = (
-    // <StyledMenuItem>
-    <LayerFilters />
-    // </StyledMenuItem>
-  );
+  const filterList = <LayerFilters />;
 
   const displayList = (
     <DragDropContext onDragEnd={onDragEnd}>

@@ -57,8 +57,6 @@ export default function FilterLateralLength() {
   const [valueMinDisplay, setValueMinDisplay] = useState("");
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
 
-  const [lateralLengthWell, setLateralLengthWell] = useState(stateNav.lateralLengthWell ? stateNav.lateralLengthWell : []);
-
   const [error, setError] = useState(false);
   const [errorText, setErrorText] = useState("");
 
@@ -84,6 +82,12 @@ export default function FilterLateralLength() {
       filterLateralLength: filter,
     }));
   }, [setStateNav, valueMaxDisplay, valueMinDisplay]);
+
+  useEffect(() => {
+    if (stateNav.lateralLengthWell) {
+      setFilter();
+    } else clearFilters();
+  }, [setFilter, stateNav.lateralLengthWell]);
 
   useEffect(() => {
     const recall = () => {
@@ -116,14 +120,24 @@ export default function FilterLateralLength() {
   }, [stateNav, valueMaxDisplay, valueMinDisplay]);
 
   useEffect(() => {
-    if (stateNav.lateralLengthWell) {
-      setFilter();
-    } else {
-      clearFilters();
+    if (valueMinDisplay && valueMaxDisplay) {
+      if (valueMinDisplay > valueMaxDisplay) {
+        setError(true);
+        setErrorText("Min value is greater than Max value");
+      } else {
+        setError(false);
+        setErrorText("");
+      }
     }
-  }, [setFilter, stateNav.lateralLengthWell]);
+  }, [valueMaxDisplay, valueMinDisplay]);
 
   const clearFilters = () => {
+    if (stateNav.filterLateralLength) {
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        filterLateralLength: null,
+      }));
+    }
     setValueMinDisplay("");
     setValueMaxDisplay("");
     setError(false);
@@ -132,7 +146,6 @@ export default function FilterLateralLength() {
 
   const handleChangeMin = (event) => {
     setValueMinDisplay(parseInt(event.target.value.replace(/,/g, "")));
-    setLateralLengthWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
       lateralLengthWell: event.target.id,
@@ -147,10 +160,9 @@ export default function FilterLateralLength() {
 
   const handleChangeMax = (event) => {
     setValueMaxDisplay(parseInt(event.target.value.replace(/,/g, "")));
-    setLateralLengthWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
-      tvdWell: event.target.id,
+      lateralLengthWell: event.target.id,
     }));
     if (event.target.value === "") {
       setStateNav((stateNav) => ({
@@ -159,18 +171,6 @@ export default function FilterLateralLength() {
       }));
     }
   };
-
-  useEffect(() => {
-    if (valueMinDisplay && valueMaxDisplay) {
-      if (valueMinDisplay > valueMaxDisplay) {
-        setError(true);
-        setErrorText("Min value is greater than Max value");
-      } else {
-        setError(false);
-        setErrorText("");
-      }
-    }
-  }, [valueMaxDisplay, valueMinDisplay]);
 
   const allowNumbersOnly = (e) => {
     let code = e.which ? e.which : e.keyCode;

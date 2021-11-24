@@ -39,9 +39,6 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   subHeaderItem: {
-    // this is the top header on the layer manager which contains the word "layesrs" and teh button "manager"
-    // backgroundColor: "#141d32 !important",
-    // backgroundColor: "red",
     backgroundColor: "#0e111a !important",
     minWidth: "400px",
     height: "50px",
@@ -52,16 +49,11 @@ export const useStyles = makeStyles((theme) => ({
     padding: 0,
     minWidth: "425px",
     overflowY: "auto",
-    height: "calc(100vh - 466px - 50px - 64px)",
-    // maxHeight: 'calc(100vh - 40px - 64px)',
-    // backgroundColor: "#040e24",
+    height: "calc(100vh - 571px)",
     backgroundColor: "#0e111a",
     "&::-webkit-scrollbar": {
       width: "0.75em",
     },
-    // "&:hover::-webkit-scrollbar": {
-    //     width: "1.0em",
-    // },
     "&::-webkit-scrollbar-track": {
       "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
     },
