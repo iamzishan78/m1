@@ -37,38 +37,44 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "lightgrey",
   },
   tabsHeader: {
-    padding: "20px",
+    padding: "20px 20px 0px 20px",
   },
   tabsSection: {
     marginTop: "20px",
     backgroundColor: "#fff",
   },
   headerSection: {
-    padding: "20px",
+    padding: "20px 30px",
     minHeight: "400px",
+    backgroundColor: "#fff",
+    marginBottom: "10px",
   },
   summarySection: {
-    padding: "20px",
+    padding: "20px 30px",
     minHeight: "400px",
+    backgroundColor: "#fff",
+    marginBottom: "10px",
   },
   checkDetailsSection: {
-    padding: "20px",
+    padding: "20px 30px",
     minHeight: "400px",
+    backgroundColor: "#fff",
   },
 }));
 
 const StyledTabs = withStyles({
   root: {
     borderBottom: "1px solid #e8e8e8",
+    textTransform: "capitalize",
   },
   indicator: {
-    backgroundColor: "#1890ff",
+    backgroundColor: "#12abe0",
   },
 })(Tabs);
 
 const StyledTab = withStyles((theme) => ({
   root: {
-    textTransform: "none",
+    textTransform: "uppercase",
     minWidth: 72,
     fontWeight: theme.typography.fontWeightRegular,
     marginRight: theme.spacing(4),
@@ -167,16 +173,22 @@ export default function DetailComponents() {
               <StyledTab label="Check Details" />
             </StyledTabs>
           </div>
-          <div style={{ maxHeight: "719px", overflow: "overlay" }}>
+          <div style={{ maxHeight: "719px", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
             <div style={{ padding: "0px 10px" }}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-                <Typography varient="h6">Header</Typography>
+                <Typography varient="h6" style={{ textTransform: "uppercase" }}>
+                  Header
+                </Typography>
               </div>
               <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
-                <Typography varient="h6">Summary</Typography>
+                <Typography varient="h6" style={{ textTransform: "uppercase" }}>
+                  Summary
+                </Typography>
               </div>
               <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
-                <Typography varient="h6">Check Details</Typography>
+                <Typography varient="h6" style={{ textTransform: "uppercase" }}>
+                  Check Details
+                </Typography>
               </div>
             </div>
           </div>
