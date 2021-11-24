@@ -2,15 +2,8 @@ import React, { Fragment, useState, useContext, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../AppContext";
 import Card from "@material-ui/core/Card";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
 import CloseIcon from "@material-ui/icons/Close";
-import ExpandIcon from "../Shared/svgIcons/ExpandIcon";
-import ShrinkIcon from "../Shared/svgIcons/ShrinkIcon";
 import IconButton from "@material-ui/core/IconButton";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import MapGridCardSearch from "./components/MapGridCardSearch";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import Button from "@material-ui/core/Button";
@@ -22,14 +15,15 @@ import TabPanels, { TabPanel } from "components/Shared/TabPanels";
 import TabButtons from "components/Shared/TabPanels/TabButtons";
 
 import ContactsHeadCells from "../Shared/constants/contacts-header-schema.js";
-import WellsHeadCells from "../Shared/constants/well-header-schema.js";
 import wellsColumnHeaders from "../Shared/constants/well-interests-header-grid-schema.js";
 import parcelsColumnHeaders from "../Shared/constants/parcel-header-grid.js";
 import { leasesColumnHeaders, locationsColumnHeaders, operatorsColumnHeaders, ownersColumnHeaders } from "./MapGridCardHeaders";
 import DockMenu from "./DockMenu";
 import ShapeGridWellsTable from "components/Table/Wells/ShapeGridWellsTable";
 import ShapeGridTaxOwnersTable from "components/Table/TaxOwners/ShapeGridTaxOwnersTable";
-import ViewportGridWellsTable from "components/Table/Wells/ViewportGridWellsTable";
+
+import SearchPanel from "./components/SearchPanel";
+import { platformDataInitialData } from "./components/data";
 
 function a11yProps(index) {
   return {
@@ -75,6 +69,10 @@ const useStyles = makeStyles((theme) => {
       },
     },
     appBar: {
+      backgroundColor: "#F2F2F2",
+      borderBottom: "1px solid rgba(224, 224, 224, 1)",
+      boxShadow: "none",
+      color: "#757575",
       cursor: "context-menu",
       "& .MuiIconButton-root:hover": {
         backgroundColor: "rgba(255, 255, 255, 0.08)",
@@ -119,8 +117,8 @@ const useStyles = makeStyles((theme) => {
                   ? "calc(91vh - 233px)"
                   : "calc(60vh - 233px)"
                 : mapGridCardActivated === "exp"
-                ? "calc(91vh - 183px)"
-                : "calc(60vh - 183px)",
+                  ? "calc(91vh - 183px)"
+                  : "calc(60vh - 183px)",
           },
         },
       },
@@ -198,7 +196,7 @@ function MapGridCard(props) {
   const [stateApp] = useContext(AppContext);
 
   // function state
-  const [searchTapValue, SearchTapValue] = useState(0);
+  const [searchTapValue, SearchTapValue] = useState(platformDataInitialData[0]);
   const [viewportTapValue, ViewportTapValue] = useState(0);
   const [selectedBoundary, SelectBoundary] = useState("Shape Filter");
   const [dockMenu, SetDockMenu] = useState("bottom");
@@ -266,7 +264,7 @@ function MapGridCard(props) {
     /// this intends to set the search value that gets passed into the mapgridcardsearch.js
     /// value will control the cog api
 
-    switch (searchTapValue) {
+    switch (searchTapValue.index) {
       case 5:
         return "location";
       case 4:
@@ -322,40 +320,61 @@ function MapGridCard(props) {
     []
   );
 
-  const SearchTabPanels = () => (
-    <TabButtons
-      labels={[
-        "Wells",
-        "Tax Owners",
-        "Operators",
-        "Leases",
-        // "Parcels",
-        // "Recent Permits",
-        "Contacts",
-        "Locations",
-      ]}
-      value={searchTapValue}
-      setValue={(n) => {
-        setSearchTapValue(n);
-        if (searchTapValue !== n) {
-          dispatch(setMapGridCardState({ searchResultData: [], searchloading: true }));
-        }
-      }}
-    />
-  );
+  const handleSearchPanelChange = (value) => {
+    setSearchTapValue(value);
+    if (searchTapValue.index !== value.index) {
+      dispatch(
+        setMapGridCardState({ searchResultData: [], searchloading: true })
+      );
+    }
+  }
+
+  const ativateSearchPanel = () => {
+    if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
+    if (mapGridCardActivated === "min") {
+      dispatch(
+        setMapGridCardState({ mapGridCardActivated: true })
+      );
+    }
+  }
+
+  const options = {
+    toolbarActionMarginRight: '87px !important',
+    customToolbar: () => {
+
+      return <div style={{ display: "flex", "float": "left", position: "relative", left: "207px", marginRight: "15px" }}>
+        <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
+
+        <IconButton
+          className="cancelDraggableEffect"
+          onClick={(e) => {
+            e.stopPropagation();
+            dispatch(
+              setMapGridCardState({
+                mapGridCardActivated: false,
+                selectedOwner: null,
+                selectedOwnerWellIntsSummary: null,
+              })
+            );
+          }}
+        >
+          <CloseIcon color="secondary" />
+        </IconButton>
+      </div>
+    }
+  }
 
   const CardReturn = () => {
     return (
       <Card className={`${mapGridCardActivated === "exp" ? "noDrag" : ""} ${classes.dockMenu}`}>
-        <AppBar
+        {/* <AppBar
           position="static"
           className={`${mapGridCardActivated === "exp" ? "cancelDraggableEffect" : ""} ${classes.appBar}`}
           onClick={() => {
             if (mapGridCardActivated === "min") {
               dispatch(setMapGridCardState({ mapGridCardActivated: true }));
             }
-          }}
-        >
+          }}>
           <Toolbar style={{ paddingRight: "0" }}>
             <Tabs className={classes.tapsRoot} value={mapGridCardActiveTap} onChange={handleMainTapChange} aria-label="simple tabs example">
               <Tab className="cancelDraggableEffect" label={`Search Result (${searchResultData.length})`} {...a11yProps(0)} />
@@ -364,14 +383,14 @@ function MapGridCard(props) {
               <Tab
                 className="cancelDraggableEffect"
                 disabled={!stateApp.gridPolygonString}
-                label={`Boundary${
-                  stateApp.shapeGridWellsCount
+                label={`Boundary${stateApp.shapeGridWellsCount
                     ? " (" + Number((stateApp.shapeGridWellsCount || "") + (stateApp.shapeGridOwnersCount || "")) + ")"
                     : ""
-                }`}
+                  }`}
                 {...a11yProps(1)}
               ></Tab>
             </Tabs>
+
 
             <div style={{ flexGrow: 1 }}></div>
 
@@ -393,7 +412,7 @@ function MapGridCard(props) {
               <CloseIcon color="secondary" />
             </IconButton>
           </Toolbar>
-        </AppBar>
+        </AppBar>  */}
 
         {selectedOwner ? (
           <OwnersSummaryCard />
@@ -406,7 +425,7 @@ function MapGridCard(props) {
               className={classes.tapsPanelsPadding}
               style={{ position: "absolute", width: "100vw" }}
             >
-              <MapGridCardSearch
+              {/* <MapGridCardSearch
                 ativateSearchPanel={() => {
                   if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
                   if (mapGridCardActivated === "min") {
@@ -414,18 +433,19 @@ function MapGridCard(props) {
                   }
                 }}
                 searchOption={getTargetFromSearchTaps()}
-              />
-              <div style={{ position: "relative" }}>
+              /> */}
+              <div style={{ position: "relative" }} classes={classes.gridTables}>
                 <TabPanels
-                  value={searchTapValue}
+                  value={searchTapValue.index}
                   panels={getTaps.map((tab, index) => (
                     <Fragment key={index}>
                       <M1nTable
                         dense
+                        options={options}
                         parent="search"
                         privateColumns={tab.privateColumns}
                         targetLabel={tab.label}
-                        header={<SearchTabPanels />}
+                        header={<SearchPanel handleChange={handleSearchPanelChange} value={searchTapValue} ativateSearchPanel={ativateSearchPanel} />}
                         showTags={tab.showTags}
                         showComments={tab.showComments}
                         showTracks={tab.showTracks}
@@ -443,7 +463,7 @@ function MapGridCard(props) {
               className={classes.tapsPanelsPadding}
               //
               style={{ position: "absolute", width: "100vw" }}
-              //
+            //
             >
               <div style={{ position: "relative" }}>
                 <TabPanels
