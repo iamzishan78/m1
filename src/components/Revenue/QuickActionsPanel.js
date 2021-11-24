@@ -12,7 +12,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import { useStyles, StyledMenu, StyledMenuItem } from "./styles";
 import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
 
-function Panel({ children, handlePanelStateChange, expandedPanel }) {
+export default function QuickActionsPanel({ children, handlePanelStateChange, expandedPanel }) {
   const classes = useStyles();
   const history = useHistory();
 
@@ -74,5 +74,3 @@ function Panel({ children, handlePanelStateChange, expandedPanel }) {
     </>
   );
 }
-
-export default Panel;

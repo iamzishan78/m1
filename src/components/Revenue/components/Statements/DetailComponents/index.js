@@ -8,7 +8,7 @@ import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    position: "fixed",
+    position: "absolute",
     top: 0,
     zIndex: 1,
     height: "100vh",
@@ -45,19 +45,19 @@ const useStyles = makeStyles((theme) => ({
   },
   headerSection: {
     padding: "20px 30px",
-    minHeight: "400px",
+    minHeight: "500px",
     backgroundColor: "#fff",
     marginBottom: "10px",
   },
   summarySection: {
     padding: "20px 30px",
-    minHeight: "400px",
+    minHeight: "500px",
     backgroundColor: "#fff",
     marginBottom: "10px",
   },
   checkDetailsSection: {
     padding: "20px 30px",
-    minHeight: "400px",
+    minHeight: "500px",
     backgroundColor: "#fff",
   },
 }));
@@ -105,9 +105,9 @@ const StyledTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-export default function DetailComponents() {
+export default function DetailComponents(props) {
   const history = useHistory();
-  const classes = useStyles();
+  const classes = useStyles(props);
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
 
@@ -173,23 +173,21 @@ export default function DetailComponents() {
               <StyledTab label="Check Details" />
             </StyledTabs>
           </div>
-          <div style={{ maxHeight: "719px", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
-            <div>
-              <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-                <Typography varient="h6" style={{ textTransform: "uppercase" }}>
-                  Header
-                </Typography>
-              </div>
-              <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
-                <Typography varient="h6" style={{ textTransform: "uppercase" }}>
-                  Summary
-                </Typography>
-              </div>
-              <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
-                <Typography varient="h6" style={{ textTransform: "uppercase" }}>
-                  Check Details
-                </Typography>
-              </div>
+          <div style={{ maxHeight: "calc(100vh - 320px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+            <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
+              <Typography varient="h6" style={{ textTransform: "uppercase" }}>
+                Header
+              </Typography>
+            </div>
+            <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
+              <Typography varient="h6" style={{ textTransform: "uppercase" }}>
+                Summary
+              </Typography>
+            </div>
+            <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
+              <Typography varient="h6" style={{ textTransform: "uppercase" }}>
+                Check Details
+              </Typography>
             </div>
           </div>
         </div>
