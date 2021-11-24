@@ -189,15 +189,16 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
 
                                     {data.type === 'date' &&
                                         <KeyboardDatePicker
-                                            className={classes.maxWidth}
                                             autoFocus
+                                            className={classes.select}
                                             disableToolbar
-                                            variant="inline"
+                                            fullWidth
+                                            inputVariant="outlined"
                                             format="MM/DD/YYYY"
                                             margin="normal"
                                             id="date-picker-inline"
                                             value={properties[data.key] || null}
-                                            onBlur={() => { setTableDataState({}); setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] }) }}
+                                            // onBlur={() => { setTableDataState({}); setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] }) }}
                                             onChange={(date) => {
                                                 if (date) { updateProperties(null, data.key, String(date["_d"])); }
                                             }}
