@@ -6,12 +6,15 @@ import Grid from "@material-ui/core/Grid";
 import Dialog from "@material-ui/core/Dialog";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Menu from "@material-ui/core/Menu";
 import CheckIcon from "@material-ui/icons/Check";
 import AddIcon from "@material-ui/icons/Add";
 import { arrayMoveImmutable } from "array-move";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { AppContext } from "AppContext";
+import omit from "lodash/omit";
 
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
@@ -25,6 +28,7 @@ import {
   sortableHandle,
 } from "react-sortable-hoc";
 
+import { GET_ALL_LIBRARY_META_DATA } from "graphQL/useQueryGetMetaData";
 import { ADD_META_DATA } from "graphQL/useMutationAddMetaData";
 import { UPDATE_META_DATA } from "graphQL/useMutationUpdateMetaData";
 import { colorPallete } from "components/Table/helpers";
@@ -65,75 +69,132 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: 8,
     borderBottom: "1px solid #EEF1F4",
   },
+  library: {
+    marginLeft: 25,
+    marginTop: 20,
+    "& .MuiTypography-body1": {
+      fontSize: 14,
+    },
+  },
+  fields: {
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: "#F6F8F9",
+    },
+  },
 }));
 
-const MetaField = () => {
+const options = [
+  { value: "dropdown", label: "Drop-down" },
+  { value: "text", label: "Text" },
+];
+
+const viewOptions = [
+  {
+    label: "Create new",
+    value: "new",
+  },
+  {
+    label: "Choose from library",
+    value: "existing",
+  },
+];
+
+const categoryOptions = [
+  {
+    label: "Docs",
+    value: "Docs",
+  },
+  {
+    label: "Contacts",
+    value: "Contacts",
+  },
+  {
+    label: "Flow",
+    value: "Flow",
+  },
+  {
+    label: "All (wells, docs, flows etc.)",
+    value: "All",
+  },
+];
+
+const MetaField = ({ category }) => {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState("new");
+  const [metaData, setMetaData] = useState(null);
+  const [filteredMetaData, setFilteredMetaData] = useState(null);
+  const [selectFilter, setSelectFilter] = useState(
+    categoryOptions[categoryOptions.length - 1].value
+  );
+  const [filter, setFilter] = useState("");
   const [showAddDescription, setShowAddDescription] = useState(false);
   const { control, reset, setValue, register, getValues, watch } = useForm();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const type = watch("type", stateApp.selectedMeta? stateApp.selectedMeta.type : "dropdown");
-  
-  const [items, setItems] = useState([{ palleteId: colorPallete[0].id}]);
-  
+  const type = watch(
+    "type",
+    stateApp.selectedMeta ? stateApp.selectedMeta.type : "dropdown"
+  );
+  const isAddedToLibrary = watch(
+    "isAddedToLibrary",
+    stateApp.selectedMeta ? stateApp.selectedMeta.isAddedToLibrary : false
+  );
+
+  const [items, setItems] = useState([{ palleteId: colorPallete[0].id }]);
+
   useEffect(() => {
-    if(stateApp.selectedMeta){
+    if (stateApp.selectedMeta) {
       setTimeout(() => {
+        setValue("isAddedToLibrary", stateApp.selectedMeta.isAddedToLibrary);
         setValue("type", stateApp.selectedMeta.type);
         setValue("title", stateApp.selectedMeta.label);
         setItems(stateApp.selectedMeta.dropdownOptions);
-      },100)
+      }, 100);
     }
-  },[stateApp.selectedMeta])
-  
-  const [addMetaData, { data }] = useMutation(ADD_META_DATA);
-  const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
+  }, [stateApp.selectedMeta]);
 
-  const options = [
-    { value: "dropdown", label: "Drop-down" },
-    { value: "text", label: "Text" },
-  ];
+  const [addMetaData, {}] = useMutation(ADD_META_DATA);
+  const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
+  const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(
+    GET_ALL_LIBRARY_META_DATA
+  );
 
-  const viewOptions = [
-    {
-      label: "Create new",
-      value: "new",
-    },
-    {
-      label: "Choose from library",
-      value: "existing",
-    },
-  ];
+  useEffect(() => {
+    getAllLibraryMetaData();
+  }, [getAllLibraryMetaData]);
 
-  const categoryOptions = [
-    {
-      label: "Docs",
-      value: "Docs",
-    },
-    {
-      label: "Contacts",
-      value: "Contacts",
-    },
-    {
-      label: "Flow",
-      value: "Flow",
-    },
-    {
-      label: "All",
-      value: "All",
-    },
-  ];
+  useEffect(() => {
+    if (metaDataRes?.getAllLibraryMetaData?.gridViews) {
+      setMetaData(metaDataRes.getAllLibraryMetaData.gridViews);
+      setFilteredMetaData(metaDataRes.getAllLibraryMetaData.gridViews);
+    }
+  }, [metaDataRes]);
+
+  useEffect(() => {
+    if (metaData?.length > 0) {
+      let data = metaData;
+      if (selectFilter !== "All") {
+        data = metaData.filter((d) => d.category === selectFilter);
+      }
+      if (filter) {
+        data = data.filter((d) =>
+          d.label.toLowerCase().includes(filter.toLowerCase())
+        );
+      }
+      setFilteredMetaData(data);
+    }
+  }, [filter, selectFilter]);
 
   const handleSave = () => {
     const values = getValues();
-    if(stateApp.selectedMeta){
+    if (stateApp.selectedMeta) {
       updateMetaData({
         variables: {
           metaData: {
             _id: stateApp.selectedMeta._id,
             label: values.title,
             dropdownOptions: items,
+            isAddedToLibrary: values.isAddedToLibrary,
           },
         },
         refetchQueries: ["getMetaData"],
@@ -145,7 +206,9 @@ const MetaField = () => {
           metaData: {
             name: values.title.replace(/ /g, "_").toLowerCase(),
             label: values.title,
-            esKey: `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}.value.keyword`,
+            esKey: `custom_data.${values.title
+              .replace(/ /g, "_")
+              .toLowerCase()}.value.keyword`,
             options: {
               display: true,
               filter: true,
@@ -159,6 +222,7 @@ const MetaField = () => {
             category: values.category,
             user: stateApp.user.mongoId,
             dropdownOptions: items,
+            isAddedToLibrary: values.isAddedToLibrary,
             isCustom: true,
           },
         },
@@ -166,7 +230,7 @@ const MetaField = () => {
         awaitRefetchQueries: true,
       });
     }
-    handleClose()
+    handleClose();
   };
 
   const handleClose = () => {
@@ -174,9 +238,10 @@ const MetaField = () => {
     setStateApp((stateApp) => ({
       ...stateApp,
       showFieldModal: false,
-      selectedMeta: null
-    }))
-  }
+      selectedMeta: null,
+    }));
+  };
+
   return (
     <Dialog
       fullWidth
@@ -189,176 +254,322 @@ const MetaField = () => {
         }))
       }
     >
-      <div>
+      <div style={{ height: "550px" }}>
         <div className={classes.header}>
           {stateApp.selectedMeta ? <h3>Edit Field</h3> : <h3>Add Field</h3>}
-          <IconButton
-            onClick={handleClose}
-          >
+          <IconButton onClick={handleClose}>
             <CloseIcon />
           </IconButton>
         </div>
-        <div>
-          <div className={classes.tabs}>
-            {viewOptions.map((option) => {
-              return (
-                <span
-                  style={{ marginLeft: 13, padding: 5 }}
-                  onClick={() => setSelectedTab(option.value)}
-                  className={
-                    selectedTab === option.value
-                      ? classes.selectedType
-                      : classes.unSelectedType
-                  }
-                >
-                  {option.label}
-                </span>
-              );
-            })}
-          </div>
-          <div style={{ padding: 35 }}>
-            <Grid container spacing={0}>
-              <Grid
-                container
-                item
-                xs={7}
-                style={{ paddingRight: 20 }}
-                alignItems="center"
+        <div className={classes.tabs}>
+          {viewOptions.map((option) => {
+            return (
+              <span
+                style={{ marginLeft: 13, padding: 5 }}
+                onClick={() => setSelectedTab(option.value)}
+                className={
+                  selectedTab === option.value
+                    ? classes.selectedType
+                    : classes.unSelectedType
+                }
               >
-                <label style={{ margin: "5px 0px" }}>Field title</label>
-                <Controller
-                  control={control}
-                  name="title"
-                  render={(props) => (
-                    <TextField
-                      size="small"
-                      type="text"
-                      variant="outlined"
-                      value={props.value}
-                      inputRef={props.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => {
-                        props.onChange(e.target.value);
-                      }}
-                      placeholder="e.g. Priority, Stage, Status"
-                      fullWidth
-                      defaultValue=""
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid container item xs={5} alignItems="center">
-                <label style={{ margin: "5px 0px" }}>Field type</label>
-                <Controller
-                  control={control}
-                  name="type"
-                  defaultValue={options[0].value}
-                  render={(props) => (
-                    <Select
-                      styles={{
-                        menu: provided => ({ ...provided, zIndex: 9999 })
-                      }}
-                      value={options.find((op) => op.value === props.value)}
-                      menuPlacement="auto"
-                      onChange={(e) => {
-                        props.onChange(e.value);
-                      }}
-                      options={options}
-                      className={classes.select}
-                      isDisabled={stateApp.selectedMeta}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid container item xs={7} style={{ paddingRight: 20 }}>
-                {!showAddDescription ? (
-                  <div
-                    className={classes.addField}
-                    onClick={() => {
-                      setShowAddDescription(true);
-                    }}
+                {option.label}
+              </span>
+            );
+          })}
+        </div>
+        {selectedTab === "new" ? (
+          <div>
+            <div>
+              <div style={{ padding: 35 }}>
+                <Grid container spacing={0}>
+                  <Grid
+                    container
+                    item
+                    xs={7}
+                    style={{ paddingRight: 20 }}
+                    alignItems="center"
                   >
-                    <AddIcon className={classes.addIcon} />{" "}
-                    <span className={classes.f13}>Add Description</span>
-                  </div>
-                ) : (
-                  <Controller
-                    control={control}
-                    name="description"
-                    render={(props) => (
-                      <TextField
-                        style={{ paddingTop: 20 }}
-                        size="small"
-                        type="text"
-                        variant="outlined"
-                        value={props.value}
-                        inputRef={props.ref}
-                        onWheel={(e) => e.target.blur()}
-                        onChange={(e) => {
-                          props.onChange(e.target.value);
+                    <label style={{ margin: "5px 0px" }}>Field title</label>
+                    <Controller
+                      control={control}
+                      name="title"
+                      render={(props) => (
+                        <TextField
+                          size="small"
+                          type="text"
+                          variant="outlined"
+                          value={props.value}
+                          inputRef={props.ref}
+                          onWheel={(e) => e.target.blur()}
+                          onChange={(e) => {
+                            props.onChange(e.target.value);
+                          }}
+                          placeholder="e.g. Priority, Stage, Status"
+                          fullWidth
+                          defaultValue=""
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid container item xs={5} alignItems="center">
+                    <label style={{ margin: "5px 0px" }}>Field type</label>
+                    <Controller
+                      control={control}
+                      name="type"
+                      defaultValue={options[0].value}
+                      render={(props) => (
+                        <Select
+                          styles={{
+                            menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                          }}
+                          value={options.find((op) => op.value === props.value)}
+                          menuPlacement="auto"
+                          onChange={(e) => {
+                            props.onChange(e.value);
+                          }}
+                          options={options}
+                          className={classes.select}
+                          isDisabled={stateApp.selectedMeta}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid container item xs={7} style={{ paddingRight: 20 }}>
+                    {!showAddDescription ? (
+                      <div
+                        className={classes.addField}
+                        onClick={() => {
+                          setShowAddDescription(true);
                         }}
-                        placeholder="Description"
-                        fullWidth
-                        defaultValue=""
-                        multiline
-                        rows={3}
-                        rowsMax={4}
+                      >
+                        <AddIcon className={classes.addIcon} />{" "}
+                        <span className={classes.f13}>Add Description</span>
+                      </div>
+                    ) : (
+                      <Controller
+                        control={control}
+                        name="description"
+                        render={(props) => (
+                          <TextField
+                            style={{ paddingTop: 20 }}
+                            size="small"
+                            type="text"
+                            variant="outlined"
+                            value={props.value}
+                            inputRef={props.ref}
+                            onWheel={(e) => e.target.blur()}
+                            onChange={(e) => {
+                              props.onChange(e.target.value);
+                            }}
+                            placeholder="Description"
+                            fullWidth
+                            defaultValue=""
+                            multiline
+                            rows={3}
+                            rowsMax={4}
+                          />
+                        )}
                       />
                     )}
+                  </Grid>
+                  <Grid container item xs={5} style={{ paddingTop: 20 }}>
+                    <Controller
+                      control={control}
+                      name="category"
+                      defaultValue={categoryOptions[0].value}
+                      render={(props) => (
+                        <Select
+                          styles={{
+                            menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                          }}
+                          value={categoryOptions.find(
+                            (op) => op.value === props.value
+                          )}
+                          menuPlacement="auto"
+                          options={categoryOptions}
+                          className={classes.select}
+                          isDisabled={stateApp.selectedMeta}
+                        />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
+              </div>
+              {type === "dropdown" && (
+                <div style={{ padding: "0px 35px" }}>
+                  <SortableComponent setItems={setItems} items={items} />
+                </div>
+              )}
+              <Controller
+                control={control}
+                name="isAddedToLibrary"
+                render={(props) => (
+                  <FormControlLabel
+                    className={classes.library}
+                    style={{ fontSize: 14 }}
+                    control={
+                      <Checkbox
+                        checked={isAddedToLibrary}
+                        onChange={(e) => props.onChange(e.target.checked)}
+                        color="primary"
+                      />
+                    }
+                    label="Add to Mineral's field library"
                   />
                 )}
-              </Grid>
-              <Grid container item xs={5} style={{ paddingTop: 20 }}>
-                <Controller
-                  control={control}
-                  name="category"
-                  defaultValue={categoryOptions[0].value}
-                  render={(props) => (
-                    <Select
-                      styles={{
-                        menu: provided => ({ ...provided, zIndex: 9999 })
-                      }}
-                      value={categoryOptions.find(
-                        (op) => op.value === props.value
-                      )}
-                      menuPlacement="auto"
-                      options={categoryOptions}
-                      className={classes.select}
-                      isDisabled={stateApp.selectedMeta}
-                    />
+              />
+              <div
+                style={{
+                  borderTop: "1px solid #EEF1F4",
+                }}
+              >
+                <div style={{ float: "right" }}>
+                  <Button
+                    style={{ margin: "25px 5px 25px 0px" }}
+                    variant="outlined"
+                    onClick={handleClose}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    style={{ margin: "25px 25px 25px 5px" }}
+                    variant="outlined"
+                    onClick={handleSave}
+                  >
+                    {stateApp.selectedMeta ? "Updated Field" : "Create Field"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div style={{ padding: "20px 40px" }}>
+              <div style={{ width: "80%" }}>
+                <Select
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                  }}
+                  value={categoryOptions.find(
+                    (op) => op.value === selectFilter
                   )}
+                  menuPlacement="auto"
+                  onChange={(e) => {
+                    setSelectFilter(e.value);
+                  }}
+                  options={categoryOptions}
+                  className={classes.select}
+                  isDisabled={stateApp.selectedMeta}
                 />
+                <TextField
+                  style={{ marginTop: 15 }}
+                  size="small"
+                  type="text"
+                  variant="outlined"
+                  value={filter}
+                  onWheel={(e) => e.target.blur()}
+                  onChange={(e) => {
+                    setFilter(e.target.value);
+                  }}
+                  placeholder="Find a field in M1neral"
+                  fullWidth
+                  defaultValue=""
+                />
+              </div>
+            </div>
+            <div style={{ maxHeight: "300px", overflow: "auto" }}>
+              <Grid
+                container
+                spacing={0}
+                style={{
+                  backgroundColor: "#F6F8F9",
+                  color: "#B1B6BC",
+                  fontSize: 13,
+                  padding: "5px 0px",
+                }}
+              >
+                <Grid container item xs={10} style={{ paddingLeft: "50px" }}>
+                  Recent field in your org
+                </Grid>
+                <Grid container item xs={2} style={{ paddingRight: "50px" }}>
+                  <div style={{ width: "100%", textAlign: "end" }}>Type</div>
+                </Grid>
               </Grid>
-            </Grid>
-          </div>
-          {type === "dropdown" && (
-            <div style={{ padding: "0px 35px" }}>
-              <SortableComponent setItems={setItems} items={items} />
+              <div style={{ marginBottom: "10px" }}>
+                {filteredMetaData.map((data) => {
+                  return data.isAddedToLibrary ? (
+                    <div
+                      className={classes.fields}
+                      onClick={() => {
+                        const meta = omit(data, [
+                          "_id",
+                          "lastUpdateAt",
+                          "createAt",
+                          "_ts",
+                          "__v",
+                        ]);
+                        addMetaData({
+                          variables: {
+                            metaData: {
+                              ...meta,
+                              category: category,
+                              user: stateApp.user.mongoId,
+                              isAddedToLibrary: false,
+                              isCustom: true,
+                            },
+                          },
+                          refetchQueries: ["getMetaData"],
+                          awaitRefetchQueries: true,
+                        });
+
+                        handleClose();
+                      }}
+                    >
+                      <div style={{ padding: "0px 50px" }}>
+                        <Grid
+                          container
+                          spacing={0}
+                          style={{
+                            padding: "10px 0px",
+                            borderBottom: "1px solid #F4F5F6",
+                          }}
+                        >
+                          <Grid container item xs={10}>
+                            <div>{data.label}</div>
+                            <div style={{ width: "100%", color: "#B4B9BF" }}>
+                              {data.dropdownOptions.map((option, index) => {
+                                return (
+                                  <span>
+                                    {option.value}
+                                    {index < options.length - 1 ? ", " : ""}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </Grid>
+                          <Grid container item xs={2}>
+                            <div
+                              style={{
+                                width: "100%",
+                                textAlign: "end",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {data.category}
+                            </div>
+                          </Grid>
+                        </Grid>
+                      </div>
+                    </div>
+                  ) : (
+                    <></>
+                  );
+                })}
+              </div>
             </div>
-          )}
-          <div
-            style={{
-              borderTop: "1px solid #EEF1F4",
-            }}
-          >
-            <div style={{ float: "right" }}>
-              <Button
-                style={{ margin: "25px 5px 25px 0px" }}
-                variant="outlined"
-                onClick={handleClose}
-              >
-                Cancel
-              </Button>
-              <Button
-                style={{ margin: "25px 25px 25px 5px" }}
-                variant="outlined"
-                onClick={handleSave}
-              >
-                {stateApp.selectedMeta ? 'Updated Field' : 'Create Field' }
-              </Button>
-            </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </Dialog>
   );

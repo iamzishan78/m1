@@ -102,7 +102,6 @@ export const setColumnsData = (
         filterList: filters[index],
         filterOptions: {
           display: (filterList, onChange, index, column) => {
-            debugger
             column.filterKey = TableHeader.find(
               (el) => el.name === column.name
             )?.esKey;

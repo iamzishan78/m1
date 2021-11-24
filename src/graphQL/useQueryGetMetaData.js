@@ -8,3 +8,9 @@ export const GET_META_DATA = gql`
     )
   }
 `;
+
+export const GET_ALL_LIBRARY_META_DATA = gql`
+  query getAllLibraryMetaData {
+    getAllLibraryMetaData
+  }
+`;

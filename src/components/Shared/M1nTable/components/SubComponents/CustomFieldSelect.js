@@ -47,22 +47,22 @@ const CustomFieldSelect = ({ index, value, onCustomKeyChange, column }) => {
     onCustomKeyChange(act)
   };
 
-  useEffect(() => {
+  useEffect(() => { 
     if (value?.label) {
       const pallete = colorPallete.find(
         (pallete) => pallete.id === value.palleteId
       );
       document.getElementById(
-        `colorText_${index}`
+        `colorText_${index}_${column.name}`
       ).innerHTML = `<span class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}">${value.label}</span>`;
     } else {
-      document.getElementById(`colorText_${index}`).innerHTML = `<span class='colorText'>----</span>`;
+      document.getElementById(`colorText_${index}_${column.name}`).innerHTML = `<span class='colorText'>----</span>`;
     }
   }, [index, value]);
 
   return (
     <div
-      style={{ padding: "0px 10px" }}
+      style={{ padding: "0px 10px", minWidth: "120px" }}
       onClick={(e) => e.stopPropagation()}
       onMouseLeave={(e) => setShowOptions(false)}
     >
@@ -139,7 +139,7 @@ const CustomFieldSelect = ({ index, value, onCustomKeyChange, column }) => {
                   justifyContent: "space-between",
                 }}
               >
-                <span id={`colorText_${index}`}></span>
+                <span id={`colorText_${index}_${column.name}`}></span>
                 <KeyboardArrowDownIcon
                   style={{ marginLeft: 10, marginTop: -2 }}
                 />

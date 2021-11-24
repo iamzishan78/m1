@@ -76,7 +76,6 @@ function DocumentsTable(props) {
   const orderByTracks = false;
   const startPaginationAt = 25;
 
-  console.log("selectedMeta", stateApp.selectedMeta);
   useEffect(() => {
     getESDocuments({
       variables: {
@@ -295,7 +294,7 @@ function DocumentsTable(props) {
             selectedFilters={selectedFilters.current}
           />
         )}
-        {stateApp.showFieldModal && <MetaField />}
+        {stateApp.showFieldModal && <MetaField category="Docs"/>}
         <Table
           style={{ backgroundColor: "#fff" }}
           header={header}
