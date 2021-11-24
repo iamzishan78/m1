@@ -50,7 +50,7 @@ export const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
     backgroundColor: "#0e1119",
     color: "white",
-    zIndex: 1,
+    zIndex: 3,
   },
   quickActionText: {
     margin: "30px 10px 10px 10px",
