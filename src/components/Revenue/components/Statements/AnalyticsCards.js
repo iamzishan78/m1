@@ -4,6 +4,9 @@ import { Grid, Card, CardContent, Typography } from "@material-ui/core";
 import { Warning as WarningIcon } from "@material-ui/icons";
 
 const useStyles = makeStyles(() => ({
+  root: {
+    padding: "75px",
+  },
   card: { borderRadius: "8px" },
   cardHeaderTypography: {
     fontWeight: "bolder",

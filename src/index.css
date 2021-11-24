@@ -69,18 +69,15 @@ body {
   z-index: 9999999999 !important;
 }
 
-.blue {
+.blue{
   color: #3FC0DF
 }
-
 .hideScroll::-webkit-scrollbar {
   display: none;
 }
-
-.red {
+.red{
   color: red
 }
-
 #TaskTemplateDatePopover,
 #SubtaskAssigneePopover,
 .MuiPopover-root {
@@ -89,73 +86,4 @@ body {
 
 .red {
   color: red;
-}
-
-.flex {
-  display: flex;
-}
-
-.block {
-  display: block;
-}
-
-.row {
-  flex-direction: row;
-}
-
-.column {
-  flex-direction: column;
-}
-
-.justifyBetween {
-  justify-content: space-between;
-}
-
-.justifyCenter {
-  justify-content: center;
-}
-
-.justifyStart {
-  justify-content: flex-start;
-}
-
-.justifyEnd {
-  justify-content: flex-end;
-}
-
-.alignStart {
-  align-items: flex-start;
-}
-
-.alignCenter {
-  align-items: center;
-}
-
-.alignEnd {
-  align-items: flex-end;
-}
-
-.h-100 {
-  height: 100%;
-}
-
-.w-100 {
-  width: 100%;
-}
-
-.h-100vh {
-  height: 100vh;
-}
-
-.w_96vw {
-  width: 96vw;
-  margin-right: 2rem;
-}
-
-.w-100vw {
-  width: 100vw;
-}
-
-.mt_48 {
-  margin-top: 48px !important;
 }
