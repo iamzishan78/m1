@@ -165,14 +165,6 @@ export default function FilterFormProduction() {
     }
   }, [optionsCopy]);
 
-  const handleSelectedValueToDisplay = (value) => {
-    setProdOptions(value);
-    setStateNav((stateNav) => ({
-      ...stateNav,
-      prodOptions: value,
-    }));
-  };
-
   useEffect(() => {
     if (stateNav.prodOptions && optionsCopy) {
       const check = optionsCopy.map((val) => val);
@@ -216,6 +208,14 @@ export default function FilterFormProduction() {
       }
     }
   }, [optionsCopy, prodOptions, stateNav.prodOptions]);
+
+  const handleSelectedValueToDisplay = (value) => {
+    setProdOptions(value);
+    setStateNav((stateNav) => ({
+      ...stateNav,
+      prodOptions: value,
+    }));
+  };
 
   const renderFMW = list
     .filter((item) => item.display === true)
