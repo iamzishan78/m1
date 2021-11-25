@@ -90,7 +90,7 @@ export const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       width: theme.spacing(6) + 4,
     },
-    borderRight: "1px solid rgb(38 52 81)",
+    borderRight: "1px solid rgb(38 52 81) !important",
   },
   toolbar: {
     display: "flex",

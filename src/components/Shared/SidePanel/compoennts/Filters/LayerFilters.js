@@ -39,7 +39,7 @@ const useStyles = makeStyles(() => ({
     },
   },
   accordionDetails: {
-    backgroundColor: "white",
+    backgroundColor: "#6a7485",
     padding: 0,
   },
   accordionHeading: {
