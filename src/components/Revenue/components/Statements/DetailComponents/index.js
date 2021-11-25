@@ -6,6 +6,9 @@ import { Typography, IconButton, Tabs, Tab, Grid, Breadcrumbs } from "@material-
 import { LocalAtm as CurrencyIcon, NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
 
+// Components
+import HeaderSection from "./HeaderSection";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     position: "absolute",
@@ -45,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
   },
   headerSection: {
     padding: "20px 30px",
-    minHeight: "500px",
     backgroundColor: "#fff",
     marginBottom: "10px",
   },
@@ -175,9 +177,7 @@ export default function DetailComponents(props) {
           </div>
           <div style={{ maxHeight: "calc(100vh - 320px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
             <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-              <Typography varient="h6" style={{ textTransform: "uppercase" }}>
-                Header
-              </Typography>
+              <HeaderSection />
             </div>
             <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
               <Typography varient="h6" style={{ textTransform: "uppercase" }}>
