@@ -207,6 +207,9 @@ export default function FilterFormProduction() {
         setList(updateState);
       }
     }
+    if (stateNav.prodOptions?.length === 0) {
+      setList([]);
+    }
   }, [optionsCopy, prodOptions, stateNav.prodOptions]);
 
   const handleSelectedValueToDisplay = (value) => {
