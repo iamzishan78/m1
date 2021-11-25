@@ -16,7 +16,7 @@ const useStyles = makeStyles(() => ({
     fontFamily: "Poppins",
     display: "block",
     color: "white",
-    padding: "10px",
+    padding: "0px 10px",
     overflow: "overlay",
     "& .MuiTypography-root": {
       padding: "15px 5px",
@@ -155,7 +155,6 @@ const LayerFilters = () => {
 
   return (
     <div className={classes.root}>
-      <Typography variant="h6">Filters</Typography>
       {Object.keys(filterTypes).map((filterType, index) => (
         <Accordion className={classes.accordionRoot}>
           <AccordionSummary

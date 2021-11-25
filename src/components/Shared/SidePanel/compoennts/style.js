@@ -231,13 +231,10 @@ export const StyledMenuHeaderItem = withStyles((theme) => ({
     fontFamily: "Poppins",
     display: "flex",
     justifyContent: "space-between",
-
+    padding: "32px 23px",
     "&:hover": {
       background: "#0e111a",
     },
-    // backgroundColor: "#263451",
-    // backgroundColor: "#0e111a",
-
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
     },
@@ -248,6 +245,27 @@ export const StyledMenuHeaderItem = withStyles((theme) => ({
     },
     "& .MuiListItemText-primary": {
       fontSize: "x-large",
+    },
+  },
+}))(MenuItem);
+
+export const StyledMenuSecondaryHeaderItem = withStyles((theme) => ({
+  root: {
+    fontFamily: "Poppins",
+    display: "flex",
+    justifyContent: "space-between",
+    backgroundColor: "#0e111a !important",
+    padding: "10px 22px",
+    "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+      color: theme.palette.common.white,
+    },
+    "& .MuiButton-textPrimary": {
+      color: theme.palette.common.white,
+      background: "#17acdd",
+      padding: "10px 8px 8px 0px",
+    },
+    "& .MuiListItemText-primary": {
+      fontSize: "large",
     },
   },
 }))(MenuItem);

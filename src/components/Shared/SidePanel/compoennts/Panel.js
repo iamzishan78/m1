@@ -40,6 +40,7 @@ import {
   StyledListItemSecondaryAction,
   StyledMenuHeaderItem,
   StyledMenuHActionHeader,
+  StyledMenuSecondaryHeaderItem,
 } from "./style";
 import SortableLayer from "./SortableLayer";
 import { CircularProgress } from "@material-ui/core";
@@ -73,6 +74,9 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
         break;
       case "base":
         setTab(2);
+        break;
+      case "filter":
+        setTab(3);
         break;
       default:
     }
@@ -259,15 +263,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           open={Boolean(stateMapControls.selectedControl)}
         >
           <StyledMenuHeaderItem disableRipple key="subheader" role={undefined} dense className={classes.subHeaderItem}>
-            <ListItemText primary={title} />
-
-            {headerButton && (
-              <StyledListItemSecondaryAction>
-                <Button onClick={headerButton.fn} color="secondary" variant="outlined" startIcon={headerButton.icon}>
-                  {headerButton.text}
-                </Button>
-              </StyledListItemSecondaryAction>
-            )}
+            <ListItemText primary="Find Map" />
           </StyledMenuHeaderItem>
 
           {/* Layer Icons */}
@@ -275,14 +271,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
             <Grid container direction="row" justify="space-between" alignItems="center" className={classes.toolbarActions}>
               {!searchState && (
                 <Grid item>
-                  <Tabs
-                    value={tab}
-                    onChange={(event, tab) => setTab(tab)}
-                    aria-label="simple tabs example"
-                    indicatorColor="primary"
-                    textColor="primary"
-                    variant="fullWidth"
-                  >
+                  <Tabs value={tab} aria-label="find-map-tabs" indicatorColor="primary" textColor="primary" variant="fullWidth">
                     {layerIcons.map((action, index) => (
                       <Tab
                         icon={action.icon}
@@ -323,6 +312,16 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
               </Grid>
             </Grid>
           </StyledMenuHActionHeader>
+          <StyledMenuSecondaryHeaderItem>
+            <ListItemText primary={title} />
+            {headerButton && (
+              <StyledListItemSecondaryAction>
+                <Button onClick={headerButton.fn} color="secondary" variant="outlined" startIcon={headerButton.icon}>
+                  {headerButton.text}
+                </Button>
+              </StyledListItemSecondaryAction>
+            )}
+          </StyledMenuSecondaryHeaderItem>
           {/* base Stuff */}
           {type === "base" && getBasemapImageBox()}
 
@@ -340,7 +339,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
             </Collapse>
           )}
           {type === "heatMaps" && displayList}
-          {type === "filter" && filterList}
+          {type === "filter" && <LayerFilters />}
         </StyledMenu>
         <StyledMenu
           id="layer-secondary-panel"
