@@ -33,6 +33,7 @@ import { PAGINATEDWELLSQUERY } from "graphQL/useQueryPaginatedWells";
 import { PAGINATEDOWNERSQUERY } from "graphQL/useQueryPaginatedOwner";
 import { PAGINATEDOPERATORSQUERY } from "graphQL/useQueryPaginatedOperators";
 import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
+import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
 // custom components
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
@@ -270,9 +271,11 @@ function Search() {
     }
   }, [searchHistoryList]);
 
-  const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(PAGINATEDWELLSQUERY, { fetchPolicy: "network-only", skip: true });
+  // const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(PAGINATEDWELLSQUERY, { fetchPolicy: "network-only", skip: true });
+  const [getESWellsPaginatedList, { data: constDataWells }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
   const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(PAGINATEDOWNERSQUERY, { fetchPolicy: "network-only", skip: true });
+  // const [getESOwnersPaginatedList, { data: constDataOwners }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
   const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(PAGINATEDOPERATORSQUERY, {
     fetchPolicy: "network-only",
@@ -282,16 +285,28 @@ function Search() {
   const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(PAGINATEDLEASESQUERY, { fetchPolicy: "network-only", skip: true });
 
   //////////// Search History End//////////////////
+  const startPaginationAt = 25;
 
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        getPaginatedWells({
+        getESWellsPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top,
-          },
-        });
+            esIndex: "platformData:wells",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: `${request.input}`,
+            sort:[]
+          }
+        })
+        // getPaginatedWells({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top,
+        //   },
+        // });
       }, 500),
     []
   );
@@ -299,6 +314,17 @@ function Search() {
   const callOwnerSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
+        // getESOwnersPaginatedList({
+        //   variables: {
+        //     esIndex: "platformData:globalowner",
+        //     pagination: {
+        //       first: startPaginationAt,
+        //       keep_alive: "1micros"
+        //     },
+        //     search: `${request.input}`,
+        //     sort:[]
+        //   }
+        // })
         getPaginatedOwners({
           variables: {
             search: request.input,
@@ -380,7 +406,7 @@ function Search() {
     if (constDataWells) {
       let newOptions = [];
       newOptions = [
-        ...constDataWells.paginatedWells.edges.map((well) => {
+        ...constDataWells.getESPaginatedList.hits.map((well) => {
           return {
             ...well,
             Source: wellCogIndexName,
@@ -389,7 +415,17 @@ function Search() {
           };
         }),
       ];
-      setMaxMinWellsScore(maxMinScore(constDataWells.paginatedWells.edges));
+      // newOptions = [
+      //   ...constDataWells.paginatedWells.edges.map((well) => {
+      //     return {
+      //       ...well,
+      //       Source: wellCogIndexName,
+      //       Primary: well.WellName,
+      //       Secondary: well.ApiNumber,
+      //     };
+      //   }),
+      // ];
+      // setMaxMinWellsScore(maxMinScore(constDataWells.paginatedWells.edges));
 
       setOptions(newOptions);
       setLoadingWells(false);
@@ -420,6 +456,7 @@ function Search() {
   useEffect(() => {
     if (constDataOwners) {
       let newOptions;
+      debugger
       newOptions = [
         ...constDataOwners.paginatedOwners.edges.map((result) => {
           return {
@@ -1114,6 +1151,7 @@ function Search() {
         value={value}
         // handle change also acts like onClick here
         onChange={(event, newValue) => {
+          debugger
           if (event.key === "Enter") handleChange(options[0]);
           else handleChange(newValue);
         }}
