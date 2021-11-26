@@ -277,10 +277,11 @@ function Search() {
   // const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(PAGINATEDOWNERSQUERY, { fetchPolicy: "network-only", skip: true });
   const [getESOwnersPaginatedList, { data: constDataOwners }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
-  const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(PAGINATEDOPERATORSQUERY, {
-    fetchPolicy: "network-only",
-    skip: true,
-  });
+  // const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(PAGINATEDOPERATORSQUERY, {
+  //   fetchPolicy: "network-only",
+  //   skip: true,
+  // });
+  const [getESOperatorsPaginatedList, { data: constDataOperators }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
   const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(PAGINATEDLEASESQUERY, { fetchPolicy: "network-only", skip: true });
 
@@ -338,12 +339,23 @@ function Search() {
   const callOperatorSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        getPaginatedOperators({
+        getESOperatorsPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top,
-          },
-        });
+            esIndex: "platformData:operator",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: `${request.input}`,
+            sort:[]
+          }
+        })
+        // getPaginatedOperators({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top,
+        //   },
+        // });
       }, 500),
     []
   );
@@ -385,7 +397,7 @@ function Search() {
     let newOptions = [];
     if (constDataOperators) {
       newOptions = [
-        ...constDataOperators.paginatedOperators.edges.map((result) => {
+        ...constDataOperators.getESPaginatedList.hits.map((result) => {
           return {
             ...result,
             Source: operatorIndexName,
@@ -395,7 +407,7 @@ function Search() {
         }),
       ];
 
-      setMaxMinOperatosScore(maxMinScore(constDataOperators.paginatedOperators.edges));
+      // setMaxMinOperatosScore(maxMinScore(constDataOperators.paginatedOperators.edges));
 
       setOptions(newOptions);
       setLoadingOperators(false);
