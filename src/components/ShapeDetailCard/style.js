@@ -99,6 +99,27 @@ export const detailCardStyles = makeStyles((theme) => ({
 
 
 export const summaryStyles = makeStyles((theme) => ({
+    provisionCard: {
+        backgroundColor: '#F6F8F9',
+        padding: '10px',
+        '& .heading': {
+            fontWeight: 'bold',
+            paddingBottom: '20px',
+            fontSize: 'larger'
+        },
+        '& .text': {
+            fontWeight: 'bold',
+        },
+        '& .MuiSvgIcon-root': {
+            marginRight: '10px'
+        },
+        '& .uncheck': {
+            opacity: 0.5
+        },
+        '& .provisionRow': {
+            paddingBottom: '10px'
+        }
+    },
     summaryCard: {
         backgroundColor: 'white', paddingLeft: "10px",
         paddingRight: "10px", paddingTop: '8px',

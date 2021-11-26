@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Grid from "@material-ui/core/Grid";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
+import { Grid, Button, FormControl, IconButton, InputLabel, MenuItem, Select } from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -12,68 +12,43 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import { makeStyles } from "@material-ui/core/styles";
 import ContactCardIcon from "components/Shared/svgIcons/contact_card";
-import { summaryStyles } from "components/ShapeDetailCard/style";
-import { FormControl, IconButton, InputLabel, MenuItem, Select } from "@material-ui/core";
+import ContactCardDisabledIcon from "components/Shared/svgIcons/contact_card_disabled";
+import AddIcon from '@material-ui/icons/Add';
 import CommentsWithIcon from "components/Shared/CommentsWithIcon";
-
-const standardProvisions = [
-    {
-        label: 'Option to Extent',
-        key: 'optionToExtend',
-    },
-    {
-        label: 'Concent to Assign',
-        key: 'concentToAssign',
-    },
-    {
-        label: 'Cessation of Production',
-        key: 'CessationOfProduction',
-    },
-    {
-        label: 'Pugh - Vertical',
-        key: 'pVertical',
-    },
-    {
-        label: 'Pugh - Horizontal',
-        key: 'pHorizontal',
-    },
-    {
-        label: 'Shut In Provisions',
-        key: 'shutInProvisions',
-    },
-    {
-        label: 'Cost Free',
-        key: 'costFree',
-    },
-    {
-        label: 'Deductions Allowed',
-        key: 'deductionsAllowed',
-    },
-    {
-        label: 'Pooling Cause',
-        key: 'poolingCause',
-    },
-    {
-        label: 'Continues Drilling',
-        key: 'continuesDrilling',
-    },
-    {
-        label: 'Force Majeur',
-        key: 'forceMajeur',
-    },
-    {
-        label: 'No Titile Warrenty',
-        key: 'noTitleWarrenty',
-    }
-]
+import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
+import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { CREATE_AGREEMENT_PROVISION } from "graphQL/useMutationCreateAgreementProvision";
+import debounce from "lodash/debounce";
+import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
+import AutoCompleteWithNewOption from "components/Shared/Forms/Fields/AutoCompleteWithNewOption";
+import { GET_PROVISION_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetProvisionAutoCompleteList";
 
 const styles = makeStyles(() => ({
     root: {
+        paddingLeft: "10px",
+        paddingRight: "10px", paddingTop: '8px',
+        paddingBottom: '40px',
         '& .MuiFormControl-root': {
             backgroundColor: 'white',
         },
         backgroundColor: 'white',
-        padding: '15px'
+        padding: '15px',
+        '& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary, & .MuiIconButton-label ': {
+            color: '#7f7f7f !important',
+            'svg': {
+                fill: '#7f7f7f !important'
+            }
+        },
+        '& .MuiIconButton-root, & .MuiButtonBase-root': {
+            "&:hover": {
+                backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
+            },
+        },
+        '& .MuiIconButton-label svg': {
+            color: '#7f7f7f !important',
+            fill: '#7f7f7f !important'
+        }
     },
     accordion: {
         border: '3px solid #d9d9d9',
@@ -95,16 +70,33 @@ const styles = makeStyles(() => ({
     checked: { opacity: 1 },
     heading: {
         fontWeight: 'bold'
+    },
+    addDataButton: {
+        backgroundColor: 'white',
+        color: 'black',
+        textTransform: "capitalize",
+        '&:hover': {
+            backgroundColor: 'white',
+            opacity: 0.15,
+        }
+    },
+    contactCard: {
+        '& path': {
+            fill: 'grey'
+        }
     }
 }));
 
 
-export default function ProvisionsTab({ provisions }) {
+export default function ProvisionsTab({ provisions, standardProvisions, id }) {
     const classes = styles();
     const [selectionProvision, setSelectedProvision] = useState('')
-    const { control, register, reset, getValues } = useForm();
+    const { control, register, reset, getValues, setValue } = useForm();
 
-    const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+    const [getProvisionAutoCompleteList, { data: dataProvisionAutoCompleteList = [] }] = useLazyQuery(GET_PROVISION_AUTOCOMPLETE_LIST);
+    const [createAgreementProvision] = useMutation(CREATE_AGREEMENT_PROVISION, { refetchQueries: ['getAgreementProvisions'] });
+
+    const { fields, append } = useFieldArray({
         control, // control props comes from useForm (optional: if you are using FormContext)
         name: "provisions", // unique name for your Field Array
         // keyName: "id", default to "id", you can change the key name
@@ -112,22 +104,49 @@ export default function ProvisionsTab({ provisions }) {
 
     useEffect(() => { reset({ provisions }) }, [])
 
-    const addRemoveProvision = (addProvision, type) => {
+    useEffect(() => {
+        getProvisionAutoCompleteList({ variables: { key: 'type', agreementId: id } })
+    }, [])
+
+    useEffect(() => { reset({ provisions }) }, [provisions])
+
+    const addRemoveProvision = (addProvision, provision) => {
         if (addProvision) {
-            setSelectedProvision(type)
-            append({ type, applicable: true })
+            setSelectedProvision(provision.type)
+            let addProvision = { agreement: id, type: provision.type, isDeleted: false }
+            if (provision.templateRef === true) {
+                addProvision = { ...addProvision, isTemplate: false, templateRef: provision._id }
+                createAgreementProvision({ variables: { provision: addProvision } });
+            } else {
+                append({})
+            }
+
         } else {
-            remove(fields.findIndex(provision => provision.type === type))
+            createAgreementProvision({ variables: { provision: { agreement: id, type: provision.type, isDeleted: true } } });
+            // remove(fields.findIndex(p => p.type === provision.type))
         }
     }
 
-    const handleChange = () => {
-        console.log('getValues:', getValues())
-    }
+    const handleChange = debounce((item, index) => {
+        const formValues = getValues();
+        if (formValues?.provisions && formValues?.provisions[index]) {
+            const provision = formValues.provisions[index]
+            console.log(formValues.provisions[index])
+            if (provision.type)
+                createAgreementProvision({
+                    variables:
+                    {
+                        provision: { agreement: id, ...formValues.provisions[index] }
+                    }
+                });
+        }
+    }, 500)
+
+    const provisionAutoCompleteList = dataProvisionAutoCompleteList?.provisionAutoCompleteList || []
 
     return <Grid container direction="column" spacing={5} className={classes.root}>
         <Grid item>
-            <Accordion className={classes.accordion}>
+            <Accordion className={classes.accordion} defaultExpanded={true}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
@@ -138,8 +157,8 @@ export default function ProvisionsTab({ provisions }) {
                 <AccordionDetails>
                     <Grid container direction="row">
                         {
-                            standardProvisions.map((provision) => {
-                                const isFound = !!fields.find(p => p.type === provision.key)
+                            standardProvisions?.map((provision) => {
+                                const isFound = !!fields.find(p => p.type === provision.type)
                                 return (
                                     <Grid item md={4}>
                                         <FormControlLabel
@@ -148,11 +167,11 @@ export default function ProvisionsTab({ provisions }) {
                                                 <Checkbox
                                                     checked={isFound}
                                                     color="default"
-                                                    onChange={(e) => { addRemoveProvision(e.target.checked, provision.key) }}
-                                                    inputProps={{ 'aria-label': provision.label }}
+                                                    onChange={(e) => { addRemoveProvision(e.target.checked, provision) }}
+                                                    inputProps={{ 'aria-label': provision.type }}
                                                 />
                                             }
-                                            label={provision.label}
+                                            label={provision.type}
                                         />
                                     </Grid>
                                 )
@@ -170,6 +189,7 @@ export default function ProvisionsTab({ provisions }) {
                         onClick={() => setSelectedProvision(item.type)}>
                         <Grid item>
                             <Grid container direction="row" spacing={2} >
+                                <TextField id="templateRef" name={`provisions[${index}].templateRef`} type={'hidden'} inputRef={register()} defaultValue={item.templateRef} />
                                 <Grid item md={4}>
                                     <Controller
                                         control={control}
@@ -178,19 +198,24 @@ export default function ProvisionsTab({ provisions }) {
                                         render={(
                                             { onChange, value, ref },
                                         ) => (
-                                            <FormControl variant="outlined" fullWidth >
-                                                <InputLabel id="provision-type-label">Provision Type</InputLabel>
-                                                <Select
-                                                    labelId="provision-type-label"
-                                                    id="provision-type-label"
-                                                    label="Provision Type"
-                                                    onChange={(value) => { onChange(value); handleChange(value) }}
-                                                    inputRef={ref}
-                                                    value={value}
-                                                >
-                                                    {standardProvisions.map((p) => <MenuItem value={p.key}>{p.label}</MenuItem>)}
-                                                </Select>
-                                            </FormControl>
+                                            <>
+                                                {item.templateRef ? <FormControl variant="outlined" fullWidth >
+                                                    <InputLabel id="provision-type-label">Provision Type</InputLabel>
+                                                    <Select
+                                                        labelId="provision-type-label"
+                                                        id="provision-type-label"
+                                                        label="Provision Type"
+                                                        onChange={(value) => { onChange(value); handleChange(item, index) }}
+                                                        inputRef={ref}
+                                                        disabled={provisions[index]?.isTemplate === false}
+                                                        value={value}
+                                                    >
+                                                        {standardProvisions?.map((p) => <MenuItem value={p.type}>{p.type}</MenuItem>)}
+                                                    </Select>
+                                                </FormControl> :
+                                                    <AutoCompleteWithNewOption variant="outlined" options={provisionAutoCompleteList} value={value} onChange={(_, value) => { onChange(value.name); handleChange(item, index) }} />}
+                                            </>
+
                                         )}
                                     />
                                 </Grid>
@@ -208,7 +233,7 @@ export default function ProvisionsTab({ provisions }) {
                                                     labelId="applicable-label"
                                                     id="applicable-label"
                                                     label="Applicable"
-                                                    onChange={(value) => { onChange(value); handleChange(value) }}
+                                                    onChange={(value) => { onChange(value); handleChange(item, index) }}
                                                     inputRef={ref}
                                                     value={value}
                                                 >
@@ -222,14 +247,14 @@ export default function ProvisionsTab({ provisions }) {
                                 <Grid item md={6} >
                                     <FormControl variant="outlined" fullWidth>
                                         <TextField fullWidth id="p-value" label="Provison Value" variant="outlined" name={`provisions[${index}].value`}
-                                            inputRef={register()} defaultValue={item.value} onChange={handleChange} />
+                                            inputRef={register()} defaultValue={item.value} onChange={() => handleChange(item, index)} />
                                     </FormControl>
                                 </Grid>
                             </Grid>
                         </Grid>
 
                         <Grid item>
-                            <Grid container direction="row" spacing={2}>
+                            <Grid container direction="row" spacing={2} >
                                 <Grid item md={3} >
                                     <Controller
                                         control={control}
@@ -250,7 +275,7 @@ export default function ProvisionsTab({ provisions }) {
                                                 value={value}
                                                 onChange={(date) => {
                                                     onChange(date)
-                                                    handleChange()
+                                                    handleChange(item, index)
                                                 }}
                                                 KeyboardButtonProps={{ "aria-label": "change date" }}
                                             />
@@ -278,7 +303,7 @@ export default function ProvisionsTab({ provisions }) {
                                                 value={value}
                                                 onChange={(date) => {
                                                     onChange(date)
-                                                    handleChange()
+                                                    handleChange(item, index)
                                                 }}
                                                 KeyboardButtonProps={{ "aria-label": "change date" }}
                                             />
@@ -287,22 +312,33 @@ export default function ProvisionsTab({ provisions }) {
                                 </Grid>
 
                                 <Grid item md={4} >
-                                    <TextField id="p-value" label="Party Name" variant="outlined" fullWidth name={`provisions[${index}].partyName`}
-                                        inputRef={register()} defaultValue={item.partyName} onChange={handleChange} />
+                                    <Controller
+                                        control={control}
+                                        name={`provisions[${index}].parties`}
+                                        defaultValue={item?.parties && item?.parties[0] ? item?.parties[0] : item?.parties}
+                                        render={(
+                                            { onChange, value, ref },
+                                        ) => (
+                                            <AutocompEntityNamesList variant='outlined' margin='' size='' label='Party Name' nameAutValue={value}
+                                                setNameAutValue={(value) => { onChange([{ _id: value._id }]); handleChange(item, index) }} />
+                                        )}
+                                    />
+
                                 </Grid>
-                                <Grid item >
+                                <Grid item md={2} style={{ height: '0px' }}>
                                     <IconButton
                                         size={"medium"}
-                                        color="primary"
+                                        color={item?.parties && item?.parties[0] ? 'primary' : 'secondary'}
                                         onClick={(e) => {
                                             e.stopPropagation();
                                         }}
                                         aria-label="show contact"
                                     >
-                                        <ContactCardIcon style={{ margin: "4px" }} />
+                                        {item?.parties && item?.parties[0] ? <ContactCardIcon /> : <ContactCardDisabledIcon />}
+
                                     </IconButton>
                                     <CommentsWithIcon
-                                        // objectId={targetSourceId.toLowerCase()}
+                                        objectId={item._id}
                                         targetLabel={'provision'}
                                         iconZiseSmall={false}
                                     />
@@ -312,15 +348,19 @@ export default function ProvisionsTab({ provisions }) {
                         </Grid>
 
                         <Grid item>
-                            <Grid container direction="row" >
-                                <TextField id="p-value" label="Full Description" variant="outlined" fullWidth multiline rows={4} name={`provisions[${index}].description`}
-                                    inputRef={register()} defaultValue={item.description} onChange={handleChange} />
-                            </Grid>
+                            <TextField id="p-value" label="Full Description" variant="outlined" fullWidth multiline rows={4} name={`provisions[${index}].description`}
+                                inputRef={register()} defaultValue={item.description} onChange={() => handleChange(item, index)} />
                         </Grid>
                     </Grid>
                 )
             }
+            <Grid item>
+                <Button variant="contained" onClick={() => { addRemoveProvision(true, {}) }} color="primary" component="span" className={classes.addDataButton} startIcon={<AddIcon />}>
+                    Add another provision
+                </Button>
+            </Grid>
         </Grid>
+
 
     </Grid>
 }

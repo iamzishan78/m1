@@ -27,6 +27,8 @@ import { AppContext } from "AppContext";
 
 import { copy } from "components/Shared/functions";
 import { detailCardStyles } from "../style";
+import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
+import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 
 export default function AgreementDetailCard(props) {
 
@@ -44,17 +46,15 @@ export default function AgreementDetailCard(props) {
   const classes = detailCardStyles();
   const showSummary = true
 
-  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
-    CUSTOMLAYER,
-  );
+  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
+  const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
+  const [getStandardProvisions, { data: dataStandardProvisions = [] }] = useLazyQuery(GET_STANDARD_PROVISIONS);
 
   useEffect(() => {
     if (props.id) {
-      getCustomLayer({
-        variables: {
-          id: props.id,
-        },
-      });
+      getStandardProvisions()
+      getCustomLayer({ variables: { id: props.id } });
+      getAgreementProvisions({ variables: { agreementId: props.id } });
     }
   }, [props.id]);
 
@@ -151,14 +151,6 @@ export default function AgreementDetailCard(props) {
     });
   };
 
-  const OwnershipHeader = ({ selectedTab, setSelectedTab }) => (
-    <TabButtons
-      labels={["Unit Ownership", "Potential Ownership"]}
-      value={selectedTab}
-      setValue={(n) => { setSelectedTab(n) }}
-    />
-  );
-
   const DocumentHeader = () => {
     const classes = detailCardStyles();
     return (
@@ -209,9 +201,19 @@ export default function AgreementDetailCard(props) {
           tabLabels={["Summary", "Provisions", "Tracts", "Wells", "Documents", "Related Info"]}
           openTabIdex={selectedTab}
           tabPanels={[
-            <AgreementSummary properties={properties} setProperties={setProperties} updateProperties={updateProperties}
-              updateCustomProperties={updateCustomProperties} id={props.id} />,
-            <ProvisionsTab />,
+            <AgreementSummary
+              properties={properties}
+              setProperties={setProperties}
+              updateProperties={updateProperties}
+              updateCustomProperties={updateCustomProperties}
+              id={props.id}
+              provisions={agreementProvisions?.getAgreementProvisions || []}
+              standardProvisions={dataStandardProvisions?.getStandardProvisions || []}
+            />,
+            <ProvisionsTab
+              provisions={agreementProvisions?.getAgreementProvisions || []}
+              standardProvisions={dataStandardProvisions?.getStandardProvisions || []}
+              id={props.id} />,
 
             <div className={showSummary ? classes.subContent : classes.subContent2}>
               <ParcelDetailsRunsheetTable

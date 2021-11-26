@@ -9,8 +9,10 @@ import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutli
 // import TodayOutlinedIcon from '@material-ui/icons/TodayOutlined';
 import InputBase from '@material-ui/core/InputBase';
 import AddIcon from '@material-ui/icons/Add';
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
 import SearchIcon from '@material-ui/icons/Search';
-import { Button } from "@material-ui/core";
+import { Box, Button, Typography } from "@material-ui/core";
 import { useLazyQuery } from "@apollo/client";
 import CommentComponent from "components/Shared/CommentComponent";
 import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable'
@@ -46,6 +48,8 @@ export default function AgreementSummary(props) {
         })
         props.setProperties({ ...props.properties, custom_data_arr: [...props.properties.custom_data_arr] })
     }
+
+    const hasCustomProvision = props.provisions.find((provision) => !provision.templateRef)
 
     return <Grid container direction="row" className={classes.summaryCard}>
         <Grid item md={7} sm={12} className={classes.paddingLeft}>
@@ -99,9 +103,36 @@ export default function AgreementSummary(props) {
             </Grid>
         </Grid>
         <Grid item md={5} sm={12}>
-            <Grid container spacing={2} direction="row">
-                <Grid item md={12}>
-                    {/* <CommentComponent targetLabel={'unit'} targetSourceId={props.id} /> */}
+            <Grid container spacing={2} direction="row" >
+                <Grid item md={12} className={classes.provisionCard}>
+                    <Typography className='heading'>Provisions</Typography>
+                    <Grid container direction="row" >
+                        {
+                            props.standardProvisions.map((provision) => {
+                                const found = props.provisions.find((p) => p.type === provision.type)
+                                return (
+                                    <Grid item md={6} className='provisionRow'>
+                                        <Box display='inline-flex' className={found ? '' : 'uncheck'}>
+                                            {
+                                                found ? <CheckIcon fontSize='medium' style={{ color: '#00b050' }} /> : <CloseIcon />
+                                            }
+                                            <Typography className='text'>{provision.type}</Typography>
+                                        </Box>
+                                    </Grid>
+                                )
+                            }
+                            )
+                        }
+                        <Grid item md={6} className='provisionRow'>
+                            <Box display='inline-flex' className={hasCustomProvision ? '' : 'uncheck'}>
+                                {
+                                    hasCustomProvision ? <CheckIcon fontSize='medium' style={{ color: '#00b050' }} /> : <CloseIcon />
+                                }
+                                <Typography className='text'>Other</Typography>
+                            </Box>
+                        </Grid>
+
+                    </Grid>
                 </Grid>
                 <Grid item className={classes.descriptionInput}>
                     <TextField
