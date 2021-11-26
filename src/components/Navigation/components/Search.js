@@ -274,8 +274,8 @@ function Search() {
   // const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(PAGINATEDWELLSQUERY, { fetchPolicy: "network-only", skip: true });
   const [getESWellsPaginatedList, { data: constDataWells }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
-  const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(PAGINATEDOWNERSQUERY, { fetchPolicy: "network-only", skip: true });
-  // const [getESOwnersPaginatedList, { data: constDataOwners }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
+  // const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(PAGINATEDOWNERSQUERY, { fetchPolicy: "network-only", skip: true });
+  const [getESOwnersPaginatedList, { data: constDataOwners }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
   const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(PAGINATEDOPERATORSQUERY, {
     fetchPolicy: "network-only",
@@ -314,23 +314,23 @@ function Search() {
   const callOwnerSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        // getESOwnersPaginatedList({
-        //   variables: {
-        //     esIndex: "platformData:globalowner",
-        //     pagination: {
-        //       first: startPaginationAt,
-        //       keep_alive: "1micros"
-        //     },
-        //     search: `${request.input}`,
-        //     sort:[]
-        //   }
-        // })
-        getPaginatedOwners({
+        getESOwnersPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top,
-          },
-        });
+            esIndex: "platformData:globalowner",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: `${request.input}`,
+            sort:[]
+          }
+        })
+        // getPaginatedOwners({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top,
+        //   },
+        // });
       }, 500),
     []
   );
@@ -415,16 +415,6 @@ function Search() {
           };
         }),
       ];
-      // newOptions = [
-      //   ...constDataWells.paginatedWells.edges.map((well) => {
-      //     return {
-      //       ...well,
-      //       Source: wellCogIndexName,
-      //       Primary: well.WellName,
-      //       Secondary: well.ApiNumber,
-      //     };
-      //   }),
-      // ];
       // setMaxMinWellsScore(maxMinScore(constDataWells.paginatedWells.edges));
 
       setOptions(newOptions);
@@ -456,9 +446,8 @@ function Search() {
   useEffect(() => {
     if (constDataOwners) {
       let newOptions;
-      debugger
       newOptions = [
-        ...constDataOwners.paginatedOwners.edges.map((result) => {
+        ...constDataOwners.getESPaginatedList.hits.map((result) => {
           return {
             ...result,
             Source: ownerCogIndexName,
@@ -468,7 +457,7 @@ function Search() {
         }),
       ];
 
-      setMaxMinOwnersScore(maxMinScore(constDataOwners.paginatedOwners.edges));
+      // setMaxMinOwnersScore(maxMinScore(constDataOwners.paginatedOwners.edges));
       setOptions(newOptions);
       setLoadingOwners(false);
     }
