@@ -4115,7 +4115,7 @@ function Map({ type, paramId, lati, longi }) {
     stateApp.customLayers,
     stateApp.wellListFromTagsFilter,
     stateNav.filterIntersectingWellLines,
-    stateNav.prodOptions
+    stateNav.prodOptions,
   ]);
 
   useEffect(() => {
@@ -5348,10 +5348,10 @@ function Map({ type, paramId, lati, longi }) {
           ...stateApp,
           mapVars: {
             ...stateApp.mapVars,
-            zoom: zoom,
-            center: center,
-            pitch: pitch,
-            bearing: bearing,
+            zoom,
+            center,
+            pitch,
+            bearing,
           },
         }));
 

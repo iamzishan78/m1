@@ -39,7 +39,7 @@ const useStyles = makeStyles(() => ({
     },
   },
   accordionDetails: {
-    backgroundColor: "#6a7485",
+    backgroundColor: "#101d29",
     padding: 0,
     // overridding the default text fields colors
     "& svg": {
