@@ -199,6 +199,7 @@ export default function AgreementDetailCard(props) {
       <Grid item sm={12}>
         <Taps
           tabLabels={["Summary", "Provisions", "Tracts", "Wells", "Documents", "Related Info"]}
+          backgroundColor={'white'}
           openTabIdex={selectedTab}
           tabPanels={[
             <AgreementSummary

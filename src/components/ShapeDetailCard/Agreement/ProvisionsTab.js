@@ -16,11 +16,9 @@ import ContactCardDisabledIcon from "components/Shared/svgIcons/contact_card_dis
 import AddIcon from '@material-ui/icons/Add';
 import CommentsWithIcon from "components/Shared/CommentsWithIcon";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
-import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { CREATE_AGREEMENT_PROVISION } from "graphQL/useMutationCreateAgreementProvision";
 import debounce from "lodash/debounce";
-import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import AutoCompleteWithNewOption from "components/Shared/Forms/Fields/AutoCompleteWithNewOption";
 import { GET_PROVISION_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetProvisionAutoCompleteList";
 
@@ -32,7 +30,6 @@ const styles = makeStyles(() => ({
         '& .MuiFormControl-root': {
             backgroundColor: 'white',
         },
-        backgroundColor: 'white',
         padding: '15px',
         '& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary, & .MuiIconButton-label ': {
             color: '#7f7f7f !important',

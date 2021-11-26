@@ -121,7 +121,7 @@ export const summaryStyles = makeStyles((theme) => ({
         }
     },
     summaryCard: {
-        backgroundColor: 'white', paddingLeft: "10px",
+        paddingLeft: "10px",
         paddingRight: "10px", paddingTop: '8px',
         paddingBottom: '40px'
     },
