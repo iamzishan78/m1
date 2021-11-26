@@ -13,7 +13,7 @@ import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoComple
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import { summaryTableStyles } from "components/ShapeDetailCard/style";
 
-function TableTextField({ data, value, onChange, onKeyDown, onBlur, showMessage, type, InputProps }) {
+function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
     const classes = summaryTableStyles();
     return (
         <TextField
@@ -32,7 +32,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, showMessage,
                     onKeyDown(e, data, type)
                 }
             }}
-
+            onWheel={onWheel ? onWheel : () => { }}
             onBlur={() => { onBlur(data, type) }}
             InputProps={{
                 ...InputProps,
