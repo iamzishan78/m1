@@ -41,6 +41,43 @@ const useStyles = makeStyles(() => ({
   accordionDetails: {
     backgroundColor: "#6a7485",
     padding: 0,
+    // overridding the default text fields colors
+    "& svg": {
+      fill: "white",
+    },
+    "& label": {
+      color: "white",
+    },
+    "& label.Mui-focused": {
+      color: "white",
+    },
+    "& label.Mui-disabled": {
+      color: "#adadad",
+    },
+    "& input": {
+      color: "white !important",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "white",
+    },
+    "& .MuiOutlinedInput-root": {
+      color: "white",
+      "& fieldset": {
+        borderColor: "white",
+      },
+      "&:hover fieldset": {
+        borderColor: "white",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "white",
+      },
+      "&.Mui-disabled fieldset": {
+        borderColor: "#adadad",
+      },
+      "&.Mui-disabled svg": {
+        fill: "#adadad !important",
+      },
+    },
   },
   accordionHeading: {
     display: "flex",
