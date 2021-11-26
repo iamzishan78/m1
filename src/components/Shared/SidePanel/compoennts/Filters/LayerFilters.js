@@ -12,7 +12,7 @@ import * as LayerFiltersComponents from "components/Shared/SidePanel/compoennts/
 const useStyles = makeStyles(() => ({
   root: {
     backgroundColor: "#0e111a",
-    height: "calc(100vh - 103px)",
+    height: "calc(100vh - 172px)",
     fontFamily: "Poppins",
     display: "block",
     color: "white",

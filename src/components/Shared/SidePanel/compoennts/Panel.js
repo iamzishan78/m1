@@ -197,8 +197,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     );
   };
 
-  const filterList = <LayerFilters />;
-
   const displayList = (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppableM1">
