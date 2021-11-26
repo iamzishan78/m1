@@ -13,9 +13,6 @@ const useStyles = makeStyles((theme) => ({
   search: {
     width: "35%",
     marginLeft: "5px",
-    // "& svg": {
-    //   fill: "grey",
-    // },
   },
 }));
 
