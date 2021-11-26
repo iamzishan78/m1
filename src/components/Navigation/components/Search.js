@@ -283,8 +283,8 @@ function Search() {
   // });
   const [getESOperatorsPaginatedList, { data: constDataOperators }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
-  const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(PAGINATEDLEASESQUERY, { fetchPolicy: "network-only", skip: true });
-
+  // const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(PAGINATEDLEASESQUERY, { fetchPolicy: "network-only", skip: true });
+  const [getESLeasesPaginatedList, { data: constDataLeases }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
   //////////// Search History End//////////////////
   const startPaginationAt = 25;
 
@@ -363,12 +363,23 @@ function Search() {
   const callLeaseSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        getPaginatedLeases({
+        getESLeasesPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top,
-          },
-        });
+            esIndex: "platformData:lease",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: `${request.input}`,
+            sort:[]
+          }
+        })
+        // getPaginatedLeases({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top,
+        //   },
+        // });
       }, 500),
     []
   );
@@ -438,7 +449,7 @@ function Search() {
       let newOptions = [];
 
       newOptions = [
-        ...constDataLeases.paginatedLeases.edges.map((result) => {
+        ...constDataLeases.getESPaginatedList.hits.map((result) => {
           return {
             ...result,
             Source: leaseIndexName,
@@ -448,7 +459,7 @@ function Search() {
           };
         }),
       ];
-      setMaxMinLeasesScore(maxMinScore(constDataLeases.paginatedLeases.edges));
+      // setMaxMinLeasesScore(maxMinScore(constDataLeases.paginatedLeases.edges));
 
       setOptions(newOptions);
       setLoadingLeases(false);
