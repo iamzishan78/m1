@@ -386,10 +386,11 @@ function Search() {
 
   ///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
 
-  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-    skip: true,
-  });
+  // const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+  //   fetchPolicy: "cache-and-network",
+  //   skip: true,
+  // });
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
   const callContactsSearch = React.useMemo(
     () =>
@@ -397,9 +398,20 @@ function Search() {
         /// this function takes the search request and sends it to gql
         getPaginatedContacts({
           variables: {
-            search: request.input,
-          },
-        });
+            esIndex: "contacts_flat",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: `${request.input}`,
+            sort:[]
+          }
+        })
+        // getPaginatedContacts({
+        //   variables: {
+        //     search: request.input,
+        //   },
+        // });
       }, 500),
     []
   );
@@ -493,8 +505,8 @@ function Search() {
     if (constDataContacts) {
       var newOptions = [];
       var newOptions = [
-        ...constDataContacts.paginatedContacts.edges.map((result) => {
-          result = { ...result.node };
+        ...constDataContacts.getESPaginatedList.hits.map((result) => {
+          // result = { ...result.node };
           result.Source = contactIndexName;
 
           if (result.name) {
@@ -513,7 +525,6 @@ function Search() {
         }),
         ...newOptions,
       ];
-
       setOptions(newOptions);
       setLoadingContacts(false);
     }
@@ -1163,7 +1174,6 @@ function Search() {
         value={value}
         // handle change also acts like onClick here
         onChange={(event, newValue) => {
-          debugger
           if (event.key === "Enter") handleChange(options[0]);
           else handleChange(newValue);
         }}
