@@ -298,7 +298,7 @@ function Search() {
               first: startPaginationAt,
               keep_alive: "1micros"
             },
-            search: `${request.input}`,
+            search: request.input? `wellName:*${request.input}*`: '',
             sort:[]
           }
         })

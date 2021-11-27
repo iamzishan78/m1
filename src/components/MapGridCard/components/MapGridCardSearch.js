@@ -23,6 +23,7 @@ import { PAGINATEDWELLSQUERY } from "graphQL/useQueryPaginatedWells";
 import { PAGINATEDOWNERSQUERY } from "graphQL/useQueryPaginatedOwner";
 import { PAGINATEDOPERATORSQUERY } from "graphQL/useQueryPaginatedOperators";
 import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
+import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
 const leaseIndexName = 'lease-index-v2';
 const operatorIndexName = 'operator-index';
@@ -143,15 +144,17 @@ function MapGridCardSearch(props) {
 
 
 
-  const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(
-    PAGINATEDWELLSQUERY,
-    { fetchPolicy: "network-only", skip: true }
-  );
+  // const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(
+  //   PAGINATEDWELLSQUERY,
+  //   { fetchPolicy: "network-only", skip: true }
+  // );
+  const [getESWellsPaginatedList, { data: constDataWells }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
-  const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(
-    PAGINATEDOWNERSQUERY,
-    { fetchPolicy: "network-only", skip: true }
-  );
+  // const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(
+  //   PAGINATEDOWNERSQUERY,
+  //   { fetchPolicy: "network-only", skip: true }
+  // );
+  const [getESOwnersPaginatedList, { data: constDataOwners }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
   const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(
     PAGINATEDOPERATORSQUERY,
@@ -163,17 +166,28 @@ function MapGridCardSearch(props) {
     { fetchPolicy: "network-only", skip: true }
   );
 
-
+  const startPaginationAt = 25;
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
 
-        getPaginatedWells({
+        getESWellsPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top
+            esIndex: "platformData:wells",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: request.input? `wellName:*${request.input}*`: '',
+            sort:[]
           }
         })
+        // getPaginatedWells({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top
+        //   }
+        // })
 
       }, 500),
     []
@@ -182,12 +196,23 @@ function MapGridCardSearch(props) {
   const callOwnerSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        getPaginatedOwners({
+        getESOwnersPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top
+            esIndex: "platformData:globalowner",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: request.input? `ownerName:*${request.input}*`: '',
+            sort:[]
           }
         })
+        // getPaginatedOwners({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top
+        //   }
+        // })
       }, 500),
     []
   );
@@ -277,7 +302,7 @@ function MapGridCardSearch(props) {
 
       let newOptions = [];
       newOptions = [
-        ...constDataWells.paginatedWells.edges.map((well) => {
+        ...constDataWells.getESPaginatedList.hits.map((well) => {
           return {
             ...well,
             Source: wellCogIndexName,
@@ -337,7 +362,7 @@ function MapGridCardSearch(props) {
     if (constDataOwners) {
       let newOptions
       newOptions = [
-        ...constDataOwners.paginatedOwners.edges.map((result) => {
+        ...constDataOwners.getESPaginatedList.hits.map((result) => {
           return {
             ...result,
             Source: 'globalowner-index',
