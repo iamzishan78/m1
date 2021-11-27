@@ -85,7 +85,7 @@ export default function SidePanel() {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       addLayer: true,
-      selectedLayer: null
+      selectedLayer: null,
     }));
   };
 
@@ -395,13 +395,17 @@ export default function SidePanel() {
   //   for Marketplace Panel
   useEffect(() => {
     if (panelType === "marketplace") {
-      setDragFunction(() => { });
-      setToggleFunction(() => { });
+      setDragFunction(() => {});
+      setToggleFunction(() => {});
       // setPanelItems(stateApp.layers);
       setPanelTitle("Marketplace");
       setPanelButton(null);
       setHeaderFilters(null);
     }
+  }, [panelType]);
+
+  useEffect(() => {
+    if (panelType === "filter") setPanelTitle("Filters");
   }, [panelType]);
 
   return panelItems ? (
