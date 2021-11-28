@@ -340,9 +340,9 @@ export default function Navigation(props) {
       currentAccounts && currentAccounts.length === 1
         ? currentAccounts[0]
         : (() => {
-            // Add choose account code here
-            return;
-          })();
+          // Add choose account code here
+          return;
+        })();
 
     const logoutRequest = {
       account: currentAccount,

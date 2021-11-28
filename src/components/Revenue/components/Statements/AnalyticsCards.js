@@ -5,7 +5,7 @@ import { Warning as WarningIcon } from "@material-ui/icons";
 
 const useStyles = makeStyles(() => ({
   root: {
-    padding: "75px",
+    padding: 75,
   },
   card: { borderRadius: "8px" },
   cardHeaderTypography: {
@@ -31,7 +31,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function AnalyticsCards() {
+export default function AnalyticsCards(props) {
   const classes = useStyles();
   return (
     <Grid container direction="row" display="flex" align="center" spacing={4} textAlign="left" className={classes.root}>
@@ -42,7 +42,7 @@ export default function AnalyticsCards() {
               Statements
             </Typography>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
-              342
+              {props.checks}
             </Typography>
           </CardContent>
         </Card>
@@ -55,7 +55,7 @@ export default function AnalyticsCards() {
               Approved
             </Typography>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
-              431
+              {props.approved}
             </Typography>
           </CardContent>
         </Card>
@@ -68,7 +68,7 @@ export default function AnalyticsCards() {
               Needs Approval
             </Typography>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography} style={{ color: "#b9b908" }}>
-              4
+              {props.unApproved}
             </Typography>
           </CardContent>
         </Card>
