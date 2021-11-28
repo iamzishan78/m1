@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
+import { useHistory } from "react-router-dom";
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -87,6 +88,7 @@ const styles = makeStyles(() => ({
 
 export default function ProvisionsTab({ provisions, standardProvisions, id }) {
     const classes = styles();
+    let history = useHistory();
     const [selectionProvision, setSelectedProvision] = useState('')
     const { control, register, reset, getValues, setValue } = useForm();
 
@@ -141,6 +143,10 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
 
     const provisionAutoCompleteList = dataProvisionAutoCompleteList?.provisionAutoCompleteList || []
 
+    const getParty = (item) => {
+        return item?.parties && item?.parties[0] ? item?.parties[0] : item?.parties
+    }
+
     return <Grid container direction="column" spacing={5} className={classes.root}>
         <Grid item>
             <Accordion className={classes.accordion} defaultExpanded={true}>
@@ -185,6 +191,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                         className={`${classes.provisionCard} ${selectionProvision === item.type ? classes.provisionCardSelected : ''}`}
                         onClick={() => setSelectedProvision(item.type)}>
                         <Grid item>
+                            {console.log(item)}
                             <Grid container direction="row" spacing={2} >
                                 <TextField id="templateRef" name={`provisions[${index}].templateRef`} type={'hidden'} inputRef={register()} defaultValue={item.templateRef} />
                                 <Grid item md={4}>
@@ -312,7 +319,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                     <Controller
                                         control={control}
                                         name={`provisions[${index}].parties`}
-                                        defaultValue={item?.parties && item?.parties[0] ? item?.parties[0] : item?.parties}
+                                        defaultValue={getParty(item)}
                                         render={(
                                             { onChange, value, ref },
                                         ) => (
@@ -331,13 +338,16 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                 <Grid item md={2} style={{ height: '0px' }}>
                                     <IconButton
                                         size={"medium"}
-                                        color={item?.parties && item?.parties[0] ? 'primary' : 'secondary'}
+                                        color={getParty(item) ? 'primary' : 'secondary'}
                                         onClick={(e) => {
-                                            e.stopPropagation();
+                                            if (getParty(item)?._id) {
+                                                e.stopPropagation();
+                                                history.push(`/contact/details/${getParty(item)._id}`);
+                                            }
                                         }}
                                         aria-label="show contact"
                                     >
-                                        {item?.parties && item?.parties[0] ? <ContactCardIcon /> : <ContactCardDisabledIcon />}
+                                        {getParty(item) ? <ContactCardIcon /> : <ContactCardDisabledIcon />}
 
                                     </IconButton>
                                     <CommentsWithIcon
