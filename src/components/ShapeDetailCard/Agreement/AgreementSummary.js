@@ -96,7 +96,7 @@ export default function AgreementSummary(props) {
                         updateCustomProperties={props.updateCustomProperties} search={search} />
                 </Grid>
                 <Grid item>
-                    <Button variant="contained" onClick={addCustomData} color="primary" component="span" className={classes.addDataButton} startIcon={<AddIcon />}>
+                    <Button variant="contained" onClick={addCustomData} color="primary" className={classes.addDataButton} startIcon={<AddIcon />}>
                         Add Data
                     </Button>
                 </Grid>

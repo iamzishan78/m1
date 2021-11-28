@@ -135,10 +135,10 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                                     :
                                     <div style={{ minWidth: '30px', cursor: "pointer" }} >
                                         <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                                            <Grid item>
+                                            <Grid item md={10}>
                                                 {data.key || '-'}
                                             </Grid>
-                                            <Grid item>
+                                            <Grid item md={2}>
                                                 {editIconState[`${data.key}key`] && <Tooltip title={"Edit"} placement="top">
                                                     <IconButton
                                                         size="small"
@@ -199,9 +199,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                                             format="MM/DD/YYYY"
                                             margin="normal"
                                             id="date-picker-inline"
-                                            // PopoverProps={{ disablePortal: true }}
                                             value={properties[data.key] || null}
-                                            // onBlur={() => { setTableDataState({}); setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] }) }}
                                             onChange={(date) => {
                                                 if (date && date?._d?.toString() !== 'Invalid Date') {
                                                     debounce(() => {
