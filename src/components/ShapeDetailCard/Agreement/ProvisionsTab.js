@@ -91,7 +91,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
     const { control, register, reset, getValues, setValue } = useForm();
 
     const [getProvisionAutoCompleteList, { data: dataProvisionAutoCompleteList = [] }] = useLazyQuery(GET_PROVISION_AUTOCOMPLETE_LIST);
-    const [createAgreementProvision] = useMutation(CREATE_AGREEMENT_PROVISION, { refetchQueries: ['getAgreementProvisions'] });
+    const [createAgreementProvision] = useMutation(CREATE_AGREEMENT_PROVISION, { refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList'] });
 
     const { fields, append } = useFieldArray({
         control, // control props comes from useForm (optional: if you are using FormContext)
@@ -110,12 +110,12 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
     const addRemoveProvision = (addProvision, provision) => {
         if (addProvision) {
             setSelectedProvision(provision.type)
-            let addProvision = { agreement: id, type: provision.type, isDeleted: false }
-            if (provision.templateRef === true) {
-                addProvision = { ...addProvision, isTemplate: false, templateRef: provision._id }
+            let addProvision = { agreement: id, type: provision.type, isDeleted: false, startDate: undefined, endDate: undefined }
+            if (provision._id) {
+                addProvision = { ...addProvision, isTemplate: false, applicable: true, templateRef: provision._id }
                 createAgreementProvision({ variables: { provision: addProvision } });
             } else {
-                append({})
+                append({ startDate: undefined, endDate: undefined })
             }
 
         } else {
@@ -269,7 +269,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                                 margin="normal"
                                                 id="date-picker-outlined"
                                                 ref={ref}
-                                                value={value}
+                                                value={value || null}
                                                 onChange={(date) => {
                                                     onChange(date)
                                                     handleChange(item, index)
@@ -297,7 +297,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                                 margin="normal"
                                                 id="date-picker-outlined"
                                                 ref={ref}
-                                                value={value}
+                                                value={value || null}
                                                 onChange={(date) => {
                                                     onChange(date)
                                                     handleChange(item, index)
@@ -317,7 +317,13 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                             { onChange, value, ref },
                                         ) => (
                                             <AutocompEntityNamesList variant='outlined' margin='' size='' label='Party Name' nameAutValue={value}
-                                                setNameAutValue={(value) => { onChange([{ _id: value._id }]); handleChange(item, index) }} />
+                                                setNameAutValue={(value) => {
+                                                    if (value?._id)
+                                                        onChange([{ _id: value._id }]);
+                                                    else
+                                                        onChange([]);
+                                                    handleChange(item, index)
+                                                }} />
                                         )}
                                     />
 

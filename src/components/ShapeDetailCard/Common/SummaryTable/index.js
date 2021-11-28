@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import TextField from "@material-ui/core/TextField";
+import debounce from "lodash/debounce";
 import moment from "moment";
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -192,15 +193,21 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                                             autoFocus
                                             className={classes.select}
                                             disableToolbar
+                                            variant="inline"
                                             fullWidth
                                             inputVariant="outlined"
                                             format="MM/DD/YYYY"
                                             margin="normal"
                                             id="date-picker-inline"
+                                            // PopoverProps={{ disablePortal: true }}
                                             value={properties[data.key] || null}
                                             // onBlur={() => { setTableDataState({}); setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] }) }}
                                             onChange={(date) => {
-                                                if (date) { updateProperties(null, data.key, String(date["_d"])); }
+                                                if (date && date?._d?.toString() !== 'Invalid Date') {
+                                                    debounce(() => {
+                                                        updateProperties(null, data.key, String(date["_d"]));
+                                                    }, 500)()
+                                                }
                                             }}
                                             KeyboardButtonProps={{ "aria-label": "change date" }}
                                         />

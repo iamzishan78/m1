@@ -97,7 +97,6 @@ const AutoCompleteWithNewOption = ({ options, onChange, value, shapeType, typeKe
                         ...params.InputProps,
                     }}
                     fullWidth
-                    autoFocus
                 />
             )}
         // {...other}
