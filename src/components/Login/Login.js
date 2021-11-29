@@ -10,20 +10,13 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import RenderSignUpControls from "./RenderSignUpControls";
 import queryString from "query-string";
 
-import {
-  tenantsCredentials,
-  b2cPolicies,
-  msalConfig,
-  loginRequest,
-  authGraphQLRequest,
-} from "./AADAuthConfig";
+import { tenantsCredentials, b2cPolicies, msalConfig, loginRequest, authGraphQLRequest } from "./AADAuthConfig";
 import * as msal from "@azure/msal-browser";
 import { GET_LOGGED_IN_USER } from "graphQL/useMutationLoggedInUser";
 import { USER_MAP_SETTINGS } from "graphQL/useQueryUserMapSettings";
 
 // import rock from '../../DFJ.PNG'
-import rock from '../../rock.png'
-
+import rock from "../../rock.png";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -68,7 +61,7 @@ const localStyles = makeStyles((theme) => ({
     display: "flex",
     height: "100vh",
     flexDirection: "column",
-    backgroundColor: '#343d54'
+    backgroundColor: "#343d54",
     // "&::-webkit-scrollbar": {
     //   width: "0 !important",
     // },
@@ -91,21 +84,14 @@ const localStyles = makeStyles((theme) => ({
 }));
 
 const M1neralLogoNavNoAuth = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 11320 2490"
-    className={props.className}
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11320 2490" className={props.className}>
     <g fill="none" fillRule="evenodd" stroke="none" strokeWidth="1">
       <path
         fill="#12ABE0"
         d="M1396 1823c-201 202-528 202-729 0-15-15-30-31-43-48l-366 366c14 16 29 31 44 47 403 402 1056 402 1459 0 356-356 397-908 124-1309l-379 378c80 188 43 413-110 566zm-839-163c-80-188-43-413 110-566 201-201 528-201 729 0 16 15 30 32 43 48l366-366c-14-16-29-31-44-47L1032 0 302 729c-356 356-397 908-124 1309l379-378zm292-384c101-100 264-100 365 0 101 101 101 264 0 365s-264 101-365 0c-100-101-100-264 0-365z"
       ></path>
       <g transform="translate(2687 379)">
-        <path
-          fill="#12ABE0"
-          d="M2703 1686L2703 64 2703 0 2505 64 2072 202 2132 432 2422 351 2422 1686z"
-        ></path>
+        <path fill="#12ABE0" d="M2703 1686L2703 64 2703 0 2505 64 2072 202 2132 432 2422 351 2422 1686z"></path>
         <path fill="white" d="M8354 6L8354 1686 8633 1686 8633 6z"></path>
         <path
           fill="white"
@@ -160,32 +146,30 @@ const Login = (props) => {
           const accountObj = tokenResponse
             ? tokenResponse.account
             : (() => {
-              const currentAccounts = stateApp.myMSALObj.getAllAccounts();
-              return currentAccounts && currentAccounts.length === 1
-                ? currentAccounts[0]
-                : (() => {
-                  // hoose account code here
-                  return;
-                })();
-            })();
+                const currentAccounts = stateApp.myMSALObj.getAllAccounts();
+                return currentAccounts && currentAccounts.length === 1
+                  ? currentAccounts[0]
+                  : (() => {
+                      // hoose account code here
+                      return;
+                    })();
+              })();
 
           if (accountObj) {
-
             // We need to reject id tokens that were not issued with the default sign-in policy.
             // "acr" claim in the token tells us what policy is used (NOTE: for new policies (v2.0), use "tfp" instead of "acr")
             // To learn more about b2c tokens, visit https://docs.microsoft.com/en-us/azure/active-directory-b2c/tokens-overview
             if (tokenResponse && tokenResponse.idTokenClaims && tokenResponse.idTokenClaims.tfp === b2cPolicies.forgotPassword) {
-
               // stateApp.myMSALObj.clearCache();
               // stateApp.myMSALObj.account = null;
               const logoutRequest = {
-                account: accountObj
+                account: accountObj,
               };
 
-              let request = loginRequest(stateApp.graphqlScope)
+              let request = loginRequest(stateApp.graphqlScope);
 
               if (queryString.parse(props.location.search).id_token_hint) {
-                request.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
+                request.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint };
               }
 
               stateApp.myMSALObj.logout(logoutRequest);
@@ -210,10 +194,7 @@ const Login = (props) => {
             } else if (tokenResponse === null) {
               // tokenResponse was null, attempt sign in or enter unauthenticated state for app
             } else {
-              console.log(
-                "tokenResponse was not null but did not have any tokens: " +
-                tokenResponse
-              );
+              console.log("tokenResponse was not null but did not have any tokens: " + tokenResponse);
             }
             setLoading(false);
 
@@ -225,30 +206,30 @@ const Login = (props) => {
           console.log(error);
 
           if (error.errorMessage && error.errorMessage.includes("AADB2C90118")) {
-            console.log(stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword))
+            console.log(stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword));
 
-            stateApp.myMSALObj.loginRedirect({ authority: stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword) });
+            stateApp.myMSALObj.loginRedirect({
+              authority: stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword),
+            });
 
             return;
           }
 
           if (error.errorMessage && error.errorMessage.includes("AADB2C90085")) {
-            console.log("retrying with forced login bypassing session cookies")
+            console.log("retrying with forced login bypassing session cookies");
 
-            let request = loginRequest()
-            request.extraQueryParameters = { prompt: "login" }
+            let request = loginRequest();
+            request.extraQueryParameters = { prompt: "login" };
             stateApp.myMSALObj.loginRedirect(request);
 
             return;
           }
 
           const currentAccounts = stateApp.myMSALObj.getAllAccounts();
-          const currentAccount = currentAccounts && currentAccounts.length === 1
-            ? currentAccounts[0]
-            : undefined
+          const currentAccount = currentAccounts && currentAccounts.length === 1 ? currentAccounts[0] : undefined;
 
           const logoutRequest = {
-            account: currentAccount
+            account: currentAccount,
           };
 
           sessionStorage.clear();
@@ -260,7 +241,6 @@ const Login = (props) => {
 
           // window.location.replace(window.location.origin);
           setLoading(false);
-
         });
     } else {
       if (stateApp.myMSALObj === false) setLoading(false);
@@ -276,9 +256,7 @@ const Login = (props) => {
       let myMSALObj = stateApp.myMSALObj;
 
       if (!stateApp.myMSALObj) {
-        myMSALObj = new msal.PublicClientApplication(
-          msalConfig(tenant)
-        );
+        myMSALObj = new msal.PublicClientApplication(msalConfig(tenant));
         setStateApp({
           ...stateApp,
           myMSALObj,
@@ -309,10 +287,10 @@ const Login = (props) => {
 
         await finishAADAuth(loginResponse);
       } else if (signInType === "loginRedirect") {
-        let request = loginRequest(tenant.graphqlScope)
+        let request = loginRequest(tenant.graphqlScope);
 
         if (queryString.parse(props.location.search).id_token_hint) {
-          request.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
+          request.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint };
         }
 
         history.replace(window.location.pathname);
@@ -327,18 +305,13 @@ const Login = (props) => {
     const request = authGraphQLRequest(stateApp.graphqlScope);
     request.account = accountObj;
 
-
-
     request.loginHint = request.account.username;
 
-
     authGraphQLRequest.account = request.account;
-    const authGraphQLToken = await getTokenRedirect(request).catch(
-      (error) => {
-        //do some error stuff
-        console.log(error);
-      }
-    );
+    const authGraphQLToken = await getTokenRedirect(request).catch((error) => {
+      //do some error stuff
+      console.log(error);
+    });
     if (!authGraphQLToken) {
       //do some error stuff
       return;
@@ -369,37 +342,66 @@ const Login = (props) => {
       return;
     }
 
-
-    const authUser = {}
-    authUser.issuerUserId = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'http://schemas.microsoft.com/identity/claims/objectidentifier' });
-    if (authUser.issuerUserId) { authUser.issuerUserId = authUser.issuerUserId.val }
-    authUser.issuerTenantId = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'http://schemas.microsoft.com/identity/claims/tenantid' });
-    if (authUser.issuerTenantId) { authUser.issuerTenantId = authUser.issuerTenantId.val }
-    authUser.b2cEmail = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'emails' });
-    if (authUser.b2cEmail) { authUser.b2cEmail = authUser.b2cEmail.val }
-    authUser.b2bEmail = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'preferred_username' });
-    if (authUser.b2bEmail) { authUser.b2bEmail = authUser.b2bEmail.val }
-    authUser.b2cName = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'displayName' });
-    if (authUser.b2cName) { authUser.b2cName = authUser.b2cName.val }
-    authUser.b2bName = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'name' })
-    if (authUser.b2bName) { authUser.b2bName = authUser.b2bName.val }
-    authUser.roles = graphQLProfileResponse.user_claims.filter(({ typ }) => { return typ === 'roles' })
-    if (authUser.roles) { authUser.roles = authUser.roles.map(role => role.val) }
+    const authUser = {};
+    authUser.issuerUserId = graphQLProfileResponse.user_claims.find(({ typ }) => {
+      return typ === "http://schemas.microsoft.com/identity/claims/objectidentifier";
+    });
+    if (authUser.issuerUserId) {
+      authUser.issuerUserId = authUser.issuerUserId.val;
+    }
+    authUser.issuerTenantId = graphQLProfileResponse.user_claims.find(({ typ }) => {
+      return typ === "http://schemas.microsoft.com/identity/claims/tenantid";
+    });
+    if (authUser.issuerTenantId) {
+      authUser.issuerTenantId = authUser.issuerTenantId.val;
+    }
+    authUser.b2cEmail = graphQLProfileResponse.user_claims.find(({ typ }) => {
+      return typ === "emails";
+    });
+    if (authUser.b2cEmail) {
+      authUser.b2cEmail = authUser.b2cEmail.val;
+    }
+    authUser.b2bEmail = graphQLProfileResponse.user_claims.find(({ typ }) => {
+      return typ === "preferred_username";
+    });
+    if (authUser.b2bEmail) {
+      authUser.b2bEmail = authUser.b2bEmail.val;
+    }
+    authUser.b2cName = graphQLProfileResponse.user_claims.find(({ typ }) => {
+      return typ === "displayName";
+    });
+    if (authUser.b2cName) {
+      authUser.b2cName = authUser.b2cName.val;
+    }
+    authUser.b2bName = graphQLProfileResponse.user_claims.find(({ typ }) => {
+      return typ === "name";
+    });
+    if (authUser.b2bName) {
+      authUser.b2bName = authUser.b2bName.val;
+    }
+    authUser.roles = graphQLProfileResponse.user_claims.filter(({ typ }) => {
+      return typ === "roles";
+    });
+    if (authUser.roles) {
+      authUser.roles = authUser.roles.map((role) => role.val);
+    }
 
     const loginResp = await loginUser(
       {
         // issuerUserId: authUser.issuerUserId,
         // issuerTenantId: authUser.issuerTenantId,
         email: authUser.b2cEmail ?? authUser.b2bEmail,
-        name: authUser.b2cName ?? authUser.b2bName
+        name: authUser.b2cName ?? authUser.b2bName,
       },
       authGraphQLResponse.authenticationToken,
-      authGraphQLToken.idToken,
+      authGraphQLToken.idToken
     );
-    let mongoUser, sessionData, mapVars = stateApp.mapVars;
+    let mongoUser,
+      sessionData,
+      mapVars = stateApp.mapVars;
     if (loginResp?.user) {
-      mongoUser = loginResp.user
-      sessionData = loginResp.sessionData
+      mongoUser = loginResp.user;
+      sessionData = loginResp.sessionData;
     }
     if (!mongoUser) {
       //do some error stuff
@@ -407,7 +409,8 @@ const Login = (props) => {
     }
     const userSettingsResp = await userSettings(mongoUser._id, authGraphQLResponse.authenticationToken, authGraphQLToken.idToken);
     if (userSettingsResp) {
-      mapVars = { ...mapVars, styleId: userSettingsResp.activeBaseMap }
+      const { activeBaseMap, mapDefaultPosition } = userSettingsResp;
+      mapVars = { ...mapVars, ...mapDefaultPosition, styleId: activeBaseMap };
     }
 
     setStateApp((state) => ({
@@ -421,11 +424,7 @@ const Login = (props) => {
         roles: authUser.roles,
         authToken: authGraphQLResponse.authenticationToken,
         accessToken: authGraphQLToken.idToken,
-        authTokenExpires: new Date(
-          authGraphQLToken.expiresOn.setDate(
-            authGraphQLToken.expiresOn.getDate() + 14
-          )
-        ),
+        authTokenExpires: new Date(authGraphQLToken.expiresOn.setDate(authGraphQLToken.expiresOn.getDate() + 14)),
         tenant: {
           id: request.tenantId,
           tenant: "M1neral",
@@ -434,7 +433,8 @@ const Login = (props) => {
           },
         },
       },
-      mapVars
+      mapVars,
+      defaultMapVars: mapVars,
     }));
 
     setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
@@ -447,7 +447,6 @@ const Login = (props) => {
   }
 
   async function loginUser(user, authToken, idToken) {
-
     var options = {
       method: "POST",
       headers: {
@@ -455,14 +454,12 @@ const Login = (props) => {
       },
       body: JSON.stringify({ query: GET_LOGGED_IN_USER, variables: { user } }),
     };
-    let endpoint = stateApp.apolloClientEndpoint
-    options = setApolloHeaders(options, authToken, idToken)
+    let endpoint = stateApp.apolloClientEndpoint;
+    options = setApolloHeaders(options, authToken, idToken);
     return await fetch(endpoint, options)
       .then((response) => response.json())
       .then((response) => {
-        return response?.data?.login?.success
-          ? { user: response.data.login.user, sessionData: response.data.login.sessionData }
-          : null;
+        return response?.data?.login?.success ? { user: response.data.login.user, sessionData: response.data.login.sessionData } : null;
       })
       .catch((error) => console.log(error));
   }
@@ -475,17 +472,15 @@ const Login = (props) => {
       },
       body: JSON.stringify({ query: USER_MAP_SETTINGS, variables: { user: userId } }),
     };
-    let endpoint = stateApp.apolloClientEndpoint
-    options = setApolloHeaders(options, authToken, idToken)
+    let endpoint = stateApp.apolloClientEndpoint;
+    options = setApolloHeaders(options, authToken, idToken);
     return await fetch(endpoint, options)
       .then((response) => response.json())
       .then((response) => {
-        return response?.data?.userMapSettings?.settings
-          ? response.data.userMapSettings.settings.settings
-          : null;
+        return response?.data?.userMapSettings?.settings ? response.data.userMapSettings.settings.settings : null;
       })
       .catch((error) => {
-        console.log(error)
+        console.log(error);
       });
   }
 
@@ -493,11 +488,9 @@ const Login = (props) => {
     console.log("request made to signIn at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 
-    const loginResponse = await stateApp.myMSALObj
-      .loginPopup(request)
-      .catch(function (error) {
-        console.log(error);
-      });
+    const loginResponse = await stateApp.myMSALObj.loginPopup(request).catch(function (error) {
+      console.log(error);
+    });
     console.log(loginResponse);
     if (stateApp.myMSALObj.getAllAccounts()) {
       return loginResponse;
@@ -508,20 +501,16 @@ const Login = (props) => {
     console.log("request made to getTokenRedirect at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 
-    return await stateApp.myMSALObj
-      .acquireTokenSilent(request)
-      .catch(async (error) => {
-        console.log("silent token acquisition fails.");
+    return await stateApp.myMSALObj.acquireTokenSilent(request).catch(async (error) => {
+      console.log("silent token acquisition fails.");
+      console.error(error);
+
+      request.forceRefresh = true;
+
+      return stateApp.myMSALObj.acquireTokenRedirect(request).catch((error) => {
         console.error(error);
-
-        request.forceRefresh = true;
-
-        return stateApp.myMSALObj
-          .acquireTokenRedirect(request)
-          .catch((error) => {
-            console.error(error);
-          });
       });
+    });
   }
 
   async function callMSGraph(endpoint, accessToken) {
@@ -560,7 +549,7 @@ const Login = (props) => {
     return await fetch(endpoint, options)
       .then(async (response) => {
         if (!response.ok) {
-          throw new Error(response.headers.toString())
+          throw new Error(response.headers.toString());
         }
 
         return response.json();
@@ -609,15 +598,10 @@ const Login = (props) => {
         <SignInCard
           ready={loadingSigInButton}
           handleAADSignIn={handleAADSignIn}
-          tenant={
-            !stateApp.myMSALObj
-              ? queryString.parse(props.location.search).tenant
-              : undefined}
+          tenant={!stateApp.myMSALObj ? queryString.parse(props.location.search).tenant : undefined}
         />
 
-        
-
-{/* <div
+        {/* <div
   style={{
     color: "#fff",
   }}
@@ -705,43 +689,31 @@ const Login = (props) => {
   );
 
   return loading ? (
-    <div style={{ marginTop: "20%", marginLeft: "47%",  }}>
+    <div style={{ marginTop: "20%", marginLeft: "47%" }}>
       <CircularProgress size={80} disableShrink color="secondary" />
     </div>
   ) : (
     <div
-      className={
-        width > 2050
-          ? `${localClass.height_100} ${localClass.myRoot}`
-          : localClass.myRoot
-      }
-
-      style={{backgroundImage:`url(${rock})`}}
-
+      className={width > 2050 ? `${localClass.height_100} ${localClass.myRoot}` : localClass.myRoot}
+      style={{ backgroundImage: `url(${rock})` }}
     >
-      <div className={localClass.rootNewUser} 
-      
-      style={{
-        backgroundImage:`url(${rock})`,
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-      
-      }}
-      // style={{ overflowY: "scroll !important"}}
-      >{renderBody}
-      
-
-
-      
+      <div
+        className={localClass.rootNewUser}
+        style={{
+          backgroundImage: `url(${rock})`,
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+        }}
+        // style={{ overflowY: "scroll !important"}}
+      >
+        {renderBody}
       </div>
 
       {/* <div className={localClass.rootNewUser}>
         <RenderSignUpControls />
       </div> */}
-
- 
-    </div> 
+    </div>
   );
 };
 

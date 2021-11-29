@@ -4549,10 +4549,19 @@ function Map({ type, paramId, lati, longi }) {
           bearing: map.getBearing(),
         },
       }));
-
       setMap(null);
     }
   }, [stateApp.mapVars.styleId]);
+
+  useEffect(() => {
+    if (map) {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        mapVars: stateApp.defaultMapVars,
+      }));
+      setMap(null);
+    }
+  }, [stateApp.defaultMapVars]);
 
   useEffect(() => {
     if (abstractData && abstractData.abstractGeo && abstractData.abstractGeo.length > 0) {

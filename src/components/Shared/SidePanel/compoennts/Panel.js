@@ -1,7 +1,8 @@
 import React, { useContext, useState, useEffect } from "react";
+import { get } from "lodash";
 import { TransitionGroup } from "react-transition-group";
 import RootRef from "@material-ui/core/RootRef";
-import { useMutation } from "@apollo/client";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
@@ -28,7 +29,9 @@ import ClearIcon from "@material-ui/icons/Clear";
 import FilterAltIcon from "components/Shared/svgIcons/FilterAltIcon";
 import SecondaryPanel from "components/Shared/SecondaryPanel";
 import LayerFilters from "components/Shared/SidePanel/compoennts/Filters/LayerFilters";
+import MapPositions from "components/Shared/SidePanel/compoennts/MapPositions";
 
+import { USER_MAP_SETTINGS_QUERY } from "graphQL/useQueryUserMapSettings";
 import { deepEqualObjects } from "../../functions";
 import Layer from "./Layer";
 
@@ -49,7 +52,7 @@ import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems }) {
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS);
+  const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
 
   const classes = useStyles();
 
@@ -59,6 +62,15 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   const [search, setSearch] = useState("");
   const [searchState, setSearchState] = useState(false);
   const [tab, setTab] = useState(0);
+  const [mapSettings, setSettings] = useState();
+
+  const [getUserMapSettingsQuery, { data: userMapSettings }] = useLazyQuery(USER_MAP_SETTINGS_QUERY);
+
+  useEffect(() => {
+    getUserMapSettingsQuery({
+      variables: { user: stateApp.user.mongoId },
+    });
+  }, []);
 
   useEffect(() => {
     if (stateApp.mapStyles && stateApp.mapStyles.length > 0) setMapStyles([...stateApp.mapStyles]);
@@ -94,6 +106,30 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     }
   }, [stateMapControls.selectedControl, filteredItems, stateApp.checkedBaseLayers, stateApp.checkedHeatLayers, type]);
 
+  // useEffect(() => {
+  //   const mapDefaultPosition = get(userMapSettings, "userMapSettings.settings.settings.mapDefaultPosition");
+  //   // setMapVars(mapDefaultPosition);
+  //   setSettings(mapDefaultPosition);
+  // }, [userMapSettings]);
+
+  useEffect(() => {
+    const mapDefaultPosition = get(updatedMapSettings, "updateUserMapSettings.settings.settings.mapDefaultPosition");
+    setMapVars(mapDefaultPosition);
+  }, [updatedMapSettings]);
+
+  const setMapVars = (settings) => {
+    if (settings) {
+      // setSettings(settings);
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        defaultMapVars: {
+          ...stateApp.defaultMapVars,
+          ...settings,
+        },
+      }));
+    }
+  };
+
   const togglePullout = () => {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
@@ -114,6 +150,22 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           type,
           settings: {
             activeBaseMap: style.name,
+          },
+        },
+      },
+    });
+  };
+
+  const setMapDefaultPosition = (params) => {
+    updateUserMapSettings({
+      variables: {
+        settings: {
+          user: stateApp.user.mongoId,
+          type,
+          settings: {
+            mapDefaultPosition: {
+              ...params,
+            },
           },
         },
       },
@@ -220,6 +272,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
       </Droppable>
     </DragDropContext>
   );
+
   const a11yProps = (index) => ({
     id: `full-width-tab-${index}`,
     "aria-controls": `full-width-tabpanel-${index}`,
@@ -312,34 +365,39 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
               </Grid>
             </Grid>
           </StyledMenuHActionHeader>
-          <StyledMenuSecondaryHeaderItem>
-            <ListItemText primary={title} />
-            {headerButton && (
-              <StyledListItemSecondaryAction>
-                <Button onClick={headerButton.fn} color="secondary" variant="outlined" startIcon={headerButton.icon}>
-                  {headerButton.text}
-                </Button>
-              </StyledListItemSecondaryAction>
-            )}
-          </StyledMenuSecondaryHeaderItem>
-          {/* base Stuff */}
-          {type === "base" && getBasemapImageBox()}
+          <div style={{ maxHeight: "calc(100vh - 117px)", overflow: "overlay" }}>
+            <StyledMenuSecondaryHeaderItem>
+              <ListItemText primary={title} />
+              {headerButton && (
+                <StyledListItemSecondaryAction>
+                  <Button onClick={headerButton.fn} color="secondary" variant="outlined" startIcon={headerButton.icon}>
+                    {headerButton.text}
+                  </Button>
+                </StyledListItemSecondaryAction>
+              )}
+            </StyledMenuSecondaryHeaderItem>
+            {/* base Stuff */}
+            {type === "base" && getBasemapImageBox()}
 
-          {type === "layer" &&
-            (layerMap && layerMap[0]?.type ? (
-              <SortableLayer layerMap={layerMap} panelItems={panelItems} />
-            ) : (
-              <Box height="calc(100vh - 50px - 64px)" bgcolor="#0e111a" display="flex" justifyContent="center">
-                <CircularProgress style={{ top: "50%", position: "absolute" }} size={40} color="secondary" />
-              </Box>
-            ))}
-          {type === "base" && (
-            <Collapse in={true} timeout="auto" unmountOnExit>
-              {displayList}
-            </Collapse>
-          )}
-          {type === "heatMaps" && displayList}
-          {type === "filter" && <LayerFilters />}
+            {type === "layer" &&
+              (layerMap && layerMap[0]?.type ? (
+                <SortableLayer layerMap={layerMap} panelItems={panelItems} />
+              ) : (
+                <Box height="calc(100vh - 50px - 64px)" bgcolor="#0e111a" display="flex" justifyContent="center">
+                  <CircularProgress style={{ top: "50%", position: "absolute" }} size={40} color="secondary" />
+                </Box>
+              ))}
+            {type === "base" && (
+              <>
+                <Collapse in={true} timeout="auto" unmountOnExit>
+                  {displayList}
+                </Collapse>
+                <MapPositions setMapDefaultPosition={setMapDefaultPosition} userMapSettings={stateApp.defaultMapVars} />
+              </>
+            )}
+            {type === "heatMaps" && displayList}
+            {type === "filter" && <LayerFilters />}
+          </div>
         </StyledMenu>
         <StyledMenu
           id="layer-secondary-panel"
