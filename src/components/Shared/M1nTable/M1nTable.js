@@ -1543,7 +1543,7 @@ function M1nTable(props) {
       setAddAble(false);
       setOrderByTracks(false);
       setStartPaginationAt(100);
-      if (searchResultData.length > 0) {
+      if (!searchloading && searchResultData.length > 0) {
         // setLoading(true);
         const objectsIdsArray = searchResultData.map((result) => result.Id);
         if (props.showComments)
@@ -2923,6 +2923,7 @@ function M1nTable(props) {
         orderByTracks={orderByTracks}
         startPaginationAt={startPaginationAt}
         contactId={props.contact?._id}
+        options={props.options}
         contactsPageProps={{
           getPaginatedContacts,
           getContactsFilterOptions,

@@ -7,9 +7,7 @@ import WellIcon from "components/Shared/svgIcons/well";
 import PersonIcon from '@material-ui/icons/Person';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 // import TodayOutlinedIcon from '@material-ui/icons/TodayOutlined';
-import InputBase from '@material-ui/core/InputBase';
 import AddIcon from '@material-ui/icons/Add';
-import SearchIcon from '@material-ui/icons/Search';
 import { Button } from "@material-ui/core";
 import { useLazyQuery } from "@apollo/client";
 import CommentComponent from "components/Shared/CommentComponent";
@@ -17,7 +15,7 @@ import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable'
 import unitDefaultData from 'components/ShapeDetailCard/Common/SummaryTable/unitDefaultData'
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { summaryStyles } from "components/ShapeDetailCard/style";
-
+import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 
 export default function UnitSummary(props) {
     const [search, setSearch] = useState('');
@@ -73,21 +71,7 @@ export default function UnitSummary(props) {
                             </Grid>
                         </Grid>
                         <Grid item>
-                            <div className={classes.search}>
-                                <div className={classes.searchIcon}>
-                                    <SearchIcon />
-                                </div>
-                                <InputBase
-                                    placeholder="Search…"
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    classes={{
-                                        root: classes.inputRoot,
-                                        input: classes.inputInput,
-                                    }}
-                                    inputProps={{ 'aria-label': 'search' }}
-                                />
-                            </div>
+                            <ExpandableSearch setSearch={setSearch} search={search} />
                         </Grid>
                     </Grid>
                 </Grid>

@@ -40,10 +40,9 @@ export default function FirstMonthWater(props) {
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
   const [error, setError] = useState(false);
   const [errorText, setErrorText] = useState("");
-  const [id, setId] = useState(props.id);
   const [type, setType] = useState("");
   const [filterName, setFilterName] = useState(props.filter);
-  const [name, setName] = useState(props.name);
+  const { name, id } = props;
 
   useEffect(() => {
     if (name.includes("Gas")) {
@@ -66,11 +65,7 @@ export default function FirstMonthWater(props) {
       filter = ["all", [">=", ["get", id.toString()], min]];
     } else if (min && max) {
       if (min < max) {
-        filter = [
-          "all",
-          [">=", ["get", id.toString()], min],
-          ["<=", ["get", id.toString()], max],
-        ];
+        filter = ["all", [">=", ["get", id.toString()], min], ["<=", ["get", id.toString()], max]];
       }
     } else {
       filter = null;
@@ -81,6 +76,14 @@ export default function FirstMonthWater(props) {
       [filterName]: filter,
     }));
   }, [filterName, id, setStateNav, valueMaxDisplay, valueMinDisplay]);
+
+  useEffect(() => {
+    if (stateNav.prodOptions) {
+      setFilter();
+    } else {
+      clearFilters();
+    }
+  }, [setFilter, stateNav.prodOptions]);
 
   useEffect(() => {
     const recall = () => {
@@ -113,10 +116,23 @@ export default function FirstMonthWater(props) {
   }, [filterName, stateNav, valueMaxDisplay, valueMinDisplay]);
 
   useEffect(() => {
-    if (stateNav.prodOptions) {
-      setFilter();
+    if (valueMinDisplay && valueMaxDisplay) {
+      if (valueMinDisplay >= valueMaxDisplay) {
+        setError(true);
+        setErrorText("Min value is greater or equal than Max value");
+      } else {
+        setError(false);
+        setErrorText("");
+      }
     }
-  }, [setFilter, stateNav.prodOptions]);
+  }, [valueMaxDisplay, valueMinDisplay]);
+
+  const allowNumbersOnly = (e) => {
+    let code = e.which ? e.which : e.keyCode;
+    if (code > 31 && (code < 48 || code > 57)) {
+      e.preventDefault();
+    }
+  };
 
   const handleChangeMin = (event) => {
     setValueMinDisplay(parseInt(event.target.value.replace(/,/g, "")));
@@ -138,23 +154,17 @@ export default function FirstMonthWater(props) {
     }
   };
 
-  useEffect(() => {
-    if (valueMinDisplay && valueMaxDisplay) {
-      if (valueMinDisplay >= valueMaxDisplay) {
-        setError(true);
-        setErrorText("Min value is greater or equal than Max value");
-      } else {
-        setError(false);
-        setErrorText("");
-      }
+  const clearFilters = () => {
+    if (stateNav[filterName]) {
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        [filterName]: null,
+      }));
     }
-  }, [valueMaxDisplay, valueMinDisplay]);
-
-  const allowNumbersOnly = (e) => {
-    let code = e.which ? e.which : e.keyCode;
-    if (code > 31 && (code < 48 || code > 57)) {
-      e.preventDefault();
-    }
+    handleChangeMax({ target: { value: "" } });
+    handleChangeMin({ target: { value: "" } });
+    setError(false);
+    setErrorText("");
   };
 
   return (
@@ -204,14 +214,7 @@ export default function FirstMonthWater(props) {
           },
         }}
       />
-      <IconButton
-        onClick={() => {
-          handleChangeMax({ target: { id, value: "" } });
-          handleChangeMin({ target: { id, value: "" } });
-          setError(false);
-          setErrorText("");
-        }}
-      >
+      <IconButton onClick={clearFilters}>
         <CancelIcon height={"30px"} />
       </IconButton>
     </div>
