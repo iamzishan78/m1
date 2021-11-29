@@ -93,7 +93,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
     const { control, register, reset, getValues, setValue } = useForm();
 
     const [getProvisionAutoCompleteList, { data: dataProvisionAutoCompleteList = [] }] = useLazyQuery(GET_PROVISION_AUTOCOMPLETE_LIST);
-    const [createAgreementProvision] = useMutation(CREATE_AGREEMENT_PROVISION, { refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList'] });
+    const [createAgreementProvision] = useMutation(CREATE_AGREEMENT_PROVISION,);
 
     const { fields, append } = useFieldArray({
         control, // control props comes from useForm (optional: if you are using FormContext)
@@ -115,7 +115,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
             let addProvision = { agreement: id, type: provision.type, isDeleted: false, startDate: undefined, endDate: undefined }
             if (provision._id) {
                 addProvision = { ...addProvision, isTemplate: false, applicable: true, templateRef: provision._id }
-                createAgreementProvision({ variables: { provision: addProvision } });
+                createAgreementProvision({ variables: { provision: addProvision } }, { refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList'] });
             } else {
                 append({ startDate: undefined, endDate: undefined })
             }
@@ -193,6 +193,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                         <Grid item>
                             {console.log(item)}
                             <Grid container direction="row" spacing={2} >
+                                <TextField id="_id" name={`provisions[${index}]._id`} type={'hidden'} inputRef={register()} defaultValue={item._id} />
                                 <TextField id="templateRef" name={`provisions[${index}].templateRef`} type={'hidden'} inputRef={register()} defaultValue={item.templateRef} />
                                 <Grid item md={4}>
                                     <Controller
@@ -227,7 +228,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                     <Controller
                                         control={control}
                                         name={`provisions[${index}].applicable`}
-                                        defaultValue={item.applicable || 'Yes'}
+                                        defaultValue={item.applicable}
                                         render={(
                                             { onChange, value, ref },
                                         ) => (

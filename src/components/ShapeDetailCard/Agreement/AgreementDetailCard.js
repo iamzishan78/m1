@@ -19,7 +19,7 @@ import ProvisionsTab from "./ProvisionsTab";
 import UnitOwnersTable from "components/Table/Unit/UnitOwnersTable";
 import UnitWellInterestTable from "components/Table/Unit/UnitWellInterestTable";
 import AssociatedWellsUnitTable from "components/Table/Wells/AssociatedWellsUnitTable";
-import UnitTractsTable from "components/Table/Unit/UnitTractsTable";
+import AgreementTractsTable from "components/Table/Agreement/AgreementTractsTable";
 import AssociatedTractsUnitTable from "components/Table/Wells/AssociatedTractsUnitTable";
 import Tags from "components/Shared/Tagger";
 import { showSuccessMessage, showErrorMessage } from "actions";
@@ -29,6 +29,7 @@ import { copy } from "components/Shared/functions";
 import { detailCardStyles } from "../style";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
+
 
 export default function AgreementDetailCard(props) {
 
@@ -57,6 +58,13 @@ export default function AgreementDetailCard(props) {
       getAgreementProvisions({ variables: { agreementId: props.id } });
     }
   }, [props.id]);
+
+  useEffect(() => {
+    if (selectedTab === 0 || selectedTab === 1) {
+      getAgreementProvisions({ variables: { agreementId: props.id } });
+    }
+  }, [selectedTab]);
+
 
 
   useEffect(() => {
@@ -162,20 +170,9 @@ export default function AgreementDetailCard(props) {
     )
   };
 
-  const RunsheetHeader = () => {
-    const classes = detailCardStyles();
-    return (
-      <div className={classes.documentHeader}>
-        <GavelIcon />
-        <span>LIMITED TITLE RUNSHEET</span>
-      </div>
-    )
-  };
-
-
   const WellHeader = ({ selectedWellTab, setWellSelectedTab }) => (
     <TabButtons
-      labels={["Unit Wells", "Potential Wells"]}
+      labels={["Agreement Wells", "Potential Wells"]}
       value={selectedWellTab}
       setValue={(n) => { setWellSelectedTab(n) }}
     />
@@ -183,7 +180,7 @@ export default function AgreementDetailCard(props) {
 
   const TractHeader = ({ selectedTractTab, setTractSelectedTab }) => (
     <TabButtons
-      labels={["Unit Tracts", "Potential Tracts"]}
+      labels={["Agreement Tracts", "Potential Tracts"]}
       value={selectedTractTab}
       setValue={(n) => { setTractSelectedTab(n) }}
     />
@@ -201,6 +198,7 @@ export default function AgreementDetailCard(props) {
           tabLabels={["Summary", "Provisions", "Tracts", "Wells", "Documents", "Related Info"]}
           backgroundColor={'white'}
           openTabIdex={selectedTab}
+          whichTapIsActive={(value) => setSelectedTab(value)}
           tabPanels={[
             <AgreementSummary
               properties={properties}
@@ -216,22 +214,35 @@ export default function AgreementDetailCard(props) {
               standardProvisions={dataStandardProvisions?.getStandardProvisions || []}
               id={props.id} />,
 
-            <div className={showSummary ? classes.subContent : classes.subContent2}>
-              <ParcelDetailsRunsheetTable
-                customLayer={uniObj}
-                parent="associatedRunsheetPerParcel"
-                targetLabel="parcelRunsheet"
-                header={<RunsheetHeader />}
-                dense
-              />
-            </div>,
+            <TabPanels
+              value={selectedTractTab}
+              panels={[
+                <div className={showSummary ? classes.subContent : classes.subContent2}>
+                  <AgreementTractsTable
+                    customLayer={uniObj}
+                    shapeType='Agreement'
+                    header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                    dense
+                  />
+                </div>,
+                <div className={showSummary ? classes.subContent : classes.subContent2}>
+                  <AssociatedTractsUnitTable
+                    customLayer={uniObj}
+                    shapeType='Agreement'
+                    header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                    setSelectedTab={setTractSelectedTab}
+                    dense
+                  />
+                </div>
+              ]}
+            />,
             <TabPanels
               value={selectedWellTab}
               panels={[
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <UnitWellInterestTable
                     customLayer={uniObj}
-                    shapeType='Unit'
+                    shapeType='Agreement'
                     parent="associatedWellsPerUnits"
                     targetLabel="well"
                     header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
@@ -242,7 +253,7 @@ export default function AgreementDetailCard(props) {
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <AssociatedWellsUnitTable
                     customLayer={uniObj}
-                    shapeType='Unit'
+                    shapeType='Agreement'
                     parent="associatedWellsPerUnits"
                     targetLabel="well"
                     header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
@@ -253,28 +264,7 @@ export default function AgreementDetailCard(props) {
                 </div>
               ]}
             />,
-            <TabPanels
-              value={selectedTractTab}
-              panels={[
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <UnitTractsTable
-                    customLayer={uniObj}
-                    shapeType='Unit'
-                    header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                    dense
-                  />
-                </div>,
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <AssociatedTractsUnitTable
-                    customLayer={uniObj}
-                    shapeType='Unit'
-                    header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                    setSelectedTab={setTractSelectedTab}
-                    dense
-                  />
-                </div>
-              ]}
-            />,
+
             <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
               <RelatedDetailsDocumentTable
                 customLayer={uniObj}
