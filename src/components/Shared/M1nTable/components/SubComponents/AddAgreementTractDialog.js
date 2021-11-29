@@ -326,10 +326,7 @@ function AddAgreementTractDialog(props) {
             </List>
           </div>
 
-          <Grid item xs={12}>
-            <h3>Name</h3>
-            <AutocompEntityNamesList nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
-          </Grid>
+          <AutocompEntityNamesList nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
 
           <Controller as={TextField} control={control} variant="outlined" margin="dense" name='mineral_interest' inputRef={register()} label={"Mineral Interest"}
             InputLabelProps={{ shrink: true }} type='number' fullWidth onWheel={(e) => e.target.blur()} />

@@ -199,12 +199,35 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                                             format="MM/DD/YYYY"
                                             margin="normal"
                                             id="date-picker-inline"
-                                            value={properties[data.key] || null}
+                                            value={tableTempProperties[data.key] || null}
+
+                                            onOpen={() => { tableDataState[`${data.key}date`] = true }}
+                                            onClose={() => { tableDataState[`${data.key}date`] = false; setTableDataState({}); setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] }) }}
+                                            onKeyDown={(e) => {
+                                                if (e.keyCode === 13) {
+                                                    e.stopPropagation();
+                                                    onKeyDown(e, data, 'value')
+                                                }
+                                            }}
+                                            onBlur={() => {
+                                                setTimeout(() => {
+                                                    if (!tableDataState[`${data.key}date`]) {
+                                                        console.log('blur'); setTableDataState({}); setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] })
+                                                    }
+                                                }, 100)
+
+                                            }}
                                             onChange={(date) => {
-                                                if (date && date?._d?.toString() !== 'Invalid Date') {
-                                                    debounce(() => {
-                                                        updateProperties(null, data.key, String(date["_d"]));
-                                                    }, 500)()
+                                                if (date === null) {
+                                                    setTableTempProperties({ ...tableTempProperties, [`${data.key}`]: date });
+                                                }
+                                                if ((date && date?._d?.toString() !== 'Invalid Date')) {
+                                                    setTimeout(() => {
+                                                        if (date?._pf?.overflow === -2 || !date?._strict) {
+                                                            tableTempProperties[`${data.key}`] = date ? String(date["_d"]) : null
+                                                            onKeyDown(null, data, 'value')
+                                                        }
+                                                    }, 0)
                                                 }
                                             }}
                                             KeyboardButtonProps={{ "aria-label": "change date" }}
