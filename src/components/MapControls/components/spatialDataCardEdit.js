@@ -432,6 +432,7 @@ export default function SpatialDataCardEdit(props) {
               <MenuItem value="interest">Area of Interest</MenuItem>
               <MenuItem value="parcel">Parcel</MenuItem>
               <MenuItem value="unit">Unit</MenuItem>
+              <MenuItem value="agreement">Agreement</MenuItem>
               {/* {stateApp.currentFeature &&
                 stateApp.currentFeature.geometry.type === "Polygon" &&
                 !stateApp.currentFeature.properties.isCircle && (
