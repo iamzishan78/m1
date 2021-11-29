@@ -57,8 +57,6 @@ export default function FilterMeasuredDistance() {
   const [valueMinDisplay, setValueMinDisplay] = useState("");
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
 
-  const [measuredDistanceWell, setMeasuredDistanceWell] = useState(stateNav.measuredDistanceWell ? stateNav.measuredDistanceWell : []);
-
   const [error, setError] = useState(false);
   const [errorText, setErrorText] = useState("");
 
@@ -84,6 +82,12 @@ export default function FilterMeasuredDistance() {
       filterMeasuredDistance: filter,
     }));
   }, [setStateNav, valueMaxDisplay, valueMinDisplay]);
+
+  useEffect(() => {
+    if (stateNav.measuredDistanceWell) {
+      setFilter();
+    } else clearFilters();
+  }, [setFilter, stateNav.measuredDistanceWell]);
 
   useEffect(() => {
     const recall = () => {
@@ -116,12 +120,24 @@ export default function FilterMeasuredDistance() {
   }, [stateNav, valueMaxDisplay, valueMinDisplay]);
 
   useEffect(() => {
-    if (stateNav.measuredDistanceWell) {
-      setFilter();
-    } else clearFilters();
-  }, [setFilter, stateNav.measuredDistanceWell]);
+    if (valueMinDisplay && valueMaxDisplay) {
+      if (valueMinDisplay > valueMaxDisplay) {
+        setError(true);
+        setErrorText("Min value is greater than Max value");
+      } else {
+        setError(false);
+        setErrorText("");
+      }
+    }
+  }, [valueMaxDisplay, valueMinDisplay]);
 
   const clearFilters = () => {
+    if (stateNav.filterMeasuredDistance) {
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        filterMeasuredDistance: null,
+      }));
+    }
     setValueMinDisplay("");
     setValueMaxDisplay("");
     setError(false);
@@ -130,7 +146,6 @@ export default function FilterMeasuredDistance() {
 
   const handleChangeMin = (event) => {
     setValueMinDisplay(parseInt(event.target.value.replace(/,/g, "")));
-    setMeasuredDistanceWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
       measuredDistanceWell: event.target.id,
@@ -145,7 +160,6 @@ export default function FilterMeasuredDistance() {
 
   const handleChangeMax = (event) => {
     setValueMaxDisplay(parseInt(event.target.value.replace(/,/g, "")));
-    setMeasuredDistanceWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
       measuredDistanceWell: event.target.id,
@@ -157,18 +171,6 @@ export default function FilterMeasuredDistance() {
       }));
     }
   };
-
-  useEffect(() => {
-    if (valueMinDisplay && valueMaxDisplay) {
-      if (valueMinDisplay > valueMaxDisplay) {
-        setError(true);
-        setErrorText("Min value is greater than Max value");
-      } else {
-        setError(false);
-        setErrorText("");
-      }
-    }
-  }, [valueMaxDisplay, valueMinDisplay]);
 
   const allowNumbersOnly = (e) => {
     let code = e.which ? e.which : e.keyCode;

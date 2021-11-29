@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from "@material-ui/core";
@@ -16,7 +16,7 @@ const useStyles = makeStyles(() => ({
     fontFamily: "Poppins",
     display: "block",
     color: "white",
-    padding: "10px",
+    padding: "0px 10px",
     overflow: "overlay",
     "& .MuiTypography-root": {
       padding: "15px 5px",
@@ -39,7 +39,7 @@ const useStyles = makeStyles(() => ({
     },
   },
   accordionDetails: {
-    backgroundColor: "white",
+    backgroundColor: "#6a7485",
     padding: 0,
   },
   accordionHeading: {
@@ -89,33 +89,17 @@ const wellFiltersParams = [
 ];
 const ownershipFiltersParams = ["interestName", "ownerTypeName", "filterOwnerCount", "filterHasOwnerCount", "filterOwnerConfidence"];
 const tagFiltersParams = ["selectedTags", "filterTrackedWells"];
+const filterTypes = {
+  Geography: { component: "GeographyFilter", countKey: "geographyFilterCount" },
+  Wells: { component: "WellFilter", countKey: "wellFilterCount" },
+  Production: { component: "ProductionFilter", countKey: "productionFilterCount" },
+  Ownership: { component: "OwnershipFilter", countKey: "ownershipFilterCount" },
+  Tags: { component: "TagsFilter", countKey: "tagFilterCount" },
+};
 
 const LayerFilters = () => {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [filterTypes, setFilters] = useState({
-    Geography: { component: "GeographyFilter", appliedFiltersCount: 0 },
-    Wells: { component: "WellFilter", appliedFiltersCount: 0 },
-    Production: { component: "ProductionFilter", appliedFiltersCount: 0 },
-    Ownership: { component: "OwnershipFilter", appliedFiltersCount: 0 },
-    Tags: { component: "TagsFilter", appliedFiltersCount: 0 },
-  });
-
-  useEffect(() => {
-    checkGeoFiltersChange();
-    checkProdFiltersChange();
-    checkWellFiltersChange();
-    checkOwnershipFiltersChange();
-    checkTagFiltersChange();
-  }, [stateNav]);
-
-  const getFiltersCount = (params) => {
-    let count = 0;
-    params.forEach((filter) => {
-      if ((!Array.isArray(stateNav[filter]) && stateNav[filter]) || (Array.isArray(stateNav[filter]) && stateNav[filter].length)) count++;
-    });
-    return count;
-  };
 
   const resetFilters = (params, additionalParamsToReset = {}) => {
     const geoFiltersToReset = {};
@@ -129,41 +113,6 @@ const LayerFilters = () => {
       ...stateNav,
       ...geoFiltersToReset,
       ...additionalParamsToReset,
-    }));
-  };
-
-  const checkGeoFiltersChange = () => {
-    setFilters((prevState) => ({
-      ...prevState,
-      Geography: { ...filterTypes.Geography, appliedFiltersCount: getFiltersCount(geoFiltersParams) },
-    }));
-  };
-
-  const checkWellFiltersChange = () => {
-    setFilters((prevState) => ({
-      ...prevState,
-      Wells: { ...filterTypes.Wells, appliedFiltersCount: getFiltersCount(wellFiltersParams) },
-    }));
-  };
-
-  const checkProdFiltersChange = () => {
-    setFilters((prevState) => ({
-      ...prevState,
-      Production: { ...filterTypes.Production, appliedFiltersCount: getFiltersCount(prodFiltersParams) },
-    }));
-  };
-
-  const checkOwnershipFiltersChange = () => {
-    setFilters((prevState) => ({
-      ...prevState,
-      Ownership: { ...filterTypes.Ownership, appliedFiltersCount: getFiltersCount(ownershipFiltersParams) },
-    }));
-  };
-
-  const checkTagFiltersChange = () => {
-    setFilters((prevState) => ({
-      ...prevState,
-      Tags: { ...prevState.Tags, appliedFiltersCount: getFiltersCount(tagFiltersParams) },
     }));
   };
 
@@ -206,7 +155,6 @@ const LayerFilters = () => {
 
   return (
     <div className={classes.root}>
-      <Typography variant="h6">Filters</Typography>
       {Object.keys(filterTypes).map((filterType, index) => (
         <Accordion className={classes.accordionRoot}>
           <AccordionSummary
@@ -214,14 +162,12 @@ const LayerFilters = () => {
             id="panel1a-header"
             expandIcon={<ExpandMoreIcon />}
             defaultExpanded={index === 0}
-            style={{ borderLeft: filterTypes[filterType].appliedFiltersCount > 0 ? "5px solid #18aadd" : "transparent" }}
+            style={{ borderLeft: stateNav[filterTypes[filterType].countKey] > 0 ? "5px solid #18aadd" : "transparent" }}
           >
             <Grid container direction="row" justify="space-between" alignItems="center">
               <Grid item className={classes.accordionHeading}>
                 <Typography>{filterType}</Typography>
-                {filterTypes[filterType].appliedFiltersCount > 0 && (
-                  <Chip color="info" label={filterTypes[filterType].appliedFiltersCount} />
-                )}
+                {stateNav[filterTypes[filterType].countKey] > 0 && <Chip color="info" label={stateNav[filterTypes[filterType].countKey]} />}
               </Grid>
               <Grid item className={classes.clearIcon}>
                 <IconButton
