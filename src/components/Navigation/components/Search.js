@@ -322,7 +322,7 @@ function Search() {
               first: startPaginationAt,
               keep_alive: "1micros"
             },
-            search: `${request.input}`,
+            search: request.input? `ownerName:*${request.input}*`: '',
             sort:[]
           }
         })
@@ -346,7 +346,7 @@ function Search() {
               first: startPaginationAt,
               keep_alive: "1micros"
             },
-            search: `${request.input}`,
+            search: request.input? `operator:*${request.input}*`: '',
             sort:[]
           }
         })
@@ -370,7 +370,7 @@ function Search() {
               first: startPaginationAt,
               keep_alive: "1micros"
             },
-            search: `${request.input}`,
+            search: request.input? `lease:*${request.input}*`: '',
             sort:[]
           }
         })

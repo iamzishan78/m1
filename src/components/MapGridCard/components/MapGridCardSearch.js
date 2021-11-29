@@ -74,22 +74,36 @@ function MapGridCardSearch(props) {
 
   ///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
 
-  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    { fetchPolicy: "cache-and-network", skip: true }
-  );
+  // const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
+  //   PAGINATEDCONTACTSQUERY,
+  //   { fetchPolicy: "cache-and-network", skip: true }
+  // );
+
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
 
   const callContactsSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
 
-        /// this function takes the search request and sends it to gql
         getPaginatedContacts({
           variables: {
-            search: request.input,
-          },
-        });
+            esIndex: "contacts_flat",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: `${request.input}`,
+            sort:[]
+          }
+        })
+
+        /// this function takes the search request and sends it to gql
+        // getPaginatedContacts({
+        //   variables: {
+        //     search: request.input,
+        //   },
+        // });
 
       }, 500),
     []
@@ -107,7 +121,7 @@ function MapGridCardSearch(props) {
       var newOptions = [];
       var newOptions = [
 
-        ...constDataContacts.paginatedContacts.edges.map((result) => {
+        ...constDataContacts.getESPaginatedList.hits.map((result) => {
 
           result = { ...result.node };
           //result.Source = contactIndexName;
@@ -156,17 +170,19 @@ function MapGridCardSearch(props) {
   // );
   const [getESOwnersPaginatedList, { data: constDataOwners }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
-  const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(
-    PAGINATEDOPERATORSQUERY,
-    { fetchPolicy: "network-only", skip: true }
-  );
+  // const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(
+  //   PAGINATEDOPERATORSQUERY,
+  //   { fetchPolicy: "network-only", skip: true }
+  // );
+  const [getESOperatorsPaginatedList, { data: constDataOperators }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
-  const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(
-    PAGINATEDLEASESQUERY,
-    { fetchPolicy: "network-only", skip: true }
-  );
+  // const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(
+  //   PAGINATEDLEASESQUERY,
+  //   { fetchPolicy: "network-only", skip: true }
+  // );
+  const [getESLeasesPaginatedList, { data: constDataLeases }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
-  const startPaginationAt = 25;
+  const startPaginationAt = 50;
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
@@ -220,12 +236,23 @@ function MapGridCardSearch(props) {
   const callOperatorSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        getPaginatedOperators({
+        getESOperatorsPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top
+            esIndex: "platformData:operator",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: request.input? `operator:*${request.input}*`: '',
+            sort:[]
           }
         })
+        // getPaginatedOperators({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top
+        //   }
+        // })
       }, 500),
     []
   );
@@ -233,13 +260,23 @@ function MapGridCardSearch(props) {
   const callLeaseSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-
-        getPaginatedLeases({
+        getESLeasesPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top
+            esIndex: "platformData:lease",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: request.input? `lease:*${request.input}*`: '',
+            sort:[]
           }
         })
+        // getPaginatedLeases({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top
+        //   }
+        // })
 
       }, 500),
     []
@@ -277,7 +314,7 @@ function MapGridCardSearch(props) {
     if (constDataOperators) {
 
       newOptions = [
-        ...constDataOperators.paginatedOperators.edges.map((result) => {
+        ...constDataOperators.getESPaginatedList.hits.map((result) => {
           return {
             ...result,
             Source: operatorIndexName,
@@ -326,7 +363,7 @@ function MapGridCardSearch(props) {
       let newOptions = []
 
       newOptions = [
-        ...constDataLeases.paginatedLeases.edges.map((result) => {
+        ...constDataLeases.getESPaginatedList.hits.map((result) => {
           return {
             ...result,
             Source: leaseIndexName,
