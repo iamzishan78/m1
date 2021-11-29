@@ -4,7 +4,7 @@ export const detailCardStyles = makeStyles((theme) => ({
     summaryCard: {
         backgroundColor: 'white', paddingLeft: "10px",
         paddingRight: "10px", paddingTop: '8px',
-        paddingBottom: '40px'
+        paddingBottom: '60px'
     },
     summaryDetailCard: {
         paddingLeft: '18px', paddingTop: '8px'
@@ -123,7 +123,7 @@ export const summaryStyles = makeStyles((theme) => ({
     summaryCard: {
         paddingLeft: "10px",
         paddingRight: "10px", paddingTop: '8px',
-        paddingBottom: '40px'
+        paddingBottom: '60px'
     },
     summaryDetailCard: {
         paddingLeft: '18px', paddingTop: '8px'
