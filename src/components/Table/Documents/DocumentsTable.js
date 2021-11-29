@@ -295,7 +295,7 @@ function DocumentsTable(props) {
             selectedFilters={selectedFilters.current}
           />
         )}
-        {stateApp.showFieldModal && <MetaField category="Docs"/>}
+        {stateApp.showFieldModal && <MetaField columns={columns} category="Docs"/>}
         <Table
           style={{ backgroundColor: "#fff" }}
           header={header}

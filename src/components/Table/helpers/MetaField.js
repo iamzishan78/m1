@@ -123,7 +123,7 @@ const categoryOptions = [
   },
 ];
 
-const MetaField = ({ category }) => {
+const MetaField = ({ category, columns }) => {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState("new");
   const [metaData, setMetaData] = useState(null);
@@ -173,8 +173,12 @@ const MetaField = ({ category }) => {
 
   useEffect(() => {
     if (metaDataRes?.getAllLibraryMetaData?.gridViews) {
-      setMetaData(metaDataRes.getAllLibraryMetaData.gridViews);
-      setFilteredMetaData(metaDataRes.getAllLibraryMetaData.gridViews);
+      let data = metaDataRes.getAllLibraryMetaData.gridViews;
+      for(let i=0; i<columns.length; i++) {
+        data = data.filter(d => d.name !== columns[i].name)
+      }
+      setMetaData(data);
+      setFilteredMetaData(data);
     }
   }, [metaDataRes]);
 
