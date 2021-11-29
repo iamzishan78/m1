@@ -4,9 +4,6 @@ import { Grid, Card, CardContent, Typography } from "@material-ui/core";
 import { Warning as WarningIcon } from "@material-ui/icons";
 
 const useStyles = makeStyles(() => ({
-  root: {
-    padding: 75,
-  },
   card: { borderRadius: "8px" },
   cardHeaderTypography: {
     fontWeight: "bolder",
@@ -55,7 +52,7 @@ export default function AnalyticsCards(props) {
               Approved
             </Typography>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
-              {props.approved}
+              {props.approvedCount}
             </Typography>
           </CardContent>
         </Card>
@@ -68,7 +65,7 @@ export default function AnalyticsCards(props) {
               Needs Approval
             </Typography>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography} style={{ color: "#b9b908" }}>
-              {props.unApproved}
+              {props.unapprovedCount}
             </Typography>
           </CardContent>
         </Card>
@@ -81,19 +78,19 @@ export default function AnalyticsCards(props) {
               Potential Issues
             </Typography>
             <div className={classes.issuesBadges}>
-              <div>
+              <div style={{marginRight: 6}}>
                 <WarningIcon />
-              </div>{" "}
+              </div>
               <div>4</div>
               &nbsp;
-              <div>
+              <div style={{marginRight: 6}}>
                 <WarningIcon />
               </div>
               <div>1 </div>
               &nbsp;
-              <div>
+              <div style={{marginRight: 6}}>
                 <WarningIcon />
-              </div>{" "}
+              </div>
               <div>7</div>
             </div>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography} style={{ color: "red" }}>
