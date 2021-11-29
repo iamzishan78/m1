@@ -230,7 +230,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                                                 {data.formatValue(data.value || properties[data.key]) || '-'}
                                             </Grid> :
                                             <Grid item>
-                                                {(data.type === 'date') && (properties[data.key] ? moment.parseZone(new Date(properties[data.key])).format("MM-DD-yyyy") : '-')}
+                                                {(data.type === 'date') && (properties[data.key] ? moment.parseZone(new Date(properties[data.key])).format("MM/DD/yyyy") : '-')}
                                                 {data.type !== 'date' && ((data.value || properties[data.key]) || '-')}
                                             </Grid>
                                         }
