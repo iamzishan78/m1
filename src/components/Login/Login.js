@@ -398,7 +398,8 @@ const Login = (props) => {
     );
     let mongoUser,
       sessionData,
-      mapVars = stateApp.mapVars;
+      mapVars = stateApp.mapVars,
+      defaultMapVars = stateApp.defaultMapVars;
     if (loginResp?.user) {
       mongoUser = loginResp.user;
       sessionData = loginResp.sessionData;
@@ -411,6 +412,7 @@ const Login = (props) => {
     if (userSettingsResp) {
       const { activeBaseMap, mapDefaultPosition } = userSettingsResp;
       mapVars = { ...mapVars, ...mapDefaultPosition, styleId: activeBaseMap };
+      defaultMapVars = { ...defaultMapVars, ...mapDefaultPosition, styleId: activeBaseMap };
     }
 
     setStateApp((state) => ({
@@ -434,7 +436,7 @@ const Login = (props) => {
         },
       },
       mapVars,
-      defaultMapVars: mapVars,
+      defaultMapVars: defaultMapVars,
     }));
 
     setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));

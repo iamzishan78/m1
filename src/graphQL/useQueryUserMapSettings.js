@@ -10,14 +10,3 @@ export const USER_MAP_SETTINGS = `
     }
   }
 `;
-
-export const USER_MAP_SETTINGS_QUERY = gql`
-  query getUserMapSettingsQuery($user: ID, $type: String) {
-    userMapSettings(user: $user, type: $type) {
-      success
-      error
-      message
-      settings
-    }
-  }
-`;

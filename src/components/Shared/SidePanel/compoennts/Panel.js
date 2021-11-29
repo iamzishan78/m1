@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { get } from "lodash";
 import { TransitionGroup } from "react-transition-group";
 import RootRef from "@material-ui/core/RootRef";
-import { useMutation, useLazyQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
@@ -31,7 +31,6 @@ import SecondaryPanel from "components/Shared/SecondaryPanel";
 import LayerFilters from "components/Shared/SidePanel/compoennts/Filters/LayerFilters";
 import MapPositions from "components/Shared/SidePanel/compoennts/MapPositions";
 
-import { USER_MAP_SETTINGS_QUERY } from "graphQL/useQueryUserMapSettings";
 import { deepEqualObjects } from "../../functions";
 import Layer from "./Layer";
 
@@ -62,15 +61,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   const [search, setSearch] = useState("");
   const [searchState, setSearchState] = useState(false);
   const [tab, setTab] = useState(0);
-  const [mapSettings, setSettings] = useState();
-
-  const [getUserMapSettingsQuery, { data: userMapSettings }] = useLazyQuery(USER_MAP_SETTINGS_QUERY);
-
-  useEffect(() => {
-    getUserMapSettingsQuery({
-      variables: { user: stateApp.user.mongoId },
-    });
-  }, []);
 
   useEffect(() => {
     if (stateApp.mapStyles && stateApp.mapStyles.length > 0) setMapStyles([...stateApp.mapStyles]);
@@ -142,6 +132,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     setStateApp((stateApp) => ({
       ...stateApp,
       mapVars: { ...stateApp.mapVars, styleId: style.name },
+      defaultMapVars: { ...stateApp.defaultMapVars, styleId: style.name },
     }));
     updateUserMapSettings({
       variables: {
@@ -161,7 +152,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
       variables: {
         settings: {
           user: stateApp.user.mongoId,
-          type,
+          type: "baseMap",
           settings: {
             mapDefaultPosition: {
               ...params,
