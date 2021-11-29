@@ -251,7 +251,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                 </Grid>
                                 <Grid item md={6} >
                                     <FormControl variant="outlined" fullWidth>
-                                        <TextField fullWidth id="p-value" label="Provison Value" variant="outlined" name={`provisions[${index}].value`}
+                                        <TextField fullWidth id="p-value" label="Provision Value" variant="outlined" name={`provisions[${index}].value`}
                                             inputRef={register()} defaultValue={item.value} onChange={() => handleChange(item, index)} />
                                     </FormControl>
                                 </Grid>
