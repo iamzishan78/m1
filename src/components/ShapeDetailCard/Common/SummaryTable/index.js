@@ -222,12 +222,11 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                                                     setTableTempProperties({ ...tableTempProperties, [`${data.key}`]: date });
                                                 }
                                                 if ((date && date?._d?.toString() !== 'Invalid Date')) {
-                                                    setTimeout(() => {
-                                                        if (date?._pf?.overflow === -2 || !date?._strict) {
-                                                            tableTempProperties[`${data.key}`] = date ? String(date["_d"]) : null
-                                                            onKeyDown(null, data, 'value')
-                                                        }
-                                                    }, 0)
+                                                    tableTempProperties[`${data.key}`] = date ? String(date["_d"]) : null
+                                                    setTableTempProperties({ ...tableTempProperties });
+                                                    if (date?._pf?.overflow === -2 || !date?._strict) {
+                                                        onKeyDown(null, data, 'value')
+                                                    }
                                                 }
                                             }}
                                             KeyboardButtonProps={{ "aria-label": "change date" }}

@@ -7,7 +7,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Grid from "@material-ui/core/Grid";
-import { Box, CircularProgress, Dialog, FormControlLabel, List, ListItem, ListItemText, Radio, RadioGroup, Typography } from "@material-ui/core";
+import { Box, CircularProgress, Dialog, FormControlLabel, List, ListItem, ListItemText, MenuItem, Radio, RadioGroup, Select, Typography } from "@material-ui/core";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import { useForm, Controller } from "react-hook-form";
@@ -19,6 +19,7 @@ import { ADD_TRACTS_TOA_SHAPE } from "graphQL/useMutationAddTractsToAShape";
 import { UPDATE_SHAPE_TRACTS } from "graphQL/useMutationUpdateShapeTracts";
 import pick from 'lodash/pick';
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
+import AutoCompleteWithNewOption from "components/Shared/Forms/Fields/AutoCompleteWithNewOption";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -370,6 +371,28 @@ function AddAgreementTractDialog(props) {
                 InputLabelProps={{ shrink: true }} type='number' fullWidth onWheel={(e) => e.target.blur()} />
             </Grid>
           )}
+
+          {/* <Controller
+            control={control}
+            name={`tractStatus`}
+            render={(
+              { onChange, value, ref },
+            ) => (
+              <AutoCompleteWithNewOption variant="outlined" options={provisionAutoCompleteList} value={value} onChange={(_, value) => { onChange(value.name); }} />
+            )}
+          /> */}
+
+          <Select
+            className={classes.viewSwitcher}
+            variant="outlined"
+            label='countAcres'
+            nputRef={register()}
+            name=''
+          >
+            <MenuItem value={true}>Yes</MenuItem>
+            <MenuItem value={false}>No</MenuItem>
+          </Select>
+
 
 
           <div className={classes.dialogFooter}>
