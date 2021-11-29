@@ -222,10 +222,10 @@ const MetaField = ({ category, columns }) => {
               values.type === "dropdown"
                 ? `custom_data.${values.title
                     .replace(/ /g, "_")
-                    .toLowerCase()}.value.keyword`
+                    .toLowerCase()}.value`
                 : `custom_data.${values.title
                     .replace(/ /g, "_")
-                    .toLowerCase()}.keyword`,
+                    .toLowerCase()}`,
             options: {
               display: true,
               filter: true,
