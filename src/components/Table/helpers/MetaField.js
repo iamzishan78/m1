@@ -83,9 +83,9 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   btnColor: {
-    color: 'white', 
-    backgroundColor: '#4576CF'
-  }
+    color: "white",
+    backgroundColor: "#4576CF",
+  },
 }));
 
 const options = [
@@ -214,9 +214,14 @@ const MetaField = ({ category }) => {
           metaData: {
             name: values.title.replace(/ /g, "_").toLowerCase(),
             label: values.title,
-            esKey: `custom_data.${values.title
-              .replace(/ /g, "_")
-              .toLowerCase()}.value.keyword`,
+            esKey:
+              values.type === "dropdown"
+                ? `custom_data.${values.title
+                    .replace(/ /g, "_")
+                    .toLowerCase()}.value.keyword`
+                : `custom_data.${values.title
+                    .replace(/ /g, "_")
+                    .toLowerCase()}.keyword`,
             options: {
               display: true,
               filter: true,
@@ -441,8 +446,8 @@ const MetaField = ({ category }) => {
                     Cancel
                   </Button>
                   <Button
-                    className={!title ? '' : classes.btnColor}
-                    style={{ margin: "25px 25px 25px 5px"}}
+                    className={!title ? "" : classes.btnColor}
+                    style={{ margin: "25px 25px 25px 5px" }}
                     variant="outlined"
                     onClick={handleSave}
                     disabled={!title}
@@ -547,16 +552,18 @@ const MetaField = ({ category }) => {
                         >
                           <Grid container item xs={10}>
                             <div>{data.label}</div>
-                            <div style={{ width: "100%", color: "#B4B9BF" }}>
-                              {data.dropdownOptions.map((option, index) => {
-                                return (
-                                  <span>
-                                    {option.value}
-                                    {index < options.length - 1 ? ", " : ""}
-                                  </span>
-                                );
-                              })}
-                            </div>
+                            {data.type === "dropdown" && (
+                              <div style={{ width: "100%", color: "#B4B9BF" }}>
+                                {data.dropdownOptions.map((option, index) => {
+                                  return (
+                                    <span>
+                                      {option.value}
+                                      {index < options.length - 1 ? ", " : ""}
+                                    </span>
+                                  );
+                                })}
+                              </div>
+                            )}
                           </Grid>
                           <Grid container item xs={2}>
                             <div

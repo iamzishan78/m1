@@ -6,6 +6,7 @@ const useStyles = makeStyles((theme) => ({}));
 
 const CustomFieldText = ({ value, onCustomKeyChange }) => {
   const classes = useStyles();
+  const [previousValue, setPreviousValue] = useState(value)
   const [inputValue, setInputValue] = useState(value)
   return (
     <div style={{ width: "150px" }} onClick={(e) => e.stopPropagation()}>
@@ -29,15 +30,16 @@ const CustomFieldText = ({ value, onCustomKeyChange }) => {
           if (event.key === "Enter") {
             event.preventDefault();
             onCustomKeyChange(inputValue)
+            setPreviousValue(inputValue)
           }
           if (event.key === "Escape") {
-              onCustomKeyChange(value)
-              setInputValue(value);
+              // onCustomKeyChange(previousValue)
+              setInputValue(previousValue);
           }
         }}
         onBlur={() => {
-            onCustomKeyChange(value)
-            setInputValue(value);
+            // onCustomKeyChange(previousValue)
+            setInputValue(previousValue);
         }}
         InputProps={{
             disableUnderline: true,
