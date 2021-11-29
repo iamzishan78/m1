@@ -73,7 +73,7 @@ export default function UnitDetailCard(props) {
   useEffect(() => {
     if (updatedUnit) {
       if (updatedUnit.updateCustomLayer?.success) {
-        dispatch(showSuccessMessage("Successfully updated the Unit"));
+        dispatch(showSuccessMessage("Successfully updated the unit"));
         // Updating stateapp parcel object
         const customLayer = updatedUnit.updateCustomLayer.customLayer;
         const feature = JSON.parse(customLayer.shape);

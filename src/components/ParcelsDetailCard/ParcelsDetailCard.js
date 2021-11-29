@@ -287,7 +287,7 @@ export default function ParcelsDetailCard(props) {
   useEffect(() => {
     if (updatedParcel) {
       if (updatedParcel.updateCustomLayer?.success) {
-        dispatch(showSuccessMessage("Successfully updated the parcel"));
+        dispatch(showSuccessMessage("Successfully updated the tract"));
 
         // Updating stateapp parcel object
         const customLayer = updatedParcel.updateCustomLayer.customLayer;
