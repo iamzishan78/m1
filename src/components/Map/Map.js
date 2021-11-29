@@ -78,7 +78,8 @@ import { drawShapeStyles, findBoundsMap } from "components/MapControls/commonHel
 import _ from "lodash";
 
 import parseLinkHeader from "parse-link-header";
-import UnitCardProvider from "components/UnitDetailCard/UnitCardProvider";
+import ShapeDetailCard from "components/ShapeDetailCard";
+import { ifDefaultLayers, ifDefaultSources, ifGenericShapeSource, layersWithSelectedShapeKey, defaultLayers, setLayerLabelLayout, showIfUserDefinedLayer } from "components/Shared/functions/shapeLayer";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -398,7 +399,7 @@ function Map({ type, paramId, lati, longi }) {
   };
 
   async function getCustomLayer() {
-    const keys = { parcels: "selectedParcel", units: "selectedShape", wells: "selectedWell" };
+    const keys = { parcels: "selectedParcel", ...layersWithSelectedShapeKey(), wells: "selectedWell" };
 
     if (type === "wells") {
       const intervalObj = setInterval(function () {
@@ -695,7 +696,6 @@ function Map({ type, paramId, lati, longi }) {
 
   const setLayer = (data, identifier, map, bLayer = null) => {
     let beforelayer = bLayer;
-
     //// configIndex = actual layer index
     const configIndex = stateApp.layers.findIndex((value) => value.identifier === identifier);
     //// config = actual layer
@@ -705,7 +705,7 @@ function Map({ type, paramId, lati, longi }) {
     for (let i = (paintProps ? paintProps.length : 0) - 1; i >= 0; i--) {
       const prop = paintProps[i];
       let layerData = null;
-      if (identifier === "Parcels" || identifier === "Area of Interest" || identifier === "Units") {
+      if (ifDefaultLayers(identifier)) {
         const dataId = prop.id;
         const groupBy = (arr, property) => {
           return arr.reduce((memo, x) => {
@@ -815,7 +815,7 @@ function Map({ type, paramId, lati, longi }) {
         });
       }
 
-      if (sourceId === "parcels_source" || sourceId === "interests_source" || sourceId === "units_source") {
+      if (ifDefaultSources(sourceId)) {
         let pointSource = geoJson.features.map((feature) => {
           var output = feature;
 
@@ -918,22 +918,7 @@ function Map({ type, paramId, lati, longi }) {
           // });
 
           // override label properties for parcel and interest
-          if (layerId === "parcel") {
-            labelLayout = {
-              ...labelLayout,
-              "text-size": ["interpolate", ["linear"], ["zoom"], 12, 12, 15, 28],
-            };
-          } else if (layerId === "interest") {
-            labelLayout = {
-              ...labelLayout,
-              "text-size": ["interpolate", ["linear"], ["zoom"], 9, 16, 11, 32, 15, 54],
-            };
-          } else if (layerId === "unit") {
-            labelLayout = {
-              ...labelLayout,
-              "text-size": ["interpolate", ["linear"], ["zoom"], 12, 12, 15, 28],
-            };
-          }
+          labelLayout = setLayerLabelLayout(layerId, labelLayout)
 
           // add point
           map.addLayer({
@@ -1157,10 +1142,10 @@ function Map({ type, paramId, lati, longi }) {
           id: filteredLayer._id,
         };
 
-      if (feature.source === "units_source") {
+      if (ifGenericShapeSource(feature.source)) {
         setStateApp((state) => {
           if (state.isDrawing) return state;
-          const newPath = `/map/units/${feature.properties.id}`;
+          const newPath = `/map/${feature.source.replace('_source', '')}/${feature.properties.id}`;
           history.location.pathname !== newPath && history.replace(newPath);
           findBoundsMap([selectedUserDefinedLayer], map);
           return {
@@ -1255,9 +1240,7 @@ function Map({ type, paramId, lati, longi }) {
       setStateApp((state) => {
         if (
           !state.showDrawShapesPopup ||
-          feature.source === "parcels_source" ||
-          feature.source === "interests_source" ||
-          feature.source === "units_source"
+          ifDefaultSources(feature.source)
         )
           createUDPopUp(feature.properties);
         return state;
@@ -1312,9 +1295,7 @@ function Map({ type, paramId, lati, longi }) {
               }
               if (map.getLayer(layerId)) {
                 if (
-                  layer.identifier === "Parcels" ||
-                  layer.identifier === "Units" ||
-                  layer.identifier === "Area of Interest" ||
+                  ifDefaultLayers(layer.identifier) ||
                   layer.identifier === "Tracked Wells" ||
                   layer.identifier === "Tracked Owners" ||
                   layer.identifier === "User Tags" ||
@@ -1322,7 +1303,7 @@ function Map({ type, paramId, lati, longi }) {
                 )
                   layers.push(layerId);
 
-                if (layer.identifier === "Parcels" || layer.identifier === "Units" || layer.identifier === "Area of Interest") {
+                if (ifDefaultLayers(layer.identifier)) {
                   udLayers.push(layerId);
                 }
               }
@@ -1393,9 +1374,7 @@ function Map({ type, paramId, lati, longi }) {
           case layerId === "wellpoints" ||
             layerId === "welllines" ||
             layerId === "wellpermitlines" ||
-            layerId === "Parcels" ||
-            layerId === "Units" ||
-            layerId === "Area of Interest" ||
+            ifDefaultLayers(layerId) ||
             layerId === "Tracked Wells" ||
             layerId === "Tracked Owners" ||
             layerId === "Tags Filter" ||
@@ -2265,7 +2244,7 @@ function Map({ type, paramId, lati, longi }) {
               });
 
               let ids = result.map(function (feature) {
-                if (["interest", "parcel", "unit"].indexOf(filterLayer) > -1) {
+                if (defaultLayers.indexOf(filterLayer) > -1) {
                   return feature.properties.shapeLabel;
                 }
                 return feature.properties.VIEWID;
@@ -2312,9 +2291,7 @@ function Map({ type, paramId, lati, longi }) {
           "recent_submitted_permits",
           "recent_submitted_permit_laterals",
           "rigs",
-          "interest",
-          "parcel",
-          "unit",
+          ...defaultLayers
         ];
 
         const basinShapes = stateNav.filterBasin;
@@ -2359,7 +2336,7 @@ function Map({ type, paramId, lati, longi }) {
           "recent_submitted_permit_laterals",
           "rigs",
           "parcel",
-          "unit",
+          ...defaultLayers
         ];
 
         const aoiShapes = stateNav.filterAOI;
@@ -2477,7 +2454,7 @@ function Map({ type, paramId, lati, longi }) {
           "rigs",
           "interest",
           "parcel",
-          "unit",
+          ...defaultLayers
         ];
         const filterFeature = stateNav.filterDrawing[1];
         filterShapeAction([filterFeature], filterLayers);
@@ -2640,7 +2617,7 @@ function Map({ type, paramId, lati, longi }) {
                 baseFilter,
                 ["any", ["within", mergeIntoMultiPolygon(filterCustomArray[filterLayer])], intersectingPermitLinesFilter],
               ]);
-            } else if (["interest", "parcel", "unit"].indexOf(filterLayer) > -1) {
+            } else if (defaultLayers.indexOf(filterLayer) > -1) {
               map.setFilter(filterLayer, ["match", ["get", "shapeLabel"], mergeArrays(filterCustomArray[filterLayer]), true, false]);
               map.setFilter(filterLayer + "_point", [
                 "match",
@@ -2682,7 +2659,7 @@ function Map({ type, paramId, lati, longi }) {
                   ].indexOf(filterLayer) > -1
                 ) {
                   map.setFilter(filterLayer, ["match", ["get", "id"], "-1", true, false]);
-                } else if (["interest", "parcel", "unit"].indexOf(filterLayer) > -1) {
+                } else if (defaultLayers.indexOf(filterLayer) > -1) {
                   map.setFilter(filterLayer, ["match", ["get", "shapeLabel"], "-1", true, false]);
                   map.setFilter(filterLayer + "_point", ["match", ["get", "shapeLabel"], "-1", true, false]);
                   map.setFilter(filterLayer + "_labels", ["match", ["get", "shapeLabel"], "-1", true, false]);
@@ -4002,10 +3979,11 @@ function Map({ type, paramId, lati, longi }) {
         map.setFilter("GLOUnitLabels", null);
         map.setFilter("basinLayer", null);
         map.setFilter("basinLabels", null);
-        map.setFilter("interest", null);
         map.setFilter("interest_point", null);
-        map.setFilter("parcel", null);
-        map.setFilter("unit", null);
+        defaultLayers.forEach((layer) => {
+          map.setFilter(layer, null);
+          map.setFilter(`${layer}_point`, null);
+        })
         map.setFilter("parcel_point", null);
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
         map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
@@ -6088,9 +6066,9 @@ function Map({ type, paramId, lati, longi }) {
           <ExpandableCardProvider
             expanded={true}
             handleCloseExpandableCard={handleCloseExpandableCard}
-            component={<UnitCardProvider></UnitCardProvider>}
+            component={<ShapeDetailCard type={stateApp.selectedShape.type}></ShapeDetailCard>}
             title={stateApp.selectedShape?.shapeLabel}
-            subTitle={stateApp.selectedShape?.unitInfo}
+            subTitle={stateApp.selectedShape?.shapeSubtitle || stateApp.selectedShape?.unitInfo}
             parent="map"
             position="relative"
             cardTop={0}
@@ -6099,7 +6077,7 @@ function Map({ type, paramId, lati, longi }) {
             cardWidthExpanded="50vw"
             cardHeightExpanded="calc(100vh - 64px)"
             targetSourceId={stateApp.selectedShape?.id}
-            targetLabel="unit"
+            targetLabel={stateApp.selectedShape.type}
             deleteCustomLayer={deleteCustomLayer}
           ></ExpandableCardProvider>
         </div>
@@ -6161,23 +6139,20 @@ function Map({ type, paramId, lati, longi }) {
                 )}
               </PortalD>
             )}
-            {stateApp.selectedUserDefinedLayer !== null &&
-              stateApp.currentFeature?.source !== "parcels_source" &&
-              stateApp.currentFeature?.source !== "units_source" &&
-              stateApp.currentFeature?.source !== "interests_source" && (
-                <PortalD id="popupContainer">
-                  <UdLayerCardProvider
-                    parent="map"
-                    handleCloseExpandableCard={handleCloseExpandableCard}
-                    selectedUserDefinedLayer={stateApp.selectedUserDefinedLayer}
-                    zIndex={3000}
-                    cardWidth="350px"
-                    mouseX={0}
-                    mouseY={0}
-                    position="relative"
-                  />
-                </PortalD>
-              )}
+            {showIfUserDefinedLayer(stateApp) && (
+              <PortalD id="popupContainer">
+                <UdLayerCardProvider
+                  parent="map"
+                  handleCloseExpandableCard={handleCloseExpandableCard}
+                  selectedUserDefinedLayer={stateApp.selectedUserDefinedLayer}
+                  zIndex={3000}
+                  cardWidth="350px"
+                  mouseX={0}
+                  mouseY={0}
+                  position="relative"
+                />
+              </PortalD>
+            )}
             {stateApp.selectedParcel && (
               <PortalD id="popupContainer">
                 {!stateApp.expandedCard && (

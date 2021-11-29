@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import get from "lodash/get";
 
 import { useMutation, useLazyQuery } from "@apollo/client";
@@ -6,10 +6,11 @@ import { ADDCONTACT } from "graphQL/useMutationAddContact";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { setStateIfDeepEqual } from "../../functions";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
+import { AppContext } from "AppContext";
 
 
-export default function AutocompEntityNamesList({ userId, nameAutValue, setNameAutValue }) {
-
+export default function AutocompEntityNamesList({ nameAutValue, setNameAutValue, ...rest }) {
+    const [stateApp] = useContext(AppContext);
     const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
     const [nameAutInputValue, NameAutInputValue] = useState("");
     const setNameAutInputValue = (newState) => {
@@ -82,14 +83,15 @@ export default function AutocompEntityNamesList({ userId, nameAutValue, setNameA
                     variables: {
                         contact: {
                             ...contact,
-                            createBy: userId,
-                            lastUpdateBy: userId,
+                            createBy: stateApp.user.mongoId,
+                            lastUpdateBy: stateApp.user.mongoId,
                         },
                     },
                     refetchQueries: ["getPaginatedContacts", "getContact"],
                     awaitRefetchQueries: true,
                 });
             }}
+            {...rest}
         />
     );
 }
