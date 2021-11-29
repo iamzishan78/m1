@@ -82,6 +82,10 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#F6F8F9",
     },
   },
+  btnColor: {
+    color: 'white', 
+    backgroundColor: '#4576CF'
+  }
 }));
 
 const options = [
@@ -134,6 +138,10 @@ const MetaField = ({ category }) => {
   const type = watch(
     "type",
     stateApp.selectedMeta ? stateApp.selectedMeta.type : "dropdown"
+  );
+  const title = watch(
+    "title",
+    stateApp.selectedMeta ? stateApp.selectedMeta.title : ""
   );
   const isAddedToLibrary = watch(
     "isAddedToLibrary",
@@ -433,9 +441,11 @@ const MetaField = ({ category }) => {
                     Cancel
                   </Button>
                   <Button
-                    style={{ margin: "25px 25px 25px 5px" }}
+                    className={!title ? '' : classes.btnColor}
+                    style={{ margin: "25px 25px 25px 5px"}}
                     variant="outlined"
                     onClick={handleSave}
+                    disabled={!title}
                   >
                     {stateApp.selectedMeta ? "Updated Field" : "Create Field"}
                   </Button>
