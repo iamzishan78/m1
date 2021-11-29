@@ -118,7 +118,7 @@ const categoryOptions = [
     value: "Flow",
   },
   {
-    label: "All (wells, docs, flows etc.)",
+    label: "All (contacts, docs, flow, etc.)",
     value: "All",
   },
 ];
@@ -298,7 +298,7 @@ const MetaField = ({ category }) => {
                     style={{ paddingRight: 20 }}
                     alignItems="center"
                   >
-                    <label style={{ margin: "5px 0px" }}>Field title</label>
+                    <label style={{ margin: "5px 0px" }}>Field Title</label>
                     <Controller
                       control={control}
                       name="title"
@@ -321,7 +321,7 @@ const MetaField = ({ category }) => {
                     />
                   </Grid>
                   <Grid container item xs={5} alignItems="center">
-                    <label style={{ margin: "5px 0px" }}>Field type</label>
+                    <label style={{ margin: "5px 0px" }}>Field Type</label>
                     <Controller
                       control={control}
                       name="type"
@@ -423,7 +423,7 @@ const MetaField = ({ category }) => {
                         color="primary"
                       />
                     }
-                    label="Add to Mineral's field library"
+                    label="Add to field library"
                   />
                 )}
               />
@@ -447,7 +447,7 @@ const MetaField = ({ category }) => {
                     onClick={handleSave}
                     disabled={!title}
                   >
-                    {stateApp.selectedMeta ? "Updated Field" : "Create Field"}
+                    {stateApp.selectedMeta ? "Update Field" : "Create Field"}
                   </Button>
                 </div>
               </div>
@@ -482,7 +482,7 @@ const MetaField = ({ category }) => {
                   onChange={(e) => {
                     setFilter(e.target.value);
                   }}
-                  placeholder="Find a field in M1neral"
+                  placeholder="Search for an existing field"
                   fullWidth
                   defaultValue=""
                 />
@@ -500,7 +500,7 @@ const MetaField = ({ category }) => {
                 }}
               >
                 <Grid container item xs={10} style={{ paddingLeft: "50px" }}>
-                  Recent field in your org
+                  Available fields
                 </Grid>
                 <Grid container item xs={2} style={{ paddingRight: "50px" }}>
                   <div style={{ width: "100%", textAlign: "end" }}>Type</div>
@@ -632,7 +632,7 @@ const SortableComponent = ({ setItems, items }) => {
             marginTop: 1,
           }}
         />{" "}
-        <span style={{ fontSize: 13 }}>Add an Option</span>
+        <span style={{ fontSize: 13 }}>Add an option</span>
       </div>
     </>
   );
