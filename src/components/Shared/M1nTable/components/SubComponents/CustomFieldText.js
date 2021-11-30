@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { TextField } from "@material-ui/core";
 
@@ -6,8 +6,14 @@ const useStyles = makeStyles((theme) => ({}));
 
 const CustomFieldText = ({ value, onCustomKeyChange }) => {
   const classes = useStyles();
-  const [previousValue, setPreviousValue] = useState(value)
-  const [inputValue, setInputValue] = useState(value)
+  const [previousValue, setPreviousValue] = useState(value ? value : '');
+  const [inputValue, setInputValue] = useState(value ? value : '');
+
+  useEffect(() => {
+    setInputValue(value ? value : '');
+    setPreviousValue(value ? value : '');
+  }, [value]);
+
   return (
     <div style={{ width: "150px" }} onClick={(e) => e.stopPropagation()}>
       <TextField
@@ -29,20 +35,20 @@ const CustomFieldText = ({ value, onCustomKeyChange }) => {
           event.stopPropagation();
           if (event.key === "Enter") {
             event.preventDefault();
-            onCustomKeyChange(inputValue)
-            setPreviousValue(inputValue)
+            onCustomKeyChange(inputValue);
+            setPreviousValue(inputValue);
           }
           if (event.key === "Escape") {
-              // onCustomKeyChange(previousValue)
-              setInputValue(previousValue);
+            // onCustomKeyChange(previousValue)
+            setInputValue(previousValue);
           }
         }}
         onBlur={() => {
-            // onCustomKeyChange(previousValue)
-            setInputValue(previousValue);
+          // onCustomKeyChange(previousValue)
+          setInputValue(previousValue);
         }}
         InputProps={{
-            disableUnderline: true,
+          disableUnderline: true,
         }}
       />
     </div>

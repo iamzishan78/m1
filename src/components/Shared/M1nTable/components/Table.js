@@ -459,6 +459,9 @@ const useStyles = makeStyles((theme) => ({
     color: "#000000",
     fontWeight: "normal",
   },
+  fileName: {
+    minWidth: "400px !important",
+  },
   docDateText: {
     // cursor: "pointer",
     padding: "0px 30px 10px 10px",
@@ -1840,10 +1843,11 @@ function SubTable(props) {
                           : tableMeta.rowData[0];
 
                   return (
-                    <div className="fileName">
+                    <div className={classes.fileName}>
                       <Grid container spacing={2} direction="row">
                         <Grid
                           item
+                          xs={2}
                           style={{
                             display: "flex",
                             justifyContent: "center",
@@ -1874,7 +1878,7 @@ function SubTable(props) {
                           {/* </div> */}
                         </Grid>
 
-                        <Grid item>
+                        <Grid xs={10} item>
                           <div
                             style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
                             onClick={(e) => {
