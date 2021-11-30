@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CustomFieldSelect = ({ index, value, onCustomKeyChange, column }) => {
+const CustomFieldSelect = ({ index, value, onCustomKeyChange, column, fullWidth }) => {
   const classes = useStyles();
   const defaultValue = {
     label: "----",
@@ -62,7 +62,7 @@ const CustomFieldSelect = ({ index, value, onCustomKeyChange, column }) => {
 
   return (
     <div
-      style={{ padding: "0px 10px", minWidth: "120px" }}
+      style={{ padding: "0px 10px", height: "50px", minWidth: "120px", width: fullWidth ? '100%' : 'auto',  borderBottom: fullWidth ? '1px solid' : 'none' }}
       onClick={(e) => e.stopPropagation()}
       onMouseLeave={(e) => setShowOptions(false)}
     >
