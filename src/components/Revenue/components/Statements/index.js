@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import AnalyticsCards from "components/Revenue/components/Statements/AnalyticsCards";
-import StatementTable from "./StatementTable";
+import RevenueStatementTable from "components/Table/Revenue/RevenueStatementTable";
 
 import { useLazyQuery } from "@apollo/client";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
@@ -77,7 +77,9 @@ export default function RevenueStatements() {
   return (rows.length > 0 ? (
     <div style={{ padding: "75px" }}>
       <AnalyticsCards checks={rows.length} approvedCount={approvedCount} unapprovedCount={unapprovedCount} />
-      <StatementTable datasource={rows} />
+      <div style={{ marginTop: 40 }}>
+        <RevenueStatementTable datasource={rows} />
+      </div>
     </div>) : (
     <>
       {loading && (

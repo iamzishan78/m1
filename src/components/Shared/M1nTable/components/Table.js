@@ -259,6 +259,13 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
     },
+    "& .MuiTableCell-paddingCheckbox": {
+      position: "relative",
+    },
+    "& .MuiToolbar-regular > div:nth-child(2) .MuiIconButton-root": {
+      backgroundColor: "#D4E8F1",
+      margin: "0 2px",
+    },
     "& .MuiTableHead-root": {
       "& th": {
         backgroundColor: "#F2F2F2",
@@ -1945,6 +1952,46 @@ function SubTable(props) {
           case "water":
           case "allocatedWater":
           case "allocatedGas":
+          case "checkNumber":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                const splitNumber = value.split("_");
+                return (
+                  <p onClick={() => history.push(`/revenue/statement/details?id=${splitNumber[1]}`)} style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}>
+                    {splitNumber[0]}
+                  </p>
+                );
+              },
+            };
+            break;
+          case "checkAmount":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                return (
+                  <p style={{ fontWeight: 600 }}>
+                    {`$${value}`}
+                  </p>
+                );
+              },
+            };
+            break;
+          case "status":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                return (
+                  <div className="flex justifyStart alignCenter">
+                    {value.toLowerCase() === "approved" && (<div style={{ background: "#17c10d", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />)}
+                    {value.toLowerCase() === "imported" && (<div style={{ background: "#ffa800", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />)}
+                    {value}
+                  </div>
+
+                );
+              },
+            };
+            break;
           case "allocatedOil":
             column.options = {
               ...column.options,
@@ -2693,7 +2740,6 @@ function SubTable(props) {
         },
 
     customToolbar: () => {
-      console.log("props addable type", props.addAble.type);
       let buttonLabel = "+ ADD",
         menuOptions = {};
       if (props.addAble.type === "contact") {
@@ -3367,6 +3413,23 @@ function SubTable(props) {
     }
   };
 
+  //  revenue data set
+  const getRevenueStatementRows = () => {
+    let dataSet = rows?.map((item) => ({
+      checkNumber: `${item?.check?.checkNumber}_${item?._id}`,
+      purchaserName: item?.check?.payor?.name || "",
+      checkAmount: item?.check?.checkAmount || "",
+      checkDate: moment.parseZone(item?.check?.checkDate).format("MM/DD/yyyy") || "",
+      depositeDate: moment.parseZone(item?.check?.depositDate).format("MM/DD/yyyy") || "",
+      lines: 0,
+      checkId: item?.check?._id,
+      source: item?.check?.source || "",
+      status: item?.check?.status || "Imported",
+    }));
+    return dataSet;
+  }
+
+
   return (
     <div
       style={{
@@ -3384,7 +3447,7 @@ function SubTable(props) {
         <MUIDataTable
           className={tableStyle}
           title={getHeaders()}
-          data={props.parent === "ownersPerParcel" ? searchedRows : rows ? rows : []}
+          data={props.parent === "ownersPerParcel" ? searchedRows : props.addAble.type === "RevenueStatement" ? getRevenueStatementRows() : rows ? rows : []}
           // columns={
           //   props.parent === "ownersPerParcel" ? false :
           //   (columns ? columns : [])}
