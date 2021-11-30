@@ -105,8 +105,10 @@ function DocumentsTable(props) {
 
   useEffect(() => {
     if(metaDataRes?.getMetaData?.gridViews){
-      const filterColumns = columns.filter(col => !metaDataRes.getMetaData.gridViews.find(meta => meta.name === col.name))
-      const columnsData = [ ...filterColumns, ...metaDataRes.getMetaData.gridViews ]
+      let filterColumns = columns.filter(col => !metaDataRes.getMetaData.gridViews.find(meta => meta.name === col.name))
+      const lastColumn = filterColumns.filter(col => col.name === ' ')
+      filterColumns = filterColumns.filter(col => col.name !== ' ')
+      const columnsData = [ ...filterColumns, ...metaDataRes.getMetaData.gridViews, ...lastColumn ]
       for(let i=0; i<metaDataRes.getMetaData.gridViews.length; i++){
         TableHeader.push(metaDataRes.getMetaData.gridViews[i])
       }
