@@ -35,6 +35,11 @@ const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
   },
+  documentTable: {
+    "& ::-webkit-scrollbar": {
+        height: "0.7em !important",
+    }
+  }
 }));
 
 function DocumentsTable(props) {
@@ -275,9 +280,8 @@ function DocumentsTable(props) {
     })
   }
 
-  console.log('rows', props.searchedRows)
   return (
-    <>
+    <div className={classes.documentTable}>
       <Container
         maxWidth={false}
         className={classes.container}
@@ -323,7 +327,7 @@ function DocumentsTable(props) {
           onCustomKeyChange={onCustomKeyChange}
         />
       </Container>
-    </>
+    </div>
   );
 }
 
