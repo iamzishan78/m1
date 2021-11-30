@@ -411,8 +411,12 @@ const Login = (props) => {
     const userSettingsResp = await userSettings(mongoUser._id, authGraphQLResponse.authenticationToken, authGraphQLToken.idToken);
     if (userSettingsResp) {
       const { activeBaseMap, mapDefaultPosition } = userSettingsResp;
-      mapVars = { ...mapVars, ...mapDefaultPosition, styleId: activeBaseMap };
-      defaultMapVars = { ...defaultMapVars, ...mapDefaultPosition, styleId: activeBaseMap };
+      mapVars = { ...mapVars, ...mapDefaultPosition };
+      defaultMapVars = { ...defaultMapVars, ...mapDefaultPosition };
+      if (activeBaseMap) {
+        mapVars.styleId = activeBaseMap;
+        defaultMapVars.styleId = activeBaseMap;
+      }
     }
 
     setStateApp((state) => ({
