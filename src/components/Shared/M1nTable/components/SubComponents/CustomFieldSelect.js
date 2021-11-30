@@ -39,6 +39,7 @@ const CustomFieldSelect = ({ index, value, onCustomKeyChange, column, fullWidth 
     value: "----",
   };
   const [showOptions, setShowOptions] = useState(false);
+  const [showIcon, setShowIcon] = useState(false);
 
   const options = JSON.parse(JSON.stringify(column.dropdownOptions))
   options.unshift(defaultValue);
@@ -64,7 +65,8 @@ const CustomFieldSelect = ({ index, value, onCustomKeyChange, column, fullWidth 
     <div
       style={{ padding: "0px 10px", height: "50px", minWidth: "120px", width: fullWidth ? '100%' : 'auto',  borderBottom: fullWidth ? '1px solid' : 'none' }}
       onClick={(e) => e.stopPropagation()}
-      onMouseLeave={(e) => setShowOptions(false)}
+      onMouseLeave={(e) => {setShowOptions(false); setShowIcon(false)}}
+      onMouseEnter={() => setShowIcon(true)}
     >
       <Autocomplete
         className={classes.search}
@@ -140,9 +142,11 @@ const CustomFieldSelect = ({ index, value, onCustomKeyChange, column, fullWidth 
                 }}
               >
                 <span id={`colorText_${index}_${column.name}`}></span>
-                <KeyboardArrowDownIcon
-                  style={{ marginLeft: 10, marginTop: -2 }}
-                />
+                {( showIcon || fullWidth ) && (
+                  <KeyboardArrowDownIcon
+                    style={{ marginLeft: 10, marginTop: -2 }}
+                  />
+                )}
               </span>
             </div>
           </>
