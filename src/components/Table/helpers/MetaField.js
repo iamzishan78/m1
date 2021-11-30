@@ -271,7 +271,7 @@ const MetaField = ({ category, columns }) => {
         }))
       }
     >
-      <div style={{ height: "550px" }}>
+      <div>
         <div className={classes.header}>
           {stateApp.selectedMeta ? <h3>Edit Field</h3> : <h3>Add Field</h3>}
           <IconButton onClick={handleClose}>
