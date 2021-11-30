@@ -30,6 +30,7 @@ import { setMapGridCardState } from "actions";
 
 import { gql } from "@apollo/client";
 import { setFeatureProperty, drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
+import { shapeTypeLayers } from "components/Shared/functions/shapeLayer";
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
@@ -119,7 +120,7 @@ const ShapeActionsPopup = (props) => {
     feature.layer = { id: customLayer.layer };
     let key;
     if (customLayer.layer === 'parcel') key = 'selectedParcel'
-    if (customLayer.layer === 'unit') key = 'selectedShape'
+    if (shapeTypeLayers.includes(customLayer.layer)) key = 'selectedShape'
 
     setStateApp((state) => ({
       ...state,
@@ -354,7 +355,7 @@ const ShapeActionsPopup = (props) => {
     return abstractShape
   }
 
-  const getParcelUnitName = (abstractShape) => {
+  const getParcelAndShapeName = (abstractShape) => {
     const properties = abstractShape?.properties;
     let township = properties?.Township;
     let range = properties?.Range;
@@ -379,7 +380,7 @@ const ShapeActionsPopup = (props) => {
 
 
     let originalProperties;
-    let parcelName = getParcelUnitName(abstractShape)
+    let parcelName = getParcelAndShapeName(abstractShape)
     originalProperties = [abstractShape.properties];
 
     const featureId = hat();
@@ -436,17 +437,22 @@ const ShapeActionsPopup = (props) => {
     popupCloseAction();
   };
 
-  const saveAndOpenUnitDetail = () => {
+  const saveAndOpenShapeDetail = (layerType) => {
     if (!user._id) {
       return;
     }
     let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
-    let unitInfo = ''
+    let shapeSubtitle = ''
     if (abstractShape?.properties?.County && abstractShape?.properties?.State) {
-      unitInfo = `${abstractShape?.properties?.County}, ${abstractShape?.properties?.State} - BLK ${abstractShape?.properties?.Block}, SEC ${abstractShape?.properties?.Section}`
+      if (layerType === 'unit') shapeSubtitle = `${abstractShape?.properties?.County}, ${abstractShape?.properties?.State} - BLK ${abstractShape?.properties?.Block}, SEC ${abstractShape?.properties?.Section}`
+      if (layerType === 'agreement') shapeSubtitle = `${abstractShape?.properties?.County}, ${abstractShape?.properties?.State}`
     }
-    let unitName = getParcelUnitName(abstractShape)
-
+    let shapeName = getParcelAndShapeName(abstractShape)
+    let properties = {}
+    if (layerType === 'unit')
+      properties = { uName: shapeName, uNumber: "", uType: "", uOperator: "", uStatus: "" }
+    if (layerType === 'agreement')
+      properties = { agreementName: shapeName }
     const featureId = hat();
     const newShapeFeature = {
       id: featureId,
@@ -454,28 +460,20 @@ const ShapeActionsPopup = (props) => {
       geometry: abstractShape.geometry,
       properties: {
         originalProperties: abstractShape.properties,
-        unitInfo,
-        type: "unit",
-        shapeLabel: unitName,
-        uNumber: "",
-        uName: unitName,
-        uType: "",
-        uOperator: "",
-        uStatus: "",
-        uFieldName: "",
-        sdNotes: "",
-        sdGrossAcres: "",
+        shapeSubtitle,
+        type: layerType,
+        shapeLabel: shapeName,
+        ...properties,
         shapeArea: calculateLandArea(abstractShape),
         shapeCenter: calculateShapeCenter(abstractShape.geometry.coordinates),
-        shapeLabelLayer: "",
         id: featureId,
       },
     };
     const customLayerData = {
       shapeJson: newShapeFeature,
       shape: JSON.stringify(newShapeFeature),
-      layer: "unit",
-      name: unitName,
+      layer: layerType,
+      name: shapeName,
       user: user._id,
     };
 
@@ -579,7 +577,7 @@ const ShapeActionsPopup = (props) => {
     setTimeout(() => popupCloseAction(), 0);
   };
 
-  const enableEditOnly = stateApp.featureToEdit?.layer?.id === "parcel" || stateApp.featureToEdit?.layer?.id === "unit";
+  const enableEditOnly = stateApp.featureToEdit?.layer?.id === "parcel" || shapeTypeLayers.includes(stateApp.featureToEdit?.layer?.id)
   const isAoi = stateApp.selectedAoi?.layer?.id === "interest";
   const isCreateParcelMenu = Boolean(anchorEl);
 
@@ -596,10 +594,10 @@ const ShapeActionsPopup = (props) => {
         className={classes.parcelPopover}
       >
         <MenuItem disabled>Shape Layer Type</MenuItem>
-        <MenuItem>Agreement</MenuItem>
+        <MenuItem onClick={() => saveAndOpenShapeDetail('agreement')} >Agreement</MenuItem>
         <MenuItem onClick={saveAndOpenParcelDetail}>Tract</MenuItem>
-        <MenuItem onClick={saveAndOpenUnitDetail}>Unit Boundary</MenuItem>
-        
+        <MenuItem onClick={() => saveAndOpenShapeDetail('unit')}>Unit Boundary</MenuItem>
+
       </Menu>
       <Fragment>
         <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span> {calculateLandArea()}

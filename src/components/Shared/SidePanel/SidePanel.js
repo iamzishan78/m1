@@ -402,6 +402,10 @@ export default function SidePanel() {
     }
   }, [panelType]);
 
+  useEffect(() => {
+    if (panelType === "filter") setPanelTitle("Filters");
+  }, [panelType]);
+
   return panelItems ? (
     <Panel
       type={panelType}
