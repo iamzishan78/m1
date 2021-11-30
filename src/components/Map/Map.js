@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
     top: "0px",
     bottom: "0",
     width: "100%",
-    height: "calc(100vh - 0px)",
+    height: "100vh",
     overflow: "hidden !important",
     "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib": {
       display: "none",
@@ -4093,7 +4093,7 @@ function Map({ type, paramId, lati, longi }) {
     stateApp.customLayers,
     stateApp.wellListFromTagsFilter,
     stateNav.filterIntersectingWellLines,
-    stateNav.prodOptions
+    stateNav.prodOptions,
   ]);
 
   useEffect(() => {
@@ -5326,10 +5326,10 @@ function Map({ type, paramId, lati, longi }) {
           ...stateApp,
           mapVars: {
             ...stateApp.mapVars,
-            zoom: zoom,
-            center: center,
-            pitch: pitch,
-            bearing: bearing,
+            zoom,
+            center,
+            pitch,
+            bearing,
           },
         }));
 
