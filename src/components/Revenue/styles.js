@@ -57,7 +57,7 @@ export const useStyles = makeStyles((theme) => ({
     color: "#29abe0",
   },
   revenueRootExpanded: {
-    marginLeft: "425px",
+    marginLeft: "425px !important",
   },
   revenueRootCollapsed: {
     marginLeft: "0px !important",

@@ -64,7 +64,6 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
           [classes.revenueRootExpanded]: expandedPanel,
           [classes.revenueRootCollapsed]: !expandedPanel,
         })}
-        style={{ marginTop: "62px" }}
       >
         {children}
       </div>

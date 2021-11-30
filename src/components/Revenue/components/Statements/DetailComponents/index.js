@@ -11,9 +11,6 @@ import HeaderSection from "./HeaderSection";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    position: "absolute",
-    top: 0,
-    zIndex: 1,
     height: "100vh",
     backgroundColor: "#f3f3f3",
     width: "100%",
@@ -22,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "52px",
     padding: "10px 20px",
     backgroundColor: "#fff",
-    width: "100%",
   },
   detailHeader: {
     backgroundColor: "#fff",
@@ -175,7 +171,7 @@ export default function DetailComponents(props) {
               <StyledTab label="Check Details" />
             </StyledTabs>
           </div>
-          <div style={{ maxHeight: "calc(100vh - 320px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+          <div style={{ maxHeight: "calc(100vh - 310px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
             <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
               <HeaderSection />
             </div>

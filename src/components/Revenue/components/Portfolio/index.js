@@ -39,10 +39,7 @@ const useStyles = makeStyles((theme) => ({
 
 const CUSTOM_DATES = {
   THIS_YEAR_TO_LAST_MONTH: "This year-to-last-month",
-  YESTERDAY: "Yesterday",
   RECENT: "Recent",
-  LAST_WEEK: "Last week",
-  LAST_WEEK_TO_DATE: "Last week-to-date",
   LAST_MONTH: "Last Month",
   LAST_MONTH_TO_DATE: "Last month-to-date",
   LAST_QUARTER: "Last Quarter",
@@ -58,16 +55,13 @@ export default function Portfolio() {
 
   const hadnleDateTypeChange = (date) => {
     const currentYear = Math.round(new Date().getFullYear());
+    const currentMonth = Math.round(new Date().getMonth());
     switch (date) {
       case CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH:
         setFromDate(`${currentYear}-01`);
-        setToDate(`${currentYear}-12`);
+        setToDate(`${currentYear}-${currentMonth}`);
         break;
-      case CUSTOM_DATES.YESTERDAY:
       case CUSTOM_DATES.RECENT:
-      case CUSTOM_DATES.LAST_WEEK:
-      case CUSTOM_DATES.LAST_WEEK_TO_DATE:
-        const currentMonth = new Date().getMonth();
         setFromDate(`${currentYear}-${currentMonth}`);
         setToDate(`${currentYear}-${currentMonth}`);
         break;
@@ -89,7 +83,7 @@ export default function Portfolio() {
         break;
       case CUSTOM_DATES.LAST_YEAR_TO_DATE:
         setFromDate(`${currentYear - 1}-01`);
-        setToDate(`${currentYear}-12`);
+        setToDate(`${currentYear}-${currentMonth}`);
         break;
       default:
     }
