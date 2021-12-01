@@ -39,9 +39,9 @@ function RevenueStatementTable(props) {
 
 
     const startPaginationAt = 25;
-    const esIndex = 'checkdetails_flat';
+    const esIndex = 'checks_flat';
 
-    // get paginated data hits from checkdetails_flat table
+    // get paginated data hits from checks_flat table
     useEffect(() => {
         getESPaginatedList({
             variables: {
@@ -122,6 +122,7 @@ function RevenueStatementTable(props) {
         filter: true,
     }
 
+    console.log("columns", columns);
     return (
         <Container
             maxWidth={false}

@@ -18,10 +18,10 @@ export default function RevenueStatements() {
   const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
-    // get checks list from checkdetails_flat table
+    // get checks list from checks_flat table
     getESPaginatedList({
       variables: {
-        esIndex: "checkdetails_flat",
+        esIndex: "checks_flat",
         pagination: {
           first: 50,
           keep_alive: "1micros"
@@ -29,11 +29,11 @@ export default function RevenueStatements() {
       }
     });
 
-    // Filter approved checks list from checkdetails_flat table
+    // Filter approved checks list from checks_flat table
     getFilters({
       variables: {
-        esIndex: "checkdetails_flat",
-        filterKey: "check.status.keyword",
+        esIndex: "checks_flat",
+        filterKey: "status.keyword",
         search: "APPROVED",
         size: 50,
       },

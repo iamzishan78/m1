@@ -3416,15 +3416,15 @@ function SubTable(props) {
   //  revenue data set
   const getRevenueStatementRows = () => {
     let dataSet = rows?.map((item) => ({
-      checkNumber: `${item?.check?.checkNumber}_${item?._id}`,
-      purchaserName: item?.check?.payor?.name || "",
-      checkAmount: item?.check?.checkAmount || "",
-      checkDate: moment.parseZone(item?.check?.checkDate).format("MM/DD/yyyy") || "",
-      depositeDate: moment.parseZone(item?.check?.depositDate).format("MM/DD/yyyy") || "",
-      lines: 0,
-      checkId: item?.check?._id,
-      source: item?.check?.source || "",
-      status: item?.check?.status || "Imported",
+      checkNumber: `${item?.checkNumber}_${item?._id}`,
+      purchaserName: item?.payor?.name || "",
+      checkAmount: item?.checkAmount || "",
+      checkDate: moment.parseZone(item?.checkDate).format("MM/DD/yyyy") || "",
+      depositDate: moment.parseZone(item?.depositDate).format("MM/DD/yyyy") || "",
+      lines: item?.checkDetail?.lines || 0,
+      checkId: item?._id,
+      source: item?.source || "",
+      status: item?.status || "Imported",
     }));
     return dataSet;
   }
