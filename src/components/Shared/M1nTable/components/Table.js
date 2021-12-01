@@ -11,7 +11,7 @@ import Tags from "../../Tagger";
 import Comments from "../../Comments";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
-import MUIDataTable, { TableFilterList } from "mui-datatables";
+import MUIDataTable, { TableFilterList, TableViewCol } from "mui-datatables";
 import { DndProvider } from "react-dnd";
 import { Box, ButtonGroup, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
 import TrackToggleButton from "../../TrackToggleButton";
@@ -72,7 +72,6 @@ import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDraw
 import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
-
 import ButtonDropDown from "./ButtonGroup";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
@@ -96,6 +95,9 @@ import RightDialog from "../../../ContactDetailCard/components/RightDialog";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
+import CustomFieldText from "components/Shared/M1nTable/components/SubComponents/CustomFieldText";
+import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+
 // queries
 import { OWNERSLATSLONS } from "../../../../graphQL/useQueryOwnerLatsLonsArray";
 import { OPERATORSLATSLONS } from "../../../../graphQL/useQueryOperatorLatsLonsArray";
@@ -116,14 +118,14 @@ import PostAddIcon from "@material-ui/icons/PostAdd";
 import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
-import { isPropertySignature } from "typescript";
+import { isDebuggerStatement, isPropertySignature } from "typescript";
+import { colorPallete } from "components/Table/helpers";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
-
 // const customStyles = makeStyles((theme) => ({
 //   table: {
 //     "& .MuiTableCell-body": {
@@ -1965,7 +1967,30 @@ function SubTable(props) {
             {
               column.options = {
                 ...column.options,
-                customBodyRender: column?.options?.customBodyRender ? column.options.customBodyRender : (value, tableMeta, updateValue) => {
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  // if(column?.options?.customBodyRender){
+                  //   return column?.options?.customBodyRender
+                  // }
+                  if(column.isCustom && column.type === 'dropdown'){
+                    let value = null;
+                    if(props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data){
+                      value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
+                    }
+                    return (
+                      <>
+                        <CustomFieldSelect index={tableMeta.rowIndex} column={column} value={value} onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)} />
+                      </>
+                    )
+                  }
+                  if(column.isCustom && column.type === 'text'){
+                    let value = null;
+                    if( props.rows[tableMeta.rowIndex].custom_data){
+                      value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
+                    }
+                    return (
+                      <CustomFieldText value={value} onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)} />
+                    )
+                  }
                   const valueFormatter = (v) => {
                     if (
                       (column.name === "status" && props.targetLabel === "deal") ||
@@ -3341,11 +3366,11 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    if (props.header === 'Contacts') {
+    if(props.header === 'Contacts' || props.header === "Documents") {
       const HeaderComponent = props.headerComponent
       return <HeaderComponent {...props.headerProps} />
     }
-    if (props.header === "Documents") {
+    if (props.header === "Documentss") {
       return (
         <div style={{ display: "flex", justifyContent: "left" }}>
           <DescriptionOutlinedIcon />
@@ -3367,6 +3392,15 @@ function SubTable(props) {
       return props.header;
     }
   };
+
+  const CustomTableViewCol = (columnsProps) => {
+    if(props.header === "Documents") {
+      const ViewColumn = props.viewColumn
+      return <ViewColumn {...columnsProps} tableColumns={props.columns} />
+    }else{
+      return <TableViewCol {...columnsProps} />
+    }
+  }
 
   return (
     <div
@@ -3392,6 +3426,7 @@ function SubTable(props) {
 
           columns={columns ? columns : []}
           components={{
+            TableViewCol: CustomTableViewCol,
             TableFilterList: props.header === 'Tax Roll Ownership' && !isSearchOpen ? TableFilterList : null,
             icons: {
               FilterIcon,
