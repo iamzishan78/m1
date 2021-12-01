@@ -310,34 +310,36 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
               </Grid>
             </Grid>
           </StyledMenuHActionHeader>
-          <StyledMenuSecondaryHeaderItem>
-            <ListItemText primary={title} />
-            {headerButton && (
-              <StyledListItemSecondaryAction>
-                <Button onClick={headerButton.fn} color="secondary" variant="outlined" startIcon={headerButton.icon}>
-                  {headerButton.text}
-                </Button>
-              </StyledListItemSecondaryAction>
-            )}
-          </StyledMenuSecondaryHeaderItem>
-          {/* base Stuff */}
-          {type === "base" && getBasemapImageBox()}
+          <div className={classes.panelContent}>
+            <StyledMenuSecondaryHeaderItem>
+              <ListItemText primary={title} />
+              {headerButton && (
+                <StyledListItemSecondaryAction>
+                  <Button onClick={headerButton.fn} color="secondary" variant="outlined" startIcon={headerButton.icon}>
+                    {headerButton.text}
+                  </Button>
+                </StyledListItemSecondaryAction>
+              )}
+            </StyledMenuSecondaryHeaderItem>
+            {/* base Stuff */}
+            {type === "base" && getBasemapImageBox()}
 
-          {type === "layer" &&
-            (layerMap && layerMap[0]?.type ? (
-              <SortableLayer layerMap={layerMap} panelItems={panelItems} />
-            ) : (
-              <Box height="calc(100vh - 50px - 64px)" bgcolor="#0e111a" display="flex" justifyContent="center">
-                <CircularProgress style={{ top: "50%", position: "absolute" }} size={40} color="secondary" />
-              </Box>
-            ))}
-          {type === "base" && (
-            <Collapse in={true} timeout="auto" unmountOnExit>
-              {displayList}
-            </Collapse>
-          )}
-          {type === "heatMaps" && displayList}
-          {type === "filter" && <LayerFilters />}
+            {type === "layer" &&
+              (layerMap && layerMap[0]?.type ? (
+                <SortableLayer layerMap={layerMap} panelItems={panelItems} />
+              ) : (
+                <Box height="calc(100vh - 50px - 64px)" bgcolor="#0e111a" display="flex" justifyContent="center">
+                  <CircularProgress style={{ top: "50%", position: "absolute" }} size={40} color="secondary" />
+                </Box>
+              ))}
+            {type === "base" && (
+              <Collapse in={true} timeout="auto" unmountOnExit>
+                {displayList}
+              </Collapse>
+            )}
+            {type === "heatMaps" && displayList}
+            {type === "filter" && <LayerFilters />}
+          </div>
         </StyledMenu>
         <StyledMenu
           id="layer-secondary-panel"
