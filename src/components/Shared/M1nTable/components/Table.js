@@ -465,7 +465,7 @@ const useStyles = makeStyles((theme) => ({
   docDateText: {
     // cursor: "pointer",
     padding: "0px 30px 10px 10px",
-    marginTop: "-10px",
+    marginTop: "-20px",
     position: "relative",
     justifyContent: "flex-end"
     // minWidth: "100px",
