@@ -57,7 +57,10 @@ const useStyles = makeStyles(() => ({
     "& input": {
       color: "white !important",
     },
-    "& .MuiInput-underline:after": {
+    "& .MuiInputBase-adornedStart:before": {
+      borderBottomColor: "white",
+    },
+    "& .MuiInputBase-adornedStart:after": {
       borderBottomColor: "white",
     },
     "& .MuiOutlinedInput-root": {
