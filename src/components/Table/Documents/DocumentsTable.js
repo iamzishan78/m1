@@ -8,6 +8,7 @@ import TableHOC from "components/Table/TableHOC";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 // QUERIES
 import { useLazyQuery, useMutation } from "@apollo/client";
+import { arrayMoveImmutable } from "array-move";
 
 import {
   deepEqualObjects,
@@ -29,7 +30,9 @@ import { GET_ES_DOCUMENTS } from "graphQL/useQueryESDocuments";
 import { GET_ES_DOCUMENTS_FILTER } from "graphQL/useQueryESDocumentsFilter";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
+import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 import { AppContext } from "AppContext";
+import { lengthToDegrees } from "@turf/helpers";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -37,9 +40,9 @@ const useStyles = makeStyles((theme) => ({
   },
   documentTable: {
     "& ::-webkit-scrollbar": {
-        height: "0.7em !important",
-    }
-  }
+      height: "0.7em !important",
+    },
+  },
 }));
 
 function DocumentsTable(props) {
@@ -59,7 +62,7 @@ function DocumentsTable(props) {
   };
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [selectedGridView, setSelectedGridView] = useState(defaultView);
+  const [selectedGridView, setSelectedGridView] = useState({});
 
   // queries
   const [getESDocuments, { data: DocumentsData, loading }] = useLazyQuery(
@@ -67,7 +70,9 @@ function DocumentsTable(props) {
     { fetchPolicy: "no-cache" }
   );
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
-  const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
+  const [getGridViews, { data: gridViews }] = useLazyQuery(GET_GRID_VIEWS);
+  const [updateGridView, { data: updatedGridView }] =
+    useMutation(UPDATE_GRID_VIEW);
   const [updateDocument] = useMutation(UPDATE_DOCUMENT);
 
   const tableData = DocumentsData?.getESFiles;
@@ -80,6 +85,24 @@ function DocumentsTable(props) {
   const total = false;
   const orderByTracks = false;
   const startPaginationAt = 25;
+
+  useEffect(() => {
+    getGridViews({
+      variables: {
+        module: "Documents",
+        userId: stateApp.user.mongoId,
+      },
+    });
+  }, [getGridViews]);
+
+  useEffect(() => {
+    if (gridViews?.getGridViews?.gridViews) {
+      const data = JSON.parse(JSON.stringify(gridViews.getGridViews.gridViews));
+      setSelectedGridView(
+        data.find((d) => d.type === "Default" && d.name === "All Documents")
+      );
+    }
+  }, [gridViews]);
 
   useEffect(() => {
     getESDocuments({
@@ -101,31 +124,41 @@ function DocumentsTable(props) {
 
   useEffect(() => {
     getMetaData({
-      variables:{
+      variables: {
         user: stateApp.user?.mongoId,
-        category: "Docs"
-      }
-    })
-  },[getMetaData])
+        category: "Docs",
+      },
+    });
+  }, [getMetaData]);
 
   useEffect(() => {
     return () => {
       setStateApp((stateApp) => ({
         ...stateApp,
-        documentSearchQuery: '',
+        documentSearchQuery: "",
       }));
-    }
-  },[])
-  
+    };
+  }, []);
+
   useEffect(() => {
-    if(metaDataRes?.getMetaData?.gridViews){
-      let filterColumns = columns.filter(col => !metaDataRes.getMetaData.gridViews.find(meta => meta.name === col.name))
-      const lastColumn = filterColumns.filter(col => col.name === ' ')
-      filterColumns = filterColumns.filter(col => col.name !== ' ')
-      const columnsData = [ ...filterColumns, ...metaDataRes.getMetaData.gridViews, ...lastColumn ]
-      for(let i=0; i<metaDataRes.getMetaData.gridViews.length; i++){
-        TableHeader.push(metaDataRes.getMetaData.gridViews[i])
+    if (metaDataRes?.getMetaData?.gridViews) {
+      let filterColumns = columns.filter(
+        (col) =>
+          !metaDataRes.getMetaData.gridViews.find(
+            (meta) => meta.name === col.name
+          )
+      );
+      const lastColumn = filterColumns.filter((col) => col.name === " ");
+      filterColumns = filterColumns.filter((col) => col.name !== " ");
+      let columnsData = [
+        ...filterColumns,
+        ...metaDataRes.getMetaData.gridViews,
+        ...lastColumn,
+      ];
+      for (let i = 0; i < metaDataRes.getMetaData.gridViews.length; i++) {
+        TableHeader.push(metaDataRes.getMetaData.gridViews[i]);
       }
+      columnsData = sortColumns(columnsData, selectedGridView);
       setColumnsData(
         TableHeader,
         filters,
@@ -135,7 +168,7 @@ function DocumentsTable(props) {
         GET_ES_DOCUMENTS_FILTER
       );
     }
-  },[metaDataRes])
+  }, [metaDataRes, selectedGridView]);
 
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
@@ -154,12 +187,29 @@ function DocumentsTable(props) {
     }
   }, [tableData, props.dependencyUpdate]);
 
+  const sortColumns = (columns, gridView) => {
+    if (gridView?.columns) {
+      let updatedColumns = [];
+      for (let i = 0; i < gridView.columns.length; i++) {
+        const col = columns.find((c) => c.name === gridView.columns[i]);
+        columns = columns.filter((c) => c.name !== gridView.columns[i]);
+        if (col) {
+          updatedColumns.push(col);
+        }
+      }
+      updatedColumns = [...updatedColumns, ...columns];
+      columns = updatedColumns;
+    }
+    return columns;
+  };
+
   useEffect(() => {
-    const updatedColumns = handleSelectedGridChange(
+    let updatedColumns = handleSelectedGridChange(
       TableHeader,
       selectedGridView,
       columns
     );
+    updatedColumns = sortColumns(updatedColumns, selectedGridView);
     setColumnsData(
       TableHeader,
       filters,
@@ -178,7 +228,7 @@ function DocumentsTable(props) {
     search: false,
     filter: true,
     searchText: props.documentSearchQuery,
-    customSearchRender: () => null
+    customSearchRender: () => null,
   };
 
   const viewColumnsChange = (tableColumns) => {
@@ -262,6 +312,26 @@ function DocumentsTable(props) {
     return view;
   };
 
+  const updateColumnSorting = (value) => {
+
+    debugger
+    const columns = value
+      .filter((col) => col.display === "true")
+      .map((col) => col.name);
+    
+    debugger
+    setSelectedGridView({ ...selectedGridView, columns });
+    
+    updateGridView({
+      variables: {
+        gridView: {
+          _id: selectedGridView._id,
+          columns,
+        },
+      },
+    });
+  };
+
   const headerProps = {
     columns,
     showViewModal,
@@ -274,21 +344,29 @@ function DocumentsTable(props) {
     selectedFilters: selectedFilters.current,
   };
 
+  const viewColumnProps = {
+    selectedGridView,
+    updateColumnSorting,
+  };
+
   const onCustomKeyChange = (value, index, key) => {
-    const rows = JSON.parse(JSON.stringify(props.rows))
-    rows[index].custom_data = { ...props.rows[index].custom_data, [`${key}`]: value  }
-    props.setRows(rows)
+    const rows = JSON.parse(JSON.stringify(props.rows));
+    rows[index].custom_data = {
+      ...props.rows[index].custom_data,
+      [`${key}`]: value,
+    };
+    props.setRows(rows);
     updateDocument({
       variables: {
         document: {
           fileId: props.rows[index]._id,
-          custom_data: { [`${key}`]: value  },
+          custom_data: { [`${key}`]: value },
         },
       },
       refetchQueries: ["getESDocuments"],
       awaitRefetchQueries: true,
-    })
-  }
+    });
+  };
 
   return (
     <div className={classes.documentTable}>
@@ -311,12 +389,15 @@ function DocumentsTable(props) {
             selectedFilters={selectedFilters.current}
           />
         )}
-        {stateApp.showFieldModal && <MetaField columns={columns} category="Docs"/>}
+        {stateApp.showFieldModal && (
+          <MetaField columns={columns} category="Docs" />
+        )}
         <Table
           style={{ backgroundColor: "#fff" }}
           header={header}
           headerComponent={HeaderComponent}
           viewColumn={CustomerViewCol}
+          viewColumnProps={viewColumnProps}
           headerProps={headerProps}
           columns={columns}
           rows={props.searchedRows}

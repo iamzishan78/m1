@@ -64,7 +64,7 @@ const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column) => {
       if (column.esKey && !column.noFilter) {
         column.options.filter = true;
       }
-    } else {
+    } else if(column.name !== ' ') {
       column.options.display = false;
       column.options.filter = false;
     }
