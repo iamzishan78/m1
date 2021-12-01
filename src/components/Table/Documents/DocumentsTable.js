@@ -49,7 +49,7 @@ function DocumentsTable(props) {
     type: "Default",
   };
   const selectedFilters = useRef([]);
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   // function states\
   const [filters, setFilters] = useState([]);
@@ -108,6 +108,15 @@ function DocumentsTable(props) {
     })
   },[getMetaData])
 
+  useEffect(() => {
+    return () => {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        documentSearchQuery: '',
+      }));
+    }
+  },[])
+  
   useEffect(() => {
     if(metaDataRes?.getMetaData?.gridViews){
       let filterColumns = columns.filter(col => !metaDataRes.getMetaData.gridViews.find(meta => meta.name === col.name))
@@ -169,6 +178,7 @@ function DocumentsTable(props) {
     search: false,
     filter: true,
     searchText: props.documentSearchQuery,
+    customSearchRender: () => null
   };
 
   const viewColumnsChange = (tableColumns) => {
