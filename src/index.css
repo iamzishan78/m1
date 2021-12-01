@@ -159,3 +159,8 @@ body {
 .mt_48 {
   margin-top: 48px !important;
 }
+
+/* Drawer */
+.MuiDrawer-paper{
+  z-index: 1001 !important;
+}

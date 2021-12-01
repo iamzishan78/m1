@@ -10,7 +10,6 @@ import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 export default function RevenueStatements() {
 
-  const [rows, setRows] = useState([]);
   const [approvedCount, setApprovedCount] = useState([]);
   const [unapprovedCount, setUnapprovedCount] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,14 +41,6 @@ export default function RevenueStatements() {
 
   }, []);
 
-  useEffect(() => {
-    if (elasticData?.getESPaginatedList?.hits?.length > 0) {
-      let hits = elasticData?.getESPaginatedList?.hits;
-      setRows(hits);
-    } else if (elasticData?.getESPaginatedList?.hits?.length === 0) {
-      setRows([]);
-    }
-  }, [elasticData]);
 
 
   useEffect(() => {
@@ -73,12 +64,11 @@ export default function RevenueStatements() {
   }, [filtersData, elasticData]);
 
 
-
-  return (rows.length > 0 ? (
+  return (elasticData?.getESPaginatedList?.hits?.length > 0 ? (
     <div style={{ padding: "75px" }}>
-      <AnalyticsCards checks={rows.length} approvedCount={approvedCount} unapprovedCount={unapprovedCount} />
+      <AnalyticsCards checks={elasticData?.getESPaginatedList?.total || 0} approvedCount={approvedCount} unapprovedCount={unapprovedCount} />
       <div style={{ marginTop: 40 }}>
-        <RevenueStatementTable datasource={rows} />
+        <RevenueStatementTable />
       </div>
     </div>) : (
     <>

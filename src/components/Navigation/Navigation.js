@@ -460,6 +460,7 @@ export default function Navigation(props) {
       <CssBaseline />
       <AppBar
         position="fixed"
+        style={{ background: "#ffffff", zIndex: 1000, boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.3)" }}
         className={clsx(classes.appBar, {
           [classes.appBarShift]: openDrawer,
         })}

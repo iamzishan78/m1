@@ -32,7 +32,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
   const theme = useTheme();
 
   return (
-    <div>
+    <div style={{zIndex: 1001}}>
       <Drawer
         variant="permanent"
         anchor="left"

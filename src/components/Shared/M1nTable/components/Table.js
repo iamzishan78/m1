@@ -349,7 +349,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "12px",
     width: "100%",
     maxWidth: "180px",
-    minWidth: "80px",
+    minWidth: "120px",
     "&:hover": {
       backgroundColor: "#dadbde !important",
       cursor: "pointer",
