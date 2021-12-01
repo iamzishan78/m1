@@ -123,7 +123,7 @@ export const useStyles = makeStyles((theme) => ({
     backgroundColor: "#0e111a",
     overflow: "auto",
     height: "calc(100vh - 172px)",
-    maxheight: "calc(100vh - 167px)",
+    maxheight: "calc(100vh - 172px)",
     paddingTop: 10,
     paddingBottom: 10,
     "&::-webkit-scrollbar": { width: "0.75em" },

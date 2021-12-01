@@ -79,7 +79,15 @@ import _ from "lodash";
 
 import parseLinkHeader from "parse-link-header";
 import ShapeDetailCard from "components/ShapeDetailCard";
-import { ifDefaultLayers, ifDefaultSources, ifGenericShapeSource, layersWithSelectedShapeKey, defaultLayers, setLayerLabelLayout, showIfUserDefinedLayer } from "components/Shared/functions/shapeLayer";
+import {
+  ifDefaultLayers,
+  ifDefaultSources,
+  ifGenericShapeSource,
+  layersWithSelectedShapeKey,
+  defaultLayers,
+  setLayerLabelLayout,
+  showIfUserDefinedLayer,
+} from "components/Shared/functions/shapeLayer";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -98,6 +106,7 @@ const useStyles = makeStyles((theme) => ({
     "& .mapboxgl-canvas-container > canvas": {
       cursor: ({ drawingCircle }) => (drawingCircle ? "crosshair" : "inherit"),
       height: "100vh",
+      width: "100% !important",
     },
     "& .mapboxgl-popup-close-button": { display: "none" },
   },
@@ -918,7 +927,7 @@ function Map({ type, paramId, lati, longi }) {
           // });
 
           // override label properties for parcel and interest
-          labelLayout = setLayerLabelLayout(layerId, labelLayout)
+          labelLayout = setLayerLabelLayout(layerId, labelLayout);
 
           // add point
           map.addLayer({
@@ -1145,7 +1154,7 @@ function Map({ type, paramId, lati, longi }) {
       if (ifGenericShapeSource(feature.source)) {
         setStateApp((state) => {
           if (state.isDrawing) return state;
-          const newPath = `/map/${feature.source.replace('_source', '')}/${feature.properties.id}`;
+          const newPath = `/map/${feature.source.replace("_source", "")}/${feature.properties.id}`;
           history.location.pathname !== newPath && history.replace(newPath);
           findBoundsMap([selectedUserDefinedLayer], map);
           return {
@@ -1238,11 +1247,7 @@ function Map({ type, paramId, lati, longi }) {
         });
       }
       setStateApp((state) => {
-        if (
-          !state.showDrawShapesPopup ||
-          ifDefaultSources(feature.source)
-        )
-          createUDPopUp(feature.properties);
+        if (!state.showDrawShapesPopup || ifDefaultSources(feature.source)) createUDPopUp(feature.properties);
         return state;
       });
       map.resize();
@@ -2291,7 +2296,7 @@ function Map({ type, paramId, lati, longi }) {
           "recent_submitted_permits",
           "recent_submitted_permit_laterals",
           "rigs",
-          ...defaultLayers
+          ...defaultLayers,
         ];
 
         const basinShapes = stateNav.filterBasin;
@@ -2336,7 +2341,7 @@ function Map({ type, paramId, lati, longi }) {
           "recent_submitted_permit_laterals",
           "rigs",
           "parcel",
-          ...defaultLayers
+          ...defaultLayers,
         ];
 
         const aoiShapes = stateNav.filterAOI;
@@ -2454,7 +2459,7 @@ function Map({ type, paramId, lati, longi }) {
           "rigs",
           "interest",
           "parcel",
-          ...defaultLayers
+          ...defaultLayers,
         ];
         const filterFeature = stateNav.filterDrawing[1];
         filterShapeAction([filterFeature], filterLayers);
@@ -3983,7 +3988,7 @@ function Map({ type, paramId, lati, longi }) {
         defaultLayers.forEach((layer) => {
           map.setFilter(layer, null);
           map.setFilter(`${layer}_point`, null);
-        })
+        });
         map.setFilter("parcel_point", null);
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
         map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
