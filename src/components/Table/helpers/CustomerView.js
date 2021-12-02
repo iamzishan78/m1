@@ -6,6 +6,9 @@ import AddIcon from "@material-ui/icons/Add";
 import EditIcon from "@material-ui/icons/Edit";
 import { AppContext } from "AppContext";
 
+import { useMutation } from "@apollo/client";
+import { UPDATE_META_DATA } from "graphQL/useMutationUpdateMetaData";
+
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: "15px 20px",
@@ -39,6 +42,9 @@ const CustomerViewCol = (props) => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const { updateColumns, columns, tableColumns } = props;
+
+  const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
+
   return (
     <>
       <div className={classes.container}>
@@ -90,6 +96,18 @@ const CustomerViewCol = (props) => {
                         col.display === "false"
                           ? (columns[index].display = "true")
                           : (columns[index].display = "false");
+                        const tableCol = tableColumns.find(co => co.name === col.name)
+                        if(tableCol && tableCol.isCustom){
+                          updateMetaData({
+                            variables: {
+                              metaData: {
+                                _id: tableCol._id,
+                                options: { ...tableCol.options, display: col.display === "true" }
+                              },
+                            },
+                            awaitRefetchQueries: true,
+                          });
+                        }
                         updateColumns(columns);
                       }}
                       color="primary"
