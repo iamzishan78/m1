@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
   },
   WellsDetailsCardAppBar: {
+    zIndex: 99999,
     backgroundColor: (props) => (props.white ? "#FFFFFF" : "#7a7d82"),
     color: (props) => (props.white ? "rgb(1,17,51)" : "#FFFFFF"),
   },
@@ -102,6 +103,7 @@ export default function Taps(props) {
         backgroundColor: props.backgroundColor
           ? props.backgroundColor
           : "#efefef",
+
       }}
       className={classes.root}
       id="M1nTaps"
