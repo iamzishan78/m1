@@ -49,7 +49,6 @@ export const useStyles = makeStyles((theme) => ({
     padding: 0,
     minWidth: "425px",
     overflowY: "auto",
-    height: "calc(100vh - 870px)",
     backgroundColor: "#0e111a",
   },
   mapPositionSection: {
@@ -90,8 +89,9 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   panelContent: {
-    maxHeight: "calc(100vh - 117px)",
+    height: "calc(100vh - 117px)",
     overflow: "overlay",
+    backgroundColor: "#0e111a",
   },
   heatmapList: {
     padding: 0,
