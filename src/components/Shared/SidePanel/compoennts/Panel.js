@@ -242,8 +242,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     );
   };
 
-  const filterList = <LayerFilters />;
-
   const displayList = (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppableM1">
@@ -358,7 +356,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
               </Grid>
             </Grid>
           </StyledMenuHActionHeader>
-          <div style={{ maxHeight: "calc(100vh - 117px)", overflow: "overlay" }}>
+          <div className={classes.panelContent}>
             <StyledMenuSecondaryHeaderItem>
               <ListItemText primary={title} />
               {headerButton && (

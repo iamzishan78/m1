@@ -87,3 +87,9 @@ body {
 .red {
   color: red;
 }
+.colorText {
+  padding: 5px 10px !important;
+  border-radius: 26px !important;
+  align-items: center !important;
+  text-align: center !important;
+}

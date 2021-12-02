@@ -88,8 +88,8 @@ const useStyles = makeStyles((theme) => {
       "& .MuiBox-root": { padding: "0" },
     },
     mainPanelsDiv: {
-      height: "calc(100vh - 0px)",
-      maxHeight: "calc(100vh - 0px)",
+      height: "100vh",
+      maxHeight: "100vh",
       overflow: "auto",
 
       "&::-webkit-scrollbar": {
@@ -117,8 +117,8 @@ const useStyles = makeStyles((theme) => {
                   ? "calc(91vh - 233px)"
                   : "calc(60vh - 233px)"
                 : mapGridCardActivated === "exp"
-                  ? "calc(91vh - 183px)"
-                  : "calc(60vh - 183px)",
+                ? "calc(91vh - 183px)"
+                : "calc(60vh - 183px)",
           },
         },
       },
@@ -323,46 +323,43 @@ function MapGridCard(props) {
   const handleSearchPanelChange = (value) => {
     setSearchTapValue(value);
     if (searchTapValue.index !== value.index) {
-      dispatch(
-        setMapGridCardState({ searchResultData: [], searchloading: true })
-      );
+      dispatch(setMapGridCardState({ searchResultData: [], searchloading: true }));
     }
-  }
+  };
 
   const ativateSearchPanel = () => {
     if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
     if (mapGridCardActivated === "min") {
-      dispatch(
-        setMapGridCardState({ mapGridCardActivated: true })
-      );
+      dispatch(setMapGridCardState({ mapGridCardActivated: true }));
     }
-  }
+  };
 
   const options = {
-    toolbarActionMarginRight: '87px !important',
+    toolbarActionMarginRight: "87px !important",
     customToolbar: () => {
+      return (
+        <div style={{ display: "flex", float: "left", position: "relative", left: "207px", marginRight: "15px" }}>
+          <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
 
-      return <div style={{ display: "flex", "float": "left", position: "relative", left: "207px", marginRight: "15px" }}>
-        <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
-
-        <IconButton
-          className="cancelDraggableEffect"
-          onClick={(e) => {
-            e.stopPropagation();
-            dispatch(
-              setMapGridCardState({
-                mapGridCardActivated: false,
-                selectedOwner: null,
-                selectedOwnerWellIntsSummary: null,
-              })
-            );
-          }}
-        >
-          <CloseIcon color="secondary" />
-        </IconButton>
-      </div>
-    }
-  }
+          <IconButton
+            className="cancelDraggableEffect"
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch(
+                setMapGridCardState({
+                  mapGridCardActivated: false,
+                  selectedOwner: null,
+                  selectedOwnerWellIntsSummary: null,
+                })
+              );
+            }}
+          >
+            <CloseIcon color="secondary" />
+          </IconButton>
+        </div>
+      );
+    },
+  };
 
   const CardReturn = () => {
     return (
@@ -445,7 +442,13 @@ function MapGridCard(props) {
                         parent="search"
                         privateColumns={tab.privateColumns}
                         targetLabel={tab.label}
-                        header={<SearchPanel handleChange={handleSearchPanelChange} value={searchTapValue} ativateSearchPanel={ativateSearchPanel} />}
+                        header={
+                          <SearchPanel
+                            handleChange={handleSearchPanelChange}
+                            value={searchTapValue}
+                            ativateSearchPanel={ativateSearchPanel}
+                          />
+                        }
                         showTags={tab.showTags}
                         showComments={tab.showComments}
                         showTracks={tab.showTracks}
@@ -463,7 +466,7 @@ function MapGridCard(props) {
               className={classes.tapsPanelsPadding}
               //
               style={{ position: "absolute", width: "100vw" }}
-            //
+              //
             >
               <div style={{ position: "relative" }}>
                 <TabPanels

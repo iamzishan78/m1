@@ -89,6 +89,7 @@ export const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  panelContent: {},
   heatmapList: {
     padding: 0,
     minWidth: "425px",
@@ -149,20 +150,12 @@ export const useStyles = makeStyles((theme) => ({
     backgroundColor: "#0e111a",
     overflow: "auto",
     height: "calc(100vh - 172px)",
-    maxheight: "calc(100vh - 167px)",
+    maxheight: "calc(100vh - 172px)",
     paddingTop: 10,
     paddingBottom: 10,
-
-    "&::-webkit-scrollbar": {
-      width: "0.75em",
-    },
-    "&::-webkit-scrollbar-track": {
-      "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#506187",
-      borderRadius: 5,
-    },
+    "&::-webkit-scrollbar": { width: "0.75em" },
+    "&::-webkit-scrollbar-track": { "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)" },
+    "&::-webkit-scrollbar-thumb": { backgroundColor: "#506187", borderRadius: 5 },
   },
   toolbarActions: {
     display: "flex",
