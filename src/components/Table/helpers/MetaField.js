@@ -78,6 +78,10 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#F6F8F9",
     },
   },
+  btnColor: {
+    color: "white",
+    backgroundColor: "#4576CF",
+  },
 }));
 
 const options = [
@@ -115,7 +119,7 @@ const categoryOptions = [
   },
 ];
 
-const MetaField = ({ category }) => {
+const MetaField = ({ category, columns }) => {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState("new");
   const [metaData, setMetaData] = useState(null);
@@ -126,6 +130,7 @@ const MetaField = ({ category }) => {
   const { control, reset, setValue, register, getValues, watch } = useForm();
   const [stateApp, setStateApp] = useContext(AppContext);
   const type = watch("type", stateApp.selectedMeta ? stateApp.selectedMeta.type : "dropdown");
+  const title = watch("title", stateApp.selectedMeta ? stateApp.selectedMeta.title : "");
   const isAddedToLibrary = watch("isAddedToLibrary", stateApp.selectedMeta ? stateApp.selectedMeta.isAddedToLibrary : false);
 
   const [items, setItems] = useState([{ palleteId: colorPallete[0].id }]);
@@ -151,8 +156,12 @@ const MetaField = ({ category }) => {
 
   useEffect(() => {
     if (metaDataRes?.getAllLibraryMetaData?.gridViews) {
-      setMetaData(metaDataRes.getAllLibraryMetaData.gridViews);
-      setFilteredMetaData(metaDataRes.getAllLibraryMetaData.gridViews);
+      let data = metaDataRes.getAllLibraryMetaData.gridViews;
+      for (let i = 0; i < columns.length; i++) {
+        data = data.filter((d) => d.name !== columns[i].name);
+      }
+      setMetaData(data);
+      setFilteredMetaData(data);
     }
   }, [metaDataRes]);
 
@@ -190,7 +199,10 @@ const MetaField = ({ category }) => {
           metaData: {
             name: values.title.replace(/ /g, "_").toLowerCase(),
             label: values.title,
-            esKey: `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}.value.keyword`,
+            esKey:
+              values.type === "dropdown"
+                ? `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}.value`
+                : `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}`,
             options: {
               display: true,
               filter: true,
@@ -236,7 +248,7 @@ const MetaField = ({ category }) => {
         }))
       }
     >
-      <div style={{ height: "550px" }}>
+      <div>
         <div className={classes.header}>
           {stateApp.selectedMeta ? <h3>Edit Field</h3> : <h3>Add Field</h3>}
           <IconButton onClick={handleClose}>
@@ -391,7 +403,13 @@ const MetaField = ({ category }) => {
                   <Button style={{ margin: "25px 5px 25px 0px" }} variant="outlined" onClick={handleClose}>
                     Cancel
                   </Button>
-                  <Button style={{ margin: "25px 25px 25px 5px" }} variant="outlined" onClick={handleSave}>
+                  <Button
+                    className={!title ? "" : classes.btnColor}
+                    style={{ margin: "25px 25px 25px 5px" }}
+                    variant="outlined"
+                    onClick={handleSave}
+                    disabled={!title}
+                  >
                     {stateApp.selectedMeta ? "Update Field" : "Create Field"}
                   </Button>
                 </div>
@@ -484,16 +502,18 @@ const MetaField = ({ category }) => {
                         >
                           <Grid container item xs={10}>
                             <div>{data.label}</div>
-                            <div style={{ width: "100%", color: "#B4B9BF" }}>
-                              {data.dropdownOptions.map((option, index) => {
-                                return (
-                                  <span>
-                                    {option.value}
-                                    {index < options.length - 1 ? ", " : ""}
-                                  </span>
-                                );
-                              })}
-                            </div>
+                            {data.type === "dropdown" && (
+                              <div style={{ width: "100%", color: "#B4B9BF" }}>
+                                {data.dropdownOptions.map((option, index) => {
+                                  return (
+                                    <span>
+                                      {option.value}
+                                      {index < options.length - 1 ? ", " : ""}
+                                    </span>
+                                  );
+                                })}
+                              </div>
+                            )}
                           </Grid>
                           <Grid container item xs={2}>
                             <div

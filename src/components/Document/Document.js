@@ -59,11 +59,14 @@ export default function DocumentComponent() {
     setNumPages(numPages);
   }
 
+  console.log('drawer', stateApp.DocumentDrawer, stateApp.selectedDocument)
   return (
     <div className={classes.root}>
       <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} />
       {/* <M1nTable dense parent="Documents"></M1nTable> */}
-      <Drawer data={true}></Drawer>
+      {/* {(stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument)?.length > 0) && ( */}
+        <Drawer data={true}></Drawer>
+      {/* )} */}
 
       <Dialog
         className={classes.dialogExpCard}
