@@ -156,28 +156,6 @@ function Map({ type, paramId, lati, longi }) {
   const removeLayerFromMap = useSelector(({ MainMap }) => MainMap.removeLayerFromMap);
   const clustersOff = useSelector(({ MainMap }) => MainMap.clustersOff);
 
-  const [filtersDefault, FiltersDefault] = useState(stateApp.user.defaultFilters ? stateApp.user.defaultFilters : []);
-
-  const [lng, Lng] = useState();
-  const [lat, Lat] = useState();
-
-  const setLng = (state) => {
-    if (lng !== state) {
-      Lng(state);
-    }
-  };
-  const setLat = (state) => {
-    if (lat !== state) {
-      Lat(state);
-    }
-  };
-  const [zoom, Zoom] = useState(stateApp.mapVars.zoom);
-  const setZoom = (state) => {
-    if (zoom !== state) {
-      Zoom(state);
-    }
-  };
-
   const [transform, Transform] = useState("transform: inherit");
   const setTransform = (state) => {
     if (transform !== state) {
@@ -4541,7 +4519,11 @@ function Map({ type, paramId, lati, longi }) {
         ...stateApp,
         mapVars: stateApp.defaultMapVars,
       }));
-      setMap(null);
+      map.flyTo({
+        center: [stateApp.defaultMapVars.center.lng, stateApp.defaultMapVars.center.lat],
+        zoom: stateApp.defaultMapVars.zoom,
+        speed: 0.5,
+      });
     }
   }, [stateApp.defaultMapVars]);
 
@@ -4953,10 +4935,16 @@ function Map({ type, paramId, lati, longi }) {
               },
             });
           }
-          // setting zoom level on every zoom
+          // setting map vars on every map moveend
           setStateApp((state) => ({
             ...state,
-            mapVars: { ...state.mapVars, zoom: map.getZoom() },
+            mapVars: {
+              ...stateApp.mapVars,
+              zoom: map.getZoom(),
+              center: map.getCenter(),
+              pitch: map.getPitch(),
+              bearing: map.getBearing(),
+            },
           }));
         };
 

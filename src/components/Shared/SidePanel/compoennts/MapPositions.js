@@ -45,26 +45,38 @@ const StyledTextField = (props) => (
 export default function MapPositions(props) {
   const classes = useStyles();
   const { control, handleSubmit, reset, watch } = useForm();
-  const { setMapDefaultPosition, userMapSettings } = props;
+  const { setMapDefaultPosition, defaultMapVars, mapVars } = props;
 
   const [centerError, setCenterError] = useState(false);
   const center = watch("center", "");
 
   useEffect(() => {
-    if (userMapSettings) {
-      const vars = {
-        ...userMapSettings,
-        center: `${userMapSettings.center.lat}, ${userMapSettings.center.lng}`,
-      };
+    if (defaultMapVars) {
+      const vars = getVars(defaultMapVars);
       reset(vars);
     }
-  }, [reset, userMapSettings]);
+  }, [reset, defaultMapVars]);
+
+  useEffect(() => {
+    if (mapVars) {
+      const vars = getVars(mapVars);
+      reset(vars);
+    }
+  }, [reset, mapVars]);
 
   useEffect(() => {
     const regExp = /[a-zA-Z]/g;
     if (regExp.test(center)) setCenterError(true);
     else setCenterError(false);
   }, [center]);
+
+  const getVars = (mapVars) => {
+    const vars = {
+      ...mapVars,
+      center: `${mapVars.center.lat}, ${mapVars.center.lng}`,
+    };
+    return vars;
+  };
 
   const submitFunc = (values) => {
     if (values.center) {

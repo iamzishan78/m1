@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { get } from "lodash";
 import { TransitionGroup } from "react-transition-group";
 import RootRef from "@material-ui/core/RootRef";
@@ -30,6 +31,7 @@ import FilterAltIcon from "components/Shared/svgIcons/FilterAltIcon";
 import SecondaryPanel from "components/Shared/SecondaryPanel";
 import LayerFilters from "components/Shared/SidePanel/compoennts/Filters/LayerFilters";
 import MapPositions from "components/Shared/SidePanel/compoennts/MapPositions";
+import { showErrorMessage, showSuccessMessage } from "actions";
 
 import { deepEqualObjects } from "../../functions";
 import Layer from "./Layer";
@@ -54,6 +56,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
 
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const [filteredItems, setFilteredItems] = useState([]);
   const [layerMap, setLayerMap] = useState([]);
@@ -96,14 +99,13 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     }
   }, [stateMapControls.selectedControl, filteredItems, stateApp.checkedBaseLayers, stateApp.checkedHeatLayers, type]);
 
-  // useEffect(() => {
-  //   const mapDefaultPosition = get(userMapSettings, "userMapSettings.settings.settings.mapDefaultPosition");
-  //   // setMapVars(mapDefaultPosition);
-  //   setSettings(mapDefaultPosition);
-  // }, [userMapSettings]);
-
   useEffect(() => {
     const mapDefaultPosition = get(updatedMapSettings, "updateUserMapSettings.settings.settings.mapDefaultPosition");
+    if (mapDefaultPosition) {
+      dispatch(showSuccessMessage("Map Default Position saved."));
+    } else if (updatedMapSettings) {
+      dispatch(showErrorMessage("Error in saving Map Default Position."));
+    }
     setMapVars(mapDefaultPosition);
   }, [updatedMapSettings]);
 
@@ -383,7 +385,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
                 <Collapse in={true} timeout="auto" unmountOnExit>
                   {displayList}
                 </Collapse>
-                <MapPositions setMapDefaultPosition={setMapDefaultPosition} userMapSettings={stateApp.defaultMapVars} />
+                <MapPositions
+                  setMapDefaultPosition={setMapDefaultPosition}
+                  defaultMapVars={stateApp.defaultMapVars}
+                  mapVars={stateApp.mapVars}
+                />
               </>
             )}
             {type === "heatMaps" && displayList}
