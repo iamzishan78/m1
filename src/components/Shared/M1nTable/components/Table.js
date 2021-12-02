@@ -2001,7 +2001,7 @@ function SubTable(props) {
               },
             };
             break;
-          case "status":
+          case "status" && props.header === "Revenue Check":
             column.options = {
               ...column.options,
               customBodyRender: (value) => {
@@ -2372,7 +2372,7 @@ function SubTable(props) {
     rowsPerPageOptions: props.rows && props.rows.length > 25 ? [10, 25, 50, 100] : props.rows && props.rows.length > 10 ? [10, 25] : [],
     selectableRows: props.targetLabel === "production_detail" ? false : "multiple",
     print: false,
-    download: (props.parent === "assocTaxRollInterests" || props.parent === "OwnersPerWell") ? true : false,
+    download: (props.parent === "assocTaxRollInterests" || props.parent === "OwnersPerWell" || props.parent === "RevenueStatementTable" ) ? true : false,
     viewColumns: props.targetLabel !== "usermanagement",
 
     onColumnViewChange: (changedColumn, action) => {
@@ -3489,7 +3489,6 @@ function SubTable(props) {
           }}
           options={{
             ...options,
-
             onSearchOpen: () => openSearch(true),
             onSearchClose: () => openSearch(false),
 

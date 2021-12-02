@@ -23,7 +23,7 @@ const useStyles = makeStyles(() => ({
   issuesBadges: {
     display: "flex",
     alignItems: "center",
-    color: "red",
+    color: "#ff0000",
     height: "20px",
   },
 }));

@@ -172,9 +172,9 @@ body {
 }
 
 .success svg {
-  fill: #1ddd9f !important;
+  fill: #17c10d !important;
 }
 
 .warning svg {
-  fill: #ebeb55 !important;
+  fill: #ff0000 !important;
 }

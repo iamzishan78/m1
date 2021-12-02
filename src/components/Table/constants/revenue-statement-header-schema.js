@@ -17,7 +17,7 @@ const RevenueStatementHeadCells = [
         name: "checkDate", label: "Check Date", esKey: 'checkDate.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "depositDate", label: "Deposite Date", esKey: 'depositDate.keyword', options: { sort: true, filter: true }
+        name: "depositDate", label: "Deposit Date", esKey: 'depositDate.keyword', options: { sort: true, filter: true }
     },
     {
         name: "lines", label: "Lines", esKey: 'checkDetail.lines.keyword', options: { sort: true, filter: true }
@@ -36,6 +36,19 @@ const RevenueStatementHeadCells = [
     },
     {
         name: "validation", label: "Validation", esKey: 'validation.keyword', options: { sort: true, filter: true }
+    },
+    {
+        name: "commentsCounter",
+        label: " ",
+        options: {
+            dbName: "comments.comment",
+            filter: false,
+            searchable: false,
+            sort: true,
+            download: false,
+            print: false,
+            viewColumns: false,
+        },
     },
 ];
 
