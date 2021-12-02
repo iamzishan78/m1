@@ -136,7 +136,9 @@ export default function ContactDocumentsCard(props) {
           <ContactsWellInterestsParcelInterests activeTap={0} contactData={contactData} />
         </>
       ) : (
-        <CircularProgress size={80} disableShrink color="secondary" />
+        <div style={{ padding: 20 }}>
+          <CircularProgress size={80} disableShrink color="secondary" />
+        </div>
       )}
     </div>
   );
