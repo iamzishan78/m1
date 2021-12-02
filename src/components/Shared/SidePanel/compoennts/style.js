@@ -89,7 +89,10 @@ export const useStyles = makeStyles((theme) => ({
       },
     },
   },
-  panelContent: {},
+  panelContent: {
+    maxHeight: "calc(100vh - 117px)",
+    overflow: "overlay",
+  },
   heatmapList: {
     padding: 0,
     minWidth: "425px",
