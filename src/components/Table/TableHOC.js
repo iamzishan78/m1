@@ -223,6 +223,7 @@ export const TableHOC = (Component) => {
             return {
                 pageESVariables,
                 genericESAction: () => {
+                    console.log("called change")
                     setLoading(true);
                     tableState.page = 0;
                     meta.setPageInd(tableState.page);

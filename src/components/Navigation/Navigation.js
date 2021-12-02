@@ -455,12 +455,21 @@ export default function Navigation(props) {
     }));
   };
 
+
+  const applyNavigationStyle = () => {
+    if (location.pathname === "/revenue/statements") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   return (
     <div className={classes.root}>
       <CssBaseline />
       <AppBar
         position="fixed"
-        style={{ background: "#ffffff", zIndex: 1000, boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.3)" }}
+        style={{ background: applyNavigationStyle() && "#ffffff", zIndex: applyNavigationStyle() && 1000, boxShadow: applyNavigationStyle() && "0px 0px 3px 0px rgba(0,0,0,0.3)" }}
         className={clsx(classes.appBar, {
           [classes.appBarShift]: openDrawer,
         })}

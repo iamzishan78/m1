@@ -81,20 +81,20 @@ export default function AnalyticsCards(props) {
               <div style={{marginRight: 6}}>
                 <WarningIcon />
               </div>
-              <div>4</div>
-              &nbsp;
-              <div style={{marginRight: 6}}>
+              <div>{props.potentialIssues.length}</div>
+              {/* &nbsp; */}
+              {/* <div style={{marginRight: 6}}>
+                <WarningIcon />
+              </div> */}
+              {/* <div>1 </div> */}
+              {/* &nbsp; */}
+              {/* <div style={{marginRight: 6}}>
                 <WarningIcon />
               </div>
-              <div>1 </div>
-              &nbsp;
-              <div style={{marginRight: 6}}>
-                <WarningIcon />
-              </div>
-              <div>7</div>
+              <div>7</div> */}
             </div>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography} style={{ color: "red" }}>
-              12
+              {props.potentialIssues.length}
             </Typography>
           </CardContent>
         </Card>

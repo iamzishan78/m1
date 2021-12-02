@@ -72,6 +72,7 @@ import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDraw
 import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
+import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
 
 import ButtonDropDown from "./ButtonGroup";
 
@@ -1952,6 +1953,29 @@ function SubTable(props) {
           case "water":
           case "allocatedWater":
           case "allocatedGas":
+          case "validation":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                return (
+                  <>
+                    {value.length === 0 && (
+                      <div className="flex justifyCenter alignCenter success w-100">
+                        <CheckCircle size={20} />
+                      </div>
+                    )}
+
+                    {value.length > 0 && (
+                      <div className="flex justifyCenter alignCenter warning w-100" style={{ marginRight: 6 }}>
+                        <WarningIcon />
+                      </div>
+                    )}
+
+                  </>
+                );
+              },
+            };
+            break;
           case "checkNumber":
             column.options = {
               ...column.options,
@@ -3422,9 +3446,12 @@ function SubTable(props) {
       checkDate: moment.parseZone(item?.checkDate).format("MM/DD/yyyy") || "",
       depositDate: moment.parseZone(item?.depositDate).format("MM/DD/yyyy") || "",
       lines: item?.checkDetail?.lines || 0,
-      checkId: item?._id,
+      checkId: item?.sourceId,
       source: item?.source || "",
       status: item?.status || "Imported",
+      validation: props.potentialIssues.filter((issue) => {
+        return issue.key === item._id ? true : false
+      })
     }));
     return dataSet;
   }

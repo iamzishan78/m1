@@ -4,87 +4,68 @@ import AnalyticsCards from "components/Revenue/components/Statements/AnalyticsCa
 import RevenueStatementTable from "components/Table/Revenue/RevenueStatementTable";
 
 import { useLazyQuery } from "@apollo/client";
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
-import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { GET_ES_POTENTIAL_ISSUES } from "graphQL/useQueryPotentialIssue";
 
 
 export default function RevenueStatements() {
 
-  const [approvedCount, setApprovedCount] = useState([]);
-  const [unapprovedCount, setUnapprovedCount] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [statements, setStatements] = useState([]);
+  const [approvedCount, setApprovedCount] = useState(0);
+  const [unapprovedCount, setUnapprovedCount] = useState(0);
+  const [potentialIssuesList, setPotentialIssuesList] = useState([]);
 
-  const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
-  const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  const [getPotentialIssues, { data: potentialIssues }] = useLazyQuery(GET_ES_POTENTIAL_ISSUES, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
-    // get checks list from checks_flat table
-    getESPaginatedList({
+    // Potential Issues
+    getPotentialIssues({
       variables: {
-        esIndex: "checks_flat",
-        pagination: {
-          first: 50,
-          keep_alive: "1micros"
-        },
-      }
-    });
-
-    // Filter approved checks list from checks_flat table
-    getFilters({
-      variables: {
-        esIndex: "checks_flat",
-        filterKey: "status.keyword",
-        search: "APPROVED",
+        esIndex: "checkdetails_flat",
         size: 50,
       },
     });
-
   }, []);
 
-
-
   useEffect(() => {
-    if (filtersData?.getESFilterList?.hits?.length > 0) {
-      const approved = filtersData?.getESFilterList?.hits[0]?.doc_count;
+    if (statements.length > 0) {
+      const checks = statements?.length;
+      const approved = statements?.filter((statement) => statement.status === "APPROVED" && statement)?.length;
       setApprovedCount(approved);
+      setUnapprovedCount(Number(checks) - Number(approved));
     } else {
       setApprovedCount(0);
-    }
-  }, [filtersData]);
-
-  useEffect(() => {
-    if (elasticData?.getESPaginatedList?.hits?.length > 0 && filtersData?.getESFilterList?.hits?.length > 0) {
-      const checks = elasticData?.getESPaginatedList?.total;
-      const approved = filtersData?.getESFilterList?.hits[0]?.doc_count;
-      setUnapprovedCount(Number(checks) - Number(approved));
-      setLoading(false);
-    } else {
       setUnapprovedCount(0);
     }
-  }, [filtersData, elasticData]);
+  }, [statements]);
 
 
-  return (elasticData?.getESPaginatedList?.hits?.length > 0 ? (
+  const onGettingStatements = (statementsList) => {
+    setStatements(statementsList);
+  }
+
+  //  potential issues
+  useEffect(() => {
+    if (potentialIssues?.getPotentialIssuesSummary?.hits?.length > 0) {
+      const allIssues = potentialIssues?.getPotentialIssuesSummary?.hits;
+      const issues = allIssues.filter((issue) => {
+        const checkAmt = issue?.checkAmt?.value.toFixed(2);
+        const checkDetailAmt = issue?.checkDetailAmt?.value.toFixed(2);
+        if (Number(checkAmt) !== Number(checkDetailAmt)) {
+          return issue;
+        }
+      });
+      setPotentialIssuesList(issues);
+    } else {
+      setPotentialIssuesList([]);
+    }
+  }, [potentialIssues]);
+
+  return (
     <div style={{ padding: "75px" }}>
-      <AnalyticsCards checks={elasticData?.getESPaginatedList?.total || 0} approvedCount={approvedCount} unapprovedCount={unapprovedCount} />
+      <AnalyticsCards checks={statements?.length || 0} approvedCount={approvedCount} unapprovedCount={unapprovedCount} potentialIssues={potentialIssuesList} />
       <div style={{ marginTop: 40 }}>
-        <RevenueStatementTable />
+        <RevenueStatementTable onGettingStatements={onGettingStatements} parent="RevenueStatementTable" />
       </div>
-    </div>) : (
-    <>
-      {loading && (
-        <div
-          style={{
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            translate: "transform(-50%, -50%)",
-          }}
-        >
-          <CircularProgress size={56} disableShrink color="secondary" />
-        </div>
-      )}
-    </>
-  )
+    </div>
   );
 }

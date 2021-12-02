@@ -15,6 +15,7 @@ import TableHeader from 'components/Table/constants/revenue-statement-header-sch
 import { usetableStyles } from "../Styles";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { GET_ES_POTENTIAL_ISSUES } from "graphQL/useQueryPotentialIssue";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
 
 
@@ -24,6 +25,8 @@ function RevenueStatementTable(props) {
     // function states 
     const [columns, Columns] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
+    const [potentialIssuesList, setPotentialIssuesList] = useState([]);
+
 
     const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
@@ -35,7 +38,10 @@ function RevenueStatementTable(props) {
         }
     });
 
-    const tableData = elasticData?.getESPaginatedList
+    const [getPotentialIssues, { data: potentialIssues }] = useLazyQuery(GET_ES_POTENTIAL_ISSUES, { fetchPolicy: "no-cache" });
+
+    const tableData = elasticData?.getESPaginatedList;
+    const issues = potentialIssues?.getPotentialIssuesSummary;
 
 
     const startPaginationAt = 25;
@@ -52,13 +58,36 @@ function RevenueStatementTable(props) {
                 },
             }
         });
+        // Potential Issues
+        getPotentialIssues({
+            variables: {
+                esIndex: "checkdetails_flat",
+                size: 50,
+            },
+        });
     }, [props.parent]);
 
+
+    //  Potential issues
+    useEffect(() => {
+        if (issues?.hits?.length > 0) {
+            const allIssues = issues?.hits.filter((issue) => {
+                const checkAmt = issue?.checkAmt?.value.toFixed(2);
+                const checkDetailAmt = issue?.checkDetailAmt?.value.toFixed(2);
+                if (Number(checkAmt) !== Number(checkDetailAmt)) {
+                    return issue;
+                }
+            });
+            setPotentialIssuesList(allIssues);
+        } else {
+            setPotentialIssuesList([]);
+        }
+    }, [issues]);
 
     useEffect(() => {
         if (tableData?.hits?.length > 0) {
             let hits = tableData?.hits
-
+            props.onGettingStatements(hits);
             props.setRows(hits);
             let headers = copy(TableHeader)
 
@@ -87,12 +116,13 @@ function RevenueStatementTable(props) {
         else if (tableData?.hits?.length === 0) {
             props.setRows([]);
             props.setLoading(false);
+            props.onGettingStatements([]);
         }
     }, [tableData, props.dependencyUpdate]);
 
 
     const onTableChange = (action, tableState, rows, meta) => {
-        tableState.esIndex = esIndex
+        tableState.esIndex = esIndex;
         const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
         switch (action) {
             case "search":
@@ -122,7 +152,6 @@ function RevenueStatementTable(props) {
         filter: true,
     }
 
-    console.log("columns", columns);
     return (
         <Container
             maxWidth={false}
@@ -135,6 +164,7 @@ function RevenueStatementTable(props) {
                 columns={columns}
                 rows={props.rows}
                 total={false}
+                potentialIssues={potentialIssuesList}
                 addAble={{ type: "RevenueStatement" }}
                 loading={props.loading}
                 targetLabel={props.targetLabel}
