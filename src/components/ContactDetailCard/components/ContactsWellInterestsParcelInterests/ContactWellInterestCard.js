@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         },
         "&> table": {
           bottom: 0,
-        }
+        },
       },
     },
   },
@@ -42,10 +42,7 @@ export default function ContactDocumentsCard(props) {
 
   const [contactData, setContactData] = useState(null);
 
-  const contactId =
-    history.location.pathname.split("/")[
-    history.location.pathname.split("/").length - 2
-    ];
+  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 2];
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
 
@@ -69,82 +66,78 @@ export default function ContactDocumentsCard(props) {
     return !!stateNav.contactFromMap;
   };
 
-  return contactData ? (
-    <div>
-      <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-        <Breadcrumbs
-          separator={<NavigateNextIcon fontSize="small" />}
-          aria-label="breadcrumb"
-        >
-          {checkModuleHistory() && (
-            <Link
-              style={{
-                marginLeft: "5px",
-                fontSize: "16px",
-                cursor: "pointer",
-              }}
-              color="inherit"
-              onClick={() => {
-                history.push("/");
-                setStateNav((stateApp) => ({
-                  ...stateApp,
-                  contactFromMap: false,
-                }));
-              }}
-            >
-              Map
-            </Link>
-          )}
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => history.push("/contacts")}
-          >
-            Contacts
-          </Link>
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => history.push(`/contact/details/${contactId}`)}
-          >
-            {contactData?.name}
-          </Link>
-          <Typography
-            style={{
-              color: "#18AADD",
-              fontSize: "16px",
-              marginLeft: "5px",
-            }}
-          >
-            Associated Interests
-          </Typography>
-        </Breadcrumbs>
-      </Toolbar>
-
-      <ContactsWellInterestsParcelInterests
-        activeTap={0}
-        contactData={contactData}
-      />
-    </div>
-  ) : (
+  return (
     <div
       style={{
-        padding: "20px",
         position: "absolute",
+        top: "64px",
         height: "100%",
         width: "100%",
         zIndex: "50",
       }}
     >
-      <CircularProgress size={80} disableShrink color="secondary" />
+      {contactData ? (
+        <>
+          <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
+            <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+              {checkModuleHistory() && (
+                <Link
+                  style={{
+                    marginLeft: "5px",
+                    fontSize: "16px",
+                    cursor: "pointer",
+                  }}
+                  color="inherit"
+                  onClick={() => {
+                    history.push("/");
+                    setStateNav((stateApp) => ({
+                      ...stateApp,
+                      contactFromMap: false,
+                    }));
+                  }}
+                >
+                  Map
+                </Link>
+              )}
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => history.push("/contacts")}
+              >
+                Contacts
+              </Link>
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => history.push(`/contact/details/${contactId}`)}
+              >
+                {contactData?.name}
+              </Link>
+              <Typography
+                style={{
+                  color: "#18AADD",
+                  fontSize: "16px",
+                  marginLeft: "5px",
+                }}
+              >
+                Associated Interests
+              </Typography>
+            </Breadcrumbs>
+          </Toolbar>
+
+          <ContactsWellInterestsParcelInterests activeTap={0} contactData={contactData} />
+        </>
+      ) : (
+        <CircularProgress size={80} disableShrink color="secondary" />
+      )}
     </div>
   );
 }
