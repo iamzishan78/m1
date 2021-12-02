@@ -59,7 +59,8 @@ export const handleCustomFilterColumns = (TableHeader, filterObject) => {
 
 const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column) => {
   if (selectedGridView?.columns) {
-    if (selectedGridView.columns.includes(column.name)) {
+    const col = selectedGridView.columns.find(col => col.name === column.name)
+    if (col && col.display) {
       column.options.display = true;
       if (column.esKey && !column.noFilter) {
         column.options.filter = true;
@@ -92,7 +93,6 @@ export const setColumnsData = (
   setFilters,
   query
 ) => {
-  console.log('bofore columns', JSON.parse(JSON.stringify(columns)))
   columns.forEach((column, index) => {
     if (column?.options?.filter) {
       column.options = {
@@ -122,7 +122,6 @@ export const setColumnsData = (
       };
     }
   });
-  console.log("after columns", JSON.parse(JSON.stringify(columns)));
   setColumns(columns);
 };
 
@@ -361,3 +360,4 @@ export const colorPallete = [
     textColor: "white",
   },
 ];
+

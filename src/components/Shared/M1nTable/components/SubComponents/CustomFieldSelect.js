@@ -102,7 +102,7 @@ const CustomFieldSelect = ({
         }))}
         getOptionLabel={(option) => option.label}
         getOptionSelected={(option, value) => {
-          return option === value;
+          return option.value === value.value;
         }}
         filterOptions={(options, params) => {
           return options;

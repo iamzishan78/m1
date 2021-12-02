@@ -1183,8 +1183,13 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
+                  var dateTime = null;
+                  if (row_line && row_line.dateTime) {
+                    dateTime = row_line.dateTime;
+                  }
                   return (
-                    <span style={{ padding: 10 }}>{tableMeta.rowData[5] ? moment(tableMeta.rowData[5]).format("MM/DD/YYYY") : ""}</span>
+                    <span style={{ padding: 10 }}>{dateTime ? moment(dateTime).format("MM/DD/YYYY") : ""}</span>
                   );
                 },
               };
@@ -1820,9 +1825,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  let id = (trueTargetLabel ? trueTargetLabel : props.targetLabel) + tableMeta.columnIndex;
-
-                  const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [columns[index]?.name]: item })));
+                  const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
                   var dateTime = null;
                   if (row_line && row_line.uploadedDate) {
                     dateTime = row_line.uploadedDate;
@@ -1830,17 +1833,6 @@ function SubTable(props) {
                   const fileExtension = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
                   const file = row_line?.fileName;
                   const uri = row_line?.fileUrl;
-
-                  // console.log('DOCS',row_line)
-
-                  let targetSourceId =
-                    props.parent === "OwnersPerWell"
-                      ? tableMeta.rowData[2]
-                      : props.parent === "owner_WellInterests"
-                        ? tableMeta.rowData[1]
-                        : props.parent === "ownersPerParcel"
-                          ? tableMeta.rowData[1]
-                          : tableMeta.rowData[0];
 
                   return (
                     <div className={classes.fileName}>
@@ -2095,7 +2087,12 @@ function SubTable(props) {
                           round
                         />
                       )}
-                      {props.targetLabel !== "contact" && (
+                      {props.targetLabel === "documents" && (
+                        <p style={{ padding: '0px 5px' }}>
+                          {value}
+                        </p>
+                      )}
+                      {props.targetLabel !== "contact" && props.targetLabel !== "documents" && (
                         <CellContentEdition
                           id={tableMeta.rowData[0]}
                           content={{ [column.name]: valueFormatter(value) }}
@@ -2723,7 +2720,7 @@ function SubTable(props) {
         },
 
     customToolbar: () => {
-      console.log("props addable type", props.addAble.type);
+      // console.log("props addable type", props.addAble.type);
       let buttonLabel = "+ ADD",
         menuOptions = {};
       if (props.addAble.type === "contact") {
@@ -3205,7 +3202,7 @@ function SubTable(props) {
         }
       }
 
-      console.log("SHAPE PROPS", props);
+      // console.log("SHAPE PROPS", props);
 
       if (props.header === "Well Interests" && props.parent === "owner_WellInterests") {
         const pageVariables = {

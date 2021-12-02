@@ -47,7 +47,7 @@ const CustomerViewCol = (props) => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [items, setItems] = useState([]);
-  const { updateColumns, columns, tableColumns, updateColumnSorting } = props;
+  const { updateColumns, columns, tableColumns, updateColumnSorting, selectedGridView } = props;
 
   const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
 
@@ -78,10 +78,12 @@ const CustomerViewCol = (props) => {
         <div style={{ marginTop: 40 }}>
           <SortableComponent
             items={items}
+            selectedGridView={selectedGridView}
             tableColumns={tableColumns}
             updateColumns={updateColumns}
             updateMetaData={updateMetaData}
             columns={columns}
+            updateColumnSorting={updateColumnSorting}
             setItems={(value) => {
               setItems(value)
               updateColumnSorting(value)
@@ -111,6 +113,8 @@ const SortableComponent = ({
   setItems,
   tableColumns,
   columns,
+  selectedGridView,
+  updateColumnSorting,
   updateColumns,
   updateMetaData,
   items,
@@ -125,6 +129,8 @@ const SortableComponent = ({
         setItems={setItems}
         items={items}
         columns={columns}
+        selectedGridView={selectedGridView}
+        updateColumnSorting={updateColumnSorting}
         tableColumns={tableColumns}
         updateColumns={updateColumns}
         updateMetaData={updateMetaData}
@@ -140,6 +146,8 @@ const SortableList = SortableContainer(
     items,
     tableColumns,
     columns,
+    selectedGridView,
+    updateColumnSorting,
     updateColumns,
     updateMetaData,
     setItems,
@@ -164,6 +172,8 @@ const SortableList = SortableContainer(
               index={index}
               item={item}
               columns={columns}
+              selectedGridView={selectedGridView}
+              updateColumnSorting={updateColumnSorting}
               tableColumns={tableColumns}
               updateColumns={updateColumns}
               updateMetaData={updateMetaData}
@@ -189,6 +199,8 @@ const SortableItem = SortableElement(
     tableColumns,
     columns,
     updateColumns,
+    selectedGridView,
+    updateColumnSorting,
     updateMetaData,
     removeIndex,
     itemIndex,
@@ -235,23 +247,7 @@ const SortableItem = SortableElement(
                 item.display === "false"
                   ? (columns[index].display = "true")
                   : (columns[index].display = "false");
-                const tableCol = tableColumns.find(
-                  (co) => co.name === item.name
-                );
-                if (tableCol && tableCol.isCustom) {
-                  updateMetaData({
-                    variables: {
-                      metaData: {
-                        _id: tableCol._id,
-                        options: {
-                          ...tableCol.options,
-                          display: item.display === "true",
-                        },
-                      },
-                    },
-                    awaitRefetchQueries: true,
-                  });
-                }
+                updateColumnSorting(columns)
                 updateColumns(columns);
               }}
               color="primary"

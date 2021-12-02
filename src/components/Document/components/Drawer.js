@@ -591,6 +591,7 @@ export default function DocumentDrawer() {
             <>
               {meta.type === "text" && (
                 <ListItem
+                  key={meta.name}
                   style={{
                     flexDirection: "column",
                     justifyContent: "start",
@@ -616,6 +617,7 @@ export default function DocumentDrawer() {
               )}
               {meta.type === "dropdown" && (
                 <ListItem
+                  key={meta.name}
                   style={{
                     flexDirection: "column",
                     justifyContent: "start",

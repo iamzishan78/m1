@@ -8,7 +8,7 @@ import TableHOC from "components/Table/TableHOC";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 // QUERIES
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { arrayMoveImmutable } from "array-move";
+import isEmpty from "lodash/isEmpty";
 
 import {
   deepEqualObjects,
@@ -32,7 +32,6 @@ import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 import { AppContext } from "AppContext";
-import { lengthToDegrees } from "@turf/helpers";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -47,14 +46,10 @@ const useStyles = makeStyles((theme) => ({
 
 function DocumentsTable(props) {
   const classes = useStyles();
-  const defaultView = {
-    name: "All Documents",
-    type: "Default",
-  };
   const selectedFilters = useRef([]);
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  // function states\
+  // function states
   const [filters, setFilters] = useState([]);
   const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const setColumns = (newState) => {
@@ -150,15 +145,25 @@ function DocumentsTable(props) {
       );
       const lastColumn = filterColumns.filter((col) => col.name === " ");
       filterColumns = filterColumns.filter((col) => col.name !== " ");
-      let columnsData = [
+      let columnsData = JSON.parse(JSON.stringify([
         ...filterColumns,
         ...metaDataRes.getMetaData.gridViews,
         ...lastColumn,
-      ];
+      ]));
       for (let i = 0; i < metaDataRes.getMetaData.gridViews.length; i++) {
         TableHeader.push(metaDataRes.getMetaData.gridViews[i]);
       }
+
+      if(!isEmpty(selectedGridView)){
+        columnsData = handleSelectedGridChange(
+          TableHeader,
+          selectedGridView,
+          columnsData
+        );
+      }
+      
       columnsData = sortColumns(columnsData, selectedGridView);
+      
       setColumnsData(
         TableHeader,
         filters,
@@ -168,15 +173,25 @@ function DocumentsTable(props) {
         GET_ES_DOCUMENTS_FILTER
       );
     }
-  }, [metaDataRes, selectedGridView]);
+  }, [metaDataRes]);
 
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
       props.setRows(tableData?.hits);
+      let updatedColumns = columns
+      if(!isEmpty(selectedGridView)){
+        updatedColumns = handleSelectedGridChange(
+          TableHeader,
+          selectedGridView,
+          updatedColumns
+        );
+        updatedColumns = sortColumns(updatedColumns, selectedGridView);
+      }
+      
       setColumnsData(
         TableHeader,
         filters,
-        JSON.parse(JSON.stringify(columns)),
+        JSON.parse(JSON.stringify(updatedColumns)),
         setColumns,
         setFilters,
         GET_ES_DOCUMENTS_FILTER
@@ -191,8 +206,8 @@ function DocumentsTable(props) {
     if (gridView?.columns) {
       let updatedColumns = [];
       for (let i = 0; i < gridView.columns.length; i++) {
-        const col = columns.find((c) => c.name === gridView.columns[i]);
-        columns = columns.filter((c) => c.name !== gridView.columns[i]);
+        const col = columns.find((c) => c.name === gridView.columns[i].name);
+        columns = columns.filter((c) => c.name !== gridView.columns[i].name);
         if (col) {
           updatedColumns.push(col);
         }
@@ -204,20 +219,22 @@ function DocumentsTable(props) {
   };
 
   useEffect(() => {
-    let updatedColumns = handleSelectedGridChange(
-      TableHeader,
-      selectedGridView,
-      columns
-    );
-    updatedColumns = sortColumns(updatedColumns, selectedGridView);
-    setColumnsData(
-      TableHeader,
-      filters,
-      JSON.parse(JSON.stringify(updatedColumns)),
-      setColumns,
-      setFilters,
-      GET_ES_DOCUMENTS_FILTER
-    );
+    if(!isEmpty(selectedGridView)) {
+      let updatedColumns = handleSelectedGridChange(
+        TableHeader,
+        selectedGridView,
+        columns
+      );
+      updatedColumns = sortColumns(updatedColumns, selectedGridView);
+      setColumnsData(
+        TableHeader,
+        filters,
+        JSON.parse(JSON.stringify(updatedColumns)),
+        setColumns,
+        setFilters,
+        GET_ES_DOCUMENTS_FILTER
+      );
+    }
   }, [selectedGridView]);
 
   const count = tableData?.total || 0;
@@ -313,23 +330,27 @@ function DocumentsTable(props) {
   };
 
   const updateColumnSorting = (value) => {
-
-    debugger
-    const columns = value
-      .filter((col) => col.display === "true")
-      .map((col) => col.name);
-    
-    debugger
-    setSelectedGridView({ ...selectedGridView, columns });
+    const sortedColumns = value.map((col) => ({ name: col.name, display: col.display === "true"}));
     
     updateGridView({
       variables: {
         gridView: {
           _id: selectedGridView._id,
-          columns,
+          columns: sortedColumns,
         },
       },
     });
+    
+    const columnsData = sortColumns(columns, { ...selectedGridView, columns: sortedColumns });
+    setColumnsData(
+      TableHeader,
+      filters,
+      JSON.parse(JSON.stringify(columnsData)),
+      setColumns,
+      setFilters,
+      GET_ES_DOCUMENTS_FILTER
+    );
+
   };
 
   const headerProps = {
