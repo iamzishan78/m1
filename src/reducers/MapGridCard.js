@@ -1,7 +1,4 @@
-import {
-  TOGGLE_MAP_GRID_ACTIVATED,
-  SET_MAP_GRID_CARD_STATE,
-} from "../constants/ActionTypes";
+import { TOGGLE_MAP_GRID_ACTIVATED, SET_MAP_GRID_CARD_STATE } from "../constants/ActionTypes";
 
 const INIT_STATE = {
   mapGridCardActivated: false,
@@ -16,10 +13,10 @@ const INIT_STATE = {
   selectedOwnerWellIntsSummary: null,
 };
 
-export default (state = INIT_STATE, action) => {
+export default function MapGridCardReducer(state = INIT_STATE, action) {
   switch (action.type) {
     case SET_MAP_GRID_CARD_STATE: {
-      console.log('reducer', action.payload)
+      console.log("reducer", action.payload);
       return { ...state, ...(action.payload ? action.payload : {}) };
     }
     case TOGGLE_MAP_GRID_ACTIVATED: {
@@ -30,8 +27,7 @@ export default (state = INIT_STATE, action) => {
         selectedOwnerWellIntsSummary: null,
       };
     }
-
     default:
       return state;
   }
-};
+}

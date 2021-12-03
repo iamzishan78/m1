@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { TransitionGroup } from "react-transition-group";
 import RootRef from "@material-ui/core/RootRef";
 import { useMutation } from "@apollo/client";
@@ -31,6 +32,7 @@ import LayerFilters from "components/Shared/SidePanel/compoennts/Filters/LayerFi
 
 import { deepEqualObjects } from "../../functions";
 import Layer from "./Layer";
+import { toggleLayersFiltersPanel } from "actions/MainMap";
 
 import {
   useStyles,
@@ -52,6 +54,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS);
 
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const [filteredItems, setFilteredItems] = useState([]);
   const [layerMap, setLayerMap] = useState([]);
@@ -93,6 +96,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
       setLayerMap(filteredItems.filter((item) => item.name !== "Water" && item.name !== "Land"));
     }
   }, [stateMapControls.selectedControl, filteredItems, stateApp.checkedBaseLayers, stateApp.checkedHeatLayers, type]);
+
+  useEffect(() => {
+    dispatch(toggleLayersFiltersPanel(!!stateMapControls.expandedPanel));
+  }, [dispatch, stateMapControls.expandedPanel]);
 
   const togglePullout = () => {
     setStateMapControls((stateMapControls) => ({

@@ -256,11 +256,12 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#D4E8F1",
     },
     "& .MuiToolbar-regular > div:nth-child(2)": {
-      marginRight: (props) => props.toolbarActionMarginRight ? props.toolbarActionMarginRight : 'inherit',
+      marginRight: (props) => (props.toolbarActionMarginRight ? props.toolbarActionMarginRight : "inherit"),
       flex: "0 1 auto",
     },
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
+      backgroundColor: "#fff"
     },
     "& .MuiTableHead-root": {
       "& th": {
@@ -275,6 +276,9 @@ const useStyles = makeStyles((theme) => ({
       },
       "& .MuiTableCell-paddingCheckbox": {
         padding: (props) => (props.dense ? "0 !important" : "16px"),
+        left: "0px",
+        position: "sticky",
+        zIndex: 1800,
       },
     },
     "& tr": {
@@ -464,7 +468,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "0px 30px 10px 10px",
     marginTop: "-10px",
     position: "relative",
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
     // minWidth: "100px",
     // borderRadius: "7px",
     // color: "#17aadd",
@@ -472,7 +476,7 @@ const useStyles = makeStyles((theme) => ({
     //   textDecoration: "underline",
     // },
     // fontWeight: "bold",
-  }
+  },
   // filenamediv: {
   //   cursor: "pointer",
   //   padding: "10px 30px 10px 10px",
@@ -1971,9 +1975,9 @@ function SubTable(props) {
                   // if(column?.options?.customBodyRender){
                   //   return column?.options?.customBodyRender
                   // }
-                  if(column.isCustom && column.type === 'dropdown'){
+                  if (column.isCustom && column.type === 'dropdown') {
                     let value = null;
-                    if(props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data){
+                    if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
                     }
                     return (
@@ -1982,9 +1986,9 @@ function SubTable(props) {
                       </>
                     )
                   }
-                  if(column.isCustom && column.type === 'text'){
+                  if (column.isCustom && column.type === 'text') {
                     let value = null;
-                    if( props.rows[tableMeta.rowIndex].custom_data){
+                    if (props.rows[tableMeta.rowIndex].custom_data) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
                     }
                     return (
@@ -3366,7 +3370,7 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    if(props.header === 'Contacts' || props.header === "Documents") {
+    if (props.header === 'Contacts' || props.header === "Documents") {
       const HeaderComponent = props.headerComponent
       return <HeaderComponent {...props.headerProps} />
     }
@@ -3394,10 +3398,10 @@ function SubTable(props) {
   };
 
   const CustomTableViewCol = (columnsProps) => {
-    if(props.header === "Documents") {
+    if (props.header === "Documents") {
       const ViewColumn = props.viewColumn
       return <ViewColumn {...columnsProps} tableColumns={props.columns} />
-    }else{
+    } else {
       return <TableViewCol {...columnsProps} />
     }
   }
