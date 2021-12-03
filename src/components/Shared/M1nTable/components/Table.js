@@ -1189,7 +1189,15 @@ function SubTable(props) {
                     dateTime = row_line.dateTime;
                   }
                   return (
-                    <span style={{ padding: 10 }}>{dateTime ? moment(dateTime).format("MM/DD/YYYY") : ""}</span>
+                    <span style={{ padding: 10 }}>
+                      {dateTime ? (
+                        <span>
+                          {moment(dateTime).format("MM/DD/YYYY")}
+                        </span>
+                      ) : (
+                        <span style={{ color: '#959595' }}>N/A</span>
+                      )}
+                    </span>
                   );
                 },
               };
@@ -2088,9 +2096,17 @@ function SubTable(props) {
                         />
                       )}
                       {props.targetLabel === "documents" && (
-                        <p style={{ padding: '0px 5px' }}>
-                          {value}
-                        </p>
+                        <>
+                          {value ? (
+                            <p style={{ padding: '0px 5px' }}>
+                              {value}
+                            </p>
+                          ):(
+                            <p style={{ padding: '0px 5px', color: '#959595' }}>
+                              {value ? value : 'N/A'}
+                            </p>
+                          )}
+                        </>
                       )}
                       {props.targetLabel !== "contact" && props.targetLabel !== "documents" && (
                         <CellContentEdition

@@ -95,14 +95,14 @@ const CustomFieldSelect = ({
         defaultValue={defaultValue}
         value={value}
         disableListWrap
-        options={options.map((op) => ({
+        options={options.filter(op => op.value).map((op) => ({
           ...op,
           label: op.value,
           value: op.value,
         }))}
         getOptionLabel={(option) => option.label}
         getOptionSelected={(option, value) => {
-          return option.value === value.value;
+          return option?.value === value?.value;
         }}
         filterOptions={(options, params) => {
           return options;
