@@ -35,6 +35,7 @@ import { showErrorMessage, showSuccessMessage } from "actions";
 
 import { deepEqualObjects } from "../../functions";
 import Layer from "./Layer";
+import { toggleLayersFiltersPanel } from "actions/MainMap";
 
 import {
   useStyles,
@@ -98,6 +99,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
       setLayerMap(filteredItems.filter((item) => item.name !== "Water" && item.name !== "Land"));
     }
   }, [stateMapControls.selectedControl, filteredItems, stateApp.checkedBaseLayers, stateApp.checkedHeatLayers, type]);
+
+  useEffect(() => {
+    dispatch(toggleLayersFiltersPanel(!!stateMapControls.expandedPanel));
+  }, [dispatch, stateMapControls.expandedPanel]);
 
   useEffect(() => {
     const mapDefaultPosition = get(updatedMapSettings, "updateUserMapSettings.settings.settings.mapDefaultPosition");
