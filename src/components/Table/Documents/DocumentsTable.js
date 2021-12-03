@@ -8,6 +8,7 @@ import TableHOC from "components/Table/TableHOC";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 // QUERIES
 import { useLazyQuery, useMutation } from "@apollo/client";
+import isEmpty from "lodash/isEmpty";
 
 import {
   deepEqualObjects,
@@ -29,6 +30,7 @@ import { GET_ES_DOCUMENTS } from "graphQL/useQueryESDocuments";
 import { GET_ES_DOCUMENTS_FILTER } from "graphQL/useQueryESDocumentsFilter";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
+import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -37,21 +39,17 @@ const useStyles = makeStyles((theme) => ({
   },
   documentTable: {
     "& ::-webkit-scrollbar": {
-        height: "0.7em !important",
-    }
-  }
+      height: "0.7em !important",
+    },
+  },
 }));
 
 function DocumentsTable(props) {
   const classes = useStyles();
-  const defaultView = {
-    name: "All Documents",
-    type: "Default",
-  };
   const selectedFilters = useRef([]);
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  // function states\
+  // function states
   const [filters, setFilters] = useState([]);
   const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const setColumns = (newState) => {
@@ -59,7 +57,7 @@ function DocumentsTable(props) {
   };
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [selectedGridView, setSelectedGridView] = useState(defaultView);
+  const [selectedGridView, setSelectedGridView] = useState({});
 
   // queries
   const [getESDocuments, { data: DocumentsData, loading }] = useLazyQuery(
@@ -67,7 +65,9 @@ function DocumentsTable(props) {
     { fetchPolicy: "no-cache" }
   );
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
-  const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
+  const [getGridViews, { data: gridViews }] = useLazyQuery(GET_GRID_VIEWS);
+  const [updateGridView, { data: updatedGridView }] =
+    useMutation(UPDATE_GRID_VIEW);
   const [updateDocument] = useMutation(UPDATE_DOCUMENT);
 
   const tableData = DocumentsData?.getESFiles;
@@ -80,6 +80,26 @@ function DocumentsTable(props) {
   const total = false;
   const orderByTracks = false;
   const startPaginationAt = 25;
+
+  useEffect(() => {
+    getGridViews({
+      variables: {
+        module: "Documents",
+        userId: stateApp.user.mongoId,
+      },
+    });
+  }, [getGridViews]);
+
+  useEffect(() => {
+    if (gridViews?.getGridViews?.gridViews) {
+      const data = JSON.parse(JSON.stringify(gridViews.getGridViews.gridViews));
+      if(isEmpty(selectedGridView)){
+        setSelectedGridView(
+          data.find((d) => d.type === "Default" && d.name === "All Documents")
+        );
+      }
+    }
+  }, [gridViews]);
 
   useEffect(() => {
     getESDocuments({
@@ -101,31 +121,53 @@ function DocumentsTable(props) {
 
   useEffect(() => {
     getMetaData({
-      variables:{
+      variables: {
         user: stateApp.user?.mongoId,
-        category: "Docs"
-      }
-    })
-  },[getMetaData])
+        category: "Docs",
+      },
+    });
+  }, [getMetaData]);
 
   useEffect(() => {
     return () => {
       setStateApp((stateApp) => ({
         ...stateApp,
-        documentSearchQuery: '',
+        documentSearchQuery: "",
       }));
-    }
-  },[])
-  
+    };
+  }, []);
+
   useEffect(() => {
-    if(metaDataRes?.getMetaData?.gridViews){
-      let filterColumns = columns.filter(col => !metaDataRes.getMetaData.gridViews.find(meta => meta.name === col.name))
-      const lastColumn = filterColumns.filter(col => col.name === ' ')
-      filterColumns = filterColumns.filter(col => col.name !== ' ')
-      const columnsData = [ ...filterColumns, ...metaDataRes.getMetaData.gridViews, ...lastColumn ]
-      for(let i=0; i<metaDataRes.getMetaData.gridViews.length; i++){
-        TableHeader.push(metaDataRes.getMetaData.gridViews[i])
+    if (metaDataRes?.getMetaData?.gridViews) {
+      let filterColumns = columns.filter(
+        (col) =>
+          !metaDataRes.getMetaData.gridViews.find(
+            (meta) => meta.name === col.name
+          )
+      );
+      // const lastColumn = filterColumns.filter((col) => col.name === " ");
+      // filterColumns = filterColumns.filter((col) => col.name !== " ");
+      let columnsData = JSON.parse(JSON.stringify([
+        ...filterColumns,
+        ...metaDataRes.getMetaData.gridViews,
+        // ...lastColumn,
+      ]));
+      for (let i = 0; i < metaDataRes.getMetaData.gridViews.length; i++) {
+        TableHeader.push(metaDataRes.getMetaData.gridViews[i]);
       }
+
+      let view = JSON.parse(JSON.stringify(selectedGridView))
+      if(!isEmpty(view)){
+        view = formattingGridView(JSON.parse(JSON.stringify(view)))
+        columnsData = handleSelectedGridChange(
+          TableHeader,
+          view,
+          columnsData
+        );
+      }
+
+      columnsData = sortColumns(columnsData, view);
+      
       setColumnsData(
         TableHeader,
         filters,
@@ -135,15 +177,26 @@ function DocumentsTable(props) {
         GET_ES_DOCUMENTS_FILTER
       );
     }
-  },[metaDataRes])
+  }, [metaDataRes]);
 
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
       props.setRows(tableData?.hits);
+      let updatedColumns = columns
+      if(!isEmpty(selectedGridView)){
+        const view = formattingGridView(JSON.parse(JSON.stringify(selectedGridView)))
+        updatedColumns = handleSelectedGridChange(
+          TableHeader,
+          view,
+          updatedColumns
+        );
+        updatedColumns = sortColumns(updatedColumns, view);
+      }
+      
       setColumnsData(
         TableHeader,
         filters,
-        JSON.parse(JSON.stringify(columns)),
+        JSON.parse(JSON.stringify(updatedColumns)),
         setColumns,
         setFilters,
         GET_ES_DOCUMENTS_FILTER
@@ -154,20 +207,59 @@ function DocumentsTable(props) {
     }
   }, [tableData, props.dependencyUpdate]);
 
+  const sortColumns = (columns, gridView) => {
+    if (gridView?.columns) {
+      let updatedColumns = [];
+      for (let i = 0; i < gridView.columns.length; i++) {
+        const col = columns.find((c) => c.name === gridView.columns[i].name);
+        columns = columns.filter((c) => c.name !== gridView.columns[i].name);
+        if (col) {
+          updatedColumns.push(col);
+        }
+      }
+      updatedColumns = [...updatedColumns, ...columns];
+      columns = updatedColumns;
+    }
+
+    const lastColumn = columns.filter((col) => col.name === " ");
+    columns = columns.filter((col) => col.name !== " ");
+    columns = [
+      ...columns,
+      ...lastColumn,
+    ];
+
+    return columns;
+  };
+
+  const formattingGridView = (view) => {
+    if(view?.columns?.length > 0) {
+      for(let i = 0; i < view.columns.length; i++){
+        if(typeof view.columns[i] === 'string'){
+          view.columns[i] = { name: view.columns[i], display: true }
+        }
+      }
+    }
+    return view;
+  }
+
   useEffect(() => {
-    const updatedColumns = handleSelectedGridChange(
-      TableHeader,
-      selectedGridView,
-      columns
-    );
-    setColumnsData(
-      TableHeader,
-      filters,
-      JSON.parse(JSON.stringify(updatedColumns)),
-      setColumns,
-      setFilters,
-      GET_ES_DOCUMENTS_FILTER
-    );
+    if(!isEmpty(selectedGridView)) {
+      const view = formattingGridView(JSON.parse(JSON.stringify(selectedGridView)))
+      let updatedColumns = handleSelectedGridChange(
+        TableHeader,
+        view,
+        columns
+      );
+      updatedColumns = sortColumns(updatedColumns, view);
+      setColumnsData(
+        TableHeader,
+        filters,
+        JSON.parse(JSON.stringify(updatedColumns)),
+        setColumns,
+        setFilters,
+        GET_ES_DOCUMENTS_FILTER
+      );
+    }
   }, [selectedGridView]);
 
   const count = tableData?.total || 0;
@@ -178,7 +270,7 @@ function DocumentsTable(props) {
     search: false,
     filter: true,
     searchText: props.documentSearchQuery,
-    customSearchRender: () => null
+    customSearchRender: () => null,
   };
 
   const viewColumnsChange = (tableColumns) => {
@@ -262,6 +354,30 @@ function DocumentsTable(props) {
     return view;
   };
 
+  const updateColumnSorting = (value) => {
+    const sortedColumns = value.map((col) => ({ name: col.name, display: col.display === "true"}));
+    
+    updateGridView({
+      variables: {
+        gridView: {
+          _id: selectedGridView._id,
+          columns: sortedColumns,
+        },
+      },
+    });
+    
+    const columnsData = sortColumns(columns, { ...selectedGridView, columns: sortedColumns });
+    setColumnsData(
+      TableHeader,
+      filters,
+      JSON.parse(JSON.stringify(columnsData)),
+      setColumns,
+      setFilters,
+      GET_ES_DOCUMENTS_FILTER
+    );
+
+  };
+
   const headerProps = {
     columns,
     showViewModal,
@@ -274,21 +390,29 @@ function DocumentsTable(props) {
     selectedFilters: selectedFilters.current,
   };
 
+  const viewColumnProps = {
+    selectedGridView,
+    updateColumnSorting,
+  };
+
   const onCustomKeyChange = (value, index, key) => {
-    const rows = JSON.parse(JSON.stringify(props.rows))
-    rows[index].custom_data = { ...props.rows[index].custom_data, [`${key}`]: value  }
-    props.setRows(rows)
+    const rows = JSON.parse(JSON.stringify(props.rows));
+    rows[index].custom_data = {
+      ...props.rows[index].custom_data,
+      [`${key}`]: value,
+    };
+    props.setRows(rows);
     updateDocument({
       variables: {
         document: {
           fileId: props.rows[index]._id,
-          custom_data: { [`${key}`]: value  },
+          custom_data: { [`${key}`]: value },
         },
       },
       refetchQueries: ["getESDocuments"],
       awaitRefetchQueries: true,
-    })
-  }
+    });
+  };
 
   return (
     <div className={classes.documentTable}>
@@ -311,12 +435,15 @@ function DocumentsTable(props) {
             selectedFilters={selectedFilters.current}
           />
         )}
-        {stateApp.showFieldModal && <MetaField columns={columns} category="Docs"/>}
+        {stateApp.showFieldModal && (
+          <MetaField columns={columns} category="Docs" />
+        )}
         <Table
           style={{ backgroundColor: "#fff" }}
           header={header}
           headerComponent={HeaderComponent}
           viewColumn={CustomerViewCol}
+          viewColumnProps={viewColumnProps}
           headerProps={headerProps}
           columns={columns}
           rows={props.searchedRows}
@@ -342,3 +469,4 @@ function DocumentsTable(props) {
 }
 
 export default React.memo(TableHOC(DocumentsTable), deepEqualObjects);
+

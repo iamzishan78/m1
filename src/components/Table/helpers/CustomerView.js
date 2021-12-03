@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -8,6 +8,15 @@ import { AppContext } from "AppContext";
 
 import { useMutation } from "@apollo/client";
 import { UPDATE_META_DATA } from "graphQL/useMutationUpdateMetaData";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
+import {
+  SortableContainer,
+  SortableElement,
+  sortableHandle,
+} from "react-sortable-hoc";
+import { arrayMoveImmutable } from "array-move";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -32,18 +41,19 @@ const useStyles = makeStyles((theme) => ({
   f13: {
     fontSize: "13px",
   },
-  columnContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
 }));
 
 const CustomerViewCol = (props) => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const { updateColumns, columns, tableColumns } = props;
+  const [items, setItems] = useState([]);
+  const { updateColumns, columns, tableColumns, updateColumnSorting, selectedGridView } = props;
 
   const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
+
+  useEffect(() => {
+    setItems(columns.filter((col) => col.viewColumns))
+  },[columns])
 
   return (
     <>
@@ -57,7 +67,7 @@ const CustomerViewCol = (props) => {
               element.click();
               setStateApp((stateApp) => ({
                 ...stateApp,
-                showFieldModal: true
+                showFieldModal: true,
               }));
             }}
           >
@@ -66,60 +76,187 @@ const CustomerViewCol = (props) => {
           </div>
         </div>
         <div style={{ marginTop: 40 }}>
-          {columns
-            .filter((col) => col.viewColumns)
-            .map((col) => {
-              return (
-                <div key={col.name} className={classes.columnContainer}>
-                  <span style={{ alignSelf: 'center' }} >{col.label}</span>
-                  <span style={{ display: 'flex' }}>
-                    {tableColumns.find(co => co.name === col.name)?.isCustom && (
-                      <IconButton style={{ padding: 6 }} onClick={() => {
-                        var element = document.querySelector('[aria-label="Close"]');
-                        element.click();
-                        setStateApp((stateApp) => ({
-                          ...stateApp,
-                          selectedMeta: tableColumns.find(co => co.name === col.name),
-                          showFieldModal: true
-                        }));
-                      }}>
-                        <EditIcon style={{ alignSelf: 'center', fontSize: 20 }} />
-                      </IconButton>
-                    )}
-                    <Checkbox
-                      style={{ padding: 3 }}
-                      checked={col.display === "true"}
-                      onChange={(e) => {
-                        const index = columns.findIndex(
-                          (co) => co.name === col.name
-                        );
-                        col.display === "false"
-                          ? (columns[index].display = "true")
-                          : (columns[index].display = "false");
-                        const tableCol = tableColumns.find(co => co.name === col.name)
-                        if(tableCol && tableCol.isCustom){
-                          updateMetaData({
-                            variables: {
-                              metaData: {
-                                _id: tableCol._id,
-                                options: { ...tableCol.options, display: col.display === "true" }
-                              },
-                            },
-                            awaitRefetchQueries: true,
-                          });
-                        }
-                        updateColumns(columns);
-                      }}
-                      color="primary"
-                    />
-                  </span>
-                </div>
-              );
-            })}
+          <SortableComponent
+            items={items}
+            selectedGridView={selectedGridView}
+            tableColumns={tableColumns}
+            updateColumns={updateColumns}
+            updateMetaData={updateMetaData}
+            columns={columns}
+            updateColumnSorting={updateColumnSorting}
+            setItems={(value) => {
+              setItems(value)
+              updateColumnSorting(value)
+            }}
+          />
         </div>
       </div>
     </>
   );
 };
+
+const useSortableStyles = makeStyles((theme) => ({
+  itemContainer: {
+    width: "100%",
+    display: "flex",
+    padding: "10px 0px",
+    justifyContent: "space-between",
+    borderBottom: "1px solid #EEF1F4",
+    "& .MuiInputBase-input": {
+      padding: "0 !important",
+      fontSize: "15px",
+    },
+  },
+}));
+
+const SortableComponent = ({
+  setItems,
+  tableColumns,
+  columns,
+  selectedGridView,
+  updateColumnSorting,
+  updateColumns,
+  updateMetaData,
+  items,
+}) => {
+  const onSortEnd = ({ oldIndex, newIndex }) => {
+    setItems(arrayMoveImmutable(items, oldIndex, newIndex));
+  };
+
+  return (
+    <>
+      <SortableList
+        setItems={setItems}
+        items={items}
+        columns={columns}
+        selectedGridView={selectedGridView}
+        updateColumnSorting={updateColumnSorting}
+        tableColumns={tableColumns}
+        updateColumns={updateColumns}
+        updateMetaData={updateMetaData}
+        onSortEnd={onSortEnd}
+        useDragHandle
+      />
+    </>
+  );
+};
+
+const SortableList = SortableContainer(
+  ({
+    items,
+    tableColumns,
+    columns,
+    selectedGridView,
+    updateColumnSorting,
+    updateColumns,
+    updateMetaData,
+    setItems,
+  }) => {
+    const removeIndex = (index) => {
+      const newItems = JSON.parse(JSON.stringify(items));
+      newItems.splice(index, 1);
+      setItems(newItems);
+    };
+
+    const updateIndex = (index, data) => {
+      const newItems = JSON.parse(JSON.stringify(items));
+      newItems[index] = data;
+      setItems(newItems);
+    };
+
+    return (
+      <List style={{ margin: 0, padding: 0 }} component="div">
+        {items.map((item, index) => (
+            <SortableItem
+              key={`item-${item.value}`}
+              index={index}
+              item={item}
+              columns={columns}
+              selectedGridView={selectedGridView}
+              updateColumnSorting={updateColumnSorting}
+              tableColumns={tableColumns}
+              updateColumns={updateColumns}
+              updateMetaData={updateMetaData}
+              removeIndex={removeIndex}
+              updateIndex={updateIndex}
+              itemIndex={index}
+            />
+          ))}
+      </List>
+    );
+  }
+);
+
+const DragHandle = sortableHandle(({ display }) => (
+  <DragIndicatorIcon
+    style={{ fontSize: 18, visibility: display ? "visible" : "hidden" }}
+  />
+));
+
+const SortableItem = SortableElement(
+  ({
+    item,
+    tableColumns,
+    columns,
+    updateColumns,
+    selectedGridView,
+    updateColumnSorting,
+    updateMetaData,
+    removeIndex,
+    itemIndex,
+    updateIndex,
+  }) => {
+    const classes = useSortableStyles();
+    const [showDrag, setShowDrag] = useState(false);
+    const [stateApp, setStateApp] = useContext(AppContext);
+
+    return (
+      <ListItem
+        ContainerComponent="div"
+        style={{ zIndex: 1400, padding: 0 }}
+        onMouseOver={() => setShowDrag(true)}
+        onMouseLeave={() => setShowDrag(false)}
+      >
+        <DragHandle display={showDrag} />
+        <div className={classes.itemContainer}>
+          <span style={{ alignSelf: "center" }}>{item.label}</span>
+          <span style={{ display: "flex" }}>
+            {tableColumns.find((co) => co.name === item.name)?.isCustom && (
+              <IconButton
+                style={{ padding: 6 }}
+                onClick={() => {
+                  var element = document.querySelector('[aria-label="Close"]');
+                  element.click();
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    selectedMeta: tableColumns.find(
+                      (co) => co.name === item.name
+                    ),
+                    showFieldModal: true,
+                  }));
+                }}
+              >
+                <EditIcon style={{ alignSelf: "center", fontSize: 20 }} />
+              </IconButton>
+            )}
+            <Checkbox
+              style={{ padding: 3 }}
+              checked={item.display === "true"}
+              onChange={(e) => {
+                const index = columns.findIndex((co) => co.name === item.name);
+                item.display === "false"
+                  ? (columns[index].display = "true")
+                  : (columns[index].display = "false");
+                updateColumnSorting(columns)
+                updateColumns(columns);
+              }}
+              color="primary"
+            />
+          </span>
+        </div>
+      </ListItem>
+    );
+  }
+);
 
 export default CustomerViewCol;
