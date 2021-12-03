@@ -56,15 +56,19 @@ const CustomFieldSelect = ({
   };
 
   useEffect(() => {
-    if (typeof value === "string") {
-      const opt = dropdownOptions.find((opt) => opt.value === value);
+    if (value) {
+      let data = JSON.parse(JSON.stringify(value));
+      if(typeof value !== 'string' && value?.label){
+        data = JSON.parse(JSON.stringify(value.label));
+      }
+      const opt = dropdownOptions.find((opt) => opt.value === data);
       if (opt) {
         const pallete = colorPallete.find(
           (pallete) => pallete.id === opt.palleteId
         );
         document.getElementById(
           `colorText_${index}_${column.name}`
-        ).innerHTML = `<span class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}">${value}</span>`;
+        ).innerHTML = `<span class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}">${data}</span>`;
       } else {
         document.getElementById(
           `colorText_${index}_${column.name}`
