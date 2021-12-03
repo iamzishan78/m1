@@ -49,20 +49,50 @@ export const useStyles = makeStyles((theme) => ({
     padding: 0,
     minWidth: "425px",
     overflowY: "auto",
-    height: "calc(100vh - 640px)",
     backgroundColor: "#0e111a",
-    "&::-webkit-scrollbar": {
-      width: "0.75em",
+  },
+  mapPositionSection: {
+    minWidth: "425px",
+    color: "white",
+    backgroundColor: "#0e111a",
+    padding: "10px 20px",
+    minHeight: "230px",
+    "& .MuiFormControl-root": {
+      width: "100%",
     },
-    "&::-webkit-scrollbar-track": {
-      "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    "& label": {
+      color: "white",
     },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#506187",
-      borderRadius: 5,
+    "& label.Mui-focused": {
+      color: "white",
+    },
+    "& label.Mui-disabled": {
+      color: "#adadad",
+    },
+    "& input": {
+      color: "white !important",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "white",
+    },
+    "& .MuiOutlinedInput-root": {
+      color: "white",
+      "& fieldset": {
+        borderColor: "white",
+      },
+      "&:hover fieldset": {
+        borderColor: "white",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "white",
+      },
     },
   },
-  panelContent: {},
+  panelContent: {
+    height: "calc(100vh - 117px)",
+    overflow: "overlay",
+    backgroundColor: "#0e111a",
+  },
   heatmapList: {
     padding: 0,
     minWidth: "425px",
