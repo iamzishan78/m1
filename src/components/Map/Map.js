@@ -2512,6 +2512,26 @@ function Map({ type, paramId, lati, longi }) {
           // console.timeEnd(`booleanIntersects`);
         }
 
+        var intersectingWellPermitLinesFilter;
+        if (filterCustomArray["wellpermitlines"]) {
+          var boundingMultiPoly = mergeIntoMultiPolygon(filterCustomArray["wellpermitlines"]);
+          var features = stateNav.filterIntersectingWellLines;
+
+          // console.time(`booleanIntersects`);
+          intersectingWellPermitLinesFilter = features.reduce(
+            function (memo, feature) {
+              boundingMultiPoly?.features?.forEach((boundingPoly) => {
+                if (turf.booleanIntersects(feature.geometry, boundingPoly.geometry) && feature.properties.id) {
+                  memo[2][1].push(feature.properties.id);
+                }
+              });
+              return memo;
+            },
+            ["in", ["get", "id"], ["literal", []]]
+          );
+          // console.timeEnd(`booleanIntersects`);
+        }
+
         var intersectingPermitLinesFilter;
         if (filterCustomArray["recent_submitted_permit_laterals"]) {
           var boundingMultiPoly = mergeIntoMultiPolygon(filterCustomArray["recent_submitted_permit_laterals"]);
@@ -2550,6 +2570,17 @@ function Map({ type, paramId, lati, longi }) {
           map.setFilter("welllines", ["match", ["get", "id"], "-1", true, false]);
         } else {
           map.setFilter("welllines", filterArray);
+        }
+
+        if (filterCustomArray["wellpermitlines"]) {
+          map.setFilter("wellpermitlines", [
+            ...filterArray,
+            ["any", ["within", mergeIntoMultiPolygon(filterCustomArray["wellpermitlines"])], intersectingWellPermitLinesFilter],
+          ]);
+        } else if (Object.keys(filterCustomArray).length > 0) {
+          map.setFilter("wellpermitlines", ["match", ["get", "id"], "-1", true, false]);
+        } else {
+          map.setFilter("wellpermitlines", filterArray);
         }
 
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
@@ -4777,8 +4808,11 @@ function Map({ type, paramId, lati, longi }) {
     ) {
       // console.time(`querySourceFeatures`);
       let features = [];
-      features = [...features, ...map.querySourceFeatures("wellsVT", { sourceLayer: "wellLines" })];
-      features = [...features, ...map.querySourceFeatures("recentsub_permits_source")];
+      features = [...features, ...map.querySourceFeatures("wellsVT", { sourceLayer: "wells" })];
+      // features = [...features, ...map.queryRenderedFeatures({layers: ['welllines']})];
+      // features = [...features, ...map.queryRenderedFeatures({layers: ['wellpermitlines']})];
+      features = [...features, ...map.querySourceFeatures("recentsub_permits_source", { sourceLayer: "recent_submitted_permit_laterals" })];
+      // features = [...features, ...map.queryRenderedFeatures({layers: ['recent_submitted_permit_laterals']})];
       // console.timeEnd(`querySourceFeatures`);
 
       setStateNav((stateNav) => ({
