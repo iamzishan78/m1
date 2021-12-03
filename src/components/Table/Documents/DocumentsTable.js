@@ -156,15 +156,17 @@ function DocumentsTable(props) {
         TableHeader.push(metaDataRes.getMetaData.gridViews[i]);
       }
 
-      if(!isEmpty(selectedGridView)){
+      let view = JSON.parse(JSON.stringify(selectedGridView))
+      if(!isEmpty(view)){
+        view = formattingGridView(JSON.parse(JSON.stringify(view)))
         columnsData = handleSelectedGridChange(
           TableHeader,
-          selectedGridView,
+          view,
           columnsData
         );
       }
       
-      columnsData = sortColumns(columnsData, selectedGridView);
+      columnsData = sortColumns(columnsData, view);
       
       setColumnsData(
         TableHeader,
@@ -182,12 +184,13 @@ function DocumentsTable(props) {
       props.setRows(tableData?.hits);
       let updatedColumns = columns
       if(!isEmpty(selectedGridView)){
+        const view = formattingGridView(JSON.parse(JSON.stringify(selectedGridView)))
         updatedColumns = handleSelectedGridChange(
           TableHeader,
-          selectedGridView,
+          view,
           updatedColumns
         );
-        updatedColumns = sortColumns(updatedColumns, selectedGridView);
+        updatedColumns = sortColumns(updatedColumns, view);
       }
       
       setColumnsData(
@@ -220,14 +223,26 @@ function DocumentsTable(props) {
     return columns;
   };
 
+  const formattingGridView = (view) => {
+    if(view?.columns?.length > 0) {
+      for(let i = 0; i < view.columns.length; i++){
+        if(typeof view.columns[i] === 'string'){
+          view.columns[i] = { name: view.columns[i], display: true }
+        }
+      }
+    }
+    return view;
+  }
+
   useEffect(() => {
     if(!isEmpty(selectedGridView)) {
+      const view = formattingGridView(JSON.parse(JSON.stringify(selectedGridView)))
       let updatedColumns = handleSelectedGridChange(
         TableHeader,
-        selectedGridView,
+        view,
         columns
       );
-      updatedColumns = sortColumns(updatedColumns, selectedGridView);
+      updatedColumns = sortColumns(updatedColumns, view);
       setColumnsData(
         TableHeader,
         filters,
