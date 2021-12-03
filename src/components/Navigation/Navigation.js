@@ -525,6 +525,16 @@ export default function Navigation(props) {
             ) : (
               <div style={{ display: "none" }}></div>
             )}
+
+
+            {applyNavigationStyle() && (
+              <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+                <Button onClick={() => handleListItemClick("/revenue/statement/details")} color="primary" variant="contained" startIcon={<Add />}>
+                  Add Statement
+                </Button>
+              </div>
+            )}
+
             <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
               {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
             </IconButton>

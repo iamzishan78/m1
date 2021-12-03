@@ -1407,6 +1407,7 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
+                  console.log("tableMeta", tableMeta.rowData);
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
@@ -1414,7 +1415,9 @@ function SubTable(props) {
                         ? tableMeta.rowData[1]
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
-                          : tableMeta.rowData[0];
+                          : props.parent === "RevenueStatementTable"
+                            ? tableMeta.rowData[1].split("_")[1]
+                            : tableMeta.rowData[0];
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
@@ -1968,13 +1971,13 @@ function SubTable(props) {
               customBodyRender: (value, tableMeta) => {
                 return (
                   <>
-                    {value.length === 0 && (
+                    {!value && (
                       <div className="flex justifyCenter alignCenter success w-100">
                         <CheckCircle size={20} />
                       </div>
                     )}
 
-                    {value.length > 0 && (
+                    {value && (
                       <div className="flex justifyCenter alignCenter warning w-100"
                         onMouseOver={() => document.getElementById("alertTootip").style.display = "block"}
                         onMouseOut={() => document.getElementById("alertTootip").style.display = "none"}
@@ -2017,17 +2020,20 @@ function SubTable(props) {
               },
             };
             break;
-          case "status" && props.header === "Revenue Check":
+          case "status":
             column.options = {
               ...column.options,
               customBodyRender: (value) => {
                 return (
-                  <div className="flex justifyStart alignCenter">
-                    {value.toLowerCase() === "approved" && (<div style={{ background: "#17c10d", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />)}
-                    {value.toLowerCase() === "imported" && (<div style={{ background: "#ffa800", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />)}
-                    {value}
-                  </div>
-
+                  <>
+                    {props.parent === "RevenueStatementTable" && (
+                      <div className="flex justifyStart alignCenter">
+                        {value.toLowerCase() === "approved" && (<div style={{ background: "#17c10d", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />)}
+                        {value.toLowerCase() === "imported" && (<div style={{ background: "#ffa800", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />)}
+                        {value}
+                      </div>
+                    )}
+                  </>
                 );
               },
             };
@@ -3453,6 +3459,21 @@ function SubTable(props) {
     }
   };
 
+  const checkStatementValidation = (checkId) => {
+    const response = props.potentialIssues.filter((issue) => {
+      if (issue.key === checkId) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    if (response.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   //  revenue data set
   const getRevenueStatementRows = () => {
     let dataSet = rows?.map((item) => ({
@@ -3465,9 +3486,7 @@ function SubTable(props) {
       checkId: item?.sourceId,
       source: item?.source || "",
       status: item?.status || "Imported",
-      validation: props.potentialIssues.filter((issue) => {
-        return issue.key === item._id ? true : false
-      })
+      validation: checkStatementValidation(item._id) || null
     }));
     return dataSet;
   }
