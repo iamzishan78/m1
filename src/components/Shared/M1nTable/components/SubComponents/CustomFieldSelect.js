@@ -36,6 +36,7 @@ const CustomFieldSelect = ({
   index,
   value,
   onCustomKeyChange,
+  dropdownOptions,
   column,
   fullWidth,
 }) => {
@@ -51,17 +52,24 @@ const CustomFieldSelect = ({
   options.unshift(defaultValue);
 
   const onChange = (e, act) => {
-    onCustomKeyChange(act);
+    onCustomKeyChange(act.value);
   };
 
   useEffect(() => {
-    if (value?.label) {
-      const pallete = colorPallete.find(
-        (pallete) => pallete.id === value.palleteId
-      );
-      document.getElementById(
-        `colorText_${index}_${column.name}`
-      ).innerHTML = `<span class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}">${value.label}</span>`;
+    if (typeof value === "string") {
+      const opt = dropdownOptions.find((opt) => opt.value === value);
+      if (opt) {
+        const pallete = colorPallete.find(
+          (pallete) => pallete.id === opt.palleteId
+        );
+        document.getElementById(
+          `colorText_${index}_${column.name}`
+        ).innerHTML = `<span class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}">${value}</span>`;
+      } else {
+        document.getElementById(
+          `colorText_${index}_${column.name}`
+        ).innerHTML = `<span class='colorText'>----</span>`;
+      }
     } else {
       document.getElementById(
         `colorText_${index}_${column.name}`
@@ -92,17 +100,19 @@ const CustomFieldSelect = ({
         classes={{ paper: classes.paper }}
         disableClearable
         open={showOptions}
-        defaultValue={defaultValue}
+        defaultValue={defaultValue.value}
         value={value}
         disableListWrap
-        options={options.filter(op => op.value).map((op) => ({
-          ...op,
-          label: op.value,
-          value: op.value,
-        }))}
+        options={options
+          .filter((op) => op.value)
+          .map((op) => ({
+            ...op,
+            label: op.value,
+            value: op.value,
+          }))}
         getOptionLabel={(option) => option.label}
         getOptionSelected={(option, value) => {
-          return option?.value === value?.value;
+          return option?.value === value;
         }}
         filterOptions={(options, params) => {
           return options;

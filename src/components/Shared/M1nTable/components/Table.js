@@ -1982,7 +1982,7 @@ function SubTable(props) {
                     }
                     return (
                       <div style={{ minWidth: "100px"}}>
-                        <CustomFieldSelect index={tableMeta.rowIndex} column={column} value={value} onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)} />
+                        <CustomFieldSelect dropdownOptions={column.dropdownOptions} index={tableMeta.rowIndex} column={column} value={value} onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)} />
                       </div>
                     )
                   }

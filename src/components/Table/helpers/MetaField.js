@@ -201,7 +201,7 @@ const MetaField = ({ category, columns }) => {
             label: values.title,
             esKey:
               values.type === "dropdown"
-                ? `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}.value`
+                ? `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}`
                 : `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}`,
             options: {
               display: true,
