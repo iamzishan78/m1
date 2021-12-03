@@ -93,9 +93,11 @@ function DocumentsTable(props) {
   useEffect(() => {
     if (gridViews?.getGridViews?.gridViews) {
       const data = JSON.parse(JSON.stringify(gridViews.getGridViews.gridViews));
-      setSelectedGridView(
-        data.find((d) => d.type === "Default" && d.name === "All Documents")
-      );
+      if(isEmpty(selectedGridView)){
+        setSelectedGridView(
+          data.find((d) => d.type === "Default" && d.name === "All Documents")
+        );
+      }
     }
   }, [gridViews]);
 
