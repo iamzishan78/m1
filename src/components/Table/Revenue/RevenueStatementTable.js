@@ -120,6 +120,35 @@ function RevenueStatementTable(props) {
         }
     }, [tableData, props.dependencyUpdate]);
 
+    useEffect(() => {
+        if (issues?.hits?.length > 0 && tableData?.hits?.length > 0) {
+            const issuesArr = issues?.hits.filter((issue) => {
+                console.log("issue", issue);
+                for (let i = 0; i < tableData?.hits?.length; i++) {
+                    console.log("tableData?.hits[i]._id", tableData?.hits[i]._id);
+                    if (tableData?.hits[i]._id === issue.key) {
+                        return issue;
+                    }
+                }
+            });
+
+            if (issuesArr?.length > 0) {
+                const allIssues = issuesArr?.filter((issue) => {
+                    const checkAmt = issue?.checkAmt?.value.toFixed(2);
+                    const checkDetailAmt = issue?.checkDetailAmt?.value.toFixed(2);
+                    if (Number(checkAmt) !== Number(checkDetailAmt)) {
+                        return issue;
+                    }
+                });
+                setPotentialIssuesList(allIssues);
+                props.onGettingPotentialIssues(allIssues);
+            }
+
+        } else {
+            setPotentialIssuesList([]);
+            props.onGettingPotentialIssues([]);
+        }
+    }, [tableData]);
 
     const onTableChange = (action, tableState, rows, meta) => {
         tableState.esIndex = esIndex;

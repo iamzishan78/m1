@@ -477,6 +477,14 @@ const useStyles = makeStyles((theme) => ({
     //   textDecoration: "underline",
     // },
     // fontWeight: "bold",
+  },
+  tooltip: {
+    position: "absolute",
+    top: -60,
+    display: "none",
+    color: "rgb(255, 0, 0)",
+    width: 200,
+    left: -124,
   }
   // filenamediv: {
   //   cursor: "pointer",
@@ -536,6 +544,7 @@ function SubTable(props) {
   const [isSearchOpen, openSearch] = useState(false);
   const [handleSearch, setHandleSearch] = useState(() => () => { });
   const [dataWell, setDataWell] = useState();
+  const [tooltip, showTooltip] = useState(false);
 
   // deep state
   const setFirstMount = (newState) => {
@@ -1956,7 +1965,7 @@ function SubTable(props) {
           case "validation":
             column.options = {
               ...column.options,
-              customBodyRender: (value) => {
+              customBodyRender: (value, tableMeta) => {
                 return (
                   <>
                     {value.length === 0 && (
@@ -1966,11 +1975,18 @@ function SubTable(props) {
                     )}
 
                     {value.length > 0 && (
-                      <div className="flex justifyCenter alignCenter warning w-100" style={{ marginRight: 6 }}>
+                      <div className="flex justifyCenter alignCenter warning w-100"
+                        onMouseOver={() => document.getElementById("alertTootip").style.display = "block"}
+                        onMouseOut={() => document.getElementById("alertTootip").style.display = "none"}
+                        style={{ marginRight: 6, position: "relative", zIndex: 100 }}
+                      >
                         <WarningIcon />
+
+                        <div id="alertTootip" className={classes.tooltip}>
+                          <p style={{ fontSize: 14, lineHeight: "120%", textAlign: "left" }}>Sum of details does not match check account</p>
+                        </div>
                       </div>
                     )}
-
                   </>
                 );
               },
@@ -2372,7 +2388,7 @@ function SubTable(props) {
     rowsPerPageOptions: props.rows && props.rows.length > 25 ? [10, 25, 50, 100] : props.rows && props.rows.length > 10 ? [10, 25] : [],
     selectableRows: props.targetLabel === "production_detail" ? false : "multiple",
     print: false,
-    download: (props.parent === "assocTaxRollInterests" || props.parent === "OwnersPerWell" || props.parent === "RevenueStatementTable" ) ? true : false,
+    download: (props.parent === "assocTaxRollInterests" || props.parent === "OwnersPerWell" || props.parent === "RevenueStatementTable") ? true : false,
     viewColumns: props.targetLabel !== "usermanagement",
 
     onColumnViewChange: (changedColumn, action) => {
