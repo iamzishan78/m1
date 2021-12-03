@@ -628,6 +628,7 @@ export default function DocumentDrawer() {
                   <CustomFieldSelect
                     fullWidth
                     index={"documentTable"}
+                    dropdownOptions={meta.dropdownOptions}
                     column={meta}
                     value={value}
                     onCustomKeyChange={(value) => {
