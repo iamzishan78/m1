@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     backgroundColor: "#ffffff",
-    height: "84.5vh",
+    height: "88vh",
   },
   textBtn: {
     margin: "0 0 8px 0",
@@ -77,9 +77,7 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
       if (e.target.checked) {
         newActivitiesFilter.push(type);
       } else {
-        const filterIndex = newActivitiesFilter.findIndex(
-          (act) => act === type
-        );
+        const filterIndex = newActivitiesFilter.findIndex((act) => act === type);
         if (filterIndex !== -1) {
           newActivitiesFilter.splice(filterIndex, 1);
         }
@@ -116,11 +114,7 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
     return (
       <Grid item xs={12} className={classes.checkBox}>
         <h4 style={{ color: "#9A9A9A", margin: 0 }}>{name}</h4>
-        <Checkbox
-          checked={activitiesFilter.includes(type)}
-          onChange={(e) => handleChange(e, type)}
-          color="secondary"
-        />
+        <Checkbox checked={activitiesFilter.includes(type)} onChange={(e) => handleChange(e, type)} color="secondary" />
       </Grid>
     );
   };
@@ -159,19 +153,9 @@ export default function ViewActivities() {
   const [stateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
-  const id =
-    history.location.pathname.split("/")[
-      history.location.pathname.split("/").length - 2
-    ];
+  const id = history.location.pathname.split("/")[history.location.pathname.split("/").length - 2];
 
-  const [activitiesFilter, setActivitiesFilter] = useState([
-    "call",
-    "meeting",
-    "email",
-    "task",
-    "deadline",
-    "mailer",
-  ]);
+  const [activitiesFilter, setActivitiesFilter] = useState(["call", "meeting", "email", "task", "deadline", "mailer"]);
   const [contactData, setContactData] = useState(null);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
@@ -204,21 +188,16 @@ export default function ViewActivities() {
     setActivityModalOpen(true);
   };
 
-  const filteredActivities = stateApp.currentContatcAtivities.filter((act) =>
-    activitiesFilter.includes(act.type)
-  );
+  const filteredActivities = stateApp.currentContatcAtivities.filter((act) => activitiesFilter.includes(act.type));
 
   const checkModuleHistory = () => {
     return !!stateNav.contactFromMap;
   };
 
   return (
-    <div>
+    <div style={{ marginTop: "65px" }}>
       <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-        <Breadcrumbs
-          separator={<NavigateNextIcon fontSize="small" />}
-          aria-label="breadcrumb"
-        >
+        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
           {checkModuleHistory() && (
             <Link
               className={classes.linkClass}
@@ -273,11 +252,7 @@ export default function ViewActivities() {
         </Breadcrumbs>
       </Toolbar>
 
-      <RightDialog
-        open={activityModalOpen ? true : false}
-        handleClickDialogClose={() => setActivityModalOpen(false)}
-        width="450px"
-      >
+      <RightDialog open={activityModalOpen ? true : false} handleClickDialogClose={() => setActivityModalOpen(false)} width="450px">
         <AddActivityDialog
           onClose={() => setActivityModalOpen(false)}
           id={id}
@@ -303,10 +278,7 @@ export default function ViewActivities() {
           />
         </div>
         <div className={classes.activityCardRight}>
-          <ActivitiesFilter
-            activitiesFilter={activitiesFilter}
-            setActivitiesFilter={setActivitiesFilter}
-          />
+          <ActivitiesFilter activitiesFilter={activitiesFilter} setActivitiesFilter={setActivitiesFilter} />
         </div>
       </div>
     </div>

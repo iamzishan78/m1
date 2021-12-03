@@ -1,205 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
-import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 
-import WellIcon from "../../Shared/svgIcons/well";
+import WellIcon from "components/Shared/svgIcons/well";
 import PersonIcon from '@material-ui/icons/Person';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 // import TodayOutlinedIcon from '@material-ui/icons/TodayOutlined';
-import CommentComponent from "components/Shared/CommentComponent";
-import UnitTableInfo from './UnitTableInfo'
 import AddIcon from '@material-ui/icons/Add';
 import { Button } from "@material-ui/core";
 import { useLazyQuery } from "@apollo/client";
+import CommentComponent from "components/Shared/CommentComponent";
+import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable'
+import unitDefaultData from 'components/ShapeDetailCard/Common/SummaryTable/unitDefaultData'
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
+import { summaryStyles } from "components/ShapeDetailCard/style";
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
-
-
-const useStyles = makeStyles((theme) => ({
-    summaryCard: {
-        backgroundColor: 'white', paddingLeft: "10px",
-        paddingRight: "10px", paddingTop: '8px',
-        paddingBottom: '40px'
-    },
-    summaryDetailCard: {
-        paddingLeft: '18px', paddingTop: '8px'
-    },
-    summaryValue: {
-        display: "inline-flex",
-        bottom: "5px",
-        position: "relative",
-        marginRight: "5px",
-        fontWeight: "bold",
-        color: '#848484'
-    },
-    descriptionInput: {
-        width: '100%',
-        '& .MuiTextField-root': {
-            backgroundColor: '#fffcdc'
-        },
-        '& .MuiOutlinedInput-notchedOutline': {
-            border: 'none'
-        }
-    },
-    icon: {
-        color: "#757575",
-        fontSize: "26px"
-    },
-    tags: {
-        '& .MuiOutlinedInput-notchedOutline': {
-            border: 'none'
-        }
-    },
-
-    ///////////////////////
-    grid: {
-        width: "auto",
-    },
-    gridItem: {
-        flexGrow: 1,
-        display: "flex",
-        height: "100%",
-    },
-    gridPacelDetails: {
-        flexGrow: 1,
-        display: "flex",
-        height: "100%",
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 10,
-
-    },
-    gridWidthScroll: {
-        maxHeight: "100%",
-        overflowX: "auto",
-        overflowY: "hidden",
-        // overflow: "auto",
-
-        "& .MuiTabs-indicator": {
-            // marginLeft: "14px !important",
-            bottom: '10px !important'
-        },
-        "& .MuiTab-root": {
-            padding: "15px 12px !important"
-        },
-        "& .MuiAppBar-root": {
-            height: "60px"
-        },
-
-        "&::-webkit-scrollbar": {
-            height: "0.4em",
-            width: "0.4em"
-        },
-        "&::-webkit-scrollbar-track": {
-            "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-        },
-        "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#929292",
-            borderRadius: 5,
-        },
-    },
-    calcSummary: {
-        width: '100%'
-    },
-    content: {
-        backgroundColor: "#fff",
-        padding: "16px",
-    },
-    borderRight: {
-        borderRight: "1px solid #eaeaea",
-        backgroundColor: "#fff",
-        padding: "15px",
-    },
-    foodText: {
-        position: "absolute",
-        bottom: "20px",
-        // zIndex: "51",
-        right: "0px",
-        fontSize: "10px",
-        color: "#6e6e6e",
-        margin: "0 !important",
-        textAlign: "right",
-        height: "0",
-        paddingRight: "10px",
-        "& span": {
-            fontWeight: "bold",
-        },
-    },
-    subContent: {
-        "& div": {
-            "&>.MuiPaper-root": {
-                "&>:nth-child(3)": {
-                    height: "calc(100vh - 53vh ) !important",
-                    "& .MuiTableCell-paddingCheckbox": {
-                        position: 'unset',
-                    },
-                },
-            },
-        },
-    },
-    subContent2: {
-        "& div": {
-            "&>.MuiPaper-root": {
-                "&>:nth-child(3)": {
-                    height: "calc(100vh - 35vh ) !important",
-                    "& .MuiTableCell-paddingCheckbox": {
-                        position: 'unset',
-                    },
-                },
-            },
-        },
-    },
-    tapsLabelsButtonsSelected: {
-        boxShadow: "none",
-        color: "#fff",
-        backgroundColor: theme.palette.secondary.main,
-        "&:hover": { color: "#757575", boxShadow: "none !important" },
-    },
-    tapsLabelsButtons: {
-        boxShadow: "none",
-        backgroundColor: "#fff",
-        color: "#757575",
-        "&:hover": { boxShadow: "none !important" },
-    },
-    documentHeader: {
-        display: "flex",
-        "& span": {
-            marginTop: "2px",
-            marginLeft: "5px"
-
-        }
-    },
-    parcelDocument: {
-        "& .MuiTableRow-root": {
-            "&>:nth-child(2) ": {
-                "& .fileName": {
-                    width: "375px !important"
-                }
-            }
-        }
-    },
-    addDataButton: {
-        backgroundColor: 'white',
-        color: 'black',
-        textTransform: "capitalize",
-        '&:hover': {
-            backgroundColor: theme.palette.common.white,
-            opacity: 0.15,
-        }
-    },
-    paddingLeft: {
-        paddingRight: "20px"
-    }
-}));
 
 export default function UnitSummary(props) {
     const [search, setSearch] = useState('');
     const [unitProperties, setProperties] = useState(props.properties);
     const [tableDataState, setTableDataState] = useState({});
 
-    const classes = useStyles({ search });
+    const classes = summaryStyles({ search });
 
     const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
 
@@ -253,7 +76,7 @@ export default function UnitSummary(props) {
                     </Grid>
                 </Grid>
                 <Grid item>
-                    <UnitTableInfo properties={props.properties} updateProperties={props.updateProperties}
+                    <SummaryTable tableData={unitDefaultData} properties={props.properties} updateProperties={props.updateProperties}
                         updateCustomProperties={props.updateCustomProperties} search={search} />
                 </Grid>
                 <Grid item>
