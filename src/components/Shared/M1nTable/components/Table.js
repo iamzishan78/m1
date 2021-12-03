@@ -463,10 +463,13 @@ const useStyles = makeStyles((theme) => ({
     color: "#000000",
     fontWeight: "normal",
   },
+  fileName: {
+    minWidth: "400px !important",
+  },
   docDateText: {
     // cursor: "pointer",
     padding: "0px 30px 10px 10px",
-    marginTop: "-10px",
+    marginTop: "-20px",
     position: "relative",
     justifyContent: "flex-end",
     // minWidth: "100px",
@@ -1844,10 +1847,11 @@ function SubTable(props) {
                           : tableMeta.rowData[0];
 
                   return (
-                    <div className="fileName">
+                    <div className={classes.fileName}>
                       <Grid container spacing={2} direction="row">
                         <Grid
                           item
+                          xs={2}
                           style={{
                             display: "flex",
                             justifyContent: "center",
@@ -1878,7 +1882,7 @@ function SubTable(props) {
                           {/* </div> */}
                         </Grid>
 
-                        <Grid item>
+                        <Grid xs={10} item>
                           <div
                             style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
                             onClick={(e) => {
@@ -1981,9 +1985,9 @@ function SubTable(props) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
                     }
                     return (
-                      <>
+                      <div style={{ minWidth: "100px"}}>
                         <CustomFieldSelect index={tableMeta.rowIndex} column={column} value={value} onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)} />
-                      </>
+                      </div>
                     )
                   }
                   if (column.isCustom && column.type === 'text') {

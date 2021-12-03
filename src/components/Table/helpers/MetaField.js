@@ -22,11 +22,7 @@ import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
-import {
-  SortableContainer,
-  SortableElement,
-  sortableHandle,
-} from "react-sortable-hoc";
+import { SortableContainer, SortableElement, sortableHandle } from "react-sortable-hoc";
 
 import { GET_ALL_LIBRARY_META_DATA } from "graphQL/useQueryGetMetaData";
 import { ADD_META_DATA } from "graphQL/useMutationAddMetaData";
@@ -82,6 +78,10 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#F6F8F9",
     },
   },
+  btnColor: {
+    color: "white",
+    backgroundColor: "#4576CF",
+  },
 }));
 
 const options = [
@@ -119,26 +119,19 @@ const categoryOptions = [
   },
 ];
 
-const MetaField = ({ category }) => {
+const MetaField = ({ category, columns }) => {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState("new");
   const [metaData, setMetaData] = useState(null);
   const [filteredMetaData, setFilteredMetaData] = useState(null);
-  const [selectFilter, setSelectFilter] = useState(
-    categoryOptions[categoryOptions.length - 1].value
-  );
+  const [selectFilter, setSelectFilter] = useState(categoryOptions[categoryOptions.length - 1].value);
   const [filter, setFilter] = useState("");
   const [showAddDescription, setShowAddDescription] = useState(false);
   const { control, reset, setValue, register, getValues, watch } = useForm();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const type = watch(
-    "type",
-    stateApp.selectedMeta ? stateApp.selectedMeta.type : "dropdown"
-  );
-  const isAddedToLibrary = watch(
-    "isAddedToLibrary",
-    stateApp.selectedMeta ? stateApp.selectedMeta.isAddedToLibrary : false
-  );
+  const type = watch("type", stateApp.selectedMeta ? stateApp.selectedMeta.type : "dropdown");
+  const title = watch("title", stateApp.selectedMeta ? stateApp.selectedMeta.title : "");
+  const isAddedToLibrary = watch("isAddedToLibrary", stateApp.selectedMeta ? stateApp.selectedMeta.isAddedToLibrary : false);
 
   const [items, setItems] = useState([{ palleteId: colorPallete[0].id }]);
 
@@ -155,9 +148,7 @@ const MetaField = ({ category }) => {
 
   const [addMetaData, {}] = useMutation(ADD_META_DATA);
   const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
-  const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(
-    GET_ALL_LIBRARY_META_DATA
-  );
+  const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(GET_ALL_LIBRARY_META_DATA);
 
   useEffect(() => {
     getAllLibraryMetaData();
@@ -165,8 +156,12 @@ const MetaField = ({ category }) => {
 
   useEffect(() => {
     if (metaDataRes?.getAllLibraryMetaData?.gridViews) {
-      setMetaData(metaDataRes.getAllLibraryMetaData.gridViews);
-      setFilteredMetaData(metaDataRes.getAllLibraryMetaData.gridViews);
+      let data = metaDataRes.getAllLibraryMetaData.gridViews;
+      for (let i = 0; i < columns.length; i++) {
+        data = data.filter((d) => d.name !== columns[i].name);
+      }
+      setMetaData(data);
+      setFilteredMetaData(data);
     }
   }, [metaDataRes]);
 
@@ -177,9 +172,7 @@ const MetaField = ({ category }) => {
         data = metaData.filter((d) => d.category === selectFilter);
       }
       if (filter) {
-        data = data.filter((d) =>
-          d.label.toLowerCase().includes(filter.toLowerCase())
-        );
+        data = data.filter((d) => d.label.toLowerCase().includes(filter.toLowerCase()));
       }
       setFilteredMetaData(data);
     }
@@ -206,9 +199,10 @@ const MetaField = ({ category }) => {
           metaData: {
             name: values.title.replace(/ /g, "_").toLowerCase(),
             label: values.title,
-            esKey: `custom_data.${values.title
-              .replace(/ /g, "_")
-              .toLowerCase()}.value.keyword`,
+            esKey:
+              values.type === "dropdown"
+                ? `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}.value`
+                : `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}`,
             options: {
               display: true,
               filter: true,
@@ -254,7 +248,7 @@ const MetaField = ({ category }) => {
         }))
       }
     >
-      <div style={{ height: "550px" }}>
+      <div>
         <div className={classes.header}>
           {stateApp.selectedMeta ? <h3>Edit Field</h3> : <h3>Add Field</h3>}
           <IconButton onClick={handleClose}>
@@ -267,11 +261,7 @@ const MetaField = ({ category }) => {
               <span
                 style={{ marginLeft: 13, padding: 5 }}
                 onClick={() => setSelectedTab(option.value)}
-                className={
-                  selectedTab === option.value
-                    ? classes.selectedType
-                    : classes.unSelectedType
-                }
+                className={selectedTab === option.value ? classes.selectedType : classes.unSelectedType}
               >
                 {option.label}
               </span>
@@ -283,13 +273,7 @@ const MetaField = ({ category }) => {
             <div>
               <div style={{ padding: 35 }}>
                 <Grid container spacing={0}>
-                  <Grid
-                    container
-                    item
-                    xs={7}
-                    style={{ paddingRight: 20 }}
-                    alignItems="center"
-                  >
+                  <Grid container item xs={7} style={{ paddingRight: 20 }} alignItems="center">
                     <label style={{ margin: "5px 0px" }}>Field Title</label>
                     <Controller
                       control={control}
@@ -343,8 +327,7 @@ const MetaField = ({ category }) => {
                           setShowAddDescription(true);
                         }}
                       >
-                        <AddIcon className={classes.addIcon} />{" "}
-                        <span className={classes.f13}>Add Description</span>
+                        <AddIcon className={classes.addIcon} /> <span className={classes.f13}>Add Description</span>
                       </div>
                     ) : (
                       <Controller
@@ -383,9 +366,7 @@ const MetaField = ({ category }) => {
                           styles={{
                             menu: (provided) => ({ ...provided, zIndex: 9999 }),
                           }}
-                          value={categoryOptions.find(
-                            (op) => op.value === props.value
-                          )}
+                          value={categoryOptions.find((op) => op.value === props.value)}
                           menuPlacement="auto"
                           options={categoryOptions}
                           className={classes.select}
@@ -408,13 +389,7 @@ const MetaField = ({ category }) => {
                   <FormControlLabel
                     className={classes.library}
                     style={{ fontSize: 14 }}
-                    control={
-                      <Checkbox
-                        checked={isAddedToLibrary}
-                        onChange={(e) => props.onChange(e.target.checked)}
-                        color="primary"
-                      />
-                    }
+                    control={<Checkbox checked={isAddedToLibrary} onChange={(e) => props.onChange(e.target.checked)} color="primary" />}
                     label="Add to field library"
                   />
                 )}
@@ -425,17 +400,15 @@ const MetaField = ({ category }) => {
                 }}
               >
                 <div style={{ float: "right" }}>
-                  <Button
-                    style={{ margin: "25px 5px 25px 0px" }}
-                    variant="outlined"
-                    onClick={handleClose}
-                  >
+                  <Button style={{ margin: "25px 5px 25px 0px" }} variant="outlined" onClick={handleClose}>
                     Cancel
                   </Button>
                   <Button
+                    className={!title ? "" : classes.btnColor}
                     style={{ margin: "25px 25px 25px 5px" }}
                     variant="outlined"
                     onClick={handleSave}
+                    disabled={!title}
                   >
                     {stateApp.selectedMeta ? "Update Field" : "Create Field"}
                   </Button>
@@ -451,9 +424,7 @@ const MetaField = ({ category }) => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 9999 }),
                   }}
-                  value={categoryOptions.find(
-                    (op) => op.value === selectFilter
-                  )}
+                  value={categoryOptions.find((op) => op.value === selectFilter)}
                   menuPlacement="auto"
                   onChange={(e) => {
                     setSelectFilter(e.value);
@@ -502,13 +473,7 @@ const MetaField = ({ category }) => {
                     <div
                       className={classes.fields}
                       onClick={() => {
-                        const meta = omit(data, [
-                          "_id",
-                          "lastUpdateAt",
-                          "createAt",
-                          "_ts",
-                          "__v",
-                        ]);
+                        const meta = omit(data, ["_id", "lastUpdateAt", "createAt", "_ts", "__v"]);
                         addMetaData({
                           variables: {
                             metaData: {
@@ -537,16 +502,18 @@ const MetaField = ({ category }) => {
                         >
                           <Grid container item xs={10}>
                             <div>{data.label}</div>
-                            <div style={{ width: "100%", color: "#B4B9BF" }}>
-                              {data.dropdownOptions.map((option, index) => {
-                                return (
-                                  <span>
-                                    {option.value}
-                                    {index < options.length - 1 ? ", " : ""}
-                                  </span>
-                                );
-                              })}
-                            </div>
+                            {data.type === "dropdown" && (
+                              <div style={{ width: "100%", color: "#B4B9BF" }}>
+                                {data.dropdownOptions.map((option, index) => {
+                                  return (
+                                    <span>
+                                      {option.value}
+                                      {index < options.length - 1 ? ", " : ""}
+                                    </span>
+                                  );
+                                })}
+                              </div>
+                            )}
                           </Grid>
                           <Grid container item xs={2}>
                             <div
@@ -596,12 +563,7 @@ const SortableComponent = ({ setItems, items }) => {
 
   return (
     <>
-      <SortableList
-        setItems={setItems}
-        items={items}
-        onSortEnd={onSortEnd}
-        useDragHandle
-      />
+      <SortableList setItems={setItems} items={items} onSortEnd={onSortEnd} useDragHandle />
       <div
         style={{
           color: "#929292",
@@ -658,127 +620,114 @@ const SortableList = SortableContainer(({ items, setItems }) => {
 });
 
 const DragHandle = sortableHandle(({ display }) => (
-  <DragIndicatorIcon
-    style={{ fontSize: 18, visibility: display ? "visible" : "hidden" }}
-  />
+  <DragIndicatorIcon style={{ fontSize: 18, visibility: display ? "visible" : "hidden" }} />
 ));
 
-const SortableItem = SortableElement(
-  ({ item, removeIndex, itemIndex, updateIndex }) => {
-    const classes = useSortableStyles();
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [showDrag, setShowDrag] = useState(false);
-    const [itemValue, setItemValue] = useState(item.value);
+const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateIndex }) => {
+  const classes = useSortableStyles();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [showDrag, setShowDrag] = useState(false);
+  const [itemValue, setItemValue] = useState(item.value);
 
-    const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
-    };
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
-    return (
-      <ListItem
-        ContainerComponent="div"
-        style={{ zIndex: 1300, padding: 0 }}
-        onMouseOver={() => setShowDrag(true)}
-        onMouseLeave={() => setShowDrag(false)}
-      >
-        <DragHandle display={showDrag} />
-        <div className={classes.itemContainer}>
-          <div style={{ width: "100%" }}>
-            <div
-              style={{
-                marginTop: 4,
-                marginLeft: 10,
-                marginRight: 10,
-                width: 15,
-                height: 15,
-                backgroundColor: colorPallete.find(
-                  (pallete) => pallete.id === item.palleteId
-                ).color,
-                display: "inline-block",
-                borderRadius: 10,
-              }}
-              onClick={handleClick}
-            ></div>
+  return (
+    <ListItem
+      ContainerComponent="div"
+      style={{ zIndex: 1300, padding: 0 }}
+      onMouseOver={() => setShowDrag(true)}
+      onMouseLeave={() => setShowDrag(false)}
+    >
+      <DragHandle display={showDrag} />
+      <div className={classes.itemContainer}>
+        <div style={{ width: "100%" }}>
+          <div
+            style={{
+              marginTop: 4,
+              marginLeft: 10,
+              marginRight: 10,
+              width: 15,
+              height: 15,
+              backgroundColor: colorPallete.find((pallete) => pallete.id === item.palleteId).color,
+              display: "inline-block",
+              borderRadius: 10,
+            }}
+            onClick={handleClick}
+          ></div>
 
-            <Menu
-              id="simple-menu"
-              anchorEl={anchorEl}
-              keepMounted
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "center",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "center",
-              }}
-            >
-              <div style={{ width: "220px", padding: "0px 10px" }}>
-                {colorPallete.map((pallet) => {
-                  return (
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "center",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+          >
+            <div style={{ width: "220px", padding: "0px 10px" }}>
+              {colorPallete.map((pallet) => {
+                return (
+                  <div
+                    style={{ display: "inline-block" }}
+                    onClick={() => {
+                      handleClose();
+                      updateIndex(itemIndex, {
+                        ...item,
+                        palleteId: pallet.id,
+                      });
+                    }}
+                  >
                     <div
-                      style={{ display: "inline-block" }}
-                      onClick={() => {
-                        handleClose();
-                        updateIndex(itemIndex, {
-                          ...item,
-                          palleteId: pallet.id,
-                        });
+                      style={{
+                        marginTop: 4,
+                        marginLeft: 5,
+                        marginRight: 5,
+                        width: 15,
+                        height: 15,
+                        backgroundColor: pallet.color,
+                        display: "inline-block",
                       }}
                     >
-                      <div
-                        style={{
-                          marginTop: 4,
-                          marginLeft: 5,
-                          marginRight: 5,
-                          width: 15,
-                          height: 15,
-                          backgroundColor: pallet.color,
-                          display: "inline-block",
-                        }}
-                      >
-                        {item.color === pallet.color && (
-                          <CheckIcon style={{ fontSize: 13 }} />
-                        )}
-                      </div>
+                      {item.color === pallet.color && <CheckIcon style={{ fontSize: 13 }} />}
                     </div>
-                  );
-                })}
-              </div>
-            </Menu>
-            <TextField
-              type="text"
-              variant="standard"
-              placeholder="Enter option"
-              style={{ width: "95%", marginTop: 3 }}
-              value={itemValue}
-              onChange={(e) => {
-                setItemValue(e.target.value);
-              }}
-              onBlur={() =>
-                updateIndex(itemIndex, { ...item, value: itemValue })
-              }
-              InputProps={{
-                disableUnderline: true,
-              }}
-            />
-          </div>
-          <IconButton
-            style={{ padding: "4px" }}
-            onClick={() => removeIndex(itemIndex)}
-          >
-            <CloseIcon style={{ fontSize: 16, alignSelf: "center" }} />
-          </IconButton>
+                  </div>
+                );
+              })}
+            </div>
+          </Menu>
+          <TextField
+            type="text"
+            variant="standard"
+            placeholder="Enter option"
+            style={{ width: "95%", marginTop: 3 }}
+            value={itemValue}
+            onChange={(e) => {
+              setItemValue(e.target.value);
+            }}
+            onBlur={() => updateIndex(itemIndex, { ...item, value: itemValue })}
+            InputProps={{
+              disableUnderline: true,
+            }}
+          />
         </div>
-      </ListItem>
-    );
-  }
-);
+        <IconButton style={{ padding: "4px" }} onClick={() => removeIndex(itemIndex)}>
+          <CloseIcon style={{ fontSize: 16, alignSelf: "center" }} />
+        </IconButton>
+      </div>
+    </ListItem>
+  );
+});
 
 export default MetaField;

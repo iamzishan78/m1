@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { get } from "lodash";
 import { TransitionGroup } from "react-transition-group";
 import RootRef from "@material-ui/core/RootRef";
 import { useMutation } from "@apollo/client";
@@ -29,6 +30,8 @@ import ClearIcon from "@material-ui/icons/Clear";
 import FilterAltIcon from "components/Shared/svgIcons/FilterAltIcon";
 import SecondaryPanel from "components/Shared/SecondaryPanel";
 import LayerFilters from "components/Shared/SidePanel/compoennts/Filters/LayerFilters";
+import MapPositions from "components/Shared/SidePanel/compoennts/MapPositions";
+import { showErrorMessage, showSuccessMessage } from "actions";
 
 import { deepEqualObjects } from "../../functions";
 import Layer from "./Layer";
@@ -51,7 +54,7 @@ import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems }) {
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS);
+  const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
 
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -101,6 +104,29 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     dispatch(toggleLayersFiltersPanel(!!stateMapControls.expandedPanel));
   }, [dispatch, stateMapControls.expandedPanel]);
 
+  useEffect(() => {
+    const mapDefaultPosition = get(updatedMapSettings, "updateUserMapSettings.settings.settings.mapDefaultPosition");
+    if (mapDefaultPosition) {
+      dispatch(showSuccessMessage("Map Default Position saved."));
+    } else if (updatedMapSettings) {
+      dispatch(showErrorMessage("Error in saving Map Default Position."));
+    }
+    setMapVars(mapDefaultPosition);
+  }, [updatedMapSettings]);
+
+  const setMapVars = (settings) => {
+    if (settings) {
+      // setSettings(settings);
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        defaultMapVars: {
+          ...stateApp.defaultMapVars,
+          ...settings,
+        },
+      }));
+    }
+  };
+
   const togglePullout = () => {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
@@ -113,6 +139,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     setStateApp((stateApp) => ({
       ...stateApp,
       mapVars: { ...stateApp.mapVars, styleId: style.name },
+      defaultMapVars: { ...stateApp.defaultMapVars, styleId: style.name },
     }));
     updateUserMapSettings({
       variables: {
@@ -121,6 +148,22 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           type,
           settings: {
             activeBaseMap: style.name,
+          },
+        },
+      },
+    });
+  };
+
+  const setMapDefaultPosition = (params) => {
+    updateUserMapSettings({
+      variables: {
+        settings: {
+          user: stateApp.user.mongoId,
+          type: "baseMap",
+          settings: {
+            mapDefaultPosition: {
+              ...params,
+            },
           },
         },
       },
@@ -225,6 +268,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
       </Droppable>
     </DragDropContext>
   );
+
   const a11yProps = (index) => ({
     id: `full-width-tab-${index}`,
     "aria-controls": `full-width-tabpanel-${index}`,
@@ -340,9 +384,16 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
                 </Box>
               ))}
             {type === "base" && (
-              <Collapse in={true} timeout="auto" unmountOnExit>
-                {displayList}
-              </Collapse>
+              <>
+                <Collapse in={true} timeout="auto" unmountOnExit>
+                  {displayList}
+                </Collapse>
+                <MapPositions
+                  setMapDefaultPosition={setMapDefaultPosition}
+                  defaultMapVars={stateApp.defaultMapVars}
+                  mapVars={stateApp.mapVars}
+                />
+              </>
             )}
             {type === "heatMaps" && displayList}
             {type === "filter" && <LayerFilters />}

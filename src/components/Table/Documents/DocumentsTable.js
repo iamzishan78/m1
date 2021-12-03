@@ -35,6 +35,11 @@ const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
   },
+  documentTable: {
+    "& ::-webkit-scrollbar": {
+        height: "0.7em !important",
+    }
+  }
 }));
 
 function DocumentsTable(props) {
@@ -44,7 +49,7 @@ function DocumentsTable(props) {
     type: "Default",
   };
   const selectedFilters = useRef([]);
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   // function states\
   const [filters, setFilters] = useState([]);
@@ -104,9 +109,20 @@ function DocumentsTable(props) {
   },[getMetaData])
 
   useEffect(() => {
+    return () => {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        documentSearchQuery: '',
+      }));
+    }
+  },[])
+  
+  useEffect(() => {
     if(metaDataRes?.getMetaData?.gridViews){
-      const filterColumns = columns.filter(col => !metaDataRes.getMetaData.gridViews.find(meta => meta.name === col.name))
-      const columnsData = [...metaDataRes.getMetaData.gridViews, ...filterColumns]
+      let filterColumns = columns.filter(col => !metaDataRes.getMetaData.gridViews.find(meta => meta.name === col.name))
+      const lastColumn = filterColumns.filter(col => col.name === ' ')
+      filterColumns = filterColumns.filter(col => col.name !== ' ')
+      const columnsData = [ ...filterColumns, ...metaDataRes.getMetaData.gridViews, ...lastColumn ]
       for(let i=0; i<metaDataRes.getMetaData.gridViews.length; i++){
         TableHeader.push(metaDataRes.getMetaData.gridViews[i])
       }
@@ -162,6 +178,7 @@ function DocumentsTable(props) {
     search: false,
     filter: true,
     searchText: props.documentSearchQuery,
+    customSearchRender: () => null
   };
 
   const viewColumnsChange = (tableColumns) => {
@@ -273,9 +290,8 @@ function DocumentsTable(props) {
     })
   }
 
-  console.log('rows', props.searchedRows)
   return (
-    <>
+    <div className={classes.documentTable}>
       <Container
         maxWidth={false}
         className={classes.container}
@@ -295,7 +311,7 @@ function DocumentsTable(props) {
             selectedFilters={selectedFilters.current}
           />
         )}
-        {stateApp.showFieldModal && <MetaField category="Docs"/>}
+        {stateApp.showFieldModal && <MetaField columns={columns} category="Docs"/>}
         <Table
           style={{ backgroundColor: "#fff" }}
           header={header}
@@ -321,7 +337,7 @@ function DocumentsTable(props) {
           onCustomKeyChange={onCustomKeyChange}
         />
       </Container>
-    </>
+    </div>
   );
 }
 

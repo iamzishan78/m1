@@ -32,22 +32,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CustomFieldSelect = ({ index, value, onCustomKeyChange, column }) => {
+const CustomFieldSelect = ({
+  index,
+  value,
+  onCustomKeyChange,
+  column,
+  fullWidth,
+}) => {
   const classes = useStyles();
   const defaultValue = {
     label: "----",
     value: "----",
   };
   const [showOptions, setShowOptions] = useState(false);
+  const [showIcon, setShowIcon] = useState(false);
 
-  const options = JSON.parse(JSON.stringify(column.dropdownOptions))
+  const options = JSON.parse(JSON.stringify(column.dropdownOptions));
   options.unshift(defaultValue);
 
   const onChange = (e, act) => {
-    onCustomKeyChange(act)
+    onCustomKeyChange(act);
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     if (value?.label) {
       const pallete = colorPallete.find(
         (pallete) => pallete.id === value.palleteId
@@ -56,15 +63,26 @@ const CustomFieldSelect = ({ index, value, onCustomKeyChange, column }) => {
         `colorText_${index}_${column.name}`
       ).innerHTML = `<span class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}">${value.label}</span>`;
     } else {
-      document.getElementById(`colorText_${index}_${column.name}`).innerHTML = `<span class='colorText'>----</span>`;
+      document.getElementById(
+        `colorText_${index}_${column.name}`
+      ).innerHTML = `<span class='colorText'>----</span>`;
     }
   }, [index, value]);
 
   return (
     <div
-      style={{ padding: "0px 10px", minWidth: "120px" }}
+      style={{
+        padding: "0px 10px",
+        height: "50px",
+        width: fullWidth ? "100%" : "max-content",
+        borderBottom: fullWidth ? "1px solid" : "none",
+      }}
       onClick={(e) => e.stopPropagation()}
-      onMouseLeave={(e) => setShowOptions(false)}
+      onMouseLeave={(e) => {
+        setShowOptions(false);
+        setShowIcon(false);
+      }}
+      onMouseEnter={() => setShowIcon(true)}
     >
       <Autocomplete
         className={classes.search}
@@ -132,18 +150,19 @@ const CustomFieldSelect = ({ index, value, onCustomKeyChange, column }) => {
               className={`${classes.textDiv}`}
               onClick={() => setShowOptions(!showOptions)}
             >
-              <span
-                style={{
-                  display: "flex",
-                  width: "auto",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span id={`colorText_${index}_${column.name}`}></span>
-                <KeyboardArrowDownIcon
-                  style={{ marginLeft: 10, marginTop: -2 }}
-                />
-              </span>
+              <Grid container spacing={0}>
+                <Grid container item xs={10}>
+                  <span id={`colorText_${index}_${column.name}`}></span>
+                </Grid>
+                <Grid container item xs={2}>
+                  <KeyboardArrowDownIcon
+                    style={{
+                      marginTop: -2,
+                      visibility: showIcon || fullWidth ? "visible" : "hidden",
+                    }}
+                  />
+                </Grid>
+              </Grid>
             </div>
           </>
         )}
