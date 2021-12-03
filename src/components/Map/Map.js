@@ -4442,7 +4442,7 @@ function Map({ type, paramId, lati, longi }) {
 
     const signal = abortController.signal;
 
-    const styleTypes = ["Satellite", "Basic", "Dark", "Light", "Outdoors"];
+    const styleTypes = ["Satellite", "Basic", "Dark", "Light", "Outdoors"/*, "Basic Template", "Outdoors-copy-brent"*/];
     let recurseLimit = 5;
 
     let styles = await styleTypes.reduce(async function reduceFunction(styles, styleType) {
@@ -4458,7 +4458,7 @@ function Map({ type, paramId, lati, longi }) {
             .then(async (data) => {
               styles.push(
                 ..._.uniqBy(
-                  data.filter((style) => styleTypes.includes(style.name) && !styles.includes(style.name)),
+                  data.filter((style) => styleTypes.includes(style.name) && !styles.find((el) => el.name === style.name)),
                   "name"
                 )
               );
@@ -4796,9 +4796,12 @@ function Map({ type, paramId, lati, longi }) {
         let id = mapEl.current.id;
 
         var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
+        if (index === -1) {
+          index = 0
+        }
         const newMap = new mapboxgl.Map({
           container: `${id}`,
-          style: "mapbox://styles/m1neral/" + mapStyles[index].id,
+          style: "mapbox://styles/m1neral/" + mapStyles[index]?.id,
           // style: "mapbox://styles/mapbox/outdoors-v11",
           center: stateApp.mapVars.center,
           zoom: stateApp.mapVars.zoom,
