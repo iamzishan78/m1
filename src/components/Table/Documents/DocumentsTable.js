@@ -145,12 +145,12 @@ function DocumentsTable(props) {
             (meta) => meta.name === col.name
           )
       );
-      const lastColumn = filterColumns.filter((col) => col.name === " ");
-      filterColumns = filterColumns.filter((col) => col.name !== " ");
+      // const lastColumn = filterColumns.filter((col) => col.name === " ");
+      // filterColumns = filterColumns.filter((col) => col.name !== " ");
       let columnsData = JSON.parse(JSON.stringify([
         ...filterColumns,
         ...metaDataRes.getMetaData.gridViews,
-        ...lastColumn,
+        // ...lastColumn,
       ]));
       for (let i = 0; i < metaDataRes.getMetaData.gridViews.length; i++) {
         TableHeader.push(metaDataRes.getMetaData.gridViews[i]);
@@ -165,7 +165,7 @@ function DocumentsTable(props) {
           columnsData
         );
       }
-      
+
       columnsData = sortColumns(columnsData, view);
       
       setColumnsData(
@@ -220,6 +220,14 @@ function DocumentsTable(props) {
       updatedColumns = [...updatedColumns, ...columns];
       columns = updatedColumns;
     }
+
+    const lastColumn = columns.filter((col) => col.name === " ");
+    columns = columns.filter((col) => col.name !== " ");
+    columns = [
+      ...columns,
+      ...lastColumn,
+    ];
+
     return columns;
   };
 
@@ -461,3 +469,4 @@ function DocumentsTable(props) {
 }
 
 export default React.memo(TableHOC(DocumentsTable), deepEqualObjects);
+
