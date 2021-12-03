@@ -79,7 +79,15 @@ import _ from "lodash";
 
 import parseLinkHeader from "parse-link-header";
 import ShapeDetailCard from "components/ShapeDetailCard";
-import { ifDefaultLayers, ifDefaultSources, ifGenericShapeSource, layersWithSelectedShapeKey, defaultLayers, setLayerLabelLayout, showIfUserDefinedLayer } from "components/Shared/functions/shapeLayer";
+import {
+  ifDefaultLayers,
+  ifDefaultSources,
+  ifGenericShapeSource,
+  layersWithSelectedShapeKey,
+  defaultLayers,
+  setLayerLabelLayout,
+  showIfUserDefinedLayer,
+} from "components/Shared/functions/shapeLayer";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -98,6 +106,7 @@ const useStyles = makeStyles((theme) => ({
     "& .mapboxgl-canvas-container > canvas": {
       cursor: ({ drawingCircle }) => (drawingCircle ? "crosshair" : "inherit"),
       height: "100vh",
+      width: "100% !important",
     },
     "& .mapboxgl-popup-close-button": { display: "none" },
   },
@@ -147,28 +156,6 @@ function Map({ type, paramId, lati, longi }) {
   const { mapGridCardActivated, searchInputValue } = useSelector(({ MapGridCard }) => MapGridCard);
   const removeLayerFromMap = useSelector(({ MainMap }) => MainMap.removeLayerFromMap);
   const clustersOff = useSelector(({ MainMap }) => MainMap.clustersOff);
-
-  const [filtersDefault, FiltersDefault] = useState(stateApp.user.defaultFilters ? stateApp.user.defaultFilters : []);
-
-  const [lng, Lng] = useState();
-  const [lat, Lat] = useState();
-
-  const setLng = (state) => {
-    if (lng !== state) {
-      Lng(state);
-    }
-  };
-  const setLat = (state) => {
-    if (lat !== state) {
-      Lat(state);
-    }
-  };
-  const [zoom, Zoom] = useState(stateApp.mapVars.zoom);
-  const setZoom = (state) => {
-    if (zoom !== state) {
-      Zoom(state);
-    }
-  };
 
   const [transform, Transform] = useState("transform: inherit");
   const setTransform = (state) => {
@@ -918,7 +905,7 @@ function Map({ type, paramId, lati, longi }) {
           // });
 
           // override label properties for parcel and interest
-          labelLayout = setLayerLabelLayout(layerId, labelLayout)
+          labelLayout = setLayerLabelLayout(layerId, labelLayout);
 
           // add point
           map.addLayer({
@@ -1145,7 +1132,7 @@ function Map({ type, paramId, lati, longi }) {
       if (ifGenericShapeSource(feature.source)) {
         setStateApp((state) => {
           if (state.isDrawing) return state;
-          const newPath = `/map/${feature.source.replace('_source', '')}/${feature.properties.id}`;
+          const newPath = `/map/${feature.source.replace("_source", "")}/${feature.properties.id}`;
           history.location.pathname !== newPath && history.replace(newPath);
           findBoundsMap([selectedUserDefinedLayer], map);
           return {
@@ -1238,11 +1225,7 @@ function Map({ type, paramId, lati, longi }) {
         });
       }
       setStateApp((state) => {
-        if (
-          !state.showDrawShapesPopup ||
-          ifDefaultSources(feature.source)
-        )
-          createUDPopUp(feature.properties);
+        if (!state.showDrawShapesPopup || ifDefaultSources(feature.source)) createUDPopUp(feature.properties);
         return state;
       });
       map.resize();
@@ -2291,7 +2274,7 @@ function Map({ type, paramId, lati, longi }) {
           "recent_submitted_permits",
           "recent_submitted_permit_laterals",
           "rigs",
-          ...defaultLayers
+          ...defaultLayers,
         ];
 
         const basinShapes = stateNav.filterBasin;
@@ -2336,7 +2319,7 @@ function Map({ type, paramId, lati, longi }) {
           "recent_submitted_permit_laterals",
           "rigs",
           "parcel",
-          ...defaultLayers
+          ...defaultLayers,
         ];
 
         const aoiShapes = stateNav.filterAOI;
@@ -2454,7 +2437,7 @@ function Map({ type, paramId, lati, longi }) {
           "rigs",
           "interest",
           "parcel",
-          ...defaultLayers
+          ...defaultLayers,
         ];
         const filterFeature = stateNav.filterDrawing[1];
         filterShapeAction([filterFeature], filterLayers);
@@ -3983,7 +3966,7 @@ function Map({ type, paramId, lati, longi }) {
         defaultLayers.forEach((layer) => {
           map.setFilter(layer, null);
           map.setFilter(`${layer}_point`, null);
-        })
+        });
         map.setFilter("parcel_point", null);
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
         map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
@@ -4527,10 +4510,23 @@ function Map({ type, paramId, lati, longi }) {
           bearing: map.getBearing(),
         },
       }));
-
       setMap(null);
     }
   }, [stateApp.mapVars.styleId]);
+
+  useEffect(() => {
+    if (map) {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        mapVars: stateApp.defaultMapVars,
+      }));
+      map.flyTo({
+        center: [stateApp.defaultMapVars.center.lng, stateApp.defaultMapVars.center.lat],
+        zoom: stateApp.defaultMapVars.zoom,
+        speed: 0.5,
+      });
+    }
+  }, [stateApp.defaultMapVars]);
 
   useEffect(() => {
     if (abstractData && abstractData.abstractGeo && abstractData.abstractGeo.length > 0) {
@@ -4800,7 +4796,6 @@ function Map({ type, paramId, lati, longi }) {
         let id = mapEl.current.id;
 
         var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
-        console.log("mapbox://styles/m1neral/" + mapStyles[index].id);
         const newMap = new mapboxgl.Map({
           container: `${id}`,
           style: "mapbox://styles/m1neral/" + mapStyles[index].id,
@@ -4941,10 +4936,16 @@ function Map({ type, paramId, lati, longi }) {
               },
             });
           }
-          // setting zoom level on every zoom
+          // setting map vars on every map moveend
           setStateApp((state) => ({
             ...state,
-            mapVars: { ...state.mapVars, zoom: map.getZoom() },
+            mapVars: {
+              ...stateApp.mapVars,
+              zoom: map.getZoom(),
+              center: map.getCenter(),
+              pitch: map.getPitch(),
+              bearing: map.getBearing(),
+            },
           }));
         };
 

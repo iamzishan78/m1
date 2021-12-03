@@ -33,6 +33,7 @@ import { PAGINATEDWELLSQUERY } from "graphQL/useQueryPaginatedWells";
 import { PAGINATEDOWNERSQUERY } from "graphQL/useQueryPaginatedOwner";
 import { PAGINATEDOPERATORSQUERY } from "graphQL/useQueryPaginatedOperators";
 import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
+import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
 // custom components
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
@@ -270,28 +271,43 @@ function Search() {
     }
   }, [searchHistoryList]);
 
-  const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(PAGINATEDWELLSQUERY, { fetchPolicy: "network-only", skip: true });
+  // const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(PAGINATEDWELLSQUERY, { fetchPolicy: "network-only", skip: true });
+  const [getESWellsPaginatedList, { data: constDataWells }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
-  const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(PAGINATEDOWNERSQUERY, { fetchPolicy: "network-only", skip: true });
+  // const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(PAGINATEDOWNERSQUERY, { fetchPolicy: "network-only", skip: true });
+  const [getESOwnersPaginatedList, { data: constDataOwners }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
-  const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(PAGINATEDOPERATORSQUERY, {
-    fetchPolicy: "network-only",
-    skip: true,
-  });
+  // const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(PAGINATEDOPERATORSQUERY, {
+  //   fetchPolicy: "network-only",
+  //   skip: true,
+  // });
+  const [getESOperatorsPaginatedList, { data: constDataOperators }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
-  const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(PAGINATEDLEASESQUERY, { fetchPolicy: "network-only", skip: true });
-
+  // const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(PAGINATEDLEASESQUERY, { fetchPolicy: "network-only", skip: true });
+  const [getESLeasesPaginatedList, { data: constDataLeases }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
   //////////// Search History End//////////////////
+  const startPaginationAt = 25;
 
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        getPaginatedWells({
+        getESWellsPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top,
-          },
-        });
+            esIndex: "platformData:wells",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: request.input? `wellName:*${request.input}*`: '',
+            sort:[]
+          }
+        })
+        // getPaginatedWells({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top,
+        //   },
+        // });
       }, 500),
     []
   );
@@ -299,12 +315,23 @@ function Search() {
   const callOwnerSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        getPaginatedOwners({
+        getESOwnersPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top,
-          },
-        });
+            esIndex: "platformData:globalowner",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: request.input? `ownerName:*${request.input}*`: '',
+            sort:[]
+          }
+        })
+        // getPaginatedOwners({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top,
+        //   },
+        // });
       }, 500),
     []
   );
@@ -312,12 +339,23 @@ function Search() {
   const callOperatorSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        getPaginatedOperators({
+        getESOperatorsPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top,
-          },
-        });
+            esIndex: "platformData:operator",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: request.input? `operator:*${request.input}*`: '',
+            sort:[]
+          }
+        })
+        // getPaginatedOperators({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top,
+        //   },
+        // });
       }, 500),
     []
   );
@@ -325,22 +363,34 @@ function Search() {
   const callLeaseSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        getPaginatedLeases({
+        getESLeasesPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top,
-          },
-        });
+            esIndex: "platformData:lease",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: request.input? `lease:*${request.input}*`: '',
+            sort:[]
+          }
+        })
+        // getPaginatedLeases({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top,
+        //   },
+        // });
       }, 500),
     []
   );
 
   ///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
 
-  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-    skip: true,
-  });
+  // const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+  //   fetchPolicy: "cache-and-network",
+  //   skip: true,
+  // });
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
   const callContactsSearch = React.useMemo(
     () =>
@@ -348,9 +398,20 @@ function Search() {
         /// this function takes the search request and sends it to gql
         getPaginatedContacts({
           variables: {
-            search: request.input,
-          },
-        });
+            esIndex: "contacts_flat",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: `${request.input}`,
+            sort:[]
+          }
+        })
+        // getPaginatedContacts({
+        //   variables: {
+        //     search: request.input,
+        //   },
+        // });
       }, 500),
     []
   );
@@ -359,7 +420,7 @@ function Search() {
     let newOptions = [];
     if (constDataOperators) {
       newOptions = [
-        ...constDataOperators.paginatedOperators.edges.map((result) => {
+        ...constDataOperators.getESPaginatedList.hits.map((result) => {
           return {
             ...result,
             Source: operatorIndexName,
@@ -369,7 +430,7 @@ function Search() {
         }),
       ];
 
-      setMaxMinOperatosScore(maxMinScore(constDataOperators.paginatedOperators.edges));
+      // setMaxMinOperatosScore(maxMinScore(constDataOperators.paginatedOperators.edges));
 
       setOptions(newOptions);
       setLoadingOperators(false);
@@ -380,7 +441,7 @@ function Search() {
     if (constDataWells) {
       let newOptions = [];
       newOptions = [
-        ...constDataWells.paginatedWells.edges.map((well) => {
+        ...constDataWells.getESPaginatedList.hits.map((well) => {
           return {
             ...well,
             Source: wellCogIndexName,
@@ -389,7 +450,7 @@ function Search() {
           };
         }),
       ];
-      setMaxMinWellsScore(maxMinScore(constDataWells.paginatedWells.edges));
+      // setMaxMinWellsScore(maxMinScore(constDataWells.paginatedWells.edges));
 
       setOptions(newOptions);
       setLoadingWells(false);
@@ -400,7 +461,7 @@ function Search() {
       let newOptions = [];
 
       newOptions = [
-        ...constDataLeases.paginatedLeases.edges.map((result) => {
+        ...constDataLeases.getESPaginatedList.hits.map((result) => {
           return {
             ...result,
             Source: leaseIndexName,
@@ -410,7 +471,7 @@ function Search() {
           };
         }),
       ];
-      setMaxMinLeasesScore(maxMinScore(constDataLeases.paginatedLeases.edges));
+      // setMaxMinLeasesScore(maxMinScore(constDataLeases.paginatedLeases.edges));
 
       setOptions(newOptions);
       setLoadingLeases(false);
@@ -421,7 +482,7 @@ function Search() {
     if (constDataOwners) {
       let newOptions;
       newOptions = [
-        ...constDataOwners.paginatedOwners.edges.map((result) => {
+        ...constDataOwners.getESPaginatedList.hits.map((result) => {
           return {
             ...result,
             Source: ownerCogIndexName,
@@ -431,7 +492,7 @@ function Search() {
         }),
       ];
 
-      setMaxMinOwnersScore(maxMinScore(constDataOwners.paginatedOwners.edges));
+      // setMaxMinOwnersScore(maxMinScore(constDataOwners.paginatedOwners.edges));
       setOptions(newOptions);
       setLoadingOwners(false);
     }
@@ -444,8 +505,8 @@ function Search() {
     if (constDataContacts) {
       var newOptions = [];
       var newOptions = [
-        ...constDataContacts.paginatedContacts.edges.map((result) => {
-          result = { ...result.node };
+        ...constDataContacts.getESPaginatedList.hits.map((result) => {
+          // result = { ...result.node };
           result.Source = contactIndexName;
 
           if (result.name) {
@@ -464,7 +525,6 @@ function Search() {
         }),
         ...newOptions,
       ];
-
       setOptions(newOptions);
       setLoadingContacts(false);
     }
