@@ -128,31 +128,36 @@ export const setColumnsData = (
 export const handleSelectedGridChange = (
   TableHeader,
   selectedGridView,
-  columns
+  columns,
+  isGridChanged = false
 ) => {
   if (selectedGridView?.filters) {
     columns.forEach((column, index) => {
       setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
-      const value = get(
-        selectedGridView?.filters?.find((filter) => {
-          return JSON.stringify(filter.field) === JSON.stringify(column.esKey);
-        }),
-        "value",
-        ""
-      );
-      let filterList = [];
-      if (value) {
-        filterList = [value];
-      }
-      if (column?.options?.filter) {
-        column.options.filterList = filterList;
+      if(isGridChanged){
+        const value = get(
+          selectedGridView?.filters?.find((filter) => {
+            return JSON.stringify(filter.field) === JSON.stringify(column.esKey);
+          }),
+          "value",
+          ""
+        );
+        let filterList = [];
+        if (value) {
+          filterList = [value];
+        }
+        if (column?.options?.filter) {
+          column.options.filterList = filterList;
+        }
       }
     });
   } else {
     columns.forEach((column, index) => {
       setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
-      if (column.options) {
-        column.options.filterList = [];
+      if(isGridChanged){
+        if (column.options) {
+          column.options.filterList = [];
+        }
       }
     });
   }
