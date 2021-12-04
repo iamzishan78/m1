@@ -21,22 +21,16 @@ const UnitOwnersTractHeadCells = [
   {
     name: "section", label: "Section", esKey: 'tract.section.keyword', options: { sort: true, filter: true }
   },
-  {
-    name: "altSurvey", label: "Alt Survey", esKey: 'tract.altSurvey.keyword', options: { sort: true, filter: true }
-  },
-  {
-    name: "legalDescription", label: "Legal Description", esKey: 'tract.legalDescription.keyword', options: { sort: true, filter: true }
-  },
+  // {
+  //   name: "altSurvey", label: "Alt Survey", esKey: 'tract.altSurvey.keyword', options: { sort: true, filter: true }
+  // },
+  // {
+  //   name: "legalDescription", label: "Legal Description", esKey: 'tract.legalDescription.keyword', options: { sort: true, filter: true }
+  // },
   {
     name: "tractName", label: "Tract Name", esKey: 'tract.trackName.keyword', options: { sort: true, filter: true }
   },
 
-  {
-    name: "depthFrom", label: "Depth From", esKey: 'depthFrom.keyword', options: { sort: true, filter: true }
-  },
-  {
-    name: "depthTo", label: "Depth To", esKey: 'depthTo.keyword', options: { sort: true, filter: true }
-  },
   {
     name: "name", label: "Name", esKey: 'contact.entityDetail.name.keyword', options: { sort: true, filter: true }
   },
@@ -47,6 +41,12 @@ const UnitOwnersTractHeadCells = [
   },
   { name: "net_acres", esKey: 'net_acres', label: "Net Acres", type: "number", options: { filter: true } },
   { name: "countAcres", esKey: 'countAcres.keyword', label: "Count Acres", options: { filter: true } },
+  {
+    name: "depthFrom", label: "Depth From", esKey: 'depthFrom.keyword', options: { sort: true, filter: true }
+  },
+  {
+    name: "depthTo", label: "Depth To", esKey: 'depthTo.keyword', options: { sort: true, filter: true }
+  },
   { name: "tractStatus", esKey: 'tractStatus.keyword', label: "Tract Status", editable: true, options: { filter: true } },
 ];
 
