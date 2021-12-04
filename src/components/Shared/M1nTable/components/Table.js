@@ -3176,8 +3176,6 @@ function SubTable(props) {
         }
       }
 
-      console.log("SHAPE PROPS", props);
-
       if (props.header === "Well Interests" && props.parent === "owner_WellInterests") {
         const pageVariables = {
           variables: {

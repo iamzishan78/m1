@@ -50,24 +50,24 @@ function ParcelDetailsRunsheetTable(props) {
   // queries 
   const [getParcelAgreement, { data: dataParcelAgreement, loading }] = useLazyQuery(GET_PARCELS_AGREEMENT);
 
-  const [deleteParcelRunsheet] = useMutation(DELETE_PARCEL_RUNSHEET, { refetchQueries: [ "getParcelAgreement" ], awaitRefetchQueries: true });
+  const [deleteParcelRunsheet] = useMutation(DELETE_PARCEL_RUNSHEET, { refetchQueries: ["getParcelAgreement"], awaitRefetchQueries: true });
   const tableData = dataParcelAgreement?.getParcelAgreement
 
   const addAble = { type: "parcelRunsheet" }
   const total = false
   const orderByTracks = false
 
-  useEffect(()=>{
+  useEffect(() => {
     setSearchedRows(props.rows)
-  },[props.rows])
+  }, [props.rows])
 
   useEffect(() => {
-		getParcelAgreement({
-			variables: {
-				parcelId: props.customLayer._id,
-			},
-		});
-	}, [getParcelAgreement, props.customLayer._id]);
+    getParcelAgreement({
+      variables: {
+        parcelId: props.customLayer._id,
+      },
+    });
+  }, [getParcelAgreement, props.customLayer._id]);
 
 
   useEffect(() => {
@@ -89,7 +89,7 @@ function ParcelDetailsRunsheetTable(props) {
         well.fileDate = well.fileDate ? moment(well.fileDate).format('MM/DD/YYYY') : ''
 
         well = props.setGenricData(well, well._id, ['comments', 'tracks', 'tags'])
-        return { ...well, _id: w._id }; 
+        return { ...well, _id: w._id };
       })
       props.setRows(wells);
       const cleanAvailableTags = [];
@@ -118,15 +118,15 @@ function ParcelDetailsRunsheetTable(props) {
     setNumPages(numPages);
   }
 
-  const deleteFunc = (ids)=> {
-    for(let i=0; i< ids.length;  i++){
+  const deleteFunc = (ids) => {
+    for (let i = 0; i < ids.length; i++) {
       const record = props.rows.find(row => row._id === ids[i])
-      if(record){
+      if (record) {
         deleteParcelRunsheet({
           variables: {
-              id: record.descriptorObject,
-              parcelId: props.customLayer._id,
-              fileId: record.fileId
+            id: record.descriptorObject,
+            parcelId: props.customLayer._id,
+            fileId: record.fileId
           },
           refetchQueries: [
             "getParcelAgreement",
@@ -139,15 +139,14 @@ function ParcelDetailsRunsheetTable(props) {
 
   const searchData = (tableState) => {
     let rows = []
-    if(tableState.searchText){
-      for(let i=0; i< props.rows.length; i++){
-        for( const key of Object.keys(props.rows[i])){
+    if (tableState.searchText) {
+      for (let i = 0; i < props.rows.length; i++) {
+        for (const key of Object.keys(props.rows[i])) {
           const col = columns.find(column => column.name === key)
-          if(col && (!col.options || col.options.searchable !== false)) {
-            if(typeof props.rows[i][key] === 'string'){
-              console.log(props.rows[i][key], key)
+          if (col && (!col.options || col.options.searchable !== false)) {
+            if (typeof props.rows[i][key] === 'string') {
               const value = props.rows[i][key].toLowerCase()
-              if(value.includes(tableState.searchText.toLowerCase())){
+              if (value.includes(tableState.searchText.toLowerCase())) {
                 rows.push(props.rows[i])
                 break
               }
@@ -155,17 +154,17 @@ function ParcelDetailsRunsheetTable(props) {
           }
         }
       }
-    }else{
+    } else {
       rows = props.rows
     }
     rows = JSON.parse(JSON.stringify(rows));
-    for(let j=0; j<tableState.filterList.length; j++){
-      if(tableState.filterList[j].length> 0){
-        for(let i=0; i<rows.length;i++){
-          const isFiltered = rows[i].isFiltered !== false 
+    for (let j = 0; j < tableState.filterList.length; j++) {
+      if (tableState.filterList[j].length > 0) {
+        for (let i = 0; i < rows.length; i++) {
+          const isFiltered = rows[i].isFiltered !== false
           const rowdata = rows[i][columns[j].name]
           const filter = tableState.filterList[j][0]
-          if(isFiltered&& rowdata !== filter){
+          if (isFiltered && rowdata !== filter) {
             rows[i].isFiltered = false
             continue
           }

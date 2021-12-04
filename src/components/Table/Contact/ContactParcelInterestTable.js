@@ -179,7 +179,6 @@ function ContactParcelInterestTable(props) {
           const col = columns.find(column => column.name === key)
           if (col && (!col.options || col.options.searchable !== false)) {
             if (typeof props.rows[i][key] === 'string') {
-              console.log(props.rows[i][key], key)
               const value = props.rows[i][key].toLowerCase()
               if (value.includes(searchText.toLowerCase())) {
                 rows.push(props.rows[i])

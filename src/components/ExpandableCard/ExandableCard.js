@@ -382,7 +382,6 @@ function ExpandableCard(props) {
     );
   };
 
-  console.log("Title Rendered: ", props.title)
 
   const openConfirmationDialog = () => {
     setOpenDialog(true);

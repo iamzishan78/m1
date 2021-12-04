@@ -130,7 +130,6 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
         const formValues = getValues();
         if (formValues?.provisions && formValues?.provisions[index]) {
             const provision = formValues.provisions[index]
-            console.log(formValues.provisions[index])
             if (provision.type)
                 createAgreementProvision({
                     variables:
@@ -191,7 +190,6 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                         className={`${classes.provisionCard} ${selectionProvision === item.type ? classes.provisionCardSelected : ''}`}
                         onClick={() => setSelectedProvision(item.type)}>
                         <Grid item>
-                            {console.log(item)}
                             <Grid container direction="row" spacing={2} >
                                 <TextField id="_id" name={`provisions[${index}]._id`} type={'hidden'} inputRef={register()} defaultValue={item._id} />
                                 <TextField id="templateRef" name={`provisions[${index}].templateRef`} type={'hidden'} inputRef={register()} defaultValue={item.templateRef} />

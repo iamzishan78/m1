@@ -495,13 +495,13 @@ export default function DocumentDrawer(props) {
                   options={
                     documents?.getFiles
                       ? documents?.getFiles?.map((doc) => {
-                          return {
-                            _id: doc.fileId,
-                            name: doc.documentName,
-                            number: doc.documentNumber,
-                            fileName: doc.fileName,
-                          };
-                        })
+                        return {
+                          _id: doc.fileId,
+                          name: doc.documentName,
+                          number: doc.documentNumber,
+                          fileName: doc.fileName,
+                        };
+                      })
                       : []
                   }
                   getOptionLabel={(option) => {
@@ -750,9 +750,7 @@ export default function DocumentDrawer(props) {
                           <div
                             className={classes.forImageContainer}
                             onClick={() => {
-                              console.log("STATE", stateApp);
                               if (fileExtension === "pdf") {
-                                console.log("STATE PDR CLICKED");
                                 setStateApp((state) => ({
                                   ...state,
                                   pdfView: stateApp.selectedDocument,
@@ -804,11 +802,11 @@ export default function DocumentDrawer(props) {
                           <IconButton
                             disabled={false}
                             size="small"
-                            // onClick={() =>
-                            //   handleViewFile(
-                            //     files?.getFileDescriptors[key].fileId
-                            //   )
-                            // }
+                          // onClick={() =>
+                          //   handleViewFile(
+                          //     files?.getFileDescriptors[key].fileId
+                          //   )
+                          // }
                           >
                             <GetAppIcon />
                           </IconButton>
@@ -817,7 +815,6 @@ export default function DocumentDrawer(props) {
                       interactive
                     >
                       <div>
-                        {console.log("STATE", stateApp)}
 
                         {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
                           <img src={value.uri} alt={value.name} className={classes.forImage}></img>
@@ -825,7 +822,6 @@ export default function DocumentDrawer(props) {
                           <div
                             className={classes.forImageContainer}
                             onClick={() => {
-                              console.log("STATE", stateApp);
                               if (fileExtension === "pdf") {
                                 setStateApp({
                                   ...stateApp,
@@ -935,7 +931,7 @@ export default function DocumentDrawer(props) {
             onClose={handleDeleteCancel}
             deleteFunc={handleDeleteAccept}
             m1nSelectedRowsIds={[document._id]}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected documents?
           </DeleteConfirmationDialogContent>
@@ -980,8 +976,8 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
       options={
         documentTypes
           ? documentTypes?.getFilesType?.map((type) => {
-              return { _id: type, name: type };
-            })
+            return { _id: type, name: type };
+          })
           : []
       }
       getOptionLabel={(option) => {
