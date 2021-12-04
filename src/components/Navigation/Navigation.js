@@ -501,7 +501,9 @@ export default function Navigation(props) {
             {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
             {(matchFind || matchDocument) && (
-              <div className={classes.search} id="searchBarDivParent">
+              <div 
+              className={classes.search} id="searchBarDivParent"
+              >
                 <SearchBarWithToggleButton />
               </div>
             )}
