@@ -251,7 +251,6 @@ export default function Documents(props) {
     onCompleted: ({ getFileDescriptors }) => {
       let allActive = true;
 
-      console.log("File descriptors: ", getFileDescriptors);
       if (getFileDescriptors)
         for (let i = 0; i < getFileDescriptors.length; i++) {
           if (getFileDescriptors[i].fileState !== "active") {
@@ -487,11 +486,10 @@ export default function Documents(props) {
                         {
                           <div
                             className={`${classes.greySquare} 
-                        // ${
-                          file.state !== "active"
-                          //   ? classes.disabledDownload
-                          //   : ""
-                        }`}
+                        // ${file.state !== "active"
+                              //   ? classes.disabledDownload
+                              //   : ""
+                              }`}
                           >
                             {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
                               <img src={file.uri} alt={file.name} className={classes.forImage} onClick={() => handleViewFile(file.id)} />

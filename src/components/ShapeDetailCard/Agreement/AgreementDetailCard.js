@@ -19,7 +19,7 @@ import ProvisionsTab from "./ProvisionsTab";
 import UnitOwnersTable from "components/Table/Unit/UnitOwnersTable";
 import UnitWellInterestTable from "components/Table/Unit/UnitWellInterestTable";
 import AssociatedWellsUnitTable from "components/Table/Wells/AssociatedWellsUnitTable";
-import AgreementTractsTable from "components/Table/Agreement/AgreementTractsTable";
+import AgreementOwnersTractsTable from "components/Table/Agreement/AgreementOwnersTractsTable";
 import AssociatedTractsUnitTable from "components/Table/Wells/AssociatedTractsUnitTable";
 import Tags from "components/Shared/Tagger";
 import { showSuccessMessage, showErrorMessage } from "actions";
@@ -195,7 +195,9 @@ export default function AgreementDetailCard(props) {
       </Grid>
       <Grid item sm={12}>
         <Taps
-          tabLabels={["Summary", "Provisions", "Tracts", "Wells", "Documents", "Related Info"]}
+          //hiding related info until it is further built out
+          //tabLabels={["Summary", "Provisions", "Tracts", "Wells", "Documents", "Related Info"]}  
+          tabLabels={["Summary", "Provisions", "Tracts", "Wells", "Documents"]}
           backgroundColor={'white'}
           openTabIdex={selectedTab}
           whichTapIsActive={(value) => setSelectedTab(value)}
@@ -218,7 +220,7 @@ export default function AgreementDetailCard(props) {
               value={selectedTractTab}
               panels={[
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <AgreementTractsTable
+                  <AgreementOwnersTractsTable
                     customLayer={uniObj}
                     shapeType='Agreement'
                     header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}

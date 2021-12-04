@@ -14,18 +14,18 @@ import { setStateIfDeepEqual, deepEqualObjects, copy } from "components/Shared/f
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 // Header Schemas 
-import TableHeader from 'components/Table/constants/unit-tracts-header-schema.js'
+import TableHeader from 'components/Table/constants/unit-owners-tracts-header-schema.js'
 
 // Utilities
 import { usetableStyles } from "../Styles";
-import AddAgreementTractDialog from "components/Shared/M1nTable/components/SubComponents/AddAgreementTractDialog";
+import AddAgreementOwnerAndTractDialog from "components/Shared/M1nTable/components/SubComponents/AddAgreementOwnerAndTractDialog";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
 
 
 
-function AgreementTractsTable(props) {
+function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
   const [addToTable, setAddToTable] = useState(false)
   const [openDialog, setOpenDialog] = useState(null);
@@ -59,7 +59,7 @@ function AgreementTractsTable(props) {
 
   const startPaginationAt = 25
   const extendSearchQuery = `shape._id:${props.customLayer._id}`
-  const esIndex = 'shapetracts_flat'
+  const esIndex = 'shapeowners_flat'
 
   ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
@@ -92,10 +92,10 @@ function AgreementTractsTable(props) {
 
       if (isStateTx) {
         headers.forEach((header) => {
-          if (header.name === 'meridian') { header.name = 'survey'; header.label = 'Survey'; header.esKey = 'survey.keyword' }
-          else if (header.name === 'township') { header.name = 'block'; header.label = 'Block'; header.esKey = 'block.keyword' }
-          else if (header.name === 'section') { header.name = 'abstract'; header.label = 'Abstract'; header.esKey = 'abstract.keyword' }
-          else if (header.name === 'range') { header.name = 'section'; header.label = 'Section'; header.esKey = 'section.keyword' }
+          if (header.name === 'meridian') { header.name = 'survey'; header.label = 'Survey'; header.esKey = 'tract.survey.keyword' }
+          else if (header.name === 'township') { header.name = 'block'; header.label = 'Block'; header.esKey = 'tract.block.keyword' }
+          else if (header.name === 'section') { header.name = 'abstract'; header.label = 'Abstract'; header.esKey = 'tract.abstract.keyword' }
+          else if (header.name === 'range') { header.name = 'section'; header.label = 'Section'; header.esKey = 'tract.section.keyword' }
         })
       }
 
@@ -210,12 +210,12 @@ function AgreementTractsTable(props) {
       id={props.id ? props.id : props.parent}
     >
 
-      {addToTable && <AddAgreementTractDialog
+      {addToTable && <AddAgreementOwnerAndTractDialog
         open={addToTable}
         width="450px"
         shapeId={props.customLayer._id}
         shapeType={props.shapeType}
-        seletedTract={selectedRow}
+        seletedOwner={selectedRow}
         onClose={() =>
           setAddToTable(false)
         }
@@ -262,4 +262,4 @@ function AgreementTractsTable(props) {
   );
 }
 
-export default React.memo(TableHOC(AgreementTractsTable), deepEqualObjects);
+export default React.memo(TableHOC(AgreementOwnersTractsTable), deepEqualObjects);
