@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useMutation } from "@apollo/client";
-import AddIcon from "@material-ui/icons/Add";
 import AddLayerIcon from "@material-ui/icons/Queue";
 import { MapControlsContext } from "../../MapControls/MapControlsContext";
 import { AppContext } from "../../../AppContext";

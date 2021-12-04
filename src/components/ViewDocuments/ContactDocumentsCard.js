@@ -31,10 +31,7 @@ export default function ContactDocumentsCard(props) {
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
 
-  const contactId =
-    history.location.pathname.split("/")[
-      history.location.pathname.split("/").length - 2
-    ];
+  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 2];
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
@@ -80,12 +77,9 @@ export default function ContactDocumentsCard(props) {
   };
 
   return contactData ? (
-    <div variant="outlined">
+    <div variant="outlined" style={{ marginTop: "65px" }}>
       <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-        <Breadcrumbs
-          separator={<NavigateNextIcon fontSize="small" />}
-          aria-label="breadcrumb"
-        >
+        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
           {checkModuleHistory() && (
             <Link
               style={{
@@ -157,20 +151,15 @@ export default function ContactDocumentsCard(props) {
       >
         <DialogTitle className={modalClass.title} id="customized-dialog-title">
           Delete Document
-          <HighlightOffIcon
-            fontSize="large"
-            className={modalClass.titleClose}
-            onClick={()=> setOpenDeleteConfirmDialog(false)}
-          />
+          <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={() => setOpenDeleteConfirmDialog(false)} />
         </DialogTitle>
         <DialogContent>
           <h3 className={modalClass.inputLabel}>Are you sure you want to delete this document?</h3>
         </DialogContent>
         <DialogActions>
-
           <Button
             onClick={() => {
-              setOpenDeleteConfirmDialog(false)
+              setOpenDeleteConfirmDialog(false);
             }}
             color="primary"
           >
@@ -178,7 +167,7 @@ export default function ContactDocumentsCard(props) {
           </Button>
           <Button
             onClick={() => {
-              handleDeleteAccept()
+              handleDeleteAccept();
             }}
             color="secondary"
           >

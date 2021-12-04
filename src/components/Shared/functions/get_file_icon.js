@@ -16,8 +16,6 @@ import {
 
 export default function get_file_icon(value) {
 
-    console.log('VALUE VALUE', value)
-
     const getFileIcon = (fileExtension) => {
 
         if(fileExtension){

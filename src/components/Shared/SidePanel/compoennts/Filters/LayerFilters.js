@@ -12,7 +12,7 @@ import * as LayerFiltersComponents from "components/Shared/SidePanel/compoennts/
 const useStyles = makeStyles(() => ({
   root: {
     backgroundColor: "#0e111a",
-    height: "calc(100vh - 103px)",
+    height: "calc(100vh - 172px)",
     fontFamily: "Poppins",
     display: "block",
     color: "white",
@@ -39,8 +39,48 @@ const useStyles = makeStyles(() => ({
     },
   },
   accordionDetails: {
-    backgroundColor: "#6a7485",
+    backgroundColor: "#101d29",
     padding: 0,
+    // overridding the default text fields colors
+    "& svg": {
+      fill: "white",
+    },
+    "& label": {
+      color: "white",
+    },
+    "& label.Mui-focused": {
+      color: "white",
+    },
+    "& label.Mui-disabled": {
+      color: "#adadad",
+    },
+    "& input": {
+      color: "white !important",
+    },
+    "& .MuiInputBase-adornedStart:before": {
+      borderBottomColor: "white",
+    },
+    "& .MuiInputBase-adornedStart:after": {
+      borderBottomColor: "white",
+    },
+    "& .MuiOutlinedInput-root": {
+      color: "white",
+      "& fieldset": {
+        borderColor: "white",
+      },
+      "&:hover fieldset": {
+        borderColor: "white",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "white",
+      },
+      "&.Mui-disabled fieldset": {
+        borderColor: "#adadad",
+      },
+      "&.Mui-disabled svg": {
+        fill: "#adadad !important",
+      },
+    },
   },
   accordionHeading: {
     display: "flex",

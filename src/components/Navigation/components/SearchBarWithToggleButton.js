@@ -7,16 +7,14 @@ import GridOnIcon from "@material-ui/icons/GridOn";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleMapGridCardAtived } from "../../../actions";
+import { toggleMapGridCardAtived } from "actions";
 import PostAddOutlinedIcon from "@material-ui/icons/PostAddOutlined";
 import { useLocation } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    "& .MuiButtonGroup-root": { width: "100%",
-    borderRadius: "25px",
-  },
+    "& .MuiButtonGroup-root": { width: "100%", borderRadius: "25px" },
     "& .MuiAutocomplete-root": {
       flexGrow: "1",
       borderRight: "1px solid rgba(0, 0, 0, 0.23)",
