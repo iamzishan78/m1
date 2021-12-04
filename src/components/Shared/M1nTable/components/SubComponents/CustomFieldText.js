@@ -15,7 +15,7 @@ const CustomFieldText = ({ value, onCustomKeyChange }) => {
   }, [value]);
 
   return (
-    <div style={{ width: 'max-content', padding: ' 0px 5px' }} onClick={(e) => e.stopPropagation()}>
+    <div style={{ maxWidth: '200px', padding: ' 0px 5px' }} onClick={(e) => e.stopPropagation()}>
       {inputValue && (
         <div style={{ fontSize: '16px', visibility: 'hidden', marginBottom: '-24px' }}>{inputValue}</div>
       )}

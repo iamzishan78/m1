@@ -114,10 +114,7 @@ const CustomFieldSelect = ({
             label: op.value,
             value: op.value,
           }))}
-        getOptionLabel={(option) => option.label}
-        getOptionSelected={(option, value) => {
-          return option?.value === value;
-        }}
+        getOptionLabel={(option) =>  option?.label ? option.label : ''}
         filterOptions={(options, params) => {
           return options;
         }}
@@ -128,8 +125,12 @@ const CustomFieldSelect = ({
           return (
             <Grid className={classes.myClass} container spacing={0}>
               <Grid container item xs={2} alignItems="center">
-                {(option.value === value?.label ||
-                  (!value && option.value === defaultValue.label)) && (
+                {(
+                  (typeof value === 'string'  && option.value === value ) || 
+                  option.value === value?.label ||
+                  (!value && option.value === defaultValue.label)
+                  ) 
+                  && (
                   <CheckIcon style={{ fontSize: 13, marginRight: 5 }} />
                 )}
               </Grid>
