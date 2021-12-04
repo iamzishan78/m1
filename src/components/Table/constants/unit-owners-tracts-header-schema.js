@@ -25,10 +25,10 @@ const UnitOwnersTractHeadCells = [
     name: "altSurvey", label: "Alt Survey", esKey: 'tract.altSurvey.keyword', options: { sort: true, filter: true }
   },
   {
-    name: "legalDescription", label: "Full Legal Description", esKey: 'tract.legalDescription.keyword', options: { sort: true, filter: true }
+    name: "legalDescription", label: "Legal Description", esKey: 'tract.legalDescription.keyword', options: { sort: true, filter: true }
   },
   {
-    name: "tractName", label: "Track Name", esKey: 'tract.trackName.keyword', options: { sort: true, filter: true }
+    name: "tractName", label: "Tract Name", esKey: 'tract.trackName.keyword', options: { sort: true, filter: true }
   },
 
   {
@@ -40,10 +40,10 @@ const UnitOwnersTractHeadCells = [
   {
     name: "name", label: "Name", esKey: 'contact.entityDetail.name.keyword', options: { sort: true, filter: true }
   },
-  { name: "mineral_interest", esKey: 'mineral_interest', type: "number", label: "Mineral Interest", options: { filter: true } },
-  { name: "royalty_interest", esKey: 'royalty_interest', type: "number", label: "Royalty Interest", options: { filter: true } },
+  { name: "mineral_interest", esKey: 'mineral_interest', type: "number", label: "MI", options: { filter: true } },
+  { name: "royalty_interest", esKey: 'royalty_interest', type: "number", label: "RI", options: { filter: true } },
   {
-    name: "sdGrossAcres", label: "Gross. Acres", esKey: 'tract.sdGrossAcres', options: { sort: true, filter: true }
+    name: "sdGrossAcres", label: "Gross Acres", esKey: 'tract.sdGrossAcres', options: { sort: true, filter: true }
   },
   { name: "net_acres", esKey: 'net_acres', label: "Net Acres", type: "number", options: { filter: true } },
   { name: "countAcres", esKey: 'countAcres.keyword', label: "Count Acres", options: { filter: true } },

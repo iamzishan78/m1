@@ -195,7 +195,9 @@ export default function AgreementDetailCard(props) {
       </Grid>
       <Grid item sm={12}>
         <Taps
-          tabLabels={["Summary", "Provisions", "Tracts", "Wells", "Documents", "Related Info"]}
+          //hiding related info until it is further built out
+          //tabLabels={["Summary", "Provisions", "Tracts", "Wells", "Documents", "Related Info"]}  
+          tabLabels={["Summary", "Provisions", "Tracts", "Wells", "Documents"]}
           backgroundColor={'white'}
           openTabIdex={selectedTab}
           whichTapIsActive={(value) => setSelectedTab(value)}
