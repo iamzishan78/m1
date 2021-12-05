@@ -15,11 +15,11 @@ import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRun
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import TabButtons from "components/Shared/TabPanels/TabButtons"
 import UnitSummary from "./UnitSummary";
-import UnitOwnersTable from "components/Table/Unit/UnitOwnersTable";
-import UnitWellInterestTable from "components/Table/Unit/UnitWellInterestTable";
-import AssociatedWellsUnitTable from "components/Table/Wells/AssociatedWellsUnitTable";
-import UnitTractsTable from "components/Table/Unit/UnitTractsTable";
-import AssociatedTractsUnitTable from "components/Table/Wells/AssociatedTractsUnitTable";
+import UnitOwnersTable from "components/Table/Shape/UnitOwnersTable";
+import ShapeWellInterestTable from "components/Table/Shape/ShapeWellInterestTable";
+import AssociatedWellsShapeTable from "components/Table/Wells/AssociatedWellsShapeTable";
+import UnitTractsTable from "components/Table/Shape/UnitTractsTable";
+import AssociatedTractsShapeTable from "components/Table/Wells/AssociatedTractsShapeTable";
 import Tags from "components/Shared/Tagger";
 import { showSuccessMessage, showErrorMessage } from "actions";
 import { AppContext } from "AppContext";
@@ -244,7 +244,7 @@ export default function UnitDetailCard(props) {
               value={selectedWellTab}
               panels={[
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <UnitWellInterestTable
+                  <ShapeWellInterestTable
                     customLayer={uniObj}
                     shapeType='Unit'
                     parent="associatedWellsPerUnits"
@@ -255,7 +255,7 @@ export default function UnitDetailCard(props) {
                   />
                 </div>,
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <AssociatedWellsUnitTable
+                  <AssociatedWellsShapeTable
                     customLayer={uniObj}
                     shapeType='Unit'
                     parent="associatedWellsPerUnits"
@@ -280,7 +280,7 @@ export default function UnitDetailCard(props) {
                   />
                 </div>,
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <AssociatedTractsUnitTable
+                  <AssociatedTractsShapeTable
                     customLayer={uniObj}
                     shapeType='Unit'
                     header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}

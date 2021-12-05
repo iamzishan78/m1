@@ -21,7 +21,7 @@ import { useDispatch } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "actions/Notifications.js";
 import { usetableStyles } from "../Styles/index.js";
 
-function AssociatedTractsUnitTable(props) {
+function AssociatedTractsShapeTable(props) {
     const classes = usetableStyles();
 
     // contexts
@@ -198,4 +198,4 @@ function AssociatedTractsUnitTable(props) {
     );
 }
 
-export default React.memo(TableHOC(AssociatedTractsUnitTable), deepEqualObjects);
+export default React.memo(TableHOC(AssociatedTractsShapeTable), deepEqualObjects);

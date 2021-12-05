@@ -22,7 +22,7 @@ import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 
-function UnitWellInterestTable(props) {
+function ShapeWellInterestTable(props) {
   const classes = usetableStyles();
   const [addToTable, setAddToTable] = useState(false)
 
@@ -219,4 +219,4 @@ function UnitWellInterestTable(props) {
   );
 }
 
-export default React.memo(TableHOC(UnitWellInterestTable), deepEqualObjects);
+export default React.memo(TableHOC(ShapeWellInterestTable), deepEqualObjects);
