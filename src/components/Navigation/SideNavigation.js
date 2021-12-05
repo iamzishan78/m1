@@ -16,6 +16,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import FlowIcon from "@material-ui/icons/Repeat";
 import ActivityIcon from "@material-ui/icons/Event";
 import SearchIcon from "@material-ui/icons/Search";
+import LandScapeIcon from "components/Shared/svgIcons/LandscapeBlackIcon";
 
 import { M1neralLogoNavNoAuth, useStyles } from "./Common";
 
@@ -131,6 +132,28 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                 </ListItemIcon>
               </Tooltip>
               <ListItemText className={`${classes.sideNavText} uppercase`} primary="Contacts" />
+            </div>
+          </ListItem>
+
+          <ListItem
+            classes={{
+              root: classes.menuListItem,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexContacts === 1}
+            onClick={(event) => {
+              handleListItemClick("/land");
+            }}
+            key="land"
+          >
+            <div className={classes.tabContent}>
+              <Tooltip title="Land" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <ListItemIcon className={classes.sideNavIcon}>
+                  <LandScapeIcon />
+                </ListItemIcon>
+              </Tooltip>
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Land" />
             </div>
           </ListItem>
 
