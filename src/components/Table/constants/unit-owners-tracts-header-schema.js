@@ -10,6 +10,10 @@ const UnitOwnersTractHeadCells = [
     name: "county", label: "County", esKey: 'tract.county.keyword', options: { sort: true, filter: true }
   },
   {
+    name: "tractName", label: "Tract Name", esKey: 'tract.trackName.keyword', options: { sort: true, filter: true }
+  },
+
+  {
     name: "meridian", label: "Meridian", esKey: 'tract.meridian.keyword', options: { sort: true, filter: true }
   },
   {
@@ -27,9 +31,6 @@ const UnitOwnersTractHeadCells = [
   // {
   //   name: "legalDescription", label: "Legal Description", esKey: 'tract.legalDescription.keyword', options: { sort: true, filter: true }
   // },
-  {
-    name: "tractName", label: "Tract Name", esKey: 'tract.trackName.keyword', options: { sort: true, filter: true }
-  },
 
   {
     name: "name", label: "Name", esKey: 'contact.entityDetail.name.keyword', options: { sort: true, filter: true }
