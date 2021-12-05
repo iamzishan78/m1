@@ -4808,7 +4808,7 @@ function Map({ type, paramId, lati, longi }) {
     ) {
       // console.time(`querySourceFeatures`);
       let features = [];
-      features = [...features, ...map.querySourceFeatures("wellsVT", { sourceLayer: "wells" })];
+      features = [...features, ...map.querySourceFeatures("wellsVT", { filter: ["==", ["geometry-type"], "LineString"], sourceLayer: "wells" })];
       // features = [...features, ...map.queryRenderedFeatures({layers: ['welllines']})];
       // features = [...features, ...map.queryRenderedFeatures({layers: ['wellpermitlines']})];
       features = [...features, ...map.querySourceFeatures("recentsub_permits_source", { sourceLayer: "recent_submitted_permit_laterals" })];
@@ -4820,6 +4820,28 @@ function Map({ type, paramId, lati, longi }) {
         filterIntersectingWellLines: features,
       }));
     }
+
+    const renderedLineStrings = map.queryRenderedFeatures({ filter: ["in", ["geometry-type"], ["literal", ["LineString", "MultiLineString"]]], layers: ['welllines', 'wellpermitlines'] });
+    // const renderedLineStrings = map.querySourceFeatures("wellsVT", { filter: ["in", ["geometry-type"], ["literal", ["LineString","MultiLineString"]]], sourceLayer: "wells" })
+    renderedLineStrings.forEach((feature) => {
+      const geometryLength = map.getFeatureState({
+        source: 'wellsVT',
+        sourceLayer: 'wells',
+        id: feature.id
+      })?.geometryLength
+      // const newGeometryLength = Math.round(turf.length(feature.geometry, { units: 'feet' }), 0)
+      if (geometryLength === undefined) {
+        const newGeometryLength = Math.round(turf.length(feature.geometry, { units: 'feet' }), 0)
+        map.setFeatureState({
+          source: 'wellsVT',
+          sourceLayer: 'wells',
+          id: feature.id
+        }, {
+          geometryLength: Math.max(newGeometryLength, geometryLength || -1)
+        })
+      }
+    });
+
   }
 
   useEffect(() => {
@@ -4986,13 +5008,18 @@ function Map({ type, paramId, lati, longi }) {
           }));
         };
 
+        newMap.on('sourcedataloading', (e) => {
+          if (e.sourceId === 'wellsVT') {
+            shapeFilterControl(e.target);
+          }
+        });
         newMap.on("zoomend", function (e) {
           abstractControl(e);
-          shapeFilterControl(e.target);
+          // shapeFilterControl(e.target);
         });
         newMap.on("moveend", function (e) {
           abstractControl(e);
-          shapeFilterControl(e.target);
+          // shapeFilterControl(e.target);
         });
 
         // omg please use the updater pattern!
@@ -5023,14 +5050,43 @@ function Map({ type, paramId, lati, longi }) {
               newMap.addSource("wellsVT", {
                 type: "vector",
                 tiles: [`https://m1neraldata.z22.web.core.windows.net/${response.latest}/{z}/{x}/{y}.pbf`],
-                maxzoom: 15,
+                promoteId: 'id',
+                maxzoom: 15
               });
               setStateApp((state) => ({
                 ...state,
                 wellTilesetSource: `https://m1neraldata.z22.web.core.windows.net/${response.latest}/{z}/{x}/{y}.pbf`,
               }));
               setLayerSource("wellpermitlines", "wellsVT");
+              const defaultwellpermitlinesOpacity = newMap.getPaintProperty('wellpermitlines', 'line-opacity');
+              newMap.setPaintProperty('wellpermitlines', 'line-opacity', [
+                'case',
+                ['>', ['number', ['feature-state', 'geometryLength']], 10000],
+                0,
+                defaultwellpermitlinesOpacity || 1
+                ]);
+              // const defaultwellpermitlinesWidth = newMap.getPaintProperty('welllines', 'line-width');
+              // newMap.setPaintProperty('wellpermitlines', 'line-width', [
+              //   'case',
+              //   ['>', ['number', ['feature-state', 'geometryLength']], 10000],
+              //   10,
+              //   defaultwellpermitlinesWidth || 1
+              //   ]);
               setLayerSource("welllines", "wellsVT");
+              const defaultwelllinesOpacity = newMap.getPaintProperty('welllines', 'line-opacity');
+              newMap.setPaintProperty('welllines', 'line-opacity', [
+                'case',
+                ['>', ['number', ['feature-state', 'geometryLength']], 10000],
+                0,
+                defaultwelllinesOpacity || 1
+                ]);
+              // const defaultwelllinesWidth = newMap.getPaintProperty('welllines', 'line-width');
+              // newMap.setPaintProperty('welllines', 'line-width', [
+              //   'case',
+              //   ['>', ['number', ['feature-state', 'geometryLength']], 10000],
+              //   10,
+              //   defaultwelllinesWidth || 1
+              //   ]);
               setLayerSource("wellpoints", "wellsVT");
             })
             .catch((error) => {
