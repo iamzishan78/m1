@@ -58,6 +58,9 @@ import ContactSearch from "./components/ContactSearch";
 import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
 import SideNavigation from "./SideNavigation";
 
+// App Bars
+import LandAppBar from "./AppBar/Land";
+
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
 
@@ -451,29 +454,8 @@ export default function Navigation(props) {
     setOpenSupportCenter(true);
   };
 
-  const handleClickLogo = () => {
-    setStateApp((stateApp) => ({ ...stateApp, toggleZoomOut: true }));
-  };
-
   const handleDrawerClose = () => {
     setOpenDrawer(false);
-  };
-
-  const handleFilterCardClose = () => {
-    setOpenFilterCard(false);
-    setValue(0);
-  };
-
-  const handleClickAway = () => {
-    setOpenFilterCard(false);
-    setValue(0);
-  };
-
-  const handleFilterTabChange = (event, newValue) => {
-    if (!openFilterCard) {
-      setOpenFilterCard(true);
-    }
-    setValue(newValue);
   };
 
   const handleOpenContactForm = () => {
@@ -523,6 +505,8 @@ export default function Navigation(props) {
               </Typography>
             )}
 
+            {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
+
             {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
             {(matchFind || matchDocument) && (
@@ -544,42 +528,6 @@ export default function Navigation(props) {
             ) : (
               <div style={{ display: "none" }}></div>
             )}
-
-            {/* {matchTrack && (
-              <div>
-                <div ref={anchorEl} className={classes.filterTabs}>
-                  <Tabs
-                    value={valueTabsTrack}
-                    onChange={handleTabChange}
-                    variant="standard"
-                    textColor="primary"
-                    aria-label="tabs"
-                    classes={{ indicator: classes.indicator }}
-                  >
-                    <Tab
-                      value={0}
-                      className={classes.tab}
-                      icon={
-                        <Badge badgeContent={stateApp.owners ? stateApp.owners.length : 0} color="secondary">
-                          <OwnershipIcon color="#fff" opacity="1.0" />
-                        </Badge>
-                      }
-                      aria-label="well"
-                    />
-                    <Tab
-                      value={1}
-                      className={classes.tab}
-                      icon={
-                        <Badge badgeContent={stateApp.trackedwells ? stateApp.trackedwells.length : 0} color="secondary">
-                          <WellIcon color="#fff" opacity="1.0" />
-                        </Badge>
-                      }
-                      aria-label="geography"
-                    />
-                  </Tabs>
-                </div>
-              </div>
-            )} */}
             <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
               {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
             </IconButton>

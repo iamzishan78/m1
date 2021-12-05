@@ -59,10 +59,10 @@ export const useStyles = makeStyles((theme) => ({
     margin: "30px 10px 10px 10px",
     color: "#29abe0",
   },
-  revenueRootExpanded: {
+  landRootExpanded: {
     marginLeft: "425px !important",
   },
-  revenueRootCollapsed: {
+  landRootCollapsed: {
     marginLeft: "0px !important",
   },
   header: {

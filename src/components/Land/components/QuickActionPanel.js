@@ -61,9 +61,13 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, qu
       </Drawer>
       <div
         className={clsx({
-          [classes.revenueRootExpanded]: quickActionsPanelState,
-          [classes.revenueRootCollapsed]: !quickActionsPanelState,
+          [classes.landRootExpanded]: quickActionsPanelState,
+          [classes.landRootCollapsed]: !quickActionsPanelState,
         })}
+        style={{
+          position: "relative",
+          top: "65px",
+        }}
       >
         {children}
       </div>
