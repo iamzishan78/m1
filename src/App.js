@@ -322,7 +322,7 @@ function App() {
                         <PrivateRoute exact path="/studio" component={StudioProvider} />
                         <PrivateRoute title="Bulk Upload" exact path="/bulkupload" component={BulkUpload} />
                         <PrivateRoute exact path="/agreement" component={AgreementProvider} />
-                        <PrivateRoute exact path="/land" component={Land} />
+                        <PrivateRoute path="/land" component={Land} />
                         {/* <Route component={NotFoundRedirect} /> */}
                       </NavigationProvider>
                     </Switch>

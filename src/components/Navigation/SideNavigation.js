@@ -141,7 +141,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               selected: classes.menuListItemSelected,
             }}
             button
-            selected={stateNav.selectedMenuIndexContacts === 1}
+            selected={stateNav.selectedMenuIndexLand === 1}
             onClick={(event) => {
               handleListItemClick("/land");
             }}

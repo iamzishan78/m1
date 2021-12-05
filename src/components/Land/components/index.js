@@ -1,1 +1,1 @@
-export { default as Portfolio } from "./Agreements";
+export { default as Agreements } from "./Agreements";
