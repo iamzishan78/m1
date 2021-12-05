@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/styles";
 
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
+import DetailTabsSection from "components/Revenue/components/Portfolio/DetailTabsSection";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -65,6 +66,7 @@ export default function Portfolio() {
         </Grid>
       </div>
       <AnalyticsCards cards={cards} />
+      <DetailTabsSection />
     </>
   );
 }
