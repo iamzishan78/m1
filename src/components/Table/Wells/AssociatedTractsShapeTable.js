@@ -77,6 +77,11 @@ function AssociatedTractsShapeTable(props) {
                     else if (header.name === 'range') { header.name = 'section'; header.label = 'Section'; header.esKey = 'section.keyword' }
                 })
             }
+            columns.forEach((header) => {
+                if (header.name === 'uAcres' && props.shapeType === 'Agreement') {
+                    header.name = 'sdGrossAcres'; header.label = 'Gross Acres'; header.esKey = 'sdGrossAcres.keyword'
+                }
+            })
 
             props.setRows(tableData);
             setColumns(columns);
