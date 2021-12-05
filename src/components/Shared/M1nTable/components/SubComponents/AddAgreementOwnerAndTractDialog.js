@@ -239,7 +239,16 @@ function AddAgreementOwnerAndTractDialog(props) {
   const setExistingOwner = (e, value) => {
     if (value?._id && value?.name) {
       setNameAutValue(value)
-      reset({ ...getValues(), ownerEntity: value._id, ownerName: value.name, ...value.ownerData })
+      reset({
+        ...getValues(), ownerEntity: value._id, ownerName: value.name,
+        mineral_interest: value.ownerData.mineral_interest || "",
+        royalty_interest: value.ownerData.royalty_interest || "",
+        orri: value.ownerData.orri || "",
+        depthFrom: value.ownerData.depthFrom || "",
+        depthTo: value.ownerData.depthTo || "",
+        net_acres: value.ownerData.net_acres || "",
+        ...value.ownerData
+      })
     }
   }
 

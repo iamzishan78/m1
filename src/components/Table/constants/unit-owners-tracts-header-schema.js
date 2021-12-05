@@ -36,6 +36,10 @@ const UnitOwnersTractHeadCells = [
   },
   { name: "mineral_interest", esKey: 'mineral_interest', type: "number", label: "MI", options: { filter: true } },
   { name: "royalty_interest", esKey: 'royalty_interest', type: "number", label: "RI", options: { filter: true } },
+
+  {
+    name: "orri", label: "ORRI", esKey: 'orri', options: { sort: true, filter: true }
+  },
   {
     name: "sdGrossAcres", label: "Gross Acres", esKey: 'tract.sdGrossAcres', options: { sort: true, filter: true }
   },

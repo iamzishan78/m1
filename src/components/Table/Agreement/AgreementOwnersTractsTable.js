@@ -225,18 +225,18 @@ function AgreementOwnersTractsTable(props) {
       <Dialog open={openDialog ? true : false} onClose={() => setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
         {
           openDialog === "delete" && <DeleteConfirmationDialogContent
-            header="Delete Tracts(s)"
+            header={`Delete ${props.shapeType}(s)`}
             onClose={() => setOpenDialog(null)}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={selectedRows.map((sR => props.rows[sR.dataIndex]._id))}
             setM1nSelectedRowsIndexes={setSelectedRows}
           >
-            {`Do you want to permanently delete the tracts${selectedRows &&
+            {`Do you want to permanently delete the ${props.shapeType}${selectedRows &&
               selectedRows.length > 1 &&
               selectedRows.length > 1
               ? "s"
               : ""
-              } from  this Unit?`}
+              } from  this ${props.shapeType}?`}
           </DeleteConfirmationDialogContent>
         }
       </Dialog>
