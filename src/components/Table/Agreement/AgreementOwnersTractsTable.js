@@ -8,7 +8,7 @@ import TableHOC from "components/Table/TableHOC";
 
 // QUERIES 
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { UPDATE_SHAPE_TRACTS } from "graphQL/useMutationUpdateShapeTracts";
+import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 
 import { setStateIfDeepEqual, deepEqualObjects, copy } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
@@ -22,6 +22,7 @@ import AddAgreementOwnerAndTractDialog from "components/Shared/M1nTable/componen
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
+
 
 
 
@@ -45,14 +46,14 @@ function AgreementOwnersTractsTable(props) {
     }
   });
 
-  const [updateShapeTract] = useMutation(UPDATE_SHAPE_TRACTS, {
+  const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
       props.setLoading(false);
       setSelectedRows([])
     },
+
     onError: (err) => { },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"],
-    awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
 
   const tableData = elasticData?.getESPaginatedList
@@ -194,9 +195,9 @@ function AgreementOwnersTractsTable(props) {
   const deleteFunc = (ids) => {
     if (ids.length > 0) {
       props.setLoading(true);
-      updateShapeTract({
+      updateShapeOwners({
         variables: {
-          shapeTracts: ids.map((_id) => ({ _id, isDeleted: true })),
+          shapeOwners: ids.map((_id) => ({ _id, isDeleted: true })),
         }
       });
     }
