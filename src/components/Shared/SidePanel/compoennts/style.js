@@ -51,6 +51,19 @@ export const useStyles = makeStyles((theme) => ({
     overflowY: "auto",
     backgroundColor: "#0e111a",
   },
+  itemOne: {
+    "&.MuiDivider-root": {
+      "&::before": {
+        borderTop: "thin solid green"
+      },
+      "&::after": {
+        borderTop: "thin solid blue"
+      }
+    },
+    "& .MuiDivider-wrapper": {
+      fontSize: 16
+    }
+  },
   mapPositionSection: {
     minWidth: "425px",
     color: "white",

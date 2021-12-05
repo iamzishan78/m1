@@ -237,6 +237,14 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           ))}
         </div>
 
+        <div style={{paddingLeft: '20px', paddingRight: '20px', 
+        }}>
+
+        <hr style={{border: '1px solid #263451', 
+                    borderRadius: '5px', marginTop: '30px', marginBottom: '10px'}}/>
+
+        </div> 
+
         <StyledListItem2>
           <ListItemIcon>
             <LayersIcon />
@@ -305,6 +313,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           zIndex: "2",
         }}
       >
+
         <StyledMenu
           id="layer-side-panel"
           style={!stateMapControls.expandedPanel ? { display: "none" } : { minWidth: "425px" }}
@@ -385,6 +394,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
               ))}
             {type === "base" && (
               <>
+
                 <Collapse in={true} timeout="auto" unmountOnExit>
                   {displayList}
                 </Collapse>

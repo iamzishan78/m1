@@ -327,7 +327,6 @@ export default function CommentComponent(props) {
   return (
     <SizeMe>{({ size }) =>
       <div className={classes.container}>
-        {console.log(size)}
         <div className={classes.comment} >
           {!loadingComments ? (
             <>

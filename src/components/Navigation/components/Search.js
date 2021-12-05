@@ -82,6 +82,7 @@ const calcScoreOpacity = (maxMin, score) => {
 const useStyles = makeStyles((theme) => ({
   icon: {
     color: theme.palette.text.secondary,
+    // color: '#fff',
     marginRight: theme.spacing(2),
   },
   groupsHeadersText: {
@@ -96,7 +97,8 @@ const useStyles = makeStyles((theme) => ({
     position: "-webkit-sticky",
     position: "sticky",
     top: "-9px",
-    backgroundColor: "#d4e7fce0",
+    // backgroundColor: "#d4e7fce0",
+    // backgroundColor: "red",
     zIndex: "4000",
   },
   groupsButton: {
@@ -111,7 +113,8 @@ const useStyles = makeStyles((theme) => ({
   },
   textF: {
     "& input": {
-      color: "#ffffffc9",
+      // color: "#ffffffc9",
+      color: "#d3d3d3",
       height: "5px",
       minWidth: "0 !important",
       visibility: "unset",
@@ -119,7 +122,7 @@ const useStyles = makeStyles((theme) => ({
       // visibility: ({ mapGridCardActivated }) =>
       //   mapGridCardActivated ? "hidden" : "unset",
       // opacity: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : "1"),
-      transition: "opacity 0.5s linear",
+      // transition: "opacity 0.5s linear",
     },
     // "& .MuiInputAdornment-root": {
     //   padding: "6px 0 6px 8px",
@@ -1246,7 +1249,7 @@ function Search() {
                           if (mapGridCardActivated) dispatch(toggleMapGridCardAtived());
                         }}
                       >
-                        <SearchIcon htmlColor="#8486af" />
+                        <SearchIcon htmlColor="#d3d3d3" />
                       </Button>
                     </InputAdornment>
                   ),

@@ -1985,7 +1985,7 @@ function SubTable(props) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
                     }
                     return (
-                      <div style={{ minWidth: "100px"}}>
+                      <div style={{ minWidth: "100px" }}>
                         <CustomFieldSelect dropdownOptions={column.dropdownOptions} index={tableMeta.rowIndex} column={column} value={value} onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)} />
                       </div>
                     )
@@ -2105,7 +2105,7 @@ function SubTable(props) {
                             <p style={{ padding: '0px 5px' }}>
                               {value}
                             </p>
-                          ):(
+                          ) : (
                             <p style={{ padding: '0px 5px', color: '#959595' }}>
                               {value ? value : 'N/A'}
                             </p>
@@ -3418,7 +3418,7 @@ function SubTable(props) {
     if (props.header === "Documents") {
       const ViewColumn = props.viewColumn
       return <ViewColumn {...columnsProps} {...props.viewColumnProps} tableColumns={props.columns} />
-    }else{
+    } else {
       return <TableViewCol {...columnsProps} />
     }
   }

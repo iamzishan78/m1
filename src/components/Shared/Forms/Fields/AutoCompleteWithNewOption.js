@@ -25,7 +25,7 @@ const AutoCompleteWithNewOption = ({ options, onChange, value, shapeType, typeKe
     return (
         <Autocomplete
             defaultValue={{ _id: value, name: value }}
-            value={{ _id: value, name: value }}
+            value={value ? { _id: value, name: value } : null}
             disableListWrap
             classes={classes}
             onBlur={onBlur}
@@ -79,7 +79,6 @@ const AutoCompleteWithNewOption = ({ options, onChange, value, shapeType, typeKe
                         _id: "newEntity",
                     });
                 }
-                console.log('Filtered', filtered)
                 return filtered;
             }}
             onChange={(event, newValue) => {
@@ -92,9 +91,16 @@ const AutoCompleteWithNewOption = ({ options, onChange, value, shapeType, typeKe
             renderInput={(params) => (
                 <TextField
                     variant={rest.variant}
+                    margin={rest.margin}
+                    label={rest.label}
                     {...params}
+                    InputLabelProps={{
+                        ...params.InputLabelProps,
+                        ...rest.InputLabelProps,
+                    }}
                     InputProps={{
                         ...params.InputProps,
+                        ...rest.InputProps,
                     }}
                     fullWidth
                 />

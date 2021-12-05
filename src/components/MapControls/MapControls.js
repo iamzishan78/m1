@@ -286,7 +286,7 @@ export default function MapControls(props) {
       },
       {
         icon: <AspectRatioOutlinedIcon />,
-        name: "Toggle Zoom Out",
+        name: "Zoom To Default Map Position",
         action: "zoomout",
       },
       // temp delete for marketplace

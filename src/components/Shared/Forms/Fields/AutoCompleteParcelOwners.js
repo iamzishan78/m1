@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { Typography, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import loadashFilter from "lodash/filter";
 import { useLazyQuery } from "@apollo/client";
-import { SHAPE_AUTOCOMPLETE_LIST } from "graphQL/useQueryShapeAutoCompleteList";
+import joinAddress from "../../valueformatters/join-address.js";
+import pick from 'lodash/pick';
+import { PARCELOWNERSQUERY } from "graphQL/useQueryParcelOwners.js";
 
 
 const useStyles = makeStyles({
@@ -21,34 +22,50 @@ const useStyles = makeStyles({
     },
 });
 
-const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur, ...other }) => {
+const AutoCompleteParcelOwners = ({ onChange, value, parcel, onBlur, ...other }) => {
 
-    const [types, setTypes] = useState([])
+    const [esData, setEsData] = useState([])
 
-    const [typeListQuery, { data: dataTypes }] = useLazyQuery(SHAPE_AUTOCOMPLETE_LIST);
+    const [getParcelOwners, { data: elasticData }] = useLazyQuery(PARCELOWNERSQUERY, {
+        fetchPolicy: "no-cache", onCompleted: () => {
+        }
+    });
 
     useEffect(() => {
-        typeListQuery({ variables: { shapeType, key: typeKey } })
-    }, [])
+        if (parcel?._id || parcel?.tractId)
+            getParcelOwners({
+                variables: { customLayerId: parcel._id || parcel.tractId, qtr: parcel.qtrQtr || {} },
+            });
+    }, [parcel])
 
     useEffect(() => {
-        if (dataTypes && dataTypes[Object.keys(dataTypes)[0]])
-            setTypes(dataTypes[Object.keys(dataTypes)[0]])
+        if (elasticData && elasticData[Object.keys(elasticData)[0]])
+            setEsData(elasticData[Object.keys(elasticData)[0]])
 
-    }, [dataTypes])
+    }, [elasticData])
 
     const classes = useStyles();
+
+    const options = useMemo(() => {
+        if (esData?.length > 0)
+            return esData.map((data) => ({
+                _id: data.ownerEntity,
+                ...data?.relatedObject?.entityDetail,
+                ownerData: pick(data, ['depthFrom', 'depthTo', 'mineral_interest', 'royalty_interest', 'orri', 'net_acres'])
+            }))
+
+        return []
+
+    }, [esData])
 
     return (
         <Autocomplete
             defaultValue={{ _id: value, name: value }}
-            value={{ _id: value, name: value }}
+            value={value}
             disableListWrap
             classes={classes}
             onBlur={onBlur}
-            options={types?.map((type) => {
-                return { _id: type, name: type };
-            }) || []}
+            options={options}
             getOptionLabel={(option) => {
                 // Value selected with enter, right from the input
                 if (typeof option === "string") {
@@ -66,17 +83,16 @@ const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur
                 return option?._id === value?._id;
             }}
             renderOption={(option) => {
-                if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
+                // if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
 
                 return (
                     <Grid container spacing={0}>
                         <Grid container item xs={12} alignItems="center">
                             <Grid item xs>
                                 <span style={{ fontWeight: 400 }}>{option.name}</span>
-
-                                {/* <Typography variant="body2" color="textSecondary">
-                                    {option}
-                                </Typography> */}
+                                <Typography variant="body2" color="textSecondary">
+                                    {joinAddress(option)}
+                                </Typography>
                             </Grid>
                         </Grid>
                     </Grid>
@@ -85,16 +101,16 @@ const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur
             filterOptions={(options, params) => {
                 const inputValue = params.inputValue
                 const filtered = createFilterOptions()(options, { ...params, inputValue });
-                const isExist = loadashFilter(filtered, (filter) => {
-                    return filter._id === inputValue;
-                });
+                // const isExist = loadashFilter(filtered, (filter) => {
+                //     return filter._id === inputValue;
+                // });
                 // Suggest the creation of a new value
-                if (inputValue !== "" && (!isExist || isExist.length === 0)) {
-                    filtered.unshift({
-                        name: inputValue,
-                        _id: "newEntity",
-                    });
-                }
+                // if (inputValue !== "" && (!isExist || isExist.length === 0)) {
+                //     filtered.unshift({
+                //         name: inputValue,
+                //         _id: "newEntity",
+                //     });
+                // }
                 return filtered;
             }}
             onChange={(event, newValue) => {
@@ -102,10 +118,18 @@ const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur
             }}
             renderInput={(params) => (
                 <TextField
-                    margin="dense"
+                    variant={other.variant}
+                    margin={other.margin}
+                    label={other.label}
+                    placeholder={other.placeholder}
                     {...params}
+                    InputLabelProps={{
+                        ...params.InputLabelProps,
+                        ...other.InputLabelProps,
+                    }}
                     InputProps={{
                         ...params.InputProps,
+                        ...other.InputProps,
                     }}
                     fullWidth
                     autoFocus
@@ -117,4 +141,4 @@ const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur
     );
 };
 
-export default AutoCompleteTypeComponent
+export default AutoCompleteParcelOwners
