@@ -45,6 +45,9 @@ export const useStyles = makeStyles((theme) => ({
     "& .MuiDrawer-paperAnchorLeft": {
       left: "52px",
     },
+    "& .MuiDivider-root": {
+      backgroundColor: "#263451",
+    },
   },
   drawerPaper: {
     width: drawerWidth,
@@ -63,7 +66,7 @@ export const useStyles = makeStyles((theme) => ({
     marginLeft: "0px !important",
   },
   header: {
-    paddingLeft: "10px",
+    padding: "20px 10px",
     alignItems: "center",
   },
   pulloutBox: {
