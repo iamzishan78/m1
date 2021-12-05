@@ -97,6 +97,12 @@ function DocumentsTable(props) {
         setSelectedGridView(
           data.find((d) => d.type === "Default" && d.name === "All Documents")
         );
+        setStateApp((state, props) => {
+          return {
+            ...state,
+            selectedView: data.find((d) => d.type === "Default" && d.name === "All Documents")
+          };
+        });
       }
     }
   }, [gridViews]);
