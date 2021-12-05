@@ -147,6 +147,7 @@ const AppProvider = (props) => {
     selectedAgreement: null,
     bulkUpload: false,
     selectedMeta: null,
+    selectedView: null,
 
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
