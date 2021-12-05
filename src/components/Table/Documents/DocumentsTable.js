@@ -248,7 +248,8 @@ function DocumentsTable(props) {
       let updatedColumns = handleSelectedGridChange(
         TableHeader,
         view,
-        columns
+        columns,
+        true
       );
       updatedColumns = sortColumns(updatedColumns, view);
       setColumnsData(

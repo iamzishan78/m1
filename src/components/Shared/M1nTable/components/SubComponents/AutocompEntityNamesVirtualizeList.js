@@ -271,6 +271,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
           variant={variant}
           InputProps={{
             ...params.InputProps,
+            ...props.InputProps,
             endAdornment: (
               <>
                 {isNextPageLoading ? <CircularProgress color="inherit" size={20} /> : null}

@@ -183,7 +183,7 @@ function WellCard() {
     { loading: loadingTenantWell, data: dataTenantWell },
   ] = useLazyQuery(TENANTWELL);
 
-  const [getWellFilesCount, { data: dataWellFiles }] = useLazyQuery(GET_PARCELS_FILES_COUNT, { fetchPolicy: "cache-and-network"});
+  const [getWellFilesCount, { data: dataWellFiles }] = useLazyQuery(GET_PARCELS_FILES_COUNT, { fetchPolicy: "cache-and-network" });
   const documentCount = dataWellFiles?.getParcelFilesCount || 0;
 
   useEffect(() => {
@@ -215,7 +215,6 @@ function WellCard() {
         ...state,
         selectedWell: dataWellSummary.wellSummaryDetail[0],
       }));
-      console.log('SUMMARY DETAIL', dataWellSummary)
     } else {
       setWellData(null);
     }
@@ -223,7 +222,7 @@ function WellCard() {
 
   useEffect(() => {
     if (dataTenantWell?.tenantWell?.tenantWellId &&
-        stateApp?.selectedWell?.tenantWellId !== dataTenantWell?.tenantWell?.tenantWellId) {
+      stateApp?.selectedWell?.tenantWellId !== dataTenantWell?.tenantWell?.tenantWellId) {
       setStateApp((state) => ({
         ...state,
         selectedWell: {
@@ -236,7 +235,7 @@ function WellCard() {
 
   useEffect(() => {
     if (stateApp?.selectedWell?.tenantWellId)
-    getWellFilesCount({
+      getWellFilesCount({
         variables: {
           relatedObjectId: stateApp?.selectedWell?.tenantWellId,
           relatedObjectType: "Well",
@@ -382,7 +381,7 @@ function WellCard() {
                   </Typography>
                 </div>
               </Button>
-              
+
               {/* <Button
               className={classes.button}
               onClick={() => { handleOpenDetails(3) }}
