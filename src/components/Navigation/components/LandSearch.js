@@ -83,7 +83,7 @@ const LandSearch = () => {
         className={classes.contactSearchField}
         margin="dense"
         variant="outlined"
-        placeholder="Search for Agreements"
+        placeholder="Search for agreement by name or attribute"
         InputProps={{
           startAdornment: (
             <InputAdornment>

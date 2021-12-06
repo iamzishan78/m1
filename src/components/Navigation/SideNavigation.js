@@ -143,7 +143,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             button
             selected={stateNav.selectedMenuIndexLand === 1}
             onClick={(event) => {
-              handleListItemClick("/land");
+              handleListItemClick("/land/agreements");
             }}
             key="land"
           >
