@@ -58,9 +58,11 @@ export const useStyles = makeStyles((theme) => ({
   },
   revenueRootExpanded: {
     marginLeft: "425px !important",
+    width: "calc(100% - 425px)",
   },
   revenueRootCollapsed: {
     marginLeft: "0px !important",
+    width: "100%",
   },
   header: {
     paddingLeft: "10px",

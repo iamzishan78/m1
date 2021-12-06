@@ -45,14 +45,10 @@ const cards = [
 export default function Portfolio() {
   const classes = useStyles();
 
-  const getFlaggedMoment = (moment) => {
-    return moment >= 10 ? moment : `0${moment}`;
-  };
-
   return (
     <>
       <div className={classes.actionBar}>
-        <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 78px" }}>
+        <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 36px" }}>
           <CustomDates />
           <Grid item xs={5} md={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>

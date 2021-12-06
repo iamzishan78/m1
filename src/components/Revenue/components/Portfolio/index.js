@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Button } from "@material-ui/core";
+import { Grid, Button, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
@@ -20,6 +20,10 @@ const useStyles = makeStyles((theme) => ({
       height: "35px",
       fontWeight: "bold",
     },
+  },
+  divider: {
+    height: "10px",
+    backgroundColor: "#f3f3f3",
   },
 }));
 
@@ -49,7 +53,7 @@ export default function Portfolio() {
   return (
     <>
       <div className={classes.actionBar}>
-        <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 78px" }}>
+        <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 36px" }}>
           <CustomDates />
           <Grid item xs={5} md={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
@@ -66,6 +70,7 @@ export default function Portfolio() {
         </Grid>
       </div>
       <AnalyticsCards cards={cards} />
+      <Divider className={classes.divider} />
       <DetailTabsSection />
     </>
   );

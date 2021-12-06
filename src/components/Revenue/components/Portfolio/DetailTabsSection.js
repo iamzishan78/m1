@@ -29,28 +29,34 @@ const useStyles = makeStyles((theme) => ({
     width: "65px",
     backgroundColor: "lightgrey",
   },
-  tabsHeader: {
-    padding: "20px 20px 0px 20px",
-  },
+  tabsHeader: {},
   tabsSection: {
-    marginTop: "20px",
+    marginTop: "10px",
     backgroundColor: "#fff",
+    width: "100%",
   },
-  headerSection: {
-    padding: "20px 30px",
+  revenueSection: {
+    padding: "20px 38px",
     backgroundColor: "#fff",
     marginBottom: "10px",
+    height: "400px",
   },
-  summarySection: {
-    padding: "20px 30px",
-    minHeight: "500px",
+  adjustmentSection: {
+    padding: "20px 38px",
     backgroundColor: "#fff",
     marginBottom: "10px",
+    height: "400px",
   },
-  checkDetailsSection: {
-    padding: "20px 30px",
-    minHeight: "500px",
+  productSection: {
+    padding: "20px 38px",
     backgroundColor: "#fff",
+    marginBottom: "10px",
+    height: "400px",
+  },
+  propertiesSection: {
+    padding: "20px 38px",
+    backgroundColor: "#fff",
+    height: "400px",
   },
 }));
 
@@ -58,9 +64,11 @@ const StyledTabs = withStyles({
   root: {
     borderBottom: "1px solid #e8e8e8",
     textTransform: "capitalize",
+    padding: "0px 26px",
   },
   indicator: {
     backgroundColor: "#12abe0",
+    height: "4px",
   },
 })(Tabs);
 
@@ -68,7 +76,7 @@ const StyledTab = withStyles((theme) => ({
   root: {
     textTransform: "uppercase",
     minWidth: 72,
-    fontWeight: theme.typography.fontWeightRegular,
+    fontWeight: theme.typography.fontWeightBold,
     marginRight: theme.spacing(4),
     fontFamily: [
       "-apple-system",
@@ -88,7 +96,6 @@ const StyledTab = withStyles((theme) => ({
     },
     "&$selected": {
       color: "black",
-      fontWeight: theme.typography.fontWeightMedium,
     },
     "&:focus": {
       color: "black",
@@ -121,20 +128,25 @@ export default function DetailTabsSection(props) {
           <StyledTab label="Properties" />
         </StyledTabs>
       </div>
-      <div style={{ maxHeight: "calc(100vh - 310px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
-        <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
+      <div style={{ maxHeight: "calc(100vh - 480px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+        <div className={classes.revenueSection} ref={tab === 0 ? selectedTabRef : null}>
           <Typography varient="h6" style={{ textTransform: "uppercase" }}>
             Revenue
           </Typography>
         </div>
-        <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
+        <div className={classes.adjustmentSection} ref={tab === 1 ? selectedTabRef : null}>
           <Typography varient="h6" style={{ textTransform: "uppercase" }}>
             Adjustments
           </Typography>
         </div>
-        <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
+        <div className={classes.productSection} ref={tab === 2 ? selectedTabRef : null}>
           <Typography varient="h6" style={{ textTransform: "uppercase" }}>
-            Products Details
+            Products
+          </Typography>
+        </div>
+        <div className={classes.propertiesSection} ref={tab === 3 ? selectedTabRef : null}>
+          <Typography varient="h6" style={{ textTransform: "uppercase" }}>
+            Properties
           </Typography>
         </div>
       </div>
