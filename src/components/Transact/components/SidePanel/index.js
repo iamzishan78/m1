@@ -331,16 +331,16 @@ const SidePanel = () => {
       <Drawer variant="permanent" className={classes.drawer} classes={{ paper: classes.drawer }} open={true}>
         <div className={classes.toolbar}>
           <div className={classes.toolbarHeader}>
-            <Typography varient="h4" component="h4" style={{ float: "left", marginTop: "10px" }}>
+            <Typography variant="h5" component="h4" style={{ float: "left", marginTop: "15px"}}>
               Flowlines
             </Typography>
             <Typography
-              variant="caption"
+              variant="h7"
               display="block"
               style={{
                 float: "right",
                 color: "rgba(121, 121, 121, 0.85)",
-                marginTop: "15px",
+                marginTop: "20px",
               }}
             >
               {get(pipelines, "length", 0)} Flowlines
