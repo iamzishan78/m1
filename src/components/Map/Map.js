@@ -4473,7 +4473,7 @@ function Map({ type, paramId, lati, longi }) {
 
     const signal = abortController.signal;
 
-    const styleTypes = ["Satellite", "Basic", "Dark", "Light", "Outdoors"/*, "Basic Template", "Outdoors-copy-brent"*/];
+    const styleTypes = ["Satellite", "Basic", "Dark", "Light", "Outdoors"];
     let recurseLimit = 5;
 
     let styles = await styleTypes.reduce(async function reduceFunction(styles, styleType) {
@@ -4799,7 +4799,7 @@ function Map({ type, paramId, lati, longi }) {
   }, [map, stateApp.customLayers, stateApp.multiSelectLandGrids]);
 
   // having to use a ref because callbacks are not guaranteed to get the correct version of context state!!!
-  function shapeFilterControl(map) {
+  async function shapeFilterControl(map) {
     if (
       stateNavRef.current?.filterBasin ||
       stateNavRef.current?.filterAOI ||
@@ -4820,18 +4820,27 @@ function Map({ type, paramId, lati, longi }) {
         filterIntersectingWellLines: features,
       }));
     }
+  }
 
-    const renderedLineStrings = map.queryRenderedFeatures({ filter: ["in", ["geometry-type"], ["literal", ["LineString", "MultiLineString"]]], layers: ['welllines', 'wellpermitlines'] });
-    // const renderedLineStrings = map.querySourceFeatures("wellsVT", { filter: ["in", ["geometry-type"], ["literal", ["LineString","MultiLineString"]]], sourceLayer: "wells" })
+  // if this isn't fast enough we can try to only recalc length for features on the tile boundary
+  // if feature is entirely within a tile we difinitively know the length
+  // if it is on the tile boundary we know that the vector feature "may" cross tile boundaries so don't know the true
+  // length from a single tile
+  async function findBadLinestrings(map, tile) {
+    if (!tile) return
+    let repaint = false;
+    let renderedLineStrings = []
+    tile.querySourceFeatures(renderedLineStrings, { filter: ["in", ["geometry-type"], ["literal", ["LineString","MultiLineString"]]], sourceLayer: "wells" });
+    // renderedLineStrings.push(...map.queryRenderedFeatures({ filter: ["in", ["geometry-type"], ["literal", ["LineString", "MultiLineString"]]], layers: ['welllines', 'wellpermitlines'] }));
+    // renderedLineStrings.push();
     renderedLineStrings.forEach((feature) => {
       const geometryLength = map.getFeatureState({
         source: 'wellsVT',
         sourceLayer: 'wells',
         id: feature.id
       })?.geometryLength
-      // const newGeometryLength = Math.round(turf.length(feature.geometry, { units: 'feet' }), 0)
-      if (geometryLength === undefined) {
-        const newGeometryLength = Math.round(turf.length(feature.geometry, { units: 'feet' }), 0)
+      const newGeometryLength = Math.round(turf.length(feature.geometry, { units: 'feet' }), 0)
+      if (newGeometryLength > 20000 && !(geometryLength >= newGeometryLength)) {
         map.setFeatureState({
           source: 'wellsVT',
           sourceLayer: 'wells',
@@ -4839,9 +4848,13 @@ function Map({ type, paramId, lati, longi }) {
         }, {
           geometryLength: Math.max(newGeometryLength, geometryLength || -1)
         })
+        repaint = true
       }
     });
 
+    if (repaint) {
+      map.triggerRepaint();
+    }
   }
 
   useEffect(() => {
@@ -4949,7 +4962,7 @@ function Map({ type, paramId, lati, longi }) {
         });
         newMap.addControl(Draw);
 
-        const abstractControl = (e) => {
+        const abstractControl = async (e) => {
           const map = e.target;
           if (map.getZoom() >= 12) {
             const bounds = map.getBounds();
@@ -5008,18 +5021,18 @@ function Map({ type, paramId, lati, longi }) {
           }));
         };
 
-        newMap.on('sourcedataloading', (e) => {
+        newMap.on('sourcedata', (e) => {
           if (e.sourceId === 'wellsVT') {
-            shapeFilterControl(e.target);
+            findBadLinestrings(e.target, e.tile);
           }
         });
         newMap.on("zoomend", function (e) {
           abstractControl(e);
-          // shapeFilterControl(e.target);
+          shapeFilterControl(e.target);
         });
         newMap.on("moveend", function (e) {
           abstractControl(e);
-          // shapeFilterControl(e.target);
+          shapeFilterControl(e.target);
         });
 
         // omg please use the updater pattern!
@@ -5061,32 +5074,18 @@ function Map({ type, paramId, lati, longi }) {
               const defaultwellpermitlinesOpacity = newMap.getPaintProperty('wellpermitlines', 'line-opacity');
               newMap.setPaintProperty('wellpermitlines', 'line-opacity', [
                 'case',
-                ['>', ['number', ['feature-state', 'geometryLength']], 10000],
+                ['>', ['number', ['feature-state', 'geometryLength']], 20000],
                 0,
                 defaultwellpermitlinesOpacity || 1
                 ]);
-              // const defaultwellpermitlinesWidth = newMap.getPaintProperty('welllines', 'line-width');
-              // newMap.setPaintProperty('wellpermitlines', 'line-width', [
-              //   'case',
-              //   ['>', ['number', ['feature-state', 'geometryLength']], 10000],
-              //   10,
-              //   defaultwellpermitlinesWidth || 1
-              //   ]);
               setLayerSource("welllines", "wellsVT");
               const defaultwelllinesOpacity = newMap.getPaintProperty('welllines', 'line-opacity');
               newMap.setPaintProperty('welllines', 'line-opacity', [
                 'case',
-                ['>', ['number', ['feature-state', 'geometryLength']], 10000],
+                ['>', ['number', ['feature-state', 'geometryLength']], 20000],
                 0,
                 defaultwelllinesOpacity || 1
                 ]);
-              // const defaultwelllinesWidth = newMap.getPaintProperty('welllines', 'line-width');
-              // newMap.setPaintProperty('welllines', 'line-width', [
-              //   'case',
-              //   ['>', ['number', ['feature-state', 'geometryLength']], 10000],
-              //   10,
-              //   defaultwelllinesWidth || 1
-              //   ]);
               setLayerSource("wellpoints", "wellsVT");
             })
             .catch((error) => {
