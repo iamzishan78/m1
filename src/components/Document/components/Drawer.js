@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -619,67 +619,65 @@ export default function DocumentDrawer() {
                   isInView = true;
                 }
               }
-              return isInView || value ? (
-                <>
-                  {meta.type === "text" && (
-                    <ListItem
-                      key={meta.name}
-                      style={{
-                        flexDirection: "column",
-                        justifyContent: "start",
-                        alignItems: "start",
-                      }}
-                    >
-                      <h4>{meta.label}</h4>
-                      <TextField
-                        className={classes.maxWidth}
-                        value={value}
-                        onChange={(e) => {
-                          const custom_data = JSON.parse(
-                            JSON.stringify(newDocument.custom_data)
-                          );
-                          custom_data[meta.name] = e.target.value;
-                          setNewDocument({
-                            ...newDocument,
-                            custom_data,
-                          });
+              if(isInView || value){
+                return  (
+                  <Fragment key={meta.name}>
+                    {meta.type === "text" && (
+                      <ListItem
+                        style={{
+                          flexDirection: "column",
+                          justifyContent: "start",
+                          alignItems: "start",
                         }}
-                      />
-                    </ListItem>
-                  )}
-                  {meta.type === "dropdown" && (
-                    <ListItem
-                      key={meta.name}
-                      style={{
-                        flexDirection: "column",
-                        justifyContent: "start",
-                        alignItems: "start",
-                      }}
-                    >
-                      <h4>{meta.label}</h4>
-                      <CustomFieldSelect
-                        fullWidth
-                        index={"documentTable"}
-                        dropdownOptions={meta.dropdownOptions}
-                        column={meta}
-                        value={value}
-                        onCustomKeyChange={(value) => {
-                          const custom_data = JSON.parse(
-                            JSON.stringify(newDocument.custom_data)
-                          );
-                          custom_data[meta.name] = value;
-                          setNewDocument({
-                            ...newDocument,
-                            custom_data,
-                          });
+                      >
+                        <h4>{meta.label}</h4>
+                        <TextField
+                          className={classes.maxWidth}
+                          value={value}
+                          onChange={(e) => {
+                            const custom_data = JSON.parse(
+                              JSON.stringify(newDocument.custom_data)
+                            );
+                            custom_data[meta.name] = e.target.value;
+                            setNewDocument({
+                              ...newDocument,
+                              custom_data,
+                            });
+                          }}
+                        />
+                      </ListItem>
+                    )}
+                    {meta.type === "dropdown" && (
+                      <ListItem
+                        style={{
+                          flexDirection: "column",
+                          justifyContent: "start",
+                          alignItems: "start",
                         }}
-                      />
-                    </ListItem>
-                  )}
-                </>
-              ) : (
-                <></>
-              );
+                      >
+                        <h4>{meta.label}</h4>
+                        <CustomFieldSelect
+                          fullWidth
+                          index={"documentTable"}
+                          dropdownOptions={meta.dropdownOptions}
+                          column={meta}
+                          value={value}
+                          onCustomKeyChange={(value) => {
+                            const custom_data = JSON.parse(
+                              JSON.stringify(newDocument.custom_data)
+                            );
+                            custom_data[meta.name] = value;
+                            setNewDocument({
+                              ...newDocument,
+                              custom_data,
+                            });
+                          }}
+                        />
+                      </ListItem>
+                    )}
+                  </Fragment>
+                )
+              }
             })}
           </List>
         </div>
