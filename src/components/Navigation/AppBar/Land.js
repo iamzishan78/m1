@@ -17,7 +17,7 @@ export default function LandAppBar(props) {
       display="flex"
       justify="space-between"
       alignItems="center"
-      style={{ marginLeft: quickActionsPanelState ? "445px" : "" }}
+      style={{ marginLeft: quickActionsPanelState ? "433px" : "7px" }}
     >
       <Grid item md={8}>
         <Grid container direction="row" display="flex" justify="flex-start" alignItems="center">

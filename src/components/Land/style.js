@@ -66,7 +66,7 @@ export const useStyles = makeStyles((theme) => ({
     marginLeft: "0px !important",
   },
   header: {
-    padding: "20px 10px",
+    padding: "10px 5px 15px 10px",
     alignItems: "center",
   },
   pulloutBox: {
