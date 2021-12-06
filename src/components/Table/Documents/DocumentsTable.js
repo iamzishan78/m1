@@ -58,6 +58,7 @@ function DocumentsTable(props) {
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState({});
+  const [refetchList, setRefetchList] = useState(false);
 
   // queries
   const [getESDocuments, { data: DocumentsData, loading }] = useLazyQuery(
@@ -118,12 +119,7 @@ function DocumentsTable(props) {
         filters: selectedGridView?.filters ? selectedGridView?.filters : [],
       },
     });
-  }, [
-    getESDocuments,
-    props.parent,
-    props.documentSearchQuery,
-    selectedGridView,
-  ]);
+  }, [getESDocuments, props.parent, props.documentSearchQuery]);
 
   useEffect(() => {
     getMetaData({
@@ -250,6 +246,20 @@ function DocumentsTable(props) {
 
   useEffect(() => {
     if(!isEmpty(selectedGridView)) {
+      if(refetchList){
+        getESDocuments({
+          variables: {
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros",
+            },
+            search: props.documentSearchQuery ? props.documentSearchQuery : "",
+            filters: selectedGridView?.filters ? selectedGridView?.filters : [],
+          },
+        });
+      }else{
+        setRefetchList(true)
+      }
       const view = formattingGridView(JSON.parse(JSON.stringify(selectedGridView)))
       let updatedColumns = handleSelectedGridChange(
         TableHeader,
@@ -390,6 +400,10 @@ function DocumentsTable(props) {
       GET_ES_DOCUMENTS_FILTER
     );
 
+    setRefetchList(false)
+    setTimeout(() => {
+      setSelectedGridView({ ...selectedGridView, columns: sortedColumns })
+    }, 10)
   };
 
   const headerProps = {
