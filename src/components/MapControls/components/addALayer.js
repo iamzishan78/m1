@@ -443,7 +443,7 @@ export default function AddLayer(props) {
                 </Typography>
                 <div className={classes.uploaderText}>
                   <span>
-                    To add a new user-defined layer, drag and drop a GeoJSON or Shapefile or click to select file.
+                    To add a new user-defined shape layer, drag and drop a GeoJSON or Shapefile anywhere on this screen or click here to select file from your local drive
                     {/* //hiding for now as this functionality does not work currently
                 {" "}
                 <span
