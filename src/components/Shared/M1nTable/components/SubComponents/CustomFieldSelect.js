@@ -41,6 +41,7 @@ const CustomFieldSelect = ({
   fullWidth
 }) => {
   const classes = useStyles();
+  const [options, setOptions] = useState([])
   const defaultValue = {
     label: "----",
     value: "----",
@@ -48,8 +49,11 @@ const CustomFieldSelect = ({
   const [showOptions, setShowOptions] = useState(false);
   const [showIcon, setShowIcon] = useState(false);
 
-  const options = JSON.parse(JSON.stringify(column.dropdownOptions));
-  options.unshift(defaultValue);
+  useEffect(() => {
+    const options = JSON.parse(JSON.stringify(dropdownOptions));
+    options.unshift(defaultValue);
+    setOptions(options);
+  },[dropdownOptions])
 
   const onChange = (e, act) => {
     onCustomKeyChange(act.value);
@@ -115,6 +119,9 @@ const CustomFieldSelect = ({
             value: op.value,
           }))}
         getOptionLabel={(option) =>  option?.label ? option.label : ''}
+        getOptionSelected={(option) => {
+          return option.value === value || option.value === value?.value
+        }}
         filterOptions={(options, params) => {
           return options;
         }}

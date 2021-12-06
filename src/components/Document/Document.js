@@ -59,7 +59,6 @@ export default function DocumentComponent() {
     setNumPages(numPages);
   }
 
-  console.log('drawer', stateApp.DocumentDrawer, stateApp.selectedDocument)
   return (
     <div className={classes.root}>
       <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} />
