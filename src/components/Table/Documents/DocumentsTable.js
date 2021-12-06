@@ -372,7 +372,14 @@ function DocumentsTable(props) {
         },
       },
     });
-    
+
+    setStateApp((state, props) => {
+      return {
+        ...state,
+        selectedView: { ...state.selectedView, columns: sortedColumns }
+      };
+    });
+
     const columnsData = sortColumns(columns, { ...selectedGridView, columns: sortedColumns });
     setColumnsData(
       TableHeader,
