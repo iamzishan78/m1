@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 // context 
 import { AppContext } from "../../../AppContext";
+import { NavigationContext } from "components/Navigation/NavigationContext";
 import { MapGridContext } from "../../../components/MapGridCard/MapGridContext.js";
 
 
@@ -61,8 +62,8 @@ function MapGridCardSearch(props) {
 
   // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateGrid, setStateGrid] = useContext(MapGridContext);
-
 
   // function states 
   const [inputValue, setInputValue] = React.useState("");
@@ -182,11 +183,24 @@ function MapGridCardSearch(props) {
   // );
   const [getESLeasesPaginatedList, { data: constDataLeases }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
+  const getSearchQuery = (filters) => {
+    let query = '';
+    Object.entries(filters).map((filter, index) => {
+      for(let i = 0; i < filter[1]?.length; i++) {
+        query = query + ` ${query ? 'OR' : ''} ${filter[0]}:${filter[1][i]}`
+      }
+      if(index < Object.entries(filters).length - 1){
+        query = query + ' AND '
+      }
+    })
+    return query;
+  }
+
   const startPaginationAt = 50;
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-
+        const search = getSearchQuery(request.navFilter);
         getESWellsPaginatedList({
           variables: {
             esIndex: "platformData:wells",
@@ -194,7 +208,7 @@ function MapGridCardSearch(props) {
               first: startPaginationAt,
               keep_alive: "1micros"
             },
-            search: request.input? `wellName:*${request.input}*`: '',
+            search: request.input? `wellName:*${request.input}*${search}`: search,
             sort:[]
           }
         })
@@ -421,12 +435,12 @@ function MapGridCardSearch(props) {
   React.useEffect(() => {
     (async () => {
       let newOptions = [];
-
       Promise.all([
         props.searchOption == "well"
           ? callWellSearch({
             input: searchInputValue,
-            searchTop
+            searchTop,
+            navFilter: { operator: stateNav.operatorName }
           })
           : null,
         props.searchOption == "owner"
@@ -495,6 +509,7 @@ function MapGridCardSearch(props) {
     callContactsSearch,
     callMapboxSearch,
     props.searchOption,
+    stateNav.operatorName
   ]);
 
 
