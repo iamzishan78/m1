@@ -38,7 +38,7 @@ const CustomFieldSelect = ({
   onCustomKeyChange,
   dropdownOptions,
   column,
-  fullWidth,
+  fullWidth
 }) => {
   const classes = useStyles();
   const defaultValue = {
@@ -79,7 +79,7 @@ const CustomFieldSelect = ({
         `colorText_${index}_${column.name}`
       ).innerHTML = `<span class='colorText'>----</span>`;
     }
-  }, [index, value]);
+  }, [index, value, dropdownOptions]);
 
   return (
     <div
