@@ -682,7 +682,8 @@ export default function DocumentDrawer() {
               );
             })}
           </List>
-
+        </div>
+        <div style={{ flexShrink: 0 }}>
           {stateApp.selectedDocument?.fileId || fileData ? (
             <ListItem>
               <div style={{ display: "flex", justifyContent: "start" }}>
@@ -869,8 +870,6 @@ export default function DocumentDrawer() {
               />
             </div>
           ) : null}
-        </div>
-        <div style={{ flexShrink: 0 }}>
           <div className={classes.dialogFooter}>
             <Button
               variant="contained"
