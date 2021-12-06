@@ -58,6 +58,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#fff",
     height: "400px",
   },
+  sectionTitle: {
+    textTransform: "uppercase",
+    fontWeight: theme.typography.fontWeightBold,
+  },
 }));
 
 const StyledTabs = withStyles({
@@ -130,22 +134,22 @@ export default function DetailTabsSection(props) {
       </div>
       <div style={{ maxHeight: "calc(100vh - 480px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
         <div className={classes.revenueSection} ref={tab === 0 ? selectedTabRef : null}>
-          <Typography varient="h6" style={{ textTransform: "uppercase" }}>
-            Revenue
+          <Typography varient="h6" className={classes.sectionTitle}>
+            Revenue & Income
           </Typography>
         </div>
         <div className={classes.adjustmentSection} ref={tab === 1 ? selectedTabRef : null}>
-          <Typography varient="h6" style={{ textTransform: "uppercase" }}>
+          <Typography varient="h6" className={classes.sectionTitle}>
             Adjustments
           </Typography>
         </div>
         <div className={classes.productSection} ref={tab === 2 ? selectedTabRef : null}>
-          <Typography varient="h6" style={{ textTransform: "uppercase" }}>
+          <Typography varient="h6" className={classes.sectionTitle}>
             Products
           </Typography>
         </div>
         <div className={classes.propertiesSection} ref={tab === 3 ? selectedTabRef : null}>
-          <Typography varient="h6" style={{ textTransform: "uppercase" }}>
+          <Typography varient="h6" className={classes.sectionTitle}>
             Properties
           </Typography>
         </div>
