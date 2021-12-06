@@ -135,7 +135,13 @@ function AddAgreementOwnerAndTractDialog(props) {
         props.seletedOwner.parcelOwnersRadioBValue = "true";
       else
         props.seletedOwner.parcelOwnersRadioBValue = "false";
-      reset(props.seletedOwner)
+
+      reset({
+        state: "", county: "", survey: "", block: "", section: "", abstract: "",
+        township: "", meridian: "", range: "", sdGrossAcres: "", legalDescription: "", altSurvey: "",
+        ...props.seletedOwner
+      })
+
       // reset(pick(props.seletedOwner, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'sdGrossAcres', 'uAcres', 'legalDescription']))
     }
   }, [props.seletedOwner]);
@@ -394,7 +400,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.legalDescription' inputRef={register()} label={"Full Legal Description"}
-              InputLabelProps={{ shrink: true }} multiline rows={4} fullWidth disabled />
+              InputLabelProps={{ shrink: true }} multiline rows={4} defaultValue='' fullWidth disabled />
 
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.sdGrossAcres' inputRef={register()} label={"Gross. Acres"}
