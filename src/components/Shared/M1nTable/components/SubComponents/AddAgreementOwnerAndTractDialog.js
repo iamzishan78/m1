@@ -130,6 +130,11 @@ function AddAgreementOwnerAndTractDialog(props) {
       setTractValue({ _id: props.seletedOwner?.tract?.tractId, name: props?.seletedOwner?.tract?.tractName })
       setNameAutValue({ _id: props.seletedOwner?.ownerEntity, name: props?.seletedOwner?.ownerName })
       setSelectedShapeLayer(props.seletedOwner);
+
+      if (props.seletedOwner.depthTo === "All depths" && props.seletedOwner.depthFrom === "All depths")
+        props.seletedOwner.parcelOwnersRadioBValue = "true";
+      else
+        props.seletedOwner.parcelOwnersRadioBValue = "false";
       reset(props.seletedOwner)
       // reset(pick(props.seletedOwner, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'sdGrossAcres', 'uAcres', 'legalDescription']))
     }
@@ -172,6 +177,11 @@ function AddAgreementOwnerAndTractDialog(props) {
       if (['mineral_interest', 'royalty_interest', 'orri', 'net_acres'].includes(key))
         ownerToAdd[key] = addTrailingZeros(ownerToAdd[key])
     })
+
+    if (ownerToAdd.parcelOwnersRadioBValue === "true") {
+      ownerToAdd.depthFrom = 'All depths';
+      ownerToAdd.depthTo = 'All depths';
+    }
 
     setLoading(true);
     if (props.seletedOwner) {

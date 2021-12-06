@@ -75,6 +75,13 @@ function ShapeWellInterestTable(props) {
     }
   }, [tableData]);
 
+  const formatHits = (hits) => {
+    hits = hits.map((hit) => {
+      hit = props.setGenricData(hit, hit._id, ['comments', 'tracks', 'tags']);
+      return hit;
+    });
+  }
+
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
       let hits = tableData?.hits
