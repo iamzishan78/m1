@@ -360,7 +360,7 @@ function AddAgreementOwnerAndTractDialog(props) {
               <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.range' inputRef={register()} label={"Range"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.altSurvey' inputRef={register()} label={"Section"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.section' inputRef={register()} label={"Section"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
             </>}
 
@@ -371,15 +371,17 @@ function AddAgreementOwnerAndTractDialog(props) {
               <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.block' inputRef={register()} label={"Block"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.range' inputRef={register()} label={"Section"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.section' inputRef={register()} label={"Section"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.section' inputRef={register()} label={"Abstract"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.abstract' inputRef={register()} label={"Abstract"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.altSurvey' inputRef={register()} label={"Alternate Survey"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
             </>}
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.altSurvey' inputRef={register()} label={"Alternate Survey"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled />
+
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.legalDescription' inputRef={register()} label={"Full Legal Description"}
               InputLabelProps={{ shrink: true }} multiline rows={4} fullWidth disabled />
