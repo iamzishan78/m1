@@ -22,7 +22,7 @@ export default function LandAppBar(props) {
       <Grid item md={8}>
         <Grid container direction="row" display="flex" justify="flex-start" alignItems="center">
           <Grid item md={2.5}>
-            <Typography variant="h4" style={{ color: "black", fontWeight: "bold" }}>
+            <Typography variant="h5" style={{ color: "black", fontWeight: "bold" }}>
               Agreements
             </Typography>
           </Grid>
