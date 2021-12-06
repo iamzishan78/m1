@@ -150,6 +150,7 @@ const AppProvider = (props) => {
       expandedPanel: true,
     },
     selectedMeta: null,
+    selectedView: null,
 
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {

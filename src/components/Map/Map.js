@@ -2512,6 +2512,26 @@ function Map({ type, paramId, lati, longi }) {
           // console.timeEnd(`booleanIntersects`);
         }
 
+        var intersectingWellPermitLinesFilter;
+        if (filterCustomArray["wellpermitlines"]) {
+          var boundingMultiPoly = mergeIntoMultiPolygon(filterCustomArray["wellpermitlines"]);
+          var features = stateNav.filterIntersectingWellLines;
+
+          // console.time(`booleanIntersects`);
+          intersectingWellPermitLinesFilter = features.reduce(
+            function (memo, feature) {
+              boundingMultiPoly?.features?.forEach((boundingPoly) => {
+                if (turf.booleanIntersects(feature.geometry, boundingPoly.geometry) && feature.properties.id) {
+                  memo[2][1].push(feature.properties.id);
+                }
+              });
+              return memo;
+            },
+            ["in", ["get", "id"], ["literal", []]]
+          );
+          // console.timeEnd(`booleanIntersects`);
+        }
+
         var intersectingPermitLinesFilter;
         if (filterCustomArray["recent_submitted_permit_laterals"]) {
           var boundingMultiPoly = mergeIntoMultiPolygon(filterCustomArray["recent_submitted_permit_laterals"]);
@@ -2550,6 +2570,17 @@ function Map({ type, paramId, lati, longi }) {
           map.setFilter("welllines", ["match", ["get", "id"], "-1", true, false]);
         } else {
           map.setFilter("welllines", filterArray);
+        }
+
+        if (filterCustomArray["wellpermitlines"]) {
+          map.setFilter("wellpermitlines", [
+            ...filterArray,
+            ["any", ["within", mergeIntoMultiPolygon(filterCustomArray["wellpermitlines"])], intersectingWellPermitLinesFilter],
+          ]);
+        } else if (Object.keys(filterCustomArray).length > 0) {
+          map.setFilter("wellpermitlines", ["match", ["get", "id"], "-1", true, false]);
+        } else {
+          map.setFilter("wellpermitlines", filterArray);
         }
 
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
@@ -4458,7 +4489,7 @@ function Map({ type, paramId, lati, longi }) {
             .then(async (data) => {
               styles.push(
                 ..._.uniqBy(
-                  data.filter((style) => styleTypes.includes(style.name) && !styles.includes(style.name)),
+                  data.filter((style) => styleTypes.includes(style.name) && !styles.find((el) => el.name === style.name)),
                   "name"
                 )
               );
@@ -4768,7 +4799,7 @@ function Map({ type, paramId, lati, longi }) {
   }, [map, stateApp.customLayers, stateApp.multiSelectLandGrids]);
 
   // having to use a ref because callbacks are not guaranteed to get the correct version of context state!!!
-  function shapeFilterControl(map) {
+  async function shapeFilterControl(map) {
     if (
       stateNavRef.current?.filterBasin ||
       stateNavRef.current?.filterAOI ||
@@ -4777,14 +4808,52 @@ function Map({ type, paramId, lati, longi }) {
     ) {
       // console.time(`querySourceFeatures`);
       let features = [];
-      features = [...features, ...map.querySourceFeatures("wellsVT", { sourceLayer: "wellLines" })];
-      features = [...features, ...map.querySourceFeatures("recentsub_permits_source")];
+      features = [...features, ...map.querySourceFeatures("wellsVT", { filter: ["==", ["geometry-type"], "LineString"], sourceLayer: "wells" })];
+      // features = [...features, ...map.queryRenderedFeatures({layers: ['welllines']})];
+      // features = [...features, ...map.queryRenderedFeatures({layers: ['wellpermitlines']})];
+      features = [...features, ...map.querySourceFeatures("recentsub_permits_source", { sourceLayer: "recent_submitted_permit_laterals" })];
+      // features = [...features, ...map.queryRenderedFeatures({layers: ['recent_submitted_permit_laterals']})];
       // console.timeEnd(`querySourceFeatures`);
 
       setStateNav((stateNav) => ({
         ...stateNav,
         filterIntersectingWellLines: features,
       }));
+    }
+  }
+
+  // if this isn't fast enough we can try to only recalc length for features on the tile boundary
+  // if feature is entirely within a tile we difinitively know the length
+  // if it is on the tile boundary we know that the vector feature "may" cross tile boundaries so don't know the true
+  // length from a single tile
+  async function findBadLinestrings(map, tile) {
+    if (!tile) return
+    let repaint = false;
+    let renderedLineStrings = []
+    tile.querySourceFeatures(renderedLineStrings, { filter: ["in", ["geometry-type"], ["literal", ["LineString","MultiLineString"]]], sourceLayer: "wells" });
+    // renderedLineStrings.push(...map.queryRenderedFeatures({ filter: ["in", ["geometry-type"], ["literal", ["LineString", "MultiLineString"]]], layers: ['welllines', 'wellpermitlines'] }));
+    // renderedLineStrings.push();
+    renderedLineStrings.forEach((feature) => {
+      const geometryLength = map.getFeatureState({
+        source: 'wellsVT',
+        sourceLayer: 'wells',
+        id: feature.id
+      })?.geometryLength
+      const newGeometryLength = Math.round(turf.length(feature.geometry, { units: 'feet' }), 0)
+      if (newGeometryLength > 20000 && !(geometryLength >= newGeometryLength)) {
+        map.setFeatureState({
+          source: 'wellsVT',
+          sourceLayer: 'wells',
+          id: feature.id
+        }, {
+          geometryLength: Math.max(newGeometryLength, geometryLength || -1)
+        })
+        repaint = true
+      }
+    });
+
+    if (repaint) {
+      map.triggerRepaint();
     }
   }
 
@@ -4796,9 +4865,12 @@ function Map({ type, paramId, lati, longi }) {
         let id = mapEl.current.id;
 
         var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
+        if (index === -1) {
+          index = 0
+        }
         const newMap = new mapboxgl.Map({
           container: `${id}`,
-          style: "mapbox://styles/m1neral/" + mapStyles[index].id,
+          style: "mapbox://styles/m1neral/" + mapStyles[index]?.id,
           // style: "mapbox://styles/mapbox/outdoors-v11",
           center: stateApp.mapVars.center,
           zoom: stateApp.mapVars.zoom,
@@ -4890,7 +4962,7 @@ function Map({ type, paramId, lati, longi }) {
         });
         newMap.addControl(Draw);
 
-        const abstractControl = (e) => {
+        const abstractControl = async (e) => {
           const map = e.target;
           if (map.getZoom() >= 12) {
             const bounds = map.getBounds();
@@ -4949,6 +5021,11 @@ function Map({ type, paramId, lati, longi }) {
           }));
         };
 
+        newMap.on('sourcedata', (e) => {
+          if (e.sourceId === 'wellsVT') {
+            findBadLinestrings(e.target, e.tile);
+          }
+        });
         newMap.on("zoomend", function (e) {
           abstractControl(e);
           shapeFilterControl(e.target);
@@ -4986,14 +5063,29 @@ function Map({ type, paramId, lati, longi }) {
               newMap.addSource("wellsVT", {
                 type: "vector",
                 tiles: [`https://m1neraldata.z22.web.core.windows.net/${response.latest}/{z}/{x}/{y}.pbf`],
-                maxzoom: 15,
+                promoteId: 'id',
+                maxzoom: 15
               });
               setStateApp((state) => ({
                 ...state,
                 wellTilesetSource: `https://m1neraldata.z22.web.core.windows.net/${response.latest}/{z}/{x}/{y}.pbf`,
               }));
               setLayerSource("wellpermitlines", "wellsVT");
+              const defaultwellpermitlinesOpacity = newMap.getPaintProperty('wellpermitlines', 'line-opacity');
+              newMap.setPaintProperty('wellpermitlines', 'line-opacity', [
+                'case',
+                ['>', ['number', ['feature-state', 'geometryLength']], 20000],
+                0,
+                defaultwellpermitlinesOpacity || 1
+                ]);
               setLayerSource("welllines", "wellsVT");
+              const defaultwelllinesOpacity = newMap.getPaintProperty('welllines', 'line-opacity');
+              newMap.setPaintProperty('welllines', 'line-opacity', [
+                'case',
+                ['>', ['number', ['feature-state', 'geometryLength']], 20000],
+                0,
+                defaultwelllinesOpacity || 1
+                ]);
               setLayerSource("wellpoints", "wellsVT");
             })
             .catch((error) => {

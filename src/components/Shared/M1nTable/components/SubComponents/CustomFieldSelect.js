@@ -38,9 +38,10 @@ const CustomFieldSelect = ({
   onCustomKeyChange,
   dropdownOptions,
   column,
-  fullWidth,
+  fullWidth
 }) => {
   const classes = useStyles();
+  const [options, setOptions] = useState([])
   const defaultValue = {
     label: "----",
     value: "----",
@@ -48,8 +49,11 @@ const CustomFieldSelect = ({
   const [showOptions, setShowOptions] = useState(false);
   const [showIcon, setShowIcon] = useState(false);
 
-  const options = JSON.parse(JSON.stringify(column.dropdownOptions));
-  options.unshift(defaultValue);
+  useEffect(() => {
+    const options = JSON.parse(JSON.stringify(dropdownOptions));
+    options.unshift(defaultValue);
+    setOptions(options);
+  },[dropdownOptions])
 
   const onChange = (e, act) => {
     onCustomKeyChange(act.value);
@@ -79,7 +83,7 @@ const CustomFieldSelect = ({
         `colorText_${index}_${column.name}`
       ).innerHTML = `<span class='colorText'>----</span>`;
     }
-  }, [index, value]);
+  }, [index, value, dropdownOptions]);
 
   return (
     <div
@@ -114,9 +118,9 @@ const CustomFieldSelect = ({
             label: op.value,
             value: op.value,
           }))}
-        getOptionLabel={(option) => option.label}
-        getOptionSelected={(option, value) => {
-          return option?.value === value;
+        getOptionLabel={(option) =>  option?.label ? option.label : ''}
+        getOptionSelected={(option) => {
+          return option.value === value || option.value === value?.value
         }}
         filterOptions={(options, params) => {
           return options;
@@ -128,8 +132,12 @@ const CustomFieldSelect = ({
           return (
             <Grid className={classes.myClass} container spacing={0}>
               <Grid container item xs={2} alignItems="center">
-                {(option.value === value?.label ||
-                  (!value && option.value === defaultValue.label)) && (
+                {(
+                  (typeof value === 'string'  && option.value === value ) || 
+                  option.value === value?.label ||
+                  (!value && option.value === defaultValue.label)
+                  ) 
+                  && (
                   <CheckIcon style={{ fontSize: 13, marginRight: 5 }} />
                 )}
               </Grid>
