@@ -35,12 +35,10 @@ function AgreementOwnersTractsTable(props) {
   const formatColumns = (headers, hits) => {
     const isStateTx = !!hits.find((hit) => hit.state === 'TX')
     if (isStateTx) {
-      headers.forEach((header) => {
-        if (header.name === 'meridian') { header.name = 'survey'; header.label = 'Survey'; header.esKey = 'tract.survey.keyword' }
-        else if (header.name === 'township') { header.name = 'block'; header.label = 'Block'; header.esKey = 'tract.block.keyword' }
-        else if (header.name === 'section') { header.name = 'abstract'; header.label = 'Abstract'; header.esKey = 'tract.abstract.keyword' }
-        else if (header.name === 'range') { header.name = 'section'; header.label = 'Section'; header.esKey = 'tract.section.keyword' }
-      })
+      headers[4] = { ...headers[4], name: 'survey', label: 'Survey', esKey: 'tract.survey.keyword' }
+      headers[5] = { ...headers[5], name: 'block', label: 'Block', esKey: 'tract.block.keyword' }
+      headers[6] = { ...headers[6], name: 'abstract', label: 'Abstract', esKey: 'tract.abstract.keyword' }
+      headers[7] = { ...headers[7], name: 'section', label: 'Section', esKey: 'tract.section.keyword' }
     }
     return headers
   }

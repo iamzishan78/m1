@@ -20,10 +20,10 @@ const UnitOwnersTractHeadCells = [
     name: "township", label: "Township", esKey: 'tract.township.keyword', options: { sort: true, filter: true }
   },
   {
-    name: "range", label: "Range", esKey: 'tract.range.keyword', options: { sort: true, filter: true }
+    name: "section", label: "Section", esKey: 'tract.section.keyword', options: { sort: true, filter: true }
   },
   {
-    name: "section", label: "Section", esKey: 'tract.section.keyword', options: { sort: true, filter: true }
+    name: "range", label: "Range", esKey: 'tract.range.keyword', options: { sort: true, filter: true }
   },
   // {
   //   name: "altSurvey", label: "Alt Survey", esKey: 'tract.altSurvey.keyword', options: { sort: true, filter: true }
