@@ -86,6 +86,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
 
   const state = watch('tract.state', '')
+  const tract = watch('tract', {})
 
   const parcelOwnersRadioBValue = watch('parcelOwnersRadioBValue', 'true')
 
@@ -136,11 +137,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       else
         props.seletedOwner.parcelOwnersRadioBValue = "false";
 
-      reset({
-        state: "", county: "", survey: "", block: "", section: "", abstract: "",
-        township: "", meridian: "", range: "", sdGrossAcres: "", legalDescription: "", altSurvey: "",
-        ...props.seletedOwner
-      })
+      reset(props.seletedOwner)
 
       // reset(pick(props.seletedOwner, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'sdGrossAcres', 'uAcres', 'legalDescription']))
     }
@@ -154,8 +151,8 @@ function AddAgreementOwnerAndTractDialog(props) {
     // if launched from grid row set initializing based on selectedWell state
     if (selectedShapeLayer?.shapeJson) {
       const originalProperties = getParcelOriginalProperties(selectedShapeLayer?.shapeJson?.properties)
-      const sdGrossAcres = selectedShapeLayer?.shapeJson?.properties?.sdGrossAcres;
-      const legalDescription = selectedShapeLayer?.shapeJson?.properties?.legalDescription;
+      const sdGrossAcres = selectedShapeLayer?.shapeJson?.properties?.sdGrossAcres || "";
+      const legalDescription = selectedShapeLayer?.shapeJson?.properties?.legalDescription || "";
       selectedShapeLayer.parcelId = selectedShapeLayer._id;
 
       setTractValue({ _id: selectedShapeLayer._id, name: selectedShapeLayer.name })
@@ -163,10 +160,15 @@ function AddAgreementOwnerAndTractDialog(props) {
         ...getValues(),
         depthTo: getValues().depthTo || "All depths",
         depthFrom: getValues().depthFrom || "All depths",
-        tract: { ...getValues().tract, tractId: selectedShapeLayer._id, tractName: selectedShapeLayer.name, sdGrossAcres, legalDescription, ...originalProperties }
+        tract: { tractId: selectedShapeLayer._id, tractName: selectedShapeLayer.name, sdGrossAcres, legalDescription, ...originalProperties }
       }
       reset({ ...form })
 
+    } else {
+      if (selectedShapeLayer?.clear) {
+        setTractValue({ name: "", _id: null })
+        reset({ ...getValues(), tract: {} })
+      }
     }
   }, [selectedShapeLayer]);
 
@@ -265,6 +267,8 @@ function AddAgreementOwnerAndTractDialog(props) {
         net_acres: value.ownerData.net_acres || "",
         ...value.ownerData
       })
+    } else {
+      setNameAutValue(null)
     }
   }
 
@@ -275,7 +279,6 @@ function AddAgreementOwnerAndTractDialog(props) {
   }
 
   const autoCompleteList = dataAutoCompleteList?.autoCompleteList || []
-
   return (
     <>
       {deleteDialogOpen && (
@@ -356,55 +359,49 @@ function AddAgreementOwnerAndTractDialog(props) {
             <TextField id="_id" name='_id' style={{ display: 'none' }} inputRef={register()} />
             <TextField id="tractName" name='tract.tractName' style={{ display: 'none' }} inputRef={register()} />
             <TextField id="tractId" name='tract.tractId' style={{ display: 'none' }} inputRef={register()} />
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.state' inputRef={register()} label={"State"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled />
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.state' label={"State"}
+              InputLabelProps={{ shrink: true }} fullWidth defaultValue={tract?.state || ''} disabled />
 
-
-
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.county' inputRef={register()} label={"County"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled />
-
-
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.county' label={"County"}
+              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.county || ''} />
 
             {state !== 'TX' && <>
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.meridian' inputRef={register()} label={"Meridian"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.meridian' label={"Meridian"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.township' inputRef={register()} label={"Township"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.township' label={"Township"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.range' inputRef={register()} label={"Range"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.range' label={"Range"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.section' inputRef={register()} label={"Section"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.section' label={"Section"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
             </>}
 
             {state === 'TX' && <>
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.survey' inputRef={register()} label={"Survey"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.survey' label={"Survey"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.block' inputRef={register()} label={"Block"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.block' label={"Block"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.section' inputRef={register()} label={"Section"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.section' label={"Section"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.abstract' inputRef={register()} label={"Abstract"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.abstract' label={"Abstract"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.altSurvey' inputRef={register()} label={"Alternate Survey"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.altSurvey' label={"Alternate Survey"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
             </>}
 
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.legalDescription' label={"Full Legal Description"}
+              InputLabelProps={{ shrink: true }} multiline rows={4} fullWidth disabled defaultValue={tract?.legalDescription || ''} />
 
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.legalDescription' inputRef={register()} label={"Full Legal Description"}
-              InputLabelProps={{ shrink: true }} multiline rows={4} defaultValue='' fullWidth disabled />
-
-
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.sdGrossAcres' inputRef={register()} label={"Gross. Acres"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled />
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.sdGrossAcres' label={"Gross. Acres"}
+              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.sdGrossAcres || ''} />
 
           </div>
           <div>
