@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
 // context
 
-import { Container, Dialog, } from "@material-ui/core";
+import { Container, Dialog } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
-import TableESHOC from "components/Table/TableESHOC";
+import TableESHOC from "../TableESHOC";
 
 // QUERIES 
 import { useMutation } from "@apollo/client";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
+import AddAgreementOwnerAndTractDialog from "components/Shared/M1nTable/components/SubComponents/AddAgreementOwnerAndTractDialog";
 
 import { deepEqualObjects, copy } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
@@ -17,9 +18,8 @@ import TableHeader from 'components/Table/constants/unit-owners-tracts-header-sc
 
 // Utilities
 import { usetableStyles } from "../Styles";
-import AddAgreementOwnerAndTractDialog from "components/Shared/M1nTable/components/SubComponents/AddAgreementOwnerAndTractDialog";
 
-function AgreementOwnersTractsTable(props) {
+function ESTableComponent(props) {
   const classes = usetableStyles();
 
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
@@ -32,13 +32,28 @@ function AgreementOwnersTractsTable(props) {
     refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
 
+  useEffect(() => {
+    props.setTableMeta({
+      shapeType: props.shapeType,
+      addableName: "Tract",
+      extendSearchQuery: `shape._id:${props.customLayer._id}`,
+      TableHeader: copy(TableHeader),
+      esIndex: 'shapeowners_flat',
+      startPaginationAt: 25,
+
+      formatColumns,
+    })
+  }, []);
+
   const formatColumns = (headers, hits) => {
     const isStateTx = !!hits.find((hit) => hit.state === 'TX')
     if (isStateTx) {
-      headers[4] = { ...headers[4], name: 'survey', label: 'Survey', esKey: 'tract.survey.keyword' }
-      headers[5] = { ...headers[5], name: 'block', label: 'Block', esKey: 'tract.block.keyword' }
-      headers[6] = { ...headers[6], name: 'abstract', label: 'Abstract', esKey: 'tract.abstract.keyword' }
-      headers[7] = { ...headers[7], name: 'section', label: 'Section', esKey: 'tract.section.keyword' }
+      headers.forEach((header) => {
+        if (header.name === 'meridian') { header.name = 'survey'; header.label = 'Survey'; header.esKey = 'tract.survey.keyword' }
+        else if (header.name === 'township') { header.name = 'block'; header.label = 'Block'; header.esKey = 'tract.block.keyword' }
+        else if (header.name === 'section') { header.name = 'abstract'; header.label = 'Abstract'; header.esKey = 'tract.abstract.keyword' }
+        else if (header.name === 'range') { header.name = 'section'; header.label = 'Section'; header.esKey = 'tract.section.keyword' }
+      })
     }
     return headers
   }
@@ -54,18 +69,6 @@ function AgreementOwnersTractsTable(props) {
     }
   }
 
-  useEffect(() => {
-    props.setTableMeta({
-      shapeType: props.shapeType,
-      addableName: "Tract",
-      extendSearchQuery: `shape._id:${props.customLayer._id}`,
-      TableHeader: copy(TableHeader),
-      esIndex: 'shapeowners_flat',
-      startPaginationAt: 25,
-
-      formatColumns,
-    })
-  }, []);
 
   return (
     <Container
@@ -126,4 +129,4 @@ function AgreementOwnersTractsTable(props) {
   );
 }
 
-export default React.memo(TableESHOC(AgreementOwnersTractsTable), deepEqualObjects);
+export default React.memo(TableESHOC(ESTableComponent), deepEqualObjects);

@@ -102,7 +102,7 @@ export default function UnitSummary(props) {
                             setProperties({ ...unitProperties, description: e.target.value });
                         }}
                         onKeyDown={(e) => {
-                            if (e.keyCode === 13)
+                            if (e.keyCode === 13 && !e.shiftKey)
                                 props.updateProperties(e, 'description', unitProperties.description);
                         }}
                         onFocus={() => { setTableDataState({ description: true }) }}
