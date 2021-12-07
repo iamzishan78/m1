@@ -71,6 +71,7 @@ function MapGridCardSearch(props) {
   const [searchTop] = React.useState(100);
 
 
+  // console.log('stateNav', stateNav)
 
 
   ///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
@@ -187,12 +188,13 @@ function MapGridCardSearch(props) {
     let query = '';
     Object.entries(filters).map((filter, index) => {
       for(let i = 0; i < filter[1]?.length; i++) {
-        query = query + ` ${query ? 'OR' : ''} ${filter[0]}:${filter[1][i]}`
-      }
-      if(index < Object.entries(filters).length - 1){
-        query = query + ' AND '
+        if(query && i===0){
+          query = query + ' AND '
+        }
+        query = `${query} ${i===0 ? '(' : 'OR'} ${filter[0]}.keyword:(${filter[1][i]}) ${i===filter[1].length - 1? ')' : ''}`
       }
     })
+    console.log('query', query)
     return query;
   }
 
@@ -440,7 +442,7 @@ function MapGridCardSearch(props) {
           ? callWellSearch({
             input: searchInputValue,
             searchTop,
-            navFilter: { operator: stateNav.operatorName }
+            navFilter: { operator: stateNav.operatorName, wellType: stateNav.typeName }
           })
           : null,
         props.searchOption == "owner"
@@ -509,7 +511,8 @@ function MapGridCardSearch(props) {
     callContactsSearch,
     callMapboxSearch,
     props.searchOption,
-    stateNav.operatorName
+    stateNav.operatorName,
+    stateNav.typeName,
   ]);
 
 
