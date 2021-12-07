@@ -71,7 +71,7 @@ function MapGridCardSearch(props) {
   const [searchTop] = React.useState(100);
 
 
-  // console.log('stateNav', stateNav)
+  console.log('stateNav', stateNav)
 
 
   ///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
@@ -198,11 +198,33 @@ function MapGridCardSearch(props) {
     return query;
   }
 
+  const getFilters = (filters) => {
+    const customFilters = []
+    Object.entries(filters).map((filter, index) => {
+      if(filter[1].from || filter[1].to){
+        customFilters.push({
+          field: filter[0],
+          value: {
+            range:{
+              [filter[0]]: { 
+                gte: filter[1].from ? filter[1].from : null,
+                lte: filter[1].to ? filter[1].to : null,
+              }
+            }
+          }
+        })
+
+      }
+    })
+    return customFilters;
+  }
+
   const startPaginationAt = 50;
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const search = getSearchQuery(request.navFilter);
+        const search = getSearchQuery(request.navFilter.query);
+        const filters = getFilters(request.navFilter.filter);
         getESWellsPaginatedList({
           variables: {
             esIndex: "platformData:wells",
@@ -211,7 +233,8 @@ function MapGridCardSearch(props) {
               keep_alive: "1micros"
             },
             search: request.input? `wellName:*${request.input}*${search}`: search,
-            sort:[]
+            sort:[],
+            filters
           }
         })
         // getPaginatedWells({
@@ -442,7 +465,17 @@ function MapGridCardSearch(props) {
           ? callWellSearch({
             input: searchInputValue,
             searchTop,
-            navFilter: { operator: stateNav.operatorName, wellType: stateNav.typeName, wellBoreProfile: stateNav.profileName, wellStatus: stateNav.statusName }
+            navFilter: {
+              query: {
+                operator: stateNav.operatorName, 
+                wellType: stateNav.typeName, 
+                wellBoreProfile: stateNav.profileName, 
+                wellStatus: stateNav.statusName,
+              },
+              filter:{
+                spudDate: { from: stateNav.spudDateFrom, to: stateNav.spudDateTo } }
+              }
+              
           })
           : null,
         props.searchOption == "owner"
@@ -514,7 +547,9 @@ function MapGridCardSearch(props) {
     stateNav.operatorName,
     stateNav.typeName,
     stateNav.profileName,
-    stateNav.statusName
+    stateNav.statusName,
+    stateNav.spudDateFrom,
+    stateNav.spudDateTo
   ]);
 
 
