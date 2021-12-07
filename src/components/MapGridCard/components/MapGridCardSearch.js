@@ -442,7 +442,7 @@ function MapGridCardSearch(props) {
           ? callWellSearch({
             input: searchInputValue,
             searchTop,
-            navFilter: { operator: stateNav.operatorName, wellType: stateNav.typeName }
+            navFilter: { operator: stateNav.operatorName, wellType: stateNav.typeName, wellBoreProfile: stateNav.profileName, wellStatus: stateNav.statusName }
           })
           : null,
         props.searchOption == "owner"
@@ -513,6 +513,8 @@ function MapGridCardSearch(props) {
     props.searchOption,
     stateNav.operatorName,
     stateNav.typeName,
+    stateNav.profileName,
+    stateNav.statusName
   ]);
 
 

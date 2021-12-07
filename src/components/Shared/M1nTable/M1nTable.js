@@ -1692,6 +1692,12 @@ function M1nTable(props) {
           }
         }
 
+        if(props.targetLabel === 'well') {
+          if(stateNav.profileName?.length > 0) {
+            privateCol.push({ name: "wellBoreProfile", label: "Well Profile" })
+          }
+        }
+
         const buildingColumns = [SearchsHeadCells[0], ...privateCol];
 
         if (props.showTags) {
