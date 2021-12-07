@@ -22,21 +22,6 @@ import { UPDATE_SHAPE_WELL_INTEREST } from "graphQL/useMutationUpdateShapeWellIn
 
 function ShapeWellInterestTable(props) {
   const classes = usetableStyles();
-  // const [addToTable, setAddToTable] = useState(false)
-
-  // function states 
-  // const [columns, Columns] = useState([]);
-  // const [selectedRow, selectRow] = useState([]);
-
-  // const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
-
-  // // queries 
-
-  // const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
-  //   fetchPolicy: "no-cache", onCompleted: () => {
-  //     props.setLoading(false);
-  //   }
-  // });
 
   const [updateShapeWellInterests] = useMutation(UPDATE_SHAPE_WELL_INTEREST, {
     onCompleted: () => {
@@ -44,16 +29,6 @@ function ShapeWellInterestTable(props) {
     },
     refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
-  // const tableData = elasticData?.getESPaginatedList
-
-  const addAble = {
-    type: "wellInterest", customLayer: props.customLayer,
-    customLayerId: props.customLayer._id,
-  }
-
-  const startPaginationAt = 25
-  const extendSearchQuery = `shape._id:${props.customLayer._id}`
-  const esIndex = 'shapewellinterests_flat'
 
   useEffect(() => {
     props.setTableMeta({
@@ -68,27 +43,6 @@ function ShapeWellInterestTable(props) {
     })
   }, []);
 
-  ////////////Contact Wells begin///////////////////////////////////////////////
-  // useEffect(() => {
-  //   getESPaginatedList({
-  //     variables: {
-  //       esIndex,
-  //       pagination: {
-  //         first: startPaginationAt,
-  //         keep_alive: "1micros"
-  //       },
-  //       search: `shape._id:${props.customLayer._id}`
-  //     }
-  //   });
-  // }, [props.parent]);
-
-  // useEffect(() => {
-  //   if (tableData?.hits?.length > 0) {
-  //     const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
-  //     props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
-  //   }
-  // }, [tableData]);
-
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
       hit = props.setGenricData(hit, hit._id, ['comments', 'tracks', 'tags']);
@@ -97,91 +51,6 @@ function ShapeWellInterestTable(props) {
     });
     return hits
   }
-
-  // useEffect(() => {
-  //   if (tableData?.hits?.length > 0) {
-  //     let hits = tableData?.hits
-  //     hits = hits.map((hit) => {
-  //       hit = props.setGenricData(hit, hit._id, ['comments', 'tracks', 'tags']);
-  //       return hit;
-  //     });
-  //     props.setRows(hits);
-  //     TableHeader.forEach((column) => {
-  //       if (column?.options?.filter) {
-  //         column.options = {
-  //           ...column.options,
-  //           filter: true,
-  //           filterType: 'custom',
-  //           filterOptions: {
-  //             display: (filterList, onChange, index, column) => {
-  //               column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
-  //               return (
-  //                 <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-  //                   extendSearchQuery={extendSearchQuery} query={GET_ES_FILTER_LIST} esIndex={esIndex} />
-  //               );
-  //             }
-  //           }
-  //         }
-  //       }
-  //     })
-
-  //     setColumns(TableHeader);
-  //     props.setLoading(false);
-  //   }
-  //   else if (tableData?.hits?.length === 0) {
-  //     props.setRows([]);
-  //     props.setLoading(false);
-  //   }
-  // }, [tableData, props.dependencyUpdate]);
-
-
-  ////////////Contact Wells end///////////////////////////////////////////////
-
-  // const onTableChange = (action, tableState, rows, meta) => {
-  //   tableState.esIndex = esIndex
-  //   const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
-  //   switch (action) {
-  //     case "search":
-  //     case "sort":
-  //     case "filterChange":
-  //     case "resetFilters":
-  //     case "changeRowsPerPage":
-  //       tableActions.extendSearchQuery(extendSearchQuery);
-  //       tableActions.genericESAction();
-  //       break;
-  //     case "changePage":
-  //       tableActions.extendSearchQuery(extendSearchQuery);
-  //       tableActions.changeESPage();
-  //       break;
-  //     default:
-  //   }
-  // }
-
-  // const count = tableData?.total || 0
-  // const options = {
-  //   rowsPerPageOptions: [10, 25, 50, 100],
-  //   count: count,
-  //   serverSide: true,
-  //   searchable: true,
-  //   filter: true,
-  //   customToolbar: () => {
-
-  //     return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-  //       <Button
-  //         color="secondary"
-  //         className={classes.multiSelectionTopBarButtons}
-  //         onClick={() => { setAddToTable(true); selectRow(null) }}
-  //       >
-  //         + ADD Well To {props.shapeType?.toUpperCase()}
-  //       </Button>
-  //     </div>
-  //   },
-  //   onRowClick: (rowData, { dataIndex, rowIndex }) => {
-  //     setAddToTable(true)
-  //     selectRow({ ...props.rows[dataIndex] })
-  //   }
-  // }
-
 
   const deleteFunc = (ids) => {
     props.setLoading(true);
