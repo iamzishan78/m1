@@ -1,6 +1,9 @@
 
 const UnitWellHeadCells = [
   {
+    name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
+  },
+  {
     name: "wellId",
     options: {
       display: false,
@@ -27,7 +30,7 @@ const UnitWellHeadCells = [
   },
 
   {
-    name: "leaseId", label: "Lease Number", options: {
+    name: "leaseId", label: "Lease Number", esKey: 'leaseId.keyword', options: {
       dbName: "well.leaseId",
       display: true,
       filter: true,
@@ -39,7 +42,7 @@ const UnitWellHeadCells = [
     }
   },
   {
-    name: "lease", label: "Lease Name", options: {
+    name: "lease", label: "Lease Name", esKey: 'lease.keyword', options: {
       dbName: "well.lease",
       display: true,
       filter: true,
