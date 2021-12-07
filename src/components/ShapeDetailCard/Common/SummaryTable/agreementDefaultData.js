@@ -15,6 +15,10 @@ const tableData = [
         type: 'autocomplete',
         key: 'agreementType'
     }, {
+        label: 'Agreement Subtype',
+        type: 'autocomplete',
+        key: 'agreementSubtype'
+    }, {
         label: 'Rights Type',
         type: 'autocomplete',
         key: 'rightsType'
@@ -56,7 +60,7 @@ const tableData = [
         label: 'Bonus Payment',
         type: 'text',
         key: 'bounusPayment',
-        formatValue: (value) => `$ ${value}`,
+        formatValue: (value) => value ? `$ ${value}` : '',
         InputProps: {
             startAdornment: <InputAdornment position="start">$</InputAdornment>,
         }
@@ -75,6 +79,11 @@ const tableData = [
         label: 'Net Acres',
         type: 'number',
         key: 'netAcres'
+    },
+    {
+        label: 'Approval Status',
+        type: 'autocomplete',
+        key: 'approvalStatus'
     }
 ]
 export default tableData

@@ -16,11 +16,11 @@ import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import TabButtons from "components/Shared/TabPanels/TabButtons"
 import AgreementSummary from "./AgreementSummary";
 import ProvisionsTab from "./ProvisionsTab";
-import UnitOwnersTable from "components/Table/Unit/UnitOwnersTable";
-import UnitWellInterestTable from "components/Table/Unit/UnitWellInterestTable";
-import AssociatedWellsUnitTable from "components/Table/Wells/AssociatedWellsUnitTable";
+import UnitOwnersTable from "components/Table/Shape/UnitOwnersTable";
+import ShapeWellInterestTable from "components/Table/Shape/ShapeWellInterestTable";
+import AssociatedWellsShapeTable from "components/Table/Wells/AssociatedWellsShapeTable";
 import AgreementOwnersTractsTable from "components/Table/Agreement/AgreementOwnersTractsTable";
-import AssociatedTractsUnitTable from "components/Table/Wells/AssociatedTractsUnitTable";
+import AssociatedTractsShapeTable from "components/Table/Wells/AssociatedTractsShapeTable";
 import Tags from "components/Shared/Tagger";
 import { showSuccessMessage, showErrorMessage } from "actions";
 import { AppContext } from "AppContext";
@@ -228,7 +228,7 @@ export default function AgreementDetailCard(props) {
                   />
                 </div>,
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <AssociatedTractsUnitTable
+                  <AssociatedTractsShapeTable
                     customLayer={uniObj}
                     shapeType='Agreement'
                     header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
@@ -242,7 +242,7 @@ export default function AgreementDetailCard(props) {
               value={selectedWellTab}
               panels={[
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <UnitWellInterestTable
+                  <ShapeWellInterestTable
                     customLayer={uniObj}
                     shapeType='Agreement'
                     parent="associatedWellsPerUnits"
@@ -253,7 +253,7 @@ export default function AgreementDetailCard(props) {
                   />
                 </div>,
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <AssociatedWellsUnitTable
+                  <AssociatedWellsShapeTable
                     customLayer={uniObj}
                     shapeType='Agreement'
                     parent="associatedWellsPerUnits"
@@ -271,7 +271,7 @@ export default function AgreementDetailCard(props) {
               <RelatedDetailsDocumentTable
                 customLayer={uniObj}
                 relatedObjectType='Shape'
-                name='Unit'
+                name='Agreement'
                 header={<DocumentHeader />}
                 dense
               />

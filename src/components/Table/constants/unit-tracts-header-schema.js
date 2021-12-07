@@ -10,11 +10,12 @@ const UnitTractHeadCells = [
     name: "county", label: "County", esKey: 'county.keyword', options: { sort: true, filter: true }
   },
   {
-    name: "meridian", label: "Meridian", esKey: 'meridian.keyword', options: { sort: true, filter: true }
-  },
-  {
     name: "name", label: "Tract Name", esKey: 'name.keyword', options: { sort: true, filter: true }
   },
+  {
+    name: "meridian", label: "Meridian", esKey: 'meridian.keyword', options: { sort: true, filter: true }
+  },
+ 
   {
     name: "township", label: "Township", esKey: 'township.keyword', options: { sort: true, filter: true }
   },

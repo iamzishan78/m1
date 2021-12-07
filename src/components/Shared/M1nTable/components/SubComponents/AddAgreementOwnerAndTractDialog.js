@@ -130,7 +130,18 @@ function AddAgreementOwnerAndTractDialog(props) {
       setTractValue({ _id: props.seletedOwner?.tract?.tractId, name: props?.seletedOwner?.tract?.tractName })
       setNameAutValue({ _id: props.seletedOwner?.ownerEntity, name: props?.seletedOwner?.ownerName })
       setSelectedShapeLayer(props.seletedOwner);
-      reset(props.seletedOwner)
+
+      if (props.seletedOwner.depthTo === "All depths" && props.seletedOwner.depthFrom === "All depths")
+        props.seletedOwner.parcelOwnersRadioBValue = "true";
+      else
+        props.seletedOwner.parcelOwnersRadioBValue = "false";
+
+      reset({
+        state: "", county: "", survey: "", block: "", section: "", abstract: "",
+        township: "", meridian: "", range: "", sdGrossAcres: "", legalDescription: "", altSurvey: "",
+        ...props.seletedOwner
+      })
+
       // reset(pick(props.seletedOwner, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'sdGrossAcres', 'uAcres', 'legalDescription']))
     }
   }, [props.seletedOwner]);
@@ -172,6 +183,11 @@ function AddAgreementOwnerAndTractDialog(props) {
       if (['mineral_interest', 'royalty_interest', 'orri', 'net_acres'].includes(key))
         ownerToAdd[key] = addTrailingZeros(ownerToAdd[key])
     })
+
+    if (ownerToAdd.parcelOwnersRadioBValue === "true") {
+      ownerToAdd.depthFrom = 'All depths';
+      ownerToAdd.depthTo = 'All depths';
+    }
 
     setLoading(true);
     if (props.seletedOwner) {
@@ -239,7 +255,16 @@ function AddAgreementOwnerAndTractDialog(props) {
   const setExistingOwner = (e, value) => {
     if (value?._id && value?.name) {
       setNameAutValue(value)
-      reset({ ...getValues(), ownerEntity: value._id, ownerName: value.name, ...value.ownerData })
+      reset({
+        ...getValues(), ownerEntity: value._id, ownerName: value.name,
+        mineral_interest: value.ownerData.mineral_interest || "",
+        royalty_interest: value.ownerData.royalty_interest || "",
+        orri: value.ownerData.orri || "",
+        depthFrom: value.ownerData.depthFrom || "",
+        depthTo: value.ownerData.depthTo || "",
+        net_acres: value.ownerData.net_acres || "",
+        ...value.ownerData
+      })
     }
   }
 
@@ -351,7 +376,7 @@ function AddAgreementOwnerAndTractDialog(props) {
               <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.range' inputRef={register()} label={"Range"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.altSurvey' inputRef={register()} label={"Section"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.section' inputRef={register()} label={"Section"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
             </>}
 
@@ -362,18 +387,20 @@ function AddAgreementOwnerAndTractDialog(props) {
               <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.block' inputRef={register()} label={"Block"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.range' inputRef={register()} label={"Section"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.section' inputRef={register()} label={"Section"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.section' inputRef={register()} label={"Abstract"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.abstract' inputRef={register()} label={"Abstract"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.altSurvey' inputRef={register()} label={"Alternate Survey"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
             </>}
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.altSurvey' inputRef={register()} label={"Alternate Survey"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled />
+
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.legalDescription' inputRef={register()} label={"Full Legal Description"}
-              InputLabelProps={{ shrink: true }} multiline rows={4} fullWidth disabled />
+              InputLabelProps={{ shrink: true }} multiline rows={4} defaultValue='' fullWidth disabled />
 
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.sdGrossAcres' inputRef={register()} label={"Gross. Acres"}
