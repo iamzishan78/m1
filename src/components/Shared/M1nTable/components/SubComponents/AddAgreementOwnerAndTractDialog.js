@@ -257,6 +257,10 @@ function AddAgreementOwnerAndTractDialog(props) {
   const setExistingOwner = (e, value) => {
     if (value?._id && value?.name) {
       setNameAutValue(value)
+      let net_acres = value.ownerData.net_acres
+      if (value.ownerData.mineral_interest && !value.ownerData.net_acres) {
+        net_acres = addTrailingZeros(getValues()?.tract?.sdGrossAcres ? (getValues()?.tract?.sdGrossAcres * value.ownerData.mineral_interest).toFixed(8) : null);
+      }
       reset({
         ...getValues(), ownerEntity: value._id, ownerName: value.name,
         mineral_interest: value.ownerData.mineral_interest || "",
@@ -264,7 +268,7 @@ function AddAgreementOwnerAndTractDialog(props) {
         orri: value.ownerData.orri || "",
         depthFrom: value.ownerData.depthFrom || "",
         depthTo: value.ownerData.depthTo || "",
-        net_acres: value.ownerData.net_acres || "",
+        net_acres: net_acres || "",
         ...value.ownerData
       })
     } else {
@@ -438,7 +442,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 
           {
             isTractOwner ?
-              <AutoCompleteParcelOwners variant='outlined' parcel={props?.seletedOwner?.tract || selectedShapeLayer} placeholder='Search existing tract owner by name'
+              <AutoCompleteParcelOwners variant='outlined' parcel={tract} placeholder='Search existing tract owner by name'
                 value={nameAutValue} onChange={setExistingOwner}
                 InputProps={{
                   startAdornment: (
