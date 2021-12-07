@@ -77,12 +77,6 @@ const useStyles = makeStyles((theme) => ({
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8
   },
-  checkDetailsSection: {
-    padding: 20,
-    background: "#ffffff",
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8
-  },
   tags: {
     "& fieldset": {
       border: "none",
@@ -219,7 +213,7 @@ export default function DetailComponents(props) {
         </Grid>
       </div>
       <div className="flex justifyBetween alignStart w-100">
-        <div className="w-100" style={{ padding: 20 }}>
+        <div className="w-100" style={{ padding: 20, maxWidth: "70%" }}>
           {/**
          * Detail title section
          */}
@@ -280,13 +274,13 @@ export default function DetailComponents(props) {
               </div>
               <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
               <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
-                <CheckDetailsSection />
+                <CheckDetailsSection checkId={checkId} />
               </div>
             </div>
           </div>
         </div>
 
-        <div style={{ marginTop: 20, marginRight: 24, padding: 20, background: "#ffffff", borderRadius: 8, minHeight: "calc(100vh + 24px)", height: "100%", maxWidth: 360, width: "100%" }}>
+        <div style={{ marginTop: 20, marginRight: 24, padding: 20, background: "#ffffff", borderRadius: 8, minHeight: "calc(100vh + 64px)", height: "100%", maxWidth: 360, width: "100%" }}>
 
         </div>
       </div>

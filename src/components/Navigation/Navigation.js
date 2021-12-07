@@ -498,7 +498,7 @@ export default function Navigation(props) {
               )}
               {location.pathname.startsWith("/revenue") && (
                 <Typography
-                  variant="h4"
+                  variant="h6"
                   style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.revenueDetails.expandedPanel ? "450px" : "30px" }}
                 >
                   {stateApp.revenueDetails.title}

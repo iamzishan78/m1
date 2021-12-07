@@ -1202,6 +1202,49 @@ function SubTable(props) {
             }
             break;
           }
+          case "property": {
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  const { columnData: { label }, rowData } = tableMeta;
+                  return (
+                    <>
+                      {label === "Property Code" && (
+                        <span style={{ padding: 10 }}>{rowData[1].number}</span>
+                      )}
+
+                      {label === "Property Name" && (
+                        <span style={{ padding: 10 }}>{rowData[1].name}</span>
+                      )}
+
+                      {label === "State" && (
+                        <span style={{ padding: 10 }}>{rowData[1].state}</span>
+                      )}
+
+                      {label === "Country" && (
+                        <span style={{ padding: 10 }}>{rowData[1].county}</span>
+                      )}
+                    </>
+                  );
+                },
+              };
+            }
+            break;
+          }
+          case "date": {
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <span style={{ padding: 10 }}>{moment(value).format("MM/DD/YYYY")}</span>
+                  );
+                },
+              };
+            }
+            break;
+          }
           case "lastLogin": {
             {
               column.options = {
@@ -1407,7 +1450,6 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
-                  console.log("tableMeta", tableMeta.rowData);
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
@@ -2396,7 +2438,7 @@ function SubTable(props) {
     rowsPerPageOptions: props.rows && props.rows.length > 25 ? [10, 25, 50, 100] : props.rows && props.rows.length > 10 ? [10, 25] : [],
     selectableRows: props.targetLabel === "production_detail" ? false : "multiple",
     print: false,
-    download: (props.parent === "assocTaxRollInterests" || props.parent === "OwnersPerWell" || props.parent === "RevenueStatementTable") ? true : false,
+    download: (props.parent === "assocTaxRollInterests" || props.parent === "OwnersPerWell" || props.parent === "RevenueStatementTable" || props.parent === "CheckDetailsTable") ? true : false,
     viewColumns: props.targetLabel !== "usermanagement",
 
     onColumnViewChange: (changedColumn, action) => {
@@ -3493,6 +3535,7 @@ function SubTable(props) {
     return dataSet;
   }
 
+  console.log("rows", rows)
 
   return (
     <div
