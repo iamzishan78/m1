@@ -150,6 +150,12 @@ function GridView({
     if (newGridView?.addGridView?.success) {
       setShowSaveAsNew(false);
       setSelectedGridView(newGridView.addGridView.newGridView);
+      setStateApp((state, props) => {
+        return {
+          ...state,
+          selectedView: newGridView.addGridView.newGridView
+        };
+      });
     }
   }, [newGridView]);
 
@@ -158,6 +164,12 @@ function GridView({
       setShowSaveAsNew(false);
       setEditGridView(null);
       setSelectedGridView(updatedGridView.updateGridView.updatedGridView);
+      setStateApp((state, props) => {
+        return {
+          ...state,
+          selectedView: updatedGridView.updateGridView.updatedGridView
+        };
+      });
     }
   }, [updatedGridView]);
 
@@ -196,6 +208,12 @@ function GridView({
       data = handleDefaultView(data, stateApp.user);
     }
     setSelectedGridView(data);
+    setStateApp((state, props) => {
+      return {
+        ...state,
+        selectedView: data
+      };
+    });
     setShowViewModal(false);
   };
   return (

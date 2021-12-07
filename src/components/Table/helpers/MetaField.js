@@ -207,7 +207,7 @@ const MetaField = ({ category, columns }) => {
               display: true,
               filter: true,
               searchable: false,
-              sort: false,
+              sort: true,
               download: false,
               print: false,
               viewColumns: true,
