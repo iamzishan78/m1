@@ -64,7 +64,7 @@ function Panel({ children, handlePanelStateChange, expandedPanel }) {
           [classes.revenueRootExpanded]: expandedPanel,
           [classes.revenueRootCollapsed]: !expandedPanel,
         })}
-        style={{ marginTop: "62px" }}
+        // style={{ marginTop: "62px" }}
       >
         {children}
       </div>
