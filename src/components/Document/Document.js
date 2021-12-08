@@ -13,6 +13,7 @@ import M1nTable from "../Shared/M1nTable/M1nTable";
 import Drawer from "./components/Drawer";
 import { Container } from "@material-ui/core";
 import DocumentsTable from "components/Table/Documents/DocumentsTable";
+// import { DocumentsTableContainer } from "containers";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,6 +63,7 @@ export default function DocumentComponent() {
   return (
     <div className={classes.root}>
       <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} />
+      {/* <DocumentsTableContainer parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} /> */}
       {/* <M1nTable dense parent="Documents"></M1nTable> */}
       {/* {(stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument)?.length > 0) && ( */}
         <Drawer data={true}></Drawer>
