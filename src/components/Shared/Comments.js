@@ -342,7 +342,7 @@ export default function Comments(props) {
           objectType: props.targetLabel,
         },
       },
-      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds", "getESPaginatedList"],
       awaitRefetchQueries: true,
     });
   };
@@ -383,7 +383,7 @@ export default function Comments(props) {
         variables: {
           commentId: comment._id,
         },
-        refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+        refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds", "getESPaginatedList"],
         awaitRefetchQueries: true,
       });
     else {
@@ -392,7 +392,7 @@ export default function Comments(props) {
           variables: {
             commentId: comment.ids[i],
           },
-          refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+          refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds", "getESPaginatedList"],
           awaitRefetchQueries: true,
         });
       }
@@ -592,7 +592,7 @@ export default function Comments(props) {
                     {/* //// delete line //// */}
                     <h5 className={classes.deleteLine} onClick={() => handleDeleteClick(comment)}>
                       Delete
-                      </h5>
+                    </h5>
                   </div>
                 ))
                 : //// ListItem  End ////

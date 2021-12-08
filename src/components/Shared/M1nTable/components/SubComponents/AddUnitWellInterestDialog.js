@@ -67,7 +67,7 @@ function AddUnitInterestDialog(props) {
     },
     refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
-  const [updateShapeWellInterest] = useMutation(UPDATE_SHAPE_WELL_INTEREST, {
+  const [updateShapeWellInterests] = useMutation(UPDATE_SHAPE_WELL_INTEREST, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
@@ -135,14 +135,14 @@ function AddUnitInterestDialog(props) {
   const handleSave = () => {
     setLoading(true);
     if (props.wellInterest) {
-      updateShapeWellInterest({
+      updateShapeWellInterests({
         variables: {
-          wellInterest: {
+          wellInterests: [{
             id: props.wellInterest._id,
             shapeType: props.shapeType,
             globalWellId: selectedWell.Id,
             ...getValues(),
-          },
+          }]
         },
         refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
       });
@@ -174,12 +174,12 @@ function AddUnitInterestDialog(props) {
   const deleteFunc = async () => {
     try {
       setLoading(true);
-      updateShapeWellInterest({
+      updateShapeWellInterests({
         variables: {
-          wellInterest: {
+          wellInterest: [{
             id: props.wellInterest._id,
             isDeleted: true
-          },
+          }],
         },
         refetchQueries: [
           "getESPaginatedList", "getESFilterList"
@@ -280,7 +280,6 @@ function AddUnitInterestDialog(props) {
               variant="outlined"
               margin="dense"
               name='wellName'
-              inputRef={register()}
               label={"Well Name"}
               InputLabelProps={{ shrink: true }}
               fullWidth
@@ -292,7 +291,6 @@ function AddUnitInterestDialog(props) {
               variant="outlined"
               margin="dense"
               name='api'
-              inputRef={register()}
               label="API Number"
               InputLabelProps={{ shrink: true }}
               fullWidth
