@@ -15,6 +15,7 @@ import { TRACKSBYOBJECTTYPE } from "graphQL/useQueryTracksByObjectType";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { AutoCompleteFilter } from "./AutoCompleteFilter";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { get } from "lodash";
 
 
 import { usetableStyles } from "./Styles";
@@ -102,6 +103,7 @@ export const TableESHOC = (Component) => {
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
 
+
         useEffect(() => {
             getESPaginatedList({
                 variables: {
@@ -115,10 +117,11 @@ export const TableESHOC = (Component) => {
             });
         }, [tableMeta?.esIndex]);
 
+
         useEffect(() => {
-            if (tableData?.hits?.length > 0) {
-                const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
-                initializeGenericData(objectsIdsArray, ['comments', 'tags']);
+            if (tableData?.hits?.length > 0 && tableMeta?.initializeGenericData?.actions) {
+                const objectsIdsArray = tableData?.hits?.map((hit) => get(hit, tableMeta?.initializeGenericData?.key));
+                initializeGenericData(objectsIdsArray, tableMeta.initializeGenericData.actions);
             }
         }, [tableData]);
 
@@ -126,11 +129,10 @@ export const TableESHOC = (Component) => {
         useEffect(() => {
             if (tableData?.hits?.length > 0) {
                 let { TableHeader, extendSearchQuery, formatColumns, formatHits, esIndex } = tableMeta
-
                 let hits = tableData?.hits
                 if (formatHits)
-                    hits = formatHits(TableHeader, hits)
-
+                    hits = formatHits(hits)
+                console.log("hits", hits)
                 setRows(hits);
 
                 if (formatColumns)
@@ -215,24 +217,11 @@ export const TableESHOC = (Component) => {
                 }
             }
             if (actions.includes('comments')) {
-                data.commentsCounter = 0;
-                const comments = dataCommentsCounter?.commentsCounter || []
-                for (let i = 0; i < comments.length; i++) {
-                    if (id === comments[i]._id) {
-                        data.commentsCounter = comments[i].total;
-                        break;
-                    }
-                }
+                data.commentsCounter = data.comments.length;
             }
             if (actions.includes('tags')) {
-                data.tags = [[], 0];
-                const tags = dataTagSamples?.tagSamples || []
-                for (let i = 0; i < tags.length; i++) {
-                    if (id === tags[i]._id) {
-                        data.tags = [tags[i].tags, tags[i].total];
-                        break;
-                    }
-                }
+                if (data?.tags[0] && data?.tags[0].tag)
+                    data.tags = [data.tags.map(t => (t.tag)), data.tags.length];
             }
 
             if (actions.includes('ifAreContacts')) {

@@ -189,15 +189,15 @@ export default function Tags(props) {
   }, [props.targetSourceId, props.multipleIds]);
 
   useEffect(() => {
-    if(upsertedTag?.upsertTag?.tag && props.targetSourceId === 'new'){
+    if (upsertedTag?.upsertTag?.tag && props.targetSourceId === 'new') {
       const tags = JSON.parse(JSON.stringify(tagsArray));
       tags.push(upsertedTag.upsertTag.tag);
       setTagsArray(tags);
-      if(props.setTagId){
+      if (props.setTagId) {
         props.setTagId(upsertedTag.upsertTag.tag._id)
       }
     }
-  },[upsertedTag])
+  }, [upsertedTag])
 
   useEffect(() => {
     if (dataTags && dataTags.tagsByObjectId) {
@@ -331,7 +331,8 @@ export default function Tags(props) {
             "getWellsIdsFromTagsArray",
             "getOwnersIdsFromTagsArray",
             "getContactsFilterOptions",
-            "getContactWellInterestsFilterOptions"
+            "getContactWellInterestsFilterOptions",
+            "getESPaginatedList"
           ],
           awaitRefetchQueries: true,
         });
@@ -357,7 +358,8 @@ export default function Tags(props) {
               "getOwnersIdsFromTagsArray",
               "getTagsByObjectsIds",
               "getContactsFilterOptions",
-              "getContactWellInterestsFilterOptions"
+              "getContactWellInterestsFilterOptions",
+              "getESPaginatedList"
             ],
             awaitRefetchQueries: true,
           });
@@ -385,6 +387,7 @@ export default function Tags(props) {
           "getTagsByObjectsIds",
           "getPaginatedContacts",
           "getContactsFilterOptions",
+          "getESPaginatedList"
         ],
         awaitRefetchQueries: true,
       });
@@ -407,6 +410,7 @@ export default function Tags(props) {
             "getTagsByObjectsIds",
             "getPaginatedContacts",
             "getContactsFilterOptions",
+            "getESPaginatedList"
           ],
           awaitRefetchQueries: true,
         });

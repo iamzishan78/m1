@@ -65,6 +65,9 @@ const AutoCompleteShapeLayer = ({ value, shapeType, setSelectedShapeLayer }) => 
             getCustomLayer({
                 variables: { id: value._id }
             });
+        else
+            setSelectedShapeLayer(value ? value : { clear: true });
+
     }
     const classes = useStyles();
 
