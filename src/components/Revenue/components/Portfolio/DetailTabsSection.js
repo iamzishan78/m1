@@ -135,7 +135,7 @@ export default function DetailTabsSection(props) {
           <StyledTab label="Properties" />
         </StyledTabs>
       </div>
-      <div style={{ maxHeight: "calc(100vh - 540px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+      <div style={{ maxHeight: "calc(100vh - 475px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
         <div className={classes.revenueSection} ref={tab === 0 ? selectedTabRef : null}>
           <Typography varient="h6" className={classes.sectionTitle}>
             Revenue & Income

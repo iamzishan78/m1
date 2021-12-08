@@ -25,6 +25,15 @@ const useStyles = makeStyles((theme) => ({
       borderBottom: "none",
     },
   },
+  secondaryTable: {
+    width: "auto",
+    "& .MuiTableCell-root": {
+      paddingBottom: "5px",
+      textAlign: "center",
+      fontWeight: "bold",
+      minWidth: "200px",
+    },
+  },
   headerCell: {
     backgroundColor: "#f1f4fb !important",
     paddingBottom: "18px !important",
@@ -47,7 +56,7 @@ export default function AcccessibleTable() {
   return (
     <div className={classes.root}>
       <TableContainer>
-        <Grid container display="flex" direction="row" justify="flex-start" alignItems="center">
+        <Grid container display="flex" direction="row" justify="flex-start" alignItems="center" style={{ padding: "2px" }}>
           <Grid item md={5}>
             <Table className={classes.table} aria-label="caption table">
               <TableHead>
@@ -99,10 +108,20 @@ export default function AcccessibleTable() {
               </TableBody>
             </Table>
           </Grid>
-          <Grid item md={7}>
-            <Table className={classes.table} aria-label="caption table">
+          <Grid item md={7} style={{ overflowX: "overlay" }}>
+            <Table className={`${classes.secondaryTable} ${classes.table}`} aria-label="caption table" style={{ width: "auto" }}>
               <TableHead>
                 <TableRow>
+                  <TableCell align="center" component="th" className={classes.headerCell}>
+                    08/12/12
+                  </TableCell>
+                  <TableCell align="center" component="th" className={classes.headerCell}>
+                    08/12/12
+                  </TableCell>
+                  <TableCell align="center" component="th" className={classes.headerCell}>
+                    08/12/12
+                  </TableCell>
+
                   <TableCell align="center" component="th" className={classes.headerCell}>
                     08/12/12
                   </TableCell>
@@ -119,13 +138,6 @@ export default function AcccessibleTable() {
                   <TableCell scope="row">10,000,000</TableCell>
                   <TableCell scope="row">10,000,000</TableCell>
                   <TableCell scope="row">10,000,000</TableCell>
-                </TableRow>
-                <TableRow key="side-headers">
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                </TableRow>
-                <TableRow key="side-headers" className={classes.highlightedRows}>
                   <TableCell scope="row">10,000,000</TableCell>
                   <TableCell scope="row">10,000,000</TableCell>
                   <TableCell scope="row">10,000,000</TableCell>
@@ -134,13 +146,38 @@ export default function AcccessibleTable() {
                   <TableCell scope="row">10,000,000</TableCell>
                   <TableCell scope="row">10,000,000</TableCell>
                   <TableCell scope="row">10,000,000</TableCell>
-                </TableRow>
-                <TableRow key="side-headers" className={classes.highlightedRows}>
                   <TableCell scope="row">10,000,000</TableCell>
                   <TableCell scope="row">10,000,000</TableCell>
                   <TableCell scope="row">10,000,000</TableCell>
                 </TableRow>
                 <TableRow key="side-headers" className={classes.highlightedRows}>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                </TableRow>
+                <TableRow key="side-headers">
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                </TableRow>
+                <TableRow key="side-headers" className={classes.highlightedRows}>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                </TableRow>
+                <TableRow key="side-headers" className={classes.highlightedRows}>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row">10,000,000</TableCell>
                   <TableCell scope="row">10,000,000</TableCell>
                   <TableCell scope="row">10,000,000</TableCell>
                   <TableCell scope="row">10,000,000</TableCell>
