@@ -89,7 +89,6 @@ export const useStyles = makeStyles((theme) => ({
 export const StyledMenu = withStyles({})((props) => <Paper elevation={0} variant="elevation" {...props} />);
 
 export const StyledMenuItem = withStyles((theme) => ({
-  // outdoors, satellite, dark, light, etc. list item background
   root: {
     fontFamily: "Poppins",
     display: "block",
@@ -97,10 +96,7 @@ export const StyledMenuItem = withStyles((theme) => ({
     "&:hover": {
       background: "#808080",
     },
-
     backgroundColor: "#0e111a",
-    // backgroundColor: "red",
-
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
     },
