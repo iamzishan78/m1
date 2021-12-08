@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import moment from "moment";
 
 // context 
 import { AppContext } from "../../../AppContext";
@@ -69,10 +70,6 @@ function MapGridCardSearch(props) {
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState([]);
   const [searchTop] = React.useState(100);
-
-
-  console.log('stateNav', stateNav)
-
 
   ///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
 
@@ -194,7 +191,6 @@ function MapGridCardSearch(props) {
         query = `${query} ${i===0 ? '(' : 'OR'} ${filter[0]}.keyword:(${filter[1][i]}) ${i===filter[1].length - 1? ')' : ''}`
       }
     })
-    console.log('query', query)
     return query;
   }
 
@@ -473,9 +469,24 @@ function MapGridCardSearch(props) {
                 wellStatus: stateNav.statusName,
               },
               filter:{
-                spudDate: { from: stateNav.spudDateFrom, to: stateNav.spudDateTo } }
+                spudDate: {
+                  from: stateNav.spudDateFrom? moment.parseZone(stateNav.spudDateFrom).utc(true).valueOf() : moment.parseZone(new Date("1900-01-01T00:00:00")).utc(true).valueOf(), 
+                  to: stateNav.spudDateTo ? moment.parseZone(stateNav.spudDateTo).utc(true).valueOf() : moment.parseZone(moment()).utc(true).valueOf(),
+                },
+                permitApprovedDate: { 
+                  from: stateNav.permitDateFrom ? moment.parseZone(stateNav.permitDateFrom).utc(true).valueOf() : moment.parseZone(new Date("1900-01-01T00:00:00")).utc(true).valueOf(), 
+                  to: stateNav.permitDateTo ? moment.parseZone(stateNav.permitDateTo).utc(true).valueOf() : moment.parseZone(moment()).utc(true).valueOf()
+                },
+                completionDate: { 
+                  from: stateNav.completetionDateFrom? moment.parseZone(stateNav.completetionDateFrom).utc(true).valueOf(): moment.parseZone(new Date("1900-01-01T00:00:00")).utc(true).valueOf(),
+                  to: stateNav.completetionDateTo? moment.parseZone(stateNav.completetionDateTo).utc(true).valueOf(): moment.parseZone(moment()).utc(true).valueOf(),
+                },
+                firstProductionDate: { 
+                  from: stateNav.firstProdDateFrom? moment.parseZone(stateNav.firstProdDateFrom).utc(true).valueOf(): moment.parseZone(new Date("1900-01-01T00:00:00")).utc(true).valueOf(),
+                  to: stateNav.firstProdDateTo? moment.parseZone(stateNav.firstProdDateTo).utc(true).valueOf(): moment.parseZone(moment()).utc(true).valueOf(),
+                } 
               }
-              
+            }  
           })
           : null,
         props.searchOption == "owner"
@@ -549,7 +560,13 @@ function MapGridCardSearch(props) {
     stateNav.profileName,
     stateNav.statusName,
     stateNav.spudDateFrom,
-    stateNav.spudDateTo
+    stateNav.spudDateTo,
+    stateNav.permitDateFrom,
+    stateNav.permitDateTo,
+    stateNav.completetionDateFrom,
+    stateNav.completetionDateTo,
+    stateNav.firstProdDateFrom,
+    stateNav.firstProdDateTo
   ]);
 
 
