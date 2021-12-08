@@ -80,43 +80,19 @@ export default function AnalyticsCards(props) {
         </Card>
       </Grid>
 
-      <Grid item md={3} style={{ position: "relative" }}>
+      <Grid item md={3}>
         <Card variant="outlined" className={classes.card}>
-          <CardContent className={classes.cardContent} onMouseOver={() => showTooltip(true)} onMouseOut={() => showTooltip(false)}>
+          <CardContent className={classes.cardContent}>
             <Typography variant="h6" component="div" className={classes.cardHeaderTypography}>
               Unapproved
             </Typography>
-            <div className={classes.issuesBadges}>
-              <div style={{ marginRight: 6 }}>
-                <WarningIcon />
-              </div>
-
-              <div>{props.potentialIssues?.length}</div>
-              {/* &nbsp; */}
-              {/* <div style={{marginRight: 6}}>
-                <WarningIcon />
-              </div> */}
-              {/* <div>1 </div> */}
-              {/* &nbsp; */}
-              {/* <div style={{marginRight: 6}}>
-                <WarningIcon />
-              </div>
-              <div>7</div> */}
-            </div>
-            <Typography variant="h6" component="div" className={classes.cardNumberTypography} style={{ color: "red" }}>
-              {props.potentialIssues?.length}
+            <Typography variant="h6" component="div" className={classes.cardNumberTypography} style={{ color: "#b9b908" }}>
+              {props.unapprovedCount}
             </Typography>
           </CardContent>
-
         </Card>
-
-        {tooltip && (
-          <div className={classes.tooltip}>
-            <p style={{ fontSize: 14, lineHeight: "120%", textAlign: "left" }}>Sum of details does not match check account</p>
-          </div>
-        )}
-
       </Grid>
+
     </Grid>
   );
 }

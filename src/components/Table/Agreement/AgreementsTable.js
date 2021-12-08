@@ -40,10 +40,18 @@ function AgreementsTable(props) {
         }
     });
 
-    const [getESAggsList, { data: aggsData, variables: aggsVariables }] = useLazyQuery(GET_ES_AGGS_LIST, { fetchPolicy: "no-cache",
+    const [getESAggsActiveCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
         onCompleted: (aggsData) => {
             if(aggsData?.getESAggsList?.aggregations?.activeCount) {
                 props.onActiveCount(aggsData?.getESAggsList?.aggregations?.activeCount?.value)
+            }
+        }
+    });
+
+    const [getESAggsApprovedCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
+        onCompleted: (aggsData) => {
+            if(aggsData?.getESAggsList?.aggregations?.approvedCount) {
+                props.onApprovedCount(aggsData?.getESAggsList?.aggregations?.approvedCount?.value)
             }
         }
     });
@@ -166,7 +174,7 @@ function AgreementsTable(props) {
             }
 
             props.onAgreementCount(count)
-            getESAggsList({
+            getESAggsActiveCount({
                 variables: {
                     esIndex,
                     search: esSearch,
@@ -176,6 +184,21 @@ function AgreementsTable(props) {
                     }],
                     aggs: {
                         activeCount: {
+                            cardinality: { field: "shapeJson.id.keyword" }
+                        }
+                    }
+                }
+            });
+            getESAggsApprovedCount({
+                variables: {
+                    esIndex,
+                    search: esSearch,
+                    filters: [ ...esFilters, {
+                        field: "shapeJson.properties.approvalStatus",
+                        value: "APPROVED"
+                    }],
+                    aggs: {
+                        approvedCount: {
                             cardinality: { field: "shapeJson.id.keyword" }
                         }
                     }

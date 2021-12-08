@@ -10,40 +10,46 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Agreements(props) {
-    let history = useHistory();
+  let history = useHistory();
 
-    const [agreementCount, setAgreementCount] = useState(0);
-    const [activeCount, setActiveCount] = useState(0);
-    const [inactiveCount, setInactiveCount] = useState(0);
-    const [unapprovedCount, setUnapprovedCount] = useState(0);
-    const [openDrawer, setOpenDrawer] = useState(false);
+  const [agreementCount, setAgreementCount] = useState(0);
+  const [activeCount, setActiveCount] = useState(0);
+  const [inactiveCount, setInactiveCount] = useState(0);
+  const [approvedCount, setApprovedCount] = useState(0);
+  const [unapprovedCount, setUnapprovedCount] = useState(0);
+  const [openDrawer, setOpenDrawer] = useState(false);
 
-    const onAgreementCount = (count) => {
-        setAgreementCount(count);
-      }
+  const onAgreementCount = (count) => {
+    setAgreementCount(count);
+  }
 
-    const onActiveCount = (count) => {
-        setActiveCount(count);
-        setInactiveCount(agreementCount - count);
-      }
+  const onActiveCount = (count) => {
+    setActiveCount(count);
+    setInactiveCount(agreementCount - count);
+  }
 
-    const handleListItemClick = (path) => {
-        history.push(path);
-        handleDrawerClose();
-      };
+  const onApprovedCount = (count) => {
+    setApprovedCount(count);
+    setUnapprovedCount(agreementCount - count);
+  }
 
-    const handleDrawerClose = () => {
+  const handleListItemClick = (path) => {
+    history.push(path);
+    handleDrawerClose();
+  };
+
+  const handleDrawerClose = () => {
     setOpenDrawer(false);
-    };
+  };
 
-    return (
-        <div style={{ padding: "75px" }}>
-            <AnalyticsCards agreementCount={agreementCount} activeCount={activeCount} inactiveCount={inactiveCount}> </AnalyticsCards>
-            <div style={{ marginTop: 40 }}>
-                <AgreementsTable header="Agreements" onAgreementCount={onAgreementCount} onActiveCount={onActiveCount} parent="AgreementsTable" />
-            </div>
-        </div>
-    )
+  return (
+    <div style={{ padding: "75px" }}>
+      <AnalyticsCards agreementCount={agreementCount} activeCount={activeCount} inactiveCount={inactiveCount} unapprovedCount={unapprovedCount}> </AnalyticsCards>
+      <div style={{ marginTop: 40 }}>
+        <AgreementsTable header="Agreements" onAgreementCount={onAgreementCount} onActiveCount={onActiveCount} onApprovedCount={onApprovedCount} parent="AgreementsTable" />
+      </div>
+    </div>
+  )
 }
 
 export default Agreements
