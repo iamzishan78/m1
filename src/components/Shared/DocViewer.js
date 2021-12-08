@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
 const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondition = false }) => {
   const classes = useStyles();
   const [numPages, setNumPages] = useState(null);
-  let [pageNumber, setPageNumber] = useState(1);
+  let [, setPageNumber] = useState(1);
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [pdfState, setpdfState] = useState([]);
   let [zoom, setzoom] = useState(2.0);

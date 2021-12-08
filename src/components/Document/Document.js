@@ -64,7 +64,7 @@ export default function DocumentComponent() {
       <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} />
       {/* <M1nTable dense parent="Documents"></M1nTable> */}
       {/* {(stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument)?.length > 0) && ( */}
-        <Drawer data={true}></Drawer>
+      <Drawer data={true}></Drawer>
       {/* )} */}
 
       <Dialog
@@ -111,11 +111,11 @@ export default function DocumentComponent() {
           </Grid>
         </Toolbar>
 
-        <Document file={stateApp.pdfView?.viewToken} options={{ workerSrc: "/pdf.worker.js" }} onLoadSuccess={onDocumentLoadSuccess}>
+        {/* <Document file={stateApp.pdfView?.viewToken} options={{ workerSrc: "/pdf.worker.js" }} onLoadSuccess={onDocumentLoadSuccess}>
           {Array.from(new Array(numPages), (el, index) => (
             <Page key={`page_${index + 1}`} pageNumber={index + 1} />
           ))}
-        </Document>
+        </Document> */}
 
         {/* {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === 'pdf' ? (
           <div className={classes.leftColumn}> <DocViewer DocStyle={{ backgroundColor: 'white !important', width: '70vw' }} divCondition={true}></DocViewer></div>

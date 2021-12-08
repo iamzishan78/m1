@@ -9,7 +9,6 @@ import { CONTACTDEALS } from "../../graphQL/useQueryContactDeals";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
 import DocViewer from "../Shared/DocViewer";
 
-
 const useStyles = makeStyles((theme) => ({
   gridWidthScroll: {
     backgroundColor: "#fff",
@@ -26,7 +25,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 const sumDeals = (deals) => {
   let sum = 0;
   deals.forEach((card) => {
@@ -34,12 +32,9 @@ const sumDeals = (deals) => {
   });
   if (sum !== 0) {
     return vf_currency(sum);
-
+  } else {
+    return "$0";
   }
-  else {
-    return "$0"
-  }
-
 };
 
 export default function DealsDetailCard(props) {
@@ -98,26 +93,11 @@ export default function DealsDetailCard(props) {
 
   return (
     <Grid container className={classes.gridWidthScroll} spacing={0}>
-      <DocViewer></DocViewer>
+      <DocViewer />
       <div className={classes.dealContainer}>
-        <DealDisplay
-          dealSum={activeSum}
-          dealType="ACTIVE"
-          dealLength={activeDeals.length}
-          color="rgb(143,229,210)"
-        />
-        <DealDisplay
-          dealSum={wonSum}
-          dealType="CLOSED"
-          dealLength={wonDeals.length}
-          color="rgb(223,168,89)"
-        />
-        <DealDisplay
-          dealSum={lostSum}
-          dealType="LOST"
-          dealLength={lostDeals.length}
-          color="rgb(130,189,200)"
-        />
+        <DealDisplay dealSum={activeSum} dealType="ACTIVE" dealLength={activeDeals.length} color="rgb(143,229,210)" />
+        <DealDisplay dealSum={wonSum} dealType="CLOSED" dealLength={wonDeals.length} color="rgb(223,168,89)" />
+        <DealDisplay dealSum={lostSum} dealType="LOST" dealLength={lostDeals.length} color="rgb(130,189,200)" />
       </div>
       <M1nTable dense parent="Deals" contact={props.contact} />
     </Grid>

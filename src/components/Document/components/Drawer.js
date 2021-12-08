@@ -4,28 +4,15 @@ import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
-import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
 import { AppContext } from "AppContext";
 import CloseIcon from "@material-ui/icons/Close";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
 
-import {
-  CircularProgress,
-  Dialog,
-  DialogTitle,
-  IconButton,
-  TextField,
-  withStyles,
-} from "@material-ui/core";
-import Autocomplete, {
-  createFilterOptions,
-} from "@material-ui/lab/Autocomplete";
+import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from "@material-ui/core";
+import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import UploadZone from "../../Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -35,9 +22,8 @@ import joinAddress from "components/Shared/valueformatters/join-address.js";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
-import DeleteDocumentConfirmation from "components/Shared/DeleteDocumentConfirmation";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
 import { setStateIfDeepEqual } from "components/Shared/functions";
@@ -191,17 +177,13 @@ export default function DocumentDrawer() {
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
 
   let [loader, setLoader] = useState(false);
-  const [viewFile, { data: viewFileResult, loading: viewFileLoading }] =
-    useLazyQuery(VIEWFILEQUERY, {
-      fetchPolicy: "no-cache",
-    });
+  const [viewFile, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "no-cache",
+  });
 
-  const [getDocumentTypes, { data: documentTypes }] = useLazyQuery(
-    DOCUMENT_TYPE,
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
+  const [getDocumentTypes, { data: documentTypes }] = useLazyQuery(DOCUMENT_TYPE, {
+    fetchPolicy: "no-cache",
+  });
 
   useEffect(() => {
     if (fileData) {
@@ -232,8 +214,7 @@ export default function DocumentDrawer() {
     getDocumentTypes();
   }, [getDocumentTypes]);
 
-  const [updateDocument, { loading: updateFileloading }] =
-    useMutation(UPDATE_DOCUMENT);
+  const [updateDocument, { loading: updateFileloading }] = useMutation(UPDATE_DOCUMENT);
 
   const UpDatefileFN = () => {
     let documentType = "";
@@ -340,10 +321,9 @@ export default function DocumentDrawer() {
     }
   }, [viewFileResult]);
 
-  const [viewFiles, { data: viewFileSResult, loading: viewFileSLoading }] =
-    useLazyQuery(VIEWFILESQUERY, {
-      fetchPolicy: "no-cache",
-    });
+  const [viewFiles, { data: viewFileSResult }] = useLazyQuery(VIEWFILESQUERY, {
+    fetchPolicy: "no-cache",
+  });
 
   useEffect(() => {
     let ID = [];
@@ -354,17 +334,8 @@ export default function DocumentDrawer() {
         variables: { fileIds: ID },
       });
       if (stateApp.selectedDocument) {
-        const {
-          documentName,
-          dateTime,
-          documentNumber,
-          documentType,
-          partyName1,
-          partyName2,
-          fileId,
-          recordingInfo,
-          custom_data,
-        } = stateApp.selectedDocument;
+        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, recordingInfo, custom_data } =
+          stateApp.selectedDocument;
         setNameAutValueParty1({
           name: partyName1?.entityDetail?.name,
           _id: partyName1?._id,
@@ -400,10 +371,7 @@ export default function DocumentDrawer() {
     },
   }))(Tooltip);
   const toggleDrawer = (anchor, open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
+    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
     }
 
@@ -439,13 +407,7 @@ export default function DocumentDrawer() {
               padding: "10px 16px",
             }}
           >
-            <div>
-              {stateApp.selectedDocument?.fileId ? (
-                <h3>Document Detail</h3>
-              ) : (
-                <h3>Add New Document</h3>
-              )}
-            </div>
+            <div>{stateApp.selectedDocument?.fileId ? <h3>Document Detail</h3> : <h3>Add New Document</h3>}</div>
             <div style={{ cursor: "pointer" }}>
               {stateApp.selectedDocument?.fileId && (
                 <IconButton
@@ -547,9 +509,7 @@ export default function DocumentDrawer() {
                 format="MM/DD/YYYY"
                 margin="normal"
                 id="date-picker-inline"
-                value={
-                  newDocument?.dateTime ? new Date(newDocument.dateTime) : null
-                }
+                value={newDocument?.dateTime ? new Date(newDocument.dateTime) : null}
                 onChange={(date) => {
                   setNewDocument({
                     ...newDocument,
@@ -607,20 +567,13 @@ export default function DocumentDrawer() {
             {metaData.map((meta) => {
               const value = newDocument.custom_data[meta.name];
               let isInView = false;
-              if (
-                stateApp.selectedView &&
-                stateApp.selectedView.columns.length > 0
-              ) {
-                if (
-                  stateApp.selectedView.columns.find(
-                    (col) => col.name === meta.name
-                  )?.display
-                ) {
+              if (stateApp.selectedView && stateApp.selectedView.columns.length > 0) {
+                if (stateApp.selectedView.columns.find((col) => col.name === meta.name)?.display) {
                   isInView = true;
                 }
               }
-              if(isInView || value){
-                return  (
+              if (isInView || value) {
+                return (
                   <Fragment key={meta.name}>
                     {meta.type === "text" && (
                       <ListItem
@@ -635,9 +588,7 @@ export default function DocumentDrawer() {
                           className={classes.maxWidth}
                           value={value}
                           onChange={(e) => {
-                            const custom_data = JSON.parse(
-                              JSON.stringify(newDocument.custom_data)
-                            );
+                            const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
                             custom_data[meta.name] = e.target.value;
                             setNewDocument({
                               ...newDocument,
@@ -663,9 +614,7 @@ export default function DocumentDrawer() {
                           column={meta}
                           value={value}
                           onCustomKeyChange={(value) => {
-                            const custom_data = JSON.parse(
-                              JSON.stringify(newDocument.custom_data)
-                            );
+                            const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
                             custom_data[meta.name] = value;
                             setNewDocument({
                               ...newDocument,
@@ -676,7 +625,7 @@ export default function DocumentDrawer() {
                       </ListItem>
                     )}
                   </Fragment>
-                )
+                );
               }
             })}
           </List>
@@ -686,9 +635,7 @@ export default function DocumentDrawer() {
             <ListItem>
               <div style={{ display: "flex", justifyContent: "start" }}>
                 {viewFileSResult?.viewFiles?.map((value, key) => {
-                  let fileExtension = value?.name
-                    ?.slice(value.name.lastIndexOf(".") + 1)
-                    ?.toLowerCase();
+                  let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
                   if (key <= 1) {
                     return (
                       <div key={key}>
@@ -699,9 +646,7 @@ export default function DocumentDrawer() {
                                 size="small"
                                 onClick={() => {
                                   setOpenDeleteConfirmDialog(true);
-                                  setFileIdToDelete(
-                                    stateApp.selectedDocument.fileId
-                                  );
+                                  setFileIdToDelete(stateApp.selectedDocument.fileId);
                                 }}
                               >
                                 <DeleteIcon />
@@ -722,14 +667,8 @@ export default function DocumentDrawer() {
                           interactive
                         >
                           <div>
-                            {new RegExp(
-                              ["jpg", "jpeg", "png", "bmp"].join("|")
-                            ).test(fileExtension) ? (
-                              <img
-                                src={value.uri}
-                                alt={value.name}
-                                className={classes.forImage}
-                              ></img>
+                            {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
+                              <img src={value.uri} alt={value.name} className={classes.forImage}></img>
                             ) : (
                               <div
                                 className={classes.forImageContainer}
@@ -740,9 +679,7 @@ export default function DocumentDrawer() {
                                       pdfView: stateApp.selectedDocument,
                                     }));
                                   } else {
-                                    handleViewFile(
-                                      stateApp.selectedDocument.fileId
-                                    );
+                                    handleViewFile(stateApp.selectedDocument.fileId);
                                   }
                                 }}
                               >
@@ -750,9 +687,7 @@ export default function DocumentDrawer() {
                               </div>
                             )}
                             <div className={classes.imageSubText}>
-                              {value?.name?.length > 12
-                                ? value.name.slice(0, 8) + "..."
-                                : value.name}
+                              {value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}
                             </div>
                           </div>
                         </LightTooltip>
@@ -772,9 +707,7 @@ export default function DocumentDrawer() {
             <ListItem>
               <div style={{ display: "flex", justifyContent: "start" }}>
                 {recentFiles?.map((value, key) => {
-                  let fileExtension = value?.name
-                    ?.slice(value.name.lastIndexOf(".") + 1)
-                    ?.toLowerCase();
+                  let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
                   if (key <= 1) {
                     return (
                       <div key={key}>
@@ -807,14 +740,8 @@ export default function DocumentDrawer() {
                           interactive
                         >
                           <div>
-                            {new RegExp(
-                              ["jpg", "jpeg", "png", "bmp"].join("|")
-                            ).test(fileExtension) ? (
-                              <img
-                                src={value.uri}
-                                alt={value.name}
-                                className={classes.forImage}
-                              ></img>
+                            {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
+                              <img src={value.uri} alt={value.name} className={classes.forImage}></img>
                             ) : (
                               <div
                                 className={classes.forImageContainer}
@@ -836,9 +763,7 @@ export default function DocumentDrawer() {
                               </div>
                             )}
                             <div className={classes.imageSubText}>
-                              {value?.name?.length > 12
-                                ? value.name.slice(0, 8) + "..."
-                                : value.name}
+                              {value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}
                             </div>
                           </div>
                         </LightTooltip>
@@ -909,19 +834,8 @@ export default function DocumentDrawer() {
 
   return (
     <div>
-      {/* <ClickAwayListener onClickAway={() => {handleClose()}}> */}
-      <Drawer
-        anchor={"right"}
-        open={
-          stateApp.DocumentDrawer === true ||
-          Object.entries(stateApp.selectedDocument).length > 0
-        }
-      >
-        <Dialog
-          open={openDeleteConfirmDialog}
-          onClose={handleDeleteCancel}
-          style={{ zIndex: 99999999999 }}
-        >
+      <Drawer anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>
+        <Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
           <DeleteConfirmationDialogContent
             header="Delete Document"
             onClose={handleDeleteCancel}
@@ -940,7 +854,6 @@ export default function DocumentDrawer() {
 
         <>{DocumentDetail("right")}</>
       </Drawer>
-      {/* </ClickAwayListener> */}
     </div>
   );
 }
@@ -990,12 +903,7 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
         return option?._id === value?._id;
       }}
       renderOption={(option) => {
-        if (option._id === "newEntity")
-          return (
-            <Typography style={{ color: "midnightblue" }}>
-              Add '{option.name}'
-            </Typography>
-          );
+        if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
 
         return (
           <Grid container spacing={0}>
@@ -1061,23 +969,17 @@ const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
     setStateIfDeepEqual(NameAutInputValue, newState);
   };
 
-  const [
-    getPaginatedContacts,
+  const [getPaginatedContacts, { data: allContacts, loading: contactsLoading, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
     {
-      data: allContacts,
-      loading: contactsLoading,
-      fetchMore: fetchMorePaginatedContacts,
-    },
-  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
-  });
+      fetchPolicy: "cache-and-network",
+      nextFetchPolicy: "cache-first",
+    }
+  );
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray([
-        ...allContacts?.paginatedContacts?.edges?.map((el) => el.node),
-      ]);
+      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
       setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
     }
     setIsNextPageLoading(false);
