@@ -70,6 +70,8 @@ import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDraw
 import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
 import Grid from "@material-ui/core/Grid";
 import ButtonDropDown from "./ButtonGroup";
+// auto complete for well API#
+import SearchWells from "components/Shared/Wells/WellsAutoCompleteFilter";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 
@@ -2402,6 +2404,21 @@ function SubTable(props) {
                         <div>{value}</div>
                       </div>
                     )}
+                  </>
+                );
+              },
+            };
+            break;
+          case "wellApiNumber":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                return (
+                  <>
+                      <SearchWells
+                        contactId={"props.contactData._id"}
+                        value={value}
+                      />
                   </>
                 );
               },

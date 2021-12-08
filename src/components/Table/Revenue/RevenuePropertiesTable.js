@@ -15,10 +15,9 @@ function RevenuePropertiesTable(props) {
   const classes = usetableStyles();
 
   // function states
-  const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [potentialIssuesList, setPotentialIssuesList] = useState([]);
-  const [pIssuesArr, setIssuesArr] = useState([]);
+  const [columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
+  const [selectedRows] = useState([]);
+  const [potentialIssuesList] = useState([]);
 
   // const count = tableData?.total || 0
   const options = {
