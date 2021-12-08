@@ -336,7 +336,7 @@ const ShapeActionsPopup = (props) => {
   const calculateShapeCenter = (shapeCoordinates) => polylabel(shapeCoordinates);
 
   const getAbstractGeoSource = (abstractShape) => {
-    if (!abstractShape.properties.State) {
+    if (!abstractShape.properties.State && !abstractShape.properties.StateAbbreviation) {
       const featuresList = stateApp.map.getSource("abstract_geo_source")._data.features;
       const foundFeatures = featuresList.filter((feature) => {
         var intersection = turf.intersect(abstractShape, feature);
@@ -420,7 +420,7 @@ const ShapeActionsPopup = (props) => {
     setStateApp((state) => ({
       ...state,
       selectedParcel: {
-        originalProperties: abstractShape.properties.State === "TX" ? JSON.stringify(abstractShape.properties) : [],
+        originalProperties: abstractShape.properties.State === "TX" ? abstractShape.properties : [],
         sdType: "parcel",
         shapeLabel: parcelName,
         projectName: "",
@@ -443,9 +443,15 @@ const ShapeActionsPopup = (props) => {
     }
     let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
     let shapeSubtitle = ''
-    if (abstractShape?.properties?.County && abstractShape?.properties?.State) {
-      if (layerType === 'unit') shapeSubtitle = `${abstractShape?.properties?.County}, ${abstractShape?.properties?.State} - BLK ${abstractShape?.properties?.Block}, SEC ${abstractShape?.properties?.Section}`
-      if (layerType === 'agreement') shapeSubtitle = `${abstractShape?.properties?.County}, ${abstractShape?.properties?.State}`
+    const state = abstractShape?.properties?.State || abstractShape?.properties?.StateAbbreviation
+    const section = abstractShape?.properties?.Section || abstractShape?.properties?.ShortName
+    let blockTownship = `BLK ${abstractShape?.properties?.Block}`
+    if (!abstractShape?.properties?.Block && abstractShape?.properties?.Township) {
+      blockTownship = `TOWN ${abstractShape?.properties?.Township}`
+    }
+    if (abstractShape?.properties?.County && state) {
+      if (layerType === 'unit') shapeSubtitle = `${abstractShape?.properties?.County}, ${state} - ${blockTownship}, SEC ${section}`
+      if (layerType === 'agreement') shapeSubtitle = `${abstractShape?.properties?.County}, ${state}`
     }
     let shapeName = getParcelAndShapeName(abstractShape)
     let properties = {}
