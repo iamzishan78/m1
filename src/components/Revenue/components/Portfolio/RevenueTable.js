@@ -41,12 +41,30 @@ const useStyles = makeStyles((theme) => ({
   highlightedRows: {
     "& .MuiTableCell-root": {
       paddingTop: "25px !important",
-      borderBottom: "3px solid rgba(224, 224, 224, 2)",
+      borderBottom: "none",
+      background: "linear-gradient(#e0e0e0, #e0e0e0) bottom/100% 3px no-repeat",
+    },
+  },
+  highlightedLessBordered: {
+    "& .MuiTableCell-root": {
+      paddingTop: "25px !important",
+      borderBottom: "none",
+      background: "linear-gradient(#e0e0e0, #e0e0e0) bottom/100% 2px no-repeat",
     },
   },
   leftCells: {
     paddingLeft: "3px",
     textAlign: "left !important",
+  },
+  topColoredBorderCell: {
+    borderTop: "2px solid #34b4e3 !important",
+  },
+  leftRightColoredBorderCell: {
+    borderLeft: "2px solid #34b4e3 !important",
+    borderRight: "2px solid #34b4e3 !important",
+  },
+  bottomColoredBorderCell: {
+    borderBottom: "2px solid #34b4e3 !important",
   },
 }));
 
@@ -62,7 +80,12 @@ export default function AcccessibleTable() {
               <TableHead>
                 <TableRow>
                   <TableCell></TableCell>
-                  <TableCell align="center" component="th" className={classes.headerCell} style={{ color: "#12abe0" }}>
+                  <TableCell
+                    align="center"
+                    component="th"
+                    className={`${classes.headerCell} ${classes.topColoredBorderCell} ${classes.leftRightColoredBorderCell}`}
+                    style={{ color: "#12abe0" }}
+                  >
                     Total
                   </TableCell>
                 </TableRow>
@@ -72,37 +95,49 @@ export default function AcccessibleTable() {
                   <TableCell scope="row" className={classes.leftCells}>
                     Gross Revenue
                   </TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
+                    10,000,000
+                  </TableCell>
                 </TableRow>
                 <TableRow key="side-headers">
                   <TableCell scope="row" className={classes.leftCells}>
                     Adjustments
                   </TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
+                    10,000,000
+                  </TableCell>
                 </TableRow>
                 <TableRow key="side-headers" className={classes.highlightedRows}>
                   <TableCell scope="row" className={classes.leftCells}>
                     Net Revenue
                   </TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
+                    10,000,000
+                  </TableCell>
                 </TableRow>
                 <TableRow key="side-headers">
                   <TableCell scope="row" className={classes.leftCells}>
                     Lease Payments
                   </TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
+                    10,000,000
+                  </TableCell>
                 </TableRow>
                 <TableRow key="side-headers" className={classes.highlightedRows}>
                   <TableCell scope="row" className={classes.leftCells}>
                     Other
                   </TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
+                    10,000,000
+                  </TableCell>
                 </TableRow>
-                <TableRow key="side-headers" className={classes.highlightedRows}>
+                <TableRow key="side-headers" className={classes.highlightedLessBordered}>
                   <TableCell scope="row" className={classes.leftCells}>
                     Total Income
                   </TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
+                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell} ${classes.bottomColoredBorderCell}`}>
+                    10,000,000
+                  </TableCell>
                 </TableRow>
                 <TableRow key="side-headers"></TableRow>
               </TableBody>
