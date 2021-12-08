@@ -358,7 +358,7 @@ function App() {
                         <PrivateRoute path="/land" component={Land} />
                         <PrivateRoute path="/landmanagement" component={LandManagementProvider} />
                         <PrivateRoute exact path="/agreements" component={AgreementProvider} />
-                        <PrivateRoute exact path="/agreement/details" component={AgreementDetailProvider} />
+                        <PrivateRoute exact path="/agreement/details/:agreementId" component={AgreementDetailProvider} />
                         {/* <Route component={NotFoundRedirect} /> */}
                       </NavigationProvider>
                     </Switch>

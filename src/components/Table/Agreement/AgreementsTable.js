@@ -19,7 +19,6 @@ import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 // import { GET_ES_POTENTIAL_ISSUES } from "graphQL/useQueryPotentialIssue";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
 
-
 function AgreementsTable(props) {
     const classes = usetableStyles();
 
@@ -30,6 +29,8 @@ function AgreementsTable(props) {
     // const [pIssuesArr, setIssuesArr] = useState([]);
 
     const [esSearch, setESSearch] = useState('');
+    const [esFilters, ESFilters] = useState([]);
+    const setESFilters = (newState) => { setStateIfDeepEqual(ESFilters, newState); };
     const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
     // queries 
@@ -64,7 +65,7 @@ function AgreementsTable(props) {
 
     const startPaginationAt = 25;
     const esIndex = 'shapes_flat';
-    const esFilters = [{
+    const esStaticFilters = [{
         field: "layer",
         value: "agreement"
     }];
@@ -88,7 +89,7 @@ function AgreementsTable(props) {
                     first: startPaginationAt,
                     keep_alive: "1micros"
                 },
-                filters: esFilters
+                filters: esStaticFilters
             }
         });
         // Potential Issues
@@ -240,9 +241,10 @@ function AgreementsTable(props) {
 
     const onTableChange = (action, tableState, rows, meta) => {
         tableState.esIndex = esIndex;
-        tableState.esFilters = esFilters
+        tableState.esFilters = esStaticFilters
         setESSearch(tableState.searchText ? `${tableState.searchText}*` : '')
         const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
+        setESFilters(tableActions.pageESVariables.variables.filters)
         switch (action) {
             case "search":
             case "sort":

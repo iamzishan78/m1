@@ -15,6 +15,7 @@ function Agreements(props) {
     const [agreementCount, setAgreementCount] = useState(0);
     const [activeCount, setActiveCount] = useState(0);
     const [inactiveCount, setInactiveCount] = useState(0);
+    const [approvedCount, setApprovedCount] = useState(0);
     const [unapprovedCount, setUnapprovedCount] = useState(0);
     const [openDrawer, setOpenDrawer] = useState(false);
 
@@ -25,6 +26,11 @@ function Agreements(props) {
     const onActiveCount = (count) => {
         setActiveCount(count);
         setInactiveCount(agreementCount - count);
+      }
+
+      const onApprovedCount = (count) => {
+        setApprovedCount(count);
+        setUnapprovedCount(agreementCount - count);
       }
 
     const handleListItemClick = (path) => {
@@ -57,12 +63,12 @@ function Agreements(props) {
     ];
 
     return (
-        <div>
+        <>
             <AnalyticsCards cards={cards} />
-            <div style={{ padding: 30, paddingTop: 0 }}>
-                <AgreementsTable header="Agreements" onAgreementCount={onAgreementCount} onActiveCount={onActiveCount} parent="AgreementsTable" />
+            <div style={{ padding: 30, paddingTop: 0, overflow: "auto" }}>
+                <AgreementsTable header="Agreements" onAgreementCount={onAgreementCount} onActiveCount={onActiveCount} onApprovedCount={onApprovedCount} parent="AgreementsTable" targetLabel="agreement" />
             </div>
-        </div>
+        </>
     )
 }
 
