@@ -28,7 +28,7 @@ import { useDispatch } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "actions/Notifications.js";
 import { usetableStyles } from "../Styles/index.js";
 
-function AssociatedWellsUnitTable(props) {
+function AssociatedWellsShapeTable(props) {
     const classes = usetableStyles();
 
     // contexts
@@ -337,4 +337,4 @@ function AssociatedWellsUnitTable(props) {
     );
 }
 
-export default React.memo(TableHOC(AssociatedWellsUnitTable), deepEqualObjects);
+export default React.memo(TableHOC(AssociatedWellsShapeTable), deepEqualObjects);

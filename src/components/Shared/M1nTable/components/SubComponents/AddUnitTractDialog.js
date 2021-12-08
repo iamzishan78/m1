@@ -247,7 +247,7 @@ function AddUnitTractDialog(props) {
               <Controller as={TextField} control={control} variant="outlined" margin="dense" name='range' inputRef={register()} label={"Range"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='altSurvey' inputRef={register()} label={"Section"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='section' inputRef={register()} label={"Section"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
             </>}
 
@@ -258,15 +258,15 @@ function AddUnitTractDialog(props) {
               <Controller as={TextField} control={control} variant="outlined" margin="dense" name='block' inputRef={register()} label={"Block"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='range' inputRef={register()} label={"Section"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='section' inputRef={register()} label={"Section"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='section' inputRef={register()} label={"Abstract"}
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='abstract' inputRef={register()} label={"Abstract"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='altSurvey' inputRef={register()} label={"Alternate Survey"}
                 InputLabelProps={{ shrink: true }} fullWidth disabled />
             </>}
-
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='altSurvey' inputRef={register()} label={"Alternate Survey"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled />
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='legalDescription' inputRef={register()} label={"Full Legal Description"}
               InputLabelProps={{ shrink: true }} multiline rows={4} fullWidth disabled />
