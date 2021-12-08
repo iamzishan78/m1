@@ -1,15 +1,20 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, Tabs, Tab, Grid, Breadcrumbs } from "@material-ui/core";
+import { Typography, IconButton, CardActions, TextField, Tabs, Tab, Grid, Breadcrumbs } from "@material-ui/core";
 import { LocalAtm as CurrencyIcon, NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
 import Tags from "components/Shared/Tagger";
 import { useLocation } from "react-router";
-
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import AddIcon from "@material-ui/icons/Add";
+import CommentComponent from "components/Shared/CommentComponent";
+import AddDialogeUploadZone from "components/ContactDetailCard/components/AddDialogUploadZone";
 import { useLazyQuery } from "@apollo/client";
+import { GETCHECK } from "graphQL/useQueryCheck";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import moment from "moment";
 
 // Components
@@ -82,6 +87,43 @@ const useStyles = makeStyles((theme) => ({
       border: "none",
     },
   },
+
+  viewAll: {
+    textDecoration: "underline",
+    margin: "0 0 8px 0",
+    float: "right",
+    color: theme.palette.secondary.main,
+    cursor: "pointer",
+    fontWeight: "normal",
+    "&:hover": { color: "#757575" },
+    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+  },
+  descriptionInput: {
+    width: '100%',
+    margin: "20px 0 0",
+    '& .MuiTextField-root': {
+      backgroundColor: '#fffcdc',
+      borderRadius: 4,
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+      border: 'none'
+    }
+  },
+  foodText: {
+    position: "absolute",
+    bottom: "20px",
+    right: "0px",
+    fontSize: "10px",
+    color: "#6e6e6e",
+    margin: "0 !important",
+    textAlign: "right",
+    height: "0",
+    paddingRight: "10px",
+    "& span": {
+      fontWeight: "bold",
+    },
+  },
+
 }));
 
 const StyledTabs = withStyles({
@@ -135,14 +177,26 @@ export default function DetailComponents(props) {
   const [checkDetails, setCheckDetails] = useState(null);
   const selectedTabRef = useRef(null);
   const location = useLocation();
-
+  const [description, setDescription] = useState("");
+  const [onFocusDescription, setFocusSate] = useState(false);
+  const [collapse, setCollapse] = useState(false);
   const { search } = location;
 
+  const [uploadedFiles, setUploadedFiles] = useState([]);
   // queries 
 
   const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
   const tableData = elasticData?.getESPaginatedList;
 
+  const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
+    fetchPolicy: "no-cache",
+  });
+
+  const [getCheck, { data: getCheckResult }] = useLazyQuery(GETCHECK, {
+    fetchPolicy: "no-cache",
+  });
+
+  console.log("getCheckResult", getCheckResult);
   useEffect(() => {
     selectedTabRef.current &&
       selectedTabRef.current.scrollIntoView({
@@ -168,12 +222,20 @@ export default function DetailComponents(props) {
             },
           },
         });
+        viewFiles({
+          variables: { fileIds: checkId },
+        });
+        getCheck({
+          variables: { id: checkId },
+        });
       }
-
     }
   }, [search]);
 
 
+  const setUploadedFileData = (uploadedfile) => {
+    setUploadedFiles([...uploadedFiles, uploadedfile]);
+  };
 
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
@@ -213,7 +275,7 @@ export default function DetailComponents(props) {
         </Grid>
       </div>
       <div className="flex justifyBetween alignStart w-100">
-        <div className="w-100" style={{ padding: 20, maxWidth: "70%" }}>
+        <div className="w-100" style={{ padding: 20, maxWidth: collapse ? "95%" : "70%" }}>
           {/**
          * Detail title section
          */}
@@ -242,7 +304,7 @@ export default function DetailComponents(props) {
                 style={{ marginTop: 16 }}
               >
                 <div className={classes.tags}>
-                  <Tags width="100%" targetSourceId={"619ae183b5a69178952b6a9c"} targetLabel="revenue" publicLeftBottom />
+                  <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
                 </div>
               </Grid>
             </div>
@@ -280,10 +342,97 @@ export default function DetailComponents(props) {
           </div>
         </div>
 
-        <div style={{ marginTop: 20, marginRight: 24, padding: 20, background: "#ffffff", borderRadius: 8, minHeight: "calc(100vh + 64px)", height: "100%", maxWidth: 360, width: "100%" }}>
+        <div className="flex column justifyStart alignStart w-100" style={{ marginTop: 20, marginRight: 24, padding: "16px 10px", background: "#ffffff", borderRadius: 8, minHeight: "calc(100vh + 12px)", height: "100%", maxWidth: collapse ? 40 : 360, width: "100%" }}>
+          <div className="flex justifyBetween alignCenter w-100">
+            {!collapse && (
+              <Typography varient="h5" className={classes.titleText} style={{ textTransform: "uppercase", fontWeight: "bold" }}>
+                Metadata
+              </Typography>
+            )}
 
+            <div className="flex alignCenter">
+              {!collapse ?
+                <span onClick={() => setCollapse(true)}>
+                  <ArrowForwardIcon style={{ fontSize: 20 }} />
+                </span>
+                :
+                <span onClick={() => setCollapse(false)}>
+                  <ArrowBackIcon style={{ fontSize: 20 }} />
+                </span>
+              }
+            </div>
+          </div>
+
+          {!collapse && (
+            <div className="flex column justifyStart w-100">
+              <Grid item className={classes.descriptionInput}>
+                <TextField
+                  id="outlined-multiline-static"
+                  label="Description"
+                  value={description}
+                  multiline
+                  fullWidth
+                  rows={5}
+                  variant="outlined"
+                  onChange={(e) => {
+                    setDescription(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.keyCode === 13)
+                      console.log("sample description will go for save: " + description);
+                    // console.log(e, 'description', unitProperties.description);
+                  }}
+                  onFocus={() => setFocusSate(true)}
+                  InputProps={{
+                    endAdornment: (
+                      onFocusDescription === true &&
+                      <p className={classes.foodText}>
+                        <span>Return</span> to save
+                      </p>
+                    )
+                  }}
+                />
+              </Grid>
+
+
+              <div className="flex alignCenter" style={{ background: "#f2f2f2", borderRadius: 8, padding: "6px 16px", marginLeft: 8, marginTop: 8, maxWidth: "max-content", cursor: "pointer" }}>
+                <span>
+                  <AddIcon style={{ marginTop: 4, marginRight: 4, fontSize: 16, alignItems: "center" }} htmlColor="#000000" />
+                </span>
+                {` Add`}
+              </div>
+
+
+              <div className="flex justifyBetween alignCenter" style={{ padding: "20px 16px", marginBottom: -56 }}>
+                <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents</h4>
+                <h4
+                  className={classes.viewAll}
+                  onClick={() => {
+                    console.log("navigate to view all page for documents")
+                  }}
+                >
+                  View All
+                </h4>
+              </div>
+
+              <AddDialogeUploadZone
+                isTransactPage={false}
+                filesData={viewFileResult}
+                id={checkId}
+                loading={viewFileLoading}
+                setUploadedFileData={setUploadedFileData}
+              ></AddDialogeUploadZone>
+
+
+
+              <div className={classes.tags} style={{ marginTop: -32 }}>
+                <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
+              </div>
+              <CommentComponent targetLabel={'check'} targetSourceId={checkId} />
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    </div >
   );
 }
