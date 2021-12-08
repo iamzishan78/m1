@@ -3,8 +3,8 @@ import { useHistory, useLocation } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Add from "@material-ui/icons/Add";
-import AnalyticsCards from "../Common/AnalyticsCards";
-import AgreementsTable from "../../../Table/Agreement/AgreementsTable";
+import AnalyticsCards from "./AnalyticsCards";
+import AgreementsTable from "../../../../Table/Agreement/AgreementsTable";
 
 const useStyles = makeStyles((theme) => ({
 }));
@@ -36,30 +36,10 @@ function Agreements(props) {
     setOpenDrawer(false);
     };
 
-    const cards = [
-      {
-        heading: "Total Agreements",
-        points: agreementCount,
-      },
-      {
-        heading: "Active",
-        points: activeCount,
-      },
-      {
-        heading: "Inactive",
-        points: inactiveCount,
-      },
-      {
-        heading: "Unapproved",
-        points: unapprovedCount,
-        type: "warning",
-      },
-    ];
-
     return (
-        <div>
-            <AnalyticsCards cards={cards} />
-            <div style={{ padding: 30, paddingTop: 0 }}>
+        <div style={{ padding: "75px" }}>
+            <AnalyticsCards agreementCount={agreementCount} activeCount={activeCount} inactiveCount={inactiveCount}> </AnalyticsCards>
+            <div style={{ marginTop: 40 }}>
                 <AgreementsTable header="Agreements" onAgreementCount={onAgreementCount} onActiveCount={onActiveCount} parent="AgreementsTable" />
             </div>
         </div>

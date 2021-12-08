@@ -148,6 +148,9 @@ const AppProvider = (props) => {
     bulkUpload: false,
     selectedMeta: null,
     selectedView: null,
+    landManagement: {
+      expandedPanel: true,
+    },
 
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {

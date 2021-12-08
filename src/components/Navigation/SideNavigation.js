@@ -9,6 +9,7 @@ import Drawer from "@material-ui/core/Drawer";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import PersonIcon from "@material-ui/icons/Person";
 import DescriptionIcon from "@material-ui/icons/Description";
+// import ImageOutlinedIcon from '@material-ui/icons/ImageOutlined';
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -181,6 +182,28 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               </ListItemSecondaryAction>
             </div>
           </ListItem>
+
+          {/* <ListItem
+            classes={{
+              root: classes.menuListItem,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexRevenue === 1}
+            onClick={(event) => {
+              handleListItemClick("/landmanagement");
+            }}
+            key="Revenue"
+          >
+            <div className={classes.tabContent}>
+              <Tooltip title="Land Management" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <ListItemIcon className={classes.sideNavIcon}>
+                  <ImageOutlinedIcon />
+                </ListItemIcon>
+              </Tooltip>
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Land Management" />
+            </div>
+          </ListItem> */}
           <ListItem
             classes={{
               root: classes.menuListItem,

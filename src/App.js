@@ -28,7 +28,10 @@ import AlertsProvider from "./components/Alerts/AlertsProvider";
 import DashboardProvider from "./components/Dashboard/DashboardProvider";
 import StudioProvider from "./components/Studio/StudioProvider";
 import BulkUpload from "./components/BulkUpload/BulkUpload";
-import AgreementProvider from "./components/Agreement/AgreementProvider";
+import LandManagementProvider from "./components/LandManagement/LandManagementProvider";
+import AgreementProvider from "./components/Land/components/Agreements/AgreementProvider";
+// import AgreementProvider from "./components/LandManagement/components/Agreements/AgreementProvider";
+import AgreementDetailProvider from "./components/Land/components/AgreementDetail/AgreementDetailProvider";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
 import ContactBulkProgress from "./components/BulkUpload/ContactBulkProgress";
@@ -323,6 +326,9 @@ function App() {
                         <PrivateRoute title="Bulk Upload" exact path="/bulkupload" component={BulkUpload} />
                         <PrivateRoute exact path="/agreement" component={AgreementProvider} />
                         <PrivateRoute path="/land" component={Land} />
+                        <PrivateRoute path="/landmanagement" component={LandManagementProvider} />
+                        <PrivateRoute exact path="/agreements" component={AgreementProvider} />
+                        <PrivateRoute exact path="/agreement/details" component={AgreementDetailProvider} />
                         {/* <Route component={NotFoundRedirect} /> */}
                       </NavigationProvider>
                     </Switch>

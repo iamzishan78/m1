@@ -474,6 +474,10 @@ export default function Navigation(props) {
     }));
   };
 
+  const matchAgreements = () => {
+    return location.pathname === "/landmanagement/agreements"
+  }
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -504,6 +508,14 @@ export default function Navigation(props) {
                 Dashboard
               </Typography>
             )}
+            {/* {location.pathname.startsWith("/landmanagement/agreements") && (
+              <Typography
+                variant="h4"
+                style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.landManagement.expandedPanel ? "450px" : "30px" }}
+              >
+                Agreements
+              </Typography>
+            )} */}
 
             {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
 
@@ -528,6 +540,13 @@ export default function Navigation(props) {
             ) : (
               <div style={{ display: "none" }}></div>
             )}
+            {/* {matchAgreements() && (
+              <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+                <Button onClick={() => handleListItemClick("/agreement/details")} color="primary" variant="contained" startIcon={<Add />}>
+                  Add Agreement
+                </Button>
+              </div>
+            )} */}
             <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
               {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
             </IconButton>

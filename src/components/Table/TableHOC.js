@@ -207,7 +207,7 @@ export const TableHOC = (Component) => {
                             }]
                     },
 
-                    filters: [],
+                    filters: [...tableState.esFilters] || [],
                 },
             };
             tableState.filterList.forEach((val, index) => {
