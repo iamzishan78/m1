@@ -22,8 +22,6 @@ function RevenuePropertiesTable(props) {
   // const count = tableData?.total || 0
   const options = {
     // rowsPerPageOptions: [10, 25, 50, 100],
-    // count: 0,
-    // serverSide: true,
     searchable: true,
     rowsSelected: selectedRows.map((sR) => sR.dataIndex),
     filter: true,
@@ -36,7 +34,7 @@ function RevenuePropertiesTable(props) {
       _id: "61aeb76ee1d4eb43b897354a",
       propertyName: "LSE 100-100001-L3 JULIA MEINERS",
       propertyCode: "100-100001",
-      payorName: "Saad Bin Khalid",
+      payorName: "Eric Calpton",
       state: "OH",
       country: "US",
       source: "Uniliver",
@@ -52,7 +50,7 @@ function RevenuePropertiesTable(props) {
       _id: "61aeb76ee1d4eb4ab897354a",
       propertyName: "LSE 100-100001-L3 JULIA MEINERS",
       propertyCode: "100-1as00001",
-      payorName: "Saad Bin Khalid",
+      payorName: "John Elton",
       state: "OH",
       country: "US",
       source: "Uniliver",

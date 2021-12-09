@@ -155,6 +155,10 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     textAlign: "center",
     minWidth: "150px",
+    border: "1px solid #c99229 ",
+    padding: theme.spacing(1),
+    borderRadius: "5px",
+    marginRight: theme.spacing(2),
   },
   closeIcon: {
     cursor: "pointer",
