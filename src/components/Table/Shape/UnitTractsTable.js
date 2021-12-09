@@ -18,7 +18,7 @@ import TableHeader from 'components/Table/constants/unit-tracts-header-schema.js
 
 // Utilities
 import { usetableStyles } from "../Styles";
-import AddUnitTractDialog from "components/Shared/M1nTable/components/SubComponents/AddUnitTractDialog";
+import AddUnitTractDialog from "components/Table/TableAddDialog/AddUnitTractDialog";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
