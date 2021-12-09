@@ -14,11 +14,6 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/land/portfolio",
     component: "Portfolio",
   },
-  AGREEMENTS_TEMP: {
-    title: "Agreements_TEMP",
-    link: "/land/agreement",
-    component: "Agreements_TEMP",
-  },
   AGREEMENTS: {
     title: "Agreements",
     link: "/land/agreements",
