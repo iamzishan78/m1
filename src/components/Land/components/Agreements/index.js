@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Add from "@material-ui/icons/Add";
+import { AppContext } from "AppContext";
 import AnalyticsCards from "../Common/AnalyticsCards";
 import AgreementsTable from "../../../Table/Agreement/AgreementsTable";
 
@@ -10,7 +11,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Agreements(props) {
-    let history = useHistory();
+    const [stateApp] = useContext(AppContext);
+    const history = useHistory();
 
     const [agreementCount, setAgreementCount] = useState(0);
     const [activeCount, setActiveCount] = useState(0);
@@ -66,7 +68,15 @@ function Agreements(props) {
         <>
             <AnalyticsCards cards={cards} />
             <div style={{ padding: 30, paddingTop: 0, overflow: "auto" }}>
-                <AgreementsTable header="Agreements" onAgreementCount={onAgreementCount} onActiveCount={onActiveCount} onApprovedCount={onApprovedCount} parent="AgreementsTable" targetLabel="agreement" />
+                <AgreementsTable 
+                  header="Agreements"
+                  onAgreementCount={onAgreementCount}
+                  onActiveCount={onActiveCount}
+                  onApprovedCount={onApprovedCount}
+                  parent="AgreementsTable"
+                  targetLabel="agreement"
+                  landSearchQuery={stateApp.landSearchQuery}
+                />
             </div>
         </>
     )

@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 import { Grid, Typography, Button } from "@material-ui/core";
 import Add from "@material-ui/icons/Add";
@@ -9,6 +10,13 @@ import LandSearch from "../components/LandSearch";
 export default function LandAppBar(props) {
   const { classes } = props;
   const { quickActionsPanelState } = useSelector(({ Land }) => Land);
+
+  const history = useHistory();
+
+  const handleListItemClick = (path) => {
+    history.push(path);
+    // handleDrawerClose();
+  };
 
   return (
     <Grid
@@ -33,7 +41,7 @@ export default function LandAppBar(props) {
       </Grid>
       <Grid item>
         <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-          <Button color="secondary" variant="contained" startIcon={<Add />}>
+          <Button color="secondary" variant="contained" startIcon={<Add />} onClick={() => handleListItemClick("/agreement/details")}>
             Add Agreement
           </Button>
         </div>

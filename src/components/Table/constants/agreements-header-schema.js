@@ -145,7 +145,7 @@ const AgreementsHeadCells = [
         options: { 
             dbName: "shapeJson.properties.approvalStatus",
             sort: true, 
-            filter: true 
+            filter: true
         }
     },
     {

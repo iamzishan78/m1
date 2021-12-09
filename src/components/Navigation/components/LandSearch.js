@@ -71,8 +71,8 @@ const LandSearch = () => {
           setTimeout(() => {
             setStateApp((stateApp) => ({
               ...stateApp,
-              contactSearchQuery: e.target.value,
-              isContactSearching: true,
+              landSearchQuery: e.target.value,
+              // isLandSearching: true,
             }));
           }, 500);
         }}
@@ -103,8 +103,8 @@ const LandSearch = () => {
                     setSearch("");
                     setStateApp((stateApp) => ({
                       ...stateApp,
-                      contactSearchQuery: "",
-                      isContactSearching: true,
+                      landSearchQuery: "",
+                      // isLandSearching: true,
                     }));
                   }}
                 >

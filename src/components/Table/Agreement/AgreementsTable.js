@@ -78,13 +78,19 @@ function AgreementsTable(props) {
         searchable: true,
         rowsSelected: selectedRows.map((sR => sR.dataIndex)),
         filter: true,
+        searchText: esSearch
     }
+
+    useEffect(() => {
+        setESSearch(props.landSearchQuery ? `${props.landSearchQuery}*` : '')
+    }, [props.landSearchQuery])
 
     // get paginated data hits from checks_flat table
     useEffect(() => {
         getESPaginatedList({
             variables: {
                 esIndex,
+                search: esSearch,
                 pagination: {
                     first: startPaginationAt,
                     keep_alive: "1micros"
@@ -99,7 +105,7 @@ function AgreementsTable(props) {
         //         size: 50,
         //     },
         // });
-    }, [props.parent]);
+    }, [props.parent, esSearch]);
 
 
     //  Potential issues
@@ -119,7 +125,7 @@ function AgreementsTable(props) {
     // }, [issues]);
 
     useEffect(() => {
-        if (!props.loading) {
+        if (tableData && !props.loading) {
             if (tableData?.hits?.length > 0) {
                 const resolvePath = (obj, path) => {
                     const parts = path.split(".");
@@ -242,7 +248,7 @@ function AgreementsTable(props) {
     const onTableChange = (action, tableState, rows, meta) => {
         tableState.esIndex = esIndex;
         tableState.esFilters = esStaticFilters
-        setESSearch(tableState.searchText ? `${tableState.searchText}*` : '')
+        // setESSearch(tableState.searchText ? `${tableState.searchText}*` : '')
         const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
         setESFilters(tableActions.pageESVariables.variables.filters)
         switch (action) {

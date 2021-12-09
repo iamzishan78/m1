@@ -1980,7 +1980,7 @@ function SubTable(props) {
                       <p onClick={(e) => {
                         e.stopPropagation();
                         if (tableMeta.rowData[0]) {
-                          history.push(`/agreement/details?id=${tableMeta.rowData[0]}`)
+                          history.push(`/agreement/details/${tableMeta.rowData[0]}`)
                         }
                         }} style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}>
                         {value}
@@ -1998,7 +1998,7 @@ function SubTable(props) {
                 return (
                   <>
                     {props.parent === "AgreementsTable" && (
-                      <div className="flex justifyStart alignCenter">
+                      <div style={{ display: "flex", "align-items": "center" }}>
                         {value?.toLowerCase() === "approved" 
                           ? (<div style={{ background: "#17c10d", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />)
                           : (<div style={{ background: "#ffa800", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />)
@@ -3074,12 +3074,9 @@ function SubTable(props) {
         }
       }
       if (props.targetLabel === "agreement") {
-        console.log("Working Inside Table");
-        console.log(rows[dataIndex], "RowIndex");
-        // setStateApp((stateApp) => ({
-        //   ...stateApp,
-        //   selectedDocument: rows[dataIndex],
-        // }));
+        if (rows[dataIndex]?._id) {
+          history.push(`/agreement/details/${rows[dataIndex]?._id}`)
+        }
       }
     },
     onChangePage: (pageState) => {

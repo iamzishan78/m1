@@ -143,6 +143,8 @@ const AppProvider = (props) => {
     contactSearchQuery: "",
     documentSearchQuery: "",
     isContactSearching: false,
+    landSearchQuery: "",
+    isLandSearching: false,
     viewDoc: null,
     pdfView: null,
     selectedAgreement: null,
