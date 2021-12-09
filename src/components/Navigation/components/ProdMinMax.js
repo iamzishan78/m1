@@ -12,9 +12,6 @@ const useStyles = makeStyles({
     padding: "3.5px 5px 5.5px 9px",
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
-    "&:hover": {
-      border: "1px solid black",
-    },
     display: "flex",
     alignItems: "center",
   },
