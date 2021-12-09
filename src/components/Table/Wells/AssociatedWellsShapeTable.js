@@ -243,7 +243,7 @@ function AssociatedWellsShapeTable(props) {
     const options = {
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
         count: stateApp.shapeGridWellsCount || count || 0,
-        serverSide: true,
+        serverSide: false,
         // search: false, 
         // filter: false,
         // column: false, 

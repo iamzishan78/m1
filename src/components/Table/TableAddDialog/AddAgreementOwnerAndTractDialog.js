@@ -10,18 +10,17 @@ import SearchIcon from '@material-ui/icons/Search';
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 import Grid from "@material-ui/core/Grid";
 import { Box, CircularProgress, Dialog, FormControl, FormControlLabel, InputLabel, List, ListItem, ListItemText, MenuItem, Radio, RadioGroup, Select, Typography, InputAdornment } from "@material-ui/core";
-import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
-import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
+import RightDialog from "../../ContactDetailCard/components/RightDialog";
+import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useForm, Controller } from "react-hook-form";
 
 // contexts 
 import { getParcelOriginalProperties } from "components/ParcelsDetailCard/utils/GetParcelOriginalProps";
-import AutoCompleteShapeLayer from "components/Shared/Forms/Fields/AutoCompleteShapeLayer";
 import { ADD_TRACTS_TOA_SHAPE } from "graphQL/useMutationAddTractsToAShape";
 import { UPDATE_SHAPE_TRACTS } from "graphQL/useMutationUpdateShapeTracts";
 import { ADD_OWNER_TOA_SHAPE } from "graphQL/useMutationAddOwnerToAShape";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
-import pick from 'lodash/pick';
+import TractForm from "components/Table/TableAddDialog/Common/TractForm";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import AutoCompleteWithNewOption from "components/Shared/Forms/Fields/AutoCompleteWithNewOption";
 import { addTrailingZeros } from "components/Shared/functions";
@@ -85,7 +84,6 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
   const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
 
-  const state = watch('tract.state', '')
   const tract = watch('tract', {})
 
   const parcelOwnersRadioBValue = watch('parcelOwnersRadioBValue', 'true')
@@ -356,54 +354,11 @@ function AddAgreementOwnerAndTractDialog(props) {
                 Search for existing tract to associate to agreement and populate ownership detail
               </Typography>
             </Box>
-
-
-            <AutoCompleteShapeLayer value={tractValue} shapeType='parcel' setSelectedShapeLayer={setSelectedShapeLayer} />
-
             <TextField id="_id" name='_id' style={{ display: 'none' }} inputRef={register()} />
+            <TractForm tract={tract} tractValue={tractValue} setSelectedShapeLayer={setSelectedShapeLayer} register={register} control={control} prefix={'tract.'} />
+
             <TextField id="tractName" name='tract.tractName' style={{ display: 'none' }} inputRef={register()} />
             <TextField id="tractId" name='tract.tractId' style={{ display: 'none' }} inputRef={register()} />
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.state' label={"State"}
-              InputLabelProps={{ shrink: true }} fullWidth defaultValue={tract?.state || ''} disabled />
-
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.county' label={"County"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.county || ''} />
-
-            {state !== 'TX' && <>
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.meridian' label={"Meridian"}
-                InputLabelProps={{ shrink: true }} fullWidth disabled />
-
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.township' label={"Township"}
-                InputLabelProps={{ shrink: true }} fullWidth disabled />
-
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.range' label={"Range"}
-                InputLabelProps={{ shrink: true }} fullWidth disabled />
-
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.section' label={"Section"}
-                InputLabelProps={{ shrink: true }} fullWidth disabled />
-            </>}
-
-            {state === 'TX' && <>
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.survey' label={"Survey"}
-                InputLabelProps={{ shrink: true }} fullWidth disabled />
-
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.block' label={"Block"}
-                InputLabelProps={{ shrink: true }} fullWidth disabled />
-
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.section' label={"Section"}
-                InputLabelProps={{ shrink: true }} fullWidth disabled />
-
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.abstract' label={"Abstract"}
-                InputLabelProps={{ shrink: true }} fullWidth disabled />
-
-              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.altSurvey' label={"Alternate Survey"}
-                InputLabelProps={{ shrink: true }} fullWidth disabled />
-            </>}
-
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.legalDescription' label={"Full Legal Description"}
-              InputLabelProps={{ shrink: true }} multiline rows={4} fullWidth disabled defaultValue={tract?.legalDescription || ''} />
-
-
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='tract.sdGrossAcres' label={"Gross. Acres"}
               InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.sdGrossAcres || ''} />
 
