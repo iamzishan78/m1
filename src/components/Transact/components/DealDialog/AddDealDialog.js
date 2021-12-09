@@ -48,7 +48,6 @@ import { GET_DEAL_SETTINGS } from "graphQL/useQueryGetDealSettings";
 import { GETDEAL } from "graphQL/useQueryDeal";
 import ExpandableCardProvider from "components/ExpandableCard/ExpandableCardProvider";
 import Contacts from "components/FlowDrawer/Contacts";
-import EventIcon from "@material-ui/icons/Event";
 import "./dialog.css";
 import { faCloudShowersHeavy } from "@fortawesome/free-solid-svg-icons";
 

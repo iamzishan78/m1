@@ -6,7 +6,7 @@ import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import { AppContext } from "AppContext";
-import CloseIcon from "@material-ui/icons/Close";
+import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
@@ -44,7 +44,16 @@ const useStyles = makeStyles({
   maxWidth: {
     width: "100%",
   },
-
+  titleSection: {
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%",
+    alignItems: "center",
+    padding: "10px 16px",
+    "& svg": {
+      fill: "#757575 !important",
+    },
+  },
   fileUploadSection: {
     minHeight: "50px",
     display: "flex",
@@ -398,15 +407,7 @@ export default function DocumentDrawer() {
         }}
       >
         <div style={{ flexShrink: 0 }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "100%",
-              alignItems: "center",
-              padding: "10px 16px",
-            }}
-          >
+          <div className={classes.titleSection}>
             <div>{stateApp.selectedDocument?.fileId ? <h3>Document Detail</h3> : <h3>Add New Document</h3>}</div>
             <div style={{ cursor: "pointer" }}>
               {stateApp.selectedDocument?.fileId && (
@@ -421,7 +422,7 @@ export default function DocumentDrawer() {
                 </IconButton>
               )}
               <IconButton size="small" onClick={() => handleClose()}>
-                <CloseIcon></CloseIcon>
+                <CloseIcon />
               </IconButton>
             </div>
           </div>
