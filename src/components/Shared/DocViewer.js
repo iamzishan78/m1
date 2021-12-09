@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     },
     border: "0px",
     inset: "unset",
-    width: "calc(100vw - 650px)",
+    width: (props) => props.width ?? "calc(100vw - 650px)",
   },
   paperTwo: {
     backgroundColor: theme.palette.background.paper,
@@ -63,8 +63,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondition = false }) => {
-  const classes = useStyles();
+const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondition = false, width }) => {
+  const classes = useStyles({ width });
   const [numPages, setNumPages] = useState(null);
   let [, setPageNumber] = useState(1);
   const [stateApp, setStateApp] = React.useContext(AppContext);

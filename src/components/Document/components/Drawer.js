@@ -676,8 +676,15 @@ export default function DocumentDrawer() {
                                   if (fileExtension === "pdf") {
                                     setStateApp((state) => ({
                                       ...state,
-                                      pdfView: stateApp.selectedDocument,
+                                      viewDoc: {
+                                        uri: stateApp.selectedDocument.viewToken,
+                                        name: stateApp.selectedDocument.name,
+                                      },
                                     }));
+                                    // setStateApp((state) => ({
+                                    //   ...state,
+                                    //   pdfView: stateApp.selectedDocument,
+                                    // }));
                                   } else {
                                     handleViewFile(stateApp.selectedDocument.fileId);
                                   }
@@ -695,12 +702,6 @@ export default function DocumentDrawer() {
                     );
                   }
                 })}
-                {/* <div style={{width:'150px',marginLeft:'20px'}}>
-         <UploadZone
-                style={{width:'150px',height:'150px'}}
-             
-              />
-         </div> */}
               </div>
             </ListItem>
           ) : (
