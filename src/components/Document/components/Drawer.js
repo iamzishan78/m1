@@ -1,6 +1,7 @@
 import React, { useEffect, useState, Fragment } from "react";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
+import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
@@ -18,6 +19,7 @@ import UploadZone from "../../Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import DeleteIcon from "@material-ui/icons/Delete";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
@@ -146,6 +148,16 @@ const useStyles = makeStyles({
     fontWeight: "bold",
     padding: "8px 20px",
   },
+  menu: {
+    "& .MuiListItem-root": {
+      "& .MuiListItemIcon-root": {
+        minWidth: "30px",
+        "& .MuiSvgIcon-root": {
+          fill: "red !important",
+        },
+      },
+    },
+  },
 });
 
 export default function DocumentDrawer() {
@@ -153,6 +165,7 @@ export default function DocumentDrawer() {
   const [state, setState] = React.useState({
     right: false,
   });
+  const [anchorEl, setAnchorEl] = useState();
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [recentFiles, setRecentFiles] = useState([]);
   const [metaData, setMetaData] = useState([]);
@@ -387,6 +400,14 @@ export default function DocumentDrawer() {
     setState({ ...state, [anchor]: open });
   };
 
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   const DocumentDetail = (anchor) => (
     <div
       style={{ width: "500px", marginLeft: "15px" }}
@@ -413,17 +434,43 @@ export default function DocumentDrawer() {
               {stateApp.selectedDocument?.fileId && (
                 <IconButton
                   size="small"
-                  onClick={() => {
-                    setOpenDeleteConfirmDialog(true);
-                    setFileIdToDelete(stateApp.selectedDocument.fileId);
+                  component="span"
+                  style={{
+                    background: "transparent",
+                    paddingLeft: "10px",
+                    align: "center",
                   }}
+                  onClick={handleMenuClick}
                 >
-                  <DeleteIcon />
+                  <MoreHorizIcon size="medium" />
                 </IconButton>
               )}
               <IconButton size="small" onClick={() => handleClose()}>
                 <CloseIcon />
               </IconButton>
+              <Menu
+                id="dealMenu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                className={classes.menu}
+                getContentAnchorEl={null}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                transformOrigin={{ vertical: "top", horizontal: "center" }}
+              >
+                <MenuItem
+                  onClick={() => {
+                    setOpenDeleteConfirmDialog(true);
+                    setFileIdToDelete(stateApp.selectedDocument.fileId);
+                  }}
+                >
+                  <ListItemIcon>
+                    <DeleteIcon size="medium" />
+                  </ListItemIcon>
+                  <ListItemText>Delete</ListItemText>
+                </MenuItem>
+              </Menu>
             </div>
           </div>
         </div>
