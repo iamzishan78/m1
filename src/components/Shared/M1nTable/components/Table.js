@@ -448,13 +448,17 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     padding: "10px 10px 10px 10px",
     position: "relative",
-    minWidth: "100px",
+    minWidth: "120px",
     borderRadius: "7px",
     color: "#17aadd",
     "&:hover": {
       textDecoration: "underline",
     },
     fontWeight: "bold",
+  },
+  propertyName: {
+    padding: "10px 10px 10px 10px",
+    minWidth: "150px",
   },
   companyName: {
     fontSize: "12px",
@@ -1783,7 +1787,6 @@ function SubTable(props) {
               };
             }
             break;
-
           case "isContact":
             {
               column.options = {
@@ -2415,10 +2418,46 @@ function SubTable(props) {
               customBodyRender: (value) => {
                 return (
                   <>
-                      <SearchWells
-                        contactId={"props.contactData._id"}
-                        value={value}
-                      />
+                    <SearchWells
+                      contactId={"props.contactData._id"}
+                      value={value}
+                    />
+                  </>
+                );
+              },
+            };
+            break;
+          case "propertyCode":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                return (
+                  <>
+                    <p className={classes.clickableCell}>{value}</p>
+                  </>
+                );
+              },
+            };
+            break;
+          case "propertyName":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                return (
+                  <>
+                    <p className={classes.propertyName}>{value}</p>
+                  </>
+                );
+              },
+            };
+            break;
+          case "payorName":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                return (
+                  <>
+                    <p className={classes.propertyName}>{value}</p>
                   </>
                 );
               },
