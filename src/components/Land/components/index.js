@@ -1,1 +1,5 @@
-export { default as Agreements } from "./Agreements";
+import { default as Tracts } from "./Tracts";
+
+export {
+    Tracts
+}
