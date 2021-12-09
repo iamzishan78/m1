@@ -21,7 +21,7 @@ import { useDispatch } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "actions/Notifications.js";
 import { usetableStyles } from "../Styles/index.js";
 
-function AssociatedTractsUnitTable(props) {
+function AssociatedTractsShapeTable(props) {
     const classes = usetableStyles();
 
     // contexts
@@ -77,6 +77,11 @@ function AssociatedTractsUnitTable(props) {
                     else if (header.name === 'range') { header.name = 'section'; header.label = 'Section'; header.esKey = 'section.keyword' }
                 })
             }
+            columns.forEach((header) => {
+                if (header.name === 'uAcres' && props.shapeType === 'Agreement') {
+                    header.name = 'sdGrossAcres'; header.label = 'Gross Acres'; header.esKey = 'sdGrossAcres.keyword'
+                }
+            })
 
             props.setRows(tableData);
             setColumns(columns);
@@ -198,4 +203,4 @@ function AssociatedTractsUnitTable(props) {
     );
 }
 
-export default React.memo(TableHOC(AssociatedTractsUnitTable), deepEqualObjects);
+export default React.memo(TableHOC(AssociatedTractsShapeTable), deepEqualObjects);

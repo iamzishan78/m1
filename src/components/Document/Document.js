@@ -16,12 +16,13 @@ import DocumentsTable from "components/Table/Documents/DocumentsTable";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    marginTop: '65px',
     "& div": {
       "&>.MuiPaper-root": {
         display: "flex",
         "flex-direction": "column",
         height: "calc(100vh - 65px)",
-        top: "65px",
+        // top: "65px",
         position: "relative",
         "align-items": "stretch",
         "&>.MuiPaper-root": {
@@ -59,7 +60,6 @@ export default function DocumentComponent() {
     setNumPages(numPages);
   }
 
-  console.log('drawer', stateApp.DocumentDrawer, stateApp.selectedDocument)
   return (
     <div className={classes.root}>
       <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} />

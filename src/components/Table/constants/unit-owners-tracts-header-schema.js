@@ -10,16 +10,20 @@ const UnitOwnersTractHeadCells = [
     name: "county", label: "County", esKey: 'tract.county.keyword', options: { sort: true, filter: true }
   },
   {
+    name: "tractName", label: "Tract Name", esKey: 'tract.trackName.keyword', options: { sort: true, filter: true }
+  },
+
+  {
     name: "meridian", label: "Meridian", esKey: 'tract.meridian.keyword', options: { sort: true, filter: true }
   },
   {
     name: "township", label: "Township", esKey: 'tract.township.keyword', options: { sort: true, filter: true }
   },
   {
-    name: "range", label: "Range", esKey: 'tract.range.keyword', options: { sort: true, filter: true }
+    name: "section", label: "Section", esKey: 'tract.section.keyword', options: { sort: true, filter: true }
   },
   {
-    name: "section", label: "Section", esKey: 'tract.section.keyword', options: { sort: true, filter: true }
+    name: "range", label: "Range", esKey: 'tract.range.keyword', options: { sort: true, filter: true }
   },
   // {
   //   name: "altSurvey", label: "Alt Survey", esKey: 'tract.altSurvey.keyword', options: { sort: true, filter: true }
@@ -27,15 +31,16 @@ const UnitOwnersTractHeadCells = [
   // {
   //   name: "legalDescription", label: "Legal Description", esKey: 'tract.legalDescription.keyword', options: { sort: true, filter: true }
   // },
-  {
-    name: "tractName", label: "Tract Name", esKey: 'tract.trackName.keyword', options: { sort: true, filter: true }
-  },
 
   {
     name: "name", label: "Name", esKey: 'contact.entityDetail.name.keyword', options: { sort: true, filter: true }
   },
   { name: "mineral_interest", esKey: 'mineral_interest', type: "number", label: "MI", options: { filter: true } },
   { name: "royalty_interest", esKey: 'royalty_interest', type: "number", label: "RI", options: { filter: true } },
+
+  {
+    name: "orri", label: "ORRI", esKey: 'orri', options: { sort: true, filter: true }
+  },
   {
     name: "sdGrossAcres", label: "Gross Acres", esKey: 'tract.sdGrossAcres', options: { sort: true, filter: true }
   },

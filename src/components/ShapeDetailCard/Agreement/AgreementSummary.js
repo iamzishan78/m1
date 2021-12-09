@@ -19,6 +19,7 @@ import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable'
 import agreementDefaultData from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData'
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { summaryStyles } from "components/ShapeDetailCard/style";
+import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 
 
 export default function AgreementSummary(props) {
@@ -50,13 +51,14 @@ export default function AgreementSummary(props) {
     }
 
     const hasCustomProvision = props.provisions.find((provision) => !provision.templateRef)
+    console.log(hasCustomProvision)
 
     return <Grid container direction="row" className={classes.summaryCard}>
         <Grid item md={7} sm={12} className={classes.paddingLeft}>
             <Grid container spacing={1} direction="column" >
                 <Grid item>
                     <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: "space-between" }}>
-                        <Grid item>
+                        <Grid item md={5}>
                             <Grid container spacing={2} className={classes.summaryDetailCard}>
                                 <Grid item>
                                     <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeWells || 0} </div>
@@ -72,22 +74,8 @@ export default function AgreementSummary(props) {
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item>
-                            <div className={classes.search}>
-                                <div className={classes.searchIcon}>
-                                    <SearchIcon />
-                                </div>
-                                <InputBase
-                                    placeholder="Search…"
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    classes={{
-                                        root: classes.inputRoot,
-                                        input: classes.inputInput,
-                                    }}
-                                    inputProps={{ 'aria-label': 'search' }}
-                                />
-                            </div>
+                        <Grid item md={7}>
+                            <ExpandableSearch setSearch={setSearch} search={search} />
                         </Grid>
                     </Grid>
                 </Grid>
@@ -148,7 +136,7 @@ export default function AgreementSummary(props) {
                             setProperties({ ...unitProperties, description: e.target.value });
                         }}
                         onKeyDown={(e) => {
-                            if (e.keyCode === 13)
+                            if (e.keyCode === 13 && !e.shiftKey)
                                 props.updateProperties(e, 'description', unitProperties.description);
                         }}
                         onFocus={() => { setTableDataState({ description: true }) }}

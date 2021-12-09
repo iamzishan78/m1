@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { Grid } from "@material-ui/core";
 import CheckIcon from "@material-ui/icons/Check";
@@ -6,6 +6,8 @@ import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import { colorPallete } from "components/Table/helpers";
+import EditIcon from "@material-ui/icons/Edit";
+import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
   noBorder: {
@@ -29,7 +31,13 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     width: "175px",
+    "& .MuiAutocomplete-option" : {
+      padding: '0px !important'
+    }
   },
+  myClass: {
+    padding: "6px 16px"
+  }
 }));
 
 const CustomFieldSelect = ({
@@ -41,6 +49,8 @@ const CustomFieldSelect = ({
   fullWidth,
 }) => {
   const classes = useStyles();
+  const [options, setOptions] = useState([]);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const defaultValue = {
     label: "----",
     value: "----",
@@ -48,17 +58,24 @@ const CustomFieldSelect = ({
   const [showOptions, setShowOptions] = useState(false);
   const [showIcon, setShowIcon] = useState(false);
 
-  const options = JSON.parse(JSON.stringify(column.dropdownOptions));
-  options.unshift(defaultValue);
+  useEffect(() => {
+    const options = JSON.parse(JSON.stringify(dropdownOptions));
+    options.unshift(defaultValue);
+    setOptions(options);
+    options.push({ label: "edit", value: "editOption" });
+  }, [dropdownOptions]);
 
   const onChange = (e, act) => {
-    onCustomKeyChange(act.value);
+    if(act.value !== "editOption"){
+      onCustomKeyChange(act.value);
+    }
+    
   };
 
   useEffect(() => {
     if (value) {
       let data = JSON.parse(JSON.stringify(value));
-      if(typeof value !== 'string' && value?.label){
+      if (typeof value !== "string" && value?.label) {
         data = JSON.parse(JSON.stringify(value.label));
       }
       const opt = dropdownOptions.find((opt) => opt.value === data);
@@ -79,7 +96,7 @@ const CustomFieldSelect = ({
         `colorText_${index}_${column.name}`
       ).innerHTML = `<span class='colorText'>----</span>`;
     }
-  }, [index, value]);
+  }, [index, value, dropdownOptions]);
 
   return (
     <div
@@ -114,9 +131,9 @@ const CustomFieldSelect = ({
             label: op.value,
             value: op.value,
           }))}
-        getOptionLabel={(option) => option.label}
-        getOptionSelected={(option, value) => {
-          return option?.value === value;
+        getOptionLabel={(option) => (option?.label ? option.label : "")}
+        getOptionSelected={(option) => {
+          return option.value === value || option.value === value?.value;
         }}
         filterOptions={(options, params) => {
           return options;
@@ -125,10 +142,33 @@ const CustomFieldSelect = ({
           const pallete = colorPallete.find(
             (pallete) => pallete.id === option.palleteId
           );
-          return (
+          return option.value === "editOption" ? (
+            <Grid style={{ borderTop: '1px solid #959595', padding: "10px 12px" }} container spacing={0} onClick={() => {
+              setShowOptions(false);
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                selectedMeta: column,
+                showFieldModal: true,
+              }));
+            }}>
+              <Grid container item xs={2} alignItems="center">
+                <EditIcon style={{ alignSelf: "center", fontSize: 18 }} />
+              </Grid>
+              <Grid
+                container
+                item
+                xs={10}
+                alignItems="center"
+                style={{ fontSize: 14 }}
+              >
+                Edit options
+              </Grid>
+            </Grid>
+          ) : (
             <Grid className={classes.myClass} container spacing={0}>
               <Grid container item xs={2} alignItems="center">
-                {(option.value === value?.label ||
+                {((typeof value === "string" && option.value === value) ||
+                  option.value === value?.label ||
                   (!value && option.value === defaultValue.label)) && (
                   <CheckIcon style={{ fontSize: 13, marginRight: 5 }} />
                 )}

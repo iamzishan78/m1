@@ -50,7 +50,7 @@ export default function UnitSummary(props) {
             <Grid container spacing={1} direction="column" >
                 <Grid item>
                     <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: "space-between" }}>
-                        <Grid item>
+                        <Grid item md={5}>
                             <Grid container spacing={2} className={classes.summaryDetailCard}>
                                 <Grid item>
                                     <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeWells || 0} </div>
@@ -70,7 +70,7 @@ export default function UnitSummary(props) {
                                 </Grid> */}
                             </Grid>
                         </Grid>
-                        <Grid item>
+                        <Grid item md={7}>
                             <ExpandableSearch setSearch={setSearch} search={search} />
                         </Grid>
                     </Grid>
@@ -102,7 +102,7 @@ export default function UnitSummary(props) {
                             setProperties({ ...unitProperties, description: e.target.value });
                         }}
                         onKeyDown={(e) => {
-                            if (e.keyCode === 13)
+                            if (e.keyCode === 13 && !e.shiftKey)
                                 props.updateProperties(e, 'description', unitProperties.description);
                         }}
                         onFocus={() => { setTableDataState({ description: true }) }}
