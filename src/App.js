@@ -28,13 +28,12 @@ import AlertsProvider from "./components/Alerts/AlertsProvider";
 import DashboardProvider from "./components/Dashboard/DashboardProvider";
 import StudioProvider from "./components/Studio/StudioProvider";
 import BulkUpload from "./components/BulkUpload/BulkUpload";
-import AgreementProvider from "./components/Land/components/Agreements/AgreementProvider";
-// import AgreementProvider from "./components/LandManagement/components/Agreements/AgreementProvider";
-import AgreementDetailProvider from "./components/Land/components/AgreementDetail/AgreementDetailProvider";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
 import ContactBulkProgress from "./components/BulkUpload/ContactBulkProgress";
 import Land from "components/Land";
+import AgreementProvider from "./components/Land/components/Agreements/AgreementProvider";
+import AgreementDetailProvider from "./components/Land/components/AgreementDetail/AgreementDetailProvider";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 import { CircularProgress } from "@material-ui/core";
