@@ -1992,9 +1992,9 @@ function Map({ type, paramId, lati, longi }) {
         let baseFilter;
         stateApp?.layers?.find(
           (layer) =>
-            (baseFilter =
-              Array.isArray(layer?.layerPaintProps) &&
-              layer?.layerPaintProps?.find((layerPaintProp) => layerPaintProp?.id === filterLayer)?.filter)
+          (baseFilter =
+            Array.isArray(layer?.layerPaintProps) &&
+            layer?.layerPaintProps?.find((layerPaintProp) => layerPaintProp?.id === filterLayer)?.filter)
         );
         return baseFilter || [];
       };
@@ -4343,9 +4343,8 @@ function Map({ type, paramId, lati, longi }) {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
-            stateApp.mapboxglAccessToken
-          }`;
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
+            }`;
 
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
@@ -4418,9 +4417,8 @@ function Map({ type, paramId, lati, longi }) {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
-            stateApp.mapboxglAccessToken
-          }`;
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
+            }`;
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
           headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
@@ -4708,10 +4706,11 @@ function Map({ type, paramId, lati, longi }) {
     }));
     if (action === "add") {
       setStateApp((state) => {
-        const isContinous = state.selectedAbstracts.find((shape) => {
-          const intersect = turf.union(shape, feature);
-          return intersect.geometry.type === "Polygon";
-        });
+        // const isContinous = state.selectedAbstracts.find((shape) => {
+        //   const intersect = turf.union(shape, feature);
+        //   return intersect.geometry.type === "Polygon";
+        // });
+        const isContinous = true;
         if (!isContinous && state.selectedAbstracts.length > 0) return state;
 
         map.setFeatureState({ source: "abstract_geo_source", id: feature.id }, { click: true });
@@ -4830,7 +4829,7 @@ function Map({ type, paramId, lati, longi }) {
     if (!tile) return
     let repaint = false;
     let renderedLineStrings = []
-    tile.querySourceFeatures(renderedLineStrings, { filter: ["in", ["geometry-type"], ["literal", ["LineString","MultiLineString"]]], sourceLayer: "wells" });
+    tile.querySourceFeatures(renderedLineStrings, { filter: ["in", ["geometry-type"], ["literal", ["LineString", "MultiLineString"]]], sourceLayer: "wells" });
     // renderedLineStrings.push(...map.queryRenderedFeatures({ filter: ["in", ["geometry-type"], ["literal", ["LineString", "MultiLineString"]]], layers: ['welllines', 'wellpermitlines'] }));
     // renderedLineStrings.push();
     renderedLineStrings.forEach((feature) => {
@@ -5077,7 +5076,7 @@ function Map({ type, paramId, lati, longi }) {
                 ['>', ['number', ['feature-state', 'geometryLength']], 20000],
                 0,
                 defaultwellpermitlinesOpacity || 1
-                ]);
+              ]);
               setLayerSource("welllines", "wellsVT");
               const defaultwelllinesOpacity = newMap.getPaintProperty('welllines', 'line-opacity');
               newMap.setPaintProperty('welllines', 'line-opacity', [
@@ -5085,7 +5084,7 @@ function Map({ type, paramId, lati, longi }) {
                 ['>', ['number', ['feature-state', 'geometryLength']], 20000],
                 0,
                 defaultwelllinesOpacity || 1
-                ]);
+              ]);
               setLayerSource("wellpoints", "wellsVT");
             })
             .catch((error) => {
