@@ -151,7 +151,7 @@ const LayerFilters = () => {
     const geoFiltersToReset = {};
     params.forEach((param) => {
       if (!Array.isArray(stateNav[param]) && stateNav[param]) geoFiltersToReset[param] = null;
-      else {
+      else if (Array.isArray(stateNav[param]) && stateNav[param].length > 0) {
         geoFiltersToReset[param] = [];
       }
     });
