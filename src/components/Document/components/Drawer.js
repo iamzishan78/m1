@@ -609,7 +609,7 @@ export default function DocumentDrawer() {
               let isInView = false;
               if (
                 stateApp.selectedView &&
-                stateApp.selectedView.columns.length > 0
+                stateApp.selectedView?.columns?.length > 0
               ) {
                 if (
                   stateApp.selectedView.columns.find(
