@@ -42,7 +42,6 @@ export default function DealsDetailCard(props) {
   const [lostDeals, setLostDeals] = useState([]); // deal rejected
   const [activeDeals, setActiveDeals] = useState([]); // all other deals
   const [allDeals, setAllDeals] = useState([]); // all other deals
-  const [stateApp, setStateApp] = useContext(AppContext);
   const [getContactDeals, { data, loading }] = useLazyQuery(CONTACTDEALS, {
     fetchPolicy: "cache-and-network",
   });

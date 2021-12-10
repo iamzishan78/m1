@@ -615,7 +615,7 @@ export default function DocumentDrawer() {
             {metaData.map((meta) => {
               const value = newDocument.custom_data[meta.name];
               let isInView = false;
-              if (stateApp.selectedView && stateApp.selectedView.columns.length > 0) {
+              if (stateApp.selectedView && stateApp.selectedView?.columns?.length > 0) {
                 if (stateApp.selectedView.columns.find((col) => col.name === meta.name)?.display) {
                   isInView = true;
                 }
