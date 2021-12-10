@@ -253,9 +253,7 @@ export const HeaderComponent = ({
                     gridView: {
                       _id: selectedGridView._id,
                       filters: selectedFilters,
-                      columns: columns
-                        .filter((col) => col.options.display)
-                        .map((col) => col.name),
+                      columns: columns.map((col) => ({ name: col.name, display: col.options.display })),
                     },
                   },
                 });
