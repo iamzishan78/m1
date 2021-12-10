@@ -1,10 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, CardActions, TextField, Tabs, Tab, Grid, Breadcrumbs } from "@material-ui/core";
+import { Typography, IconButton, TextField, Tabs, Tab, Grid, Breadcrumbs } from "@material-ui/core";
 import { LocalAtm as CurrencyIcon, NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
 import Tags from "components/Shared/Tagger";
+import MetaField from "components/Table/helpers/MetaField";
 import { useLocation } from "react-router";
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -15,6 +16,7 @@ import { useLazyQuery } from "@apollo/client";
 import { GETCHECK } from "graphQL/useQueryCheck";
 import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import moment from "moment";
+import { AppContext } from "AppContext";
 
 // Components
 import HeaderSection from "./HeaderSection";
@@ -178,6 +180,7 @@ export default function DetailComponents(props) {
   const [description, setDescription] = useState("");
   const [onFocusDescription, setFocusSate] = useState(false);
   const [collapse, setCollapse] = useState(false);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const { search } = location;
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -375,7 +378,13 @@ export default function DetailComponents(props) {
               </Grid>
 
 
-              <div className="flex alignCenter" style={{ background: "#f2f2f2", borderRadius: 8, padding: "6px 16px", marginLeft: 8, marginTop: 8, maxWidth: "max-content", cursor: "pointer" }}>
+              <div onClick={() => {
+                setStateApp((stateApp) => ({
+                  ...stateApp,
+                  showFieldModal: true,
+                }))
+              }}
+                className="flex alignCenter" style={{ background: "#f2f2f2", borderRadius: 8, padding: "6px 16px", marginLeft: 4, marginTop: 8, maxWidth: "max-content", cursor: "pointer" }}>
                 <span>
                   <AddIcon style={{ marginTop: 4, marginRight: 4, fontSize: 16, alignItems: "center" }} htmlColor="#000000" />
                 </span>
@@ -413,6 +422,10 @@ export default function DetailComponents(props) {
           )}
         </div>
       </div>
+
+      {stateApp.showFieldModal && (
+        <MetaField columns={[]} category="Check" />
+      )}
     </div >
   );
 }
