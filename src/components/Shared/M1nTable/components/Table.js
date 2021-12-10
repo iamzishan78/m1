@@ -3785,7 +3785,7 @@ function SubTable(props) {
                     removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                     ? "s"
                     : ""
-                    } from  this contact?`}
+                    } from  this unit?`}
                 </DeleteConfirmationDialogContent>
               )}
               {openDialog === "deleteParcelDocument" && (
