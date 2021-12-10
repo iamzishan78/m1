@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, TextField, Tabs, Tab, Grid, Breadcrumbs } from "@material-ui/core";
+import { Typography, IconButton, TextField, Tabs, Tab, Grid, Avatar, Breadcrumbs, FormControl, InputAdornment } from "@material-ui/core";
 import { LocalAtm as CurrencyIcon, NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
 import Tags from "components/Shared/Tagger";
@@ -15,8 +15,11 @@ import AddDialogeUploadZone from "components/ContactDetailCard/components/AddDia
 import { useLazyQuery } from "@apollo/client";
 import { GETCHECK } from "graphQL/useQueryCheck";
 import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
+import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import moment from "moment";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import { AppContext } from "AppContext";
+import CustomAvatar from "components/Shared/ui/CustomAvatar";
 
 // Components
 import HeaderSection from "./HeaderSection";
@@ -28,6 +31,60 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "100vh",
     backgroundColor: "#f3f3f3",
     width: "100%",
+  },
+  gridStyle: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  dealOwnerRoot: {
+    border: "1px solid #EBEBEB",
+
+    // This matches the specificity of the default styles at https://github.com/mui-org/material-ui/blob/v4.11.3/packages/material-ui-lab/src/Autocomplete/Autocomplete.js#L90
+    '&[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input:first-child': {
+      // Default left padding is 6px
+      paddingLeft: 26,
+    },
+
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: 0,
+    },
+    "&:hover.MuiOutlinedInput-root": {
+      backgroundColor: "#EBEBEB",
+    },
+    "&:hover .MuiAutocomplete-popupIndicator": {
+      visibility: "visible",
+      padding: "2px",
+      marginRight: "-2px",
+    },
+  },
+  dealOwnerRootFocused: {
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "1px solid black",
+    },
+  },
+  popupIndicator: {
+    visibility: "hidden",
+    padding: "2px",
+    marginRight: "-2px",
+    "&:hover": {
+      visibility: "visible",
+    },
+  },
+  inputFieldOwner: {
+    marginBottom: "7px",
+  },
+  dealOwnerAvatar: {
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    color: "#fff",
+    fontSize: "0.6rem",
+    backgroundColor: "#4880F6",
+    padding: "0.5em",
+  },
+  dealOwnerLabel: {
+    marginLeft: 4,
+    // marginTOP: -2,
   },
   navSection: {
     minHeight: 56,
@@ -182,6 +239,8 @@ export default function DetailComponents(props) {
   const [collapse, setCollapse] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
   const { search } = location;
+  const [users, setUsers] = useState([]);
+  const [ownerId, setOwnerId] = useState("");
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
   // queries 
@@ -189,6 +248,9 @@ export default function DetailComponents(props) {
     fetchPolicy: "no-cache",
   });
   const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
+    fetchPolicy: "no-cache",
+  });
+  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
   });
 
@@ -216,9 +278,23 @@ export default function DetailComponents(props) {
         getCheck({
           variables: { id: checkId },
         });
+        getAllMongoUsers();
       }
     }
   }, [search]);
+
+
+  useEffect(() => {
+    if (userLists && userLists.allMongoUsers) {
+      setUsers(
+        userLists.allMongoUsers.map((user) => ({
+          value: user._id,
+          text: user.name,
+          email: user.email,
+        }))
+      );
+    }
+  }, [userLists]);
 
 
   const setUploadedFileData = (uploadedfile) => {
@@ -346,6 +422,78 @@ export default function DetailComponents(props) {
 
           {!collapse && (
             <div className="flex column justifyStart w-100">
+
+              <div style={{ marginTop: 10, marginLeft: 4 }}>
+                <FormControl variant="outlined" fullWidth size="small">
+                  <Grid container className={classes.gridStyle}>
+                    <Grid item xs={3}>
+                      <div>Owner</div>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Autocomplete
+                        options={users.filter((u) => u.text)}
+                        onChange={(e, user) => {
+                          setOwnerId(user?.value);
+                        }}
+                        value={users.find((user) => user?.value === ownerId) || null}
+                        getOptionLabel={(option) => option.text}
+                        getOptionSelected={(option) => option.value === ownerId}
+                        classes={{
+                          inputRoot: classes.dealOwnerRoot,
+                          focused: classes.dealOwnerRootFocused,
+                          popupIndicator: classes.popupIndicator,
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            margin="dense"
+                            {...params}
+                            variant="outlined"
+                            className={classes.inputFieldOwner}
+                            InputLabelProps={{
+                              ...params.InputLabelProps,
+                              shrink: true,
+                              classes: {
+                                root: classes.dealOwnerLabel,
+                              },
+                            }}
+                            placeholder="Assign Owner"
+                            InputProps={{
+                              ...params.InputProps,
+                              startAdornment: (
+                                <>
+                                  <InputAdornment position="start">
+                                    <Avatar className={classes.dealOwnerAvatar}>
+                                      {users.find((user) => user?.value === ownerId) ? (
+                                        <CustomAvatar
+                                          diglog={true}
+                                          email={users.find((user) => user?.value === ownerId).email}
+                                          text={
+                                            users
+                                              .find((user) => user?.value === ownerId)
+                                              .text.toString()
+                                              .toUpperCase()
+                                              .split(" ").length > 1
+                                              ? users.find((user) => user?.value === ownerId).text.toString()
+                                              : "Add Owner"
+                                          }
+                                        />
+                                      ) : (
+                                        "AO"
+                                      )}
+                                    </Avatar>
+                                  </InputAdornment>
+                                  {params.InputProps.startAdornment}
+                                </>
+                              ),
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+                </FormControl>
+              </div>
+
               <Grid item className={classes.descriptionInput}>
                 <TextField
                   id="outlined-multiline-static"
