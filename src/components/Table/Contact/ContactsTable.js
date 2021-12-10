@@ -16,7 +16,7 @@ import { handleSelectedGridChange, setColumnsData } from 'components/Table/helpe
 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
-import { GET_ES_CONTACTS_FILTER } from "graphQL/useQueryESContactsFilter";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { REMOVE_CONTACTS } from "graphQL/useMutationRemoveContact";
 import { GET_ES_CONTACTS } from "graphQL/useQueryESContacts";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
@@ -134,7 +134,7 @@ function ContactsTable(props) {
         return hit;
       });
       props.setRows(JSON.parse(JSON.stringify(hits)));
-      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_CONTACTS_FILTER);
+      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST);
       props.setLoading(false);
     } else if (tableData?.length === 0) {
       props.setLoading(false);
@@ -143,7 +143,7 @@ function ContactsTable(props) {
 
   useEffect(() => {
     const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns)
-    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_CONTACTS_FILTER);
+    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST);
   }, [selectedGridView]);
 
   const count = tableData?.total || 0;
@@ -182,7 +182,7 @@ function ContactsTable(props) {
         columns[i].options.display = false;
       }
     }
-    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_CONTACTS_FILTER);
+    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST);
   };
   ////////////-----Add your code section here-----///////////////////////
   const onTableChange = (action, tableState, rows, meta) => {
