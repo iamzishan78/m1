@@ -133,7 +133,7 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor }) => {
                 }}
               >
                 <ListItemIcon>
-                  <Icon className={classes.icon} fontSize="small" />
+                  <Icon className={classes.icon} fontSize="small" color="#888f96" />
                 </ListItemIcon>
                 <ListItemText primary={icon.label} />
               </StyledMenuItem>
