@@ -67,6 +67,12 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, qu
         style={{
           position: "relative",
           top: "65px",
+          display: "flex",
+          "flex-direction": "column",
+          height: "calc(100vh - 65px)",
+          top: "65px",
+          position: "relative",
+          "align-items": "stretch"
         }}
       >
         {children}
