@@ -11,13 +11,21 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: theme.palette.common.white,
             // opacity: 0.15,
+
         },
+        '&:focus-within': {
+            width: '100% !important',
+        },
+
         marginLeft: 0,
         width: '100%',
+        float: 'right',
+
         [theme.breakpoints.up('sm')]: {
             marginLeft: theme.spacing(1),
             width: 'auto',
         },
+
     },
     searchIcon: {
         padding: theme.spacing(0, 2),
@@ -39,11 +47,11 @@ const useStyles = makeStyles((theme) => ({
         transition: theme.transitions.create('width'),
         width: '100%',
         [theme.breakpoints.up('sm')]: {
-            width: props => props.search.length > 0 ? '15ch' : '0.9px',
+            width: props => props.search.length > 0 ? '100%' : '0.9px',
             '&:focus': {
                 backgroundColor: theme.palette.common.white,
                 opacity: 0.75,
-                width: '15ch'
+                width: '100%'
             },
         },
     }
@@ -59,6 +67,7 @@ export default function ExpandableSearch({ search, setSearch }) {
         <InputBase
             placeholder="Search…"
             value={search}
+            fullWidth={true}
             onChange={(e) => setSearch(e.target.value)}
             classes={{
                 root: classes.inputRoot,
