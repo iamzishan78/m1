@@ -63,6 +63,12 @@ const useStyles = makeStyles(() => ({
     "& .MuiInputBase-adornedStart:after": {
       borderBottomColor: "white",
     },
+    "& .MuiInput-underline:before": {
+      borderBottomColor: "white",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "white",
+    },
     "& .MuiOutlinedInput-root": {
       color: "white",
       "& fieldset": {
@@ -145,7 +151,7 @@ const LayerFilters = () => {
     const geoFiltersToReset = {};
     params.forEach((param) => {
       if (!Array.isArray(stateNav[param]) && stateNav[param]) geoFiltersToReset[param] = null;
-      else {
+      else if (Array.isArray(stateNav[param]) && stateNav[param].length > 0) {
         geoFiltersToReset[param] = [];
       }
     });
