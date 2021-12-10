@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import Link from "@material-ui/core/Link";
+import { makeStyles } from "@material-ui/styles";
 import { useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -14,9 +15,16 @@ import DealsDetailCard from "./DealsDetailCard";
 import { CONTACTDEALS } from "graphQL/useQueryContactDeals";
 import { CONTACT } from "graphQL/useQueryContact";
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    marginTop: "65px",
+  },
+}));
+
 export default function ContactDocumentsCard(props) {
   let history = useHistory();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const classes = useStyles();
+  const [, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
   const [allDeals, setAllDeals] = useState([]);
@@ -25,10 +33,7 @@ export default function ContactDocumentsCard(props) {
   const [activeDeals, setActiveDeals] = useState([]);
   const [contactData, setContactData] = useState(null);
 
-  const contactId =
-    history.location.pathname.split("/")[
-      history.location.pathname.split("/").length - 2
-    ];
+  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 2];
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
   const [getContactDeals, { data: deals, loading }] = useLazyQuery(CONTACTDEALS, { fetchPolicy: "cache-and-network" });
@@ -69,7 +74,7 @@ export default function ContactDocumentsCard(props) {
       setActiveDeals(others);
     }
   }, [allDeals]);
-  
+
   useEffect(() => {
     if (contactId) {
       getContact({
@@ -86,18 +91,14 @@ export default function ContactDocumentsCard(props) {
     }
   }, [data]);
 
-
   const checkModuleHistory = () => {
     return !!stateNav.contactFromMap;
   };
 
   return contactData ? (
-    <div variant="outlined">
+    <div variant="outlined" className={classes.root}>
       <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-        <Breadcrumbs
-          separator={<NavigateNextIcon fontSize="small" />}
-          aria-label="breadcrumb"
-        >
+        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
           {checkModuleHistory() && (
             <Link
               style={{
@@ -136,7 +137,7 @@ export default function ContactDocumentsCard(props) {
             }}
             color="inherit"
             onClick={() => {
-              history.push(`/contact/details/${contactId}`)
+              history.push(`/contact/details/${contactId}`);
               setStateApp((stateApp) => ({
                 ...stateApp,
                 selectedContact: contactId,
@@ -157,12 +158,7 @@ export default function ContactDocumentsCard(props) {
         </Breadcrumbs>
       </Toolbar>
 
-      <DealsDetailCard
-        activeDeals={activeDeals}
-        lostDeals={lostDeals}
-        closedDeals={wonDeals}
-        contact={contactData}
-      />
+      <DealsDetailCard activeDeals={activeDeals} lostDeals={lostDeals} closedDeals={wonDeals} contact={contactData} />
     </div>
   ) : (
     <div
