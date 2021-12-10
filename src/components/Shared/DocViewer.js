@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "1",
     display: "flex",
     flexDirection: "column",
-    position: "sticky   !important",
+    position: "sticky !important",
     top: "85% !important",
     bottom: "0 !important",
     left: "0",
@@ -94,11 +94,6 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
       let a = document.createElement("a");
       a.href = viewFile.uri;
       a.download = viewFile.name;
-
-      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
-      // a.target = "_blank";
-
-      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
       a.click();
     }
   };
@@ -206,17 +201,15 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
             </h4>
 
             <div style={{ float: "right" }}>
-              <>
-                <IconButton size="small" style={{ margin: "0 8px" }}>
-                  {stateApp?.viewDoc?.uri ? (
-                    <IconButton size="small" onClick={() => downloadFile(stateApp?.viewDoc)}>
-                      <GetAppIcon />
-                    </IconButton>
-                  ) : (
-                    <CircularProgress size={20} color="secondary" />
-                  )}
-                </IconButton>
-              </>
+              <IconButton size="small" style={{ margin: "0 8px" }}>
+                {stateApp?.viewDoc?.uri ? (
+                  <IconButton size="small" onClick={() => downloadFile(stateApp?.viewDoc)}>
+                    <GetAppIcon />
+                  </IconButton>
+                ) : (
+                  <CircularProgress size={20} color="secondary" />
+                )}
+              </IconButton>
 
               <IconButton
                 onClick={() => {
