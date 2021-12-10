@@ -13,7 +13,6 @@ import CommentComponent from "components/Shared/CommentComponent";
 import AddDialogeUploadZone from "components/ContactDetailCard/components/AddDialogUploadZone";
 import { useLazyQuery } from "@apollo/client";
 import { GETCHECK } from "graphQL/useQueryCheck";
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import moment from "moment";
 
@@ -174,7 +173,6 @@ export default function DetailComponents(props) {
   const classes = useStyles(props);
   const [tab, setTab] = useState(0);
   const [checkId, setCheckId] = useState(null);
-  const [checkDetails, setCheckDetails] = useState(null);
   const selectedTabRef = useRef(null);
   const location = useLocation();
   const [description, setDescription] = useState("");
@@ -184,19 +182,16 @@ export default function DetailComponents(props) {
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
   // queries 
-
-  const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
-  const tableData = elasticData?.getESPaginatedList;
-
+  const [getCheck, { data: getCheckResult }] = useLazyQuery(GETCHECK, {
+    fetchPolicy: "no-cache",
+  });
   const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
     fetchPolicy: "no-cache",
   });
 
-  const [getCheck, { data: getCheckResult }] = useLazyQuery(GETCHECK, {
-    fetchPolicy: "no-cache",
-  });
 
-  console.log("getCheckResult", getCheckResult);
+  const checksFlatData = getCheckResult?.findCheck_Flat?.check;
+
   useEffect(() => {
     selectedTabRef.current &&
       selectedTabRef.current.scrollIntoView({
@@ -206,22 +201,12 @@ export default function DetailComponents(props) {
       });
   }, [tab]);
 
-  const esIndex = "checks_flat";
 
   useEffect(() => {
     if (search !== "") {
       const checkId = search.replace("?id=", "");
       if (checkId) {
         setCheckId(checkId);
-        getESPaginatedList({
-          variables: {
-            esIndex,
-            pagination: {
-              first: 50,
-              keep_alive: "1micros"
-            },
-          },
-        });
         viewFiles({
           variables: { fileIds: checkId },
         });
@@ -236,13 +221,6 @@ export default function DetailComponents(props) {
   const setUploadedFileData = (uploadedfile) => {
     setUploadedFiles([...uploadedFiles, uploadedfile]);
   };
-
-  useEffect(() => {
-    if (tableData?.hits?.length > 0) {
-      const activeCheck = tableData?.hits.filter((check) => check._id === checkId.trim() && check);
-      setCheckDetails(activeCheck[0]);
-    }
-  }, [tableData]);
 
 
   return (
@@ -262,8 +240,8 @@ export default function DetailComponents(props) {
                 Revenue Statements
               </Link>
 
-              {checkDetails && (
-                <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{`${checkDetails.checkNumber} - ${checkDetails.payor["name"]}`}</Typography>
+              {checksFlatData && (
+                <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
               )}
             </Breadcrumbs>
           </Grid>
@@ -286,11 +264,11 @@ export default function DetailComponents(props) {
                   <CurrencyIcon fontSize="large" />
                 </IconButton>
                 <div className={classes.titleText}>
-                  {checkDetails && (
-                    <Typography style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}>{`${checkDetails.checkNumber} - ${checkDetails.payor["name"]}`}</Typography>
+                  {checksFlatData && (
+                    <Typography style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}>{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
                   )}
-                  {checkDetails && (
-                    <Typography variant="subtitle1" style={{ marginLeft: 8 }}>{moment.utc(checkDetails.checkDate).format("MM/DD/YYYY")}</Typography>
+                  {checksFlatData && (
+                    <Typography variant="subtitle1" style={{ marginLeft: 8 }}>{moment.utc(checksFlatData.checkDate).format("MM/DD/YYYY")}</Typography>
                   )}
                   <div className={classes.highlighter}>
                     <Typography className={classes.highlight} variant="highlight">Revenue Check</Typography>
@@ -326,9 +304,9 @@ export default function DetailComponents(props) {
             </div>
 
 
-            <div style={{ maxHeight: "calc(100vh - 310px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+            <div style={{ maxHeight: "calc(100vh - 260px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-                <HeaderSection details={checkDetails} />
+                <HeaderSection details={checksFlatData} />
               </div>
               <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
               <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
@@ -378,9 +356,11 @@ export default function DetailComponents(props) {
                     setDescription(e.target.value);
                   }}
                   onKeyDown={(e) => {
-                    if (e.keyCode === 13)
+                    if (e.keyCode === 13) {
+                      setFocusSate(false);
                       console.log("sample description will go for save: " + description);
-                    // console.log(e, 'description', unitProperties.description);
+                      setDescription("");
+                    }
                   }}
                   onFocus={() => setFocusSate(true)}
                   InputProps={{
