@@ -114,6 +114,8 @@ export default function AutocompEntityNamesVirtualizeList(props) {
     variant = "standard",
     label = "",
     placeholder = "",
+    margin = "dense",
+    size = "small",
     hasNextPage,
     isNextPageLoading,
     loadNextPage,
@@ -123,19 +125,19 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   const useStyles = makeStyles({
     inputRoot: props.darkCard
       ? {
-          backgroundColor: "#273551",
-          color: "#ffffff",
-          "& .MuiSvgIcon-root": {
-            fill: "#ffffff",
-          },
-        }
-      : {
-          backgroundColor: "#ffffff",
-          color: "grey",
-          "& .MuiSvgIcon-root": {
-            fill: "grey",
-          },
+        backgroundColor: "#273551",
+        color: "#ffffff",
+        "& .MuiSvgIcon-root": {
+          fill: "#ffffff",
         },
+      }
+      : {
+        backgroundColor: "#ffffff",
+        color: "grey",
+        "& .MuiSvgIcon-root": {
+          fill: "grey",
+        },
+      },
     listbox: {
       boxSizing: "border-box",
       "& ul": {
@@ -156,7 +158,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 
   const loadMoreItems = async (startIndex, stopIndex) => {
     if (isNextPageLoading || !hasNextPage) {
-      return () => {};
+      return () => { };
     } else {
       return loadNextPage({
         variables: {
@@ -262,13 +264,14 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       }}
       renderInput={(params) => (
         <TextField
-          margin="dense"
+          margin={margin}
           {...params}
           label={label}
           placeholder={placeholder}
           variant={variant}
           InputProps={{
             ...params.InputProps,
+            ...props.InputProps,
             endAdornment: (
               <>
                 {isNextPageLoading ? <CircularProgress color="inherit" size={20} /> : null}
@@ -276,8 +279,8 @@ export default function AutocompEntityNamesVirtualizeList(props) {
               </>
             ),
           }}
-          size="small"
-          // placeholder="E.g. Jacob"
+          size={size}
+        // placeholder="E.g. Jacob"
         />
       )}
       {...other}

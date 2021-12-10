@@ -11,7 +11,7 @@ import Tags from "../../Tagger";
 import Comments from "../../Comments";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
-import MUIDataTable, { TableFilterList } from "mui-datatables";
+import MUIDataTable, { TableFilterList, TableViewCol } from "mui-datatables";
 import { DndProvider } from "react-dnd";
 import { Box, ButtonGroup, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
 import TrackToggleButton from "../../TrackToggleButton";
@@ -97,6 +97,9 @@ import RightDialog from "../../../ContactDetailCard/components/RightDialog";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
+import CustomFieldText from "components/Shared/M1nTable/components/SubComponents/CustomFieldText";
+import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+
 // queries
 import { OWNERSLATSLONS } from "../../../../graphQL/useQueryOwnerLatsLonsArray";
 import { OPERATORSLATSLONS } from "../../../../graphQL/useQueryOperatorLatsLonsArray";
@@ -117,14 +120,14 @@ import PostAddIcon from "@material-ui/icons/PostAdd";
 import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
-import { isPropertySignature } from "typescript";
+import { isDebuggerStatement, isPropertySignature } from "typescript";
+import { colorPallete } from "components/Table/helpers";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
-
 // const customStyles = makeStyles((theme) => ({
 //   table: {
 //     "& .MuiTableCell-body": {
@@ -255,10 +258,12 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#D4E8F1",
     },
     "& .MuiToolbar-regular > div:nth-child(2)": {
+      marginRight: (props) => (props.toolbarActionMarginRight ? props.toolbarActionMarginRight : "inherit"),
       flex: "0 1 auto",
     },
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
+      backgroundColor: "#fff"
     },
     "& .MuiTableCell-paddingCheckbox": {
       position: "relative",
@@ -280,6 +285,9 @@ const useStyles = makeStyles((theme) => ({
       },
       "& .MuiTableCell-paddingCheckbox": {
         padding: (props) => (props.dense ? "0 !important" : "16px"),
+        left: "0px",
+        position: "sticky",
+        zIndex: 1800,
       },
     },
     "& tr": {
@@ -464,12 +472,15 @@ const useStyles = makeStyles((theme) => ({
     color: "#000000",
     fontWeight: "normal",
   },
+  fileName: {
+    minWidth: "400px !important",
+  },
   docDateText: {
     // cursor: "pointer",
     padding: "0px 30px 10px 10px",
-    marginTop: "-10px",
+    marginTop: "-20px",
     position: "relative",
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
     // minWidth: "100px",
     // borderRadius: "7px",
     // color: "#17aadd",
@@ -503,7 +514,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SubTable(props) {
-  const classes = useStyles(props);
+  const classes = useStyles({ ...props, toolbarActionMarginRight: props?.options?.toolbarActionMarginRight });
   const wellTableClass = WellTableStyles(props);
   const parcelTableClass = ParcelOwnershipStyles(props);
   const productionClass = ProductionTableStyle(props);
@@ -1194,8 +1205,21 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
+                  var dateTime = null;
+                  if (row_line && row_line.dateTime) {
+                    dateTime = row_line.dateTime;
+                  }
                   return (
-                    <span style={{ padding: 10 }}>{tableMeta.rowData[5] ? moment(tableMeta.rowData[5]).format("MM/DD/YYYY") : ""}</span>
+                    <span style={{ padding: 10 }}>
+                      {dateTime ? (
+                        <span>
+                          {moment(dateTime).format("MM/DD/YYYY")}
+                        </span>
+                      ) : (
+                        <span style={{ color: '#959595' }}>N/A</span>
+                      )}
+                    </span>
                   );
                 },
               };
@@ -1878,9 +1902,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  let id = (trueTargetLabel ? trueTargetLabel : props.targetLabel) + tableMeta.columnIndex;
-
-                  const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [columns[index]?.name]: item })));
+                  const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
                   var dateTime = null;
                   if (row_line && row_line.uploadedDate) {
                     dateTime = row_line.uploadedDate;
@@ -1889,22 +1911,12 @@ function SubTable(props) {
                   const file = row_line?.fileName;
                   const uri = row_line?.fileUrl;
 
-                  // console.log('DOCS',row_line)
-
-                  let targetSourceId =
-                    props.parent === "OwnersPerWell"
-                      ? tableMeta.rowData[2]
-                      : props.parent === "owner_WellInterests"
-                        ? tableMeta.rowData[1]
-                        : props.parent === "ownersPerParcel"
-                          ? tableMeta.rowData[1]
-                          : tableMeta.rowData[0];
-
                   return (
-                    <div className="fileName">
+                    <div className={classes.fileName}>
                       <Grid container spacing={2} direction="row">
                         <Grid
                           item
+                          xs={2}
                           style={{
                             display: "flex",
                             justifyContent: "center",
@@ -1935,7 +1947,7 @@ function SubTable(props) {
                           {/* </div> */}
                         </Grid>
 
-                        <Grid item>
+                        <Grid xs={10} item>
                           <div
                             style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
                             onClick={(e) => {
@@ -2101,7 +2113,30 @@ function SubTable(props) {
             {
               column.options = {
                 ...column.options,
-                customBodyRender: column?.options?.customBodyRender ? column.options.customBodyRender : (value, tableMeta, updateValue) => {
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  // if(column?.options?.customBodyRender){
+                  //   return column?.options?.customBodyRender
+                  // }
+                  if (column.isCustom && column.type === 'dropdown') {
+                    let value = null;
+                    if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
+                      value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
+                    }
+                    return (
+                      <div style={{ minWidth: "100px" }}>
+                        <CustomFieldSelect dropdownOptions={column.dropdownOptions} index={tableMeta.rowIndex} column={column} value={value} onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)} />
+                      </div>
+                    )
+                  }
+                  if (column.isCustom && column.type === 'text') {
+                    let value = null;
+                    if (props.rows[tableMeta.rowIndex].custom_data) {
+                      value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`]
+                    }
+                    return (
+                      <CustomFieldText value={value} onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)} />
+                    )
+                  }
                   const valueFormatter = (v) => {
                     if (
                       (column.name === "status" && props.targetLabel === "deal") ||
@@ -2202,7 +2237,20 @@ function SubTable(props) {
                           round
                         />
                       )}
-                      {props.targetLabel !== "contact" && (
+                      {props.targetLabel === "documents" && (
+                        <>
+                          {value ? (
+                            <p style={{ padding: '0px 5px' }}>
+                              {value}
+                            </p>
+                          ) : (
+                            <p style={{ padding: '0px 5px', color: '#959595' }}>
+                              {value ? value : 'N/A'}
+                            </p>
+                          )}
+                        </>
+                      )}
+                      {props.targetLabel !== "contact" && props.targetLabel !== "documents" && (
                         <CellContentEdition
                           id={tableMeta.rowData[0]}
                           content={{ [column.name]: valueFormatter(value) }}
@@ -2830,6 +2878,7 @@ function SubTable(props) {
         },
 
     customToolbar: () => {
+      // console.log("props addable type", props.addAble.type);
       let buttonLabel = "+ ADD",
         menuOptions = {};
       if (props.addAble.type === "contact") {
@@ -3311,7 +3360,7 @@ function SubTable(props) {
         }
       }
 
-      console.log("SHAPE PROPS", props);
+      // console.log("SHAPE PROPS", props);
 
       if (props.header === "Well Interests" && props.parent === "owner_WellInterests") {
         const pageVariables = {
@@ -3476,11 +3525,11 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    if (props.header === 'Contacts') {
+    if (props.header === 'Contacts' || props.header === "Documents") {
       const HeaderComponent = props.headerComponent
       return <HeaderComponent {...props.headerProps} />
     }
-    if (props.header === "Documents") {
+    if (props.header === "Documentss") {
       return (
         <div style={{ display: "flex", justifyContent: "left" }}>
           <DescriptionOutlinedIcon />
@@ -3537,6 +3586,15 @@ function SubTable(props) {
 
   console.log("rows", rows)
 
+  const CustomTableViewCol = (columnsProps) => {
+    if (props.header === "Documents") {
+      const ViewColumn = props.viewColumn
+      return <ViewColumn {...columnsProps} {...props.viewColumnProps} tableColumns={props.columns} />
+    } else {
+      return <TableViewCol {...columnsProps} />
+    }
+  }
+
   return (
     <div
       style={{
@@ -3561,6 +3619,7 @@ function SubTable(props) {
 
           columns={columns ? columns : []}
           components={{
+            TableViewCol: CustomTableViewCol,
             TableFilterList: props.header === 'Tax Roll Ownership' && !isSearchOpen ? TableFilterList : null,
             icons: {
               FilterIcon,

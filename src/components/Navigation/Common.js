@@ -90,7 +90,7 @@ export const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       width: theme.spacing(6) + 4,
     },
-    borderRight: "1px solid rgb(38 52 81)",
+    borderRight: "1px solid rgb(38 52 81) !important",
   },
   toolbar: {
     display: "flex",
@@ -117,7 +117,7 @@ export const useStyles = makeStyles((theme) => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: "rgb(21 38 74)",
+    // backgroundColor: "rgb(21 38 74)",
     marginRight: theme.spacing(2),
     marginLeft: "425px !important",
     width: "34%",

@@ -28,7 +28,7 @@ import { useDispatch } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "actions/Notifications.js";
 import { usetableStyles } from "../Styles/index.js";
 
-function AssociatedWellsUnitTable(props) {
+function AssociatedWellsShapeTable(props) {
     const classes = usetableStyles();
 
     // contexts
@@ -243,7 +243,7 @@ function AssociatedWellsUnitTable(props) {
     const options = {
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
         count: stateApp.shapeGridWellsCount || count || 0,
-        serverSide: true,
+        serverSide: false,
         // search: false, 
         // filter: false,
         // column: false, 
@@ -337,4 +337,4 @@ function AssociatedWellsUnitTable(props) {
     );
 }
 
-export default React.memo(TableHOC(AssociatedWellsUnitTable), deepEqualObjects);
+export default React.memo(TableHOC(AssociatedWellsShapeTable), deepEqualObjects);

@@ -1,42 +1,26 @@
 import React, { Fragment, useState, useContext, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../AppContext";
+import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import Card from "@material-ui/core/Card";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
 import CloseIcon from "@material-ui/icons/Close";
-import ExpandIcon from "../Shared/svgIcons/ExpandIcon";
-import ShrinkIcon from "../Shared/svgIcons/ShrinkIcon";
 import IconButton from "@material-ui/core/IconButton";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import MapGridCardSearch from "./components/MapGridCardSearch";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import Button from "@material-ui/core/Button";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 import { setMapGridCardState } from "../../actions";
 import OwnersSummaryCard from "../OwnersSummaryCard/OwnersSummaryCard";
 import TabPanels, { TabPanel } from "components/Shared/TabPanels";
-import TabButtons from "components/Shared/TabPanels/TabButtons";
 
 import ContactsHeadCells from "../Shared/constants/contacts-header-schema.js";
-import WellsHeadCells from "../Shared/constants/well-header-schema.js";
 import wellsColumnHeaders from "../Shared/constants/well-interests-header-grid-schema.js";
-import parcelsColumnHeaders from "../Shared/constants/parcel-header-grid.js";
 import { leasesColumnHeaders, locationsColumnHeaders, operatorsColumnHeaders, ownersColumnHeaders } from "./MapGridCardHeaders";
 import DockMenu from "./DockMenu";
 import ShapeGridWellsTable from "components/Table/Wells/ShapeGridWellsTable";
 import ShapeGridTaxOwnersTable from "components/Table/TaxOwners/ShapeGridTaxOwnersTable";
-import ViewportGridWellsTable from "components/Table/Wells/ViewportGridWellsTable";
 
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
+import SearchPanel from "./components/SearchPanel";
+import { platformDataInitialData } from "./components/data";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -58,13 +42,41 @@ const useStyles = makeStyles((theme) => {
       zIndex: "1300",
       position: "fixed",
     },
-    dockMenu: ({ dockMenu }) => {
-      let css = {};
-      if (dockMenu === "bottom" || dockMenu === "top")
-        css = { top: dockMenu === "bottom" ? "50vh" : "6vh", width: "100vw", height: "50vh", left: "0vw" };
-      else if (dockMenu === "left" || dockMenu === "right")
-        css = { left: dockMenu === "left" ? "0vw" : "50vw", width: "50vw", height: "94vh", top: "6vh" };
-      else if (dockMenu === "full") css = { left: "0vw", width: "100vw", height: "94vh", top: "6vh" };
+    dockMenu: ({ dockMenu, mapLayersPanelExtended }) => {
+      let css = {},
+        leftMargin = mapLayersPanelExtended ? 477 : 52;
+      if (dockMenu === "bottom" || dockMenu === "top") {
+        css = {
+          top: dockMenu === "bottom" ? "50vh" : "6vh",
+          height: "50vh",
+        };
+        if (dockMenu === "top") {
+          css = { ...css, width: `calc(100vw - ${leftMargin + 20}px)`, left: `${leftMargin + 20}px` };
+        } else {
+          css = { ...css, width: `calc(100vw - ${leftMargin}px)`, left: `${leftMargin}px` };
+        }
+      } else if (dockMenu === "left") {
+        css = {
+          left: `${leftMargin + 20}px`,
+          width: "50vw",
+          height: "94vh",
+          top: "6vh",
+        };
+      } else if (dockMenu === "right") {
+        css = {
+          left: "50vw",
+          width: "50vw",
+          height: "94vh",
+          top: "6vh",
+        };
+      } else if (dockMenu === "full") {
+        css = {
+          left: `${leftMargin + 20}px`,
+          width: `calc(100vw - ${leftMargin + 20}px)`,
+          height: "94vh",
+          top: "6vh",
+        };
+      }
       css = { ...css, zIndex: "1300", position: "fixed" };
       return css;
     },
@@ -75,6 +87,10 @@ const useStyles = makeStyles((theme) => {
       },
     },
     appBar: {
+      backgroundColor: "#F2F2F2",
+      borderBottom: "1px solid rgba(224, 224, 224, 1)",
+      boxShadow: "none",
+      color: "#757575",
       cursor: "context-menu",
       "& .MuiIconButton-root:hover": {
         backgroundColor: "rgba(255, 255, 255, 0.08)",
@@ -90,26 +106,18 @@ const useStyles = makeStyles((theme) => {
       "& .MuiBox-root": { padding: "0" },
     },
     mainPanelsDiv: {
-      height: "calc(100vh - 0px)",
-      maxHeight: "calc(100vh - 0px)",
+      height: "100%",
+      maxHeight: "100vh",
       overflow: "auto",
-
+      position: "relative",
       "&::-webkit-scrollbar": {
         width: "0.75em",
         height: "0.75em",
       },
-      // "&:hover::-webkit-scrollbar": {
-      //     width: "1.0em",
-      // },
-      // "&::-webkit-scrollbar-track": {
-      //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-      // },
-
       "&::-webkit-scrollbar-thumb": {
         backgroundColor: "#929292",
         borderRadius: 10,
       },
-
       "& div": {
         "&>.MuiPaper-root": {
           "&>:nth-child(3)": {
@@ -189,37 +197,22 @@ const TabLabels = ({ labels, value, setValue }) => {
   );
 };
 
-function tabPanelsPropsAreEqual(prevProps, nextProps) {
-  return Object.is(prevProps.value, nextProps.value);
-}
-
 function MapGridCard(props) {
   // contexts
   const [stateApp] = useContext(AppContext);
+  const [stateMapControls] = useContext(MapControlsContext);
 
   // function state
-  const [searchTapValue, SearchTapValue] = useState(0);
+  const [searchTapValue, SearchTapValue] = useState(platformDataInitialData[0]);
   const [viewportTapValue, ViewportTapValue] = useState(0);
-  const [selectedBoundary, SelectBoundary] = useState("Shape Filter");
   const [dockMenu, SetDockMenu] = useState("bottom");
   const [trackedTapValue, TrackedTapValue] = useState(0);
 
   // selectors
-  const { mapGridCardActivated, mapGridCardActiveTap, searchResultData, trackedDataCount, selectedOwner } = useSelector(
-    ({ MapGridCard }) => MapGridCard,
-    shallowEqual
-  );
+  const { mapGridCardActivated, mapGridCardActiveTap, selectedOwner } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
+  const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
 
-  // queries
   const dispatch = useDispatch();
-
-  // handlers
-
-  const setSelectedBoundary = (state) => {
-    if (selectedBoundary !== state) {
-      SelectBoundary(state);
-    }
-  };
 
   const setSelectedDockMenu = (state) => {
     if (dockMenu !== state) {
@@ -247,6 +240,7 @@ function MapGridCard(props) {
   // styles
   const classes = useStyles({
     dockMenu,
+    mapLayersPanelExtended,
     mapGridCardActivated,
     mapGridCardActiveTap,
     viewportWells: stateApp.viewportWells,
@@ -260,30 +254,6 @@ function MapGridCard(props) {
         selectedOwnerWellIntsSummary: null,
       })
     );
-  };
-
-  const getTargetFromSearchTaps = () => {
-    /// this intends to set the search value that gets passed into the mapgridcardsearch.js
-    /// value will control the cog api
-
-    switch (searchTapValue) {
-      case 5:
-        return "location";
-      case 4:
-        return "contacts";
-      // case 5:
-      //   return "permits";
-      // case 4:
-      //   return "parcel";
-      case 3:
-        return "lease";
-      case 2:
-        return "operator";
-      case 1:
-        return "owner";
-      default:
-        return "well";
-    }
   };
 
   const getTaps = useMemo(
@@ -322,79 +292,50 @@ function MapGridCard(props) {
     []
   );
 
-  const SearchTabPanels = () => (
-    <TabButtons
-      labels={[
-        "Wells",
-        "Tax Owners",
-        "Operators",
-        "Leases",
-        // "Parcels",
-        // "Recent Permits",
-        "Contacts",
-        "Locations",
-      ]}
-      value={searchTapValue}
-      setValue={(n) => {
-        setSearchTapValue(n);
-        if (searchTapValue !== n) {
-          dispatch(setMapGridCardState({ searchResultData: [], searchloading: true }));
-        }
-      }}
-    />
-  );
+  const handleSearchPanelChange = (value) => {
+    setSearchTapValue(value);
+    if (searchTapValue.index !== value.index) {
+      dispatch(setMapGridCardState({ searchResultData: [], searchloading: true }));
+    }
+  };
+
+  const ativateSearchPanel = () => {
+    if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
+    if (mapGridCardActivated === "min") {
+      dispatch(setMapGridCardState({ mapGridCardActivated: true }));
+    }
+  };
+
+  const options = {
+    toolbarActionMarginRight: "87px !important",
+    customToolbar: () => {
+      return (
+        <div style={{ display: "flex", float: "left", position: "relative", left: "207px", marginRight: "15px" }}>
+          <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
+
+          <IconButton
+            className="cancelDraggableEffect"
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch(
+                setMapGridCardState({
+                  mapGridCardActivated: false,
+                  selectedOwner: null,
+                  selectedOwnerWellIntsSummary: null,
+                })
+              );
+            }}
+          >
+            <CloseIcon color="secondary" />
+          </IconButton>
+        </div>
+      );
+    },
+  };
 
   const CardReturn = () => {
     return (
       <Card className={`${mapGridCardActivated === "exp" ? "noDrag" : ""} ${classes.dockMenu}`}>
-        <AppBar
-          position="static"
-          className={`${mapGridCardActivated === "exp" ? "cancelDraggableEffect" : ""} ${classes.appBar}`}
-          onClick={() => {
-            if (mapGridCardActivated === "min") {
-              dispatch(setMapGridCardState({ mapGridCardActivated: true }));
-            }
-          }}
-        >
-          <Toolbar style={{ paddingRight: "0" }}>
-            <Tabs className={classes.tapsRoot} value={mapGridCardActiveTap} onChange={handleMainTapChange} aria-label="simple tabs example">
-              <Tab className="cancelDraggableEffect" label={`Search Result (${searchResultData.length})`} {...a11yProps(0)} />
-
-              <Tab className="cancelDraggableEffect" label={`Tracked (${trackedDataCount})`} {...a11yProps(1)} />
-              <Tab
-                className="cancelDraggableEffect"
-                disabled={!stateApp.gridPolygonString}
-                label={`Boundary${
-                  stateApp.shapeGridWellsCount
-                    ? " (" + Number((stateApp.shapeGridWellsCount || "") + (stateApp.shapeGridOwnersCount || "")) + ")"
-                    : ""
-                }`}
-                {...a11yProps(1)}
-              ></Tab>
-            </Tabs>
-
-            <div style={{ flexGrow: 1 }}></div>
-
-            <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
-
-            <IconButton
-              className="cancelDraggableEffect"
-              onClick={(e) => {
-                e.stopPropagation();
-                dispatch(
-                  setMapGridCardState({
-                    mapGridCardActivated: false,
-                    selectedOwner: null,
-                    selectedOwnerWellIntsSummary: null,
-                  })
-                );
-              }}
-            >
-              <CloseIcon color="secondary" />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-
         {selectedOwner ? (
           <OwnersSummaryCard />
         ) : (
@@ -404,28 +345,26 @@ function MapGridCard(props) {
               value={mapGridCardActiveTap}
               index={0}
               className={classes.tapsPanelsPadding}
-              style={{ position: "absolute", width: "100vw" }}
+              style={{ position: "absolute", width: "100%" }}
             >
-              <MapGridCardSearch
-                ativateSearchPanel={() => {
-                  if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
-                  if (mapGridCardActivated === "min") {
-                    dispatch(setMapGridCardState({ mapGridCardActivated: true }));
-                  }
-                }}
-                searchOption={getTargetFromSearchTaps()}
-              />
-              <div style={{ position: "relative" }}>
+              <div style={{ position: "relative" }} classes={classes.gridTables}>
                 <TabPanels
-                  value={searchTapValue}
+                  value={searchTapValue.index}
                   panels={getTaps.map((tab, index) => (
                     <Fragment key={index}>
                       <M1nTable
                         dense
+                        options={options}
                         parent="search"
                         privateColumns={tab.privateColumns}
                         targetLabel={tab.label}
-                        header={<SearchTabPanels />}
+                        header={
+                          <SearchPanel
+                            handleChange={handleSearchPanelChange}
+                            value={searchTapValue}
+                            ativateSearchPanel={ativateSearchPanel}
+                          />
+                        }
                         showTags={tab.showTags}
                         showComments={tab.showComments}
                         showTracks={tab.showTracks}
@@ -490,62 +429,6 @@ function MapGridCard(props) {
               style={{ position: "absolute", width: "100vw" }}
             >
               <div style={{ position: "relative" }}>
-                {/* 
-              showTags={tab.showTags}
-                        showComments={tab.showComments}
-                        showTracks={tab.showTracks} */}
-
-                {/* <TabPanels
-                  value={viewportTapValue}
-                  panels={selectedBoundary === 'Shape Filter' ? [
-
-                    <ShapeGridWellsTable
-                      parent="wells"
-                      header={<TabLabels
-                        labels={[
-                          `Wells (${stateApp.shapeGridWellsCount || 0})`,
-                          `Tax Owners (${stateApp.shapeGridOwnersCount || 0})`,
-                        ]}
-                        value={viewportTapValue}
-                        setValue={setViewportTapValue}
-                      />}
-                      targetLabel="well"
-                      showTracks
-                    />
-                    ,
-                    <ShapeGridTaxOwnersTable
-                      parent="gridOwners"
-                      header={<TabLabels
-                        labels={[
-                          `Wells (${stateApp.shapeGridWellsCount || 0})`,
-                          `Tax Owners (${stateApp.shapeGridOwnersCount || 0})`,
-                        ]}
-                        value={viewportTapValue}
-                        setValue={setViewportTapValue}
-                      />}
-                      targetLabel="owner"
-                      showTracks
-                    />
-                  ] : [
-                    <div className={classes.viewportWells}>
-                      <ViewportGridWellsTable
-                        parent="wells"
-                        header={"Wells"}
-                        targetLabel="well"
-                        showTracks
-                      />
-                      <h6
-                        id="minimumZoomRequired"
-                        style={{ textAlign: "left", marginLeft: "5rem" }}
-                      >
-                        Please zoom in to leverage this feature (min zoom level
-                        = {stateApp.minZoomToQueryViewport})
-                      </h6>
-                    </div>
-                  ]
-                  }
-                /> */}
-
                 <TabPanels
                   value={viewportTapValue}
                   panels={[

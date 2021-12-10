@@ -106,6 +106,17 @@ const DocumentsHeadCells = [
       viewColumns: false,
     }
   },
+  {
+    name: "custom_data",
+    label: "Custom Data",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      viewColumns: false,
+    }
+  },
 
 
 

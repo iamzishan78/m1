@@ -23,7 +23,7 @@ const useStyles = makeStyles({
     },
 });
 
-const AutoCompleteShapeLayer = ({ shapeType, setSelectedShapeLayer }) => {
+const AutoCompleteShapeLayer = ({ value, shapeType, setSelectedShapeLayer }) => {
 
     const [layerList, setLayerList] = useState([])
 
@@ -55,8 +55,9 @@ const AutoCompleteShapeLayer = ({ shapeType, setSelectedShapeLayer }) => {
     }, [layersDate])
 
     const onInputChange = (e) => {
-        console.log(e.target.value)
-        setSearch(e.target.value)
+        if (e?.target?.value) {
+            setSearch(e.target.value)
+        }
     }
 
     const onChange = (value) => {
@@ -64,13 +65,16 @@ const AutoCompleteShapeLayer = ({ shapeType, setSelectedShapeLayer }) => {
             getCustomLayer({
                 variables: { id: value._id }
             });
+        else
+            setSelectedShapeLayer(value ? value : { clear: true });
+
     }
     const classes = useStyles();
 
     return (
         <Autocomplete
             // defaultValue={{ _id: value, name: value }}
-            // value={{ _id: value, name: value }}
+            value={value}
             disableListWrap
             classes={classes}
             options={layerList || []}
@@ -108,7 +112,6 @@ const AutoCompleteShapeLayer = ({ shapeType, setSelectedShapeLayer }) => {
             }}
             onInputChange={onInputChange}
             onChange={(event, newValue) => {
-                console.log(event, newValue);
                 onChange(newValue);
             }}
             renderInput={(params) => (

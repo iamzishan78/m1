@@ -6,8 +6,8 @@ import CardContent from "@material-ui/core/CardContent";
 import UnitDetailCard from "./UnitDetailCard";
 
 // contexts 
-import { AppContext } from "../../AppContext";
-import { ExpandableCardContext } from "../ExpandableCard/ExpandableCardContext";
+import { AppContext } from "AppContext";
+import { ExpandableCardContext } from "components/ExpandableCard/ExpandableCardContext";
 
 
 const useStyles = makeStyles((theme) => ({

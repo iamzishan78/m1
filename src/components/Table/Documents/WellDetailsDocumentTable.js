@@ -50,32 +50,32 @@ function WellDetailsDocumentTable(props) {
   // queries 
   const [getAllFiles, { data: dataParcelFiles, loading }] = useLazyQuery(GET_PARCELS_FILES);
 
-  const [updateParcelDocument] = useMutation(DELETEDESCRIPTORFILE, { refetchQueries: [ "getAllFiles" ], awaitRefetchQueries: true });
+  const [updateParcelDocument] = useMutation(DELETEDESCRIPTORFILE, { refetchQueries: ["getAllFiles"], awaitRefetchQueries: true });
   const tableData = dataParcelFiles?.getParcelFiles
 
   const addAble = { type: "wellDocument" }
   const total = false
   const orderByTracks = false
 
-  useEffect(()=>{
+  useEffect(() => {
     setSearchedRows(props.rows)
-  },[props.rows])
+  }, [props.rows])
 
   useEffect(() => {
-		getAllFiles({
-			variables: {
-				relatedObjectId: props.selectedWell.tenantWellId,
-				relatedObjectType: "Well",
-			},
-		});
-	}, [getAllFiles, props.selectedWell.tenantWellId]);
+    getAllFiles({
+      variables: {
+        relatedObjectId: props.selectedWell.tenantWellId,
+        relatedObjectType: "Well",
+      },
+    });
+  }, [getAllFiles, props.selectedWell.tenantWellId]);
 
 
   useEffect(() => {
     if (dataParcelFiles?.getParcelFiles/*?.length > 0*/) {
       let wells = dataParcelFiles.getParcelFiles
       wells = wells.map((w) => {
-        return { ...w, _id: w.descriptorId, documentDate: w.dateTime ? moment(w.dateTime).format('MM/DD/YYYY') : '' }; 
+        return { ...w, _id: w.descriptorId, documentDate: w.dateTime ? moment(w.dateTime).format('MM/DD/YYYY') : '' };
       })
       props.setRows(wells);
       const cleanAvailableTags = [];
@@ -103,13 +103,13 @@ function WellDetailsDocumentTable(props) {
     setNumPages(numPages);
   }
 
-  const deleteFunc = (ids)=> {
-    for(let i=0; i< ids.length;  i++){
+  const deleteFunc = (ids) => {
+    for (let i = 0; i < ids.length; i++) {
       updateParcelDocument({
         variables: {
-            id: ids[i],
+          id: ids[i],
         },
-        refetchQueries: [ "getParcelFiles" ],
+        refetchQueries: ["getParcelFiles"],
         awaitRefetchQueries: true,
       })/*.then(() =>{
         getAllFiles({
@@ -124,15 +124,14 @@ function WellDetailsDocumentTable(props) {
 
   const searchData = (tableState) => {
     let rows = []
-    if(tableState.searchText){
-      for(let i=0; i< props.rows.length; i++){
-        for( const key of Object.keys(props.rows[i])){
+    if (tableState.searchText) {
+      for (let i = 0; i < props.rows.length; i++) {
+        for (const key of Object.keys(props.rows[i])) {
           const col = columns.find(column => column.name === key)
-          if(col && (!col.options || col.options.searchable !== false)) {
-            if(typeof props.rows[i][key] === 'string'){
-              console.log(props.rows[i][key], key)
+          if (col && (!col.options || col.options.searchable !== false)) {
+            if (typeof props.rows[i][key] === 'string') {
               const value = props.rows[i][key].toLowerCase()
-              if(value.includes(tableState.searchText.toLowerCase())){
+              if (value.includes(tableState.searchText.toLowerCase())) {
                 rows.push(props.rows[i])
                 break
               }
@@ -140,17 +139,17 @@ function WellDetailsDocumentTable(props) {
           }
         }
       }
-    }else{
+    } else {
       rows = props.rows
     }
     rows = JSON.parse(JSON.stringify(rows));
-    for(let j=0; j<tableState.filterList.length; j++){
-      if(tableState.filterList[j].length> 0){
-        for(let i=0; i<rows.length;i++){
-          const isFiltered = rows[i].isFiltered !== false 
+    for (let j = 0; j < tableState.filterList.length; j++) {
+      if (tableState.filterList[j].length > 0) {
+        for (let i = 0; i < rows.length; i++) {
+          const isFiltered = rows[i].isFiltered !== false
           const rowdata = rows[i][columns[j].name]
           const filter = tableState.filterList[j][0]
-          if(isFiltered&& rowdata !== filter){
+          if (isFiltered && rowdata !== filter) {
             rows[i].isFiltered = false
             continue
           }
@@ -186,7 +185,7 @@ function WellDetailsDocumentTable(props) {
       id={props.id ? props.id : props.parent}
     >
       {showDocumentSlider && (
-        <WellFile 
+        <WellFile
           getAllFiles={(variables) => getAllFiles(variables)}
           globalWellId={props.selectedWell.id}
           tenantWellId={props.selectedWell.tenantWellId}

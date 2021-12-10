@@ -39,9 +39,6 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   subHeaderItem: {
-    // this is the top header on the layer manager which contains the word "layesrs" and teh button "manager"
-    // backgroundColor: "#141d32 !important",
-    // backgroundColor: "red",
     backgroundColor: "#0e111a !important",
     minWidth: "400px",
     height: "50px",
@@ -52,37 +49,73 @@ export const useStyles = makeStyles((theme) => ({
     padding: 0,
     minWidth: "425px",
     overflowY: "auto",
-    height: "calc(100vh - 466px - 50px - 64px)",
-    // maxHeight: 'calc(100vh - 40px - 64px)',
-    // backgroundColor: "#040e24",
     backgroundColor: "#0e111a",
-    "&::-webkit-scrollbar": {
-      width: "0.75em",
+  },
+  itemOne: {
+    "&.MuiDivider-root": {
+      "&::before": {
+        borderTop: "thin solid green"
+      },
+      "&::after": {
+        borderTop: "thin solid blue"
+      }
     },
-    // "&:hover::-webkit-scrollbar": {
-    //     width: "1.0em",
-    // },
-    "&::-webkit-scrollbar-track": {
-      "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    "& .MuiDivider-wrapper": {
+      fontSize: 16
+    }
+  },
+  mapPositionSection: {
+    minWidth: "425px",
+    color: "white",
+    backgroundColor: "#0e111a",
+    padding: "10px 20px",
+    minHeight: "230px",
+    "& .MuiFormControl-root": {
+      width: "100%",
     },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#506187",
-      borderRadius: 5,
+    "& label": {
+      color: "white",
     },
+    "& label.Mui-focused": {
+      color: "white",
+    },
+    "& label.Mui-disabled": {
+      color: "#adadad",
+    },
+    "& input": {
+      color: "white !important",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "white",
+    },
+    "& .MuiOutlinedInput-root": {
+      color: "white",
+      "& fieldset": {
+        borderColor: "white",
+      },
+      "&:hover fieldset": {
+        borderColor: "white",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "white",
+      },
+    },
+  },
+  panelContent: {
+    height: "calc(100vh - 117px)",
+    overflow: "overlay",
+    backgroundColor: "#0e111a",
   },
   heatmapList: {
     padding: 0,
     minWidth: "425px",
     overflowY: "auto",
-    height: "calc(100vh - 50px - 64px)",
+    height: "calc(100vh - 50px - 122px)",
     maxHeight: "calc(100vh - 40px - 64px)",
     backgroundColor: "#0e111a",
     "&::-webkit-scrollbar": {
       width: "0.75em",
     },
-    // "&:hover::-webkit-scrollbar": {
-    //     width: "1.0em",
-    // },
     "&::-webkit-scrollbar-track": {
       "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
     },
@@ -132,21 +165,13 @@ export const useStyles = makeStyles((theme) => ({
     // for layer panel
     backgroundColor: "#0e111a",
     overflow: "auto",
-    height: "calc(100vh - 103px)",
-    maxheight: "calc(100vh - 167px)",
+    height: "calc(100vh - 172px)",
+    maxheight: "calc(100vh - 172px)",
     paddingTop: 10,
     paddingBottom: 10,
-
-    "&::-webkit-scrollbar": {
-      width: "0.75em",
-    },
-    "&::-webkit-scrollbar-track": {
-      "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#506187",
-      borderRadius: 5,
-    },
+    "&::-webkit-scrollbar": { width: "0.75em" },
+    "&::-webkit-scrollbar-track": { "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)" },
+    "&::-webkit-scrollbar-thumb": { backgroundColor: "#506187", borderRadius: 5 },
   },
   toolbarActions: {
     display: "flex",
@@ -239,13 +264,10 @@ export const StyledMenuHeaderItem = withStyles((theme) => ({
     fontFamily: "Poppins",
     display: "flex",
     justifyContent: "space-between",
-
+    padding: "32px 23px",
     "&:hover": {
       background: "#0e111a",
     },
-    // backgroundColor: "#263451",
-    // backgroundColor: "#0e111a",
-
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
     },
@@ -256,6 +278,27 @@ export const StyledMenuHeaderItem = withStyles((theme) => ({
     },
     "& .MuiListItemText-primary": {
       fontSize: "x-large",
+    },
+  },
+}))(MenuItem);
+
+export const StyledMenuSecondaryHeaderItem = withStyles((theme) => ({
+  root: {
+    fontFamily: "Poppins",
+    display: "flex",
+    justifyContent: "space-between",
+    backgroundColor: "#0e111a !important",
+    padding: "10px 22px",
+    "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+      color: theme.palette.common.white,
+    },
+    "& .MuiButton-textPrimary": {
+      color: theme.palette.common.white,
+      background: "#17acdd",
+      padding: "10px 8px 8px 0px",
+    },
+    "& .MuiListItemText-primary": {
+      fontSize: "large",
     },
   },
 }))(MenuItem);
