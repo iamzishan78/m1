@@ -39,10 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
   dealOwnerRoot: {
     border: "1px solid #EBEBEB",
-
-    // This matches the specificity of the default styles at https://github.com/mui-org/material-ui/blob/v4.11.3/packages/material-ui-lab/src/Autocomplete/Autocomplete.js#L90
     '&[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input:first-child': {
-      // Default left padding is 6px
       paddingLeft: 26,
     },
 
@@ -383,13 +380,13 @@ export default function DetailComponents(props) {
             </div>
 
 
-            <div style={{ maxHeight: "calc(100vh - 260px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+            <div style={{ maxHeight: "100vh", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
                 <HeaderSection details={checksFlatData} />
               </div>
               <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
               <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
-                <SummarySection />
+                <SummarySection checkId={checkId} />
               </div>
               <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
               <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
