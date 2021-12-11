@@ -64,8 +64,13 @@ const useStyles = makeStyles((theme) => ({
         fontSize: "26px"
     },
     menuButton: {
-        color: "#757575 !important",
         backgroundColor: (props) => `${props.backgroundColor}!important`,
+        borderRadius: '16px',
+        padding: '6px 12px',
+        borderRight: '25px',
+        "& .MuiButton-startIcon":{
+            color: (props) => `${props.color ? props.color : "#757575"}!important`,
+        }
     },
 
     underlinedHeader: {
@@ -79,9 +84,9 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const SearchByTypeSelectField = ({ handleChange, value, backgroundColor }) => {
+const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color }) => {
 
-    const classes = useStyles({ backgroundColor });
+    const classes = useStyles({ backgroundColor, color });
     const [search, setSearch] = useState('');
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -105,11 +110,13 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor }) => {
                 className={classes.menuButton}
                 aria-controls="customized-menu"
                 aria-haspopup="true"
-                startIcon={<SelectedIcon />}
-                endIcon={<ArrowDropDownIcon />}
+                startIcon={<SelectedIcon color={color ? color : '#757575'} opacity={1} />}
+                endIcon={<ArrowDropDownIcon style={{ color: color ? color: '#757575' }} />}
                 onClick={handleClick}
             >
-                {value.label}
+                <span style={{ color: color ? color: '#757575' }}>
+                    {value.label}
+                </span>
             </Button>
 
             <StyledMenu

@@ -970,7 +970,7 @@ function Search() {
         </Accordion>
       )
       } */}
-      <SearchByTypeSelectField value={searchDropDown} handleChange={handleSearchPanelChange} backgroundColor='transparent' />
+      <SearchByTypeSelectField value={searchDropDown} handleChange={handleSearchPanelChange} color='#ffffff' backgroundColor='#1c2233' />
       <div style={{ width: '10px' }}></div>
 
       <Autocomplete
