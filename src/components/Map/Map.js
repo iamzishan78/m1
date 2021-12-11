@@ -4138,7 +4138,7 @@ function Map({ type, paramId, lati, longi }) {
       setStateApp((state) => ({
         ...state,
         popupOpen: true,
-        expandedCard: stateApp.activateWellDetailsFromTable || currentFeature.id === paramId ? true : false,
+        expandedCard: stateApp.activateWellDetailsFromTable || ( currentFeature.id && currentFeature.id === paramId ) ? true : false,
       }));
 
       handleOpenExpandableCard();
