@@ -17,7 +17,7 @@ import DocViewer from "components/Shared/DocViewer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    marginTop: '65px',
+    marginTop: "65px",
     "& div": {
       "&>.MuiPaper-root": {
         display: "flex",
@@ -47,8 +47,12 @@ export default function DocumentComponent() {
   return (
     <div className={classes.root}>
       <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} />
-      <Drawer data={true} />
-      <DocViewer width="calc(100vw - 515px)" />
+      <Drawer />
+      {stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0 ? (
+        <DocViewer width="calc(100vw - 515px)" />
+      ) : (
+        <DocViewer width="calc(100vw)" />
+      )}
     </div>
   );
 }

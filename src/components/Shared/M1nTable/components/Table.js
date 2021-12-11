@@ -1813,9 +1813,14 @@ function SubTable(props) {
                               if (props.addAble.type === 'document') {
                                 window.history.pushState('', '', `/documents/${row_line._id}/view`);
                               }
+                              const selectedRow = rows.find((row) => row._id === row_line._id);
                               setStateApp((state) => ({
                                 ...state,
-                                pdfView: rows.find((row) => row._id === row_line._id),
+                                pdfView: selectedRow,
+                                viewDoc: {
+                                  uri: selectedRow.viewToken,
+                                  name: selectedRow.fileName,
+                                },
                               }));
                             }
                           }}
@@ -1893,9 +1898,14 @@ function SubTable(props) {
                                 if (props.addAble.type === 'document') {
                                   window.history.pushState('', '', `/documents/${row_line._id}/view`);
                                 }
+                                const selectedRow = rows.find((row) => row._id === row_line._id);
                                 setStateApp((state) => ({
                                   ...state,
-                                  pdfView: rows.find((row) => row._id === row_line._id),
+                                  pdfView: selectedRow,
+                                  viewDoc: {
+                                    uri: selectedRow.viewToken,
+                                    name: selectedRow.fileName,
+                                  },
                                 }));
                               } else {
                                 handleViewFile(row_line._id);
