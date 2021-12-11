@@ -940,7 +940,7 @@ function Search() {
   ) {
     optionsWithHeader = [header, { ...header, Source: "loader" }];
   }
-  console.log("orig optionsWithHeader", optionsWithHeader);
+  // console.log("orig optionsWithHeader", optionsWithHeader);
 
   return (
     <div className={classes.root} style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
@@ -1425,7 +1425,7 @@ function Search() {
           </div>
         )}
         renderOption={(option) => {
-          console.log("orig renderOption option", option);
+          // console.log("orig renderOption option", option);
           if (option.Source === "header" || option.group === "loader") return null;
           const parts = parse(option.Primary, Array());
 
