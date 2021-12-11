@@ -182,6 +182,7 @@ function MapGridCardSearch(props) {
   // );
   const [getESLeasesPaginatedList, { data: constDataLeases }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
+  // console.log('stateApp.gridPolygonString', stateApp.gridPolygonString)
   const startPaginationAt = 50;
   const callWellSearch = React.useMemo(
     () =>
