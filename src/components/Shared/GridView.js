@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { TextField, InputAdornment, IconButton, Accordion, AccordionSummary, AccordionDetails } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import { AppContext } from "../../AppContext";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "0 !important",
     display: "flex",
     flexFlow: "column",
-    height: "85vh",
+    // height: "85vh",
     "& .MuiPaper-elevation1": {
       boxShadow: "none !important",
     },
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
   summary: {
     backgroundColor: "#F2F2F2",
-    height: "40px !important",
+    height: "50px !important",
     minHeight: "40px !important",
   },
   textField: {
@@ -240,7 +240,7 @@ function GridView({
             </div>
             <Accordion defaultExpanded style={{ marginTop: 20 }}>
               <AccordionSummary
-                expandIcon={<KeyboardArrowUpIcon></KeyboardArrowUpIcon>}
+                expandIcon={<KeyboardArrowDownIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
                 className={classes.summary}
@@ -271,7 +271,7 @@ function GridView({
           <div style={{ flex: "1 1 auto", overflow: "auto" }}>
             <Accordion defaultExpanded style={{ margin: 0 }}>
               <AccordionSummary
-                expandIcon={<KeyboardArrowUpIcon></KeyboardArrowUpIcon>}
+                expandIcon={<KeyboardArrowDownIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
                 className={classes.summary}

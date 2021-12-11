@@ -453,6 +453,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: "100px",
     borderRadius: "7px",
     color: "#17aadd",
+    wordBreak: "break-word",
     "&:hover": {
       textDecoration: "underline",
     },
@@ -1780,17 +1781,11 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  let targetSourceId =
-                    props.parent === "OwnersPerWell"
-                      ? tableMeta.rowData[2]
-                      : props.parent === "owner_WellInterests"
-                        ? tableMeta.rowData[1]
-                        : props.parent === "ownersPerParcel"
-                          ? tableMeta.rowData[1]
-                          : tableMeta.rowData[0];
-
-                  const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [columns[index]?.name]: item })));
-
+                  const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
+                  const docInfo = rows.find((row) => row._id === row_line._id);
+                  let docExtention = docInfo?.fileName?.split(".")?.[1]?.toLowerCase();
+                  console.log("fileName", docInfo?.fileName);
+                  console.log(`docExtention: ${docExtention}`);
                   return (
                     <div style={{ marginRight: "10px", display: "flex", justifyContent: "left", alignItems: "center" }}>
                       <IconButton
@@ -1803,21 +1798,21 @@ function SubTable(props) {
                         <GetAppIcon />
                       </IconButton>
 
-                      {/* BEGINNING OF SHITTY CODE === this find the file type and if pdf will show the icon */}
-                      {row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase() === "pdf" && (
+                      {docExtention === 'pdf' && (
                         <IconButton
                           onClick={(e) => {
                             e.stopPropagation();
-                            const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
-                            if (type === "pdf") {
-                              if (props.addAble.type === 'document') {
-                                window.history.pushState('', '', `/documents/${row_line._id}/view`);
-                              }
-                              setStateApp((state) => ({
-                                ...state,
-                                pdfView: rows.find((row) => row._id === row_line._id),
-                              }));
+                            if (props.addAble.type === 'document') {
+                              window.history.pushState('', '', `/documents/${row_line._id}/view`);
                             }
+                            setStateApp((state) => ({
+                              ...state,
+                              pdfView: docInfo,
+                              viewDoc: {
+                                uri: docInfo.viewToken,
+                                name: docInfo.fileName,
+                              },
+                            }));
                           }}
                         >
                           {/* // this is the search icon in the grid on documents */}
@@ -1825,7 +1820,6 @@ function SubTable(props) {
                           <PageviewIcon />
                         </IconButton>
                       )}
-                      {/* END OF THIS PARTICULAR BLOCK OF SHITTY CODE  */}
                     </div>
                   );
                 },
@@ -1883,19 +1877,26 @@ function SubTable(props) {
                         </Grid>
 
                         <Grid xs={10} item>
+                          {/**
+                           * This is the document title showing in each row
+                           */}
                           <div
                             style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              //  console.log(,'value Div click')
                               const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
                               if (type === "pdf") {
                                 if (props.addAble.type === 'document') {
                                   window.history.pushState('', '', `/documents/${row_line._id}/view`);
                                 }
+                                const selectedRow = rows.find((row) => row._id === row_line._id);
                                 setStateApp((state) => ({
                                   ...state,
-                                  pdfView: rows.find((row) => row._id === row_line._id),
+                                  pdfView: selectedRow,
+                                  viewDoc: {
+                                    uri: selectedRow.viewToken,
+                                    name: selectedRow.fileName,
+                                  },
                                 }));
                               } else {
                                 handleViewFile(row_line._id);
@@ -1976,9 +1977,6 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  // if(column?.options?.customBodyRender){
-                  //   return column?.options?.customBodyRender
-                  // }
                   if (column.isCustom && column.type === 'dropdown') {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
@@ -2081,7 +2079,7 @@ function SubTable(props) {
                   }
                   return (
                     <div
-                      style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
+                      style={{ display: "flex", alignItems: "center", justifyContent: "left", minWidth: "150px" }}
                       className={`${props.parent === "assocTaxRollInterests" &&
                         props.addAble.type === "wellInterest" &&
                         (!tableMeta.rowData[15] || tableMeta.rowData[20])
@@ -2102,7 +2100,7 @@ function SubTable(props) {
                       {props.targetLabel === "documents" && (
                         <>
                           {value ? (
-                            <p style={{ padding: '0px 5px' }}>
+                            <p style={{ padding: '0px 5px', wordBreak: "break-word" }}>
                               {value}
                             </p>
                           ) : (
@@ -3785,7 +3783,7 @@ function SubTable(props) {
                     removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                     ? "s"
                     : ""
-                    } from  this contact?`}
+                    } from  this unit?`}
                 </DeleteConfirmationDialogContent>
               )}
               {openDialog === "deleteParcelDocument" && (
