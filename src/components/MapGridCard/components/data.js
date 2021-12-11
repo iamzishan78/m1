@@ -10,6 +10,6 @@ export const platformDataInitialData = [
   { index: 0, value: "well", Icon: WellIcon, label: "Wells" },
   { index: 1, value: "owner", Icon: TaxOwnerIcon, label: "Tax Owners" },
   { index: 2, value: "operator", Icon: OperatorIcon, label: "Operators" },
-  { index: 3, value: "lease", Icon: LeaseIcon, label: "Leases" },
+  // { index: 3, value: "lease", Icon: LeaseIcon, label: "Leases" },
   { index: 4, value: "contacts", Icon: ContactIcon, label: "Contacts" },
 ];
