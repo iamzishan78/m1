@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { useHistory } from "react-router-dom";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -43,15 +44,20 @@ const useStyles = makeStyles((theme) => ({
 export default function DocumentComponent() {
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
+  let history = useHistory();
+
+  const onCloseHandler = () => {
+    history.push('/documents');
+  }
 
   return (
     <div className={classes.root}>
       <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} />
       <Drawer />
       {stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0 ? (
-        <DocViewer width="calc(100vw - 515px)" />
+        <DocViewer width="calc(100vw - 515px)" onCloseHandler={onCloseHandler} />
       ) : (
-        <DocViewer width="calc(100vw)" />
+        <DocViewer width="calc(100vw)" onCloseHandler={onCloseHandler} />
       )}
     </div>
   );

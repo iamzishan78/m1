@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondition = false, width }) => {
+const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondition = false, width, onCloseHandler = null }) => {
   const classes = useStyles({ width });
   const [numPages, setNumPages] = useState(null);
   let [, setPageNumber] = useState(1);
@@ -158,6 +158,9 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
                 <IconButton
                   onClick={() => {
                     setStateApp({ ...stateApp, viewDoc: null });
+                    if (onCloseHandler) {
+                      onCloseHandler();
+                    }
                   }}
                   size="small"
                 >

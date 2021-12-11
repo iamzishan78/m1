@@ -453,6 +453,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: "100px",
     borderRadius: "7px",
     color: "#17aadd",
+    wordBreak: "break-word",
     "&:hover": {
       textDecoration: "underline",
     },
@@ -1888,11 +1889,13 @@ function SubTable(props) {
                         </Grid>
 
                         <Grid xs={10} item>
+                          {/**
+                           * This is the document title showing in each row
+                           */}
                           <div
                             style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              //  console.log(,'value Div click')
                               const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
                               if (type === "pdf") {
                                 if (props.addAble.type === 'document') {
@@ -2091,7 +2094,7 @@ function SubTable(props) {
                   }
                   return (
                     <div
-                      style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
+                      style={{ display: "flex", alignItems: "center", justifyContent: "left", minWidth: "150px" }}
                       className={`${props.parent === "assocTaxRollInterests" &&
                         props.addAble.type === "wellInterest" &&
                         (!tableMeta.rowData[15] || tableMeta.rowData[20])
@@ -2112,7 +2115,7 @@ function SubTable(props) {
                       {props.targetLabel === "documents" && (
                         <>
                           {value ? (
-                            <p style={{ padding: '0px 5px' }}>
+                            <p style={{ padding: '0px 5px', wordBreak: "break-word" }}>
                               {value}
                             </p>
                           ) : (
