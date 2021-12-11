@@ -62,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     color: "#757575",
     fontSize: "26px",
+    fill: "#bdc7d1",
   },
   menuButton: {
     color: "#757575 !important",
@@ -133,7 +134,7 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor }) => {
                 }}
               >
                 <ListItemIcon>
-                  <Icon className={classes.icon} fontSize="small" color="#888f96" />
+                  <Icon className={classes.icon} fontSize="small" color="#bdc7d1" />
                 </ListItemIcon>
                 <ListItemText primary={icon.label} />
               </StyledMenuItem>
