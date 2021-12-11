@@ -1,87 +1,89 @@
 import React, { useState, useMemo } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import Grid from '@material-ui/core/Grid';
+import MenuItem from "@material-ui/core/MenuItem";
+import Button from "@material-ui/core/Button";
+import Menu from "@material-ui/core/Menu";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import Grid from "@material-ui/core/Grid";
 
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import { Typography } from "@material-ui/core";
 import { platformDataInitialData } from "./data";
 
 const StyledMenu = withStyles({
-    paper: {
-        minWidth: '420px',
-        border: '1px solid #d3d4d5',
-    },
+  paper: {
+    minWidth: "420px",
+    border: "1px solid #d3d4d5",
+  },
 })((props) => (
-    <Menu
-        elevation={0}
-        getContentAnchorEl={null}
-        anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-        }}
-        transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-        }}
-        {...props}
-    />
+  <Menu
+    elevation={0}
+    getContentAnchorEl={null}
+    anchorOrigin={{
+      vertical: "bottom",
+      horizontal: "center",
+    }}
+    transformOrigin={{
+      vertical: "top",
+      horizontal: "center",
+    }}
+    {...props}
+  />
 ));
 
 const StyledMenuItem = withStyles((theme) => ({
-    root: {
-        color: "#757575",
-        '&:focus': {
-            color: "#757575",
-            // backgroundColor: theme.palette.primary.main,
-            '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
-                color: theme.palette.common.white,
-            },
-        },
+  root: {
+    color: "#757575",
+    "&:focus": {
+      color: "#757575",
+      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+        color: theme.palette.common.white,
+      },
     },
-    selected: {
-        color: "#757575  !important",
-        '& .MuiListItemText-primary': {
-            color: "#757575  !important",
-        },
-        backgroundColor: '#dfecf7 !important',
-    }
+  },
+  selected: {
+    color: "#757575  !important",
+    "& .MuiListItemText-primary": {
+      color: "#757575  !important",
+    },
+    backgroundColor: "#dfecf7 !important",
+  },
 }))(MenuItem);
 
 const useStyles = makeStyles((theme) => ({
-    searchSelect: {
-        width: '150px',
-        "& .MuiFilledInput-root, & .MuiSelect-select.MuiSelect-select": {
-            backgroundColor: (props) => `${props.backgroundColor}!important`,
-        },
-    }, icon: {
-        color: "#757575",
-        fontSize: "26px"
+  searchSelect: {
+    width: "150px",
+    "& .MuiFilledInput-root, & .MuiSelect-select.MuiSelect-select": {
+      backgroundColor: (props) => `${props.backgroundColor}!important`,
     },
-    menuButton: {
-        backgroundColor: (props) => `${props.backgroundColor}!important`,
-        borderRadius: '16px',
-        padding: '6px 12px',
-        borderRight: '25px',
-        "& .MuiButton-startIcon":{
-            color: (props) => `${props.color ? props.color : "#757575"}!important`,
-        }
-    },
-
-    underlinedHeader: {
-        paddingLeft: '16px',
-        justifyContent: "space-between",
-        borderBottom: '0.5px solid #7575753d',
-        '& .MuiTypography-h6': {
-            fontWeight: 'bold',
-            fontSize: '1.1rem'
-        }
+  },
+  icon: {
+    color: "#757575",
+    fontSize: "26px",
+    fill: "#bdc7d1",
+  },
+  menuButton: {
+    color: "#757575 !important",
+    backgroundColor: (props) => `${props.backgroundColor}!important`,
+    borderRadius: '16px',
+    padding: '6px 12px',
+    borderRight: '25px',
+    "& .MuiButton-startIcon":{
+        color: (props) => `${props.color ? props.color : "#757575"}!important`,
     }
+  },
+
+  underlinedHeader: {
+    paddingLeft: "16px",
+    justifyContent: "space-between",
+    borderBottom: "0.5px solid #7575753d",
+    "& .MuiTypography-h6": {
+      fontWeight: "bold",
+      fontSize: "1.1rem",
+    },
+  },
 }));
 
 const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color }) => {
@@ -142,7 +144,8 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color }
                         const Icon = icon.Icon
                         return <StyledMenuItem key={icon.index} selected={icon.index === value.index} onClick={() => { handleChange(icon); handleClose(); }}>
                             <ListItemIcon>
-                                <Icon className={classes.icon} fontSize="small" />
+                                {/* <Icon className={classes.icon} fontSize="small" /> */}
+                                <Icon className={classes.icon} fontSize="small" color="#bdc7d1" opacity="1" />
                             </ListItemIcon>
                             <ListItemText primary={icon.label} />
                         </StyledMenuItem>
@@ -165,11 +168,10 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color }
                                     <ListItemText primary={icon.label} />
                                 </StyledMenuItem>
                             })} */}
-
-                </Grid>
-            </StyledMenu>
-        </>
-    )
+        </Grid>
+      </StyledMenu>
+    </>
+  );
 };
 
-export default SearchByTypeSelectField
+export default SearchByTypeSelectField;
