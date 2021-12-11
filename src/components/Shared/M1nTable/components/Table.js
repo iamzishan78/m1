@@ -1572,7 +1572,7 @@ function SubTable(props) {
                             m1nSelectedRowsIndexes.push(tableMeta.rowIndex);
                           }
                           if (m1nSelectedRowsIndexes?.length > 0) {
-                            let selectedRows = m1nSelectedRowsIndexes.map((index) => rows[index]);
+                            let selectedRows = m1nSelectedRowsIndexes.map((index) => rows[tableMeta.currentTableData[index].index]);
                             selectedRows = selectedRows.filter((row) => !row.isContact);
                             if (selectedRows.length > 0)
                               return handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, selectedRows, "multipleOwnerToContact");
