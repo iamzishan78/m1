@@ -6,7 +6,6 @@ import { AppContext } from "../../../AppContext";
 import Panel from "./compoennts/Panel";
 import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
 import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyLayerSettings";
-import { makeStyles } from "@material-ui/core/styles";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
