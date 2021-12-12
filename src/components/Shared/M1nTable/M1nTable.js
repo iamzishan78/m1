@@ -4,7 +4,6 @@ import findIndex from "lodash/findIndex";
 import { useHistory } from "react-router-dom";
 // context
 import { AppContext } from "../../../AppContext";
-import { NavigationContext } from "components/Navigation/NavigationContext";
 import { MapGridContext } from "../../../components/MapGridCard/MapGridContext.js";
 
 import { Container } from "@material-ui/core";
@@ -88,7 +87,6 @@ function M1nTable(props) {
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateGrid, setStateGrid] = useContext(MapGridContext);
   //  console.log(reFetchDocuments(), 'reFetchDocuments')
 
@@ -1596,8 +1594,8 @@ function M1nTable(props) {
       if (searchResultData.length > 0) {
         searchResultData.forEach((result) => {
           result.id = result.Id;
-          // console.log("value result", result);
-          // console.log("props.target", props.targetLabel);
+          console.log("value result", result);
+          console.log("props.target", props.targetLabel);
 
           // setting flyto coordinates for well
           if (props.targetLabel && props.targetLabel == "well") {
@@ -1684,21 +1682,7 @@ function M1nTable(props) {
           }
         });
 
-        const privateCol = JSON.parse(JSON.stringify(props.privateColumns));
-        
-        if(props.targetLabel === 'well') {
-          if(stateNav.operatorName?.length > 0) {
-            privateCol.push({ name: "operator", label: "Operator Name" })
-          }
-        }
-
-        if(props.targetLabel === 'well') {
-          if(stateNav.profileName?.length > 0) {
-            privateCol.push({ name: "wellBoreProfile", label: "Well Profile" })
-          }
-        }
-
-        const buildingColumns = [SearchsHeadCells[0], ...privateCol];
+        const buildingColumns = [SearchsHeadCells[0], ...props.privateColumns];
 
         if (props.showTags) {
           let availableTags = [];

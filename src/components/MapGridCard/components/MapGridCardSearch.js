@@ -1,10 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import moment from "moment";
 
 // context 
 import { AppContext } from "../../../AppContext";
-import { NavigationContext } from "components/Navigation/NavigationContext";
 import { MapGridContext } from "../../../components/MapGridCard/MapGridContext.js";
 
 
@@ -63,13 +61,16 @@ function MapGridCardSearch(props) {
 
   // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateGrid, setStateGrid] = useContext(MapGridContext);
+
 
   // function states 
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState([]);
   const [searchTop] = React.useState(100);
+
+
+
 
   ///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
 
@@ -181,46 +182,11 @@ function MapGridCardSearch(props) {
   // );
   const [getESLeasesPaginatedList, { data: constDataLeases }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
-  const getSearchQuery = (filters) => {
-    let query = '';
-    Object.entries(filters).map((filter, index) => {
-      for(let i = 0; i < filter[1]?.length; i++) {
-        if(query && i===0){
-          query = query + ' AND '
-        }
-        query = `${query} ${i===0 ? '(' : 'OR'} ${filter[0]}.keyword:(${filter[1][i]}) ${i===filter[1].length - 1? ')' : ''}`
-      }
-    })
-    return query;
-  }
-
-  const getFilters = (filters) => {
-    const customFilters = []
-    Object.entries(filters).map((filter, index) => {
-      if(filter[1].from || filter[1].to){
-        customFilters.push({
-          field: filter[0],
-          value: {
-            range:{
-              [filter[0]]: { 
-                gte: filter[1].from ? filter[1].from : null,
-                lte: filter[1].to ? filter[1].to : null,
-              }
-            }
-          }
-        })
-
-      }
-    })
-    return customFilters;
-  }
-
   const startPaginationAt = 50;
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const search = getSearchQuery(request.navFilter.query);
-        const filters = getFilters(request.navFilter.filter);
+
         getESWellsPaginatedList({
           variables: {
             esIndex: "platformData:wells",
@@ -228,9 +194,8 @@ function MapGridCardSearch(props) {
               first: startPaginationAt,
               keep_alive: "1micros"
             },
-            search: request.input? `wellName:*${request.input}*${search}`: search,
-            sort:[],
-            filters
+            search: request.input? `wellName:*${request.input}*`: '',
+            sort:[]
           }
         })
         // getPaginatedWells({
@@ -456,37 +421,12 @@ function MapGridCardSearch(props) {
   React.useEffect(() => {
     (async () => {
       let newOptions = [];
+
       Promise.all([
         props.searchOption == "well"
           ? callWellSearch({
             input: searchInputValue,
-            searchTop,
-            navFilter: {
-              query: {
-                operator: stateNav.operatorName, 
-                wellType: stateNav.typeName, 
-                wellBoreProfile: stateNav.profileName, 
-                wellStatus: stateNav.statusName,
-              },
-              filter:{
-                spudDate: {
-                  from: stateNav.spudDateFrom? moment.parseZone(stateNav.spudDateFrom).utc(true).valueOf() : moment.parseZone(new Date("1900-01-01T00:00:00")).utc(true).valueOf(), 
-                  to: stateNav.spudDateTo ? moment.parseZone(stateNav.spudDateTo).utc(true).valueOf() : moment.parseZone(moment()).utc(true).valueOf(),
-                },
-                permitApprovedDate: { 
-                  from: stateNav.permitDateFrom ? moment.parseZone(stateNav.permitDateFrom).utc(true).valueOf() : moment.parseZone(new Date("1900-01-01T00:00:00")).utc(true).valueOf(), 
-                  to: stateNav.permitDateTo ? moment.parseZone(stateNav.permitDateTo).utc(true).valueOf() : moment.parseZone(moment()).utc(true).valueOf()
-                },
-                completionDate: { 
-                  from: stateNav.completetionDateFrom? moment.parseZone(stateNav.completetionDateFrom).utc(true).valueOf(): moment.parseZone(new Date("1900-01-01T00:00:00")).utc(true).valueOf(),
-                  to: stateNav.completetionDateTo? moment.parseZone(stateNav.completetionDateTo).utc(true).valueOf(): moment.parseZone(moment()).utc(true).valueOf(),
-                },
-                firstProductionDate: { 
-                  from: stateNav.firstProdDateFrom? moment.parseZone(stateNav.firstProdDateFrom).utc(true).valueOf(): moment.parseZone(new Date("1900-01-01T00:00:00")).utc(true).valueOf(),
-                  to: stateNav.firstProdDateTo? moment.parseZone(stateNav.firstProdDateTo).utc(true).valueOf(): moment.parseZone(moment()).utc(true).valueOf(),
-                } 
-              }
-            }  
+            searchTop
           })
           : null,
         props.searchOption == "owner"
@@ -555,18 +495,6 @@ function MapGridCardSearch(props) {
     callContactsSearch,
     callMapboxSearch,
     props.searchOption,
-    stateNav.operatorName,
-    stateNav.typeName,
-    stateNav.profileName,
-    stateNav.statusName,
-    stateNav.spudDateFrom,
-    stateNav.spudDateTo,
-    stateNav.permitDateFrom,
-    stateNav.permitDateTo,
-    stateNav.completetionDateFrom,
-    stateNav.completetionDateTo,
-    stateNav.firstProdDateFrom,
-    stateNav.firstProdDateTo
   ]);
 
 

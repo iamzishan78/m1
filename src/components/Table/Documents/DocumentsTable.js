@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function DocumentsTable(props) {
-  // const  { testSagaAction } = props
   const classes = useStyles();
   const selectedFilters = useRef([]);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -91,10 +90,6 @@ function DocumentsTable(props) {
       },
     });
   }, [getGridViews]);
-
-  // useEffect(() => {
-  //   testSagaAction()
-  // },[])
 
   useEffect(() => {
     if (gridViews?.getGridViews?.gridViews) {
