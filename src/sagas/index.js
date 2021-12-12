@@ -1,8 +1,8 @@
 import { all } from "redux-saga/effects";
-import { watcherCommon } from "store/sagas/sagaTest";
+////Example:////   import authSagas from "./Auth";
 
 export default function* rootSaga(getState) {
   yield all([
-    watcherCommon()
+    ////Example:////   authSagas(),
   ]);
 }
