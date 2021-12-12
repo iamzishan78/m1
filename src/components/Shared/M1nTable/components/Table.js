@@ -3438,6 +3438,7 @@ function SubTable(props) {
         {/* {console.log('PROPS', props)} */}
 
         <MUIDataTable
+          innerRef={props.tableRef}
           className={tableStyle}
           title={getHeaders()}
           data={props.parent === "ownersPerParcel" ? searchedRows : rows ? rows : []}

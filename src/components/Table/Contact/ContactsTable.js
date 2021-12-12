@@ -56,6 +56,7 @@ function ContactsTable(props) {
 
   // function states
   const selectedFilters = useRef([]);
+  const tableRef = useRef();
   const [filters, setFilters] = useState([]);
   const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const [showViewModal, setShowViewModal] = useState(false);
@@ -142,6 +143,7 @@ function ContactsTable(props) {
   }, [ContactsData, tableData, props.dependencyUpdate]);
 
   useEffect(() => {
+    tableRef.current.changePage(0)
     const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns)
     setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST);
   }, [selectedGridView]);
@@ -204,7 +206,9 @@ function ContactsTable(props) {
         tableActions.genericESAction();
         break;
       case "changePage":
-        tableActions.changeESPage();
+        if(tableData){
+          tableActions.changeESPage();
+        }
         break;
       case "viewColumnsChange":
         viewColumnsChange(tableState.columns);
@@ -297,6 +301,7 @@ function ContactsTable(props) {
           />
         )}
         <Table
+          tableRef={tableRef}
           style={{ backgroundColor: "#fff" }}
           header={header}
           headerComponent={HeaderComponent}
