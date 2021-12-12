@@ -167,7 +167,9 @@ export const handleSelectedGridChange = (
 export const HeaderComponent = ({
   Icon,
   label,
-  selectedGridView,
+  selectedGridView = { 
+    type: "Default"
+  },
   setShowViewModal,
   showViewModal,
   setShowSaveAsNew,
