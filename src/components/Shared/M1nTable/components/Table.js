@@ -1567,12 +1567,14 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           // Open same model for single contact as we have in multi contact
-
-                          if ((!value || value === "false") && m1nSelectedRowsIndexes?.length === 0) {
-                            m1nSelectedRowsIndexes.push(tableMeta.rowIndex);
+                          const origIndex = tableMeta.currentTableData[tableMeta.rowIndex].index
+                          const isSelectedRow = m1nSelectedRowsIndexes.find((index) => index === origIndex)
+                          if (isSelectedRow === undefined) {
+                            m1nSelectedRowsIndexes.push(origIndex)
                           }
+
                           if (m1nSelectedRowsIndexes?.length > 0) {
-                            let selectedRows = m1nSelectedRowsIndexes.map((index) => rows[tableMeta.currentTableData[index].index]);
+                            let selectedRows = m1nSelectedRowsIndexes.map((index) => rows[index]);
                             selectedRows = selectedRows.filter((row) => !row.isContact);
                             if (selectedRows.length > 0)
                               return handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, selectedRows, "multipleOwnerToContact");
