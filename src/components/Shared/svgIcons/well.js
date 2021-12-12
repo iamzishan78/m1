@@ -4,8 +4,8 @@ export default function Well(props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width={props.small ? "24" : props.size ? props.size : "30"}
-      height={props.small ? "24" : props.size ? props.size : "29"}
+      width={props.small ? "23" : props.size ? props.size : "24"}
+      height={props.small ? "23" : props.size ? props.size : "24"}
       fill="none"
       viewBox="0 0 30 29"
       className={props.className}
