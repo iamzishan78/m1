@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { useHistory } from "react-router-dom";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -14,15 +15,17 @@ import Drawer from "./components/Drawer";
 import { Container } from "@material-ui/core";
 import DocumentsTable from "components/Table/Documents/DocumentsTable";
 // import { DocumentsTableContainer } from "containers";
+import DocViewer from "components/Shared/DocViewer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    marginTop: "65px",
     "& div": {
       "&>.MuiPaper-root": {
         display: "flex",
         "flex-direction": "column",
         height: "calc(100vh - 65px)",
-        top: "65px",
+        // top: "65px",
         position: "relative",
         "align-items": "stretch",
         "&>.MuiPaper-root": {
@@ -37,24 +40,17 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-  dialogExpCard: {
-    "& .MuiDialog-paperScrollPaper": {
-      height: "100%",
-    },
-    "& *": {
-      margin: 0,
-    },
-  },
-  fileTitle: {
-    padding: "12px",
-    fontWeight: "bold",
-  },
 }));
 
 export default function DocumentComponent() {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [numPages, setNumPages] = useState(null);
+  let history = useHistory();
+
+  const onCloseHandler = () => {
+    history.push('/documents');
+  }
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
@@ -69,7 +65,7 @@ export default function DocumentComponent() {
         <Drawer data={true}></Drawer>
       {/* )} */}
 
-      <Dialog
+      {/*<Dialog
         className={classes.dialogExpCard}
         fullWidth
         maxWidth="xl"
@@ -121,9 +117,15 @@ export default function DocumentComponent() {
 
         {/* {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === 'pdf' ? (
           <div className={classes.leftColumn}> <DocViewer DocStyle={{ backgroundColor: 'white !important', width: '70vw' }} divCondition={true}></DocViewer></div>
-        ): null} */}
-      </Dialog>
+        ): null} 
+      </Dialog>*/}
       {/* </Container> */}
+      <Drawer />
+      {stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0 ? (
+        <DocViewer width="calc(100vw - 515px)" onCloseHandler={onCloseHandler} />
+      ) : (
+        <DocViewer width="calc(100vw)" onCloseHandler={onCloseHandler} />
+      )}
     </div>
   );
 }

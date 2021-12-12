@@ -208,12 +208,13 @@ export default function MapControls(props) {
         if (mapGridCardActiveTap === 1 && mapGridCardActivated) {
           dispatch(toggleMapGridCardAtived());
         } else {
-          dispatch(
-            setMapGridCardState({
-              mapGridCardActivated: true,
-              mapGridCardActiveTap: 1,
-            })
-          );
+          dispatch(toggleMapGridCardAtived());
+          // dispatch(
+          //   setMapGridCardState({
+          //     mapGridCardActivated: true,
+          //     mapGridCardActiveTap: 1,
+          //   })
+          // );
         }
       }
 
