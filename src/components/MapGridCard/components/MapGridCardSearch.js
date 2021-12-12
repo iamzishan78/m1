@@ -185,26 +185,26 @@ function MapGridCardSearch(props) {
   const startPaginationAt = 50;
 
 
-  const getShapeFilter = (shapeFilter) => {
-    const coordinates = [];
-    if(shapeFilter && typeof shapeFilter === 'string' && shapeFilter.includes('POLYGON')){
-      let data = shapeFilter.replace('POLYGON((', '').replace('))', '');
-      data = data.split(',');
-      for(let i=0; i<data.length; i++){
-        const coor = data[i].trim().split(' ');
-        coordinates.push([parseFloat(coor[0]), parseFloat(coor[1])])
-      }
-    }
-    return coordinates;
-  };
+  // const getShapeFilter = (shapeFilter) => {
+  //   const coordinates = [];
+  //   if(shapeFilter && typeof shapeFilter === 'string' && shapeFilter.includes('POLYGON')){
+  //     let data = shapeFilter.replace('POLYGON((', '').replace('))', '');
+  //     data = data.split(',');
+  //     for(let i=0; i<data.length; i++){
+  //       const coor = data[i].trim().split(' ');
+  //       coordinates.push([parseFloat(coor[0]), parseFloat(coor[1])])
+  //     }
+  //   }
+  //   return coordinates;
+  // };
 
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const shapeFilter = getShapeFilter(request.navFilter.shapeFilter);
+        // const shapeFilter = getShapeFilter(request.navFilter.shapeFilter);
         getESWellsPaginatedList({
           variables: {
-            polygon: shapeFilter.length > 0 ? shapeFilter: null,
+            // polygon: shapeFilter.length > 0 ? shapeFilter: null,
             esIndex: "platformData:wells",
             pagination: {
               first: startPaginationAt,
@@ -443,9 +443,9 @@ function MapGridCardSearch(props) {
           ? callWellSearch({
             input: searchInputValue,
             searchTop,
-            navFilter: {
-              shapeFilter: stateApp.gridPolygonString
-            }
+            // navFilter: {
+            //   shapeFilter: stateApp.gridPolygonString
+            // }
           })
           : null,
         props.searchOption == "owner"
@@ -514,7 +514,7 @@ function MapGridCardSearch(props) {
     callContactsSearch,
     callMapboxSearch,
     props.searchOption,
-    stateApp.gridPolygonString
+    // stateApp.gridPolygonString
   ]);
 
 

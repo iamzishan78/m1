@@ -224,13 +224,13 @@ const ShapeActionsPopup = (props) => {
       ...state,
       gridPolygonString: getSelectedFeaturePolygonString(),
     }));
-    dispatch(toggleMapGridCardAtived());
-    // dispatch(
-    //   setMapGridCardState({
-    //     mapGridCardActivated: true,
-    //     mapGridCardActiveTap: 2,
-    //   })
-    // );
+    // dispatch(toggleMapGridCardAtived());
+    dispatch(
+      setMapGridCardState({
+        mapGridCardActivated: true,
+        mapGridCardActiveTap: 2,
+      })
+    );
   };
 
   const clearFilter = () => {
