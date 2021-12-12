@@ -309,8 +309,9 @@ function MapGridCard(props) {
   const options = {
     toolbarActionMarginRight: "87px !important",
     customToolbar: () => {
+      const dynamicLeftPos = mapGridCardActiveTap !== 2 ? 207 : 107
       return (
-        <div style={{ display: "flex", float: "left", position: "relative", left: "207px", marginRight: "15px" }}>
+        <div style={{ display: "flex", float: "left", position: "relative", left: `${dynamicLeftPos}px`, marginRight: "15px" }}>
           <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
 
           <IconButton
@@ -426,9 +427,9 @@ function MapGridCard(props) {
               value={mapGridCardActiveTap}
               index={2}
               className={classes.tapsPanelsPadding}
-              style={{ position: "absolute", width: "100vw" }}
+              // style={{ position: "absolute", width: "100vw" }}
             >
-              <div style={{ position: "relative" }}>
+              <div style={{ position: "relative" }} classes={classes.gridTables}>
                 <TabPanels
                   value={viewportTapValue}
                   panels={[
@@ -441,6 +442,7 @@ function MapGridCard(props) {
                           setValue={setViewportTapValue}
                         />
                       }
+                      options={options}
                       targetLabel="well"
                       showTracks
                     />,
@@ -453,6 +455,7 @@ function MapGridCard(props) {
                           setValue={setViewportTapValue}
                         />
                       }
+                      options={options}
                       targetLabel="owner"
                       showTracks
                     />,
