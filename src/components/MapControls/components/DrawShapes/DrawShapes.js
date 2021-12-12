@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState, Fragment, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { get } from "lodash";
+import union from "@turf/union";
 // STATE MANAGEMENT
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import { AppContext } from "AppContext";
@@ -15,7 +16,6 @@ import { addCustomShapeProperties } from "./drawShapesHelpers";
 import { makeStyles } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
-import { useHistory } from "react-router-dom";
 
 import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
 import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
@@ -172,7 +172,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DrawShapes() {
   const dispatch = useDispatch();
-  let history = useHistory();
   const classes = useStyles();
   const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
@@ -193,6 +192,7 @@ export default function DrawShapes() {
         selectedAoi: customLayer,
       }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customLayerInsertedData]);
 
   useEffect(() => {
@@ -213,6 +213,7 @@ export default function DrawShapes() {
         toggleSpatialDataCard(true);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.selectedUserDefinedLayer]);
 
   useEffect(() => {
@@ -223,6 +224,7 @@ export default function DrawShapes() {
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.user.email]);
 
   useEffect(() => {
@@ -262,22 +264,47 @@ export default function DrawShapes() {
         }
         setFeatureProperty(draw, feature.id, "shapeEdit", false);
         drawShapeLayerToggle(stateApp, "none");
-        setStateApp((state) => ({ ...state, editDraw: false, showShapeActionsPopup: true }));
-        setTimeout(() => {
-          draw.changeMode("static");
-          setStateApp((state) => ({ ...state, isDrawing: false }));
+        let currentFeature = feature;
+        setStateApp((state) => {
+
+          if (state.currentFeature) {
+            currentFeature = union(feature, state.currentFeature);
+            currentFeature.id = state.currentFeature.id
+            currentFeature.properties.id = state.currentFeature.id;
+          }
+
+          return { ...state, editDraw: false, showShapeActionsPopup: true, currentFeature }
         });
+        setTimeout(() => {
+
+          setStateApp((state) => {
+            draw.deleteAll();
+            draw.add(currentFeature)
+            console.log(draw.get(currentFeature.id));
+            addCustomShapeProperties(currentFeature, draw);
+            setFeatureProperty(draw, currentFeature.id, "shapeEdit", false);
+            draw.changeMode(state.lastSelectedDrawMode);
+            return { ...state, isDrawing: false, currentFeature }
+
+          });
+        }, 10);
       });
 
       map.on("draw.selectionchange", ({ features }) => {
         const [feature] = features;
         if (feature && !feature.id.includes("edit_polygon")) {
           setStateApp((stateApp) => {
+            let currentFeature = feature;
+            // if (stateApp.currentFeature) {
+            //   currentFeature = union(feature, stateApp.currentFeature);
+            //   currentFeature.id = stateApp.currentFeature.id
+            //   currentFeature.properties.id = stateApp.currentFeature.id;
+            // }
             return {
               ...stateApp,
               // popupOpen: false,
-              currentFeature: feature,
-              featureOrMapShape: feature,
+              currentFeature,
+              featureOrMapShape: currentFeature,
             };
           });
         } else {
@@ -289,13 +316,13 @@ export default function DrawShapes() {
           });
         }
         setStateApp((stateApp) => {
-          if (!stateApp.shapeEdit) {
-            stateApp.draw.changeMode("static");
-          } else if (stateApp.draw.get(stateApp.currentFeature?.id) || stateApp.draw.get(stateApp.featureOrMapShape?.id)) {
-            stateApp.draw.changeMode("direct_select", {
-              featureId: stateApp?.currentFeature?.id || stateApp?.featureOrMapShape?.id,
-            });
-          }
+          // if (!stateApp.shapeEdit) {
+          //   stateApp.draw.changeMode("static");
+          // } else if (stateApp.draw.get(stateApp.currentFeature?.id) || stateApp.draw.get(stateApp.featureOrMapShape?.id)) {
+          //   stateApp.draw.changeMode("direct_select", {
+          //     featureId: stateApp?.currentFeature?.id || stateApp?.featureOrMapShape?.id,
+          //   });
+          // }
           const { features } = stateApp.draw.getAll();
           drawShapeLayerToggle(stateApp, stateApp.shapeEdit || !features || features.length === 0 ? "visible" : "none");
           return stateApp;
@@ -304,6 +331,7 @@ export default function DrawShapes() {
 
       eventsConfiguredRef.current = true;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.map, stateApp.currentFeature]);
 
   // useEffect(() => {
@@ -323,6 +351,7 @@ export default function DrawShapes() {
       selectedAoi: null,
       shapeGridWellsCount: 0,
       shapeGridOwnersCount: 0,
+      changeDrawShapeType: false
     }));
     dispatch(
       setMapGridCardState({
@@ -338,7 +367,7 @@ export default function DrawShapes() {
 
   return (
     <Fragment>
-      {stateApp.showDrawShapesPopup && !stateApp.currentFeature && (
+      {((stateApp.showDrawShapesPopup && !stateApp.currentFeature) || (stateApp.changeDrawShapeType)) && (
         <ClickAwayListener onClickAway={handleClose}>
           <div className={classes.mapOverlay}>
             <div class={classes.mapOverlayInner}>
@@ -358,11 +387,12 @@ export default function DrawShapes() {
         </ClickAwayListener>
       )}
       {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
-      stateApp.currentFeature !== undefined &&
-      !stateApp.currentFeature.id?.includes("draw_polygon") &&
-      !stateApp.currentFeature.id?.includes("drag_circle") &&
-      !stateApp.currentFeature.id?.includes("draw_rectangle") &&
-      !stateApp.currentFeature.id?.includes("edit_polygon") ? (
+        stateApp.currentFeature !== undefined &&
+        !stateApp.changeDrawShapeType &&
+        !stateApp.currentFeature.id?.includes("draw_polygon") &&
+        !stateApp.currentFeature.id?.includes("drag_circle") &&
+        !stateApp.currentFeature.id?.includes("draw_rectangle") &&
+        !stateApp.currentFeature.id?.includes("edit_polygon") ? (
         <Fragment>
           {showSpatialDataCard &&
             stateApp.currentFeature?.properties?.sdType === "interest" && ( // for edit/create AOI

@@ -58,6 +58,7 @@ const DrawShapesPopup = (props) => {
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.user.email]);
 
   useEffect(() => {
@@ -78,9 +79,14 @@ const DrawShapesPopup = (props) => {
         ...state,
         multiSelectLandGrids: !state.multiSelectLandGrids,
         editDraw: false,
+        lastSelectedDrawMode: shape.mode,
+        changeDrawShapeType: false
       }));
     } else {
-      setStateApp((state) => ({ ...state, editDraw: true, isDrawing: true }));
+      setStateApp((state) => ({
+        ...state, editDraw: true, isDrawing: true, lastSelectedDrawMode: shape.mode,
+        changeDrawShapeType: false
+      }));
       props.handleClose();
     }
     stateApp.draw.changeMode(shape.mode);

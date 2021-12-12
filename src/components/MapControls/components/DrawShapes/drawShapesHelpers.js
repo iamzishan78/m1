@@ -23,7 +23,7 @@ export const addCustomShapeProperties = (feature, Draw) => {
 };
 
 const calculateLandArea = feature => {
-  if (feature.geometry.type === "Polygon") {
+  if (feature.geometry.type === "Polygon" || feature.geometry.type === "MultiPolygon") {
     const areaInSqMeters = area(feature);
     const areaInAcres = convertArea(areaInSqMeters, "meters", "acres");
     return `${Math.round(areaInAcres * 100) / 100}`;
