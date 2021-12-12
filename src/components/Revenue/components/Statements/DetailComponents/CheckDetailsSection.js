@@ -5,6 +5,16 @@ import CheckDetailsTable from "components/Table/Revenue/CheckDetailsTable";
 
 
 const useStyles = makeStyles(() => ({
+    sectionCard: {
+        maxWidth: "100%",
+        margin: "0 auto",
+        background: "#ffffff",
+        borderBottonLeftRadius: 8,
+        borderBottomRightRadius: 8
+    },
+    titleField: {
+        padding: 20
+    },
     titleText: {
         textTransform: "uppercase",
         margin: "5px 16px 10px",
@@ -15,8 +25,8 @@ const useStyles = makeStyles(() => ({
 const CheckDetailsSection = ({ checkId }) => {
     const classes = useStyles();
     return (
-        <div className="flex column justifyStart alignStart w-100" style={{ maxWidth: "100%", margin: "0 auto", background: "#ffffff", borderBottonLeftRadius: 8, borderBottomRightRadius: 8 }}>
-            <div className="flex justifyBetween alignCenter w-100" style={{ padding: 20 }}>
+        <div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
+            <div className={`${classes.titleField} flex justifyBetween alignCenter w-100`}>
                 <Typography varient="h5" className={classes.titleText}>
                     Check Details
                 </Typography>

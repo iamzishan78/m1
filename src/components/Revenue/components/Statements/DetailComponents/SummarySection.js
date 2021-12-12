@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 import { useLazyQuery } from "@apollo/client";
-import { GET_ES_REVENUE_SUMMARY } from "graphQL/useQueryESRevenueSummary";
-import { GET_ES_ADJUSTMENT_SUMMARY } from "graphQL/useQueryESAdjustmentSummary";
-import { GET_ES_PRODUCT_SUMMARY } from "graphQL/useQueryESProductSummary";
+import { GET_ES_SUMMARY } from "graphQL/useQueryESSummary";
 
 export const TabButtons = ({ tab, actiiveId, setActive }) => {
     return (
@@ -14,77 +13,112 @@ export const TabButtons = ({ tab, actiiveId, setActive }) => {
     )
 }
 
-const SummarySection = ({ checkId }) => {
+const useStyles = makeStyles((theme) => ({
+    root: {
+        padding: 20
+    },
+    textTransform: {
+        fontWeight: "bold",
+        textTransform: "uppercase"
+    },
+    tabButtons: {
+        maxWidth: 440,
+        margin: "20px 0 32px"
+    },
+    totalLabelField: {
+        marginBottom: 24,
+        maxWidth: 400
+    },
+    totalLabelTextColor: {
+        color: "#959595"
+    },
+    graphCard: {
+        padding: 20,
+        border: "2px solid #959595",
+        borderRadius: 8,
+        marginRight: 32
+    },
+    dataCardWidth: {
+        maxWidth: 400,
+    },
+    dataCardMargin: {
+        margin: "0 0 16px"
+    },
+    productNameBox: {
+        background: "#00000070",
+        borderRadius: 8,
+        padding: "8px 12px",
+    },
+    productName: {
+        fontSize: 14,
+        color: "#ffffff",
+        margin: 0
+    },
+    field: {
+        margin: "16px 0 0",
+    },
+    fieldLabel: {
+        fontSize: 14,
+        textAlign: "center"
+    },
+    fieldValue: {
+        fontWeight: "bold",
+        fontSize: 16,
+        textAlign: "center",
+        margin: 0
+    },
+}));
 
+
+
+const SummarySection = ({ checkId }) => {
+    const classes = useStyles();
     const [activeTabId, setActiveTabId] = useState(1);
     const [revenueSummaryDetails, setRevenueSummaryDetails] = useState([]);
     const [adjustmentSummaryDetails, setAdjustmentSummaryDetails] = useState([]);
     const [productSummaryDetails, setProductSummaryDetails] = useState([]);
 
     // queries 
-    const [getESRevenueSummary, { data: revenueSummary }] = useLazyQuery(GET_ES_REVENUE_SUMMARY, {
+    const [getESRevenueSummary, { data: revenueSummary }] = useLazyQuery(GET_ES_SUMMARY, {
         context: { batch: false },
         fetchPolicy: "no-cache",
     });
-    const [getESAdjustmentSummary, { data: adjustmentSummary }] = useLazyQuery(GET_ES_ADJUSTMENT_SUMMARY, {
+    const [getESAdjustmentSummary, { data: adjustmentSummary }] = useLazyQuery(GET_ES_SUMMARY, {
         context: { batch: false },
         fetchPolicy: "no-cache",
     });
-    const [getESProductSummary, { data: productSummary }] = useLazyQuery(GET_ES_PRODUCT_SUMMARY, {
+    const [getESProductSummary, { data: productSummary }] = useLazyQuery(GET_ES_SUMMARY, {
         context: { batch: false },
         fetchPolicy: "no-cache",
     });
 
-    let revSummary = revenueSummary?.getRevenueSummary;
-    let adjSummary = adjustmentSummary?.getAddjustmentSummary;
-    let prodSummary = productSummary?.getProductSummary;
+    let revSummary = revenueSummary?.getESSummary;
+    let adjSummary = adjustmentSummary?.getESSummary;
+    let prodSummary = productSummary?.getESSummary;
 
 
-    const summaryTabs = [
-        { id: 1, label: "Revenue" },
-        { id: 2, label: "Adjustment" },
-        { id: 3, label: "Products" }
-    ];
-
-    const [grossRevenue, setGrossRevenue] = useState([
-        { label: "Oil", name: "Production Gross Volume (bbl)", value: "190,325" },
-        { label: "Gas", name: "Production Gross Volume (mcf)", value: "607,755" },
-        { label: "NGL", name: "Production Gross Volume (gal)", value: "0" },
-        { label: "Other", name: "Owner net Revenue", value: "$798,080" },
-    ])
-    const [productData, setProductData] = useState(
-        [[
-            { name: "Owner Volume", value: "9,327.4" },
-            { name: "Owner Volume", value: "9,327.4" },
-            { name: "Owner Volume", value: "9,327.4" },
-        ], [
-            { name: "Owner Net Revenue", value: "3,143.31" },
-            { name: "Owner Net Revenue", value: "3,143.31" },
-            { name: "Owner Net Revenue", value: "0.00" },
-        ], [
-            { name: "Average Price", value: "3,143.31" },
-            { name: "Average Price", value: "3,143.31" },
-            { name: "NGL Yield", value: "-" },
-        ]
-        ]);
+    const summaryTabs = [{ id: 1, label: "Revenue" }, { id: 2, label: "Adjustment" }, { id: 3, label: "Products" }];
 
     useEffect(() => {
         getESRevenueSummary({
             variables: {
                 esIndex: "checkdetails_flat",
                 size: 50,
+                extendSearchQuery: "revenueSummary"
             },
         });
         getESAdjustmentSummary({
             variables: {
                 esIndex: "checkdetails_flat",
                 size: 50,
+                extendSearchQuery: "adjustmentSummary"
             },
         });
         getESProductSummary({
             variables: {
                 esIndex: "checkdetails_flat",
                 size: 50,
+                extendSearchQuery: "productSummary"
             },
         });
     }, []);
@@ -96,10 +130,10 @@ const SummarySection = ({ checkId }) => {
             setRevenueSummaryDetails([
                 { name: "Gross Revenue", value: `(${filterRevSummary?.grossRevenue?.value.toFixed(2)})` },
                 { name: "Adjustment", value: `(${filterRevSummary?.netOwnerValue?.value.toFixed(2)})` },
-                { name: "Net Revenue", value: `(${(filterRevSummary?.grossRevenue?.value - filterRevSummary?.netOwnerValue?.value).toFixed(2)})` },
+                { name: "Net Revenue", value: `(${-1 * (filterRevSummary?.grossRevenue?.value - filterRevSummary?.netOwnerValue?.value).toFixed(2)})` },
                 { name: "Lease Payments", value: "-" },
                 { name: "Other", value: "-" },
-                { name: "Total Income", value: `(${(filterRevSummary?.grossRevenue?.value - filterRevSummary?.netOwnerValue?.value).toFixed(2)})` },
+                { name: "Total Income", value: `(${-1 * (filterRevSummary?.grossRevenue?.value - filterRevSummary?.netOwnerValue?.value).toFixed(2)})` },
             ]);
         }
     }, [revSummary]);
@@ -115,7 +149,16 @@ const SummarySection = ({ checkId }) => {
             const taxes = taxType?.buckets?.length > 0 && taxType?.buckets?.map((item) => (
                 { name: item.key, value: (item.ownerTax?.value).toFixed(2) }
             ));
-            setAdjustmentSummaryDetails([...deducts, ...taxes]);
+            if (deducts && taxes) {
+                setAdjustmentSummaryDetails([...deducts, ...taxes]);
+            } else if (deducts) {
+                setAdjustmentSummaryDetails([...deducts]);
+            } else if (taxes) {
+                setAdjustmentSummaryDetails([...taxes]);
+            } else {
+                setAdjustmentSummaryDetails([]);
+            }
+
         }
     }, [adjSummary]);
 
@@ -129,11 +172,11 @@ const SummarySection = ({ checkId }) => {
 
 
     return (
-        <div className="flex column justifyStart alignStart w-100" style={{ padding: 20 }}>
-            <Typography varient="h6" style={{ fontWeight: "bold", textTransform: "uppercase" }}>
+        <div className={`${classes.root} flex column justifyStart alignStart w-100`}>
+            <Typography varient="h6" className={classes.textTransform}>
                 Summary
             </Typography>
-            <div className="flex justifyBetween alignCenter w-100" style={{ maxWidth: 440, margin: "20px 0 32px" }}>
+            <div className={`${classes.tabButtons} flex justifyBetween alignCenter w-100`}>
                 {summaryTabs.map((tab, index) => (
                     <TabButtons key={index + 1} tab={tab} actiiveId={activeTabId} setActive={(selectedId) => setActiveTabId(selectedId)} />
                 ))}
@@ -143,27 +186,27 @@ const SummarySection = ({ checkId }) => {
             {activeTabId === 1 && (
                 <div className="flex justifyBetween alignCenter w-100">
                     <div className="flex column justifyBetween alignStart w-100">
-                        <div style={{ padding: 20, border: "2px solid #01010160", borderRadius: 8, marginRight: 32 }}>
+                        <div className={classes.graphCard}>
                             <img src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
                                 alt="static donut chart image" height={300} width={300} />
                         </div>
                     </div>
                     <div className="flex column justifyBetween alignCenter w-100">
-                        <div className="flex justifyEnd alignCenter w-100" style={{ marginBottom: 24, maxWidth: 400 }}>
-                            <Typography varient="h6" style={{ fontWeight: "bold", textTransform: "uppercase", color: "gray" }}>
+                        <div className={`${classes.totalLabelField} flex justifyEnd alignCenter w-100`}>
+                            <Typography varient="h6" className={`${classes.textTransform} ${classes.totalLabelTextColor}`}>
                                 Total
                             </Typography>
                         </div>
                         {revenueSummaryDetails?.length > 0 && revenueSummaryDetails.map((item, index) => (
-                            <div key={index + 1} className="flex justifyBetween alignCenter w-100" style={{ maxWidth: 400, margin: "0 0 16px" }}>
+                            <div key={index + 1} className={`${classes.dataCardWidth} ${classes.dataCardMargin} flex justifyBetween alignCenter w-100`}>
                                 <div className="flex alignCenter justifyStart">
-                                    <Typography varient="h6" style={{ fontWeight: "bold", textTransform: "uppercase" }}>
+                                    <Typography varient="h6" className={classes.textTransform}>
                                         {item.name || ""}
                                     </Typography>
                                 </div>
 
                                 <div className="flex alignStart justifyStart">
-                                    <Typography varient="h6" style={{ fontWeight: "bold", textTransform: "uppercase" }}>
+                                    <Typography varient="h6" className={classes.textTransform}>
                                         {`${item.value || 0}`}
                                     </Typography>
                                 </div>
@@ -177,23 +220,23 @@ const SummarySection = ({ checkId }) => {
             {activeTabId === 2 && (
                 <div className="flex justifyBetween alignCenter w-100">
                     <div className="flex column justifyBetween alignStart w-100">
-                        <div style={{ padding: 20, border: "2px solid #01010160", borderRadius: 8, marginRight: 32 }}>
+                        <div className={classes.graphCard}>
                             <img src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
                                 alt="static donut chart image" height={300} width={300} />
                         </div>
                     </div>
                     <div className="flex column justifyBetween alignCenter w-100">
                         {adjustmentSummaryDetails?.length > 0 && adjustmentSummaryDetails.map((item, index) => (
-                            <div key={index + 1} className="flex justifyBetween alignCenter w-100" style={{ maxWidth: 400 }}>
-                                <div className="flex alignStart justifyStart" style={{ margin: "0 0 16px" }}>
-                                    <Typography varient="h6" style={{ fontWeight: "bold", textTransform: "uppercase" }}>
+                            <div key={index + 1} className={`${classes.dataCardWidth} flex justifyBetween alignCenter w-100`} style={{ marginTop: 12 }}>
+                                <div className="flex alignStart justifyStart">
+                                    <Typography varient="h6" className={classes.textTransform}>
                                         {item.name || ""}
                                     </Typography>
                                 </div>
 
                                 <div className="flex alignStart justifyStart">
-                                    <Typography varient="h6" style={{ fontWeight: "bold", textTransform: "uppercase" }}>
-                                        {`(${item.value || ""})`}
+                                    <Typography varient="h6" className={classes.textTransform}>
+                                        {item.value}
                                     </Typography>
                                 </div>
                             </div>
@@ -206,7 +249,7 @@ const SummarySection = ({ checkId }) => {
             {activeTabId === 3 && (
                 <div className="flex justifyBetween alignCenter w-100">
                     <div className="flex column justifyBetween alignStart">
-                        <div style={{ padding: 20, border: "2px solid #01010160", borderRadius: 8, marginRight: 20 }}>
+                        <div className={classes.graphCard}>
                             <img src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
                                 alt="static donut chart image" height={300} width={300} />
                         </div>
@@ -214,43 +257,43 @@ const SummarySection = ({ checkId }) => {
 
                     <div className="flex justifyBetween alignCenter w-100">
                         {productSummaryDetails?.length > 0 && productSummaryDetails.map((item, index) => (
-                            <div key={index + 1} className="flex column justifyStart alignStart w-100" style={{ margin: "16px 0 0" }}>
+                            <div key={index + 1} className="flex column justifyStart alignStart w-100" className={`${classes.dataCardMargin} flex justifyBetween alignCenter w-100`}>
                                 <div className="flex column justifyBetween alignCenter w-100">
-                                    <div style={{ background: "#00000072", borderRadius: 8, padding: 8, }} >
-                                        <p style={{ fontWeight: "bold", fontSize: 14, color: "#ffffff", textTransform: "uppercase", margin: 0 }}>
+                                    <div className={classes.productNameBox} >
+                                        <p className={`${classes.productName} ${classes.textTransform}`}>
                                             {item.key || ""}
                                         </p>
                                     </div>
 
                                     {/* Owner volume */}
-                                    <div className="flex column justifyBetween alignCenter w-100" style={{ margin: "16px 0 0" }}>
-                                        <p style={{ fontSize: 12, fontWeight: "bold", textAlign: "center" }}>
+                                    <div className={`${classes.field} flex column justifyBetween alignCenter w-100`}>
+                                        <p className={classes.fieldLabel}>
                                             Owner Volume
                                         </p>
 
-                                        <p style={{ fontWeight: "bold", fontSize: 16, textAlign: "center", margin: 0 }}>
+                                        <p className={classes.fieldValue}>
                                             {item?.grossOwnerVolume?.value.toFixed(2)}
                                         </p>
                                     </div>
 
                                     {/* Owner Net Revenue */}
-                                    <div className="flex column justifyBetween alignCenter w-100" style={{ margin: "16px 0 0" }}>
-                                        <p style={{ fontSize: 12, fontWeight: "bold", textAlign: "center" }}>
+                                    <div className={`${classes.field} flex column justifyBetween alignCenter w-100`}>
+                                        <p className={classes.fieldLabel}>
                                             Owner Net Revenue
                                         </p>
 
-                                        <p style={{ fontWeight: "bold", fontSize: 16, textAlign: "center", margin: 0 }}>
+                                        <p className={classes.fieldValue}>
                                             {item?.netRevenue?.value.toFixed(2)}
                                         </p>
                                     </div>
 
                                     {/* Average Price */}
-                                    <div className="flex column justifyBetween alignCenter w-100" style={{ margin: "16px 0 0" }}>
-                                        <p style={{ fontSize: 12, fontWeight: "bold", textAlign: "center" }}>
+                                    <div className={`${classes.field} flex column justifyBetween alignCenter w-100`}>
+                                        <p className={classes.fieldLabel}>
                                             Average Price
                                         </p>
 
-                                        <p style={{ fontWeight: "bold", fontSize: 16, textAlign: "center", margin: 0 }}>
+                                        <p className={classes.fieldValue}>
                                             {item?.avgPrice?.value.toFixed(2)}
                                         </p>
                                     </div>

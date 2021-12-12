@@ -33,6 +33,11 @@ const useStyles = makeStyles(() => ({
     width: 200,
     left: -148,
   },
+  tooltipText: {
+    fontSize: 14,
+    lineHeight: "120%",
+    textAlign: "left"
+  }
 }));
 
 
@@ -90,18 +95,7 @@ export default function AnalyticsCards(props) {
               <div style={{ marginRight: 6 }}>
                 <WarningIcon />
               </div>
-
               <div>{props.potentialIssues.length}</div>
-              {/* &nbsp; */}
-              {/* <div style={{marginRight: 6}}>
-                <WarningIcon />
-              </div> */}
-              {/* <div>1 </div> */}
-              {/* &nbsp; */}
-              {/* <div style={{marginRight: 6}}>
-                <WarningIcon />
-              </div>
-              <div>7</div> */}
             </div>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography} style={{ color: "red" }}>
               {props.potentialIssues.length}
@@ -112,7 +106,7 @@ export default function AnalyticsCards(props) {
 
         {tooltip && (
           <div className={classes.tooltip}>
-            <p style={{ fontSize: 14, lineHeight: "120%", textAlign: "left" }}>Sum of details does not match check account</p>
+            <p className={classes.tooltipText}>Sum of details does not match check account</p>
           </div>
         )}
 

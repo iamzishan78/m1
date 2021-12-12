@@ -15,7 +15,7 @@ import TableHeader from 'components/Table/constants/revenue-statement-header-sch
 import { usetableStyles } from "../Styles";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-import { GET_ES_POTENTIAL_ISSUES } from "graphQL/useQueryPotentialIssue";
+import { GET_ES_SUMMARY } from "graphQL/useQueryESSummary";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
 
 
@@ -38,11 +38,10 @@ function RevenueStatementTable(props) {
         }
     });
 
-    const [getPotentialIssues, { data: potentialIssues }] = useLazyQuery(GET_ES_POTENTIAL_ISSUES, { fetchPolicy: "no-cache" });
+    const [getPotentialIssues, { data: potentialIssues }] = useLazyQuery(GET_ES_SUMMARY, { fetchPolicy: "no-cache" });
 
     const tableData = elasticData?.getESPaginatedList;
-    const issues = potentialIssues?.getPotentialIssuesSummary;
-
+    const issues = potentialIssues?.getESSummary;
 
     const startPaginationAt = 25;
     const esIndex = 'checks_flat';
@@ -63,6 +62,7 @@ function RevenueStatementTable(props) {
             variables: {
                 esIndex: "checkdetails_flat",
                 size: 50,
+                extendSearchQuery: "potentialIssues"
             },
         });
     }, [props.parent]);

@@ -81,7 +81,6 @@ const useStyles = makeStyles((theme) => ({
   },
   dealOwnerLabel: {
     marginLeft: 4,
-    // marginTOP: -2,
   },
   navSection: {
     minHeight: 56,
@@ -380,7 +379,7 @@ export default function DetailComponents(props) {
             </div>
 
 
-            <div style={{ maxHeight: "100vh", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+            <div style={{ maxHeight: "calc(100vh - 184px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
                 <HeaderSection details={checksFlatData} />
               </div>
@@ -396,7 +395,7 @@ export default function DetailComponents(props) {
           </div>
         </div>
 
-        <div className="flex column justifyStart alignStart w-100" style={{ marginTop: 20, marginRight: 24, padding: "16px 10px", background: "#ffffff", borderRadius: 8, minHeight: "calc(100vh + 12px)", height: "100%", maxWidth: collapse ? 40 : 360, width: "100%" }}>
+        <div className="flex column justifyStart alignStart w-100" style={{ marginTop: 20, marginRight: 24, padding: "16px 10px", background: "#ffffff", borderRadius: 8, minHeight: "100vh", height: "100%", maxWidth: collapse ? 40 : 360, width: "100%" }}>
           <div className="flex justifyBetween alignCenter w-100">
             {!collapse && (
               <Typography varient="h5" className={classes.titleText} style={{ textTransform: "uppercase", fontWeight: "bold" }}>
@@ -407,11 +406,11 @@ export default function DetailComponents(props) {
             <div className="flex alignCenter">
               {!collapse ?
                 <span onClick={() => setCollapse(true)}>
-                  <ArrowForwardIcon style={{ fontSize: 20 }} />
+                  <ArrowForwardIcon style={{ fontSize: 18, cursor: "pointer" }} />
                 </span>
                 :
                 <span onClick={() => setCollapse(false)}>
-                  <ArrowBackIcon style={{ fontSize: 20 }} />
+                  <ArrowBackIcon style={{ fontSize: 18, cursor: "pointer" }} />
                 </span>
               }
             </div>
