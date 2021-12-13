@@ -129,15 +129,19 @@ const DrawShapesPopup = (props) => {
 
     setStateApp((state) => ({
       ...state,
+      selectedAbstracts: [],
       currentFeature: newFeature,
       multiSelectLandGrids: false,
       isAbstractedLayersPolygon: true,
       showShapeActionsPopup: true
     }));
     addCustomShapeProperties(newFeature, draw);
-    stateApp.draw.changeMode("direct_select", {
-      featureId: newFeature.id,
-    });
+
+    stateApp.draw.changeMode('draw_polygon');
+
+    // stateApp.draw.changeMode("direct_select", {
+    //   featureId: newFeature.id,
+    // });
   };
 
   const parcelLabel = stateApp.selectedAbstracts.length > 1 ? "tracts" : "tract";

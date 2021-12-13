@@ -280,7 +280,6 @@ export default function DrawShapes() {
           setStateApp((state) => {
             draw.deleteAll();
             draw.add(currentFeature)
-            console.log(draw.get(currentFeature.id));
             addCustomShapeProperties(currentFeature, draw);
             setFeatureProperty(draw, currentFeature.id, "shapeEdit", false);
             draw.changeMode(state.lastSelectedDrawMode);

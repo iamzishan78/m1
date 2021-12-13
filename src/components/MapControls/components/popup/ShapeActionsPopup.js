@@ -648,17 +648,20 @@ const ShapeActionsPopup = (props) => {
           </Tooltip>
           <span className={classes.divider}></span>
 
-          <Tooltip title="Change Change" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
-            <IconButton size="small" aria-label="Change Change" onClick={() => {
-              stateApp.draw.changeMode('static');
-              setStateApp((state) => ({
-                ...state,
-                changeDrawShapeType: true,
-              }));
-            }}>
-              <DrawPoly className={stateApp.shapeEdit ? "selected" : ""} />
-            </IconButton>
-          </Tooltip>
+          {
+            stateApp.currentFeature && <Tooltip title="Change Change" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
+              <IconButton size="small" aria-label="Change Change" onClick={() => {
+                stateApp.draw.changeMode('static');
+                setStateApp((state) => ({
+                  ...state,
+                  changeDrawShapeType: true,
+                }));
+              }}>
+                <DrawPoly className={stateApp.shapeEdit ? "selected" : ""} />
+              </IconButton>
+            </Tooltip>
+          }
+
 
 
           <Tooltip title="Edit Active Shape" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
