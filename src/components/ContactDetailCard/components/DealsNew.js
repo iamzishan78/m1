@@ -7,7 +7,6 @@ import IconButton from "@material-ui/core/IconButton";
 import { CONTACTDEALS } from "../../../graphQL/useQueryContactDeals";
 import DealMoneyIcon from "../../Shared/svgIcons/DealMoneyIcon";
 import { AppContext } from "../../../AppContext";
-import DealsDetailCard from "../../DealsDetailCard/DealsDetailCard";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 import AddDealDialog from "components/Transact/components/DealDialog/AddDealDialog";
 import Button from "@material-ui/core/Button";
@@ -138,18 +137,8 @@ export default function Deals({ contact, ...props }) {
         className={classes.button}
         fullWidth={true}
         variant="outlined"
-        // style={{justifyContent: "flex-start"}}
         onClick={() => {
           history.push(`/contact/details/${contact._id}/deals`);
-          // props.handleOpenExpandableCard(
-          //   <DealsDetailCard
-          //     activeDeals={activeDeals}
-          //     lostDeals={lostDeals}
-          //     closedDeals={wonDeals}
-          //     contact={contact}
-          //   />,
-          //   "Deals"
-          // );
         }}
       >
         <div className={classes.root}>

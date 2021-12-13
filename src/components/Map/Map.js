@@ -1054,55 +1054,52 @@ function Map({ type, paramId, lati, longi }) {
 
       handleCloseExpandableCard();
 
-      setStateApp((state) => ({
-        ...state,
-        selectedPermit: null,
-        // popupOpen: false,
-        // selectedUserDefinedLayer: null,
-        // selectedParcel: null,
-        // expandedCard: false,
-      }));
-
-      if (feature && feature.properties) {
-        let properties = feature.properties;
-
-        // tmp fix because it appears that the data coming back
-        // from contacts api is slightly different than other apis
-        // need to setup in a standard format
-
-        if (properties.id && feature.layer.id !== "recent_submitted_permits" && feature.layer.id !== "recent_submitted_permit_laterals") {
-          setStateApp((state) => ({
-            ...state,
-            popupOpen: false,
-            selectedUserDefinedLayer: null,
-            selectedParcel: null,
-            expandedCard: false,
-          }));
-
-          setStateApp((state) => ({
-            ...state,
-            selectedWellId: properties.id.toLowerCase(),
-            wellSelectedCoordinates: [properties.longitude, properties.latitude],
-          }));
-        } else if (
-          properties.Id &&
-          (feature.layer.id === "recent_submitted_permits" || feature.layer.id === "recent_submitted_permit_laterals")
-        ) {
-          setStateApp((state) => ({
-            ...state,
-            popupOpen: false,
-            selectedUserDefinedLayer: null,
-            selectedParcel: null,
-            expandedCard: false,
-          }));
-          setStateApp((state) => ({
-            ...state,
-            selectedPermitId: properties.Id.toLowerCase(),
-            permitSelectedCoordinates: [properties.longitude, properties.latitude],
-            expandedCard: false,
-          }));
+      setStateApp((state) => {
+        if (state.isDrawing) return state;
+        let stateToUpdate = {
+          ...state,
+          selectedPermit: null,
         }
-      }
+        if (feature && feature.properties) {
+          let properties = feature.properties;
+
+          // tmp fix because it appears that the data coming back
+          // from contacts api is slightly different than other apis
+          // need to setup in a standard format
+
+          if (properties.id && feature.layer.id !== "recent_submitted_permits" && feature.layer.id !== "recent_submitted_permit_laterals") {
+
+            stateToUpdate = {
+              ...stateToUpdate,
+              popupOpen: false,
+              selectedUserDefinedLayer: null,
+              selectedParcel: null,
+              expandedCard: false,
+
+              selectedWellId: properties.id.toLowerCase(),
+              wellSelectedCoordinates: [properties.longitude, properties.latitude],
+            }
+          } else if (
+            properties.Id &&
+            (feature.layer.id === "recent_submitted_permits" || feature.layer.id === "recent_submitted_permit_laterals")
+          ) {
+            stateToUpdate = {
+              ...stateToUpdate,
+              popupOpen: false,
+              selectedUserDefinedLayer: null,
+              selectedParcel: null,
+              expandedCard: false,
+
+              selectedPermitId: properties.Id.toLowerCase(),
+              permitSelectedCoordinates: [properties.longitude, properties.latitude],
+            }
+          }
+        }
+
+        return stateToUpdate
+      });
+
+
     };
 
     // AOI/Parcel Click Handler
@@ -1992,9 +1989,9 @@ function Map({ type, paramId, lati, longi }) {
         let baseFilter;
         stateApp?.layers?.find(
           (layer) =>
-            (baseFilter =
-              Array.isArray(layer?.layerPaintProps) &&
-              layer?.layerPaintProps?.find((layerPaintProp) => layerPaintProp?.id === filterLayer)?.filter)
+          (baseFilter =
+            Array.isArray(layer?.layerPaintProps) &&
+            layer?.layerPaintProps?.find((layerPaintProp) => layerPaintProp?.id === filterLayer)?.filter)
         );
         return baseFilter || [];
       };
@@ -4138,7 +4135,7 @@ function Map({ type, paramId, lati, longi }) {
       setStateApp((state) => ({
         ...state,
         popupOpen: true,
-        expandedCard: stateApp.activateWellDetailsFromTable || currentFeature.id === paramId ? true : false,
+        expandedCard: stateApp.activateWellDetailsFromTable || ( currentFeature.id && currentFeature.id === paramId ) ? true : false,
       }));
 
       handleOpenExpandableCard();
@@ -4343,9 +4340,8 @@ function Map({ type, paramId, lati, longi }) {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
-            stateApp.mapboxglAccessToken
-          }`;
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
+            }`;
 
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
@@ -4418,9 +4414,8 @@ function Map({ type, paramId, lati, longi }) {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
-            stateApp.mapboxglAccessToken
-          }`;
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
+            }`;
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
           headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
@@ -4708,10 +4703,11 @@ function Map({ type, paramId, lati, longi }) {
     }));
     if (action === "add") {
       setStateApp((state) => {
-        const isContinous = state.selectedAbstracts.find((shape) => {
-          const intersect = turf.union(shape, feature);
-          return intersect.geometry.type === "Polygon";
-        });
+        // const isContinous = state.selectedAbstracts.find((shape) => {
+        //   const intersect = turf.union(shape, feature);
+        //   return intersect.geometry.type === "Polygon";
+        // });
+        const isContinous = true;
         if (!isContinous && state.selectedAbstracts.length > 0) return state;
 
         map.setFeatureState({ source: "abstract_geo_source", id: feature.id }, { click: true });
@@ -4830,7 +4826,7 @@ function Map({ type, paramId, lati, longi }) {
     if (!tile) return
     let repaint = false;
     let renderedLineStrings = []
-    tile.querySourceFeatures(renderedLineStrings, { filter: ["in", ["geometry-type"], ["literal", ["LineString","MultiLineString"]]], sourceLayer: "wells" });
+    tile.querySourceFeatures(renderedLineStrings, { filter: ["in", ["geometry-type"], ["literal", ["LineString", "MultiLineString"]]], sourceLayer: "wells" });
     // renderedLineStrings.push(...map.queryRenderedFeatures({ filter: ["in", ["geometry-type"], ["literal", ["LineString", "MultiLineString"]]], layers: ['welllines', 'wellpermitlines'] }));
     // renderedLineStrings.push();
     renderedLineStrings.forEach((feature) => {
@@ -5077,7 +5073,7 @@ function Map({ type, paramId, lati, longi }) {
                 ['>', ['number', ['feature-state', 'geometryLength']], 20000],
                 0,
                 defaultwellpermitlinesOpacity || 1
-                ]);
+              ]);
               setLayerSource("welllines", "wellsVT");
               const defaultwelllinesOpacity = newMap.getPaintProperty('welllines', 'line-opacity');
               newMap.setPaintProperty('welllines', 'line-opacity', [
@@ -5085,7 +5081,7 @@ function Map({ type, paramId, lati, longi }) {
                 ['>', ['number', ['feature-state', 'geometryLength']], 20000],
                 0,
                 defaultwelllinesOpacity || 1
-                ]);
+              ]);
               setLayerSource("wellpoints", "wellsVT");
             })
             .catch((error) => {

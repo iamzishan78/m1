@@ -183,19 +183,35 @@ function MapGridCardSearch(props) {
   const [getESLeasesPaginatedList, { data: constDataLeases }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
   const startPaginationAt = 50;
+
+
+  // const getShapeFilter = (shapeFilter) => {
+  //   const coordinates = [];
+  //   if(shapeFilter && typeof shapeFilter === 'string' && shapeFilter.includes('POLYGON')){
+  //     let data = shapeFilter.replace('POLYGON((', '').replace('))', '');
+  //     data = data.split(',');
+  //     for(let i=0; i<data.length; i++){
+  //       const coor = data[i].trim().split(' ');
+  //       coordinates.push([parseFloat(coor[0]), parseFloat(coor[1])])
+  //     }
+  //   }
+  //   return coordinates;
+  // };
+
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-
+        // const shapeFilter = getShapeFilter(request.navFilter.shapeFilter);
         getESWellsPaginatedList({
           variables: {
+            // polygon: shapeFilter.length > 0 ? shapeFilter: null,
             esIndex: "platformData:wells",
             pagination: {
               first: startPaginationAt,
               keep_alive: "1micros"
             },
             search: request.input? `wellName:*${request.input}*`: '',
-            sort:[]
+            sort:[],
           }
         })
         // getPaginatedWells({
@@ -426,7 +442,10 @@ function MapGridCardSearch(props) {
         props.searchOption == "well"
           ? callWellSearch({
             input: searchInputValue,
-            searchTop
+            searchTop,
+            // navFilter: {
+            //   shapeFilter: stateApp.gridPolygonString
+            // }
           })
           : null,
         props.searchOption == "owner"
@@ -495,6 +514,7 @@ function MapGridCardSearch(props) {
     callContactsSearch,
     callMapboxSearch,
     props.searchOption,
+    // stateApp.gridPolygonString
   ]);
 
 
