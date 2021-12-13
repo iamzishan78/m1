@@ -22,6 +22,7 @@ export const clearMapAndCloseShapeActionsPopup = (stateApp, setStateApp) => {
         isAbstractedLayersPolygon: false,
         multiSelectLandGrids: false,
         selectedAbstracts: [],
+        isDrawing: false,
         showShapeActionsPopup: false,
         showDrawShapesPopup: false,
     }));

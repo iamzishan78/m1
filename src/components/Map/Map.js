@@ -1054,55 +1054,52 @@ function Map({ type, paramId, lati, longi }) {
 
       handleCloseExpandableCard();
 
-      setStateApp((state) => ({
-        ...state,
-        selectedPermit: null,
-        // popupOpen: false,
-        // selectedUserDefinedLayer: null,
-        // selectedParcel: null,
-        // expandedCard: false,
-      }));
-
-      if (feature && feature.properties) {
-        let properties = feature.properties;
-
-        // tmp fix because it appears that the data coming back
-        // from contacts api is slightly different than other apis
-        // need to setup in a standard format
-
-        if (properties.id && feature.layer.id !== "recent_submitted_permits" && feature.layer.id !== "recent_submitted_permit_laterals") {
-          setStateApp((state) => ({
-            ...state,
-            popupOpen: false,
-            selectedUserDefinedLayer: null,
-            selectedParcel: null,
-            expandedCard: false,
-          }));
-
-          setStateApp((state) => ({
-            ...state,
-            selectedWellId: properties.id.toLowerCase(),
-            wellSelectedCoordinates: [properties.longitude, properties.latitude],
-          }));
-        } else if (
-          properties.Id &&
-          (feature.layer.id === "recent_submitted_permits" || feature.layer.id === "recent_submitted_permit_laterals")
-        ) {
-          setStateApp((state) => ({
-            ...state,
-            popupOpen: false,
-            selectedUserDefinedLayer: null,
-            selectedParcel: null,
-            expandedCard: false,
-          }));
-          setStateApp((state) => ({
-            ...state,
-            selectedPermitId: properties.Id.toLowerCase(),
-            permitSelectedCoordinates: [properties.longitude, properties.latitude],
-            expandedCard: false,
-          }));
+      setStateApp((state) => {
+        if (state.isDrawing) return state;
+        let stateToUpdate = {
+          ...state,
+          selectedPermit: null,
         }
-      }
+        if (feature && feature.properties) {
+          let properties = feature.properties;
+
+          // tmp fix because it appears that the data coming back
+          // from contacts api is slightly different than other apis
+          // need to setup in a standard format
+
+          if (properties.id && feature.layer.id !== "recent_submitted_permits" && feature.layer.id !== "recent_submitted_permit_laterals") {
+
+            stateToUpdate = {
+              ...stateToUpdate,
+              popupOpen: false,
+              selectedUserDefinedLayer: null,
+              selectedParcel: null,
+              expandedCard: false,
+
+              selectedWellId: properties.id.toLowerCase(),
+              wellSelectedCoordinates: [properties.longitude, properties.latitude],
+            }
+          } else if (
+            properties.Id &&
+            (feature.layer.id === "recent_submitted_permits" || feature.layer.id === "recent_submitted_permit_laterals")
+          ) {
+            stateToUpdate = {
+              ...stateToUpdate,
+              popupOpen: false,
+              selectedUserDefinedLayer: null,
+              selectedParcel: null,
+              expandedCard: false,
+
+              selectedPermitId: properties.Id.toLowerCase(),
+              permitSelectedCoordinates: [properties.longitude, properties.latitude],
+            }
+          }
+        }
+
+        return stateToUpdate
+      });
+
+
     };
 
     // AOI/Parcel Click Handler
