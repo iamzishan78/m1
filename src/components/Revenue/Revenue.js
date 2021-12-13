@@ -39,7 +39,8 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
 export default function Revenue() {
   const location = useLocation();
   const dispatch = useDispatch();
-  const { actionsPanelState } = useSelector((state) => state.Revenue);
+  const { actionsPanelState, activeModule } = useSelector((state) => state.Revenue);
+
   useEffect(() => {
     const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => item.link === location.pathname);
     if (option) {
@@ -48,11 +49,11 @@ export default function Revenue() {
   }, [location.pathname]);
 
   const handlePanelStateChange = () => {
-    toggleActionsPanel(!actionsPanelState);
+    dispatch(toggleActionsPanel(!actionsPanelState));
   };
 
   return (
-    <RevenueActionsPanel handlePanelStateChange={handlePanelStateChange} expandedPanel={actionsPanelState}>
+    <RevenueActionsPanel handlePanelStateChange={handlePanelStateChange} expandedPanel={actionsPanelState} activeModule={activeModule}>
       {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
         <Switch>
           <Route
