@@ -571,10 +571,9 @@ function Search() {
       }
       (async () => {
         let newOptions = [];
-
         Promise.all([
           searchOption == "all" || searchOption == "wells" ? callWellSearch({ input: searchInputValue }, searchTop) : null,
-          searchOption == "all" || searchOption == "owners" ? callOwnerSearch({ input: searchInputValue }, searchTop) : null,
+          searchOption == "all" || searchOption == "tax owners" ? callOwnerSearch({ input: searchInputValue }, searchTop) : null,
           searchOption == "all" || searchOption == "operators" ? callOperatorSearch({ input: searchInputValue }, searchTop) : null,
           searchOption == "all" || searchOption == "leases" ? callLeaseSearch({ input: searchInputValue }, searchTop) : null,
 
@@ -933,7 +932,7 @@ function Search() {
     (searchOption === "all" &&
       (loadingWells || loadingOwners || loadingOperators || loadingLeases || loadingContacts || loadingMapboxSearch)) ||
     (searchOption === "wells" && loadingWells) ||
-    (searchOption === "owners" && loadingOwners) ||
+    (searchOption === "tax owners" && loadingOwners) ||
     (searchOption === "operators" && loadingOperators) ||
     (searchOption === "leases" && loadingLeases) ||
     (searchOption === "contacts" && loadingContacts) ||
@@ -941,7 +940,7 @@ function Search() {
   ) {
     optionsWithHeader = [header, { ...header, Source: "loader" }];
   }
-  console.log("orig optionsWithHeader", optionsWithHeader);
+  // console.log("orig optionsWithHeader", optionsWithHeader);
 
   return (
     <div className={classes.root} style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
@@ -971,7 +970,7 @@ function Search() {
         </Accordion>
       )
       } */}
-      <SearchByTypeSelectField value={searchDropDown} handleChange={handleSearchPanelChange} backgroundColor='transparent' />
+      <SearchByTypeSelectField value={searchDropDown} handleChange={handleSearchPanelChange} color='#ffffff' backgroundColor='#1c2233' />
       <div style={{ width: '10px' }}></div>
 
       <Autocomplete
@@ -981,7 +980,7 @@ function Search() {
         filterOptions={(x) => x}
         options={optionsWithHeader}
         groupBy={(option) => {
-          if (option.Source === ownerCogIndexName) return "Owners";
+          if (option.Source === ownerCogIndexName) return "Tax Owners";
           if (option.Source === wellCogIndexName) return "Wells";
           if (option.Source === operatorIndexName) return "Operators";
           if (option.Source === leaseIndexName) return "Leases";
@@ -1133,8 +1132,8 @@ function Search() {
                         onClick={() => {
                           setSearchTop(200);
                           setSearchOption(
-                            option.group === "Owners"
-                              ? "owners"
+                            option.group === "Tax Owners"
+                              ? "tax owners"
                               : option.group === "Wells"
                                 ? "wells"
                                 : option.group === "Operators"
@@ -1200,7 +1199,7 @@ function Search() {
                 setLoadingMapboxSearch(true);
               }
               if (searchOption === "wells") setLoadingWells(true);
-              if (searchOption === "owners") setLoadingOwners(true);
+              if (searchOption === "tax owners") setLoadingOwners(true);
               if (searchOption === "operators") setLoadingOperators(true);
               if (searchOption === "leases") setLoadingLeases(true);
               if (searchOption === "contacts") setLoadingContacts(true);
@@ -1330,7 +1329,7 @@ function Search() {
                                       setSearchTop(5);
                                       setSearchOption(
                                         option.Source === ownerCogIndexName
-                                          ? "owners"
+                                          ? "tax owners"
                                           : option.Source === wellCogIndexName
                                             ? "wells"
                                             : option.Source === operatorIndexName
@@ -1426,7 +1425,7 @@ function Search() {
           </div>
         )}
         renderOption={(option) => {
-          console.log("orig renderOption option", option);
+          // console.log("orig renderOption option", option);
           if (option.Source === "header" || option.group === "loader") return null;
           const parts = parse(option.Primary, Array());
 

@@ -43,14 +43,11 @@ import NumberFormat from "react-number-format";
 import Documents from "components/Shared/Documents";
 import AddDialogeUploadZone from "components/ContactDetailCard/components/AddDialogUploadZone";
 import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
-import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
+import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GET_DEAL_SETTINGS } from "graphQL/useQueryGetDealSettings";
 import { GETDEAL } from "graphQL/useQueryDeal";
-import ExpandableCardProvider from "components/ExpandableCard/ExpandableCardProvider";
 import Contacts from "components/FlowDrawer/Contacts";
-import EventIcon from "@material-ui/icons/Event";
 import "./dialog.css";
-import { faCloudShowersHeavy } from "@fortawesome/free-solid-svg-icons";
 
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
 

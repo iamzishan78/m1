@@ -39,6 +39,9 @@ import { CircularProgress } from "@material-ui/core";
 
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
 import { ApolloProvider, ApolloClient, InMemoryCache, useApolloClient } from "@apollo/client";
+import { HttpLink } from "apollo-link-http";
+import { BatchHttpLink } from "apollo-link-batch-http";
+import { split } from "apollo-link";
 import { relayStylePagination } from "./graphQL/apolloPaginationSchemes.js";
 // import ProfileProvider from "./components/Profile/ProfileProvider";
 // import ProfileDetailsProvider from "./components/Profile/ProfileDetailsProvider";
@@ -181,7 +184,7 @@ const PrivateRoute = ({ component, ...options }) => {
   }
 
   const finalComponent =
-    stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now() && apolloClient?.link?.options?.headers?.["X-ZUMO-AUTH"]
+    stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now() && apolloClient
       ? component
       : (() => {
         return Login;
@@ -195,11 +198,14 @@ const PrivateRoute = ({ component, ...options }) => {
 };
 
 function App() {
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [apolloClient, setApolloClient] = useState(null);
   const [apolloClientToken, setApolloClientToken] = useState(null);
   const [apolloClientIdToken, setApolloIdClientToken] = useState(null);
   const [apolloClientEndpoint, setApolloClientEndpoint] = useState(null);
+  const [apolloClientFetchOptions, setApolloClientFetchOptions] = useState(null);
+  const [apolloClientHTTPLink, setApolloClientHTTPLink] = useState(null);
+  const [apolloClientHTTPBatchLink, setApolloClientHTTPBatchLink] = useState(null);
   //const apolloDevEndpoint = "https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA==";
   //set default to core until login is complete and we can get the tenant's endpoint
   //const apolloEndpoint = "https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA==";
@@ -211,21 +217,36 @@ function App() {
   const updateApolloClientToken = (token, idToken) => {
     setApolloClientToken(token);
     setApolloIdClientToken(idToken);
+    setApolloClientFetchOptions(setApolloHeaders(apolloClient.link.options, token, idToken))
     updateApolloClient(apolloClientEndpoint, token, idToken);
   };
 
   const updateApolloClient = (endpoint, token, idToken) => {
+    let fetchOptions = {}
     if (apolloClient && token) {
-      apolloClient.link.options = setApolloHeaders(apolloClient.link.options, token, idToken);
+      fetchOptions = setApolloHeaders(apolloClient.link.options, token, idToken);
+
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        apolloClientFetchOptions: fetchOptions,
+      }));
     }
 
     if (!apolloClient) {
+      const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions })
+      const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { batch: "true" }})
+
       let client = new ApolloClient({
-        uri: endpoint,
+        // uri: endpoint,
+        link: split(
+          operation => operation.getContext().batch !== true,
+          httpLink,
+          httpBatchLink
+        ),
         // fetchOptions: {
         //   mode: 'no-cors',
         // },
-        headers: {},
+        // headers: {},
         cache: new InMemoryCache({
           typePolicies: {
             Query: {
@@ -249,9 +270,17 @@ function App() {
 
     if (apolloClient && endpoint) {
       setApolloClient((state, props) => {
+        const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions })
+        const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { batch: "true" }})
+
         return new ApolloClient({
-          ...state.link.options,
-          uri: endpoint,
+          // ...state.link.options,
+          // uri: endpoint,
+          link: split(
+            operation => operation.getContext().batch !== true,
+            httpLink,
+            httpBatchLink
+          ),
           cache: state.cache,
           defaultOptions: state.defaultOptions,
         });
