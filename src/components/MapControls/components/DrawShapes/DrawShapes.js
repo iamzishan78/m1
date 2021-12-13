@@ -283,7 +283,8 @@ export default function DrawShapes() {
             addCustomShapeProperties(currentFeature, draw);
             setFeatureProperty(draw, currentFeature.id, "shapeEdit", false);
             draw.changeMode(state.lastSelectedDrawMode);
-            return { ...state, isDrawing: false, currentFeature }
+            // isDrawing: false
+            return { ...state, currentFeature }
 
           });
         }, 10);
