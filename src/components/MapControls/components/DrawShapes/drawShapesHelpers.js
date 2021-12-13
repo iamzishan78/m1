@@ -80,14 +80,15 @@ export const createShapeLabelLayer = feature => {
 export const drawBoundary = (map, selectedUserDefinedLayer) => {
   // let mapSourceData = map.getSource(source)._data;
   // const idx = mapSourceData.features.findIndex(feature => feature.id === featureId)
+
   if (selectedUserDefinedLayer?.geometry) {
     const type = selectedUserDefinedLayer.geometry.type
     const geoJson = {
       type: "Feature",
       properties: {},
       geometry: {
-        type: type === 'Point' ? 'Point' : "LineString",
-        coordinates: type === 'Point' ? selectedUserDefinedLayer.geometry.coordinates : selectedUserDefinedLayer.geometry.coordinates[0],
+        type: type,
+        coordinates: selectedUserDefinedLayer.geometry.coordinates
       },
     };
 
@@ -136,7 +137,7 @@ export const drawBoundary = (map, selectedUserDefinedLayer) => {
         },
         paint: {
           "line-color": "#FFFF00",
-          "line-width": 8,
+          "line-width": 6,
         },
       });
     }
