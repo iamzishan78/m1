@@ -191,7 +191,7 @@ const AppProvider = (props) => {
       if (tenantName) {
         let tenant = tenantsCredentials(tenantName);
         tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
-        // tenant.apolloClientEndpoint = isDev ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
+        tenant.apolloClientEndpoint = isDev ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
         let myMSALObjInt = MSALObj(tenant);
         setStateApp((state, props) => {
           return {
