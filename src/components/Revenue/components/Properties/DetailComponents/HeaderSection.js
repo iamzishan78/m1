@@ -112,37 +112,13 @@ export default function HeaderFunction(props) {
         </FormControl>
       </Grid>
       <Grid item xs={5}>
-        <TextField
-          margin="dense"
-          label="Operator Name"
-          placeholder=""
-          fullWidth
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
+        <TextField margin="dense" label="Operator Name" placeholder="" fullWidth />
       </Grid>
       <Grid item xs={3}>
-        <TextField
-          margin="dense"
-          label="Owner Number"
-          placeholder=""
-          fullWidth
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
+        <TextField margin="dense" label="Owner Number" placeholder="" fullWidth />
       </Grid>
       <Grid item xs={5}>
-        <TextField
-          margin="dense"
-          label="Owner Name"
-          placeholder=""
-          fullWidth
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
+        <TextField margin="dense" label="Owner Name" placeholder="" fullWidth />
       </Grid>
       <Grid item xs={3}>
         <TextField
