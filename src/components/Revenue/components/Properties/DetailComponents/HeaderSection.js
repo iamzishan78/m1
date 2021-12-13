@@ -41,7 +41,15 @@ const useStyles = makeStyles((theme) => ({
 export default function HeaderFunction(props) {
   const classes = useStyles();
   return (
-    <Grid container direction="row" display="flex" justify="space-around" alignItems="center" spacing={3} className={classes.fieldsSection}>
+    <Grid
+      container
+      direction="row"
+      display="flex"
+      justify="space-between"
+      alignItems="center"
+      spacing={3}
+      className={classes.fieldsSection}
+    >
       <Grid item xs={3}>
         <TextField margin="dense" type="text" label="Property Number" fullWidth />
       </Grid>
@@ -93,7 +101,7 @@ export default function HeaderFunction(props) {
           </Select>
         </FormControl>
       </Grid>
-      <Grid item xs={3}>
+      <Grid item xs={4}>
         <FormControl className={classes.formControl}>
           <InputLabel id="county-select-label">County</InputLabel>
           <Select labelId="county-select-label" id="county-select">
