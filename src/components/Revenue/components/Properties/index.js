@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/styles";
 
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
+import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTable";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -19,6 +20,10 @@ const useStyles = makeStyles((theme) => ({
       height: "35px",
       fontWeight: "bold",
     },
+  },
+  propertyTableContainer: {
+    padding: theme.spacing(2),
+    marginTop: theme.spacing(2),
   },
 }));
 
@@ -65,6 +70,9 @@ export default function Portfolio() {
         </Grid>
       </div>
       <AnalyticsCards cards={cards} />
+      <div className={classes.propertyTableContainer}>
+        <RevenuePropertiesTable header="Properties" parent="RevenuePropertiesTable" loading={false} dense={true} />
+      </div>
     </>
   );
 }
