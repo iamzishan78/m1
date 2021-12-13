@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, IconButton, Tabs, Tab, Grid, Breadcrumbs } from "@material-ui/core";
-import { LocalAtm as CurrencyIcon, NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
+import { DescriptionOutlined as DocumentIcon, NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
 
 // Components
@@ -152,7 +152,7 @@ export default function DetailComponents(props) {
         <div className={classes.detailHeader}>
           <div className={classes.title}>
             <IconButton className={classes.icon}>
-              <CurrencyIcon fontSize="large" />
+              <DocumentIcon fontSize="large" />
             </IconButton>
             <div className={classes.titleText}>
               <Typography style={{ fontWeight: "bold", fontSize: "large" }}>43736848334 - Exxon Mobile Corp</Typography>
