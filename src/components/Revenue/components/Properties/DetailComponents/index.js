@@ -132,10 +132,10 @@ export default function DetailComponents(props) {
                 color="inherit"
                 onClick={() => history.push("/revenue/statements")}
               >
-                Revenue Statements
+                Properties
               </Link>
 
-              <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>Sample Statement</Typography>
+              <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>Sample Property</Typography>
             </Breadcrumbs>
           </Grid>
           <Grid item>
