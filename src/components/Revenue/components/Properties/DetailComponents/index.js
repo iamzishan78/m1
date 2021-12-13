@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
   titleText: {
-    margin: "2px 0px 0px 5px",
+    margin: "2px 0px 0px 10px",
   },
   icon: {
     height: "65px",
@@ -155,7 +155,9 @@ export default function DetailComponents(props) {
               <DocumentIcon fontSize="large" />
             </IconButton>
             <div className={classes.titleText}>
-              <Typography style={{ fontWeight: "bold", fontSize: "large" }}>43736848334 - Exxon Mobile Corp</Typography>
+              <Typography style={{ fontWeight: "bold", fontSize: "large", textTransform: "uppercase" }}>
+                W144300498 - Williams K 22H
+              </Typography>
               <Typography variant="subtitle1">10/3/2021</Typography>
             </div>
           </div>
