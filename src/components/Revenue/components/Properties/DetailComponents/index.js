@@ -6,6 +6,8 @@ import { Typography, IconButton, Tabs, Tab, Grid, Breadcrumbs } from "@material-
 import { DescriptionOutlined as DocumentIcon, NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
 
+import Tagger from "components/Shared/Tagger";
+
 // Components
 import HeaderSection from "./HeaderSection";
 
@@ -161,6 +163,9 @@ export default function DetailComponents(props) {
               <Typography variant="subtitle1">10/3/2021</Typography>
             </div>
           </div>
+          <div>
+            <Tagger objectId={""} targetLabel="property" iconZiseSmall={false} shareable={false} />
+          </div>
         </div>
         {/**
          * Detail tabs section
@@ -169,22 +174,16 @@ export default function DetailComponents(props) {
           <div className={classes.tabsHeader}>
             <StyledTabs value={tab} onChange={(event, tab) => setTab(tab)} aria-label="ant example">
               <StyledTab label="Header" />
-              <StyledTab label="Summary" />
-              <StyledTab label="Check Details" />
+              <StyledTab label="Details" />
             </StyledTabs>
           </div>
-          <div style={{ maxHeight: "calc(100vh - 310px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+          <div style={{ maxHeight: "calc(100vh - 420px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
             <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
               <HeaderSection />
             </div>
             <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
               <Typography varient="h6" style={{ textTransform: "uppercase" }}>
-                Summary
-              </Typography>
-            </div>
-            <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
-              <Typography varient="h6" style={{ textTransform: "uppercase" }}>
-                Check Details
+                Details
               </Typography>
             </div>
           </div>
