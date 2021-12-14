@@ -210,7 +210,7 @@ function MapGridCardSearch(props) {
               first: startPaginationAt,
               keep_alive: "1micros"
             },
-            search: request.input? `wellName:*${request.input}*`: '',
+            search: request.input? `((wellName:*${request.input}*) OR (api:*${request.input}*))`: '',
             sort:[],
           }
         })
