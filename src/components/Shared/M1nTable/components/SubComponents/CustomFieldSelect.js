@@ -26,13 +26,15 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "14px",
   },
   paper: {
-    // "min-width": "175px",
-    "& .MuiAutocomplete-option" : {
+    width: "fit-content",
+    "min-width": "125px",
+    "max-width": "400px",
+    "& .MuiAutocomplete-option": {
       padding: '0px !important'
     }
   },
   myClass: {
-    padding: "6px 16px"
+    padding: "6px 6px"
   }
 }));
 
@@ -65,11 +67,10 @@ const CustomFieldSelect = ({
     if (reason === 'clear') {
       e.stopPropagation();
     }
-    if(act?.value !== "editOption"){
+    if (act?.value !== "editOption") {
 
       onCustomKeyChange(act?.value !== defaultValue.value ? act?.value : null);
     }
-    
   };
 
   useEffect(() => {
@@ -144,42 +145,58 @@ const CustomFieldSelect = ({
             (pallete) => pallete.id === option.palleteId
           );
           return option.value === "editOption" ? (
-            <Grid style={{ borderTop: '1px solid #959595', padding: "10px 12px" }} container spacing={0} onClick={() => {
-              setShowOptions(false);
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                selectedMeta: column,
-                showFieldModal: true,
-              }));
-            }}>
-              <Grid container item xs={2} alignItems="center">
-                <EditIcon style={{ alignSelf: "center", fontSize: 18 }} />
+            <Grid style={{
+              "flex-wrap": "nowrap",
+              marginTop: "5px",
+              borderTop: '1px solid #959595',
+              padding: "8px 6px 2px 6px"
+            }}
+              container spacing={0}
+              onClick={() => {
+                setShowOptions(false);
+                setStateApp((stateApp) => ({
+                  ...stateApp,
+                  selectedMeta: column,
+                  showFieldModal: true,
+                }));
+              }}>
+              <Grid style={{ "flex-grow": 1, width: "fit-content", "max-width": "max-content" }} container item xs={2} alignItems="center">
+                <EditIcon style={{ alignSelf: "center", fontSize: 18, marginRight: 5 }} />
               </Grid>
               <Grid
+                style={{ "flex-grow": 1, width: "fit-content", "max-width": "max-content" }}
                 container
                 item
                 xs={10}
                 alignItems="center"
-                style={{ fontSize: 14 }}
+                style={{
+                  fontSize: 14,
+                  "white-space": "nowrap",
+                }}
               >
                 Edit options
               </Grid>
             </Grid>
           ) : (
-            <Grid className={classes.myClass} container spacing={0}>
-              <Grid container item xs={2} alignItems="center">
-                {((typeof value === "string" && option.value === value) ||
-                  option.value === value?.label ||
-                  (!value && option.value === defaultValue.label)) && (
-                  <CheckIcon style={{ fontSize: 13, marginRight: 5 }} />
-                )}
+            <Grid style={{ "flex-grow": 1, width: "fit-content", "flex-wrap": "nowrap" }} className={classes.myClass} container spacing={0}>
+              <Grid style={{ "flex-grow": 1, width: "fit-content", "max-width": "max-content" }} container item xs={2} alignItems="center">
+                <CheckIcon style={{
+                  fontSize: 13,
+                  marginRight: 5,
+                  visibility:
+                    ((typeof value === "string" && option.value === value) ||
+                      option.value === value?.label ||
+                      (!value && option.value === defaultValue.label))
+                      ? "visible"
+                      : "hidden"
+                }} />
               </Grid>
-              <Grid container item xs={10} alignItems="center">
-                <Grid style={{ "flex-grow": 0 }} item xs>
+              <Grid style={{ "flex-grow": 1, width: "fit-content", "max-width": "max-content" }} container item xs={10} alignItems="center">
+                <Grid style={{ "flex-grow": 1, width: "fit-content" }} item xs>
                   <span
                     style={{
                       width: "100%",
-                      display: "inline-block",
+                      // display: "inline-block",
                       fontWeight: 400,
                       backgroundColor: pallete?.color,
                       color: pallete?.textColor,
@@ -210,19 +227,19 @@ const CustomFieldSelect = ({
               className={`${classes.textDiv}`}
               onClick={() => setShowOptions(!showOptions)}
             >
-              <Grid container spacing={0} 
-              {...params.inputProps} 
+              <Grid container spacing={0}
+                {...params.inputProps}
               >
                 <Grid container item xs={10}>
-                  <span id={`colorText_${index}_${column.name}`}></span>
+                  <span style={{ "white-space": "nowrap" }} id={`colorText_${index}_${column.name}`}></span>
                 </Grid>
               </Grid>
-              <InputAdornment 
+              <InputAdornment
                 style={{ "margin-left": -4, "margin-right": 8 }}
-                position="end" 
-                visibility={ showIcon ? "visible" : "hidden" } 
+                position="end"
+                visibility={showIcon ? "visible" : "hidden"}
               >
-                { params.InputProps.endAdornment.props.children[1] }
+                {params.InputProps.endAdornment.props.children[1]}
               </InputAdornment>
             </div>
           </>
