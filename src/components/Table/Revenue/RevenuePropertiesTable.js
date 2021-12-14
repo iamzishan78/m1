@@ -96,11 +96,7 @@ function RevenuePropertiesTable(props) {
   ];
 
   return (
-    <Container
-      maxWidth={false}
-      className={classes.container}
-      id={props.id ? props.id : props.parent}
-    >
+    <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
@@ -110,7 +106,7 @@ function RevenuePropertiesTable(props) {
         potentialIssues={potentialIssuesList}
         addAble={{ type: "RevenueProperties" }}
         loading={false}
-        targetLabel={props.targetLabel}
+        targetLabel="Revenue Properties"
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={false}
