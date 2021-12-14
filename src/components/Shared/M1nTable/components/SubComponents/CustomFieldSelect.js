@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Grid, InputAdornment } from "@material-ui/core";
+import { Grid, InputAdornment, Paper } from "@material-ui/core";
 import CheckIcon from "@material-ui/icons/Check";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
@@ -26,9 +26,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "14px",
   },
   paper: {
-    width: "fit-content",
+    // width: "fit-content",
     "min-width": "125px",
-    "max-width": "400px",
+    // "max-width": fullWidth ? "400px" : "none",
     "& .MuiAutocomplete-option": {
       padding: '0px !important'
     }
@@ -122,6 +122,17 @@ const CustomFieldSelect = ({
           margin: 0,
         }}
         classes={{ paper: classes.paper }}
+        PaperComponent={(props) => {
+          return (
+            <Paper
+            className={props.className}
+              style={{ 
+                width: fullWidth ? "none" : "fit-content",
+                "max-width": fullWidth ? "none" : "400px" 
+              }}
+            >{props.children}</Paper>
+          )
+        }}
         open={showOptions}
         defaultValue={defaultValue.value}
         value={value}
@@ -164,7 +175,7 @@ const CustomFieldSelect = ({
                 <EditIcon style={{ alignSelf: "center", fontSize: 18, marginRight: 5 }} />
               </Grid>
               <Grid
-                style={{ "flex-grow": 1, width: "fit-content", "max-width": "max-content" }}
+                style={{ "flex-grow": 1, width: "fit-content", /*"max-width": "max-content"*/ }}
                 container
                 item
                 xs={10}
@@ -191,7 +202,7 @@ const CustomFieldSelect = ({
                       : "hidden"
                 }} />
               </Grid>
-              <Grid style={{ "flex-grow": 1, width: "fit-content", "max-width": "max-content" }} container item xs={10} alignItems="center">
+              <Grid style={{ "flex-grow": 1, width: "fit-content", /*"max-width": "max-content"*/ }} container item xs={10} alignItems="center">
                 <Grid style={{ "flex-grow": 1, width: "fit-content" }} item xs>
                   <span
                     style={{
