@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Grid } from "@material-ui/core";
+import { Grid, InputAdornment } from "@material-ui/core";
 import CheckIcon from "@material-ui/icons/Check";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
+import ArrowDropDownIcon from "@material-ui/lab/es/internal/svg-icons/ArrowDropDown";
 import { colorPallete } from "components/Table/helpers";
 import EditIcon from "@material-ui/icons/Edit";
 import { AppContext } from "AppContext";
@@ -20,14 +20,10 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiOutlinedInput-root": {
       paddingRight: "0px !important",
     },
-    "& .MuiAutocomplete-endAdornment": {
-      display: "none",
-    },
     "& .MuiInputBase-input": { color: "red", caretColor: "black" },
   },
   textDiv: {
     fontSize: "14px",
-    marginTop: "-32px",
   },
   paper: {
     width: "175px",
@@ -65,9 +61,13 @@ const CustomFieldSelect = ({
     options.push({ label: "edit", value: "editOption" });
   }, [dropdownOptions]);
 
-  const onChange = (e, act) => {
-    if(act.value !== "editOption"){
-      onCustomKeyChange(act.value);
+  const onChange = (e, act, reason) => {
+    if (reason === 'clear') {
+      e.stopPropagation();
+    }
+    if(act?.value !== "editOption"){
+
+      onCustomKeyChange(act?.value !== defaultValue.value ? act?.value : null);
     }
     
   };
@@ -101,9 +101,9 @@ const CustomFieldSelect = ({
   return (
     <div
       style={{
-        padding: "0px 10px",
+        padding: "0px",
         height: "50px",
-        width: fullWidth ? "100%" : "max-content",
+        width: "100%",
         borderBottom: fullWidth ? "1px solid" : "none",
       }}
       onClick={(e) => e.stopPropagation()}
@@ -114,18 +114,19 @@ const CustomFieldSelect = ({
       onMouseEnter={() => setShowIcon(true)}
     >
       <Autocomplete
+        popupIcon={<ArrowDropDownIcon visibility={(fullWidth || showIcon) ? "visible" : "hidden"} />}
         className={classes.search}
         style={{
+          height: "100%",
           margin: 0,
         }}
         classes={{ paper: classes.paper }}
-        disableClearable
         open={showOptions}
         defaultValue={defaultValue.value}
         value={value}
         disableListWrap
         options={options
-          .filter((op) => op.value)
+          .filter((op) => typeof op.value === "string")
           .map((op) => ({
             ...op,
             label: op.value,
@@ -194,29 +195,30 @@ const CustomFieldSelect = ({
         }}
         renderInput={(params) => (
           <>
-            <TextField
-              style={{ visibility: "hidden" }}
-              margin="dense"
-              {...params}
-              variant="outlined"
-            />
             <div
+              style={{
+                height: "100%",
+                display: "flex",
+                "align-items": "center",
+              }}
+              ref={params.InputProps.ref}
               className={`${classes.textDiv}`}
               onClick={() => setShowOptions(!showOptions)}
             >
-              <Grid container spacing={0}>
+              <Grid container spacing={0} 
+              {...params.inputProps} 
+              >
                 <Grid container item xs={10}>
                   <span id={`colorText_${index}_${column.name}`}></span>
                 </Grid>
-                <Grid container item xs={2}>
-                  <KeyboardArrowDownIcon
-                    style={{
-                      marginTop: -2,
-                      visibility: showIcon || fullWidth ? "visible" : "hidden",
-                    }}
-                  />
-                </Grid>
               </Grid>
+              <InputAdornment 
+                style={{ "margin-left": -4, "margin-right": 8 }}
+                position="end" 
+                visibility={ showIcon ? "visible" : "hidden" } 
+              >
+                { params.InputProps.endAdornment.props.children[1] }
+              </InputAdornment>
             </div>
           </>
         )}
