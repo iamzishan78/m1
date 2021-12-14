@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "14px",
   },
   paper: {
-    width: "175px",
+    // "min-width": "175px",
     "& .MuiAutocomplete-option" : {
       padding: '0px !important'
     }
@@ -175,15 +175,20 @@ const CustomFieldSelect = ({
                 )}
               </Grid>
               <Grid container item xs={10} alignItems="center">
-                <Grid item xs>
+                <Grid style={{ "flex-grow": 0 }} item xs>
                   <span
                     style={{
+                      width: "100%",
+                      display: "inline-block",
                       fontWeight: 400,
                       backgroundColor: pallete?.color,
                       color: pallete?.textColor,
                       padding: "3px 10px",
                       borderRadius: 26,
                       fontSize: 14,
+                      overflow: "hidden",
+                      "white-space": "nowrap",
+                      "text-overflow": "ellipsis",
                     }}
                   >
                     {option.label}
