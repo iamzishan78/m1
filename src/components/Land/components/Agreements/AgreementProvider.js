@@ -1,7 +1,7 @@
 import React from "react";
 import { AgreementContextProvider } from "./AgreementContext";
 import { makeStyles } from "@material-ui/core/styles";
-import Agreement from "./Components";
+import Agreement from ".";
 
 const useStyles = makeStyles(() => ({
     AgreementWrapper: {

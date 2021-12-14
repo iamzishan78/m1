@@ -1973,6 +1973,47 @@ function SubTable(props) {
               },
             };
             break;
+          case "agreementNumber":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value, tableMeta, updateValue) => {
+                return (
+                  <>
+                    {props.parent === "AgreementsTable" && (
+                      <p onClick={(e) => {
+                        e.stopPropagation();
+                        if (tableMeta.rowData[0]) {
+                          history.push(`/agreement/details/${tableMeta.rowData[0]}`)
+                        }
+                        }} style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}>
+                        {value}
+                      </p>
+                    )}
+                  </>
+                );
+              },
+            };
+            break;
+          case "status":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                return (
+                  <>
+                    {props.parent === "AgreementsTable" && (
+                      <div style={{ display: "flex", "align-items": "center" }}>
+                        {value?.toLowerCase() === "approved" 
+                          ? (<div style={{ background: "#17c10d", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />)
+                          : (<div style={{ background: "#ffa800", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />)
+                        }
+                        {value}
+                      </div>
+                    )}
+                  </>
+                );
+              },
+            };
+            break;
           default:
             //// this is where the column names get mapped
             {
@@ -3030,6 +3071,11 @@ function SubTable(props) {
           }));
 
           handleExpandClick(null, null, null, "inviteUser");
+        }
+      }
+      if (props.targetLabel === "agreement") {
+        if (rows[dataIndex]?._id) {
+          history.push(`/agreement/details/${rows[dataIndex]?._id}`)
         }
       }
     },

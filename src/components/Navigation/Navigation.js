@@ -57,6 +57,9 @@ import ContactSearch from "./components/ContactSearch";
 import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
 import SideNavigation from "./SideNavigation";
 
+// App Bars
+import LandAppBar from "./AppBar/Land";
+
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
 
@@ -146,6 +149,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/track") {
       setStateNav((state) => ({
@@ -161,6 +165,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname.startsWith("/flow")) {
       setStateNav((state) => ({
@@ -176,6 +181,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/title") {
       setStateNav((state) => ({
@@ -192,6 +198,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/contacts") {
       setStateGrid((state) => ({
@@ -211,6 +218,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/alerts") {
       setStateNav((state) => ({
@@ -226,6 +234,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/dashboard") {
       setStateNav((state) => ({
@@ -241,6 +250,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/studio") {
       setStateNav((state) => ({
@@ -256,6 +266,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/activities") {
       setStateNav((state) => ({
@@ -271,6 +282,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 1,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/documents") {
       setStateNav((state) => ({
@@ -286,6 +298,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 1,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname.startsWith("/revenue")) {
       setStateNav((state) => ({
@@ -301,6 +314,23 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 1,
+        selectedMenuIndexLand: 0,
+      }));
+    } else if (location.pathname.startsWith("/land")) {
+      setStateNav((state) => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 0,
+        selectedMenuIndexActivities: 0,
+        selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 1,
       }));
     }
   }, [location, setStateNav]);
@@ -455,74 +485,85 @@ export default function Navigation(props) {
     }));
   };
 
+  const matchAgreements = () => {
+    return location.pathname === "/landmanagement/agreements"
+  }
+
   return (
     <div className={classes.root}>
       <CssBaseline />
-      {!location.pathname.startsWith("/revenue/statement/details") && (
-        <AppBar
-          position="fixed"
-          className={clsx(classes.appBar, {
-            [classes.appBarShift]: openDrawer,
-          })}
-        >
-          {stateApp.user && (
-            <Toolbar>
-              {location.pathname === "/activities" && (
-                <>
-                  <ActivitySearch />
-                </>
-              )}
-              {location.pathname === "/documents" && (
-                <>
-                  <DocumentSearch />
-                </>
-              )}
-              {location.pathname === "/contacts" && <ContactSearch />}
-              {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
+      <AppBar
+        position="fixed"
+        className={clsx(classes.appBar, {
+          [classes.appBarShift]: openDrawer,
+        })}
+      >
+        {stateApp.user && (
+          <Toolbar>
+            {location.pathname === "/activities" && (
+              <>
+                <ActivitySearch />
+              </>
+            )}
+            {location.pathname === "/documents" && (
+              <>
+                <DocumentSearch />
+              </>
+            )}
+            {location.pathname === "/contacts" && <ContactSearch />}
+            {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
 
-              {location.pathname.startsWith("/flow") && <DealSearch />}
-              {location.pathname === "/dashboard" && (
-                <Typography variant="h4" style={{ color: "black", fontWeight: "bold", marginLeft: 15 }}>
-                  Dashboard
-                </Typography>
-              )}
-              {location.pathname.startsWith("/revenue") && (
-                <Typography
-                  variant="h4"
-                  style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.revenueDetails.expandedPanel ? "436px" : "10px" }}
-                >
-                  {stateApp.revenueDetails.title}
-                </Typography>
-              )}
+            {location.pathname.startsWith("/flow") && <DealSearch />}
+            {location.pathname === "/dashboard" && (
+              <Typography variant="h4" style={{ color: "black", fontWeight: "bold", marginLeft: 15 }}>
+                Dashboard
+              </Typography>
+            )}
+            {/* {location.pathname.startsWith("/landmanagement/agreements") && (
+              <Typography
+                variant="h4"
+                style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.landManagement.expandedPanel ? "450px" : "30px" }}
+              >
+                Agreements
+              </Typography>
+            )} */}
 
-              {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
+            {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
 
-              {(matchFind || matchDocument) && (
-                <div className={classes.search} id="searchBarDivParent">
-                  <SearchBarWithToggleButton />
+            {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
+
+            {(matchFind || matchDocument) && (
+              <div className={classes.search} id="searchBarDivParent">
+                <SearchBarWithToggleButton />
+              </div>
+            )}
+
+            <div className={classes.grow1} />
+
+            {matchActivities ? (
+              <div>
+                <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+                  <Button onClick={handleClickAddActivity} color="secondary" variant="contained" startIcon={<Add />}>
+                    Add Activity
+                  </Button>
                 </div>
-              )}
-
-              <div className={classes.grow1} />
-
-              {matchActivities ? (
-                <div>
-                  <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-                    <Button onClick={handleClickAddActivity} color="secondary" variant="contained" startIcon={<Add />}>
-                      Add Activity
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div style={{ display: "none" }}></div>
-              )}
-              <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
-                {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
-              </IconButton>
-            </Toolbar>
-          )}
-        </AppBar>
-      )}
+              </div>
+            ) : (
+              <div style={{ display: "none" }}></div>
+            )}
+            {/* {matchAgreements() && (
+              <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+                <Button onClick={() => handleListItemClick("/agreement/details")} color="primary" variant="contained" startIcon={<Add />}>
+                  Add Agreement
+                </Button>
+              </div>
+            )} */}
+            <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
+              {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
+            </IconButton>
+          </Toolbar>
+        )}
+      </AppBar>
 
       {stateApp.user && (
         <SideNavigation
