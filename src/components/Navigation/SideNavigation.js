@@ -184,7 +184,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             </div>
           </ListItem>
 
-          {/* <ListItem
+          <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
@@ -192,19 +192,19 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             button
             selected={stateNav.selectedMenuIndexRevenue === 1}
             onClick={(event) => {
-              handleListItemClick("/landmanagement");
+              handleListItemClick("/revenue/statements");
             }}
             key="Revenue"
           >
             <div className={classes.tabContent}>
-              <Tooltip title="Land Management" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+              <Tooltip title="Revenue" placement="right" classes={{ tooltip: classes.iconTooltip }}>
                 <ListItemIcon className={classes.sideNavIcon}>
-                  <ImageOutlinedIcon />
+                  <BarChartIcon />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Land Management" />
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Revenue" />
             </div>
-          </ListItem> */}
+          </ListItem>
           <ListItem
             classes={{
               root: classes.menuListItem,
