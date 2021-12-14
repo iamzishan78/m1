@@ -522,7 +522,9 @@ export default function Tags(props) {
                     setTextValue(e.target.value);
                   }}
                   onClick={() => {
-                    setTFActive(true);
+                    if (props.type === "textfield") {
+                      setTFActive(true);
+                    }
                   }}
                   onBlur={() => {
                     setTFActive(false);
@@ -541,4 +543,5 @@ export default function Tags(props) {
 
 Tags.defaultProps = {
   shareable: true,
+  type: "textfield",
 };

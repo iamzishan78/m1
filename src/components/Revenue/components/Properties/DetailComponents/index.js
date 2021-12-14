@@ -60,6 +60,27 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "500px",
     backgroundColor: "#fff",
   },
+  tags: {
+    margin: "20px 10px",
+    "& .MuiOutlinedInput-root": {
+      color: "white",
+      "& fieldset": {
+        borderColor: "white",
+      },
+      "&:hover fieldset": {
+        borderColor: "white",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "white",
+      },
+      "&.Mui-disabled fieldset": {
+        borderColor: "#adadad",
+      },
+      "&.Mui-disabled svg": {
+        fill: "#adadad !important",
+      },
+    },
+  },
 }));
 
 const StyledTabs = withStyles({
@@ -163,8 +184,8 @@ export default function DetailComponents(props) {
               <Typography variant="subtitle1">10/3/2021</Typography>
             </div>
           </div>
-          <div>
-            <Tagger objectId={""} targetLabel="property" iconZiseSmall={false} shareable={false} />
+          <div className={classes.tags}>
+            <Tagger objectId={null} targetLabel="property" iconZiseSmall={false} shareable={false} type="clickable" />
           </div>
         </div>
         {/**

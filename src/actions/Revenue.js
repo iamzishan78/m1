@@ -1,4 +1,4 @@
-import { TOGGLE_ACTIONS_PANEL, SET_ACTIVE_MODULE } from "../constants/ActionTypes";
+import { TOGGLE_ACTIONS_PANEL, SET_ACTIVE_MODULE, SET_REVENUE_KEY } from "../constants/ActionTypes";
 
 export const toggleActionsPanel = (payload) => {
   return {
@@ -13,3 +13,8 @@ export const setActiveModule = (payload) => {
     payload,
   };
 };
+
+export const setRevenueKey = (key, value) => ({
+  type: SET_REVENUE_KEY,
+  payload: { key, value },
+});
