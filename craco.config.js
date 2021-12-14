@@ -29,5 +29,8 @@ module.exports = {
       return babelLoaderOptions;
     }
   },
+  eslint: {
+    enable: false
+  },
   plugins: [{ plugin: CracoEsbuildPlugin }],
 };
