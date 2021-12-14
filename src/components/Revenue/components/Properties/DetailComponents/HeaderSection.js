@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import { Grid, Typography, TextField, InputAdornment, IconButton, FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import WellSearchApiField from "components/Shared/Forms/Fields/WellSearchApiField";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -40,6 +42,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function HeaderFunction(props) {
   const classes = useStyles();
+  const [selectedWell, setSelectedWell] = useState(null);
+
+  const { control, reset, register, getValues } = useForm();
+
+  const setTenantWell = (well) => {
+    if (well) reset(well)
+  }
+
   return (
     <Grid
       container
@@ -57,39 +67,7 @@ export default function HeaderFunction(props) {
         <TextField margin="dense" type="text" label="Property Name" fullWidth />
       </Grid>
       <Grid item xs={4}>
-        <Autocomplete
-          className={classes.wellsSelectField}
-          multiple
-          id="tags-outlined"
-          options={[]}
-          renderInput={(params) => (
-            <>
-              <label>Associated Well</label>
-              <TextField
-                {...params}
-                margin="dense"
-                variant="outlined"
-                placeholder="Associated Well"
-                className={classes.input}
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment className={classes.inputAdornment} position="start">
-                      <SearchIcon htmlColor="#757575" />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment className={classes.inputAdornment} position="start">
-                      <IconButton size="small">
-                        <ArrowDropDownIcon htmlColor="#757575" />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </>
-          )}
-        />
+        <WellSearchApiField setTenantWell={setTenantWell} setSelectedWell={setSelectedWell} label="Associated Wells" />
       </Grid>
       <Grid item xs={2}>
         <FormControl className={classes.formControl}>
