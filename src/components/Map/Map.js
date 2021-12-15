@@ -45,7 +45,6 @@ import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from "mapbox
 import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import debounce from "lodash/debounce";
 
 // material-ui
 import { makeStyles } from "@material-ui/core/styles";
@@ -725,6 +724,7 @@ function Map({ type, paramId, lati, longi }) {
 
         // geoJson = layerData;
       } else {
+        const extraFeatures = []
         const makeGeoJSON = (mdata) => {
           return {
             type: "FeatureCollection",
@@ -751,6 +751,17 @@ function Map({ type, paramId, lati, longi }) {
                   let shape = JSON.parse(feature.shape);
                   shape.id = feature._id;
                   shape.properties.id = feature._id;
+                  if (shape.geometry.type === 'MultiPolygon') {
+                    shape.geometry.type = 'Polygon'
+                    const shapesCoordinates = copy(shape.geometry.coordinates)
+                    shape.geometry.coordinates = shapesCoordinates[0]
+                    for (let i = 1; i < shapesCoordinates.length; i++) {
+                      const newShape = copy(shape)
+                      newShape.geometry.coordinates = shapesCoordinates[i]
+                      extraFeatures.push(newShape)
+                    }
+                  }
+
                   return shape;
                 }
                 ///////////
@@ -771,6 +782,7 @@ function Map({ type, paramId, lati, longi }) {
         };
 
         geoJson = makeGeoJSON(layerData);
+        geoJson.features = geoJson.features.concat(extraFeatures)
       }
 
       const sourceId = prop.sourceProps;
