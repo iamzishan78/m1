@@ -198,7 +198,7 @@ export default function DetailComponents(props) {
               <StyledTab label="Details" />
             </StyledTabs>
           </div>
-          <div style={{ maxHeight: "calc(100vh - 420px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+          <div style={{ maxHeight: "calc(100vh - 455px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
             <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
               <HeaderSection />
             </div>
