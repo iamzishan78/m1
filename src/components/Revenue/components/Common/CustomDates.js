@@ -98,8 +98,8 @@ export default function Portfolio({ onChangeDates }) {
         setToDate(`${currentYear - 1}-12`);
         break;
       default:
-        setFromDate(null);
-        setToDate(null);
+        setFromDate("");
+        setToDate("");
     }
   };
 
