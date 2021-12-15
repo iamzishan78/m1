@@ -112,7 +112,7 @@ const StyledTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-export default function DetailTabsSection(props) {
+export default function DetailTabsSection({ monthsInterval }) {
   const classes = useStyles();
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
@@ -141,13 +141,13 @@ export default function DetailTabsSection(props) {
           <Typography varient="h6" className={classes.sectionTitle}>
             Revenue & Income
           </Typography>
-          <RevenueTable />
+          <RevenueTable monthsInterval={monthsInterval} />
         </div>
         <div className={classes.adjustmentSection} ref={tab === 1 ? selectedTabRef : null}>
           <Typography varient="h6" className={classes.sectionTitle}>
             Adjustments
           </Typography>
-          <AdjustmentTable />
+          <AdjustmentTable monthsInterval={monthsInterval} />
         </div>
         <div className={classes.productSection} ref={tab === 2 ? selectedTabRef : null}>
           <Typography varient="h6" className={classes.sectionTitle}>

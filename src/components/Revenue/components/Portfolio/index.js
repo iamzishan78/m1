@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Grid, Button, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
@@ -50,11 +50,26 @@ const cards = [
 
 export default function Portfolio() {
   const classes = useStyles();
+  const [monthsInterval, setMonths] = useState([]);
+
+  const onChangeDates = (fromDate, toDate) => {
+    const months = [],
+      fromYear = fromDate.split("-")[0],
+      toYear = toDate.split("-")[0],
+      fromMonth = fromDate.split("-")[1],
+      toMonth = toDate.split("-")[1];
+    for (let year = fromYear; year <= toYear; year++) {
+      for (let month = fromMonth; month <= toMonth; month++) {
+        months.push(`${month}/${year}`);
+      }
+    }
+    setMonths(months);
+  };
   return (
     <>
       <div className={classes.actionBar}>
         <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 36px" }}>
-          <CustomDates />
+          <CustomDates onChangeDates={onChangeDates} />
           <Grid item xs={5} md={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
               <Grid item>
@@ -71,7 +86,7 @@ export default function Portfolio() {
       </div>
       <AnalyticsCards cards={cards} />
       <Divider className={classes.divider} />
-      <DetailTabsSection />
+      <DetailTabsSection monthsInterval={monthsInterval} />
     </>
   );
 }
