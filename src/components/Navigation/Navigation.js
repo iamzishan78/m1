@@ -537,14 +537,14 @@ export default function Navigation(props) {
             )} */}
 
             {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
-            {location.pathname.startsWith("/revenue") && (
-                <Typography
-                  variant="h6"
-                  style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.revenueDetails.expandedPanel ? "450px" : "30px" }}
-                >
-                  {stateApp.revenueDetails.title}
-                </Typography>
-              )}
+            {location.pathname.startsWith("/revenue/statements") && (
+              <Typography
+                variant="h6"
+                style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.revenueDetails.expandedPanel ? "450px" : "30px" }}
+              >
+                {stateApp.revenueDetails.title}
+              </Typography>
+            )}
 
             {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
@@ -568,12 +568,15 @@ export default function Navigation(props) {
               <div style={{ display: "none" }}></div>
             )}
             {applyNavigationStyle() && (
-                <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-                  <Button onClick={() => handleListItemClick("/revenue/statement/details")} color="primary" variant="contained" startIcon={<Add />}>
-                    Add Statement
-                  </Button>
-                </div>
-              )}
+              <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+                <Button onClick={() => {
+                  console.log("add revenue statement functionality and design will be there soon.");
+                  // handleListItemClick("/revenue/statement/details")
+                }} color="primary" variant="contained" startIcon={<Add />}>
+                  Add Statement
+                </Button>
+              </div>
+            )}
             {/* {matchAgreements() && (
               <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
                 <Button onClick={() => handleListItemClick("/agreement/details")} color="primary" variant="contained" startIcon={<Add />}>
@@ -581,9 +584,11 @@ export default function Navigation(props) {
                 </Button>
               </div>
             )} */}
-            <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
-              {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
-            </IconButton>
+            {!location.pathname.startsWith("/revenue/statement/details") && (
+              <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
+                {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
+              </IconButton>
+            )}
           </Toolbar>
         )}
       </AppBar>
