@@ -5,6 +5,7 @@ import { Typography, Tabs, Tab } from "@material-ui/core";
 
 // Components
 import RevenueTable from "./RevenueTable";
+import AdjustmentTable from "./AdjustmentTable";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "20px 38px",
     backgroundColor: "#fff",
     marginBottom: "10px",
-    height: "400px",
+    height: "auto",
   },
   productSection: {
     padding: "20px 38px",
@@ -146,6 +147,7 @@ export default function DetailTabsSection(props) {
           <Typography varient="h6" className={classes.sectionTitle}>
             Adjustments
           </Typography>
+          <AdjustmentTable />
         </div>
         <div className={classes.productSection} ref={tab === 2 ? selectedTabRef : null}>
           <Typography varient="h6" className={classes.sectionTitle}>
