@@ -90,6 +90,7 @@ const StyledTabs = withStyles({
   },
   indicator: {
     backgroundColor: "#12abe0",
+    height: "4px",
   },
 })(Tabs);
 
@@ -97,7 +98,7 @@ const StyledTab = withStyles((theme) => ({
   root: {
     textTransform: "uppercase",
     minWidth: 72,
-    fontWeight: theme.typography.fontWeightRegular,
+    fontWeight: theme.typography.fontWeightBold,
     marginRight: theme.spacing(4),
     fontFamily: [
       "-apple-system",
@@ -117,7 +118,6 @@ const StyledTab = withStyles((theme) => ({
     },
     "&$selected": {
       color: "black",
-      fontWeight: theme.typography.fontWeightMedium,
     },
     "&:focus": {
       color: "black",
