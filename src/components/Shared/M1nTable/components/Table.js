@@ -72,6 +72,8 @@ import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDraw
 import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
+import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
+
 import ButtonDropDown from "./ButtonGroup";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
@@ -263,6 +265,13 @@ const useStyles = makeStyles((theme) => ({
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
       backgroundColor: "#fff"
     },
+    "& .MuiTableCell-paddingCheckbox": {
+      position: "relative",
+    },
+    "& .MuiToolbar-regular > div:nth-child(2) .MuiIconButton-root": {
+      backgroundColor: "#D4E8F1",
+      margin: "0 2px",
+    },
     "& .MuiTableHead-root": {
       "& th": {
         backgroundColor: "#F2F2F2",
@@ -349,7 +358,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "12px",
     width: "100%",
     maxWidth: "180px",
-    minWidth: "80px",
+    minWidth: "120px",
     "&:hover": {
       backgroundColor: "#dadbde !important",
       cursor: "pointer",
@@ -481,6 +490,14 @@ const useStyles = makeStyles((theme) => ({
     // },
     // fontWeight: "bold",
   },
+  tooltip: {
+    position: "absolute",
+    top: -60,
+    display: "none",
+    color: "rgb(255, 0, 0)",
+    width: 200,
+    left: -124,
+  }
   // filenamediv: {
   //   cursor: "pointer",
   //   padding: "10px 30px 10px 10px",
@@ -539,6 +556,7 @@ function SubTable(props) {
   const [isSearchOpen, openSearch] = useState(false);
   const [handleSearch, setHandleSearch] = useState(() => () => { });
   const [dataWell, setDataWell] = useState();
+  const [tooltip, showTooltip] = useState(false);
 
   // deep state
   const setFirstMount = (newState) => {
@@ -1209,6 +1227,49 @@ function SubTable(props) {
             }
             break;
           }
+          case "property": {
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  const { columnData: { label }, rowData } = tableMeta;
+                  return (
+                    <>
+                      {label === "Property Code" && (
+                        <span style={{ padding: 10 }}>{rowData[1].number}</span>
+                      )}
+
+                      {label === "Property Name" && (
+                        <span style={{ padding: 10 }}>{rowData[1].name}</span>
+                      )}
+
+                      {label === "State" && (
+                        <span style={{ padding: 10 }}>{rowData[1].state}</span>
+                      )}
+
+                      {label === "Country" && (
+                        <span style={{ padding: 10 }}>{rowData[1].county}</span>
+                      )}
+                    </>
+                  );
+                },
+              };
+            }
+            break;
+          }
+          case "date": {
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <span style={{ padding: 10 }}>{moment(value).format("MM/DD/YYYY")}</span>
+                  );
+                },
+              };
+            }
+            break;
+          }
           case "lastLogin": {
             {
               column.options = {
@@ -1421,7 +1482,9 @@ function SubTable(props) {
                         ? tableMeta.rowData[1]
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
-                          : tableMeta.rowData[0];
+                          : props.parent === "RevenueStatementTable"
+                            ? tableMeta.rowData[1].split("_")[1]
+                            : tableMeta.rowData[0];
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
@@ -1734,7 +1797,9 @@ function SubTable(props) {
                         ? tableMeta.rowData[1]
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
-                          : tableMeta.rowData[0];
+                          : props.parent === "RevenueStatementTable"
+                            ? tableMeta.rowData[1].split("_")[1]
+                            : tableMeta.rowData[0];
 
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
@@ -1959,6 +2024,79 @@ function SubTable(props) {
           case "water":
           case "allocatedWater":
           case "allocatedGas":
+          case "validation":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value, tableMeta) => {
+                return (
+                  <>
+                    {!value && (
+                      <div className="flex justifyCenter alignCenter success w-100">
+                        <CheckCircle size={20} />
+                      </div>
+                    )}
+
+                    {value && (
+                      <div className="flex justifyCenter alignCenter warning w-100"
+                        onMouseOver={() => document.getElementById("alertTootip").style.display = "block"}
+                        onMouseOut={() => document.getElementById("alertTootip").style.display = "none"}
+                        style={{ marginRight: 6, position: "relative", zIndex: 100 }}
+                      >
+                        <WarningIcon />
+
+                        <div id="alertTootip" className={classes.tooltip}>
+                          <p style={{ fontSize: 14, lineHeight: "120%", textAlign: "left" }}>Sum of details does not match check account</p>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
+              },
+            };
+            break;
+          case "checkNumber":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                const splitNumber = value.split("_");
+                return (
+                  <p onClick={() => history.push(`/revenue/statement/details?id=${splitNumber[1]}`)} style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}>
+                    {splitNumber[0]}
+                  </p>
+                );
+              },
+            };
+            break;
+          case "checkAmount":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                return (
+                  <p style={{ fontWeight: 600 }}>
+                    {`$${value}`}
+                  </p>
+                );
+              },
+            };
+            break;
+          case "status":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                return (
+                  <>
+                    {props.parent === "RevenueStatementTable" && (
+                      <div className="flex justifyStart alignCenter">
+                        {value.toLowerCase() === "approved" && (<div style={{ background: "#17c10d", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />)}
+                        {value.toLowerCase() === "imported" && (<div style={{ background: "#ffa800", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />)}
+                        {value}
+                      </div>
+                    )}
+                  </>
+                );
+              },
+            };
+            break;
           case "allocatedOil":
             column.options = {
               ...column.options,
@@ -2389,7 +2527,7 @@ function SubTable(props) {
     rowsPerPageOptions: props.rows && props.rows.length > 25 ? [10, 25, 50, 100] : props.rows && props.rows.length > 10 ? [10, 25] : [],
     selectableRows: props.targetLabel === "production_detail" ? false : "multiple",
     print: false,
-    download: (props.parent === "assocTaxRollInterests" || props.parent === "OwnersPerWell") ? true : false,
+    download: (props.parent === "assocTaxRollInterests" || props.parent === "OwnersPerWell" || props.parent === "RevenueStatementTable" || props.parent === "CheckDetailsTable") ? true : false,
     viewColumns: props.targetLabel !== "usermanagement",
 
     onColumnViewChange: (changedColumn, action) => {
@@ -3460,6 +3598,40 @@ function SubTable(props) {
     }
   };
 
+  const checkStatementValidation = (checkId) => {
+    const response = props.potentialIssues.filter((issue) => {
+      if (issue.key === checkId) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    if (response.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  //  revenue data set
+  const getRevenueStatementRows = () => {
+    let dataSet = rows?.map((item) => ({
+      checkNumber: `${item?.checkNumber}_${item?._id}`,
+      purchaserName: item?.payor?.name || "",
+      checkAmount: item?.checkAmount || "",
+      checkDate: moment.parseZone(item?.checkDate).format("MM/DD/yyyy") || "",
+      depositDate: moment.parseZone(item?.depositDate).format("MM/DD/yyyy") || "",
+      lines: item?.checkDetail?.lines || 0,
+      checkId: item?.sourceId,
+      source: item?.source || "",
+      status: item?.status || "Imported",
+      validation: checkStatementValidation(item._id) || null
+    }));
+    return dataSet;
+  }
+
+  console.log("rows", rows)
+
   const CustomTableViewCol = (columnsProps) => {
     if (props.header === "Documents") {
       const ViewColumn = props.viewColumn
@@ -3487,7 +3659,7 @@ function SubTable(props) {
           innerRef={props.tableRef}
           className={tableStyle}
           title={getHeaders()}
-          data={props.parent === "ownersPerParcel" ? searchedRows : rows ? rows : []}
+          data={props.parent === "ownersPerParcel" ? searchedRows : props.addAble.type === "RevenueStatement" ? getRevenueStatementRows() : rows ? rows : []}
           // columns={
           //   props.parent === "ownersPerParcel" ? false :
           //   (columns ? columns : [])}
@@ -3503,7 +3675,6 @@ function SubTable(props) {
           }}
           options={{
             ...options,
-
             onSearchOpen: () => openSearch(true),
             onSearchClose: () => openSearch(false),
 

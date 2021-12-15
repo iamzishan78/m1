@@ -9,6 +9,6 @@ export const GET_ES_FILTER_LIST = gql`
       search: $search,
       extendSearchQuery: $extendSearchQuery,
       size: $size
-    )
+    ),
   }
 `;

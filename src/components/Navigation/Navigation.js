@@ -370,9 +370,9 @@ export default function Navigation(props) {
       currentAccounts && currentAccounts.length === 1
         ? currentAccounts[0]
         : (() => {
-            // Add choose account code here
-            return;
-          })();
+          // Add choose account code here
+          return;
+        })();
 
     const logoutRequest = {
       account: currentAccount,
@@ -489,6 +489,14 @@ export default function Navigation(props) {
     return location.pathname === "/landmanagement/agreements"
   }
 
+  const applyNavigationStyle = () => {
+    if (location.pathname === "/revenue/statements") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -529,6 +537,14 @@ export default function Navigation(props) {
             )} */}
 
             {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
+            {location.pathname.startsWith("/revenue") && (
+                <Typography
+                  variant="h6"
+                  style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.revenueDetails.expandedPanel ? "450px" : "30px" }}
+                >
+                  {stateApp.revenueDetails.title}
+                </Typography>
+              )}
 
             {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
@@ -551,6 +567,13 @@ export default function Navigation(props) {
             ) : (
               <div style={{ display: "none" }}></div>
             )}
+            {applyNavigationStyle() && (
+                <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+                  <Button onClick={() => handleListItemClick("/revenue/statement/details")} color="primary" variant="contained" startIcon={<Add />}>
+                    Add Statement
+                  </Button>
+                </div>
+              )}
             {/* {matchAgreements() && (
               <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
                 <Button onClick={() => handleListItemClick("/agreement/details")} color="primary" variant="contained" startIcon={<Add />}>

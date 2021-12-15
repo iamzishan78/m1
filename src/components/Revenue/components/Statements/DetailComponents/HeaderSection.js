@@ -1,18 +1,16 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Typography, TextField } from "@material-ui/core";
+import moment from "moment";
 
 const useStyles = makeStyles(() => ({
   titleText: {
     textTransform: "uppercase",
     margin: "5px 16px 10px",
-    color: "#5a5a5a",
+    fontWeight: "bold",
   },
   fieldsSection: {
     margin: "10px 0px",
-    "& .MuiInputBase-root": {
-      borderRadius: "8px",
-    },
   },
 }));
 
@@ -21,7 +19,7 @@ export default function HeaderFunction(props) {
   return (
     <div>
       <Typography varient="h5" className={classes.titleText}>
-        Header
+        Check Header
       </Typography>
       <Grid
         container
@@ -32,57 +30,71 @@ export default function HeaderFunction(props) {
         spacing={3}
         className={classes.fieldsSection}
       >
-        <Grid item xs={3}>
+        <Grid item xs={4}>
+          {/* Check number */}
           <TextField
             margin="dense"
-            type="number"
-            variant="outlined"
+            type="text"
+            variant="filled"
             label="Check Number"
             fullWidth
-            InputProps={{
-              classes: {
-                root: classes.dateRoot,
-              },
-            }}
+            value={props?.details?.checkNumber || ""}
           />
         </Grid>
-        <Grid item xs={5}>
-          <TextField margin="dense" type="text" variant="outlined" label="Purchaser Name" fullWidth />
-        </Grid>
-        <Grid item xs={3}>
+        {/* Purchaser name */}
+        <Grid item xs={4}>
           <TextField
             margin="dense"
-            type="date"
-            variant="outlined"
+            type="text"
+            variant="filled"
+            label="Purchaser Name"
+            fullWidth
+            value={props?.details?.payor?.name || ""}
+          />
+        </Grid>
+        {/* Check date */}
+        <Grid item xs={4}>
+          <TextField
+            margin="dense"
+            type="text"
+            variant="filled"
             label="Check Date"
-            placeholder=""
             fullWidth
-            InputLabelProps={{
-              shrink: true,
-            }}
+            value={moment.utc(props?.details?.checkDate).format("MM/DD/YYYY") || ""}
           />
         </Grid>
-        <Grid item xs={3}>
-          <TextField margin="dense" type="number" variant="outlined" label="Owner Number" fullWidth />
-        </Grid>
-        <Grid item xs={5}>
-          <TextField margin="dense" type="text" variant="outlined" label="Owner Name" fullWidth />
-        </Grid>
-        <Grid item xs={3}>
+        {/* Owner number */}
+        <Grid item xs={4}>
           <TextField
             margin="dense"
-            type="date"
-            variant="outlined"
-            label="Deposit Date"
-            placeholder=""
+            type="text"
+            variant="filled"
+            label="Owner Number"
             fullWidth
-            InputLabelProps={{
-              shrink: true,
-            }}
+            value={props?.details?.payee?.number || ""}
           />
         </Grid>
-        <Grid item xs={3}>
-          <TextField margin="dense" type="number" variant="outlined" label="Check Amount" fullWidth />
+        {/* Owner name */}
+        <Grid item xs={4}>
+          <TextField
+            margin="dense"
+            type="text"
+            variant="filled"
+            label="Owner Name"
+            fullWidth
+            value={props?.details?.payee?.name || ""}
+          />
+        </Grid>
+        {/* Deposit date */}
+        <Grid item xs={4}>
+          <TextField
+            margin="dense"
+            type="text"
+            variant="filled"
+            label="Deposit Date"
+            fullWidth
+            value={moment.utc(props?.details?.depositDate).format("MM/DD/YYYY") || ""}
+          />
         </Grid>
       </Grid>
     </div>
