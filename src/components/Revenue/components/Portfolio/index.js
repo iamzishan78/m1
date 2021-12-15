@@ -53,18 +53,23 @@ export default function Portfolio() {
   const [monthsInterval, setMonths] = useState([]);
 
   const onChangeDates = (fromDate, toDate) => {
-    const months = [],
-      fromYear = fromDate.split("-")[0],
-      toYear = toDate.split("-")[0],
-      fromMonth = fromDate.split("-")[1],
-      toMonth = toDate.split("-")[1];
-    for (let year = fromYear; year <= toYear; year++) {
-      for (let month = fromMonth; month <= toMonth; month++) {
-        months.push(`${month}/${year}`);
+    const months = [];
+    if (fromDate && toDate) {
+      const fromYear = Number(fromDate.split("-")[0]),
+        toYear = Number(toDate.split("-")[0]),
+        fromMonth = Number(fromDate.split("-")[1]),
+        toMonth = Number(toDate.split("-")[1]);
+      for (let year = fromYear; year <= toYear; year++) {
+        const startMonth = year === fromYear ? fromMonth : 1;
+        const endMonth = year === toYear ? toMonth : 12;
+        for (let month = startMonth; month <= endMonth; month++) {
+          months.push(`${month}/${year}`);
+        }
       }
     }
     setMonths(months);
   };
+
   return (
     <>
       <div className={classes.actionBar}>
