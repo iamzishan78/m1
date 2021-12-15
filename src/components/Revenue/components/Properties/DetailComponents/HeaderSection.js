@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
-import { Grid, Typography, TextField, InputAdornment, IconButton, FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+import { Grid, Typography, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import WellSearchApiField from "components/Shared/Forms/Fields/WellSearchApiField";
+import StateField from "./State";
+import CountyField from "./County";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -44,11 +46,18 @@ export default function HeaderFunction(props) {
   const classes = useStyles();
   const [selectedWell, setSelectedWell] = useState(null);
 
-  const { control, reset, register, getValues } = useForm();
+  const { control, reset, setValue, watch, register } = useForm();
+
+  useEffect(() => {
+    register("state");
+    register("county");
+  }, [register]);
+
+  const selectedState = watch("state", {});
 
   const setTenantWell = (well) => {
-    if (well) reset(well)
-  }
+    if (well) reset(well);
+  };
 
   return (
     <Grid
@@ -57,48 +66,50 @@ export default function HeaderFunction(props) {
       display="flex"
       justify="space-between"
       alignItems="center"
-      spacing={3}
+      spacing={2}
       className={classes.fieldsSection}
     >
       <Grid item xs={3}>
-        <TextField margin="dense" type="text" label="Property Number" fullWidth />
+        <Controller
+          control={control}
+          name="propertyNumber"
+          render={(params) => <TextField {...params} margin="dense" type="text" label="Property Number" fullWidth />}
+        />
       </Grid>
       <Grid item xs={4}>
-        <TextField margin="dense" type="text" label="Property Name" fullWidth />
+        <Controller
+          control={control}
+          name="propertyName"
+          render={(params) => <TextField margin="dense" type="text" label="Property Name" fullWidth />}
+        />
       </Grid>
       <Grid item xs={4}>
         <WellSearchApiField setTenantWell={setTenantWell} setSelectedWell={setSelectedWell} label="Associated Wells" />
       </Grid>
-      <Grid item xs={2}>
-        <FormControl className={classes.formControl}>
-          <InputLabel id="state-select-label">State</InputLabel>
-          <Select labelId="state-select-label" id="state-select">
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
-          </Select>
-        </FormControl>
+      <Grid item xs={4}>
+        <StateField onStateChange={(state) => setValue("state", state)} />
       </Grid>
       <Grid item xs={4}>
-        <FormControl className={classes.formControl}>
-          <InputLabel id="county-select-label">County</InputLabel>
-          <Select labelId="county-select-label" id="county-select">
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
-          </Select>
-        </FormControl>
+        <CountyField state={selectedState.acronym} onCountyChange={(county) => setValue("county", county)} />
       </Grid>
-      <Grid item xs={5}>
-        <TextField margin="dense" label="Operator Name" placeholder="" fullWidth />
+      <Grid item xs={4}>
+        <Controller
+          control={control}
+          name="operatorName"
+          render={(params) => <TextField margin="dense" label="Operator Name" placeholder="" fullWidth />}
+        />
       </Grid>
       <Grid item xs={3}>
-        <TextField margin="dense" label="Owner Number" placeholder="" fullWidth />
+        <Controller
+          control={control}
+          name="ownerNumber"
+          render={(params) => <TextField margin="dense" label="Owner Number" placeholder="" fullWidth />}
+        />
       </Grid>
-      <Grid item xs={5}>
+      <Grid item xs={4} sm={5}>
         <TextField margin="dense" label="Owner Name" placeholder="" fullWidth />
       </Grid>
-      <Grid item xs={3}>
+      <Grid item xs={4} sm={3}>
         <TextField
           margin="dense"
           type="date"
