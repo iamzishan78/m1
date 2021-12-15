@@ -5,15 +5,17 @@ import * as turf from "@turf/turf";
 import hat from "hat";
 import polylabel from "polylabel";
 import { Menu, MenuItem } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import Modal from "@material-ui/core/Modal";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GridOnIcon from "@material-ui/icons/GridOn";
-import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
-import GpxFixedIcon from "@material-ui/icons/GpsFixed";
+import OfflineBoltIcon from '@material-ui/icons/OfflineBoltOutlined';
+import CloudDownloadOutlinedIcon from '@material-ui/icons/CloudDownloadOutlined';
 import { default as CheckCircle } from "../../../Shared/svgIcons/check-circle";
+import ConvertContact from "components/Shared/svgIcons/convert_contact";
 import LayerIcon from "@material-ui/icons/Layers";
 import FilterAltIcon from "../../../Shared/svgIcons/FilterAltIcon";
 import Typography from "@material-ui/core/Typography";
@@ -27,11 +29,14 @@ import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { addCustomShapeProperties, drawBoundary } from "../../components/DrawShapes/drawShapesHelpers";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleMapGridCardAtived, setMapGridCardState } from "actions";
-
+import { 
+  // toggleMapGridCardAtived, 
+  setMapGridCardState } from "actions";
 import { gql } from "@apollo/client";
 import { setFeatureProperty, drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
 import { shapeTypeLayers } from "components/Shared/functions/shapeLayer";
+import LimitExceedPopUp from "components/MapControls/components/popup/LimitExceedPopup"
+import { ConvertTaxOwnerToContactContainer } from 'store/containers'
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
@@ -44,6 +49,10 @@ const ShapeActionsPopup = (props) => {
   const [user, setUser] = useState({ _id: "" });
   const [selectedAction, setSelectedAction] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorConvertEl, setAnchorConvertEl] = useState(null);
+  const [limitExceed, setLimitExceed] = useState(false);
+  const [convertTaxOwnerModal, setConvertTaxOwnerModal] = useState(false);
+  const [showConvertMenu, setShowConvertMenu] = useState(false);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [getAbstractGeoContains] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
   const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER, {
@@ -589,6 +598,16 @@ const ShapeActionsPopup = (props) => {
     setTimeout(() => popupCloseAction(), 0);
   };
 
+  const convertMenuAction = (action) => {
+    setShowConvertMenu(false)
+    const area = parseInt(calculateLandArea().replace(/,/g, ''));
+    if(area > 500000){
+      setLimitExceed(true);
+    }else if(action === 'convert'){
+      setConvertTaxOwnerModal(true);
+    } 
+  }
+
   const enableEditOnly = stateApp.featureToEdit?.layer?.id === "parcel" || shapeTypeLayers.includes(stateApp.featureToEdit?.layer?.id)
   const isAoi = stateApp.selectedAoi?.layer?.id === "interest";
   const isCreateParcelMenu = Boolean(anchorEl);
@@ -609,11 +628,57 @@ const ShapeActionsPopup = (props) => {
         <MenuItem onClick={() => saveAndOpenShapeDetail('agreement')} >Agreement</MenuItem>
         <MenuItem onClick={saveAndOpenParcelDetail}>Tract</MenuItem>
         <MenuItem onClick={() => saveAndOpenShapeDetail('unit')}>Unit Boundary</MenuItem>
-
+      </Menu>
+      <Menu
+        id="convert-button"
+        anchorEl={anchorConvertEl}
+        open={showConvertMenu}
+        onClose={() => setAnchorConvertEl(null)}
+        MenuListProps={{
+          "aria-labelledby": "convert-button",
+        }}
+        className={classes.convertPopover}
+      >
+        <MenuItem onClick={() => convertMenuAction('convert')}>
+          <Grid container spacing={0}>
+            <Grid container item xs={2} alignItems="center">
+              <ConvertContact color="#A6A6A6" width="35" height="20" />
+            </Grid>
+            <Grid container item xs={10} alignItems="center">
+              <span className={classes.convertMenuColor} >Convert tax owners to contacts</span>
+            </Grid>
+          </Grid>
+        </MenuItem>
+        <MenuItem onClick={() => convertMenuAction('export')}>
+        <Grid container spacing={0}>
+            <Grid container item xs={2} alignItems="center">
+              <CloudDownloadOutlinedIcon className={classes.downloadIcon}/>
+            </Grid>
+            <Grid container item xs={10} alignItems="center">
+            <span className={classes.convertMenuColor} >Export selected data to CSV</span>
+            </Grid>
+          </Grid>
+        </MenuItem>
       </Menu>
       <Fragment>
         <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span> {calculateLandArea()}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
+          <Tooltip title="Area of Interest" className={enableEditOnly && classes.disableAction}>
+            <IconButton 
+              size="small"
+              disabled={enableEditOnly}
+              aria-label="Parcel"
+              id="convert-button"
+              aria-controls="convert-button"
+              aria-haspopup="true"
+              onClick={(event) => {
+                setAnchorConvertEl(event.currentTarget)
+                setShowConvertMenu(true)
+              }}
+            >
+              <OfflineBoltIcon />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Grid" className={enableEditOnly && classes.disableAction}>
             <IconButton disabled={enableEditOnly} size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
               <GridOnIcon className={mapGridCardActivated ? "selected" : ""} />
@@ -644,26 +709,9 @@ const ShapeActionsPopup = (props) => {
 
           <Tooltip title="Area of Interest" className={enableEditOnly && classes.disableAction}>
             <IconButton size="small" disabled={enableEditOnly} onClick={actionAOI} aria-label="Area of Interest">
-              <GpxFixedIcon />
+              <span style={{ color: 'white' }}>AOI</span>
             </IconButton>
           </Tooltip>
-          <span className={classes.divider}></span>
-
-          {
-            stateApp.currentFeature && <Tooltip title="Change Change" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
-              <IconButton size="small" aria-label="Change Change" onClick={() => {
-                stateApp.draw.changeMode('static');
-                setStateApp((state) => ({
-                  ...state,
-                  changeDrawShapeType: true,
-                }));
-              }}>
-                <DrawPoly className={stateApp.shapeEdit ? "selected" : ""} />
-              </IconButton>
-            </Tooltip>
-          }
-
-
 
           <Tooltip title="Edit Active Shape" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
             <IconButton size="small" aria-label="Edit Active Shape" onClick={actionEdit}>
@@ -732,6 +780,10 @@ const ShapeActionsPopup = (props) => {
           </div>
         </div>
       </Modal>
+      <LimitExceedPopUp open={limitExceed} onClose={() => setLimitExceed(false)} />
+      {convertTaxOwnerModal && (
+        <ConvertTaxOwnerToContactContainer open={convertTaxOwnerModal} onClose={() => setConvertTaxOwnerModal(false)}/>
+      )}
     </Fragment>
   );
 };

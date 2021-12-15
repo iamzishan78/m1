@@ -135,7 +135,7 @@ function ContactsTable(props) {
         return hit;
       });
       props.setRows(JSON.parse(JSON.stringify(hits)));
-      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST);
+      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
       props.setLoading(false);
     } else if (tableData?.length === 0) {
       props.setLoading(false);
@@ -145,7 +145,7 @@ function ContactsTable(props) {
   useEffect(() => {
     tableRef.current.changePage(0)
     const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns)
-    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST);
+    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
   }, [selectedGridView]);
 
   const count = tableData?.total || 0;
@@ -184,7 +184,7 @@ function ContactsTable(props) {
         columns[i].options.display = false;
       }
     }
-    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST);
+    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
   };
   ////////////-----Add your code section here-----///////////////////////
   const onTableChange = (action, tableState, rows, meta) => {
