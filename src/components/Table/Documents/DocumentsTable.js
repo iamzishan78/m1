@@ -46,6 +46,11 @@ const useStyles = makeStyles((theme) => ({
 
 function DocumentsTable(props) {
   const classes = useStyles();
+  const defaultView = {
+    name: "All Documents",
+    type: 'Default'
+  }
+
   const selectedFilters = useRef([]);
   const [stateApp, setStateApp] = useContext(AppContext);
 
@@ -57,7 +62,7 @@ function DocumentsTable(props) {
   };
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [selectedGridView, setSelectedGridView] = useState({});
+  const [selectedGridView, setSelectedGridView] = useState(defaultView);
   const [refetchList, setRefetchList] = useState(false);
 
   // queries
@@ -94,17 +99,15 @@ function DocumentsTable(props) {
   useEffect(() => {
     if (gridViews?.getGridViews?.gridViews) {
       const data = JSON.parse(JSON.stringify(gridViews.getGridViews.gridViews));
-      if(isEmpty(selectedGridView)){
-        setSelectedGridView(
-          data.find((d) => d.type === "Default" && d.name === "All Documents")
-        );
-        setStateApp((state, props) => {
-          return {
-            ...state,
-            selectedView: data.find((d) => d.type === "Default" && d.name === "All Documents")
-          };
-        });
-      }
+      setStateApp((state, props) => {
+        return {
+          ...state,
+          selectedView: data.find((d) =>
+            d.type === (selectedGridView?.type || "Default") &&
+            d.name === (selectedGridView?.name || "All Documents")
+          )
+        };
+      });
     }
   }, [gridViews]);
 
@@ -423,7 +426,7 @@ function DocumentsTable(props) {
     updateColumnSorting,
   };
 
-  const onCustomKeyChange = (value, index, key) => {
+  const onCustomKeyChange = (value = null, index, key) => {
     const rows = JSON.parse(JSON.stringify(props.rows));
     rows[index].custom_data = {
       ...props.rows[index].custom_data,

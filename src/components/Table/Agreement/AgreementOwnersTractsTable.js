@@ -17,7 +17,7 @@ import TableHeader from 'components/Table/constants/unit-owners-tracts-header-sc
 
 // Utilities
 import { usetableStyles } from "../Styles";
-import AddAgreementOwnerAndTractDialog from "components/Shared/M1nTable/components/SubComponents/AddAgreementOwnerAndTractDialog";
+import AddAgreementOwnerAndTractDialog from "components/Table/TableAddDialog/AddAgreementOwnerAndTractDialog";
 
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();

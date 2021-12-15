@@ -10,7 +10,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-// import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 
 const getDealNameFieldHeight = (title) => {
   const lineLength = Math.ceil(title.length / 53);
@@ -269,7 +268,6 @@ const DealDialogHeader = ({
             variant="outlined"
             placeholder="Click to enter deal name"
             required
-            // fullWidth
             multiline
             error={!title}
             helperText={!title ? "Enter a deal name to get started" : ""}

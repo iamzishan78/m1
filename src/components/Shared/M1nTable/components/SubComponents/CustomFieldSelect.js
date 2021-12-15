@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Grid } from "@material-ui/core";
+import { Grid, InputAdornment, Paper } from "@material-ui/core";
 import CheckIcon from "@material-ui/icons/Check";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
+import ArrowDropDownIcon from "@material-ui/lab/es/internal/svg-icons/ArrowDropDown";
 import { colorPallete } from "components/Table/helpers";
+import EditIcon from "@material-ui/icons/Edit";
+import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
   noBorder: {
@@ -18,18 +20,22 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiOutlinedInput-root": {
       paddingRight: "0px !important",
     },
-    "& .MuiAutocomplete-endAdornment": {
-      display: "none",
-    },
     "& .MuiInputBase-input": { color: "red", caretColor: "black" },
   },
   textDiv: {
     fontSize: "14px",
-    marginTop: "-32px",
   },
   paper: {
-    width: "175px",
+    // width: "fit-content",
+    "min-width": "125px",
+    // "max-width": fullWidth ? "400px" : "none",
+    "& .MuiAutocomplete-option": {
+      padding: '0px !important'
+    }
   },
+  myClass: {
+    padding: "6px 6px"
+  }
 }));
 
 const CustomFieldSelect = ({
@@ -38,10 +44,11 @@ const CustomFieldSelect = ({
   onCustomKeyChange,
   dropdownOptions,
   column,
-  fullWidth
+  fullWidth,
 }) => {
   const classes = useStyles();
-  const [options, setOptions] = useState([])
+  const [options, setOptions] = useState([]);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const defaultValue = {
     label: "----",
     value: "----",
@@ -53,16 +60,23 @@ const CustomFieldSelect = ({
     const options = JSON.parse(JSON.stringify(dropdownOptions));
     options.unshift(defaultValue);
     setOptions(options);
-  },[dropdownOptions])
+    options.push({ label: "edit", value: "editOption" });
+  }, [dropdownOptions]);
 
-  const onChange = (e, act) => {
-    onCustomKeyChange(act.value);
+  const onChange = (e, act, reason) => {
+    if (reason === 'clear') {
+      e.stopPropagation();
+    }
+    if (act?.value !== "editOption") {
+
+      onCustomKeyChange(act?.value !== defaultValue.value ? act?.value : null);
+    }
   };
 
   useEffect(() => {
     if (value) {
       let data = JSON.parse(JSON.stringify(value));
-      if(typeof value !== 'string' && value?.label){
+      if (typeof value !== "string" && value?.label) {
         data = JSON.parse(JSON.stringify(value.label));
       }
       const opt = dropdownOptions.find((opt) => opt.value === data);
@@ -88,9 +102,9 @@ const CustomFieldSelect = ({
   return (
     <div
       style={{
-        padding: "0px 10px",
+        padding: "0px",
         height: "50px",
-        width: fullWidth ? "100%" : "max-content",
+        width: "100%",
         borderBottom: fullWidth ? "1px solid" : "none",
       }}
       onClick={(e) => e.stopPropagation()}
@@ -101,26 +115,38 @@ const CustomFieldSelect = ({
       onMouseEnter={() => setShowIcon(true)}
     >
       <Autocomplete
+        popupIcon={<ArrowDropDownIcon visibility={(fullWidth || showIcon) ? "visible" : "hidden"} />}
         className={classes.search}
         style={{
+          height: "100%",
           margin: 0,
         }}
         classes={{ paper: classes.paper }}
-        disableClearable
+        PaperComponent={(props) => {
+          return (
+            <Paper
+            className={props.className}
+              style={{ 
+                width: fullWidth ? "none" : "fit-content",
+                "max-width": fullWidth ? "none" : "400px" 
+              }}
+            >{props.children}</Paper>
+          )
+        }}
         open={showOptions}
         defaultValue={defaultValue.value}
         value={value}
         disableListWrap
         options={options
-          .filter((op) => op.value)
+          .filter((op) => typeof op.value === "string")
           .map((op) => ({
             ...op,
             label: op.value,
             value: op.value,
           }))}
-        getOptionLabel={(option) =>  option?.label ? option.label : ''}
+        getOptionLabel={(option) => (option?.label ? option.label : "")}
         getOptionSelected={(option) => {
-          return option.value === value || option.value === value?.value
+          return option.value === value || option.value === value?.value;
         }}
         filterOptions={(options, params) => {
           return options;
@@ -129,28 +155,68 @@ const CustomFieldSelect = ({
           const pallete = colorPallete.find(
             (pallete) => pallete.id === option.palleteId
           );
-          return (
-            <Grid className={classes.myClass} container spacing={0}>
-              <Grid container item xs={2} alignItems="center">
-                {(
-                  (typeof value === 'string'  && option.value === value ) || 
-                  option.value === value?.label ||
-                  (!value && option.value === defaultValue.label)
-                  ) 
-                  && (
-                  <CheckIcon style={{ fontSize: 13, marginRight: 5 }} />
-                )}
+          return option.value === "editOption" ? (
+            <Grid style={{
+              "flex-wrap": "nowrap",
+              marginTop: "5px",
+              borderTop: '1px solid #959595',
+              padding: "8px 6px 2px 6px"
+            }}
+              container spacing={0}
+              onClick={() => {
+                setShowOptions(false);
+                setStateApp((stateApp) => ({
+                  ...stateApp,
+                  selectedMeta: column,
+                  showFieldModal: true,
+                }));
+              }}>
+              <Grid style={{ "flex-grow": 1, width: "fit-content", "max-width": "max-content" }} container item xs={2} alignItems="center">
+                <EditIcon style={{ alignSelf: "center", fontSize: 18, marginRight: 5 }} />
               </Grid>
-              <Grid container item xs={10} alignItems="center">
-                <Grid item xs>
+              <Grid
+                style={{ "flex-grow": 1, width: "fit-content", /*"max-width": "max-content"*/ }}
+                container
+                item
+                xs={10}
+                alignItems="center"
+                style={{
+                  fontSize: 14,
+                  "white-space": "nowrap",
+                }}
+              >
+                Edit options
+              </Grid>
+            </Grid>
+          ) : (
+            <Grid style={{ "flex-grow": 1, width: "fit-content", "flex-wrap": "nowrap" }} className={classes.myClass} container spacing={0}>
+              <Grid style={{ "flex-grow": 1, width: "fit-content", "max-width": "max-content" }} container item xs={2} alignItems="center">
+                <CheckIcon style={{
+                  fontSize: 13,
+                  marginRight: 5,
+                  visibility:
+                    ((typeof value === "string" && option.value === value) ||
+                      option.value === value?.label ||
+                      (!value && option.value === defaultValue.label))
+                      ? "visible"
+                      : "hidden"
+                }} />
+              </Grid>
+              <Grid style={{ "flex-grow": 1, width: "fit-content", /*"max-width": "max-content"*/ }} container item xs={10} alignItems="center">
+                <Grid style={{ "flex-grow": 1, width: "fit-content" }} item xs>
                   <span
                     style={{
+                      width: "100%",
+                      // display: "inline-block",
                       fontWeight: 400,
                       backgroundColor: pallete?.color,
                       color: pallete?.textColor,
                       padding: "3px 10px",
                       borderRadius: 26,
                       fontSize: 14,
+                      overflow: "hidden",
+                      "white-space": "nowrap",
+                      "text-overflow": "ellipsis",
                     }}
                   >
                     {option.label}
@@ -162,29 +228,30 @@ const CustomFieldSelect = ({
         }}
         renderInput={(params) => (
           <>
-            <TextField
-              style={{ visibility: "hidden" }}
-              margin="dense"
-              {...params}
-              variant="outlined"
-            />
             <div
+              style={{
+                height: "100%",
+                display: "flex",
+                "align-items": "center",
+              }}
+              ref={params.InputProps.ref}
               className={`${classes.textDiv}`}
               onClick={() => setShowOptions(!showOptions)}
             >
-              <Grid container spacing={0}>
+              <Grid container spacing={0}
+                {...params.inputProps}
+              >
                 <Grid container item xs={10}>
-                  <span id={`colorText_${index}_${column.name}`}></span>
-                </Grid>
-                <Grid container item xs={2}>
-                  <KeyboardArrowDownIcon
-                    style={{
-                      marginTop: -2,
-                      visibility: showIcon || fullWidth ? "visible" : "hidden",
-                    }}
-                  />
+                  <span style={{ "white-space": "nowrap" }} id={`colorText_${index}_${column.name}`}></span>
                 </Grid>
               </Grid>
+              <InputAdornment
+                style={{ "margin-left": -4, "margin-right": 8 }}
+                position="end"
+                visibility={showIcon ? "visible" : "hidden"}
+              >
+                {params.InputProps.endAdornment.props.children[1]}
+              </InputAdornment>
             </div>
           </>
         )}

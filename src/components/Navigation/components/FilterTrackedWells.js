@@ -4,10 +4,8 @@ import Switch from "@material-ui/core/Switch";
 import { NavigationContext } from "../NavigationContext";
 import { AppContext } from "../../../AppContext";
 import { FormLabel } from "@material-ui/core";
-import WellIcon from "../../Shared/svgIcons/well";
+import WellIcon from "components/Shared/svgIcons/well";
 import IconButton from "@material-ui/core/IconButton";
-// import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
-// import { useMutation } from "@apollo/client";
 
 const useStyles = makeStyles({
   mainDiv: {
@@ -39,25 +37,16 @@ export default function FilterTrackedWells() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateApp] = useContext(AppContext);
 
-  // const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
-
-  const toggleTracks = () => {
-    setStateNav((stateNav) => {
-      if (stateNav.filterTrackedWells) {
-        stateApp.toggleLayersActivity("Tracked Wells", false);
-        if (!stateNav.filterTrackedOwners && stateNav.selectedTags && stateNav.selectedTags.length == 0)
-          stateApp.toggleLayersActivity("Wells", true);
-      } else {
-        stateApp.toggleLayersActivity("Tracked Wells", true);
-        stateApp.toggleLayersActivity("Wells", false);
-      }
-
-      return {
-        ...stateNav,
-        filterTrackedWells: !stateNav.filterTrackedWells,
-      };
-    });
-  };
+  React.useEffect(() => {
+    if (!stateNav.filterTrackedWells) {
+      stateApp.toggleLayersActivity("Tracked Wells", false);
+      if (!stateNav.filterTrackedOwners && stateNav.selectedTags && stateNav.selectedTags.length == 0)
+        stateApp.toggleLayersActivity("Wells", true);
+    } else {
+      stateApp.toggleLayersActivity("Tracked Wells", true);
+      stateApp.toggleLayersActivity("Wells", false);
+    }
+  }, [stateNav.filterTrackedWells]);
 
   return (
     <div className={classes.mainDiv}>
@@ -70,7 +59,10 @@ export default function FilterTrackedWells() {
         className={classes.noOwnersToggle}
         checked={stateNav.filterTrackedWells}
         onChange={() => {
-          toggleTracks();
+          setStateNav((stateNav) => ({
+            ...stateNav,
+            filterTrackedWells: !stateNav.filterTrackedWells,
+          }));
         }}
         color="secondary"
         name="checked"
