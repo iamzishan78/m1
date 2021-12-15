@@ -12,13 +12,11 @@ export default function AlertDialogSlide(props) {
   const useStyles = makeStyles((theme) => ({
     dialog: {
       "& .MuiDialog-paper": {
-        // backgroundColor: "#EBEBEB",
         position: "fixed",
-        top: "15% !important",
-        left: "5px !important",
+        top: "128px !important",
+        left: "52px !important",
         width: props.width ? String(props.width) : null,
         maxWidth: "100% !important",
-        minHeight: "85vh !important",
         margin: "0 !important",
         borderTopRightRadius: "0 !important",
         overflowX: "hidden",
@@ -27,7 +25,7 @@ export default function AlertDialogSlide(props) {
       },
       "& .MuiBackdrop-root": {
         // display: "none"
-        backgroundColor: 'transparent'
+        backgroundColor: "transparent",
       },
       "& .MuiListItem-container": {
         borderBottom: "1px solid #c7c7c7",

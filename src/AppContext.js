@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
 import { heatLayers, baseMapLayers } from "./LayerConfig";
 
-const AppContext = createContext([{}, () => { }]);
+const AppContext = createContext([{}, () => {}]);
 
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
@@ -16,6 +16,7 @@ const AppProvider = (props) => {
     baseMapLayers: baseMapLayers, // move to a map context -- will be changed with mepler anyways
     heatLayers: heatLayers, // move to a map context -- will be changed with mepler anyways
     apolloClientEndpoint: "",
+    apolloClientFetchOptions: null,
     graphqlScope: null, /// potentially login context?
     user: null, /// potenitally login context or maybe a specific user context??
     signUpUserType: null, /// potenitally login context or maybe a specific user context??
@@ -274,6 +275,7 @@ const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
 const isDev = process.env.NODE_ENV === "development";
 
 const setApolloHeaders = (config, authToken, idToken) => {
+  if (!config) config = {};
   if (!config.headers) config.headers = {};
   config.headers["X-ZUMO-AUTH"] = authToken;
   if (isDev) config.headers["X-MS-TOKEN-AAD-ID-TOKEN"] = idToken;

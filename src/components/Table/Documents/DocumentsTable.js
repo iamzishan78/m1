@@ -46,6 +46,11 @@ const useStyles = makeStyles((theme) => ({
 
 function DocumentsTable(props) {
   const classes = useStyles();
+  const defaultView = {
+    name: "All Documents",
+    type: 'Default'
+  }
+
   const selectedFilters = useRef([]);
   const [stateApp, setStateApp] = useContext(AppContext);
 
@@ -57,7 +62,7 @@ function DocumentsTable(props) {
   };
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [selectedGridView, setSelectedGridView] = useState({});
+  const [selectedGridView, setSelectedGridView] = useState(defaultView);
   const [refetchList, setRefetchList] = useState(false);
 
   // queries

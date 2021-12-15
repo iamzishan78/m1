@@ -1,17 +1,9 @@
 import React, { useEffect, useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  TextField,
-  InputAdornment,
-  IconButton,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-} from "@material-ui/core";
-import moment from "moment";
+import { TextField, InputAdornment, IconButton, Accordion, AccordionSummary, AccordionDetails } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import { AppContext } from "../../AppContext";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
@@ -31,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "0 !important",
     display: "flex",
     flexFlow: "column",
-    height: "85vh",
+    // height: "85vh",
     "& .MuiPaper-elevation1": {
       boxShadow: "none !important",
     },
@@ -49,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
   summary: {
     backgroundColor: "#F2F2F2",
-    height: "40px !important",
+    height: "50px !important",
     minHeight: "40px !important",
   },
   textField: {
@@ -120,23 +112,21 @@ function GridView({
   const [editGridView, setEditGridView] = useState(null);
   const [viewName, setViewName] = useState(`${selectedGridView.name}-copy`);
   const [addGridView, { data: newGridView }] = useMutation(ADD_GRID_VIEW);
-  const [getGridViews, { data: gridViews, loading }] =
-    useLazyQuery(GET_GRID_VIEWS);
-  const [updateGridView, { data: updatedGridView }] =
-    useMutation(UPDATE_GRID_VIEW);
+  const [getGridViews, { data: gridViews, loading }] = useLazyQuery(GET_GRID_VIEWS);
+  const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
   const [updateFavouriteGridView, {}] = useMutation(UPDATE_FAVOURITE_GRID_VIEW);
 
   useEffect(() => {
-    if(selectedTab === 'views'){
-      setFilterGridView(JSON.parse(JSON.stringify(allGridViews)))
-    }else if(selectedTab === 'favorites'){
-      const data = allGridViews.filter(view => view.favouriteBy?.includes(stateApp.user.mongoId))
+    if (selectedTab === "views") {
+      setFilterGridView(JSON.parse(JSON.stringify(allGridViews)));
+    } else if (selectedTab === "favorites") {
+      const data = allGridViews.filter((view) => view.favouriteBy?.includes(stateApp.user.mongoId));
       setFilterGridView(data);
-    }else{
-      setFilterGridView([])
+    } else {
+      setFilterGridView([]);
     }
-  },[selectedTab])
-  
+  }, [selectedTab]);
+
   useEffect(() => {
     getGridViews({
       variables: {
@@ -153,7 +143,7 @@ function GridView({
       setStateApp((state, props) => {
         return {
           ...state,
-          selectedView: newGridView.addGridView.newGridView
+          selectedView: newGridView.addGridView.newGridView,
         };
       });
     }
@@ -167,7 +157,7 @@ function GridView({
       setStateApp((state, props) => {
         return {
           ...state,
-          selectedView: updatedGridView.updateGridView.updatedGridView
+          selectedView: updatedGridView.updateGridView.updatedGridView,
         };
       });
     }
@@ -183,19 +173,14 @@ function GridView({
 
   useEffect(() => {
     setTimeout(() => {
-      if (document.getElementById("fieldContentInput"))
-        document.getElementById("fieldContentInput").focus();
+      if (document.getElementById("fieldContentInput")) document.getElementById("fieldContentInput").focus();
     }, 100);
   }, [showSaveAsNew]);
 
   useEffect(() => {
     if (allGridViews) {
       if (search) {
-        setFilterGridView(
-          allGridViews.filter((view) =>
-            view.name.toLowerCase().includes(search.toLowerCase())
-          )
-        );
+        setFilterGridView(allGridViews.filter((view) => view.name.toLowerCase().includes(search.toLowerCase())));
       } else {
         setFilterGridView(allGridViews);
       }
@@ -211,7 +196,7 @@ function GridView({
     setStateApp((state, props) => {
       return {
         ...state,
-        selectedView: data
+        selectedView: data,
       };
     });
     setShowViewModal(false);
@@ -246,11 +231,7 @@ function GridView({
                   <h4
                     style={{ marginLeft: 13 }}
                     onClick={() => setSelectedTab(option.value)}
-                    className={
-                      selectedTab === option.value
-                        ? classes.selectedType
-                        : classes.unSelectedType
-                    }
+                    className={selectedTab === option.value ? classes.selectedType : classes.unSelectedType}
                   >
                     {option.label}
                   </h4>
@@ -259,7 +240,7 @@ function GridView({
             </div>
             <Accordion defaultExpanded style={{ marginTop: 20 }}>
               <AccordionSummary
-                expandIcon={<KeyboardArrowUpIcon></KeyboardArrowUpIcon>}
+                expandIcon={<KeyboardArrowDownIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
                 className={classes.summary}
@@ -290,7 +271,7 @@ function GridView({
           <div style={{ flex: "1 1 auto", overflow: "auto" }}>
             <Accordion defaultExpanded style={{ margin: 0 }}>
               <AccordionSummary
-                expandIcon={<KeyboardArrowUpIcon></KeyboardArrowUpIcon>}
+                expandIcon={<KeyboardArrowDownIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
                 className={classes.summary}
@@ -430,15 +411,7 @@ const InputField = ({
   );
 };
 
-const View = ({
-  onClick,
-  view,
-  setEditGridView,
-  setViewName,
-  updateFavouriteGridView,
-  updateGridView,
-  userId,
-}) => {
+const View = ({ onClick, view, setEditGridView, setViewName, updateFavouriteGridView, updateGridView, userId }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const [showActions, setShowActions] = useState(false);
@@ -478,15 +451,7 @@ const View = ({
       </span>
       {showActions && (
         <span className={classes.actionIcons}>
-          {view.type === "Custom" ? (
-            view.isPrivate ? (
-              <LockIcon />
-            ) : (
-              <LockOpenIcon />
-            )
-          ) : (
-            <></>
-          )}
+          {view.type === "Custom" ? view.isPrivate ? <LockIcon /> : <LockOpenIcon /> : <></>}
           <MoreVertIcon onClick={handleClick} />
         </span>
       )}
@@ -526,9 +491,7 @@ const View = ({
             });
           }}
         >
-          {view.favouriteBy?.includes(userId)
-            ? "Remove as favorite"
-            : "Set as favorite"}
+          {view.favouriteBy?.includes(userId) ? "Remove as favorite" : "Set as favorite"}
         </MenuItem>
         {view.type !== "Default" && (
           <MenuItem
