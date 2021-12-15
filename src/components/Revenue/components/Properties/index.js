@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/styles";
 
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
+import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTable";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -19,6 +20,10 @@ const useStyles = makeStyles((theme) => ({
       height: "35px",
       fontWeight: "bold",
     },
+  },
+  propertyTableContainer: {
+    padding: theme.spacing(2),
+    marginTop: theme.spacing(2),
   },
 }));
 
@@ -45,13 +50,30 @@ const cards = [
 export default function Portfolio() {
   const classes = useStyles();
 
+  // const getFlaggedMoment = (moment) => {
+  //   return moment >= 10 ? moment : `0${moment}`;
+  // };
+
   return (
     <>
       <div className={classes.actionBar}>
-        <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 36px" }}>
+        <Grid
+          container
+          direction="row"
+          display="flex"
+          justify="space-between"
+          style={{ padding: "0px 78px" }}
+        >
           <CustomDates />
           <Grid item xs={5} md={4}>
-            <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
+            <Grid
+              container
+              display="flex"
+              justify="flex-end"
+              direction="row"
+              spacing={2}
+              className={classes.actionsGrid}
+            >
               <Grid item>
                 <Button variant="contained" color="secondary">
                   Save View
@@ -65,6 +87,14 @@ export default function Portfolio() {
         </Grid>
       </div>
       <AnalyticsCards cards={cards} />
+      <div className={classes.propertyTableContainer}>
+        <RevenuePropertiesTable
+          header="Properties"
+          parent="RevenuePropertiesTable"
+          loading={false}
+          dense={true}
+        />
+      </div>
     </>
   );
 }
