@@ -52,7 +52,7 @@ export default function Portfolio({ onChangeDates }) {
   const [toDate, setToDate] = React.useState(null);
 
   useEffect(() => {
-    onChangeDates(fromDate, toDate);
+    if (onChangeDates) onChangeDates(fromDate, toDate);
   }, [fromDate, toDate]);
 
   const getFlaggedMoment = (moment) => {
