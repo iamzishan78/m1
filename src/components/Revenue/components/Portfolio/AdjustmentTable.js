@@ -45,13 +45,6 @@ const useStyles = makeStyles((theme) => ({
       background: "linear-gradient(#e0e0e0, #e0e0e0) bottom/100% 3px no-repeat",
     },
   },
-  highlightedLessBordered: {
-    "& .MuiTableCell-root": {
-      paddingTop: "25px !important",
-      borderBottom: "none",
-      background: "linear-gradient(#e0e0e0, #e0e0e0) bottom/100% 2px no-repeat",
-    },
-  },
   leftCells: {
     paddingLeft: "3px",
     textAlign: "left !important",
@@ -71,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AcccessibleTable({ monthsInterval }) {
+export default function AdjustmentTable({ monthsInterval }) {
   const classes = useStyles();
 
   return (
@@ -94,55 +87,71 @@ export default function AcccessibleTable({ monthsInterval }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow key="side-headers" className={classes.highlightedRows}>
+                <TableRow key="side-headers">
                   <TableCell scope="row" className={classes.leftCells}>
-                    Gross Revenue
+                    Severence Tax
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    3,000
+                    10,000,000
                   </TableCell>
                 </TableRow>
                 <TableRow key="side-headers">
                   <TableCell scope="row" className={classes.leftCells}>
-                    Adjustments
+                    Transportation - Oil
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    900,000,00
-                  </TableCell>
-                </TableRow>
-                <TableRow key="side-headers" className={classes.highlightedRows}>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Net Revenue
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    2,000,000
+                    10,000,000
                   </TableCell>
                 </TableRow>
                 <TableRow key="side-headers">
                   <TableCell scope="row" className={classes.leftCells}>
-                    Lease Payments
+                    Compression
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    44,000,000
+                    10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers" className={classes.highlightedRows}>
+                <TableRow key="side-headers">
                   <TableCell scope="row" className={classes.leftCells}>
-                    Other
+                    Transportation - Gas
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    13,000,000
+                    10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers" className={classes.highlightedLessBordered}>
+                <TableRow key="side-headers">
                   <TableCell scope="row" className={classes.leftCells}>
-                    Total Income
+                    Processing
+                  </TableCell>
+                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
+                    10,000,000
+                  </TableCell>
+                </TableRow>
+                <TableRow key="side-headers">
+                  <TableCell scope="row" className={classes.leftCells}>
+                    Lease Use
+                  </TableCell>
+                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
+                    10,000,000
+                  </TableCell>
+                </TableRow>
+                <TableRow key="side-headers">
+                  <TableCell scope="row" className={classes.leftCells}>
+                    Others
+                  </TableCell>
+                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
+                    10,000,000
+                  </TableCell>
+                </TableRow>
+                <TableRow key="side-headers" className={`${classes.highlightedRows}`}>
+                  <TableCell scope="row" className={classes.leftCells}>
+                    Total Adjustments
                   </TableCell>
                   <TableCell
                     scope="row"
                     className={`${classes.leftRightColoredBorderCell} ${classes.bottomColoredBorderCell} ${classes.totalColCell}`}
                   >
-                    87,000,000
+                    10,000,000
                   </TableCell>
                 </TableRow>
                 <TableRow key="side-headers"></TableRow>
@@ -161,9 +170,34 @@ export default function AcccessibleTable({ monthsInterval }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow key="side-headers" className={classes.highlightedRows}>
+                <TableRow key="side-headers">
                   {monthsInterval.map((month) => (
-                    <TableCell scope="row">02,000,000</TableCell>
+                    <TableCell scope="row">10,000,000</TableCell>
+                  ))}
+                </TableRow>
+                <TableRow key="side-headers">
+                  {monthsInterval.map((month) => (
+                    <TableCell scope="row">10,000,000</TableCell>
+                  ))}
+                </TableRow>
+                <TableRow key="side-headers">
+                  {monthsInterval.map((month) => (
+                    <TableCell scope="row">10,000,000</TableCell>
+                  ))}
+                </TableRow>
+                <TableRow key="side-headers">
+                  {monthsInterval.map((month) => (
+                    <TableCell scope="row">10,000,000</TableCell>
+                  ))}
+                </TableRow>
+                <TableRow key="side-headers">
+                  {monthsInterval.map((month) => (
+                    <TableCell scope="row">10,000,000</TableCell>
+                  ))}
+                </TableRow>
+                <TableRow key="side-headers">
+                  {monthsInterval.map((month) => (
+                    <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
                 <TableRow key="side-headers">
@@ -173,26 +207,9 @@ export default function AcccessibleTable({ monthsInterval }) {
                 </TableRow>
                 <TableRow key="side-headers" className={classes.highlightedRows}>
                   {monthsInterval.map((month) => (
-                    <TableCell scope="row">3,000,000</TableCell>
-                  ))}
-                </TableRow>
-                <TableRow key="side-headers">
-                  {monthsInterval.map((month) => (
-                    <TableCell scope="row">12,000</TableCell>
-                  ))}
-                </TableRow>
-                <TableRow key="side-headers" className={classes.highlightedRows}>
-                  {monthsInterval.map((month) => (
-                    <TableCell scope="row">5,000,00</TableCell>
-                  ))}
-                </TableRow>
-                <TableRow key="side-headers" className={classes.highlightedRows}>
-                  {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-
-                <TableRow key="side-headers"></TableRow>
               </TableBody>
             </Table>
           </Grid>

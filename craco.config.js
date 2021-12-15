@@ -1,5 +1,6 @@
 const presetReact = require('@babel/preset-react').default;
 const presetCRA = require('babel-preset-react-app');
+const CracoEsbuildPlugin = require('craco-esbuild');
 
 module.exports = {
   babel: {
@@ -28,4 +29,8 @@ module.exports = {
       return babelLoaderOptions;
     }
   },
+  eslint: {
+    enable: false
+  },
+  plugins: [{ plugin: CracoEsbuildPlugin }],
 };
