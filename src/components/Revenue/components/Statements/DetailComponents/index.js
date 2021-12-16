@@ -553,6 +553,7 @@ export default function DetailComponents(props) {
                 filesData={viewFileResult}
                 id={checkId}
                 loading={viewFileLoading}
+                isRevenueDetailPage="Check"
                 setUploadedFileData={setUploadedFileData}
               ></AddDialogeUploadZone>
 

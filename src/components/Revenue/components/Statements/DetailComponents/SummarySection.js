@@ -192,11 +192,6 @@ const SummarySection = ({ checkId }) => {
                         </div>
                     </div>
                     <div className="flex column justifyBetween alignCenter w-100">
-                        <div className={`${classes.totalLabelField} flex justifyEnd alignCenter w-100`}>
-                            <Typography varient="h6" className={`${classes.textTransform} ${classes.totalLabelTextColor}`}>
-                                Total
-                            </Typography>
-                        </div>
                         {revenueSummaryDetails?.length > 0 && revenueSummaryDetails.map((item, index) => (
                             <div key={index + 1} className={`${classes.dataCardWidth} ${classes.dataCardMargin} flex justifyBetween alignCenter w-100`}>
                                 <div className="flex alignCenter justifyStart">
@@ -226,6 +221,11 @@ const SummarySection = ({ checkId }) => {
                         </div>
                     </div>
                     <div className="flex column justifyBetween alignCenter w-100">
+                        <div className={`${classes.totalLabelField} flex justifyEnd alignCenter w-100`}>
+                            <Typography varient="h6" className={`${classes.textTransform} ${classes.totalLabelTextColor}`}>
+                                Total
+                            </Typography>
+                        </div>
                         {adjustmentSummaryDetails?.length > 0 && adjustmentSummaryDetails.map((item, index) => (
                             <div key={index + 1} className={`${classes.dataCardWidth} flex justifyBetween alignCenter w-100`} style={{ marginTop: 12 }}>
                                 <div className="flex alignStart justifyStart">
