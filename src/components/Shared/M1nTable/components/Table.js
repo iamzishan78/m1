@@ -86,7 +86,7 @@ import Link from "@material-ui/core/Link";
 
 // functions / value formatters
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
-import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
+import vf_currency from "../../../Shared/valueformatters/vf_currency";
 import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
 import convert_date from "../../../Shared/valueformatters/convert_date.js";
 import get_file_icon from "../../../Shared/functions/get_file_icon.js";
@@ -1181,7 +1181,6 @@ function SubTable(props) {
                 }
               },
             };
-
             break;
           case "dateTime": {
             {
@@ -2011,6 +2010,10 @@ function SubTable(props) {
                     if (column.name === "taxValue") return vf_currency(v);
 
                     if (column.name === "offerPrice" && !!v && !isNaN(v)) return vf_currency(v);
+                    if (
+                      (column.name === "seller_asking_price" || column.name === "competitor_offer_price" || column.name === "offer_price") &&
+                      !!v && !isNaN(v)
+                    ) return vf_currency(v);
 
                     if (column.name === "lastUpdateAt")
                       return anyToDate(v).toLocaleString("en-US", {
@@ -2182,20 +2185,6 @@ function SubTable(props) {
                           </span>
                         </FeatureFlag>
                       )}
-
-                      {/* {props.targetLabel === "documents" &&
-                        column.name === "fileName" && (
-                          <p className={classes.clickableCell}
-                            onClick={() => {
-                              setStateApp((stateApp) => ({
-                                ...stateApp,
-                                selectedContact: tableMeta.rowData[0],
-                              }));
-                              console.log(tableMeta.rowData[0], 'Meta File Name')
-                             
-                            }}
-                          ></p>
-                        )} */}
 
                       {/* temporarily removing the purchased data icon as we do not have functionality to actually purchase contact data currently - KC 3/17/21 */}
                       {/* {props.targetLabel === "contact" &&
