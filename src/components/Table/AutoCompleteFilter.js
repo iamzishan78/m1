@@ -87,7 +87,9 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
                 <TextField
                     {...params}
                     label={label}
-                    onChange={(e) => handleChange(e.target.value)}
+                    onChange={(e) => {
+                        handleChange(e.target.value);
+                    }}
                     InputProps={{
                         ...params.InputProps,
                         endAdornment: (

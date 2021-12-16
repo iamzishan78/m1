@@ -207,7 +207,7 @@ export const TableHOC = (Component) => {
                             }]
                     },
 
-                    filters: [],
+                    ...(tableState.esFilters) && { filters: [...tableState.esFilters] || [] },
                 },
             };
             tableState.filterList.forEach((val, index) => {
@@ -223,6 +223,7 @@ export const TableHOC = (Component) => {
             return {
                 pageESVariables,
                 genericESAction: () => {
+                    console.log("called change")
                     setLoading(true);
                     tableState.page = 0;
                     meta.setPageInd(tableState.page);

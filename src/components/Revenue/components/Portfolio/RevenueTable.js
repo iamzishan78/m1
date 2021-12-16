@@ -66,9 +66,12 @@ const useStyles = makeStyles((theme) => ({
   bottomColoredBorderCell: {
     borderBottom: "2px solid #34b4e3 !important",
   },
+  totalColCell: {
+    width: "160px",
+  },
 }));
 
-export default function AcccessibleTable() {
+export default function AcccessibleTable({ monthsInterval }) {
   const classes = useStyles();
 
   return (
@@ -96,7 +99,7 @@ export default function AcccessibleTable() {
                     Gross Revenue
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    10,000,000
+                    3,000
                   </TableCell>
                 </TableRow>
                 <TableRow key="side-headers">
@@ -104,7 +107,7 @@ export default function AcccessibleTable() {
                     Adjustments
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    10,000,000
+                    900,000,00
                   </TableCell>
                 </TableRow>
                 <TableRow key="side-headers" className={classes.highlightedRows}>
@@ -112,7 +115,7 @@ export default function AcccessibleTable() {
                     Net Revenue
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    10,000,000
+                    2,000,000
                   </TableCell>
                 </TableRow>
                 <TableRow key="side-headers">
@@ -120,7 +123,7 @@ export default function AcccessibleTable() {
                     Lease Payments
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    10,000,000
+                    44,000,000
                   </TableCell>
                 </TableRow>
                 <TableRow key="side-headers" className={classes.highlightedRows}>
@@ -128,15 +131,18 @@ export default function AcccessibleTable() {
                     Other
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    10,000,000
+                    13,000,000
                   </TableCell>
                 </TableRow>
                 <TableRow key="side-headers" className={classes.highlightedLessBordered}>
                   <TableCell scope="row" className={classes.leftCells}>
                     Total Income
                   </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell} ${classes.bottomColoredBorderCell}`}>
-                    10,000,000
+                  <TableCell
+                    scope="row"
+                    className={`${classes.leftRightColoredBorderCell} ${classes.bottomColoredBorderCell} ${classes.totalColCell}`}
+                  >
+                    87,000,000
                   </TableCell>
                 </TableRow>
                 <TableRow key="side-headers"></TableRow>
@@ -147,75 +153,43 @@ export default function AcccessibleTable() {
             <Table className={`${classes.secondaryTable} ${classes.table}`} aria-label="caption table" style={{ width: "auto" }}>
               <TableHead>
                 <TableRow>
-                  <TableCell align="center" component="th" className={classes.headerCell}>
-                    08/12/12
-                  </TableCell>
-                  <TableCell align="center" component="th" className={classes.headerCell}>
-                    08/12/12
-                  </TableCell>
-                  <TableCell align="center" component="th" className={classes.headerCell}>
-                    08/12/12
-                  </TableCell>
-
-                  <TableCell align="center" component="th" className={classes.headerCell}>
-                    08/12/12
-                  </TableCell>
-                  <TableCell align="center" component="th" className={classes.headerCell}>
-                    08/12/12
-                  </TableCell>
-                  <TableCell align="center" component="th" className={classes.headerCell}>
-                    08/12/12
-                  </TableCell>
+                  {monthsInterval.map((month) => (
+                    <TableCell align="center" component="th" className={classes.headerCell}>
+                      {month}
+                    </TableCell>
+                  ))}
                 </TableRow>
               </TableHead>
               <TableBody>
                 <TableRow key="side-headers" className={classes.highlightedRows}>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
+                  {monthsInterval.map((month) => (
+                    <TableCell scope="row">02,000,000</TableCell>
+                  ))}
                 </TableRow>
                 <TableRow key="side-headers">
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
+                  {monthsInterval.map((month) => (
+                    <TableCell scope="row">10,000,000</TableCell>
+                  ))}
                 </TableRow>
                 <TableRow key="side-headers" className={classes.highlightedRows}>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
+                  {monthsInterval.map((month) => (
+                    <TableCell scope="row">3,000,000</TableCell>
+                  ))}
                 </TableRow>
                 <TableRow key="side-headers">
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
+                  {monthsInterval.map((month) => (
+                    <TableCell scope="row">12,000</TableCell>
+                  ))}
                 </TableRow>
                 <TableRow key="side-headers" className={classes.highlightedRows}>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
+                  {monthsInterval.map((month) => (
+                    <TableCell scope="row">5,000,00</TableCell>
+                  ))}
                 </TableRow>
                 <TableRow key="side-headers" className={classes.highlightedRows}>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
-                  <TableCell scope="row">10,000,000</TableCell>
+                  {monthsInterval.map((month) => (
+                    <TableCell scope="row">10,000,000</TableCell>
+                  ))}
                 </TableRow>
 
                 <TableRow key="side-headers"></TableRow>

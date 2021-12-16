@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Grid, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -46,10 +46,14 @@ const CUSTOM_DATES = {
   LAST_YEAR: "Last Year",
 };
 
-export default function Portfolio() {
+export default function Portfolio({ onChangeDates }) {
   const classes = useStyles();
   const [fromDate, setFromDate] = React.useState(null);
   const [toDate, setToDate] = React.useState(null);
+
+  useEffect(() => {
+    if (onChangeDates) onChangeDates(fromDate, toDate);
+  }, [fromDate, toDate]);
 
   const getFlaggedMoment = (moment) => {
     return moment >= 10 ? moment : `0${moment}`;
@@ -94,8 +98,8 @@ export default function Portfolio() {
         setToDate(`${currentYear - 1}-12`);
         break;
       default:
-        setFromDate(null);
-        setToDate(null);
+        setFromDate("");
+        setToDate("");
     }
   };
 
@@ -136,6 +140,9 @@ export default function Portfolio() {
                 notchedOutline: classes.notchedOutline,
               },
             }}
+            onChange={(event) => {
+              setFromDate(event.target.value);
+            }}
           />
         </Grid>
         <Grid>
@@ -160,6 +167,9 @@ export default function Portfolio() {
                 focused: classes.focused,
                 notchedOutline: classes.notchedOutline,
               },
+            }}
+            onChange={(event) => {
+              setToDate(event.target.value);
             }}
           />
         </Grid>

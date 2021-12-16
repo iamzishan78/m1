@@ -7,6 +7,7 @@ import AddParcelInterest from "./AddParcelInterest";
 import MainMap from "./MainMap";
 import Flow from "./Flow";
 import Revenue from "./Revenue";
+import Land from "./Land";
 
 const createRootReducer = (history) =>
   combineReducers({
@@ -18,6 +19,7 @@ const createRootReducer = (history) =>
     MainMap,
     Flow,
     Revenue,
+    Land,
   });
 
 export default createRootReducer;

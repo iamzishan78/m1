@@ -1,12 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/styles";
 import { Grid, Card, CardContent, Typography } from "@material-ui/core";
 import { Warning as WarningIcon } from "@material-ui/icons";
 
 const useStyles = makeStyles(() => ({
-  root: {
-    padding: "75px",
-  },
   card: { borderRadius: "8px" },
   cardHeaderTypography: {
     fontWeight: "bolder",
@@ -26,13 +23,27 @@ const useStyles = makeStyles(() => ({
   issuesBadges: {
     display: "flex",
     alignItems: "center",
-    color: "red",
+    color: "#ff0000",
     height: "20px",
   },
+  tooltip: {
+    position: "absolute",
+    top: 72,
+    color: "rgb(255, 0, 0)",
+    width: 200,
+    left: -148,
+  },
+  tooltipText: {
+    fontSize: 14,
+    lineHeight: "120%",
+    textAlign: "left"
+  }
 }));
 
-export default function AnalyticsCards() {
+
+export default function AnalyticsCards(props) {
   const classes = useStyles();
+  const [tooltip, showTooltip] = useState(false);
   return (
     <Grid container direction="row" display="flex" align="center" spacing={4} textAlign="left" className={classes.root}>
       <Grid item md={3}>
@@ -42,7 +53,7 @@ export default function AnalyticsCards() {
               Statements
             </Typography>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
-              342
+              {props.checks}
             </Typography>
           </CardContent>
         </Card>
@@ -55,7 +66,7 @@ export default function AnalyticsCards() {
               Approved
             </Typography>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
-              431
+              {props.approvedCount}
             </Typography>
           </CardContent>
         </Card>
@@ -68,39 +79,37 @@ export default function AnalyticsCards() {
               Needs Approval
             </Typography>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography} style={{ color: "#b9b908" }}>
-              4
+              {props.unapprovedCount}
             </Typography>
           </CardContent>
         </Card>
       </Grid>
 
-      <Grid item md={3}>
+      <Grid item md={3} style={{ position: "relative" }}>
         <Card variant="outlined" className={classes.card}>
-          <CardContent className={classes.cardContent}>
+          <CardContent className={classes.cardContent} onMouseOver={() => showTooltip(true)} onMouseOut={() => showTooltip(false)}>
             <Typography variant="h6" component="div" className={classes.cardHeaderTypography}>
               Potential Issues
             </Typography>
             <div className={classes.issuesBadges}>
-              <div>
-                <WarningIcon />
-              </div>{" "}
-              <div>4</div>
-              &nbsp;
-              <div>
+              <div style={{ marginRight: 6 }}>
                 <WarningIcon />
               </div>
-              <div>1 </div>
-              &nbsp;
-              <div>
-                <WarningIcon />
-              </div>{" "}
-              <div>7</div>
+              <div>{props.potentialIssues.length}</div>
             </div>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography} style={{ color: "red" }}>
-              12
+              {props.potentialIssues.length}
             </Typography>
           </CardContent>
+
         </Card>
+
+        {tooltip && (
+          <div className={classes.tooltip}>
+            <p className={classes.tooltipText}>Sum of details does not match check account</p>
+          </div>
+        )}
+
       </Grid>
     </Grid>
   );
