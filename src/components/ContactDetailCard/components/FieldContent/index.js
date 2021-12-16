@@ -264,8 +264,9 @@ export default function FieldContent({
               }
             }}
             >
-              <MenuItem value='Active'> Active </MenuItem>
-              <MenuItem value='Inactive'> Inactive </MenuItem>
+              <MenuItem value='UnqualLead'> Unqualified Lead </MenuItem>
+              <MenuItem value='QualLead'> Qualified Lead </MenuItem>
+              <MenuItem value='Contact'> Contact </MenuItem>
             </Select>:
             fieldName === 'timeZone' ?
             <Autocomplete

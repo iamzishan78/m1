@@ -238,8 +238,8 @@ export const TableHOC = (Component) => {
                             pagination: {
                                 pit: tableData.pit,
                                 ...pageESVariables.variables.pagination,
-                                before: rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
-                                after: rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
+                                before: tableState.page === 0 ? null : rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
+                                after: tableState.page === 0 ? null : rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
                             },
                         },
                     });

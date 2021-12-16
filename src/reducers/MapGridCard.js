@@ -23,6 +23,7 @@ export default function MapGridCardReducer(state = INIT_STATE, action) {
       return {
         ...state,
         mapGridCardActivated: !state.mapGridCardActivated,
+        mapGridCardActiveTap: 0,
         selectedOwner: null,
         selectedOwnerWellIntsSummary: null,
       };
