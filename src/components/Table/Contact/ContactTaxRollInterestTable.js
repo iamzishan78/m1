@@ -69,7 +69,7 @@ function ContactTaxRollInterestTable(props) {
   const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: ["getContactWells", "getPaginatedContactWellInterests"], awaitRefetchQueries: true });
   const tableData = dataContactTaxRollInterst?.contactTaxRollInterests
 
-  const addAble = { type: "taxrollInterest"}
+  const addAble = { type: "taxrollInterest" }
   const total = false
   const orderByTracks = false
 
@@ -130,7 +130,6 @@ function ContactTaxRollInterestTable(props) {
         props.setLoading(false);
       },
       err => {
-        console.log(err)
         props.setLoading(false);
         dispatch(showErrorMessage("Failed to attach to contact"));
       }

@@ -51,7 +51,6 @@ export default function AgreementSummary(props) {
     }
 
     const hasCustomProvision = props.provisions.find((provision) => !provision.templateRef)
-    console.log(hasCustomProvision)
 
     return <Grid container direction="row" className={classes.summaryCard}>
         <Grid item md={7} sm={12} className={classes.paddingLeft}>

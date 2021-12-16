@@ -331,7 +331,6 @@ export default function AddLayer(props) {
             resolve();
           });
       });
-      // console.log(nadgrid);
 
       res = await new Promise((resolve, reject) => {
         fetch(inputFile).then((response) => {
@@ -410,8 +409,8 @@ export default function AddLayer(props) {
     <>
       <DropzoneAreaBase
         onAdd={handleFileInput}
-        onDelete={(fileObj) => console.log("Removed File:", fileObj)}
-        onAlert={(message, variant) => {}}
+        onDelete={(fileObj) => { }}
+        onAlert={(message, variant) => { }}
         filesLimit={1}
         maxFileSize={10000000}
         dropzoneClass={classes.dropzoneClass}

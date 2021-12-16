@@ -34,14 +34,14 @@ const useStyles = makeStyles({
   "&::-webkit-scrollbar-thumb": {
     backgroundColor: "#929292",
     borderRadius: 10,
-},
+  },
   rowCell: {
-    width:"25%",
+    width: "25%",
   },
   rowName: {
     fontWeight: "bold",
     background: "#ebebeb",
-    width:"25%",
+    width: "25%",
   },
 
   tableRow: {
@@ -65,7 +65,6 @@ export default function TableSummary(props) {
 
   useEffect(() => {
     if (props.summary) {
-      console.log('WELLDATA9', summary)
       setSummary(props.summary);
       ;
     }
@@ -80,12 +79,9 @@ export default function TableSummary(props) {
           className={classes.table}
           loading={!summary}
         >
-
-          {console.log('summary',summary)}
-          
           <TableBody>
-          <TableRow className={classes.tableRow}>
-          <TableCell scope="row" className={classes.rowName}>
+            <TableRow className={classes.tableRow}>
+              <TableCell scope="row" className={classes.rowName}>
                 API Number
               </TableCell>
               <TableCell className={classes.rowCell}>
@@ -96,17 +92,17 @@ export default function TableSummary(props) {
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.WellName ? summary.WellName : "--"}
-                </TableCell>
+              </TableCell>
             </TableRow>
-          <TableRow className={classes.tableRow}>
+            <TableRow className={classes.tableRow}>
 
               <TableCell scope="row" className={classes.rowName}>
                 Lease Number
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.LeaseId ? summary.LeaseId : "--"}
-                </TableCell>
-                <TableCell scope="row" className={classes.rowName}>
+              </TableCell>
+              <TableCell scope="row" className={classes.rowName}>
                 Lease Name
               </TableCell>
               <TableCell className={classes.rowCell}>
@@ -115,7 +111,7 @@ export default function TableSummary(props) {
             </TableRow>
 
             <TableRow className={classes.tableRow}>
-            <TableCell scope="row" className={classes.rowName}>
+              <TableCell scope="row" className={classes.rowName}>
                 Current Operator
               </TableCell>
               <TableCell className={classes.rowCell}>
@@ -130,18 +126,18 @@ export default function TableSummary(props) {
             </TableRow>
 
             <TableRow className={classes.tableRow}>
-            <TableCell scope="row" className={classes.rowName}>
+              <TableCell scope="row" className={classes.rowName}>
                 Basin
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.Basin ? summary.Basin : "--"}
-                </TableCell>
+              </TableCell>
               <TableCell scope="row" className={classes.rowName}>
                 Formation
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.PrimaryFormation ? summary.PrimaryFormation : "--"}
-                </TableCell>
+              </TableCell>
 
             </TableRow>
 
@@ -157,101 +153,101 @@ export default function TableSummary(props) {
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.Field ? summary.Field : "--"}
-                </TableCell>
+              </TableCell>
             </TableRow>
 
 
             <TableRow className={classes.tableRow}>
-            <TableCell scope="row" className={classes.rowName}>
+              <TableCell scope="row" className={classes.rowName}>
                 Permit Number
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.PermitNumber ? summary.PermitNumber : "--"}
-                </TableCell>
+              </TableCell>
               <TableCell scope="row" className={classes.rowName}>
                 MD(ft)
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.MeasuredDepth ? formatFT(summary.MeasuredDepth) : "--"}
-                </TableCell>
+              </TableCell>
             </TableRow>
 
 
             <TableRow className={classes.tableRow}>
-            <TableCell scope="row" className={classes.rowName}>
+              <TableCell scope="row" className={classes.rowName}>
                 Lateral Length(ft)
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.LateralLength ? formatFT(summary.LateralLength) : "--"}
-                </TableCell>
+              </TableCell>
               <TableCell scope="row" className={classes.rowName}>
                 TVD(ft)
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.TrueVerticalDepth ? formatFT(summary.TrueVerticalDepth) : "--"}
-                </TableCell>
+              </TableCell>
             </TableRow>
-            
+
             <TableRow className={classes.tableRow}>
-            <TableCell scope="row" className={classes.rowName}>
-               Surface Lat/Long
+              <TableCell scope="row" className={classes.rowName}>
+                Surface Lat/Long
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {/* {summary.Latitude ? summary.Latitude : "--" } */}
-                {summary.Latitude + "," +summary.Longitude  }
-                </TableCell>
+                {summary.Latitude + "," + summary.Longitude}
+              </TableCell>
               <TableCell scope="row" className={classes.rowName}>
                 BH Lat/Long
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {/* {summary.BHLatitude ? summary.BHLatitude : "--"} */}
-                {summary.BHLatitude + "," + summary.BHLongitude }
-                </TableCell>
+                {summary.BHLatitude + "," + summary.BHLongitude}
+              </TableCell>
             </TableRow>
 
-          <TableRow className={classes.tableRow}>
-          <TableCell scope="row" className={classes.rowName}>
+            <TableRow className={classes.tableRow}>
+              <TableCell scope="row" className={classes.rowName}>
                 State
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.State ? summary.State : "--"}
-                </TableCell>
+              </TableCell>
               <TableCell scope="row" className={classes.rowName}>
                 County
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.County ? summary.County : "--"}
-                </TableCell>
+              </TableCell>
             </TableRow>
 
             <TableRow className={classes.tableRow}>
-            <TableCell scope="row" className={classes.rowName}>
+              <TableCell scope="row" className={classes.rowName}>
                 {summary.State === "TX" ? "Survey" : "Meridian"}
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.GrId1 ? summary.GrId1 : "--"}
-                </TableCell>
+              </TableCell>
               <TableCell scope="row" className={classes.rowName}>
                 {summary.State === "TX" ? "Block" : "Township"}
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.GrId2 ? summary.GrId2 : "--"}
-                </TableCell>
+              </TableCell>
             </TableRow>
 
             <TableRow className={classes.tableRow}>
-            <TableCell scope="row" className={classes.rowName}>
+              <TableCell scope="row" className={classes.rowName}>
                 {summary.State === "TX" ? "Section" : "Range"}
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.GrId3 ? summary.GrId3 : "--"}
-                </TableCell>
+              </TableCell>
               <TableCell scope="row" className={classes.rowName}>
                 {summary.State === "TX" ? "Abstract" : "Section"}
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.GrId4 ? summary.GrId4 : "--"}
-                </TableCell>
+              </TableCell>
             </TableRow>
 
 
@@ -266,7 +262,7 @@ export default function TableSummary(props) {
               </TableCell>
               <TableCell className={classes.rowCell}>{"" || ""}</TableCell>
             </TableRow>
-             
+
           </TableBody>
         </Table>
       )}

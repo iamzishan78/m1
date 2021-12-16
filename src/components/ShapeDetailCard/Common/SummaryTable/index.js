@@ -211,7 +211,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                                             onBlur={() => {
                                                 setTimeout(() => {
                                                     if (!tableDataState[`${data.key}date`]) {
-                                                        console.log('blur'); setTableDataState({}); setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] })
+                                                        setTableDataState({}); setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] })
                                                     }
                                                 }, 100)
 
