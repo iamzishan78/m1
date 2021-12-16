@@ -15,6 +15,7 @@ import { usetableStyles } from "../Styles";
 
 function RevenuePropertiesTable(props) {
   const classes = usetableStyles();
+  // query
   const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(
     GET_ES_PAGINATED_LIST,
     {
@@ -24,7 +25,7 @@ function RevenuePropertiesTable(props) {
       },
     }
   );
-  console.log("elasticData", elasticData?.getESPaginatedList?.hits);
+  // rearranging the data according to the requirements.
   const tableData = elasticData?.getESPaginatedList?.hits?.map((eachRow) => {
     return {
       name: eachRow.name,
@@ -43,10 +44,11 @@ function RevenuePropertiesTable(props) {
 
   // function states
   const [columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
-  const [selectedRows] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
   const [potentialIssuesList] = useState([]);
   const esIndex = "properties_flat";
   const startPaginationAt = 10;
+  const extendSearchQuery = ``;
 
   // const count = tableData?.total || 0
   const options = {
@@ -75,6 +77,35 @@ function RevenuePropertiesTable(props) {
     });
   }, [getESPaginatedList, props.parent]);
 
+  const onTableChange = (action, tableState, rows, meta) => {
+    tableState.esIndex = esIndex;
+    tableState.sort = [];
+    const tableActions = props.initializeTableActions(
+      tableState,
+      meta,
+      tableData,
+      columns,
+      getESPaginatedList
+    );
+    switch (action) {
+      case "search":
+      case "sort":
+      case "filterChange":
+      case "resetFilters":
+      case "changeRowsPerPage":
+        tableActions.extendSearchQuery(extendSearchQuery);
+        tableActions.genericESAction();
+        break;
+      case "rowSelectionChange":
+        setSelectedRows(tableState.selectedRows.data);
+        break;
+      case "changePage":
+        tableActions.extendSearchQuery(extendSearchQuery);
+        tableActions.changeESPage();
+        break;
+      default:
+    }
+  };
   return (
     <Container
       maxWidth={false}
@@ -95,7 +126,7 @@ function RevenuePropertiesTable(props) {
         dense={props.dense ? props.dense : undefined}
         orderByTracks={false}
         startPaginationAt={null}
-        // onTableChange={onTableChange}
+        onTableChange={onTableChange}
         options={options}
         parent={props.parent}
         setColumnsBase={[]}
