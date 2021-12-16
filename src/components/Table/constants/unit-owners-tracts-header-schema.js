@@ -10,7 +10,7 @@ const UnitOwnersTractHeadCells = [
     name: "county", label: "County", esKey: 'tract.county.keyword', options: { sort: true, filter: true }
   },
   {
-    name: "tractName", label: "Tract Name", esKey: 'tract.trackName.keyword', options: { sort: true, filter: true }, style: { minWidth: 200 }
+    name: "tractName", label: "Tract Name", esKey: 'tract.trackName.keyword', options: { sort: true, filter: true }, style: { minWidth: 200, maxWidth: 300 }
   },
 
   {
