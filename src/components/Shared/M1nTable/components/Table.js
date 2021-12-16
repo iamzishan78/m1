@@ -1794,7 +1794,7 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           console.log("modell download");
-                          handleViewFile(props.addAble.type === "parcelRunsheet" || props.addAble.type === "parcelDocument" || props.addAble.type === "wellDocument" ? row_line.fileId : row_line?._id);
+                          handleViewFile(props.addAble.type === "parcelRunsheet" || props.addAble.type === "parcelDocument" || props.addAble.type === "wellDocument" || props.addAble.type === "AgreementDocument" ? row_line.fileId : row_line?._id);
                         }}
                       >
                         <GetAppIcon />
