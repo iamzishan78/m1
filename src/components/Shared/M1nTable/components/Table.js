@@ -2084,7 +2084,7 @@ function SubTable(props) {
                   }
                   return (
                     <div
-                      style={{ display: "flex", alignItems: "center", justifyContent: "left", minWidth: "150px" }}
+                      style={{ display: "flex", alignItems: "center", justifyContent: "left", ...column.style }}
                       className={`${props.parent === "assocTaxRollInterests" &&
                         props.addAble.type === "wellInterest" &&
                         (!tableMeta.rowData[15] || tableMeta.rowData[20])

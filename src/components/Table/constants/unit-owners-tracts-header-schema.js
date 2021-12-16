@@ -4,13 +4,13 @@ const UnitOwnersTractHeadCells = [
     name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
   },
   {
-    name: "state", label: "State", esKey: 'tract.state.keyword', options: { sort: true, filter: true }
+    name: "state", label: "State", esKey: 'tract.state.keyword', options: { sort: true, filter: true }, style: { maxWidth: 80 }
   },
   {
     name: "county", label: "County", esKey: 'tract.county.keyword', options: { sort: true, filter: true }
   },
   {
-    name: "tractName", label: "Tract Name", esKey: 'tract.trackName.keyword', options: { sort: true, filter: true }
+    name: "tractName", label: "Tract Name", esKey: 'tract.trackName.keyword', options: { sort: true, filter: true }, style: { minWidth: 200 }
   },
 
   {
