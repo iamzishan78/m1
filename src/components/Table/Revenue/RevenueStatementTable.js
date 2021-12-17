@@ -183,6 +183,7 @@ function RevenueStatementTable(props) {
         rowsSelected: selectedRows.map((sR => sR.dataIndex)),
         filter: true,
     }
+    console.log("props", props);
 
     return (
         <Container
