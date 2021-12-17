@@ -20,6 +20,11 @@ export const detailCardStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     color: "#848484",
   },
+  documentHeader: {
+    "& svg": {
+      transform: "translate(-4%, 22%)"
+    }
+  },
   descriptionInput: {
     width: "100%",
     "& .MuiTextField-root": {
