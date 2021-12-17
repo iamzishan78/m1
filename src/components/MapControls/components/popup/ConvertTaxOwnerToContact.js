@@ -59,10 +59,10 @@ const contactStatusOptions = [
 ];
 
 const ConvertTaxOwnerToContact = ({
+  convertTaxOwnerToContactAction,
   getShapeOwnersAndCountAction,
   getContactCampaignAction,
   campaignList,
-  shapeOwners,
   shapeCount,
   onClose,
   open,
@@ -73,10 +73,11 @@ const ConvertTaxOwnerToContact = ({
   const [newTagsIds, setNewTagsIds] = useState([]);
   const [searchCampaign, setSearchCampaign] = useState("");
   const [includeFilter, setIncludeFilter] = useState(false);
-  const { control, reset, setValue, register, getValues, watch } = useForm();
+  const { control, getValues, watch } = useForm();
 
   const contactStatus = watch("contactStatus", contactStatusOptions[0].value);
   const contactOwner = watch("contactOwner", null);
+  const userId = stateApp.user.mongoId;
 
   useEffect(() => {
     getShapeOwnersAndCountAction({
@@ -99,7 +100,10 @@ const ConvertTaxOwnerToContact = ({
     setNewTagsIds(ids);
   };
 
-  const onConvert = () => {};
+  const onConvert = () => {
+    const values = getValues();
+    convertTaxOwnerToContactAction({ ...values, tags: newTagsIds, userId })
+  };
 
   return (
     <Drawer anchor="right" open={open}>
@@ -161,6 +165,7 @@ const ConvertTaxOwnerToContact = ({
             render={(props) => (
               <ContactAutoComplete
                 value={contactOwner}
+                contactValue='email'
                 onChange={(e, user) => {
                   props.onChange(user.value);
                 }}

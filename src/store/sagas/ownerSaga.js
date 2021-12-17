@@ -12,8 +12,8 @@ function* getShapeOwnersAndCount(action) {
   try {
     const { currentFeature, userId } = action.payload
     const polygon = getSelectedFeaturePolygonString(currentFeature);
-    const shapeOwner = yield call (Api.fetch, SHAPE_OWNERS, { polygon, userId })
-    const shapeOwnerCount = yield call (Api.fetch, SHAPEOWNERSCOUNT, { polygon })
+    const shapeOwnerCount = yield call (Api.fetch, SHAPEOWNERSCOUNT, { polygon });
+    const shapeOwner = yield call (Api.fetch, SHAPE_OWNERS, { polygon, userId, pagination: { first: shapeOwnerCount?.data?.data?.shapeOwnersCount, after: null } });
     yield put (getShapeOwnersAndCountAction.FULLFILLED({ 
       shapeOwners: shapeOwner?.data?.data?.paginatedShapeOwners?.edges, 
       shapeCount: shapeOwnerCount?.data?.data?.shapeOwnersCount 

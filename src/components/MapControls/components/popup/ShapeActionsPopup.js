@@ -36,7 +36,7 @@ import { gql } from "@apollo/client";
 import { setFeatureProperty, drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
 import { shapeTypeLayers } from "components/Shared/functions/shapeLayer";
 import LimitExceedPopUp from "components/MapControls/components/popup/LimitExceedPopup"
-import { ConvertTaxOwnerToContactContainer } from 'store/containers'
+import { ConvertTaxOwnerToContactContainer, ExportWellsOwnersContainer } from 'store/containers'
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
@@ -52,6 +52,7 @@ const ShapeActionsPopup = (props) => {
   const [anchorConvertEl, setAnchorConvertEl] = useState(null);
   const [limitExceed, setLimitExceed] = useState(false);
   const [convertTaxOwnerModal, setConvertTaxOwnerModal] = useState(false);
+  const [exportCSVModal, setExportCSVModal] = useState(false);
   const [showConvertMenu, setShowConvertMenu] = useState(false);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [getAbstractGeoContains] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
@@ -605,6 +606,8 @@ const ShapeActionsPopup = (props) => {
       setLimitExceed(true);
     }else if(action === 'convert'){
       setConvertTaxOwnerModal(true);
+    }else if(action === 'export'){
+      setExportCSVModal(true);
     } 
   }
 
@@ -783,6 +786,9 @@ const ShapeActionsPopup = (props) => {
       <LimitExceedPopUp open={limitExceed} onClose={() => setLimitExceed(false)} />
       {convertTaxOwnerModal && (
         <ConvertTaxOwnerToContactContainer open={convertTaxOwnerModal} onClose={() => setConvertTaxOwnerModal(false)}/>
+      )}
+      {exportCSVModal && (
+        <ExportWellsOwnersContainer open={exportCSVModal} onClose={() => setExportCSVModal(false)}/>
       )}
     </Fragment>
   );

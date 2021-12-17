@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { NavigationContext } from "./NavigationContext";
-
+import { useDispatch } from 'react-redux'
 // contexts
 import { AppContext } from "../../AppContext";
 import { MapGridContext } from "../../components/MapGridCard/MapGridContext.js";
@@ -57,6 +57,8 @@ import DocumentSearch from "./components/DocumentSearch";
 import ContactSearch from "./components/ContactSearch";
 import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
 import SideNavigation from "./SideNavigation";
+import { setUserAction } from 'store/actions/appActions';
+import { deleteSession } from 'utils/user';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -84,6 +86,7 @@ TabPanel.propTypes = {
 export default function Navigation(props) {
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
   const theme = useTheme();
+  const dispatch = useDispatch();
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -334,6 +337,8 @@ export default function Navigation(props) {
     const logoutRequest = {
       account: currentAccount,
     };
+    dispatch(setUserAction({}))
+    deleteSession()
 
     setAnchorEl(null);
     sessionStorage.clear();

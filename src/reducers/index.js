@@ -8,6 +8,8 @@ import MainMap from "./MainMap";
 import Flow from "./Flow";
 import owner from 'store/reducers/ownerReducer';
 import contact from 'store/reducers/contactReducer';
+import common from 'store/reducers/commonReducer';
+import app from 'store/reducers/appReducer';
 
 const createRootReducer = (history) =>
   combineReducers({
@@ -19,7 +21,9 @@ const createRootReducer = (history) =>
     MainMap,
     Flow,
     owner,
-    contact
+    contact,
+    common,
+    app
   });
 
 export default createRootReducer;

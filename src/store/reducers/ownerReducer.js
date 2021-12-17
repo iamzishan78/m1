@@ -1,7 +1,7 @@
 import { GET_SHAPE_OWNERS_AND_COUNT } from "store/type";
 
 const INIT_STATE = {
-  shapeOwners: null,
+  shapeOwners: [],
   shapeCount: 0
 };
 
