@@ -129,7 +129,7 @@ export const summaryStyles = makeStyles((theme) => ({
     paddingBottom: "60px",
   },
   summaryDetailCard: {
-    paddingLeft: "18px",
+    marginLeft: 0,
     paddingTop: "8px",
     height: "53px",
   },
@@ -137,7 +137,7 @@ export const summaryStyles = makeStyles((theme) => ({
     display: "inline-flex",
     bottom: "5px",
     position: "relative",
-    marginRight: "5px",
+    marginRight: "2px",
     fontWeight: "bold",
     color: "#848484",
   },
