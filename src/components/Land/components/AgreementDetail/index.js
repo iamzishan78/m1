@@ -4,9 +4,9 @@ import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import { Breadcrumbs, Typography, Grid, IconButton } from "@material-ui/core";
 import PrintIcon from "@material-ui/icons/Print";
-import AgreementDetailSection from "./AgreementDetailSection";
-import LegalDescription from "./LegalDescription";
-import RelatedParties from "./RelatedParties";
+import AgreementDetailSection from "./components/AgreementDetailSection";
+import LegalDescription from "./components/LegalDescription";
+import RelatedParties from "./components/RelatedParties";
 import TaggerWithIcon from "components/Shared/TaggerWithIcon";
 import CommentsWithIcon from "components/Shared/CommentsWithIcon";
 import { useMutation } from "@apollo/client";
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Agreement(props) {
+function AgreementDetail(props) {
   const classes = useStyles();
   const [breadcrumbTitle, setTitle] = useState();
   const [newAgreement, setNewAgreement] = useState({});
@@ -95,4 +95,4 @@ function Agreement(props) {
   );
 }
 
-export default Agreement;
+export default AgreementDetail;

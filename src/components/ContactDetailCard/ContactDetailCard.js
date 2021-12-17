@@ -962,7 +962,6 @@ export default function ContactDetailCard(props) {
               </Grid>
 
               <Grid item xs={12} className={classes.Comments}>
-                {/* <DocViewer DocStyle={{top:'56% ', left:'40% ', backgroundColor:'white !important',transform: `translate(2.5%, -104.2%)`, width:'1320px',height:'816px'}}></DocViewer> */}
                 <Documents handleOpenExpandableCard={handleOpenExpandableCard} id={contactData._id} user_id={stateApp.user.email} />
                 <Divider />
               </Grid>

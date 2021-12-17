@@ -207,7 +207,7 @@ export const TableHOC = (Component) => {
                             }]
                     },
 
-                    filters: [],
+                    ...(tableState.esFilters) && { filters: [...tableState.esFilters] || [] },
                 },
             };
             tableState.filterList.forEach((val, index) => {
@@ -223,6 +223,7 @@ export const TableHOC = (Component) => {
             return {
                 pageESVariables,
                 genericESAction: () => {
+                    console.log("called change")
                     setLoading(true);
                     tableState.page = 0;
                     meta.setPageInd(tableState.page);
@@ -238,8 +239,8 @@ export const TableHOC = (Component) => {
                             pagination: {
                                 pit: tableData.pit,
                                 ...pageESVariables.variables.pagination,
-                                before: rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
-                                after: rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
+                                before: tableState.page === 0 ? null : rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
+                                after: tableState.page === 0 ? null : rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
                             },
                         },
                     });

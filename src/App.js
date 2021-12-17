@@ -28,11 +28,13 @@ import AlertsProvider from "./components/Alerts/AlertsProvider";
 import DashboardProvider from "./components/Dashboard/DashboardProvider";
 import StudioProvider from "./components/Studio/StudioProvider";
 import BulkUpload from "./components/BulkUpload/BulkUpload";
-import AgreementProvider from "./components/Agreement/AgreementProvider";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
 import ContactBulkProgress from "./components/BulkUpload/ContactBulkProgress";
+import RevenueProvider from "components/Revenue/RevenueProvider";
 import Land from "components/Land";
+import AgreementProvider from "./components/Land/components/Agreements/AgreementProvider";
+import AgreementDetailProvider from "./components/Land/components/AgreementDetail/AgreementDetailProvider";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 import { CircularProgress } from "@material-ui/core";
@@ -233,8 +235,8 @@ function App() {
     }
 
     if (!apolloClient) {
-      const httpLink = new HttpLink({ uri: endpoint, headers: {}, fetchOptions: fetchOptions })
-      const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: { batch: "true" }, fetchOptions: fetchOptions })
+      const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions })
+      const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { batch: "true" }})
 
       let client = new ApolloClient({
         // uri: endpoint,
@@ -270,8 +272,8 @@ function App() {
 
     if (apolloClient && endpoint) {
       setApolloClient((state, props) => {
-        const httpLink = new HttpLink({ uri: endpoint, headers: {}, fetchOptions: fetchOptions })
-        const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: { batch: "true" }, fetchOptions: fetchOptions })
+        const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions })
+        const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { batch: "true" }})
 
         return new ApolloClient({
           // ...state.link.options,
@@ -297,6 +299,7 @@ function App() {
           setApolloClient={updateApolloClient}
           setApolloClientEndpoint={updateApolloClientEndpoint}
           setApolloClientToken={updateApolloClientToken}
+          
         />
         {apolloClient ? (
           <ApolloProvider client={apolloClient}>
@@ -351,7 +354,10 @@ function App() {
                         <PrivateRoute exact path="/studio" component={StudioProvider} />
                         <PrivateRoute title="Bulk Upload" exact path="/bulkupload" component={BulkUpload} />
                         <PrivateRoute exact path="/agreement" component={AgreementProvider} />
+                        <PrivateRoute path="/revenue" component={RevenueProvider} />
                         <PrivateRoute path="/land" component={Land} />
+                        <PrivateRoute exact path="/agreements" component={AgreementProvider} />
+                        <PrivateRoute exact path="/agreement/details/:agreementId?" component={AgreementDetailProvider} />
                         {/* <Route component={NotFoundRedirect} /> */}
                       </NavigationProvider>
                     </Switch>

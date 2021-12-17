@@ -661,7 +661,7 @@ export default function Transact() {
 
   return (
     <div className={classes.root}>
-      <DocViewer></DocViewer>
+      <DocViewer />
       {stateApp.dealDialog && (
         <AddDealDialog
           open={stateApp.dealDialog ? true : false}

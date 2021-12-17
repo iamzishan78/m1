@@ -13,6 +13,13 @@ export default function LandAppBar(props) {
   const { classes } = props;
   const { quickActionsPanelState } = useSelector(({ Land }) => Land);
 
+  const history = useHistory();
+
+  const handleListItemClick = (path) => {
+    history.push(path);
+    // handleDrawerClose();
+  };
+
   return (
     <Grid
       container
