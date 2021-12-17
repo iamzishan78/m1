@@ -2582,18 +2582,6 @@ function SubTable(props) {
               },
             };
             break;
-          case "payorName":
-            column.options = {
-              ...column.options,
-              customBodyRender: (value) => {
-                return (
-                  <>
-                    <p className={classes.propertyName}>{value}</p>
-                  </>
-                );
-              },
-            };
-            break;
           default:
             //// this is where the column names get mapped
             {
