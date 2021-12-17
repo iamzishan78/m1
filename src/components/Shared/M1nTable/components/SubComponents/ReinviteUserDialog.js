@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -9,7 +10,7 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { REINVITEUSER } from "../../../../../graphQL/useMutationReinviteUser";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormLabel from "@material-ui/core/FormLabel";
-import {Select, InputLabel, FormControl, MenuItem, TextField, Grid} from "@material-ui/core";
+import { Select, InputLabel, FormControl, MenuItem, TextField, Grid } from "@material-ui/core";
 
 import gql from "graphql-tag";
 
@@ -20,13 +21,13 @@ export default function ReinviteUserDialog(props) {
   const { selectedUser } = props;
 
   const resendInvite = (id) => {
-    reinviteUser({variables: {userId: id}});
+    reinviteUser({ variables: { userId: id } });
     props.onClose();
     props.onCloseMenu();
   }
 
   return (
-    <React.Fragment>
+    <Dialog style={{ zIndex: 1301 }} open={true}>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
         Resend Invitation
         <HighlightOffIcon
@@ -56,6 +57,6 @@ export default function ReinviteUserDialog(props) {
           Confirm
         </Button>
       </DialogActions>
-    </React.Fragment>
+    </Dialog>
   );
 }
