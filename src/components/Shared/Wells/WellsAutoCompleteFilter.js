@@ -288,11 +288,9 @@ function Search(props) {
   const callMapboxSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${
-          request.input
-        }.json?access_token=${
-          stateApp.mapboxglAccessToken
-        }&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
+        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${request.input
+          }.json?access_token=${stateApp.mapboxglAccessToken
+          }&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -385,8 +383,8 @@ function Search(props) {
           searchInputValue: newValue.Primary
             ? newValue.Primary
             : newValue.Secondary
-            ? newValue.Secondary
-            : "",
+              ? newValue.Secondary
+              : "",
           lastSearch: newValue,
         })
       );
@@ -570,7 +568,7 @@ function Search(props) {
                 variant="outlined"
                 fullWidth
                 style={{ width: "100%" }}
-                value="Saad"
+                onBlur={() => setEnableSearch(!enableSearch)}
                 placeholder="Search by well name, API, owner, operator or a location"
                 InputProps={{
                   ...params.InputProps,
@@ -581,27 +579,27 @@ function Search(props) {
                         {((searchInputValue && searchInputValue !== "") ||
                           (stateApp.wellListFromSearch &&
                             stateApp.wellListFromSearch.length > 0)) && (
-                          <Tooltip title="Clear" placement="top">
-                            <IconButton
-                              size="small"
-                              onClick={() => {
-                                setValue("");
-                                dispatch(
-                                  setMapGridCardState({
-                                    searchInputValue: "",
-                                    searchResultData: [],
-                                  })
-                                );
-                                setStateApp((state) => ({
-                                  ...state,
-                                  wellListFromSearch: [],
-                                }));
-                              }}
-                            >
-                              <ClearIcon htmlColor="#fff" />
-                            </IconButton>
-                          </Tooltip>
-                        )}
+                            <Tooltip title="Clear" placement="top">
+                              <IconButton
+                                size="small"
+                                onClick={() => {
+                                  setValue("");
+                                  dispatch(
+                                    setMapGridCardState({
+                                      searchInputValue: "",
+                                      searchResultData: [],
+                                    })
+                                  );
+                                  setStateApp((state) => ({
+                                    ...state,
+                                    wellListFromSearch: [],
+                                  }));
+                                }}
+                              >
+                                <ClearIcon htmlColor="#fff" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
                         <Tooltip title="Search History" placement="top">
                           <IconButton
                             size="small"
@@ -633,7 +631,7 @@ function Search(props) {
                           style={{
                             width: document.getElementById("searchBarDivParent")
                               ? document.getElementById("searchBarDivParent")
-                                  .offsetWidth
+                                .offsetWidth
                               : "400px",
                           }}
                           className={classes.historyPopover}
@@ -683,13 +681,13 @@ function Search(props) {
                                         <Grid item>
                                           {option.Source ===
                                             wellCogIndexName && (
-                                            <WellIcon
-                                              className={classes.icon}
-                                              color={"#757575"}
-                                              opacity="1.0"
-                                              small
-                                            />
-                                          )}
+                                              <WellIcon
+                                                className={classes.icon}
+                                                color={"#757575"}
+                                                opacity="1.0"
+                                                small
+                                              />
+                                            )}
 
                                           {option.Source === "mapboxSearch" && (
                                             <LocationOnIcon
