@@ -4,17 +4,17 @@ const TractsHeadCells = [
         name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
     },
     {
-        name: "tractName", label: "Tract Name", esKey: 'shapeJson.properties.shapeLabel.keyword', 
+        name: "tractName", label: "Tract Name", esKey: 'shape.shapeJson.properties.shapeLabel.keyword', 
         options: { 
-            dbName: "shapeJson.properties.shapeLabel",
+            dbName: "shape.shapeJson.properties.shapeLabel",
             sort: true, 
             filter: true 
         }
     },
     {
-        name: "State", label: "State", esKey: 'shapeJson.properties.originalProperties.State.keyword', 
+        name: "State", label: "State", esKey: 'shape.shapeJson.properties.originalProperties.State.keyword', 
         options: { 
-            dbName: "shapeJson.properties.originalProperties.State",
+            dbName: "shape.shapeJson.properties.originalProperties.State",
             sort: true, 
             filter: true 
         }

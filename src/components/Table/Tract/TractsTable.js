@@ -64,9 +64,9 @@ function TractsTable(props) {
 
 
     const startPaginationAt = 25;
-    const esIndex = 'shapes_flat';
+    const esIndex = 'shapeowners_flat';
     const esStaticFilters = [{
-        field: "layer",
+        field: "shape.layer",
         value: "parcel"
     }];
     
