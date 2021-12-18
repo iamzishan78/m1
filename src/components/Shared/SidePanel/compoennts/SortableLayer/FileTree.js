@@ -188,7 +188,7 @@ const FileTree = ({ layerMap, panelItems }) => {
   };
 
   const updateLayer = (layer) => {
-    const currentLayers = [...panelItems];
+    const currentLayers = [...items];
     //// saving to stateApp
     const index = panelItems.findIndex((item) => item._id === layer._id);
     currentLayers[index] = layer;

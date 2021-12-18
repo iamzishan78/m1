@@ -128,20 +128,23 @@ const LayerItem = React.memo((props) => {
                 )}
               </Box>
 
-              {type === "group" && !collapsed && (
-                <ListItemIcon onClick={handleClick}>
-                  <ExpandLessIcon />
-                </ListItemIcon>
-              )}
-              {type === "group" && collapsed && (
-                <ListItemIcon onClick={handleClick}>
-                  <ExpandMoreIcon />
-                </ListItemIcon>
-              )}
+
 
               <Typography id={id} color="secondary" noWrap>
                 {name}
               </Typography>
+              <Box paddingLeft={1} display="flex">
+                {type === "group" && !collapsed && (
+                  <ListItemIcon onClick={handleClick}>
+                    <ExpandLessIcon />
+                  </ListItemIcon>
+                )}
+                {type === "group" && collapsed && (
+                  <ListItemIcon onClick={handleClick}>
+                    <ExpandMoreIcon />
+                  </ListItemIcon>
+                )}
+              </Box>
             </Grid>
           </Grid>
 
