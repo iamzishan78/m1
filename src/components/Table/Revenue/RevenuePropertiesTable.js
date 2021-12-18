@@ -7,7 +7,6 @@ import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { useLazyQuery } from "@apollo/client";
 
 // QUERIES
-
 import { deepEqualObjects } from "components/Shared/functions";
 
 // Utilities
@@ -60,7 +59,6 @@ function RevenuePropertiesTable(props) {
     count: 10,
     serverSide: true,
   };
-  // added dummy rows for just display
 
   // fetaching data
   React.useEffect(() => {
@@ -107,6 +105,7 @@ function RevenuePropertiesTable(props) {
       default:
     }
   };
+  
   return (
     <Container
       maxWidth={false}
