@@ -32,7 +32,7 @@ export default function UnitSummary(props) {
 
     const addCustomData = () => {
         if (!props.properties.custom_data_arr) {
-            props.properties.custom_data_arr = []
+            props.properties.custom_data_arr = [];
         }
         props.properties.custom_data_arr.push({
             id: uuid(),
@@ -41,8 +41,8 @@ export default function UnitSummary(props) {
             key: '',
             value: '',
             isCustom: true
-        })
-        props.setProperties({ ...props.properties, custom_data_arr: [...props.properties.custom_data_arr] })
+        });
+        props.setProperties({ ...props.properties, custom_data_arr: [...props.properties.custom_data_arr] });
     }
 
     return <Grid container direction="row" className={classes.summaryCard}>
