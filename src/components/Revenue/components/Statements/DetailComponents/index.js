@@ -251,7 +251,7 @@ export default function DetailComponents(props) {
   });
 
 
-  const checksFlatData = getCheckResult?.findCheck_Flat?.check;
+  const checksFlatData = getCheckResult?.getCheck?.check;
 
   useEffect(() => {
     selectedTabRef.current &&

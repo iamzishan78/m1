@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { useLazyQuery } from "@apollo/client";
-import { GET_ES_SUMMARY } from "graphQL/useQueryESSummary";
+import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 
 export const TabButtons = ({ tab, actiiveId, setActive }) => {
     return (
@@ -79,76 +79,113 @@ const SummarySection = ({ checkId }) => {
     const [productSummaryDetails, setProductSummaryDetails] = useState([]);
 
     // queries 
-    const [getESRevenueSummary, { data: revenueSummary }] = useLazyQuery(GET_ES_SUMMARY, {
-        context: { batch: false },
-        fetchPolicy: "no-cache",
-    });
-    const [getESAdjustmentSummary, { data: adjustmentSummary }] = useLazyQuery(GET_ES_SUMMARY, {
-        context: { batch: false },
-        fetchPolicy: "no-cache",
-    });
-    const [getESProductSummary, { data: productSummary }] = useLazyQuery(GET_ES_SUMMARY, {
-        context: { batch: false },
+    const [getESAggsRevenue, { data: revenueSummary }] = useLazyQuery(GET_ES_AGGS_LIST, {
+        context: { batch: true },
         fetchPolicy: "no-cache",
     });
 
-    let revSummary = revenueSummary?.getESSummary;
-    let adjSummary = adjustmentSummary?.getESSummary;
-    let prodSummary = productSummary?.getESSummary;
+    const [getESAggAdjustment, { data: adjustmentSummary }] = useLazyQuery(GET_ES_AGGS_LIST, {
+        context: { batch: true },
+        fetchPolicy: "no-cache",
+    });
 
+
+    const [getESProductSummary, { data: productSummary }] = useLazyQuery(GET_ES_AGGS_LIST, {
+        context: { batch: true },
+        fetchPolicy: "no-cache",
+    });
+
+    let revSummary = revenueSummary?.getESAggsList?.aggregations;
+    let adjSummary = adjustmentSummary?.getESAggsList?.aggregations;
+    let prodSummary = productSummary?.getESAggsList?.aggregations;
 
     const summaryTabs = [{ id: 1, label: "Revenue" }, { id: 2, label: "Adjustment" }, { id: 3, label: "Products" }];
 
     useEffect(() => {
-        getESRevenueSummary({
+        getESAggsRevenue({
             variables: {
                 esIndex: "checkdetails_flat",
-                size: 50,
-                extendSearchQuery: "revenueSummary"
-            },
+                search: "",
+                filters: [{
+                    field: "check._id.keyword",
+                    value: checkId
+                }],
+                aggs: {
+                    grossRevenue: { sum: { field: "grossOwnerValue" } },
+                    netOwnerValue: { sum: { field: "netOwnerValue" } }
+                }
+            }
         });
-        getESAdjustmentSummary({
+
+        getESAggAdjustment({
             variables: {
                 esIndex: "checkdetails_flat",
-                size: 50,
-                extendSearchQuery: "adjustmentSummary"
-            },
+                search: "",
+                filters: [{
+                    field: "check._id.keyword",
+                    value: checkId
+                }],
+                aggs: {
+                    taxType: {
+                        terms: { field: "taxType.keyword" },
+                        aggs: { ownerTax: { sum: { field: "ownerTax" } } }
+                    },
+                    deductType: {
+                        terms: { field: "deductType.keyword" },
+                        aggs: { ownerDeducts: { sum: { field: "ownerDeducts" } } }
+                    }
+                }
+            }
         });
+
         getESProductSummary({
             variables: {
                 esIndex: "checkdetails_flat",
-                size: 50,
-                extendSearchQuery: "productSummary"
-            },
+                search: "",
+                filters: [{
+                    field: "check._id.keyword",
+                    value: checkId
+                }],
+                aggs: {
+                    product: {
+                        terms: { field: "product.keyword" },
+                        aggs: {
+                            grossOwnerVolume: { sum: { field: "grossOwnerVolume" } },
+                            netRevenue: { sum: { field: "netOwnerValue" } },
+                            avgPrice: { avg: { field: "price" } }
+                        }
+                    }
+                }
+            }
         });
-    }, []);
+    }, [checkId]);
 
     // revenue summary
     useEffect(() => {
-        if (revSummary?.hits?.length > 0) {
-            const filterRevSummary = (revSummary?.hits.filter((item) => item.key === checkId && item))[0];
+        if (revSummary) {
             setRevenueSummaryDetails([
-                { name: "Gross Revenue", value: `(${filterRevSummary?.grossRevenue?.value.toFixed(2)})` },
-                { name: "Adjustment", value: `(${filterRevSummary?.netOwnerValue?.value.toFixed(2)})` },
-                { name: "Net Revenue", value: `(${-1 * (filterRevSummary?.grossRevenue?.value - filterRevSummary?.netOwnerValue?.value).toFixed(2)})` },
+                { name: "Gross Revenue", value: `(${revSummary?.grossRevenue?.value.toFixed(2)})` },
+                { name: "Adjustment", value: '-' },
+                { name: "Net Revenue", value: `(${(revSummary?.netOwnerValue?.value).toFixed(2)})` },
                 { name: "Lease Payments", value: "-" },
                 { name: "Other", value: "-" },
-                { name: "Total Income", value: `(${-1 * (filterRevSummary?.grossRevenue?.value - filterRevSummary?.netOwnerValue?.value).toFixed(2)})` },
+                { name: "Total Income", value: `(${(revSummary?.grossRevenue?.value + revSummary?.netOwnerValue?.value).toFixed(2)})` },
             ]);
         }
     }, [revSummary]);
 
     // adjustment summary
     useEffect(() => {
-        if (adjSummary?.hits?.length > 0) {
-            const filterAdjSummary = (adjSummary?.hits.filter((item) => item.key === checkId && item))[0];
-            let { deductType, taxType } = filterAdjSummary;
+        if (adjSummary) {
+            let { deductType, taxType } = adjSummary;
+
             const deducts = deductType?.buckets?.length > 0 && deductType?.buckets?.map((item) => (
                 { name: item.key, value: (item.ownerDeducts?.value).toFixed(2) }
             ));
             const taxes = taxType?.buckets?.length > 0 && taxType?.buckets?.map((item) => (
                 { name: item.key, value: (item.ownerTax?.value).toFixed(2) }
             ));
+
             if (deducts && taxes) {
                 setAdjustmentSummaryDetails([...deducts, ...taxes]);
             } else if (deducts) {
@@ -164,9 +201,8 @@ const SummarySection = ({ checkId }) => {
 
     // products summary
     useEffect(() => {
-        if (prodSummary?.hits?.length > 0) {
-            const filterProdSummary = (prodSummary?.hits.filter((item) => item.key === checkId && item))[0];
-            setProductSummaryDetails(filterProdSummary?.product?.buckets);
+        if (prodSummary) {
+            setProductSummaryDetails(prodSummary?.product?.buckets);
         }
     }, [prodSummary]);
 
@@ -227,7 +263,7 @@ const SummarySection = ({ checkId }) => {
                             </Typography>
                         </div>
                         {adjustmentSummaryDetails?.length > 0 && adjustmentSummaryDetails.map((item, index) => (
-                            <div key={index + 1} className={`${classes.dataCardWidth} flex justifyBetween alignCenter w-100`} style={{ marginTop: 12 }}>
+                            <div key={index + 1} className={`${classes.dataCardWidth} flex justifyBetween alignCenter w-100`} style={{ marginTop: 16 }}>
                                 <div className="flex alignStart justifyStart">
                                     <Typography varient="h6" className={classes.textTransform}>
                                         {item.name || ""}

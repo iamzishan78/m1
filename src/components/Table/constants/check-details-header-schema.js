@@ -4,16 +4,16 @@ const RevenueStatementHeadCells = [
         name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
     },
     {
-        name: "property", label: "Property Code", esKey: 'property.number.keyword', options: { sort: true, filter: true }
+        name: "property.number", label: "Property Code", esKey: 'property.number.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "property", label: "Property Name", esKey: 'property.name.keyword', options: { sort: true, filter: true }
+        name: "property.name", label: "Property Name", esKey: 'property.name.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "property", label: "State", esKey: 'property.state.keyword', options: { sort: true, filter: true }
+        name: "property.state", label: "State", esKey: 'property.state.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "property", label: "Country", esKey: 'property.county.keyword', options: { sort: true, filter: true }
+        name: "property.county", label: "County", esKey: 'property.county.keyword', options: { sort: true, filter: true }
     },
     {
         name: "date", label: "Sales Date", esKey: 'date.keyword', options: { sort: true, filter: true }
@@ -31,19 +31,19 @@ const RevenueStatementHeadCells = [
         name: "price", label: "Avg Price", esKey: 'price.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "grossPropertyVolume", label: "Sales Vol", esKey: 'grossPropertyVolume.keyword', options: { sort: true, filter: true }
+        name: "grossOwnerVolume", label: "Sales Vol", esKey: 'grossOwnerVolume.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "grossPropertyValue", label: "Gross Rev", esKey: 'grossPropertyValue.keyword', options: { sort: true, filter: true }
+        name: "grossOwnerValue", label: "Gross Rev", esKey: 'grossOwnerValue.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "grossOwnerValue", label: "Severence", esKey: 'grossOwnerValue.keyword', options: { sort: true, filter: true }
+        name: "ownerTax", label: "Severence", esKey: 'ownerTax.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "netPropertyValue", label: "Deduct Amt", esKey: 'netPropertyValue.keyword', options: { sort: true, filter: true }
+        name: "ownerDeducts", label: "Deduct Amt", esKey: 'ownerDeducts.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "netPropertyValue", label: "Deduct Cd", esKey: 'netPropertyValue.keyword', options: { sort: true, filter: true }
+        name: "deductType", label: "Deduct Cd", esKey: 'deductType.keyword', options: { sort: true, filter: true }
     },
     {
         name: "netOwnerValue", label: "Owner Net Rev", esKey: 'netOwnerValue.keyword', options: { sort: true, filter: true }
