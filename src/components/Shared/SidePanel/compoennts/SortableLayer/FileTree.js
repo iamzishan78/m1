@@ -187,9 +187,9 @@ const FileTree = ({ layerMap, panelItems }) => {
     });
 
     setStateApp({ ...stateApp, layers: [...layersWithoutGroup] });
-    // updateManyUserLayerSettings({
-    //   variables: { manySettings: layersToUpdate },
-    // });
+    updateManyUserLayerSettings({
+      variables: { manySettings: layersToUpdate },
+    });
   };
 
   const updateLayer = (layer) => {
