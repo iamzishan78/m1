@@ -157,7 +157,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
 
 
                     </TableCell>
-                    <TableCell className={classes.cell2} align="right"
+                    <TableCell className={classes.cell2}
                         onMouseEnter={() => { setEditIconState({ [data.key]: true }) }}
                         onMouseLeave={() => { setEditIconState({ [data.key]: false }) }}
                     >
@@ -165,7 +165,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             tableDataState[data.key] ?
                                 <>
                                     {data.type === 'select' &&
-                                        <FormControl variant="outlined" fullWidth margin="dense">
+                                        <FormControl fullWidth margin="dense">
                                             <Select
                                                 margin="dense"
                                                 className={classes.select}

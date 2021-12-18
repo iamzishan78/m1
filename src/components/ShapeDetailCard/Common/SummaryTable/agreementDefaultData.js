@@ -1,6 +1,6 @@
 import { InputAdornment } from "@material-ui/core"
 
-const agreementTypes = [{ label: 'Leases', value: 'lease' }, { label: 'Deeds', value: 'deed' }, { label: 'Contracts', value: 'contract' }, { label: 'Surface/ROW', value: 'surface' }]
+export const agreementTypes = [{ label: 'Lease', value: 'lease' }, { label: 'Deed', value: 'deed' }, { label: 'Contract', value: 'contract' }, { label: 'Surface/ROW', value: 'surface' }]
 const tableData = [
     {
         label: 'Agreement Number',
