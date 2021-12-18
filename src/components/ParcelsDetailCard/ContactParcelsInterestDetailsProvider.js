@@ -24,58 +24,57 @@ export default function ContactParcelsInterestProvider(props) {
 
   const parcelId =
     history.location.pathname.split("/")[
-      history.location.pathname.split("/").length - 1
+    history.location.pathname.split("/").length - 1
     ];
 
   const contactId =
     history.location.pathname.split("/")[
-      history.location.pathname.split("/").length - 3
+    history.location.pathname.split("/").length - 3
     ];
 
-    useEffect(() => {
-      if (parcelId) {
-        getCustomLayer({
-          variables: {
-            id: parcelId,
-          },
-        });
+  useEffect(() => {
+    if (parcelId) {
+      getCustomLayer({
+        variables: {
+          id: parcelId,
+        },
+      });
+    }
+  }, [getCustomLayer, parcelId]);
+
+  useEffect(() => {
+    if (contactId) {
+      getContact({
+        variables: {
+          contactId: contactId,
+        },
+      });
+    }
+  }, [contactId, getContact]);
+
+  useEffect(() => {
+    if (dataCustomLayer && dataCustomLayer.customLayer) {
+      let shape = dataCustomLayer.customLayer.shape;
+      if (typeof shape === "string") {
+        shape = JSON.parse(shape);
       }
-    }, [getCustomLayer, parcelId]);
+      setParcelObj({
+        ...dataCustomLayer.customLayer,
+        shape: shape,
+      });
+    }
+  }, [dataCustomLayer]);
 
-    useEffect(() => {
-      if (contactId) {
-        getContact({
-          variables: {
-            contactId: contactId,
-          },
-        });
-      }
-    }, [contactId, getContact]);
+  useEffect(() => {
+    if (data && data.contact) {
+      setContactData(data.contact);
+    }
+  }, [data]);
 
-    useEffect(() => {
-      if (dataCustomLayer && dataCustomLayer.customLayer) {
-        let shape = dataCustomLayer.customLayer.shape;
-        if (typeof shape === "string") {
-          shape = JSON.parse(shape);
-        }
-        setParcelObj({
-          ...dataCustomLayer.customLayer,
-          shape: shape,
-        });
-      }
-    }, [dataCustomLayer]);
+  const checkModuleHistory = () => {
+    return !!stateNav.contactFromMap;
+  };
 
-    useEffect(() => {
-      if (data && data.contact) {
-        setContactData(data.contact);
-      }
-    }, [data]);
-
-    const checkModuleHistory = () => {
-      return !!stateNav.contactFromMap;
-    };
-
-    console.log('Parcel Obj', parcelObj)
   return (
     <ContactDetailsContextProvider>
       <Toolbar style={{ backgroundColor: "#F0F6F8" }}>

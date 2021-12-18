@@ -128,8 +128,11 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "esbuild-start": "craco start",
     "build": "react-scripts build",
+    "esbuild-build": "craco build",
     "test": "react-scripts test",
+    "esbuild-test": "craco test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -155,6 +158,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.3"
+    "@craco/craco": "^6.4.3",
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "craco-esbuild": "^0.4.3"
   }
 }

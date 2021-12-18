@@ -56,7 +56,6 @@ const ShapeActionsPopup = (props) => {
         },
       }
     ) {
-      console.log(`newCustomLayer: ${JSON.stringify(customLayer)}`);
       cache.modify({
         fields: {
           allCustomLayers(existingCustomLayers = [], { readField }) {
@@ -295,17 +294,12 @@ const ShapeActionsPopup = (props) => {
 
   const actionEdit = () => {
     const { selectedFeature } = props;
-
-    console.log("FILTER EDIT TRIGGER STATEAPP", stateApp);
-
     // If shape doesn't exist! AOI case
     if (!stateApp.draw.get(stateApp.currentFeature.id)) {
       stateApp.draw.add(stateApp.currentFeature);
     }
 
     // If filter is applied, then remove it
-
-    console.log("FILTER STATEAPP", stateApp);
     clearFilter();
 
     // if (stateApp.shapeActionsFilterSelected) {

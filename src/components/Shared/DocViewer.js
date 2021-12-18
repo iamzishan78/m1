@@ -83,7 +83,6 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
   const PageView = (num) => {
     let Page = [];
     for (let i = 1; i <= num; i++) {
-      console.log(i, numPages, "value of I");
       Page.push(i);
     }
     setpdfState(Page);

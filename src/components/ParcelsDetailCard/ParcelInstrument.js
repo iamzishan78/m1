@@ -697,9 +697,7 @@ export default function ParcelInstrument(props) {
                               <div
                                 className={classes.forImageContainer}
                                 onClick={() => {
-                                  console.log("STATE", stateApp);
                                   if (fileExtension === "pdf") {
-                                    console.log("STATE PDR CLICKED");
                                     setStateApp((state) => ({
                                       ...state,
                                       pdfView: stateApp.selectedAgreement,
@@ -780,7 +778,6 @@ export default function ParcelInstrument(props) {
 }
 
 const AutoCompleteField = ({ setValue, value, options, ...other }) => {
-  console.log("options", options);
   const useStyles = makeStyles({
     inputRoot: {
       backgroundColor: "#ffffff",
@@ -808,8 +805,8 @@ const AutoCompleteField = ({ setValue, value, options, ...other }) => {
       options={
         options
           ? options?.map((type) => {
-              return { _id: type, name: type };
-            })
+            return { _id: type, name: type };
+          })
           : []
       }
       getOptionLabel={(option) => {

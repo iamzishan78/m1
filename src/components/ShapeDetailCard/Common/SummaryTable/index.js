@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import TextField from "@material-ui/core/TextField";
-import debounce from "lodash/debounce";
 import moment from "moment";
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -214,7 +213,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                                             onBlur={() => {
                                                 setTimeout(() => {
                                                     if (!tableDataState[`${data.key}date`]) {
-                                                        console.log('blur'); setTableDataState({}); setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] })
+                                                        setTableDataState({}); setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] })
                                                     }
                                                 }, 100)
 
@@ -258,19 +257,21 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                                                 {data.type !== 'date' && ((data.value || properties[data.key]) || '-')}
                                             </Grid>
                                         }
-                                        <Grid item>
-                                            {editIconState[data.key] && <Tooltip title={"Edit"} placement="top">
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => { setTableDataState({ [data.key]: true }) }}
-                                                >
-                                                    <CreateTwoToneIcon
-                                                        id="contPencilIcon"
-                                                        className={classes.pencilIcon}
-                                                    />
-                                                </IconButton>
-                                            </Tooltip>}
-                                        </Grid>
+                                        {!data.nonEditable && (
+                                            <Grid item>
+                                                {editIconState[data.key] && <Tooltip title={"Edit"} placement="top">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => { setTableDataState({ [data.key]: true }) }}
+                                                    >
+                                                        <CreateTwoToneIcon
+                                                            id="contPencilIcon"
+                                                            className={classes.pencilIcon}
+                                                        />
+                                                    </IconButton>
+                                                </Tooltip>}
+                                            </Grid>
+                                        )}
                                     </Grid>
                                 </div>
                         }

@@ -172,7 +172,7 @@ function ContactsTable(props) {
     };
   };
 
-  
+
   const viewColumnsChange = (tableColumns) => {
     for (let i = 0; i < tableColumns.length; i++) {
       if (tableColumns[i].display === "true") {
@@ -206,7 +206,7 @@ function ContactsTable(props) {
         tableActions.genericESAction();
         break;
       case "changePage":
-        if(tableData){
+        if (tableData) {
           tableActions.changeESPage();
         }
         break;
@@ -244,7 +244,6 @@ function ContactsTable(props) {
             );
         },
         (err) => {
-          console.log(err);
           Loader.errorToast("contact-deletion", "Failed to convert to contact");
         }
       );
@@ -261,7 +260,7 @@ function ContactsTable(props) {
     ) {
       view.filters[0].value.range[view.filters[0].field].gte =
         moment().subtract(30, "days").toISOString();
-        view.filters[0].value.range[view.filters[0].field].lte =
+      view.filters[0].value.range[view.filters[0].field].lte =
         moment().toISOString();
     }
     return view;
