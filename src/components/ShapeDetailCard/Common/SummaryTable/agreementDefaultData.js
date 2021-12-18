@@ -1,5 +1,6 @@
 import { InputAdornment } from "@material-ui/core"
 
+const agreementTypes = [{ label: 'Leases', value: 'lease' }, { label: 'Deeds', value: 'deed' }, { label: 'Contracts', value: 'contract' }, { label: 'Surface/ROW', value: 'surface' }]
 const tableData = [
     {
         label: 'Agreement Number',
@@ -12,7 +13,9 @@ const tableData = [
         key: 'agreementName'
     }, {
         label: 'Agreement Type',
-        type: 'autocomplete',
+        type: 'select',
+        options: agreementTypes,
+        formatValue: (value) => agreementTypes.find((at) => at.value === value)?.label || '',
         key: 'agreementType'
     }, {
         label: 'Agreement Subtype',

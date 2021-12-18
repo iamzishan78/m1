@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import set from "lodash/set";
+import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
 import GavelIcon from "@material-ui/icons/Gavel";
@@ -30,6 +31,7 @@ import { detailCardStyles } from "../style";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 
+
 export default function AgreementDetailCard(props) {
   const dispatch = useDispatch();
   const [selectedTab, setSelectedTab] = useState(props.selectTabIndex || 0);
@@ -41,6 +43,7 @@ export default function AgreementDetailCard(props) {
   const [updateCustomLayer, { data: updatedUnit }] = useMutation(UPDATECUSTOMLAYER);
 
   const classes = detailCardStyles();
+  const history = useHistory();
   const showSummary = true;
 
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
@@ -110,6 +113,12 @@ export default function AgreementDetailCard(props) {
     if (field === "agreementNumber") shapeLabel = `${value}${shape.properties.agreementName ? `-${shape.properties.agreementName}` : ""}`;
 
     if (field === "agreementName") shapeLabel = `${shape.properties.agreementNumber ? `${shape.properties.agreementNumber}-` : ""}${value}`;
+
+    if (field === "agreementType") {
+      customLayer.layer = value;
+      const newPath = `/map/${value}s/${uniObj._id}`;
+      history.location.pathname !== newPath && history.replace(newPath);
+    }
 
     shape.properties.shapeLabel = shapeLabel;
     shape.properties.name = shapeLabel;
