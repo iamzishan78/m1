@@ -171,6 +171,7 @@ const LayerItem = React.memo((props) => {
                   flexDirection: "row",
                   justifyContent: "flex-end",
                   alignItems: "center",
+                  paddingRight: "35px",
                 }}
               >
                 <Grid item>

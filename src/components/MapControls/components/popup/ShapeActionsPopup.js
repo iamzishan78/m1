@@ -649,7 +649,7 @@ const ShapeActionsPopup = (props) => {
           </Tooltip>
 
           {/* {stateApp.isAbstractedLayersPolygon && ( */}
-          <Tooltip title="Create Parcel" className={enableEditOnly && classes.disableAction}>
+          <Tooltip title="Add Shape to Layer" className={enableEditOnly && classes.disableAction}>
             <IconButton
               size="small"
               disabled={enableEditOnly}
