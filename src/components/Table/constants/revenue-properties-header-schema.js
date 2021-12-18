@@ -85,7 +85,7 @@ const RevenuePropertiesHeadCells = [
   },
     {
       name: "tags",
-      label: "Tags",
+      label: "Tags" ,
       esKey: "tags.keyword",
       options: { sort: true, filter: true },
     },

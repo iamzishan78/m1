@@ -2039,7 +2039,7 @@ function SubTable(props) {
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
-                      : props.parent === "owner_WellInterests"
+                      : props.parent === "owner_WellInterests" || props.parent === 'RevenuePropertiesTable'
                         ? tableMeta.rowData[1]
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
