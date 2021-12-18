@@ -1,6 +1,7 @@
 import React from 'react'
 import UnitCard from "./Unit/UnitCard";
 import AgreementCard from "./Agreement/AgreementCard";
+import { agreementLayers } from 'components/Shared/functions/shapeLayer';
 
 
 export default function ShapeCardProvider(props) {
@@ -17,7 +18,7 @@ export default function ShapeCardProvider(props) {
         />
       }
       {
-        props.type === 'agreement' && <AgreementCard
+        agreementLayers.includes(props.type) && <AgreementCard
           closeCard={handleCloseCard}
           selectedShape={props.selectedShape}
         />

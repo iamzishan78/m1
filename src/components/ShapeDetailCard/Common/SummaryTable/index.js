@@ -157,7 +157,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
 
 
                     </TableCell>
-                    <TableCell className={classes.cell2} align="right"
+                    <TableCell className={classes.cell2}
                         onMouseEnter={() => { setEditIconState({ [data.key]: true }) }}
                         onMouseLeave={() => { setEditIconState({ [data.key]: false }) }}
                     >
@@ -165,21 +165,23 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             tableDataState[data.key] ?
                                 <>
                                     {data.type === 'select' &&
-                                        <FormControl variant="outlined">
+                                        <FormControl fullWidth margin="dense">
                                             <Select
+                                                margin="dense"
                                                 className={classes.select}
-                                                fullWidth
                                                 labelId="demo-simple-select-label"
                                                 id="demo-simple-select"
                                                 value={tableTempProperties[data.key]}
                                                 onClick={(e) => e.stopPropagation()}
                                                 onChange={(e) => {
                                                     e.keyCode = 13
+                                                    tableTempProperties[data.key] = e.target.value
+                                                    setTableTempProperties({ ...tableTempProperties });
                                                     updateProperties(e, data.key, e.target.value);
                                                 }}
                                                 onBlur={() => { setTableDataState({}); setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] }) }}
                                             >
-                                                {data.options.map((option) => <MenuItem value={option}>{option}</MenuItem>)}
+                                                {data.options.map((option) => <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>)}
                                             </Select>
                                         </FormControl>
                                     }  {(data.type === 'text' || data.type === 'number') &&
