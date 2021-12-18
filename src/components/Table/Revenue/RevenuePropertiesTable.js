@@ -25,18 +25,19 @@ function RevenuePropertiesTable(props) {
       },
     }
   );
+
   // rearranging the data according to the requirements.
   const tableData = elasticData?.getESPaginatedList?.hits?.map((eachRow) => {
     return {
       name: eachRow.name,
-      number: eachRow.number,
+      propertyCode: eachRow.number,
       payorName: eachRow?.operator?.name,
       state: eachRow.state,
       country: eachRow?.county,
       source: eachRow?.source,
       wellApiNumber: eachRow?.well?.apiNumber,
       wellName: eachRow?.well?.wellName,
-      status: eachRow?.well?.status,
+      status: eachRow?.status,
       checkNumber: eachRow?.lastCheck?.checkNumber,
       lastChecked: new Date(eachRow?.lastCheck?.checkDate).toLocaleDateString(),
     };

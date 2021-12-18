@@ -5,7 +5,7 @@ const RevenuePropertiesHeadCells = [
   },
 
   {
-    name: "number",
+    name: "propertyCode",
     label: "Property Code",
     esKey: "number.keyword",
     options: { sort: true, filter: true },
