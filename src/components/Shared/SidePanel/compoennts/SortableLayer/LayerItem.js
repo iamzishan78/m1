@@ -173,7 +173,7 @@ const LayerItem = React.memo((props) => {
                   alignItems: "center",
                 }}
               >
-                <Grid item>
+                <Grid item style={{ paddingRight: "30px", }}>
                   <FormControlLabel control={<Switch checked={data.visiable} onChange={() => onToggleGroup(id)} size="small" />} />
                 </Grid>
               </Grid>
