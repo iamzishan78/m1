@@ -167,7 +167,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Search(props) {
   const dispatch = useDispatch();
-  const { mapGridCardActivated, mapGridCardActiveTap, searchInputValue } =
+  const { mapGridCardActivated, mapGridCardActiveTap, searchInputValue, } =
     useSelector(({ MapGridCard }) => MapGridCard);
   const [enableSearch, setEnableSearch] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -458,6 +458,15 @@ function Search(props) {
               option.Primary || searchInputValue
             }
             forcePopupIcon
+            onBlur={() => {
+              setValue(null)
+              dispatch(
+                setMapGridCardState({
+                  searchInputValue: "",
+                  searchResultData: [],
+                })
+              );
+            }} // for clearing the value
             filterOptions={(x) => x}
             options={optionsWithHeader}
             style={{ width: "100%" }}
@@ -567,6 +576,7 @@ function Search(props) {
                 {...params}
                 variant="outlined"
                 fullWidth
+                autoFocus={true}
                 style={{ width: "100%" }}
                 onBlur={() => setEnableSearch(!enableSearch)}
                 placeholder="Search by well name, API, owner, operator or a location"
@@ -761,7 +771,6 @@ function Search(props) {
               />
             )}
             renderOption={(option) => {
-              console.log("orig renderOption option", option);
               if (option.Source === "header" || option.group === "loader")
                 return null;
               // eslint-disable-next-line no-array-constructor
