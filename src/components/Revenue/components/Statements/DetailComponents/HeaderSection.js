@@ -1,11 +1,15 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Typography, TextField } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import AutoComplete from "components/Shared/components/Fields/AutoComplete";
 import moment from "moment";
 
 const useStyles = makeStyles(() => ({
   root: {
+    color: "black",
+    "&.MuiAccordion-root.Mui-expanded": {
+      margin: 0,
+    },
     "& .MuiFilledInput-root, & .MuiSelect-select.MuiSelect-select": {
       background: `none!important`,
     },
@@ -21,30 +25,11 @@ const useStyles = makeStyles(() => ({
       height: `46px!important`
     }
   },
-
 }));
 
 export default function HeaderFunction(props) {
   const classes = useStyles();
-
-
-
-  // const handleChange = debounce((item, index) => {
-  //   const formValues = getValues();
-  //   console.log("formValues", formValues)
-  //   // if (formValues?.provisions) {
-  //   //     const provision = formValues.provisions[index]
-  //   //     if (provision.type)
-  //   //         createAgreementProvision({
-  //   //             variables:
-  //   //             {
-  //   //                 provision: { agreement: id, ...formValues.provisions[index] }
-  //   //             }
-  //   //         });
-  //   // }
-  // }, 500)
-
-
+  // props?.details?.payor?.name
   return (
     <div className={classes.root}>
       <Typography varient="h5" className={classes.titleText}>
@@ -72,25 +57,13 @@ export default function HeaderFunction(props) {
         </Grid>
         {/* Purchaser name */}
         <Grid item xs={4}>
-          <Autocomplete
-            disablePortal
-            id="purchaser-name"
-            options={[]}
-            autoHighlight
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                label="Purchaser Name"
-                fullWidth
-                value={props?.details?.payor?.name || ""}
-                inputProps={{
-                  ...params.inputProps,
-                  autoComplete: 'new-password', // disable autocomplete and autofill
-                }}
-              />
-            )}
+          <AutoComplete
+            classes={classes}
+            onChange={(value) => console.log("value", value)}
+            label="Purchaser Name"
+            options={["Lease - Oil, Gas, Minerals"]}
           />
+
         </Grid>
 
 
