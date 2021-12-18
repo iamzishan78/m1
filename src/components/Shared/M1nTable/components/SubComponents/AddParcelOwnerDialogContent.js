@@ -373,7 +373,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         <RightDialog open={true} handleClickDialogClose={props.onClose} width={"450px"}>
           <DialogTitle id="customized-dialog-title" style={{ fontWeight: "bold" }}>
             {selectedRow ? "Update" : "Add"} Parcel Ownership
-            {selectedRow && (
+            {/* {selectedRow && (
               <IconButton
                 style={{ float: "right", marginRight: "5px" }}
                 onClick={() => {
@@ -385,7 +385,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               >
                 <DeleteIcon fontSize="small" />
               </IconButton>
-            )}
+            )} */}
           </DialogTitle>
           <DialogContent className={classes.dialogContent}>
             <Grid container spacing={2}>

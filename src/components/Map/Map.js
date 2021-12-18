@@ -1361,9 +1361,6 @@ function Map({ type, paramId, lati, longi }) {
             layerId === "Search" ||
             layerId === "recent_submitted_permits" ||
             layerId === "recent_submitted_permit_laterals":
-            // layerId === "permits":
-
-            console.log("LAYER", layerId);
             wellPointClick(feature);
             break;
           default:
@@ -1393,7 +1390,6 @@ function Map({ type, paramId, lati, longi }) {
 
   useEffect(() => {
     let beforeLayer = null;
-    console.log(map?.getStyle()?.sources);
     if (stateApp.layers && stateApp.layers.length > 0 && map) {
       for (let i = 0; i < stateApp.layers.length; i++) {
         const layer = stateApp.layers[i];
@@ -4135,7 +4131,7 @@ function Map({ type, paramId, lati, longi }) {
       setStateApp((state) => ({
         ...state,
         popupOpen: true,
-        expandedCard: stateApp.activateWellDetailsFromTable || ( currentFeature.id && currentFeature.id === paramId ) ? true : false,
+        expandedCard: stateApp.activateWellDetailsFromTable || (currentFeature.id && currentFeature.id === paramId) ? true : false,
       }));
 
       handleOpenExpandableCard();
@@ -4686,9 +4682,6 @@ function Map({ type, paramId, lati, longi }) {
   };
 
   const onAbstactLayerClick = function (feature, action) {
-    console.log("featur--", feature);
-    console.log("action", action);
-
     if (!feature) {
       setStateApp((state) => ({
         ...state,
@@ -5087,8 +5080,6 @@ function Map({ type, paramId, lati, longi }) {
             .catch((error) => {
               console.log(error);
             });
-
-          // setTimeout(() => { console.log(newMap?.getStyle()?.layers) }, 3000)
 
           newMap.loadImage(MarkerIcon, function (error, image) {
             if (error) throw error;

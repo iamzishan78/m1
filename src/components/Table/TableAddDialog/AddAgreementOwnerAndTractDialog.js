@@ -5,6 +5,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
+import CloseIcon2 from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import DeleteIcon from "@material-ui/icons/Delete";
 import SearchIcon from '@material-ui/icons/Search';
 import AutorenewIcon from "@material-ui/icons/Autorenew";
@@ -330,7 +331,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                     {loading ? (
                       <CircularProgress size={20} color="secondary" />
                     ) : (
-                      <DeleteIcon
+                      <CloseIcon2
                         className={classes.closeIcon}
                         fontSize="small"
                       />
@@ -342,7 +343,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                 onClick={handleClose}
                 size="small"
               >
-                <CloseIcon fontSize="small" />
+                <CloseIcon2 fontSize="small" />
               </IconButton>
             </div>
           </Grid>

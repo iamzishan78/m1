@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment";
 
 import Grid from "@material-ui/core/Grid";
@@ -58,7 +57,6 @@ function RelatedDetailsDocumentTable(props) {
   const tableData = dataParcelFiles?.getParcelFiles;
 
   const total = false;
-  const addAble = { type: "document" };
 
   useEffect(() => {
     setSearchedRows(props.rows);
@@ -238,9 +236,8 @@ function RelatedDetailsDocumentTable(props) {
             m1nSelectedRowsIds={selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
             setM1nSelectedRowsIndexes={setSelectedRows}
           >
-            {`Do you want to permanently delete the document${
-              selectedRows && selectedRows.length > 1 && selectedRows.length > 1 ? "s" : ""
-            } from  this ${props.name || props.relatedObjectType}?`}
+            {`Do you want to permanently delete the document${selectedRows && selectedRows.length > 1 && selectedRows.length > 1 ? "s" : ""
+              } from  this ${props.name || props.relatedObjectType}?`}
           </DeleteConfirmationDialogContent>
         )}
       </Dialog>
@@ -257,7 +254,7 @@ function RelatedDetailsDocumentTable(props) {
         dense={props.dense ? props.dense : undefined}
         startPaginationAt={null}
         options={options}
-        addAble={addAble}
+        addAble={props.addAble}
         parent={props.parent}
         setColumnsBase={[]}
         onTableChange={onTableChange}
@@ -276,7 +273,7 @@ function RelatedDetailsDocumentTable(props) {
       >
         <Toolbar>
           <Grid
-            justify="space-between" // Add it here :)
+            justify="space-between"
             container
             spacing={24}
           >
@@ -334,6 +331,12 @@ function RelatedDetailsDocumentTable(props) {
       </Dialog>
     </Container>
   );
+}
+
+RelatedDetailsDocumentTable.defaultProps = {
+  addAble: {
+    type: "document"
+  }
 }
 
 export default React.memo(TableHOC(RelatedDetailsDocumentTable), deepEqualObjects);

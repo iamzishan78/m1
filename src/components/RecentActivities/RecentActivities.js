@@ -128,7 +128,6 @@ export default function RecentActivities({
     setSelectedActivity(null);
     setActivityModalOpen(true);
   };
-  console.log(props);
   return (
     <div className={classes.root}>
       {/* <AddActivityModal
