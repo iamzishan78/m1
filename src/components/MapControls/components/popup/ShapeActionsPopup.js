@@ -44,6 +44,7 @@ const ShapeActionsPopup = (props) => {
   const [user, setUser] = useState({ _id: "" });
   const [selectedAction, setSelectedAction] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
+  const [agreementAnchorEl, setAgreementAnchorEl] = useState(null);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [getAbstractGeoContains] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
   const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER, {
@@ -55,7 +56,6 @@ const ShapeActionsPopup = (props) => {
         },
       }
     ) {
-      console.log(`newCustomLayer: ${JSON.stringify(customLayer)}`);
       cache.modify({
         fields: {
           allCustomLayers(existingCustomLayers = [], { readField }) {
@@ -294,17 +294,12 @@ const ShapeActionsPopup = (props) => {
 
   const actionEdit = () => {
     const { selectedFeature } = props;
-
-    console.log("FILTER EDIT TRIGGER STATEAPP", stateApp);
-
     // If shape doesn't exist! AOI case
     if (!stateApp.draw.get(stateApp.currentFeature.id)) {
       stateApp.draw.add(stateApp.currentFeature);
     }
 
     // If filter is applied, then remove it
-
-    console.log("FILTER STATEAPP", stateApp);
     clearFilter();
 
     // if (stateApp.shapeActionsFilterSelected) {
@@ -443,7 +438,7 @@ const ShapeActionsPopup = (props) => {
     popupCloseAction();
   };
 
-  const saveAndOpenShapeDetail = (layerType) => {
+  const saveAndOpenShapeDetail = (layerType, layerSubType) => {
     if (!user._id) {
       return;
     }
@@ -464,7 +459,7 @@ const ShapeActionsPopup = (props) => {
     if (layerType === 'unit')
       properties = { uName: shapeName, uNumber: "", uType: "", uOperator: "", uStatus: "" }
     if (layerType === 'agreement')
-      properties = { agreementName: shapeName }
+      properties = { agreementName: shapeName, agreementType: layerSubType }
     const featureId = hat();
     const newShapeFeature = {
       id: featureId,
@@ -474,6 +469,8 @@ const ShapeActionsPopup = (props) => {
         originalProperties: abstractShape.properties,
         shapeSubtitle,
         type: layerType,
+        layerType,
+        layerSubType,
         shapeLabel: shapeName,
         ...properties,
         shapeArea: calculateLandArea(abstractShape),
@@ -484,7 +481,7 @@ const ShapeActionsPopup = (props) => {
     const customLayerData = {
       shapeJson: newShapeFeature,
       shape: JSON.stringify(newShapeFeature),
-      layer: layerType,
+      layer: layerSubType || layerType,
       name: shapeName,
       user: user._id,
     };
@@ -606,9 +603,35 @@ const ShapeActionsPopup = (props) => {
         className={classes.parcelPopover}
       >
         <MenuItem disabled>Shape Layer Type</MenuItem>
-        <MenuItem onClick={() => saveAndOpenShapeDetail('agreement')} >Agreement</MenuItem>
+        <MenuItem onClick={(event) => setAgreementAnchorEl(event.currentTarget)} >Agreement</MenuItem>
         <MenuItem onClick={saveAndOpenParcelDetail}>Tract</MenuItem>
         <MenuItem onClick={() => saveAndOpenShapeDetail('unit')}>Unit Boundary</MenuItem>
+
+        <Menu
+          id="simple-menu"
+          elevation={0}
+          getContentAnchorEl={null}
+          anchorEl={agreementAnchorEl}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right"
+          }}
+          PaperProps={{
+            style: {
+              left: '10%',
+              transform: 'translateX(105%) translateY(-10%)',
+            }
+          }}
+          open={Boolean(agreementAnchorEl)}
+          onClose={() => setAgreementAnchorEl(null)}
+          className={classes.parcelPopover}
+        >
+          <MenuItem disabled>Agreement Type</MenuItem>
+          <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'contract')}>Contract</MenuItem>
+          <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'deed')}>Deed</MenuItem>
+          <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'lease')}>Lease</MenuItem>
+          <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'surface')}>Surface/Row</MenuItem>
+        </Menu>
 
       </Menu>
       <Fragment>
@@ -626,7 +649,7 @@ const ShapeActionsPopup = (props) => {
           </Tooltip>
 
           {/* {stateApp.isAbstractedLayersPolygon && ( */}
-          <Tooltip title="Create Parcel" className={enableEditOnly && classes.disableAction}>
+          <Tooltip title="Add Shape to Layer" className={enableEditOnly && classes.disableAction}>
             <IconButton
               size="small"
               disabled={enableEditOnly}

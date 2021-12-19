@@ -20,6 +20,11 @@ export const detailCardStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     color: "#848484",
   },
+  documentHeader: {
+    "& svg": {
+      transform: "translate(-4%, 22%)"
+    }
+  },
   descriptionInput: {
     width: "100%",
     "& .MuiTextField-root": {
@@ -129,7 +134,7 @@ export const summaryStyles = makeStyles((theme) => ({
     paddingBottom: "60px",
   },
   summaryDetailCard: {
-    paddingLeft: "18px",
+    marginLeft: 0,
     paddingTop: "8px",
     height: "53px",
   },
@@ -137,7 +142,7 @@ export const summaryStyles = makeStyles((theme) => ({
     display: "inline-flex",
     bottom: "5px",
     position: "relative",
-    marginRight: "5px",
+    marginRight: "2px",
     fontWeight: "bold",
     color: "#848484",
   },

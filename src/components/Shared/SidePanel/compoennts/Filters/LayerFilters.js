@@ -18,9 +18,6 @@ const useStyles = makeStyles(() => ({
     color: "white",
     padding: "0px 10px",
     overflow: "overlay",
-    "& .MuiTypography-root": {
-      padding: "15px 5px",
-    },
   },
   accordionRoot: {
     borderRadius: "5px",
@@ -212,7 +209,7 @@ const LayerFilters = () => {
           >
             <Grid container direction="row" justify="space-between" alignItems="center">
               <Grid item className={classes.accordionHeading}>
-                <Typography>{filterType}</Typography>
+                <Typography style={{ padding: "15px 5px" }}>{filterType}</Typography>
                 {stateNav[filterTypes[filterType].countKey] > 0 && <Chip color="info" label={stateNav[filterTypes[filterType].countKey]} />}
               </Grid>
               <Grid item className={classes.clearIcon}>

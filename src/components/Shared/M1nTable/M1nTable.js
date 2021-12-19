@@ -88,11 +88,8 @@ function M1nTable(props) {
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateGrid, setStateGrid] = useContext(MapGridContext);
-  //  console.log(reFetchDocuments(), 'reFetchDocuments')
 
   // function states
-  const [addDealOpen, setAddDealOpen] = useState(false);
-  const [selectedDeal, setSelectedDeal] = useState();
   const [rows, Rows] = useState([]);
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
@@ -1489,7 +1486,6 @@ function M1nTable(props) {
             } else Loader.errorToast("contact-deletion", "Failed to convert to contact");
           },
           (err) => {
-            console.log(err);
             Loader.errorToast("contact-deletion", "Failed to convert to contact");
           }
         );
@@ -1594,8 +1590,6 @@ function M1nTable(props) {
       if (searchResultData.length > 0) {
         searchResultData.forEach((result) => {
           result.id = result.Id;
-          console.log("value result", result);
-          console.log("props.target", props.targetLabel);
 
           // setting flyto coordinates for well
           if (props.targetLabel && props.targetLabel == "well") {

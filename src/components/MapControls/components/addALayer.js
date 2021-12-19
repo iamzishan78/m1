@@ -331,7 +331,6 @@ export default function AddLayer(props) {
             resolve();
           });
       });
-      // console.log(nadgrid);
 
       res = await new Promise((resolve, reject) => {
         fetch(inputFile).then((response) => {
@@ -387,6 +386,12 @@ export default function AddLayer(props) {
       });
   }
 
+  const checkIfDeleteAllow = (layer) => {
+    if (layer.name === 'Agreements' || layer.groupName === 'Agreements')
+      return false;
+    return true
+  }
+
   const M1Layers = React.useMemo(() => {
     return currentLayers.filter((layer) => layer.layerCategory === "M1 Layer");
   }, [currentLayers]);
@@ -403,15 +408,15 @@ export default function AddLayer(props) {
         index = 0;
       }
     }
-    return layers.filter((UdLayer) => !(UdLayer.layerType === "file layer" && UdLayer.groupId));
+    return layers.filter((UdLayer) => !((UdLayer.layerType === "file layer" || UdLayer.groupName === "Agreements") && UdLayer.groupId));
   }, [currentLayers]);
 
   return (
     <>
       <DropzoneAreaBase
         onAdd={handleFileInput}
-        onDelete={(fileObj) => console.log("Removed File:", fileObj)}
-        onAlert={(message, variant) => {}}
+        onDelete={(fileObj) => { }}
+        onAlert={(message, variant) => { }}
         filesLimit={1}
         maxFileSize={10000000}
         dropzoneClass={classes.dropzoneClass}
@@ -508,17 +513,20 @@ export default function AddLayer(props) {
                                 />
                                 <EditableTextField onChange={changeLayerName} item={layer} name={layer.name} />
                                 <ListItemSecondaryAction style={{ marginRight: "30px" }} onClick={(e) => e.stopPropagation()}>
-                                  <Tooltip title="Delete" placement="top">
-                                    <IconButton
-                                      edge="end"
-                                      size="small"
-                                      onClick={() => {
-                                        setOpenDeleteDialog(layer);
-                                      }}
-                                    >
-                                      <DeleteIcon />
-                                    </IconButton>
-                                  </Tooltip>
+                                  {
+                                    checkIfDeleteAllow(layer) && <Tooltip title="Delete" placement="top">
+                                      <IconButton
+                                        edge="end"
+                                        size="small"
+                                        onClick={() => {
+                                          setOpenDeleteDialog(layer);
+                                        }}
+                                      >
+                                        <DeleteIcon />
+                                      </IconButton>
+                                    </Tooltip>
+                                  }
+
                                 </ListItemSecondaryAction>
                               </AccordionSummary>
                               <Box paddingLeft={2} paddingRight={2}>
@@ -533,17 +541,19 @@ export default function AddLayer(props) {
                                       />
                                       <EditableTextField onChange={changeLayerName} item={groupLayer} name={groupLayer.layerName} />
                                       <ListItemSecondaryAction>
-                                        <Tooltip title="Delete" placement="top">
-                                          <IconButton
-                                            edge="end"
-                                            size="small"
-                                            onClick={() => {
-                                              setOpenDeleteDialog(groupLayer);
-                                            }}
-                                          >
-                                            <DeleteIcon />
-                                          </IconButton>
-                                        </Tooltip>
+                                        {
+                                          checkIfDeleteAllow(layer) && <Tooltip title="Delete" placement="top">
+                                            <IconButton
+                                              edge="end"
+                                              size="small"
+                                              onClick={() => {
+                                                setOpenDeleteDialog(groupLayer);
+                                              }}
+                                            >
+                                              <DeleteIcon />
+                                            </IconButton>
+                                          </Tooltip>
+                                        }
                                       </ListItemSecondaryAction>
                                     </StyledListItem>
                                   ))}

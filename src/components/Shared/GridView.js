@@ -114,7 +114,7 @@ function GridView({
   const [addGridView, { data: newGridView }] = useMutation(ADD_GRID_VIEW);
   const [getGridViews, { data: gridViews, loading }] = useLazyQuery(GET_GRID_VIEWS);
   const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
-  const [updateFavouriteGridView, {}] = useMutation(UPDATE_FAVOURITE_GRID_VIEW);
+  const [updateFavouriteGridView, { }] = useMutation(UPDATE_FAVOURITE_GRID_VIEW);
 
   useEffect(() => {
     if (selectedTab === "views") {
@@ -280,7 +280,7 @@ function GridView({
               </AccordionSummary>
               <AccordionDetails className={classes.details}>
                 {filterGridView.map((view) => {
-                  return view.type === "Custom" ? (
+                  return view.type === "Custom" && (
                     view._id === editGridView?._id ? (
                       <InputField
                         editGridViewId={editGridView._id}
@@ -306,8 +306,6 @@ function GridView({
                         updateFavouriteGridView={updateFavouriteGridView}
                       />
                     )
-                  ) : (
-                    <></>
                   );
                 })}
                 {showSaveAsNew && (
