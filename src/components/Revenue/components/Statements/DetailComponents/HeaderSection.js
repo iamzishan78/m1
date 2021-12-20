@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, Typography, TextField } from "@material-ui/core";
+import { Grid, Typography, TextField, IconButton } from "@material-ui/core";
 import AutoComplete from "components/Shared/components/Fields/AutoComplete";
 import moment from "moment";
 import { KeyboardDatePicker } from "@material-ui/pickers";
+import ContactCardDisabledIcon from "components/Shared/svgIcons/contact_card_disabled";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -47,6 +48,7 @@ export default function HeaderFunction(props) {
       <Typography varient="h5" className={classes.titleText}>
         Check Header
       </Typography>
+
       <Grid
         container
         direction="row"
@@ -56,7 +58,7 @@ export default function HeaderFunction(props) {
         spacing={3}
         className={classes.fieldsSection}
       >
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           {/* Check number */}
           <TextField
             margin="dense"
@@ -76,6 +78,21 @@ export default function HeaderFunction(props) {
             label="Purchaser Name"
             options={[]}
           />
+        </Grid>
+
+        <Grid item xs={1}>
+          <IconButton
+            size="small"
+            color='secondary'
+            style={{ marginBottom: -16 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log("e", e);
+            }}
+            aria-label="show purchaser name"
+          >
+            <ContactCardDisabledIcon />
+          </IconButton>
         </Grid>
 
         {/* Check date */}
@@ -99,7 +116,7 @@ export default function HeaderFunction(props) {
         </Grid>
 
         {/* Owner number */}
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           <TextField
             margin="dense"
             type="text"
@@ -112,14 +129,27 @@ export default function HeaderFunction(props) {
 
         {/* Owner name */}
         <Grid item xs={4}>
-          <TextField
-            margin="dense"
-            type="text"
+          <AutoComplete
             variant="filled"
+            onChange={(value) => console.log("value", value)}
             label="Owner Name"
-            fullWidth
-            value={check?.payee?.name || ""}
+            options={[]}
           />
+        </Grid>
+
+        <Grid item xs={1} >
+          <IconButton
+            size="small"
+            color='secondary'
+            style={{ marginBottom: -16 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log("e", e);
+            }}
+            aria-label="show purchaser name"
+          >
+            <ContactCardDisabledIcon />
+          </IconButton>
         </Grid>
 
         {/* Deposit date */}
@@ -153,7 +183,7 @@ export default function HeaderFunction(props) {
             value={check?.checkAmount || 0}
           />
         </Grid>
-        
+
       </Grid>
     </div>
   );
