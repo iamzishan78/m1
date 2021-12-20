@@ -402,7 +402,7 @@ function MapGridCard(props) {
                                 ativateSearchPanel={ativateSearchPanel}
                               />
                             }
-                            options={options}
+                            customOptions={options}
                             targetLabel="owner"
                             showTracks
                           />
