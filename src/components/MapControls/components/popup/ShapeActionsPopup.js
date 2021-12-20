@@ -30,7 +30,7 @@ import { addCustomShapeProperties, drawBoundary } from "../../components/DrawSha
 import Tooltip from "@material-ui/core/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
 import { 
-  // toggleMapGridCardAtived, 
+  toggleMapGridCardAtived, 
   setMapGridCardState } from "actions";
 import { gql } from "@apollo/client";
 import { setFeatureProperty, drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
@@ -239,13 +239,13 @@ const ShapeActionsPopup = (props) => {
       ...state,
       gridPolygonString: getSelectedFeaturePolygonString(),
     }));
-    // dispatch(toggleMapGridCardAtived());
-    dispatch(
-      setMapGridCardState({
-        mapGridCardActivated: true,
-        mapGridCardActiveTap: 2,
-      })
-    );
+    dispatch(toggleMapGridCardAtived());
+    // dispatch(
+    //   setMapGridCardState({
+    //     mapGridCardActivated: true,
+    //     mapGridCardActiveTap: 2,
+    //   })
+    // );
   };
 
   const clearFilter = () => {

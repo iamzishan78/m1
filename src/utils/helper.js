@@ -81,3 +81,53 @@ export const formatTaxOwners = (owners, formData) => {
   }
   return updateOwners;
 };
+
+export const getSearchQuery = (extendSearchQuery, filters) => {
+  let query = extendSearchQuery
+  Object.entries(filters).map((filter, index) => {
+    for (let i = 0; i < filter[1]?.length; i++) {
+      if (query && i === 0) {
+        query = query + " AND ";
+      }
+      query = `${query} ${i === 0 ? "(" : "OR"} ${filter[0]}.keyword:(${
+        filter[1][i]
+      }) ${i === filter[1].length - 1 ? ")" : ""}`;
+    }
+    return true;
+  });
+  return query;
+};
+
+export const getFilters = (filters) => {
+  const customFilters = [];
+  Object.entries(filters).map((filter, index) => {
+    if (filter[1].from || filter[1].to) {
+      customFilters.push({
+        field: filter[0],
+        value: {
+          range: {
+            [filter[0]]: {
+              gte: filter[1].from ? filter[1].from : null,
+              lte: filter[1].to ? filter[1].to : null,
+            },
+          },
+        },
+      });
+    }
+    return true;
+  });
+  return customFilters;
+};
+
+export const getShapeFilter = (polygon) => {
+    const coordinates = [];
+    if(polygon && typeof polygon === 'string' && polygon.includes('POLYGON')){
+      let data = polygon.replace('POLYGON((', '').replace('))', '');
+      data = data.split(',');
+      for(let i=0; i<data.length; i++){
+        const coor = data[i].trim().split(' ');
+        coordinates.push([parseFloat(coor[0]), parseFloat(coor[1])])
+      }
+    }
+    return coordinates.length > 0 ? coordinates : undefined;
+}

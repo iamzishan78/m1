@@ -105,17 +105,21 @@ export const TableESHOC = (Component) => {
 
 
         useEffect(() => {
-            getESPaginatedList({
-                variables: {
-                    esIndex: tableMeta.esIndex,
-                    pagination: {
-                        first: tableMeta.startPaginationAt,
-                        keep_alive: "1micros"
-                    },
-                    search: tableMeta.extendSearchQuery
-                }
-            });
-        }, [tableMeta?.esIndex]);
+            if(tableMeta?.esIndex){
+                getESPaginatedList({
+                    variables: {
+                        esIndex: tableMeta.esIndex,
+                        pagination: {
+                            first: tableMeta.startPaginationAt,
+                            keep_alive: "1micros"
+                        },
+                        search: tableMeta.extendSearchQuery,
+                        filters: tableMeta.filters ? tableMeta.filters : [],
+                        polygon: tableMeta.polygon? tableMeta.polygon : undefined
+                    }
+                });
+            }
+        }, [tableMeta]);
 
 
         useEffect(() => {
@@ -240,6 +244,7 @@ export const TableESHOC = (Component) => {
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
             let pageESVariables = {
                 variables: {
+                    polygon: tableState.polygon ? tableState.polygon: undefined,
                     esIndex: tableState.esIndex,
                     search: tableState.searchText ? `${tableState.searchText}*` : '',
                     pagination: {
@@ -259,7 +264,7 @@ export const TableESHOC = (Component) => {
                             }]
                     },
 
-                    filters: [],
+                    filters: tableState.filters,
                 },
             };
             tableState.filterList.forEach((val, index) => {
@@ -306,7 +311,9 @@ export const TableESHOC = (Component) => {
         }
 
         const onTableChange = (action, tableState, rows, meta) => {
-            tableState.esIndex = tableMeta.esIndex
+            tableState.esIndex = tableMeta.esIndex;
+            tableState.filters = tableMeta.filters ? tableMeta.filters : [];
+            tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
             const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
             switch (action) {
                 case "search":

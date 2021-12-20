@@ -18,6 +18,7 @@ import { leasesColumnHeaders, locationsColumnHeaders, operatorsColumnHeaders, ow
 import DockMenu from "./DockMenu";
 import ShapeGridWellsTable from "components/Table/Wells/ShapeGridWellsTable";
 import ShapeGridTaxOwnersTable from "components/Table/TaxOwners/ShapeGridTaxOwnersTable";
+import MapGridWellsTable from "components/Table/Wells/MapGridWellsTable";
 
 import SearchPanel from "./components/SearchPanel";
 import { platformDataInitialData } from "./components/data";
@@ -351,27 +352,48 @@ function MapGridCard(props) {
               <div style={{ position: "relative" }} classes={classes.gridTables}>
                 <TabPanels
                   value={searchTapValue.index}
-                  panels={getTaps.map((tab, index) => (
-                    <Fragment key={index}>
-                      <M1nTable
-                        dense
-                        options={options}
-                        parent="search"
-                        privateColumns={tab.privateColumns}
-                        targetLabel={tab.label}
-                        header={
-                          <SearchPanel
-                            handleChange={handleSearchPanelChange}
-                            value={searchTapValue}
-                            ativateSearchPanel={ativateSearchPanel}
+                  panels={getTaps.map((tab, index) => {
+                    return (
+                      <Fragment key={index}>
+                        {tab.label === 'well' ? (
+                          <MapGridWellsTable
+                            dense
+                            parent="search"
+                            customOptions={options}
+                            targetLabel={tab.label}
+                            header={
+                              <SearchPanel
+                                handleChange={handleSearchPanelChange}
+                                value={searchTapValue}
+                                ativateSearchPanel={ativateSearchPanel}
+                              />
+                            }
+                            showTags={tab.showTags}
+                            showComments={tab.showComments}
+                            showTracks={tab.showTracks}
                           />
-                        }
-                        showTags={tab.showTags}
-                        showComments={tab.showComments}
-                        showTracks={tab.showTracks}
-                      />
-                    </Fragment>
-                  ))}
+                        ): (
+                        <M1nTable
+                          dense
+                          options={options}
+                          parent="search"
+                          privateColumns={tab.privateColumns}
+                          targetLabel={tab.label}
+                          header={
+                            <SearchPanel
+                              handleChange={handleSearchPanelChange}
+                              value={searchTapValue}
+                              ativateSearchPanel={ativateSearchPanel}
+                            />
+                          }
+                          showTags={tab.showTags}
+                          showComments={tab.showComments}
+                          showTracks={tab.showTracks}
+                        />
+                        )}
+                      </Fragment>
+                    )
+                  })}
                 />
               </div>
             </TabPanel>
