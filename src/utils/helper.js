@@ -131,3 +131,17 @@ export const getShapeFilter = (polygon) => {
     }
     return coordinates.length > 0 ? coordinates : undefined;
 }
+
+export const getContactsAddress = (contact) => {
+  let address = "https://www.google.com/maps/search/";
+  if (contact.address1)
+    address = `${address}${contact.address1.replace(/ /g, "+")}`;
+  if (contact.city)
+    address = `${address},+${contact.city.replace(/ /g, "+")}`;
+  if (contact.state) address = `${address},+${contact.state}`;
+  if (contact.zip) address = `${address}+${contact.zip}`;
+  return {
+    ...contact,
+    fullContactAddress: address,
+  };
+};

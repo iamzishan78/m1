@@ -21,6 +21,8 @@ import ShapeGridWellsTable from "components/Table/Wells/ShapeGridWellsTable";
 import ShapeGridTaxOwnersTable from "components/Table/TaxOwners/ShapeGridTaxOwnersTable";
 import MapGridWellsTable from "components/Table/Wells/MapGridWellsTable";
 import MapGridTaxOwnersTable from "components/Table/TaxOwners/MapGridTaxOwnersTable";
+import MapGridOperatorTable from "components/Table/Operator/MapGridOperatorTable";
+import MapGridContactTable from "components/Table/Contact/MapGridContactTable";
 
 import SearchPanel from "./components/SearchPanel";
 import { platformDataInitialData } from "./components/data";
@@ -408,7 +410,7 @@ function MapGridCard(props) {
                         {tab.label === 'owner' && !stateApp.gridPolygonString && (
                           <MapGridTaxOwnersTable
                             dense
-                            parent="boundary_grid_owners"
+                            parent="search"
                             customOptions={options}
                             targetLabel={tab.label}
                             header={
@@ -423,8 +425,43 @@ function MapGridCard(props) {
                             showTracks={tab.showTracks}
                           />
                         )}
-                        {(tab.label !== 'well' && tab.label !== 'owner') && (
-                          <M1nTable
+                        {tab.label === 'operator' && (
+                          <MapGridOperatorTable
+                            dense
+                            parent="search"
+                            customOptions={options}
+                            targetLabel={tab.label}
+                            header={
+                              <SearchPanel
+                                handleChange={handleSearchPanelChange}
+                                value={searchTapValue}
+                                ativateSearchPanel={ativateSearchPanel}
+                              />
+                            }
+                            showTags={tab.showTags}
+                            showComments={tab.showComments}
+                            showTracks={tab.showTracks}
+                          />
+                        )}
+                        {tab.label === 'contacts' && (
+                          <MapGridContactTable
+                            dense
+                            parent="search"
+                            customOptions={options}
+                            targetLabel={tab.label}
+                            header={
+                              <SearchPanel
+                                handleChange={handleSearchPanelChange}
+                                value={searchTapValue}
+                                ativateSearchPanel={ativateSearchPanel}
+                              />
+                            }
+                            showTags={tab.showTags}
+                            showComments={tab.showComments}
+                            showTracks={tab.showTracks}
+                          />
+                        )}
+                          {/* <M1nTable
                             dense
                             options={options}
                             parent="search"
@@ -440,8 +477,7 @@ function MapGridCard(props) {
                             showTags={tab.showTags}
                             showComments={tab.showComments}
                             showTracks={tab.showTracks}
-                          />
-                        )}
+                          /> */}
                       </Fragment>
                     )
                   })}
