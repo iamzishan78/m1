@@ -30,7 +30,10 @@ function TractsTable(props) {
 
     const [esSearch, setESSearch] = useState('');
     const [esFilters, ESFilters] = useState([]);
-    const setESFilters = (newState) => { setStateIfDeepEqual(ESFilters, newState); };
+    const setESFilters = (newState) => {
+
+        setStateIfDeepEqual(ESFilters, newState); 
+    };
     const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
     // queries 
@@ -41,18 +44,26 @@ function TractsTable(props) {
         }
     });
 
-    const [getESAggsActiveCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
+    const [getESAggsGrossAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
         onCompleted: (aggsData) => {
-            if(aggsData?.getESAggsList?.aggregations?.activeCount) {
-                props.onActiveCount(aggsData?.getESAggsList?.aggregations?.activeCount?.value)
+            if(aggsData?.getESAggsList?.aggregations?.grossAcresSum) {
+                props.onGrossAcresSum(aggsData?.getESAggsList?.aggregations?.grossAcresSum?.value)
             }
         }
     });
 
-    const [getESAggsApprovedCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
+    const [getESAggsNetAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
         onCompleted: (aggsData) => {
-            if(aggsData?.getESAggsList?.aggregations?.approvedCount) {
-                props.onApprovedCount(aggsData?.getESAggsList?.aggregations?.approvedCount?.value)
+            if(aggsData?.getESAggsList?.aggregations?.netAcresSum) {
+                props.onNetAcresSum(aggsData?.getESAggsList?.aggregations?.netAcresSum?.value)
+            }
+        }
+    });
+
+    const [getESAggsNetRoyaltyAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
+        onCompleted: (aggsData) => {
+            if(aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum) {
+                props.onNetRoyaltyAcresSum(aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum?.value)
             }
         }
     });
@@ -64,9 +75,9 @@ function TractsTable(props) {
 
 
     const startPaginationAt = 25;
-    const esIndex = 'shapes_flat';
+    const esIndex = 'shapeowners_flat';
     const esStaticFilters = [{
-        field: "layer",
+        field: "shape.layer",
         value: "parcel"
     }];
     
@@ -129,12 +140,17 @@ function TractsTable(props) {
             if (tableData?.hits?.length > 0) {
                 const resolvePath = (obj, path) => {
                     if (!obj) return null
+                    // if (Array.isArray(obj)) obj = obj[0]
 
                     const parts = path.split(".");
+                    const optionalPath = parts[0].endsWith('?')
+                    if (optionalPath) parts[0] = parts[0].slice(0,-1)
                     if (parts.length == 1) {
-                        return obj[parts[0]];
+                        return obj[parts[0]] ||
+                        (optionalPath ? obj : null);
                     }
-                    return resolvePath(obj[parts[0]], parts.slice(1).join("."));
+                    return resolvePath(obj[parts[0]], parts.slice(1).join(".")) ||
+                    (optionalPath ? resolvePath(obj, parts.slice(1).join(".")) : resolvePath(null, parts.slice(1).join(".")));
                 }
 
                 const hits = tableData?.hits.map((hit) => {
@@ -142,6 +158,7 @@ function TractsTable(props) {
                     TableHeader.forEach((col) => {
                         if (col?.options?.dbName) {
                             tempHit[col.name] = resolvePath(tempHit, col.options.dbName)
+                            if (col.name === 'QtrCalls') tempHit[col.name] = tempHit[col.name]?.filter(el => el)?.map((qtr, i) => `${qtr}/${i + 1}`)?.join()
                         }
                     })
 
@@ -163,7 +180,7 @@ function TractsTable(props) {
                                     column.filterKey = headers.find(el => el.name === column.name)?.esKey;
                                     return (
                                         <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-                                            query={GET_ES_FILTER_LIST} esIndex={esIndex} />
+                                            query={GET_ES_FILTER_LIST} esIndex={esIndex} filters={esFilters} />
                                     );
                                 }
                             }
@@ -183,32 +200,44 @@ function TractsTable(props) {
             }
 
             props.onTractCount(count)
-            getESAggsActiveCount({
+            getESAggsGrossAcresSum({
                 variables: {
                     esIndex,
                     search: esSearch,
-                    filters: [ ...esFilters, {
-                        field: "shapeJson.properties.tractStatus",
-                        value: "ACTIVE"
-                    }],
+                    filters: esFilters,
                     aggs: {
-                        activeCount: {
-                            cardinality: { field: "shapeJson.id.keyword" }
+                        grossAcresSum: {
+                            sum: {
+                                field: "grossAcres"
+                            }
                         }
                     }
                 }
             });
-            getESAggsApprovedCount({
+            getESAggsNetAcresSum({
                 variables: {
                     esIndex,
                     search: esSearch,
-                    filters: [ ...esFilters, {
-                        field: "shapeJson.properties.approvalStatus",
-                        value: "APPROVED"
-                    }],
+                    filters: esFilters,
                     aggs: {
-                        approvedCount: {
-                            cardinality: { field: "shapeJson.id.keyword" }
+                        netAcresSum: {
+                            sum: {
+                                field: "net_acres"
+                            }
+                        }
+                    }
+                }
+            })
+            getESAggsNetRoyaltyAcresSum({
+                variables: {
+                    esIndex,
+                    search: esSearch,
+                    filters: esFilters,
+                    aggs: {
+                        netRoyaltyAcresSum: {
+                            sum: {
+                                field: "nra"
+                            }
                         }
                     }
                 }

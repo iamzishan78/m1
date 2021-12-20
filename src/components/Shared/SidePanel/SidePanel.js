@@ -388,13 +388,11 @@ export default function SidePanel() {
     }
   }, [panelType, stateApp.heatLayers, stateApp.checkedHeats]);
 
-  // console.log("stateApp", stateApp);
-
   //   for Marketplace Panel
   useEffect(() => {
     if (panelType === "marketplace") {
-      setDragFunction(() => {});
-      setToggleFunction(() => {});
+      setDragFunction(() => { });
+      setToggleFunction(() => { });
       // setPanelItems(stateApp.layers);
       setPanelTitle("Marketplace");
       setPanelButton(null);

@@ -27,6 +27,10 @@ export function addTrailingZeros(num) {
   return num ? num.toLocaleString("en", { useGrouping: false, minimumFractionDigits: 8, maximumFractionDigits: 20 }) : num;
 }
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 export function uploadFileData(file, fileContent) {
   const url = file.uri;
   const interal_key = file.internalKey;

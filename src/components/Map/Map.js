@@ -45,7 +45,6 @@ import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from "mapbox
 import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import debounce from "lodash/debounce";
 
 // material-ui
 import { makeStyles } from "@material-ui/core/styles";
@@ -725,6 +724,7 @@ function Map({ type, paramId, lati, longi }) {
 
         // geoJson = layerData;
       } else {
+        const extraFeatures = []
         const makeGeoJSON = (mdata) => {
           return {
             type: "FeatureCollection",
@@ -751,6 +751,17 @@ function Map({ type, paramId, lati, longi }) {
                   let shape = JSON.parse(feature.shape);
                   shape.id = feature._id;
                   shape.properties.id = feature._id;
+                  if (shape.geometry.type === 'MultiPolygon') {
+                    shape.geometry.type = 'Polygon'
+                    const shapesCoordinates = copy(shape.geometry.coordinates)
+                    shape.geometry.coordinates = shapesCoordinates[0]
+                    for (let i = 1; i < shapesCoordinates.length; i++) {
+                      const newShape = copy(shape)
+                      newShape.geometry.coordinates = shapesCoordinates[i]
+                      extraFeatures.push(newShape)
+                    }
+                  }
+
                   return shape;
                 }
                 ///////////
@@ -771,6 +782,7 @@ function Map({ type, paramId, lati, longi }) {
         };
 
         geoJson = makeGeoJSON(layerData);
+        geoJson.features = geoJson.features.concat(extraFeatures)
       }
 
       const sourceId = prop.sourceProps;
@@ -1361,9 +1373,6 @@ function Map({ type, paramId, lati, longi }) {
             layerId === "Search" ||
             layerId === "recent_submitted_permits" ||
             layerId === "recent_submitted_permit_laterals":
-            // layerId === "permits":
-
-            console.log("LAYER", layerId);
             wellPointClick(feature);
             break;
           default:
@@ -1393,7 +1402,6 @@ function Map({ type, paramId, lati, longi }) {
 
   useEffect(() => {
     let beforeLayer = null;
-    console.log(map?.getStyle()?.sources);
     if (stateApp.layers && stateApp.layers.length > 0 && map) {
       for (let i = 0; i < stateApp.layers.length; i++) {
         const layer = stateApp.layers[i];
@@ -4135,7 +4143,7 @@ function Map({ type, paramId, lati, longi }) {
       setStateApp((state) => ({
         ...state,
         popupOpen: true,
-        expandedCard: stateApp.activateWellDetailsFromTable || ( currentFeature.id && currentFeature.id === paramId ) ? true : false,
+        expandedCard: stateApp.activateWellDetailsFromTable || (currentFeature.id && currentFeature.id === paramId) ? true : false,
       }));
 
       handleOpenExpandableCard();
@@ -4686,9 +4694,6 @@ function Map({ type, paramId, lati, longi }) {
   };
 
   const onAbstactLayerClick = function (feature, action) {
-    console.log("featur--", feature);
-    console.log("action", action);
-
     if (!feature) {
       setStateApp((state) => ({
         ...state,
@@ -5087,8 +5092,6 @@ function Map({ type, paramId, lati, longi }) {
             .catch((error) => {
               console.log(error);
             });
-
-          // setTimeout(() => { console.log(newMap?.getStyle()?.layers) }, 3000)
 
           newMap.loadImage(MarkerIcon, function (error, image) {
             if (error) throw error;
