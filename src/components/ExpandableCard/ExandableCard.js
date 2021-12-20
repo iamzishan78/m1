@@ -33,6 +33,7 @@ import { MapControlsContext } from "../MapControls/MapControlsContext";
 import { Avatar, Box, Grid } from "@material-ui/core";
 import FolderIcon from '@material-ui/icons/Folder';
 import { modifyExandableCardStyle } from "components/Shared/functions/shapeLayer";
+import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
 
 
@@ -356,7 +357,7 @@ function ExpandableCard(props) {
               </Box>
               <Box className='description'>{subTitle}</Box>
               {stateApp.selectedShape.type === 'unit' && <Box className='type' >Unit</Box>}
-              {stateApp.selectedShape.type === 'agreement' && <Box className='type' >{stateApp.selectedShape?.agreementType}</Box>}
+              {stateApp.selectedShape.type === 'agreement' && <Box className='type' >{agreementTypes.find((at) => at.value === stateApp.selectedShape?.agreementType)?.label || ''}</Box>}
             </Grid>
           </Grid> : <> {
             (targetLabel !== "contact"

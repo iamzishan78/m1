@@ -136,7 +136,6 @@ export const TableESHOC = (Component) => {
                 let hits = tableData?.hits
                 if (formatHits)
                     hits = formatHits(hits)
-                console.log("hits", hits)
                 setRows(hits);
 
                 if (formatColumns)

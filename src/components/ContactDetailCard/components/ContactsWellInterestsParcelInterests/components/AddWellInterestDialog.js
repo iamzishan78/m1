@@ -201,14 +201,9 @@ function AddWellInterestDialog(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to wellheader-index search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -304,7 +299,7 @@ function AddWellInterestDialog(props) {
 
   const handleRecalcNRA = (leaseAcres, interest) => {
     if (initializing || leaseAcres == null || interest == null) return;
-    setFormRoyaltyAcres(formatRoyaltyAcres(leaseAcres * interest*8));
+    setFormRoyaltyAcres(formatRoyaltyAcres(leaseAcres * interest * 8));
   }
 
   const handleValidate = () => {
@@ -320,7 +315,6 @@ function AddWellInterestDialog(props) {
   const handleSave = () => {
     setLoading(true);
     if (stateApp.activeWellInterest) {
-      console.log("formLeaseName", formLeaseName);
       updateWellInterest({
         variables: {
           wellInterest: {
@@ -740,16 +734,16 @@ function AddWellInterestDialog(props) {
                     <OutlinedInput
                       id="royality-acres"
                       inputComponent={NumberFormatCustom}
-                      className={formRoyaltyAcres !== (formatRoyaltyAcres(formInterestAmount * formLeaseAcres*8)) ? classes.royaltyAcres : ''}
+                      className={formRoyaltyAcres !== (formatRoyaltyAcres(formInterestAmount * formLeaseAcres * 8)) ? classes.royaltyAcres : ''}
                       value={formRoyaltyAcres === 0 || formRoyaltyAcres ? formRoyaltyAcres : ''}
                       onChange={event => setFormRoyaltyAcres(parseFloat(event.target.value))}
                       labelWidth={140}
                       endAdornment={
                         <InputAdornment position="end" style={{ position: 'absolute', right: "-3px" }}>
                           {
-                            formRoyaltyAcres !== '' && formRoyaltyAcres !== (formatRoyaltyAcres(formInterestAmount * formLeaseAcres*8)) && <IconButton
+                            formRoyaltyAcres !== '' && formRoyaltyAcres !== (formatRoyaltyAcres(formInterestAmount * formLeaseAcres * 8)) && <IconButton
                               aria-label="toggle royality-acres"
-                              onClick={() => setFormRoyaltyAcres(formatRoyaltyAcres(formInterestAmount * formLeaseAcres*8))}
+                              onClick={() => setFormRoyaltyAcres(formatRoyaltyAcres(formInterestAmount * formLeaseAcres * 8))}
                             >
                               <AutorenewIcon />
                             </IconButton>

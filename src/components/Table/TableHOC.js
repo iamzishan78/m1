@@ -230,6 +230,7 @@ export const TableHOC = (Component) => {
                     gqlQuery(pageESVariables);
                 },
                 changeESPage: () => {
+                    debugger
                     setLoading(true);
                     gqlQuery({
                         ...pageESVariables,

@@ -88,7 +88,7 @@ export default function SearchBarWithToggleButton() {
     <div className={classes.root}>
       {!mapGridCardActivated && (
         <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
-          
+
           {/* <SearchByTypeSelectField/> */}
           <Search />
 
@@ -97,7 +97,6 @@ export default function SearchBarWithToggleButton() {
               <Button
                 className={classes.gridOnIcon}
                 onClick={() => {
-                  console.log(stateApp, "Add Document");
                   setStateApp({ ...stateApp, DocumentDrawer: true });
                 }}
               >
