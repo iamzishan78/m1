@@ -46,7 +46,7 @@ export function getParcelOriginalProperties(parcel) {
     } else {
       originalProperty.state = originalProperties[0].StateAbbreviation;
     }
-    if ("Section" in originalProperties[0]){
+    if ("Section" in originalProperties[0]) {
       originalProperty.section = originalProperties[0].Section;
     } else {
       originalProperty.section = originalProperties[0].ShortName;
