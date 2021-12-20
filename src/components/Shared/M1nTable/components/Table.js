@@ -2503,6 +2503,27 @@ function SubTable(props) {
               },
             };
             break;
+            case "tractName":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value, tableMeta, updateValue) => {
+                return (
+                  <>
+                    {props.parent === "TractsTable" && (
+                      <p onClick={(e) => {
+                        e.stopPropagation();
+                        if (tableMeta.rowData[0]) {
+                          history.push(`/tract/details/${tableMeta.rowData[0]}`)
+                        }
+                        }} style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}>
+                        {value}
+                      </p>
+                    )}
+                  </>
+                );
+              },
+            };
+            break;
           case "status":
             column.options = {
               ...column.options,
@@ -4424,7 +4445,7 @@ function SubTable(props) {
           innerRef={props.tableRef}
           className={tableStyle}
           title={getHeaders()}
-          data={props.parent === "ownersPerParcel" ? searchedRows : props.addAble.type === "RevenueStatement" ? getRevenueStatementRows() : rows ? rows : []}
+          data={props.parent === "ownersPerParcel" ? searchedRows : props.addAble?.type === "RevenueStatement" ? getRevenueStatementRows() : rows ? rows : []}
           // columns={
           //   props.parent === "ownersPerParcel" ? false :
           //   (columns ? columns : [])}

@@ -186,7 +186,7 @@ export default (props) => {
     } else {
       parcelName = "PLSS Default Name";
     }
-    originalProperties = [abstractShape.properties];
+    originalProperties = abstractShape.properties;
 
     const featureId = hat();
     const newShapeFeature = {

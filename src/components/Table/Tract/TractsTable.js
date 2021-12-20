@@ -147,7 +147,7 @@ function TractsTable(props) {
                     if (optionalPath) parts[0] = parts[0].slice(0,-1)
                     if (parts.length == 1) {
                         return obj[parts[0]] ||
-                        (optionalPath ? obj : null);
+                        (optionalPath && typeof obj !== 'object' ? obj : null);
                     }
                     return resolvePath(obj[parts[0]], parts.slice(1).join(".")) ||
                     (optionalPath ? resolvePath(obj, parts.slice(1).join(".")) : resolvePath(null, parts.slice(1).join(".")));

@@ -382,7 +382,7 @@ const ShapeActionsPopup = (props) => {
 
     let originalProperties;
     let parcelName = getParcelAndShapeName(abstractShape)
-    originalProperties = [abstractShape.properties];
+    originalProperties = abstractShape.properties;
 
     const featureId = hat();
     const newShapeFeature = {

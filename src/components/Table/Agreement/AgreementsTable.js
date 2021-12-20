@@ -128,11 +128,18 @@ function AgreementsTable(props) {
         if (tableData && !props.loading) {
             if (tableData?.hits?.length > 0) {
                 const resolvePath = (obj, path) => {
+                    if (!obj) return null
+                    // if (Array.isArray(obj)) obj = obj[0]
+
                     const parts = path.split(".");
+                    const optionalPath = parts[0].endsWith('?')
+                    if (optionalPath) parts[0] = parts[0].slice(0,-1)
                     if (parts.length == 1) {
-                        return obj[parts[0]];
+                        return obj[parts[0]] ||
+                        (optionalPath && typeof obj !== 'object' ? obj : null);
                     }
-                    return resolvePath(obj[parts[0]], parts.slice(1).join("."));
+                    return resolvePath(obj[parts[0]], parts.slice(1).join(".")) ||
+                    (optionalPath ? resolvePath(obj, parts.slice(1).join(".")) : resolvePath(null, parts.slice(1).join(".")));
                 }
 
                 const hits = tableData?.hits.map((hit) => {
