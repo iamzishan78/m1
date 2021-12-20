@@ -308,7 +308,6 @@ export default function Documents(props) {
     if (files && files?.getFileDescriptors) {
       let ID = [];
       for (let i = 0; i < files.getFileDescriptors.length; i++) {
-        // console.log(files?.getFileDescriptors[i].fileId, 'Kumail Test')
         ID.push(files.getFileDescriptors[i].fileId);
       }
 

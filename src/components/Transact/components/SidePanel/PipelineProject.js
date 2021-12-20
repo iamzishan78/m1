@@ -82,11 +82,9 @@ const PipelineProject = (props) => {
     begin(f) {
       itemRef.current = data;
       handleDragBegin(data);
-      console.log("begin drag");
     },
     end(f) {
       handleDragEnd(itemRef.current, data);
-      console.log("end drag");
     },
   });
 

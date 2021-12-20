@@ -128,20 +128,23 @@ const LayerItem = React.memo((props) => {
                 )}
               </Box>
 
-              {type === "group" && !collapsed && (
-                <ListItemIcon onClick={handleClick}>
-                  <ExpandLessIcon />
-                </ListItemIcon>
-              )}
-              {type === "group" && collapsed && (
-                <ListItemIcon onClick={handleClick}>
-                  <ExpandMoreIcon />
-                </ListItemIcon>
-              )}
+
 
               <Typography id={id} color="secondary" noWrap>
                 {name}
               </Typography>
+              <Box paddingLeft={1} display="flex">
+                {type === "group" && !collapsed && (
+                  <ListItemIcon onClick={handleClick}>
+                    <ExpandLessIcon />
+                  </ListItemIcon>
+                )}
+                {type === "group" && collapsed && (
+                  <ListItemIcon onClick={handleClick}>
+                    <ExpandMoreIcon />
+                  </ListItemIcon>
+                )}
+              </Box>
             </Grid>
           </Grid>
 
@@ -170,7 +173,7 @@ const LayerItem = React.memo((props) => {
                   alignItems: "center",
                 }}
               >
-                <Grid item>
+                <Grid item style={{ paddingRight: "40px", }}>
                   <FormControlLabel control={<Switch checked={data.visiable} onChange={() => onToggleGroup(id)} size="small" />} />
                 </Grid>
               </Grid>

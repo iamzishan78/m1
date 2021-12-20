@@ -112,11 +112,7 @@ export default function UploadZone(props) {
     <>
       <DropzoneAreaBase
         onAdd={handleFileInput}
-        // onDelete={(fileObj) => console.log("Removed File:", fileObj)}
         showAlerts={props.relatedObjectType === "Contact"}
-        onAlert={(message, variant) => {
-          console.log(`${variant}: ${message}`);
-        }}
         filesLimit={1}
         dropzoneProps={{
           disabled: props.loading || addFileLoading || props.disabled,
@@ -170,9 +166,9 @@ export default function UploadZone(props) {
 
         maxFileSize={104857600}
         dropzoneClass={classes.dropzoneClass}
-        // getFileAddedMessage={(value) => {
-        // 	alert("File is been added", value);
-        // }}
+      // getFileAddedMessage={(value) => {
+      // 	alert("File is been added", value);
+      // }}
       ></DropzoneAreaBase>
       {(props.loading || addFileLoading) && (
         <div style={{ display: "flex", justifyContent: "center" }}>

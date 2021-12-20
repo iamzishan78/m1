@@ -32,7 +32,7 @@ export default function UnitSummary(props) {
 
     const addCustomData = () => {
         if (!props.properties.custom_data_arr) {
-            props.properties.custom_data_arr = []
+            props.properties.custom_data_arr = [];
         }
         props.properties.custom_data_arr.push({
             id: uuid(),
@@ -41,8 +41,8 @@ export default function UnitSummary(props) {
             key: '',
             value: '',
             isCustom: true
-        })
-        props.setProperties({ ...props.properties, custom_data_arr: [...props.properties.custom_data_arr] })
+        });
+        props.setProperties({ ...props.properties, custom_data_arr: [...props.properties.custom_data_arr] });
     }
 
     return <Grid container direction="row" className={classes.summaryCard}>
@@ -50,10 +50,10 @@ export default function UnitSummary(props) {
             <Grid container spacing={1} direction="column" >
                 <Grid item>
                     <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: "space-between" }}>
-                        <Grid item md={5}>
+                        <Grid item md={5} sm={4}>
                             <Grid container spacing={2} className={classes.summaryDetailCard}>
-                                <Grid item>
-                                    <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeWells || 0} </div>
+                                <Grid item style={{ paddingLeft: 0 }}>
+                                    <div className={classes.summaryValue} style={{ bottom: "2px" }}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeWells || 0} </div>
                                     <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
                                 </Grid>
                                 <Grid item>
@@ -70,7 +70,7 @@ export default function UnitSummary(props) {
                                 </Grid> */}
                             </Grid>
                         </Grid>
-                        <Grid item md={7}>
+                        <Grid item md={7} sm={8}>
                             <ExpandableSearch setSearch={setSearch} search={search} />
                         </Grid>
                     </Grid>
