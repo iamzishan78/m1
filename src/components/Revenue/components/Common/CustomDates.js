@@ -46,10 +46,9 @@ const CUSTOM_DATES = {
   LAST_YEAR: "Last Year",
 };
 
-export default function Portfolio() {
+// fromDate and toDate should be passed from the parent
+export default function Portfolio({ fromDate, setFromDate, toDate, setToDate }) {
   const classes = useStyles();
-  const [fromDate, setFromDate] = React.useState(null);
-  const [toDate, setToDate] = React.useState(null);
 
   const getFlaggedMoment = (moment) => {
     return moment >= 10 ? moment : `0${moment}`;
@@ -126,6 +125,8 @@ export default function Portfolio() {
             fullWidth
             value={fromDate}
             className={classes.inputFieldDate}
+            onChange={(e) => setFromDate(e.target.value)}
+
             InputLabelProps={{
               shrink: true,
             }}
@@ -151,6 +152,7 @@ export default function Portfolio() {
             fullWidth
             value={toDate}
             className={classes.inputFieldDate}
+            onChange={(e) => setToDate(e.target.value)}
             InputLabelProps={{
               shrink: true,
             }}

@@ -2366,7 +2366,7 @@ function SubTable(props) {
                           ) : value?.toLowerCase() === "declined" ? (
                             <div className={classes.declinedBadge} />
                           ) :
-                            null
+                          <span style={{ color: "#959595" }}>N/A</span>
                           }
                           <div>{value?.toLowerCase() === "pending" ? '' : value}</div>
                         </div>

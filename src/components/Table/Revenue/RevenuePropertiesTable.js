@@ -3,27 +3,15 @@ import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 import TableHeader from "components/Table/constants/revenue-properties-header-schema";
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
-import { useLazyQuery } from "@apollo/client";
-
+import { RevenueContext } from 'components/Revenue/RevenueContext'
 // QUERIES
 import { deepEqualObjects } from "components/Shared/functions";
-
 // Utilities
 import { usetableStyles } from "../Styles";
 
 function RevenuePropertiesTable(props) {
   const classes = usetableStyles();
-  // query
-  const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(
-    GET_ES_PAGINATED_LIST,
-    {
-      fetchPolicy: "no-cache",
-      onCompleted: () => {
-        console.log("compeleted");
-      },
-    }
-  );
+  const { getESPaginatedList, elasticData, loading } = React.useContext(RevenueContext);
 
   // rearranging the data according to the requirements.
   const tableData = elasticData?.getESPaginatedList?.hits?.map((eachRow) => {
@@ -105,7 +93,7 @@ function RevenuePropertiesTable(props) {
       default:
     }
   };
-  
+
   return (
     <Container
       maxWidth={false}

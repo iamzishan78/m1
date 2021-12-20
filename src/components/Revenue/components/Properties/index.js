@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
-
+import { RevenueContext } from 'components/Revenue/RevenueContext'
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTable";
@@ -47,13 +47,17 @@ const cards = [
   },
 ];
 
-export default function Portfolio() {
+
+export default function Properties() {
   const classes = useStyles();
+  const { getESPaginatedList, elasticData, loading } = React.useContext(RevenueContext);
 
-  // const getFlaggedMoment = (moment) => {
-  //   return moment >= 10 ? moment : `0${moment}`;
-  // };
+  const [fromDate, setFromDate] = React.useState(null);
+  const [toDate, setToDate] = React.useState(null);
+  console.log('elasticData in properties component', elasticData)
+  const filterProperties = () => {
 
+  }
   return (
     <>
       <div className={classes.actionBar}>
@@ -64,7 +68,7 @@ export default function Portfolio() {
           justify="space-between"
           style={{ padding: "0px 78px" }}
         >
-          <CustomDates />
+          <CustomDates fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} />
           <Grid item xs={5} md={4}>
             <Grid
               container
@@ -80,7 +84,7 @@ export default function Portfolio() {
                 </Button>
               </Grid>
               <Grid item>
-                <Button variant="contained">Filter</Button>
+                <Button variant="contained" onClick={() => filterProperties()}>Filter</Button>
               </Grid>
             </Grid>
           </Grid>
@@ -91,7 +95,6 @@ export default function Portfolio() {
         <RevenuePropertiesTable
           header="Properties"
           parent="RevenuePropertiesTable"
-          loading={false}
           dense={true}
           targetLabel='properties'
         />
