@@ -3436,7 +3436,7 @@ function SubTable(props) {
               props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
-                || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+                // || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
                 ? false : null,
 
@@ -3445,7 +3445,7 @@ function SubTable(props) {
               props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
-                || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+                // || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
                 ? false : null,
 

@@ -57,6 +57,18 @@ const ownersColumnHeaders = [
     },
   },
   {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
     name: "commentsCounter",
     label: " ",
     options: {
@@ -89,18 +101,6 @@ const ownersColumnHeaders = [
     },
   },
   {
-    name: "coordinates",
-    label: " ",
-    options: {
-      filter: false,
-      sort: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-  {
     name: "detailCard",
     label: " ",
     options: {
@@ -113,12 +113,12 @@ const ownersColumnHeaders = [
     },
   },
   {
-    name: "isContact",
+    name: "coordinates",
     label: " ",
     options: {
       filter: false,
-      searchable: false,
       sort: false,
+      searchable: false,
       download: false,
       print: false,
       viewColumns: false,

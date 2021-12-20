@@ -408,7 +408,7 @@ function MapGridCard(props) {
                         {tab.label === 'owner' && !stateApp.gridPolygonString && (
                           <MapGridTaxOwnersTable
                             dense
-                            parent="search"
+                            parent="boundary_grid_owners"
                             customOptions={options}
                             targetLabel={tab.label}
                             header={
