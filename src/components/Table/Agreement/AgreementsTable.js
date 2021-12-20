@@ -160,7 +160,7 @@ function AgreementsTable(props) {
                                 display: (filterList, onChange, index, column) => {
                                     column.filterKey = headers.find(el => el.name === column.name)?.esKey;
                                     return (
-                                        <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
+                                        <AutoCompleteFilter filterList={[...esFilters, filterList]} column={column} index={index} onChange={onChange}
                                             query={GET_ES_FILTER_LIST} esIndex={esIndex} />
                                     );
                                 }

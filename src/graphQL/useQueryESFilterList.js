@@ -1,9 +1,10 @@
 import gql from "graphql-tag";
 
 export const GET_ES_FILTER_LIST = gql`
-  query getESFilterList( $esIndex: String, $filterKeys: JSON, $filterKey: String, $search: String,$extendSearchQuery: String, $size: Int) {
+  query getESFilterList( $esIndex: String, $filters: [JSON], $filterKeys: JSON, $filterKey: String, $search: String,$extendSearchQuery: String, $size: Int) {
     getESFilterList(
-      esIndex: $esIndex, 
+      esIndex: $esIndex,
+      filters: $filters,
       filterKey: $filterKey,
       filterKeys: $filterKeys,
       search: $search,

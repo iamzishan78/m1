@@ -12,197 +12,276 @@ const TractsHeadCells = [
         }
     },
     {
-        name: "State", label: "State", esKey: 'shape.shapeJson.properties.originalProperties.State.keyword', 
+        name: "State", label: "State", esKey: [
+            'shape.shapeJson.properties.originalProperties.State.keyword',
+            'shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword'
+        ],
         options: { 
-            dbName: "shape.shapeJson.properties.originalProperties.State",
+            dbName: "shape.shapeJson.properties.originalProperties.0?.State?.StateAbbreviation?",
             sort: true, 
             filter: true 
         }
     },
     {
-        name: "County", label: "County", esKey: 'shapeJson.properties.originalProperties.County.keyword', 
+        name: "County", label: "County", esKey: 'shape.shapeJson.properties.originalProperties.County.keyword', 
         options: { 
-            dbName: "shapeJson.properties.originalProperties.County",
+            dbName: "shape.shapeJson.properties.originalProperties.0?.County",
             sort: true, 
             filter: true 
         }
     },
     {
-        name: "Survey", label: "Survey", esKey: 'shapeJson.properties.originalProperties.Survey.keyword', 
+        name: "SurveyMeridian", label: "Survey/Meridian", esKey: [
+            'shape.shapeJson.properties.originalProperties.Survey.keyword',
+            'shape.shapeJson.properties.originalProperties.PrincipalMeridian.keyword'
+        ], 
         options: { 
-            dbName: "shapeJson.properties.originalProperties.Survey",
+            dbName: "shape.shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
+            sort: true, 
+            filter: true 
+        }
+    },
+    // {
+    //     name: "PrincipalMeridian", label: "PrincipalMeridian", esKey: 'shapeJson.properties.originalProperties.PrincipalMeridian.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.originalProperties.PrincipalMeridian",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    {
+        name: "BlockTownship", label: "Block/Township", esKey: [
+            'shape.shapeJson.properties.originalProperties.Block.keyword',
+            'shape.shapeJson.properties.originalProperties.Township.keyword'
+        ], 
+        options: { 
+            dbName: "shape.shapeJson.properties.originalProperties.0?.Block?.Township?",
+            sort: true, 
+            filter: true 
+        }
+    },
+    // {
+    //     name: "Township", label: "Township", esKey: 'shapeJson.properties.originalProperties.Township.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.originalProperties.Township",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    {
+        name: "SectionRange", label: "Section/Range", esKey: [
+            'shape.shapeJson.properties.originalProperties.Section.keyword',
+            'shape.shapeJson.properties.originalProperties.Range.keyword'
+        ], 
+        options: { 
+            dbName: "shape.shapeJson.properties.originalProperties.0?.Section?.Range?",
+            sort: true, 
+            filter: true 
+        }
+    },
+    // {
+    //     name: "Range", label: "Range", esKey: 'shapeJson.properties.originalProperties.Range.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.originalProperties.Range",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    {
+        name: "AbstractSection", label: "Abstract/Section", esKey: [
+            'shape.shapeJson.properties.originalProperties.AbstractName.keyword',
+            'shape.shapeJson.properties.originalProperties.ShortName.keyword'
+        ], 
+        options: { 
+            dbName: "shape.shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
             sort: true, 
             filter: true 
         }
     },
     {
-        name: "PrincipalMeridian", label: "PrincipalMeridian", esKey: 'shapeJson.properties.originalProperties.PrincipalMeridian.keyword', 
+        name: "QtrCalls", label: "QTR Calls", esKey: 'qtr.keyword', 
         options: { 
-            dbName: "shapeJson.properties.originalProperties.PrincipalMeridian",
+            dbName: "qtr",
             sort: true, 
             filter: true 
         }
     },
     {
-        name: "Block", label: "Block", esKey: 'shapeJson.properties.originalProperties.Block.keyword', 
+        name: "GrossAcres", label: "Gross Acres", esKey: 'shape.shapeJson.properties.sdGrossAcres.keyword', 
         options: { 
-            dbName: "shapeJson.properties.originalProperties.Block",
+            dbName: "shape.shapeJson.properties.sdGrossAcres",
             sort: true, 
             filter: true 
         }
     },
     {
-        name: "Township", label: "Township", esKey: 'shapeJson.properties.originalProperties.Township.keyword', 
+        name: "depthFrom", label: "Depth From", esKey: 'depthFrom.keyword', 
         options: { 
-            dbName: "shapeJson.properties.originalProperties.Township",
+            dbName: "depthFrom",
             sort: true, 
             filter: true 
         }
     },
     {
-        name: "Section", label: "Section", esKey: 'shapeJson.properties.originalProperties.Section.keyword', 
+        name: "depthTo", label: "Depth To", esKey: 'depthTo.keyword', 
         options: { 
-            dbName: "shapeJson.properties.originalProperties.Section",
+            dbName: "depthTo",
             sort: true, 
             filter: true 
         }
     },
     {
-        name: "Range", label: "Range", esKey: 'shapeJson.properties.originalProperties.Range.keyword', 
+        name: "mineral_interest", label: "Mineral Interest", esKey: 'mineral_interest', 
         options: { 
-            dbName: "shapeJson.properties.originalProperties.Range",
+            dbName: "mineral_interest",
             sort: true, 
             filter: true 
         }
     },
     {
-        name: "AbstractName", label: "AbstractName", esKey: 'shapeJson.properties.originalProperties.AbstractName.keyword', 
+        name: "royalty_interest", label: "Royalty Interest", esKey: 'royalty_interest', 
         options: { 
-            dbName: "shapeJson.properties.originalProperties.AbstractName",
+            dbName: "royalty_interest",
             sort: true, 
             filter: true 
         }
     },
     {
-        name: "ShortName", label: "ShortName", esKey: 'shapeJson.properties.originalProperties.ShortName.keyword', 
+        name: "orri", label: "ORRI", esKey: 'orri', 
         options: { 
-            dbName: "shapeJson.properties.originalProperties.ShortName",
+            dbName: "orri",
             sort: true, 
             filter: true 
         }
     },
     {
-        name: "tractType", label: "Type", esKey: 'shapeJson.properties.tractType.keyword', 
+        name: "net_acres", label: "Net Acres", esKey: 'net_acres', 
         options: { 
-            dbName: "shapeJson.properties.tractSubtype",
+            dbName: "net_acres",
             sort: true, 
             filter: true 
         }
     },
     {
-        name: "tractSubtype", label: "Subtype", esKey: 'shapeJson.properties.tractSubtype.keyword', 
+        name: "nra", label: "NRA", esKey: 'nra', 
         options: { 
-            dbName: "shapeJson.properties.tractSubtype",
+            dbName: "nra",
             sort: true, 
             filter: true 
         }
     },
-    {
-        name: "rightsType", label: "Rights", esKey: 'shapeJson.properties.rightsType.keyword', 
-        options: { 
-            dbName: "shapeJson.properties.rightsType",
-            sort: true, 
-            filter: true 
-        }
-    },
-    {
-        name: "grantor", label: "Grantor (Party 1)", esKey: 'shapeJson.properties.grantor.keyword', 
-        options: { 
-            dbName: "shapeJson.properties.grantor",
-            sort: true, 
-            filter: true 
-        }
-    },
-    {
-        name: "grantee", label: "Grantee (Party 2)", esKey: 'shapeJson.properties.grantee.keyword', 
-        options: { 
-            dbName: "shapeJson.properties.grantee",
-            sort: true, 
-            filter: true 
-        }
-    },
-    {
-        name: "tractDate", label: "Agmt Date", esKey: 'shapeJson.properties.tractDate.keyword', 
-        options: { 
-            dbName: "shapeJson.properties.tractDate",
-            sort: true, 
-            filter: true 
-        }
-    },
-    {
-        name: "effectiveDate", label: "Efftv Date", esKey: 'shapeJson.properties.effectiveDate.keyword', 
-        options: { 
-            dbName: "shapeJson.properties.effectiveDate",
-            sort: true, 
-            filter: true 
-        }
-    },
-    {
-        name: "expirationDate", label: "Exp Date", esKey: 'shapeJson.properties.expirationDate.keyword', 
-        options: { 
-            dbName: "shapeJson.properties.expirationDate",
-            sort: true, 
-            filter: true 
-        }
-    },
-    {
-        name: "extensionDate", label: "Ext Date", esKey: 'shapeJson.properties.extensionDate.keyword', 
-        options: { 
-            dbName: "shapeJson.properties.extensionDate",
-            sort: true, 
-            filter: true 
-        }
-    },
-    {
-        name: "tractStatus", label: "Status", esKey: 'shapeJson.properties.tractStatus.keyword', 
-        options: { 
-            dbName: "shapeJson.properties.tractStatus",
-            sort: true, 
-            filter: true 
-        }
-    },
-    {
-        name: "reportGrossAcres", label: "RPT GRS", esKey: 'shapeJson.properties.reportGrossAcres.keyword', 
-        options: { 
-            dbName: "shapeJson.properties.reportGrossAcres",
-            sort: true, 
-            filter: true 
-        }
-    },
-    {
-        name: "grossAcres", label: "GRS", esKey: 'shapeJson.properties.grossAcres.keyword', 
-        options: { 
-            dbName: "shapeJson.properties.grossAcres",
-            sort: true, 
-            filter: true 
-        }
-    },
-    {
-        name: "netAcres", label: "NET", esKey: 'shapeJson.properties.netAcres.keyword', 
-        options: { 
-            dbName: "shapeJson.properties.netAcres",
-            sort: true, 
-            filter: true 
-        }
-    },
-    {
-        name: "status", label: "Status", esKey: 'shapeJson.properties.approvalStatus.keyword', 
-        options: { 
-            dbName: "shapeJson.properties.approvalStatus",
-            sort: true, 
-            filter: true
-        }
-    },
+    // {
+    //     name: "ShortName", label: "ShortName", esKey: 'shapeJson.properties.originalProperties.ShortName.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.originalProperties.ShortName",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    // {
+    //     name: "tractType", label: "Type", esKey: 'shape.shapeJson.properties.tractType.keyword', 
+    //     options: { 
+    //         dbName: "shape.shapeJson.properties.tractSubtype",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    // {
+    //     name: "tractSubtype", label: "Subtype", esKey: 'shapeJson.properties.tractSubtype.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.tractSubtype",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    // {
+    //     name: "rightsType", label: "Rights", esKey: 'shapeJson.properties.rightsType.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.rightsType",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    // {
+    //     name: "grantor", label: "Grantor (Party 1)", esKey: 'shapeJson.properties.grantor.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.grantor",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    // {
+    //     name: "grantee", label: "Grantee (Party 2)", esKey: 'shapeJson.properties.grantee.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.grantee",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    // {
+    //     name: "tractDate", label: "Agmt Date", esKey: 'shapeJson.properties.tractDate.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.tractDate",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    // {
+    //     name: "effectiveDate", label: "Efftv Date", esKey: 'shapeJson.properties.effectiveDate.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.effectiveDate",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    // {
+    //     name: "expirationDate", label: "Exp Date", esKey: 'shapeJson.properties.expirationDate.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.expirationDate",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    // {
+    //     name: "extensionDate", label: "Ext Date", esKey: 'shapeJson.properties.extensionDate.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.extensionDate",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    // {
+    //     name: "tractStatus", label: "Status", esKey: 'shapeJson.properties.tractStatus.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.tractStatus",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    // {
+    //     name: "reportGrossAcres", label: "RPT GRS", esKey: 'shapeJson.properties.reportGrossAcres.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.reportGrossAcres",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    // {
+    //     name: "netAcres", label: "NET", esKey: 'shapeJson.properties.netAcres.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.netAcres",
+    //         sort: true, 
+    //         filter: true 
+    //     }
+    // },
+    // {
+    //     name: "status", label: "Status", esKey: 'shapeJson.properties.approvalStatus.keyword', 
+    //     options: { 
+    //         dbName: "shapeJson.properties.approvalStatus",
+    //         sort: true, 
+    //         filter: true
+    //     }
+    // },
     {
         name: "tags", label: "Tags", esKey: 'tags.keyword', options: { sort: true, filter: true }
     },
