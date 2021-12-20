@@ -86,14 +86,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color }) => {
+const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, isShapeGridOnly }) => {
 
     const classes = useStyles({ backgroundColor, color });
     const [search, setSearch] = useState('');
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const platformData = useMemo(() => {
-        return platformDataInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase()))
+        return platformDataInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())).filter(data => isShapeGridOnly ? data.shapeGrid ? true : false : true)
 
     }, [search])
 

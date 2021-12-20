@@ -382,6 +382,7 @@ function MapGridCard(props) {
                             targetLabel={tab.label}
                             header={
                               <SearchPanel
+                                isShapeGridOnly={stateApp.gridPolygonString}
                                 handleChange={handleSearchPanelChange}
                                 value={searchTapValue}
                                 ativateSearchPanel={ativateSearchPanel}
@@ -397,6 +398,7 @@ function MapGridCard(props) {
                             parent="boundary_grid_owners"
                             header={
                               <SearchPanel
+                                isShapeGridOnly={stateApp.gridPolygonString}
                                 handleChange={handleSearchPanelChange}
                                 value={searchTapValue}
                                 ativateSearchPanel={ativateSearchPanel}
@@ -415,6 +417,7 @@ function MapGridCard(props) {
                             targetLabel={tab.label}
                             header={
                               <SearchPanel
+                                isShapeGridOnly={stateApp.gridPolygonString}
                                 handleChange={handleSearchPanelChange}
                                 value={searchTapValue}
                                 ativateSearchPanel={ativateSearchPanel}
@@ -433,6 +436,7 @@ function MapGridCard(props) {
                             targetLabel={tab.label}
                             header={
                               <SearchPanel
+                                isShapeGridOnly={stateApp.gridPolygonString}
                                 handleChange={handleSearchPanelChange}
                                 value={searchTapValue}
                                 ativateSearchPanel={ativateSearchPanel}
@@ -451,6 +455,7 @@ function MapGridCard(props) {
                             targetLabel={tab.label}
                             header={
                               <SearchPanel
+                                isShapeGridOnly={stateApp.gridPolygonString}
                                 handleChange={handleSearchPanelChange}
                                 value={searchTapValue}
                                 ativateSearchPanel={ativateSearchPanel}
