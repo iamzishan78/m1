@@ -11,7 +11,7 @@ export default function RevenueStatements() {
   const [unapprovedCount, setUnapprovedCount] = useState(0);
   const [potentialIssuesList, setPotentialIssuesList] = useState([]);
 
-  const [addCheckData, { }] = useMutation(ADD_CHECK_DATA);
+  const [addCheck, { }] = useMutation(ADD_CHECK_DATA);
 
   useEffect(() => {
     if (statements.length > 0) {
@@ -27,7 +27,7 @@ export default function RevenueStatements() {
 
 
   useEffect(() => {
-    addCheckData({
+    addCheck({
       variables: {
         checkInput: {
           checkAmount: 1.86,
@@ -57,7 +57,7 @@ export default function RevenueStatements() {
 
         },
       },
-      refetchQueries: ["addCheckData"],
+      refetchQueries: ["addCheck"],
       awaitRefetchQueries: true,
     });
   }, []);

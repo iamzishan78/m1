@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Typography, TextField } from "@material-ui/core";
 import AutoComplete from "components/Shared/components/Fields/AutoComplete";
 import moment from "moment";
+import { KeyboardDatePicker } from "@material-ui/pickers";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -29,7 +30,18 @@ const useStyles = makeStyles(() => ({
 
 export default function HeaderFunction(props) {
   const classes = useStyles();
-  // props?.details?.payor?.name
+  const [check, updateCheck] = useState({});
+
+  const handleUpdateCheck = (checkKey) => {
+    updateCheck({ ...check, ...checkKey });
+  };
+
+  useEffect(() => {
+    if (props?.details) {
+      updateCheck(props?.details);
+    }
+  }, [props]);
+
   return (
     <div className={classes.root}>
       <Typography varient="h5" className={classes.titleText}>
@@ -49,113 +61,99 @@ export default function HeaderFunction(props) {
           <TextField
             margin="dense"
             type="text"
-            variant="outlined"
+            variant="filled"
             label="Check Number"
             fullWidth
-            value={props?.details?.checkNumber || ""}
+            value={check?.checkNumber || ""}
           />
         </Grid>
+
         {/* Purchaser name */}
         <Grid item xs={4}>
           <AutoComplete
-            classes={classes}
+            variant="filled"
             onChange={(value) => console.log("value", value)}
             label="Purchaser Name"
-            options={["Lease - Oil, Gas, Minerals"]}
+            options={[]}
           />
-
         </Grid>
-
-
-        {/* <Grid item xs={3} >
-          <Controller
-            control={control}
-            name={`Purchaser Name`}
-            defaultValue={props?.details?.payor?.name || ""}
-            render={(
-              { onChange, value, ref },
-            ) => (
-              <AutocompEntityNamesList variant='outlined' margin='' size='' label='Purchaser Name' nameAutValue={value}
-                setNameAutValue={(value) => {
-                  if (value?._id)
-                    onChange([{ _id: value._id }]);
-                  else
-                    onChange([]);
-                }} />
-            )}
-          />
-
-        </Grid>
-        <Grid item md={1} style={{ height: '0px' }}>
-          <IconButton
-            size={"medium"}
-            color={'primary'}
-            onClick={(e) => {
-              e.stopPropagation();
-              // history.push(`/contact/details/${getParty(item)._id}`);
-            }}
-            aria-label="show contact"
-          >
-            <ContactCardDisabledIcon />
-
-          </IconButton>
-        </Grid> */}
 
         {/* Check date */}
         <Grid item xs={4}>
-          <TextField
-            margin="dense"
-            type="text"
-            variant="outlined"
+          <KeyboardDatePicker
+            autoOk
+            variant="inline"
+            disableToolbar
             label="Check Date"
-            fullWidth
-            value={moment.utc(props?.details?.checkDate).format("MM/DD/YYYY") || ""}
+            format="MM/DD/YYYY"
+            margin="normal"
+            id="date-picker-inline"
+            value={moment.utc(check?.checkDate).format("MM/DD/YYYY") || ""}
+            onChange={(date) => {
+              handleUpdateCheck({ checkDate: date ? String(date["_d"]) : "" });
+            }}
+            KeyboardButtonProps={{
+              "aria-label": "change date",
+            }}
           />
         </Grid>
+
         {/* Owner number */}
         <Grid item xs={4}>
           <TextField
             margin="dense"
             type="text"
-            variant="outlined"
+            variant="filled"
             label="Owner Number"
             fullWidth
-            value={props?.details?.payee?.number || ""}
+            value={check?.payee?.number || ""}
           />
         </Grid>
+
         {/* Owner name */}
         <Grid item xs={4}>
           <TextField
             margin="dense"
             type="text"
-            variant="outlined"
+            variant="filled"
             label="Owner Name"
             fullWidth
-            value={props?.details?.payee?.name || ""}
+            value={check?.payee?.name || ""}
           />
         </Grid>
+
         {/* Deposit date */}
         <Grid item xs={4}>
-          <TextField
-            margin="dense"
-            type="text"
-            variant="outlined"
-            label="Deposit Date"
-            fullWidth
-            value={moment.utc(props?.details?.depositDate).format("MM/DD/YYYY") || ""}
+          <KeyboardDatePicker
+            autoOk
+            variant="inline"
+            disableToolbar
+            label="Check Date"
+            format="MM/DD/YYYY"
+            margin="normal"
+            id="date-picker-inline"
+            value={moment.utc(check?.depositDate).format("MM/DD/YYYY") || ""}
+            onChange={(date) => {
+              handleUpdateCheck({ depositDate: date ? String(date["_d"]) : "" });
+            }}
+            KeyboardButtonProps={{
+              "aria-label": "change date",
+            }}
           />
         </Grid>
+
         {/* Check amount */}
         <Grid item xs={4}>
           <TextField
             margin="dense"
             type="number"
-            variant="outlined"
+            variant="filled"
             label="Check Amount"
             fullWidth
-            value={props?.details?.checkAmount || 0}
+            value={check?.checkAmount || 0}
           />
         </Grid>
+        
       </Grid>
     </div>
   );
