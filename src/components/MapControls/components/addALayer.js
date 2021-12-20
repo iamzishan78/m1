@@ -511,7 +511,7 @@ export default function AddLayer(props) {
                                   onChange={(e) => changeShowAble(layer)}
                                   inputProps={{ "aria-label": "primary checkbox" }}
                                 />
-                                <EditableTextField onChange={changeLayerName} item={layer} name={layer.name} />
+                                <EditableTextField onChange={changeLayerName} item={layer} name={layer.name} isEditable={checkIfDeleteAllow(layer)} />
                                 <ListItemSecondaryAction style={{ marginRight: "30px" }} onClick={(e) => e.stopPropagation()}>
                                   {
                                     checkIfDeleteAllow(layer) && <Tooltip title="Delete" placement="top">
@@ -539,7 +539,7 @@ export default function AddLayer(props) {
                                         onChange={() => changeShowAble(groupLayer)}
                                         inputProps={{ "aria-label": "primary checkbox" }}
                                       />
-                                      <EditableTextField onChange={changeLayerName} item={groupLayer} name={groupLayer.layerName} />
+                                      <EditableTextField onChange={changeLayerName} item={groupLayer} name={groupLayer.layerName} isEditable={checkIfDeleteAllow(layer)} />
                                       <ListItemSecondaryAction>
                                         {
                                           checkIfDeleteAllow(layer) && <Tooltip title="Delete" placement="top">
