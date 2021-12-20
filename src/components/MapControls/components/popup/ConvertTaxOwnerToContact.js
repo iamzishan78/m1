@@ -13,8 +13,10 @@ import IconButton from "@material-ui/core/IconButton";
 
 import { AppContext } from "AppContext";
 import Tags from "components/Shared/Tagger";
+import { getMapFilters } from "utils/helper";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
+import { NavigationContext } from "components/Navigation/NavigationContext";
 import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 
 const useStyles = makeStyles((theme) => ({
@@ -59,6 +61,7 @@ const contactStatusOptions = [
 ];
 
 const ConvertTaxOwnerToContact = ({
+  getMapFilterShapeOwnersAndCountAction,
   convertTaxOwnerToContactAction,
   getShapeOwnersAndCountAction,
   getContactCampaignAction,
@@ -69,6 +72,7 @@ const ConvertTaxOwnerToContact = ({
 }) => {
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
+  const [stateNav] = useContext(NavigationContext);
   const { currentFeature, user } = stateApp;
   const [newTagsIds, setNewTagsIds] = useState([]);
   const [searchCampaign, setSearchCampaign] = useState("");
@@ -80,19 +84,51 @@ const ConvertTaxOwnerToContact = ({
   const userId = stateApp.user.mongoId;
 
   useEffect(() => {
-    getShapeOwnersAndCountAction({
-      currentFeature: currentFeature,
-      userId: user.mongoId,
-    });
-    // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
     getContactCampaignAction({
       search: searchCampaign ? `${searchCampaign}*` : "*",
     });
     // eslint-disable-next-line
   }, [searchCampaign]);
+
+  useEffect(() => {
+    if (!includeFilter) {
+      getShapeOwnersAndCountAction({
+        currentFeature: currentFeature,
+        userId: user.mongoId,
+      });
+    }
+    // eslint-disable-next-line
+  }, [includeFilter]);
+
+  useEffect(() => {
+    if (includeFilter) {
+      const { filters, search, polygon } = getMapFilters(stateNav, "", stateApp.gridPolygonString);
+      getMapFilterShapeOwnersAndCountAction({
+        currentFeature: currentFeature,
+        userId: user.mongoId,
+        filters,
+        search,
+        polygon,
+      });
+    }
+    // eslint-disable-next-line
+  }, [
+    includeFilter,
+    stateNav.operatorName,
+    stateNav.typeName,
+    stateNav.profileName,
+    stateNav.statusName,
+    stateNav.statusName,
+    stateNav.spudDateFrom,
+    stateNav.spudDateTo,
+    stateNav.permitDateFrom,
+    stateNav.permitDateTo,
+    stateApp.gridPolygonString,
+    stateNav.completetionDateFrom,
+    stateNav.completetionDateTo,
+    stateNav.firstProdDateFrom,
+    stateNav.firstProdDateTo,
+  ]);
 
   const setTagId = (id) => {
     const ids = JSON.parse(JSON.stringify(newTagsIds));
@@ -102,7 +138,7 @@ const ConvertTaxOwnerToContact = ({
 
   const onConvert = () => {
     const values = getValues();
-    convertTaxOwnerToContactAction({ ...values, tags: newTagsIds, userId })
+    convertTaxOwnerToContactAction({ ...values, tags: newTagsIds, userId });
   };
 
   return (
@@ -165,7 +201,7 @@ const ConvertTaxOwnerToContact = ({
             render={(props) => (
               <ContactAutoComplete
                 value={contactOwner}
-                contactValue='email'
+                contactValue="email"
                 onChange={(e, user) => {
                   props.onChange(user.value);
                 }}

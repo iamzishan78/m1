@@ -2,7 +2,6 @@ import React, { useEffect, useContext } from "react";
 import { Container } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import debounce from "lodash/debounce";
-import moment from "moment";
 
 // context
 import { AppContext } from "AppContext";
@@ -18,7 +17,7 @@ import TableHeader from "components/Table/constants/map-grid-wells-header-schema
 
 // Utilities
 import { usetableStyles } from "../Styles";
-import { getSearchQuery, getFilters, getShapeFilter } from "utils/helper";
+import { getMapFilters } from "utils/helper";
 
 function MapGridWellsTable(props) {
   const classes = usetableStyles();
@@ -45,71 +44,12 @@ function MapGridWellsTable(props) {
       debounce((request, top, callback) => {
         props.setTableMeta(request);
       }, 500),
+      // eslint-disable-next-line
     []
   );
 
-  const getMapFilters = () => {
-    const extendSearchQuery = searchInput
-      ? `((wellName:*${searchInput}*) OR (api:*${searchInput}*))`
-      : "";
-    const search = getSearchQuery(extendSearchQuery, {
-      wellType: stateNav.typeName,
-      operator: stateNav.operatorName,
-      wellStatus: stateNav.statusName,
-      wellBoreProfile: stateNav.profileName,
-    });
-    const filters = getFilters({
-      spudDate: {
-        from: stateNav.spudDateFrom
-          ? moment.parseZone(stateNav.spudDateFrom).utc(true).valueOf()
-          : moment
-              .parseZone(new Date("1900-01-01T00:00:00"))
-              .utc(true)
-              .valueOf(),
-        to: stateNav.spudDateTo
-          ? moment.parseZone(stateNav.spudDateTo).utc(true).valueOf()
-          : moment.parseZone(moment()).utc(true).valueOf(),
-      },
-      permitApprovedDate: {
-        from: stateNav.permitDateFrom
-          ? moment.parseZone(stateNav.permitDateFrom).utc(true).valueOf()
-          : moment
-              .parseZone(new Date("1900-01-01T00:00:00"))
-              .utc(true)
-              .valueOf(),
-        to: stateNav.permitDateTo
-          ? moment.parseZone(stateNav.permitDateTo).utc(true).valueOf()
-          : moment.parseZone(moment()).utc(true).valueOf(),
-      },
-      completionDate: {
-        from: stateNav.completetionDateFrom
-          ? moment.parseZone(stateNav.completetionDateFrom).utc(true).valueOf()
-          : moment
-              .parseZone(new Date("1900-01-01T00:00:00"))
-              .utc(true)
-              .valueOf(),
-        to: stateNav.completetionDateTo
-          ? moment.parseZone(stateNav.completetionDateTo).utc(true).valueOf()
-          : moment.parseZone(moment()).utc(true).valueOf(),
-      },
-      firstProductionDate: {
-        from: stateNav.firstProdDateFrom
-          ? moment.parseZone(stateNav.firstProdDateFrom).utc(true).valueOf()
-          : moment
-              .parseZone(new Date("1900-01-01T00:00:00"))
-              .utc(true)
-              .valueOf(),
-        to: stateNav.firstProdDateTo
-          ? moment.parseZone(stateNav.firstProdDateTo).utc(true).valueOf()
-          : moment.parseZone(moment()).utc(true).valueOf(),
-      },
-    });
-    const polygon = getShapeFilter(stateApp.gridPolygonString);
-    return { search, filters, polygon };
-  };
-
   useEffect(() => {
-    const { filters, search, polygon } = getMapFilters();
+    const { filters, search, polygon } = getMapFilters(stateNav, searchInput, stateApp.gridPolygonString);
     setTableMeta({
       addableName: "Wells",
       extendSearchQuery: search,
