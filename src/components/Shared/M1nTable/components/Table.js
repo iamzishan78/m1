@@ -1098,6 +1098,7 @@ function SubTable(props) {
               ...column.options,
               customBodyRender: (value, tableMeta, updateValue) => {
                 let id = props.targetLabel + tableMeta.columnIndex;
+                console.log('table detail card', props.parent, props.targetLabel)
                 if (props.parent !== "search" && props.targetLabel !== "well") {
 
                   return (
