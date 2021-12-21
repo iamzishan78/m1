@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
-import { AppContext, apolloClientEndpointDev, isDev, setApolloHeaders } from "../../AppContext";
+import { AppContext, setApolloHeaders } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import SignInCard from "./SignInCard";
