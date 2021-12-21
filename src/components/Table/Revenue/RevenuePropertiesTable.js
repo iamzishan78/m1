@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Container } from "@material-ui/core";
+import { useDispatch, useSelector } from "react-redux";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 import TableHeader from "components/Table/constants/revenue-properties-header-schema";
@@ -9,43 +10,33 @@ import { useLazyQuery } from "@apollo/client";
 import { deepEqualObjects } from "components/Shared/functions";
 // Utilities
 import { usetableStyles } from "../Styles";
+// actions
+import { setRevenuePropertyData } from "actions";
+
 
 function RevenuePropertiesTable(props) {
   const classes = usetableStyles();
-    // query for Properties Table
-    const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(
-      GET_ES_PAGINATED_LIST,
-      {
-        fetchPolicy: "no-cache",
-        onCompleted: () => {
-          console.log("compeleted");
-        },
-      }
-    );
+  // redux
+  const dispatch = useDispatch();
+  const { revenueProperties } = useSelector((state) => state.Revenue);
 
-  // rearranging the data according to the requirements.
-  const tableData = elasticData?.getESPaginatedList?.hits?.map((eachRow) => {
-    return {
-      name: eachRow.name,
-      propertyCode: eachRow.number,
-      payorName: eachRow?.operator?.name,
-      state: eachRow.state,
-      country: eachRow?.county,
-      source: eachRow?.source,
-      wellApiNumber: eachRow?.well?.apiNumber,
-      wellName: eachRow?.well?.wellName,
-      status: eachRow?.status,
-      checkNumber: eachRow?.lastCheck?.checkNumber,
-      lastChecked: new Date(eachRow?.lastCheck?.checkDate).toLocaleDateString(),
-    };
-  });
+  // query for Properties Table
+  const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(
+    GET_ES_PAGINATED_LIST,
+    {
+      fetchPolicy: "no-cache",
+      onCompleted: () => {
+        console.log("compeleted");
+      },
+    }
+  );
+
+
 
   // function states
   const [columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const [selectedRows, setSelectedRows] = useState([]);
   const [potentialIssuesList] = useState([]);
-  const esIndex = "properties_flat";
-  const startPaginationAt = 10;
   const extendSearchQuery = ``;
 
   // const count = tableData?.total || 0
@@ -62,9 +53,9 @@ function RevenuePropertiesTable(props) {
   React.useEffect(() => {
     getESPaginatedList({
       variables: {
-        esIndex,
+        esIndex: props.esIndex,
         pagination: {
-          first: startPaginationAt,
+          first: props.startPaginationAt,
           keep_alive: "1micros",
         },
         search: ``,
@@ -74,13 +65,18 @@ function RevenuePropertiesTable(props) {
     });
   }, [getESPaginatedList, props.parent]);
 
+  React.useEffect(() => {
+    dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getESPaginatedList, elasticData,]);
+
   const onTableChange = (action, tableState, rows, meta) => {
-    tableState.esIndex = esIndex;
+    tableState.esIndex = props.esIndex;
     tableState.sort = [];
     const tableActions = props.initializeTableActions(
       tableState,
       meta,
-      tableData,
+      revenueProperties,
       columns,
       getESPaginatedList
     );
@@ -110,11 +106,11 @@ function RevenuePropertiesTable(props) {
         style={{ backgroundColor: "#fff" }}
         header={props.header}
         columns={columns}
-        rows={tableData}
+        rows={revenueProperties?.data}
         total={false}
         potentialIssues={potentialIssuesList}
         addAble={{ type: "RevenueProperties" }}
-        loading={loading}
+        loading={revenueProperties?.loading}
         targetLabel={props.targetLabel}
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}

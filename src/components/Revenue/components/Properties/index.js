@@ -1,10 +1,15 @@
 import React from "react";
 import { Grid, Button } from "@material-ui/core";
+import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
-import { RevenueContext } from 'components/Revenue/RevenueContext'
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTable";
+import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { useLazyQuery } from "@apollo/client";
+// actions
+import { setRevenuePropertyData } from "actions";
+
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -50,13 +55,47 @@ const cards = [
 
 export default function Properties() {
   const classes = useStyles();
-  const { elasticData } = React.useContext(RevenueContext);
-
+  // redux
+  const dispatch = useDispatch();
   const [fromDate, setFromDate] = React.useState(null);
   const [toDate, setToDate] = React.useState(null);
-  console.log('elasticData in properties component', elasticData)
-  const filterProperties = () => {
+  // props to pass in table
+  const esIndex = "properties_flat";
+  const startPaginationAt = 10;
+  // query for Properties Table
+  const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(
+    GET_ES_PAGINATED_LIST,
+    {
+      fetchPolicy: "no-cache",
+      onCompleted: () => {
+        console.log("compeleted");
+      },
+    }
+  );
+  React.useEffect(() => {
+    dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getESPaginatedList, elasticData,]);
 
+  const filterProperties = () => {
+    getESPaginatedList({
+      variables: {
+        esIndex,
+        pagination: {
+          first: startPaginationAt,
+          keep_alive: "1micros",
+        },
+        search: ``,
+        sort: [],
+        filter: [
+          {
+            field: "county",
+            value: 'US'
+
+          }
+        ],
+      },
+    });
   }
   return (
     <>
@@ -85,7 +124,7 @@ export default function Properties() {
       </div>
       <AnalyticsCards cards={cards} />
       <div className={classes.propertyTableContainer}>
-        <RevenuePropertiesTable header="Properties" parent="RevenuePropertiesTable" dense={true} />
+        <RevenuePropertiesTable header="Properties" parent="RevenuePropertiesTable" dense={true} esIndex={esIndex} startPaginationAt={startPaginationAt} />
       </div>
     </>
   );
