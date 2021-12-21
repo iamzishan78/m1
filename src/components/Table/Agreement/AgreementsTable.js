@@ -66,7 +66,7 @@ function AgreementsTable(props) {
     const startPaginationAt = 25;
     const esIndex = 'shapes_flat';
     const esStaticFilters = [{
-        field: "layer",
+        field: "shapeJson.properties.type",
         value: "agreement"
     }];
     

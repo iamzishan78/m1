@@ -2471,6 +2471,32 @@ function SubTable(props) {
                         {value}
                       </div>
                     )}
+                    {(props.parent === "RevenuePropertiesTable") && (
+                        <div className={classes.flexAlign}>
+                          {value?.toLowerCase() === "approved" ? (
+                            <div className={classes.activeBadge} />
+                          ) : value?.toLowerCase() === "pending" ? (
+                            <div className={classes.pendingBadge} />
+                          ) : value?.toLowerCase() === "declined" ? (
+                            <div className={classes.declinedBadge} />
+                          ) : (
+                            <div className={classes.statusBtnDiv}>
+                              <div className={classes.approveBtn}>Approve</div>
+                              <div className={classes.declineBtn}>Decline</div>
+                            </div>
+                          )}
+                          <div>{value}</div>
+                        </div>
+                      )}
+                    {props.parent === "AgreementsTable" && (
+                      <div style={{ display: "flex", "align-items": "center" }}>
+                        {value?.toLowerCase() === "approved"
+                          ? (<div style={{ background: "#17c10d", height: 12, "min-width": 12, marginRight: 8, borderRadius: "50%" }} />)
+                          : (<div style={{ background: "#ffa800", height: 12, "min-width": 12, marginRight: 8, borderRadius: "50%" }} />)
+                        }
+                        {value}
+                      </div>
+                    )}
                   </>
                 );
               },
@@ -2531,35 +2557,6 @@ function SubTable(props) {
                         {value}
                       </p>
                     )}
-                  </>
-                );
-              },
-            };
-            break;
-          case "status":
-            column.options = {
-              ...column.options,
-              customBodyRender: (value) => {
-                return (
-                  <>
-                    {(props.parent === "RevenueStatementTable" ||
-                      props.parent === "RevenuePropertiesTable") && (
-                        <div className={classes.flexAlign}>
-                          {value?.toLowerCase() === "approved" ? (
-                            <div className={classes.activeBadge} />
-                          ) : value?.toLowerCase() === "pending" ? (
-                            <div className={classes.pendingBadge} />
-                          ) : value?.toLowerCase() === "declined" ? (
-                            <div className={classes.declinedBadge} />
-                          ) : (
-                            <div className={classes.statusBtnDiv}>
-                              <div className={classes.approveBtn}>Approve</div>
-                              <div className={classes.declineBtn}>Decline</div>
-                            </div>
-                          )}
-                          <div>{value}</div>
-                        </div>
-                      )}
                   </>
                 );
               },
