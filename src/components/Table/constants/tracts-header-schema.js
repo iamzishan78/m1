@@ -4,6 +4,15 @@ const TractsHeadCells = [
         name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
     },
     {
+        name: "contactId", options: { 
+            dbName: "contact._id",
+            filter: false, 
+            display: false, 
+            sort: false, 
+            viewColumns: false
+        }
+    },
+    {
         name: "tractName", label: "Tract Name", esKey: 'shape.shapeJson.properties.shapeLabel.keyword', 
         options: { 
             dbName: "shape.shapeJson.properties.shapeLabel",

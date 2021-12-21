@@ -125,6 +125,15 @@ function AgreementsTable(props) {
     // }, [issues]);
 
     useEffect(() => {
+        if (tableData?.hits?.length > 0) {
+          const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
+        //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
+          props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
+        //   props.ifAreContacts(globalOwnerIds);
+        }
+      }, [tableData]);
+
+    useEffect(() => {
         if (tableData && !props.loading) {
             if (tableData?.hits?.length > 0) {
                 const resolvePath = (obj, path) => {
@@ -143,13 +152,14 @@ function AgreementsTable(props) {
                 }
 
                 const hits = tableData?.hits.map((hit) => {
-                    const tempHit = { ...hit };
+                    let tempHit = { ...hit };
                     TableHeader.forEach((col) => {
                         if (col?.options?.dbName) {
                             tempHit[col.name] = resolvePath(tempHit, col.options.dbName)
                         }
                     })
 
+                    tempHit = props.setGenricData(tempHit, tempHit._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
                     return tempHit
                 })
 

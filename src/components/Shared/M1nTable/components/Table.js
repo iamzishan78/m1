@@ -1654,6 +1654,12 @@ function SubTable(props) {
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
+                  if (
+                    props.parent === "TractsTable" &&
+                    props.targetLabel === "tract"
+                  ) {
+                    targetSourceId = tableMeta.rowData[1];
+                  }
 
                   return (
                     //add download and search icons here
@@ -2114,6 +2120,12 @@ function SubTable(props) {
                     props.targetLabel === "parcel"
                   ) {
                     targetSourceId = tableMeta.rowData[15];
+                  }
+                  if (
+                    props.parent === "TractsTable" &&
+                    props.targetLabel === "tract"
+                  ) {
+                    targetSourceId = tableMeta.rowData[1];
                   }
                   return (
                     <div style={{ marginRight: "10px" }}>
@@ -3122,6 +3134,7 @@ function SubTable(props) {
             let selectedRowsIds = selectedRows.map((row) => {
               if (props.parent === "OwnersPerWell") return row.globalOwnerId;
               if (props.parent === "owner_WellInterests") return row.wellId;
+              if (props.parent === "TractsTable") return row.contact._id;
               if (row.id) return row.id;
               if (row.Id) return row.Id;
               if (row._id) return row._id;
