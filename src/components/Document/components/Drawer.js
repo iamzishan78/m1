@@ -170,7 +170,7 @@ const useStyles = makeStyles({
 
 export default function DocumentDrawer() {
   const classes = useStyles();
-  const [activePanel, setPanel] = useState("home");
+  const [activePanel, setPanel] = useState("Home");
   const [fileData, setFileData] = useState(null);
   const [state, setState] = React.useState({
     right: false,

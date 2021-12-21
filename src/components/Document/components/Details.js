@@ -201,15 +201,15 @@ export default function DocumentDetails(props) {
     setOpenDeleteConfirmDialog,
     setFileIdToDelete,
     handleClose,
-    viewFile,
-    viewFileResult,
+    viewFiles,
+    viewFileSResult,
   } = props;
   const [metaData, setMetaData] = useState([]);
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [recentFiles, setRecentFiles] = useState([]);
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
-  const [viewFiles, { data: viewFileSResult }] = useLazyQuery(VIEWFILESQUERY, {
+  const [viewFile, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
 
@@ -302,8 +302,8 @@ export default function DocumentDetails(props) {
   };
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
-    // if (viewFileLoading) {
-    // }
+    if (viewFileLoading) {
+    }
   };
 
   return (
