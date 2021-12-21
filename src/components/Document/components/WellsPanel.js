@@ -72,6 +72,22 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  deleteIcon: {
+    "& svg": {
+      fill: "#c1c5ca",
+    },
+    "&:hover": {
+      "& svg": {
+        fill: "#929aa3",
+      },
+    },
+  },
+  wellLink: {
+    cursor: "pointer",
+    "&:hover": {
+      fontWeight: "700",
+    },
+  },
 }));
 
 export default function Contacts(props) {
@@ -313,13 +329,7 @@ export default function Contacts(props) {
             filteredWells.map((well, index) => (
               <div style={{ padding: "10px 0px 0px" }}>
                 <ListItem key={index}>
-                  <Link
-                    style={{
-                      cursor: "pointer",
-                    }}
-                    color="primary"
-                    onClick={() => gotoContact(index)}
-                  >
+                  <Link className={classes.wellLink} color="primary" onClick={() => gotoContact(index)}>
                     {well.name}
                   </Link>
 
@@ -336,7 +346,7 @@ export default function Contacts(props) {
                       // setMutationLoading(stateApp.activeDeal?.contacts[index]?._id);
                     }}
                   >
-                    <IconButton edge="end" aria-label="delete">
+                    <IconButton edge="end" aria-label="delete" className={classes.deleteIcon}>
                       <DeleteIcon />
                     </IconButton>
                   </ListItemSecondaryAction>
