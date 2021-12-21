@@ -93,6 +93,7 @@ export default function Portfolio() {
           parent="RevenuePropertiesTable"
           loading={false}
           dense={true}
+          targetLabel='properties'
         />
       </div>
     </>
