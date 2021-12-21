@@ -70,14 +70,7 @@ export default function Properties() {
         >
           <CustomDates fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} />
           <Grid item xs={5} md={4}>
-            <Grid
-              container
-              display="flex"
-              justify="flex-end"
-              direction="row"
-              spacing={2}
-              className={classes.actionsGrid}
-            >
+            <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
               <Grid item>
                 <Button variant="contained" color="secondary">
                   Save View
@@ -92,12 +85,7 @@ export default function Properties() {
       </div>
       <AnalyticsCards cards={cards} />
       <div className={classes.propertyTableContainer}>
-        <RevenuePropertiesTable
-          header="Properties"
-          parent="RevenuePropertiesTable"
-          dense={true}
-          targetLabel='properties'
-        />
+        <RevenuePropertiesTable header="Properties" parent="RevenuePropertiesTable" dense={true} />
       </div>
     </>
   );

@@ -6,7 +6,10 @@ import { Warning as WarningIcon } from "@material-ui/icons";
 
 const useStyles = makeStyles(() => ({
   root: {
-    padding: "30px 75px",
+    padding: 20,
+    width: "100%",
+    margin: 0,
+    backgroundColor: "#fff",
   },
   card: { borderRadius: "8px" },
   cardHeaderTypography: {

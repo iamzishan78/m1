@@ -82,6 +82,7 @@ TabPanel.propTypes = {
 
 export default function Navigation(props) {
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
+  const { activeModule: activeRevenueModule, actionsPanelState: revenueActionsPanelState } = useSelector((state) => state.Revenue);
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -455,10 +456,16 @@ export default function Navigation(props) {
     }));
   };
 
+  const checkIfIgnoreHeader = () => {
+    if (location.pathname.startsWith("/revenue/statement/details") || location.pathname.startsWith("/revenue/property/details")) {
+      return true;
+    }
+  };
+
   return (
     <div className={classes.root}>
       <CssBaseline />
-      {!location.pathname.startsWith("/revenue/statement/details") && (
+      {!checkIfIgnoreHeader() && (
         <AppBar
           position="fixed"
           className={clsx(classes.appBar, {
@@ -489,9 +496,9 @@ export default function Navigation(props) {
               {location.pathname.startsWith("/revenue") && (
                 <Typography
                   variant="h4"
-                  style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.revenueDetails.expandedPanel ? "450px" : "30px" }}
+                  style={{ color: "black", fontWeight: "bold", marginLeft: revenueActionsPanelState ? "436px" : "10px" }}
                 >
-                  {stateApp.revenueDetails.title}
+                  {activeRevenueModule.title}
                 </Typography>
               )}
 

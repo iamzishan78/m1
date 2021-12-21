@@ -3757,6 +3757,10 @@ function SubTable(props) {
           handleExpandClick(null, null, null, "inviteUser");
         }
       }
+
+      if (props.targetLabel === "Revenue Properties") {
+        history.push('/revenue/property/details')
+      }
     },
     onChangePage: (pageState) => {
       setPageInd(pageState);

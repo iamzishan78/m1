@@ -147,9 +147,6 @@ const AppProvider = (props) => {
     pdfView: null,
     selectedAgreement: null,
     bulkUpload: false,
-    revenueDetails: {
-      expandedPanel: true,
-    },
     selectedMeta: null,
     selectedView: null,
 
