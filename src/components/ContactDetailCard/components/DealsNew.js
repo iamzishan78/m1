@@ -130,7 +130,6 @@ export default function Deals({ contact, ...props }) {
 
     return vf_currency(sum);
   };
-  console.log(document.referrer);
   return (
     <>
       <Button

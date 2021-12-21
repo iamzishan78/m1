@@ -84,7 +84,7 @@ import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 
 // functions / value formatters
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
-import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
+import vf_currency from "../../../Shared/valueformatters/vf_currency";
 import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
 import convert_date from "../../../Shared/valueformatters/convert_date.js";
 import get_file_icon from "../../../Shared/functions/get_file_icon.js";
@@ -666,7 +666,7 @@ function SubTable(props) {
   const [searchedRows, setSearchedRows] = useState([]);
 
   // queries
-  const [getWell, { data: getWellRes }] = useLazyQuery(WELLQUERY, {
+  const [getWell] = useLazyQuery(WELLQUERY, {
     onCompleted: (dataWell) => {
       setDataWell((state, props) => {
         return { ...dataWell };
@@ -687,13 +687,7 @@ function SubTable(props) {
     });
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
-    if (viewFileLoading) {
-      console.log(viewFileResult, "ViewFIle Result");
-    }
   };
-  useEffect(() => {
-    console.log(viewFileLoading, "Loading FileResult");
-  }, [viewFileLoading]);
 
   useEffect(() => {
     if (viewFileResult?.viewFile?.uri) {
@@ -1213,7 +1207,6 @@ function SubTable(props) {
               customBodyRender: (value, tableMeta, updateValue) => {
                 let id = props.targetLabel + tableMeta.columnIndex;
                 if (props.parent !== "search" && props.targetLabel !== "well") {
-                  console.log("PROPS 2", props);
 
                   return (
                     <Tooltip title={"Detail Card"} placement="top">
@@ -1305,7 +1298,6 @@ function SubTable(props) {
                 }
               },
             };
-
             break;
           case "dateTime": {
             {
@@ -1636,13 +1628,7 @@ function SubTable(props) {
                           }}
                           aria-label="show comments"
                           onMouseOver={() => {
-                            console.log("hover Effect Table");
-                            if (
-                              m1nSelectedRowsIndexes.indexOf(
-                                tableMeta.rowIndex
-                              ) !== -1 &&
-                              m1nSelectedRowsIndexes.length > 1
-                            )
+                            if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
                               multiSelectMouseHoverColor(id, "#dadbde");
                           }}
                           onMouseOut={() => {
@@ -1702,13 +1688,7 @@ function SubTable(props) {
                         }}
                         aria-label="show address"
                         onMouseOver={() => {
-                          console.log("hover Effect Table");
-                          if (
-                            m1nSelectedRowsIndexes.indexOf(
-                              tableMeta.rowIndex
-                            ) !== -1 &&
-                            m1nSelectedRowsIndexes.length > 1
-                          )
+                          if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
                             multiSelectMouseHoverColor(id, "#dadbde");
                         }}
                         onMouseOut={() => {
@@ -2119,8 +2099,6 @@ function SubTable(props) {
                   const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
                   const docInfo = rows.find((row) => row._id === row_line._id);
                   let docExtention = docInfo?.fileName?.split(".")?.[1]?.toLowerCase();
-                  console.log("fileName", docInfo?.fileName);
-                  console.log(`docExtention: ${docExtention}`);
                   return (
                     <div
                       style={{
@@ -2133,14 +2111,7 @@ function SubTable(props) {
                       <IconButton
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log("modell download");
-                          handleViewFile(
-                            props.addAble.type === "parcelRunsheet" ||
-                              props.addAble.type === "parcelDocument" ||
-                              props.addAble.type === "wellDocument"
-                              ? row_line.fileId
-                              : row_line?._id
-                          );
+                          handleViewFile(props.addAble.type === "parcelRunsheet" || props.addAble.type === "parcelDocument" || props.addAble.type === "wellDocument" || props.addAble.type === "AgreementDocument" ? row_line.fileId : row_line?._id);
                         }}
                       >
                         <GetAppIcon />
@@ -2267,7 +2238,6 @@ function SubTable(props) {
                               } else {
                                 handleViewFile(row_line._id);
                               }
-                              console.log(row_line, "DOCS tablemeta FILENAME");
                             }}
                           >
                             <Grid
@@ -2483,8 +2453,11 @@ function SubTable(props) {
 
                     if (column.name === "taxValue") return vf_currency(v);
 
-                    if (column.name === "offerPrice" && !!v && !isNaN(v))
-                      return vf_currency(v);
+                    if (column.name === "offerPrice" && !!v && !isNaN(v)) return vf_currency(v);
+                    if (
+                      (column.name === "seller_asking_price" || column.name === "competitor_offer_price" || column.name === "offer_price") &&
+                      !!v && !isNaN(v)
+                    ) return vf_currency(v);
 
                     if (column.name === "lastUpdateAt")
                       return anyToDate(v).toLocaleString("en-US", {
@@ -2576,7 +2549,7 @@ function SubTable(props) {
                   }
                   return (
                     <div
-                      style={{ display: "flex", alignItems: "center", justifyContent: "left", minWidth: "150px" }}
+                      style={{ display: "flex", alignItems: "center", justifyContent: "left", ...column.style }}
                       className={`${props.parent === "assocTaxRollInterests" &&
                         props.addAble.type === "wellInterest" &&
                         (!tableMeta.rowData[15] || tableMeta.rowData[20])
@@ -2716,20 +2689,6 @@ function SubTable(props) {
                           </FeatureFlag>
                         )}
 
-                      {/* {props.targetLabel === "documents" &&
-                        column.name === "fileName" && (
-                          <p className={classes.clickableCell}
-                            onClick={() => {
-                              setStateApp((stateApp) => ({
-                                ...stateApp,
-                                selectedContact: tableMeta.rowData[0],
-                              }));
-                              console.log(tableMeta.rowData[0], 'Meta File Name')
-                             
-                            }}
-                          ></p>
-                        )} */}
-
                       {/* temporarily removing the purchased data icon as we do not have functionality to actually purchase contact data currently - KC 3/17/21 */}
                       {/* {props.targetLabel === "contact" &&
                         column.name === "name" &&
@@ -2861,7 +2820,6 @@ function SubTable(props) {
           const col = columns.find((column) => column.name === key);
           if (col && (!col.options || col.options.searchable !== false)) {
             if (typeof props.rows[i][key] === "string") {
-              console.log(props.rows[i][key], key);
               const value = props.rows[i][key].toLowerCase();
               if (value.includes(tableState.searchText.toLowerCase())) {
                 rows.push(props.rows[i]);
@@ -3398,7 +3356,6 @@ function SubTable(props) {
         },
 
     customToolbar: () => {
-      // console.log("props addable type", props.addAble.type);
       let buttonLabel = "+ ADD",
         menuOptions = {};
       if (props.addAble.type === "contact") {
@@ -3649,7 +3606,6 @@ function SubTable(props) {
       );
     },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
-      console.log("props target label", props.targetLabel);
       setSelectedRow(rows[dataIndex]);
 
       if (props.targetLabel === "deal") {
@@ -3720,8 +3676,6 @@ function SubTable(props) {
       }
 
       if (props.targetLabel === "documents") {
-        console.log("Working Inside Table");
-        console.log(rows[dataIndex], "RowIndex");
         setStateApp((stateApp) => ({
           ...stateApp,
           selectedDocument: rows[dataIndex],
@@ -3991,12 +3945,7 @@ function SubTable(props) {
         }
       }
 
-      // console.log("SHAPE PROPS", props);
-
-      if (
-        props.header === "Well Interests" &&
-        props.parent === "owner_WellInterests"
-      ) {
+      if (props.header === "Well Interests" && props.parent === "owner_WellInterests") {
         const pageVariables = {
           variables: {
             pagination: {
@@ -4242,7 +4191,6 @@ function SubTable(props) {
         className={`${classes.table} ${rows && !props.loading ? "" : classes.loadingTable
           } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
       >
-        {/* {console.log('PROPS', props)} */}
 
         <MUIDataTable
           innerRef={props.tableRef}

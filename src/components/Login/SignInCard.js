@@ -38,8 +38,6 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "12px",
     paddingBottom: "12px",
     color: "#fff",
-    float: "left",
-    marginLeft: "135px",
     "&:hover": {
       backgroundColor: "#f0cfb3",
     },
@@ -53,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   errorSection: {
-    margin: "95px 65px 14px 65px",
+    margin: "12px 90px",
     padding: "10px",
     color: "#E4A773",
     background: "#e4a77347",
@@ -215,117 +213,106 @@ const SignInCard = (props) => {
   return (
 
 
-    <div> 
-    <Grid
-    container
-    spacing={0}
-    direction="column"
-    alignItems="center"
-    justify="center"
-    style={{ minHeight: 'calc(100vh - 70px)' }}
-   >
+    <div>
+      <Grid
+        container
+        spacing={0}
+        direction="column"
+        alignItems="center"
+        justify="center"
+        style={{ minHeight: 'calc(100vh - 70px)' }}
+      >
 
-    <Card square={true} className={classes.card}>
-      
-      <div>
-          <M1neralLogo2 />
-      </div>
+        <Card square={true} className={classes.card}>
 
-      {/* <div
+          <div>
+            <M1neralLogo2 />
+          </div>
+
+          {!props.ready ? (
+            <React.Fragment>
+              <div
+                style={{
+                  marginTop: "55px",
+                  fontSize: "14px",
+                  fontWeight: "900",
+                  fontFamily: "Tahoma, Geneva, sans-serif",
+                  color: "white",
+                  textAlign: "left",
+                  marginLeft: "75px",
+                }}
+              >
+                Sign in with your workspace name
+              </div>
+              <BootstrapInput
+                error={tenantFlags.error}
+                placeholder={tenantFlags.placeholder}
+                autoFocus={tenantFlags.autoFocus}
+                autoComplete="true"
+                onKeyDown={(e) => onEnterKey(e)}
+                onChange={(e) => setTenant(e.target.value)}
+                onBlur={() => {
+                  setError(null);
+                  setTenantFlags({
+                    error: false,
+                    placeholder: null,
+                    autoFocus: false,
+                  });
+                }}
+                onClick={() => {
+                  setError(null);
+                }}
+                value={tenant}
+              />
+              <>
+                {renderAADButtonAndLoader}
+                {error && (
+                  <p id="errorSection" className={classes.errorSection}>
+                    {error}
+                  </p>
+                )}
+              </>
+            </React.Fragment>
+          ) : (
+            <CircularProgress
+              color="secondary"
+              size={50}
+              className={classes.loader}
+            />
+          )}
+        </Card>
+
+      </Grid>
+
+      <div
         style={{
-          marginTop: "75px",
-          fontSize: "24px",
-          fontWeight: "900",
-          fontFamily: "Tahoma, Geneva, sans-serif",
-          textAlign: "left",
-          paddingLeft: "65px",
-          color: "white",
+          color: "#fff",
         }}
       >
-        Log in to the M1neral Platform
-      </div> */}
-      {!props.ready ? (
-        <React.Fragment>
-          <div
-            style={{
-              marginTop: "55px",
-              fontSize: "14px",
-              fontWeight: "900",
-              fontFamily: "Tahoma, Geneva, sans-serif",
-              color: "white",
-              textAlign: "left",
-              marginLeft: "75px",
-            }}
-          >
-            Sign in with your workspace name
-          </div>
-          <BootstrapInput
-            error={tenantFlags.error}
-            placeholder={tenantFlags.placeholder}
-            autoFocus={tenantFlags.autoFocus}
-            autoComplete="true"
-            onKeyDown={(e) => onEnterKey(e)}
-            onChange={(e) => setTenant(e.target.value)}
-            onBlur={() => {
-              setError(null);
-              setTenantFlags({
-                error: false,
-                placeholder: null,
-                autoFocus: false,
-              });
-            }}
-            onClick={() => {
-              setError(null);
-            }}
-            value={tenant}
-          />
-          {renderAADButtonAndLoader}
-        </React.Fragment>
-      ) : (
-        <CircularProgress
-          color="secondary"
-          size={50}
-          className={classes.loader}
-        />
-      )}
-      {error && (
-        <p id="errorSection" className={classes.errorSection}>
-          {error}
-        </p>
-      )}
-    </Card>
+        © 2021 M1neral, LLC. All Rights Reserved.
+      </div>
 
-    </Grid>
+      <div className={classes.termsAndPrivacy}>
+        <a href="https://m1neral.com/TOS.pdf" target="_blank" rel="noreferrer">
+          Terms of Service
+        </a>
+        {" | "}
+        <a href="https://m1neral.com/Privacy.pdf" target="_blank" rel="noreferrer">
+          Privacy Policy
+        </a>
+      </div>
 
-    <div
-      style={{
-        color: "#fff",
-      }}
-    >
-      © 2021 M1neral, LLC. All Rights Reserved.
-    </div>
-
-    <div className={classes.termsAndPrivacy}>
-      <a href="https://m1neral.com/TOS.pdf" target="_blank" rel="noreferrer">
-        Terms of Service
-      </a>
-      {" | "}
-      <a href="https://m1neral.com/Privacy.pdf" target="_blank" rel="noreferrer">
-        Privacy Policy
-      </a>
-    </div>
-
-    <div
-      style={{
-        marginBottom: "30px",
-      }}
-    >
-    </div>
+      <div
+        style={{
+          marginBottom: "30px",
+        }}
+      >
+      </div>
 
     </div>
 
 
-    
+
   );
 };
 

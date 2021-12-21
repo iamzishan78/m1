@@ -193,25 +193,21 @@ export default function CustomizedSteppers(props) {
   let data_to_send = stateApp.csvContactsListToSend;
 
   useEffect(() => {
-    console.log(updatedJob)
-  },[updatedJob])
-
-  useEffect(() => {
-    if(createJobData?.createJob && jobId){
+    if (createJobData?.createJob && jobId) {
       updateJob({
         variables: {
-          job:{
+          job: {
             _id: jobId,
             createJobResponse: createJobData?.createJob.body,
           }
         }
       })
     }
-  },[createJobData, jobId])
+  }, [createJobData, jobId])
 
   useEffect(() => {
-    if(contactUploadUri?.getUploadContactUri?.success &&
-       !processing){
+    if (contactUploadUri?.getUploadContactUri?.success &&
+      !processing) {
       setProcessing(true);
       setStateApp((state) => ({
         ...state,
@@ -219,10 +215,10 @@ export default function CustomizedSteppers(props) {
       }));
       const uri = contactUploadUri.getUploadContactUri.job.uri;
       const id = contactUploadUri.getUploadContactUri.job.id;
-			const interal_key = contactUploadUri.getUploadContactUri.job.internalKey;
+      const interal_key = contactUploadUri.getUploadContactUri.job.internalKey;
 
       setJobId(id)
-      
+
       const blockBlobClient = new BlockBlobClient(uri);
       blockBlobClient.uploadBrowserData(contactList, {
         maxSingleShotSize: 4 * 1024 * 1024,
@@ -234,13 +230,12 @@ export default function CustomizedSteppers(props) {
         }
       })
         .then((res) => {
-          console.log(res);
           if (res?._response?.status === 201) {
-              createJob({
-                variables: {
-                  jobId: id,
-                },
-              })
+            createJob({
+              variables: {
+                jobId: id,
+              },
+            })
           } else {
             dispatch(showErrorMessage("Upload failed"));
           }
@@ -248,8 +243,8 @@ export default function CustomizedSteppers(props) {
         .catch((err) => console.log(err));
     }
 
-  },[contactUploadUri])
-  
+  }, [contactUploadUri])
+
   const handleNext = () => {
     if (stateApp.activeStepNumber === steps.length - 2) {
       data_to_send.forEach((element) => {
