@@ -35,18 +35,23 @@ const useStyles = makeStyles((theme) => ({
   },
   activeIcon: {
     "& svg": {
-      fill: "rgb(23, 170, 221) !important",
+      "& path": {
+        fill: "rgb(23, 170, 221) !important",
+      },
     },
   },
   inactiveIcon: {
     "& svg": {
-      fill: "rgba(146, 158, 170, 1) !important",
+      "& path": {
+        fill: "#919aa3",
+      },
     },
   },
 }));
 
 export default function Drawer(props) {
   const classes = useStyles(props);
+  const { activePanel, setPanel } = props;
 
   const drawerIcons = {
     Home: (props) => (
@@ -66,7 +71,7 @@ export default function Drawer(props) {
           vertical: "top",
           horizontal: "right",
         }}
-        color="primary"
+        color="#919aa3"
       >
         <WellIcon {...props} />
       </Badge>
@@ -77,11 +82,13 @@ export default function Drawer(props) {
     <div className={classes.root}>
       {Object.keys(drawerIcons).map((key) => (
         <Tooltip title={key} placement="left">
-          <div className={`${classes.icon} ${classes.activeIcon}`} onClick={() => props.setPanel(key)}>
+          <div
+            className={`${classes.icon} ${activePanel === key ? classes.activeIcon : classes.inactiveIcon}`}
+            onClick={() => setPanel(key)}
+          >
             {drawerIcons[key]({
               opacity: "1",
               height: "30",
-              color: "#919aa3",
             })}
           </div>
         </Tooltip>

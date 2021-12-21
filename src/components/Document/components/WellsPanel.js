@@ -189,13 +189,13 @@ export default function Contacts(props) {
   };
 
   return (
-    <>
+    <div style={{ marginRight: "14px" }}>
       <Grid container direction="row" justify="space-between" alignItems="center" className={classes.rootPadding}>
         {!addContact && (
           <React.Fragment>
             {!isSearchActive && (
               <Grid item xs={10}>
-                <Typography variant="h6">Contacts</Typography>
+                <Typography variant="h6">Wells</Typography>
               </Grid>
             )}
             <Grid item xs={1}>
@@ -214,7 +214,7 @@ export default function Contacts(props) {
                 <InputBase
                   id="searchInputDocuments"
                   autoComplete="off"
-                  placeholder="Search Contacts"
+                  placeholder="Search Wells"
                   classes={{
                     root: classes.inputRoot,
                     input: classes.inputInput,
@@ -291,7 +291,7 @@ export default function Contacts(props) {
           </Grid>
         </Grid>
 
-        <List aria-label="contacts list">
+        <List aria-label="wells list">
           {filteredContacts && filteredContacts.length > 0 ? (
             filteredContacts.map((c, i) => (
               <>
@@ -340,7 +340,7 @@ export default function Contacts(props) {
           ) : (
             <ListItem>
               <ListItemText
-                primary={"No contacts found."}
+                primary={"No wells found."}
                 primaryTypographyProps={{
                   color: "primary",
                 }}
@@ -349,6 +349,6 @@ export default function Contacts(props) {
           )}
         </List>
       </div>
-    </>
+    </div>
   );
 }

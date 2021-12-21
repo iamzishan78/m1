@@ -4,42 +4,19 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import RightActionsPanel from "./RightActionsPanel";
-import WellsPanel from "./WellsPanel";
-import Button from "@material-ui/core/Button";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
 import { AppContext } from "AppContext";
 import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
-import { Typography, Grid } from "@material-ui/core";
-import loadashFilter from "lodash/filter";
-import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
 
-import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from "@material-ui/core";
-import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
-import { KeyboardDatePicker } from "@material-ui/pickers";
-import UploadZone from "../../Shared/UploadZone";
-import Tooltip from "@material-ui/core/Tooltip";
-import GetAppIcon from "@material-ui/icons/GetApp";
+import { CircularProgress, Dialog, DialogTitle, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import joinAddress from "components/Shared/valueformatters/join-address.js";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
-import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
-import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
+import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
-import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
-import { setStateIfDeepEqual } from "components/Shared/functions";
-import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 
 import DetailsPanel from "./Details";
 import WellPanel from "./WellsPanel";
-
-// functions
-import get_file_icon from "components/Shared/functions/get_file_icon.js";
-
-const filter = createFilterOptions();
 
 const useStyles = makeStyles({
   list: {
@@ -114,15 +91,10 @@ const useStyles = makeStyles({
   fileDropError: {
     color: "red",
   },
-  Uploadcomp: {
-    // width: "200px !important",
-    // height: "200px !important",
-  },
   forImage: {
     width: "100px !important",
     height: "100px !important",
     backgroundColor: "transparent !important",
-    // border: "1px solid #999",
     borderRadius: "10px !important",
   },
   forImageContainer: {
@@ -130,7 +102,6 @@ const useStyles = makeStyles({
     height: "100px !important",
     borderRadius: "10px !important",
     backgroundColor: "#eeeeee !important",
-    // border: "1px solid #999",
     textAlign: "center",
     fontSize: "1.5rem",
     fontWeight: "bold",
@@ -379,8 +350,8 @@ export default function DocumentDrawer() {
           </div>
         </div>
         <div className={classes.contentRoot}>
-          <RightActionsPanel setPanel={setPanel} />
-          <div style={{ marginRight: "62px" }}>
+          <RightActionsPanel activePanel={activePanel} setPanel={setPanel} />
+          <div style={{ marginRight: "60px" }}>
             {activePanel === "Home" && (
               <DetailsPanel
                 newDocument={newDocument}
