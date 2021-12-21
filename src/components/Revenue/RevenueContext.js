@@ -19,6 +19,7 @@ const RevenueContextProvider = (props) => {
       },
     }
   );
+
   return <RevenueContext.Provider value={[stateRevenue, setStateRevenue, getESPaginatedList, elasticData, loading]}>{props.children}</RevenueContext.Provider>;
 };
 

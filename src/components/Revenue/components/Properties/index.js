@@ -50,7 +50,7 @@ const cards = [
 
 export default function Properties() {
   const classes = useStyles();
-  const { getESPaginatedList, elasticData, loading } = React.useContext(RevenueContext);
+  const { elasticData } = React.useContext(RevenueContext);
 
   const [fromDate, setFromDate] = React.useState(null);
   const [toDate, setToDate] = React.useState(null);
