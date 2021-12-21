@@ -328,7 +328,7 @@ export default function DetailComponents(props) {
         </Grid>
       </div>
       <div className="flex justifyBetween alignStart w-100">
-        <div className="w-100" style={{ padding: 20, maxWidth: collapse ? "95%" : "70%" }}>
+        <div className="w-100" style={{ padding: 20, maxWidth: "calc(100% - 380px)" }}>
           {/**
          * Detail title section
          */}
@@ -395,7 +395,7 @@ export default function DetailComponents(props) {
           </div>
         </div>
 
-        <div className="flex column justifyStart alignStart w-100" style={{ marginTop: 20, marginRight: 24, padding: "16px 10px", background: "#ffffff", borderRadius: 8, minHeight: "100vh", height: "100%", maxWidth: collapse ? 40 : 360, width: "100%" }}>
+        <div className="flex column justifyStart alignStart w-100" style={{ marginTop: 20, marginRight: 24, padding: "16px 10px", background: "#ffffff", borderRadius: 8, maxHeight: "calc(100vh + 135px)", overflow: "auto", height: "100%", maxWidth: collapse ? 40 : 360, width: "100%" }}>
           <div className="flex justifyBetween alignCenter w-100">
             {!collapse && (
               <Typography varient="h5" className={classes.titleText} style={{ textTransform: "uppercase", fontWeight: "bold" }}>

@@ -223,7 +223,6 @@ const useStyles = makeStyles((theme) => ({
   table: {
     "& .MuiTableBody-root": {
       height: "50px",
-      cursor: "pointer"
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
       paddingLeft: "11px !important",
@@ -263,7 +262,6 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
       backgroundColor: "#fff",
-      cursor: "pointer"
     },
     "& .MuiTableCell-paddingCheckbox": {
       position: "relative",
@@ -1235,9 +1233,9 @@ function SubTable(props) {
                         size={props.dense ? "small" : "medium"}
                         color="secondary"
                         className={`${classes.icons} ${colInd === tableMeta.columnIndex &&
-                            rowInd === tableMeta.rowIndex
-                            ? classes.iconSelected
-                            : ""
+                          rowInd === tableMeta.rowIndex
+                          ? classes.iconSelected
+                          : ""
                           }`}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -1368,7 +1366,7 @@ function SubTable(props) {
                         <span style={{ padding: 10 }}>{rowData[1].state}</span>
                       )}
 
-                      {label === "Country" && (
+                      {(label === "Country" || label === "County") && (
                         <span style={{ padding: 10 }}>{rowData[1].county}</span>
                       )}
                     </>
@@ -1802,8 +1800,8 @@ function SubTable(props) {
                           size={props.dense ? "small" : "medium"}
                           color="primary"
                           className={`${classes.icons} ${!value || value.length === 0
-                              ? classes.noOwnersIcon
-                              : ""
+                            ? classes.noOwnersIcon
+                            : ""
                             } ${colInd === tableMeta.columnIndex &&
                               rowInd === tableMeta.rowIndex
                               ? classes.iconSelected
@@ -1873,8 +1871,8 @@ function SubTable(props) {
                         size={props.dense ? "small" : "medium"}
                         color="primary"
                         className={`${classes.icons} ${!value || value === "false"
-                            ? classes.noCommentsIcon
-                            : ""
+                          ? classes.noCommentsIcon
+                          : ""
                           }`}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -2059,8 +2057,8 @@ function SubTable(props) {
                           size={props.dense ? "small" : "medium"}
                           color="primary"
                           className={`${classes.icons} ${!value || value.length === 0
-                              ? classes.noOwnersIcon
-                              : ""
+                            ? classes.noOwnersIcon
+                            : ""
                             }  ${colInd === tableMeta.columnIndex &&
                               rowInd === tableMeta.rowIndex
                               ? classes.iconSelected
@@ -2116,9 +2114,9 @@ function SubTable(props) {
                         <Badge
                           id={id + targetSourceId + tableMeta.rowIndex}
                           className={`${classes.TagSample} ${colInd === tableMeta.columnIndex &&
-                              rowInd === tableMeta.rowIndex
-                              ? classes.iconSelected
-                              : ""
+                            rowInd === tableMeta.rowIndex
+                            ? classes.iconSelected
+                            : ""
                             }`}
                           badgeContent={value ? value[1] : 0}
                           color="secondary"
@@ -4778,10 +4776,10 @@ function SubTable(props) {
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
                   {`Do you want to permanently delete the owner${m1nSelectedRowsIds &&
-                      m1nSelectedRowsIds.length > 1 &&
-                      removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-                      ? "s"
-                      : ""
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                     } from  this contact?`}
                 </DeleteConfirmationDialogContent>
               )}
@@ -4794,10 +4792,10 @@ function SubTable(props) {
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
                   {`Do you want to permanently delete the well interest${m1nSelectedRowsIds &&
-                      m1nSelectedRowsIds.length > 1 &&
-                      removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-                      ? "s"
-                      : ""
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                     } from  this unit?`}
                 </DeleteConfirmationDialogContent>
               )}
@@ -4810,10 +4808,10 @@ function SubTable(props) {
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
                   {`Do you want to permanently delete the document${m1nSelectedRowsIds &&
-                      m1nSelectedRowsIds.length > 1 &&
-                      removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-                      ? "s"
-                      : ""
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                     } from  this parcel?`}
                 </DeleteConfirmationDialogContent>
               )}
@@ -4826,10 +4824,10 @@ function SubTable(props) {
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
                   {`Do you want to permanently delete the document${m1nSelectedRowsIds &&
-                      m1nSelectedRowsIds.length > 1 &&
-                      removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-                      ? "s"
-                      : ""
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                     } from  this well?`}
                 </DeleteConfirmationDialogContent>
               )}
@@ -4842,10 +4840,10 @@ function SubTable(props) {
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
                   {`Do you want to permanently delete the instrument${m1nSelectedRowsIds &&
-                      m1nSelectedRowsIds.length > 1 &&
-                      removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-                      ? "s"
-                      : ""
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                     } from  this parcel?`}
                 </DeleteConfirmationDialogContent>
               )}
@@ -4894,10 +4892,10 @@ function SubTable(props) {
               {openDialog === "deleteParcelOwnership" && (
                 <DeleteConfirmationDialogContent
                   header={`Delete Owner${m1nSelectedRowsIds &&
-                      m1nSelectedRowsIds.length > 1 &&
-                      removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-                      ? "s"
-                      : ""
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                     }`}
                   onClose={handleCloseDialog}
                   deleteFunc={props.deleteFunc}
@@ -4905,18 +4903,18 @@ function SubTable(props) {
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
                   {`Do you want to delete the owner${m1nSelectedRowsIds &&
-                      m1nSelectedRowsIds.length > 1 &&
-                      removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-                      ? "s"
-                      : ""
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                     }?`}
                 </DeleteConfirmationDialogContent>
               )}
               {openDialog === "deleteParcelInterest" && (
                 <DeleteConfirmationDialogContent
                   header={`Delete Parcel Interest${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                      ? "s"
-                      : ""
+                    ? "s"
+                    : ""
                     }`}
                   onClose={handleCloseDialog}
                   deleteFunc={props.deleteFunc}
@@ -4924,8 +4922,8 @@ function SubTable(props) {
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
                   {`Do you want to delete the Parcel Interest${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                      ? "s"
-                      : ""
+                    ? "s"
+                    : ""
                     }?`}
                 </DeleteConfirmationDialogContent>
               )}
@@ -4933,8 +4931,8 @@ function SubTable(props) {
               {openDialog === "deleteDeal" && (
                 <DeleteConfirmationDialogContent
                   header={`Delete Deal${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                      ? "s"
-                      : ""
+                    ? "s"
+                    : ""
                     }`}
                   onClose={handleCloseDialog}
                   deleteFunc={props.deleteFunc}
@@ -4942,8 +4940,8 @@ function SubTable(props) {
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
                   {`Do you want to delete the selected deal${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                      ? "s"
-                      : ""
+                    ? "s"
+                    : ""
                     }?`}
                 </DeleteConfirmationDialogContent>
               )}
@@ -4990,8 +4988,8 @@ function SubTable(props) {
               {openDialog === "deleteUser" && (
                 <DeleteConfirmationDialogContent
                   header={`Inactivate User${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                      ? "s"
-                      : ""
+                    ? "s"
+                    : ""
                     }`}
                   onClose={handleCloseDialog}
                   deleteFunc={() => {

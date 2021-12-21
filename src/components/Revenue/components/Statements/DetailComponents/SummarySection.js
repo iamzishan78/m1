@@ -112,7 +112,9 @@ const SummarySection = ({ checkId }) => {
                 }],
                 aggs: {
                     grossRevenue: { sum: { field: "grossOwnerValue" } },
-                    netOwnerValue: { sum: { field: "netOwnerValue" } }
+                    netOwnerValue: { sum: { field: "netOwnerValue" } },
+                    ownerDeducts: { sum: { field: "ownerDeducts" } },
+                    ownerTax: { sum: { field: "ownerTax" } }
                 }
             }
         });
@@ -150,6 +152,7 @@ const SummarySection = ({ checkId }) => {
                     product: {
                         terms: { field: "product.keyword" },
                         aggs: {
+                            grossPropertyVolume: { sum: { field: "grossPropertyVolume" } },
                             grossOwnerVolume: { sum: { field: "grossOwnerVolume" } },
                             netRevenue: { sum: { field: "netOwnerValue" } },
                             avgPrice: { avg: { field: "price" } }
@@ -164,12 +167,12 @@ const SummarySection = ({ checkId }) => {
     useEffect(() => {
         if (revSummary) {
             setRevenueSummaryDetails([
-                { name: "Gross Revenue", value: `(${revSummary?.grossRevenue?.value.toFixed(2)})` },
-                { name: "Adjustment", value: '-' },
-                { name: "Net Revenue", value: `(${(revSummary?.netOwnerValue?.value).toFixed(2)})` },
+                { name: "Gross Revenue", value: `${revSummary?.grossRevenue?.value.toFixed(2)}` },
+                { name: "Adjustment", value: `${(revSummary?.ownerDeducts?.value + revSummary?.ownerTax?.value).toFixed(2)}` },
+                { name: "Net Revenue", value: `${(revSummary?.netOwnerValue?.value).toFixed(2)}` },
                 { name: "Lease Payments", value: "-" },
                 { name: "Other", value: "-" },
-                { name: "Total Income", value: `(${(revSummary?.grossRevenue?.value + revSummary?.netOwnerValue?.value).toFixed(2)})` },
+                { name: "Total Income", value: `${(revSummary?.grossRevenue?.value + revSummary?.netOwnerValue?.value + revSummary?.ownerDeducts?.value + revSummary?.ownerTax?.value).toFixed(2)}` },
             ]);
         }
     }, [revSummary]);
@@ -298,6 +301,17 @@ const SummarySection = ({ checkId }) => {
                                     <div className={classes.productNameBox} >
                                         <p className={`${classes.productName} ${classes.textTransform}`}>
                                             {item.key || ""}
+                                        </p>
+                                    </div>
+
+                                    {/* Production Property Volume */}
+                                    <div className={`${classes.field} flex column justifyBetween alignCenter w-100`}>
+                                        <p className={classes.fieldLabel}>
+                                            Production Gross Volume
+                                        </p>
+
+                                        <p className={classes.fieldValue}>
+                                            {item?.grossPropertyVolume?.value.toFixed(2)}
                                         </p>
                                     </div>
 

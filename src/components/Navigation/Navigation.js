@@ -50,6 +50,7 @@ import { useLazyQuery } from "@apollo/client";
 import CheckIcon from "@material-ui/icons/Check";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import Add from "@material-ui/icons/Add";
+import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
 
 import ActivitySearch from "./components/ActivitySearch";
 import DocumentSearch from "./components/DocumentSearch";
@@ -572,10 +573,8 @@ export default function Navigation(props) {
               )}
               {applyNavigationStyle() && (
                 <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-                  <Button onClick={() => {
-                    console.log("add revenue statement functionality and design will be there soon.");
-                    // handleListItemClick("/revenue/statement/details")
-                  }} color="primary" variant="contained" startIcon={<Add />}>
+                  <Button onClick={() => handleListItemClick("/revenue/statement/details")}
+                    color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}>
                     Add Statement
                   </Button>
                 </div>
