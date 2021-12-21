@@ -13,6 +13,7 @@ import { default as CheckCircle } from "../../../Shared/svgIcons/check-circle";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
 import { addCustomShapeProperties } from "../DrawShapes/drawShapesHelpers";
+import { setFeatureProperty } from "components/MapControls/commonHelper";
 
 const DrawShapesPopup = (props) => {
   const { classes, children } = props;
@@ -89,6 +90,7 @@ const DrawShapesPopup = (props) => {
       }));
       props.handleClose();
     }
+    // setFeatureProperty(stateApp?.draw, stateApp?.currentFeature?.id, "shapeEdit", stateApp.lastSelectedDrawMode === 'draw_polygon' ? true : false);
     stateApp.draw.changeMode(shape.mode);
   };
 

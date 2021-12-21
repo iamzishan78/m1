@@ -4,12 +4,13 @@ import { withStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
 import { ColorBox } from "material-ui-color";
-import { Typography, Paper, Grid, Button, IconButton, Divider } from "@material-ui/core";
+import { Typography, Paper, Grid, Button, IconButton, Divider, FormControlLabel, Switch } from "@material-ui/core";
 import { Close as CloseIcon } from "@material-ui/icons";
 import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
 import Input from "@material-ui/core/Input";
 import FormControl from "@material-ui/core/FormControl";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import { copy } from "components/Shared/functions";
 
 function trim(str) {
   return str.replace(/^\s+|\s+$/gm, "");
@@ -66,18 +67,20 @@ function LayerStyling(props) {
   };
 
   const layerType = layer.layerPaintProps[0].paintType;
+  const initialLayerLabelVisibility = layer.layerPaintProps[0].labelProps?.symbolProps?.visibility === 'none' ? 'none' : 'visible';
+
   const initialFillColor =
     layerType === "fill"
       ? ifRgbaConvt(layer.layerPaintProps[0].paintProps["fill-color"])
       : layerType === "line"
-      ? ifRgbaConvt(layer.layerPaintProps[0].paintProps["line-color"])
-      : ifRgbaConvt(layer.layerPaintProps[0].paintProps["circle-color"]);
+        ? ifRgbaConvt(layer.layerPaintProps[0].paintProps["line-color"])
+        : ifRgbaConvt(layer.layerPaintProps[0].paintProps["circle-color"]);
   const initialStrokeColor =
     layerType === "fill"
       ? ifRgbaConvt(layer.layerPaintProps[0].paintProps["fill-outline-color"])
       : layerType === "line"
-      ? undefined
-      : ifRgbaConvt(layer.layerPaintProps[0].paintProps["circle-stroke-color"]);
+        ? undefined
+        : ifRgbaConvt(layer.layerPaintProps[0].paintProps["circle-stroke-color"]);
 
   let initialWidth;
   if (layerType === "circle")
@@ -89,6 +92,7 @@ function LayerStyling(props) {
 
   const [width, setWidth] = useState(initialWidth);
   const [fillColor, setFillColor] = useState(initialFillColor);
+  const [layerLabelVisibility, setLayerLabelVisibility] = useState(initialLayerLabelVisibility);
   const [strokeColor, setStrokeColor] = useState(initialStrokeColor);
   const [, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -117,11 +121,9 @@ function LayerStyling(props) {
   };
 
   const handleApplyChanges = () => {
-    if (
-      (stateApp.layers &&
-        layer &&
-        ((fillColor && fillColor.rgb && fillColor.alpha) || (strokeColor && strokeColor.rgb && strokeColor.alpha))) ||
-      width
+    if ((stateApp.layers && layer &&
+      ((fillColor && fillColor.rgb && fillColor.alpha) || (strokeColor && strokeColor.rgb && strokeColor.alpha))) ||
+      width || layer.layerPaintProps[0].labelProps?.symbolProps?.visibility !== layerLabelVisibility
     ) {
       let currentLayer = { ...layer };
       let fColor;
@@ -139,7 +141,8 @@ function LayerStyling(props) {
         sColor = strokeColor.rgb.length === 3 ? "rgb(" + strokeColor.rgb.join() + ")" : "rgba(" + strokeColor.rgb.join() + ")";
 
       if (currentLayer && currentLayer.layerPaintProps && currentLayer.layerPaintProps[0] && currentLayer.layerPaintProps[0].paintType) {
-        const layerPaintProps = [...currentLayer.layerPaintProps];
+        const layerPaintProps = copy(currentLayer.layerPaintProps);
+        layerPaintProps[0].labelProps.symbolProps.visibility = layerLabelVisibility
         const layerType = layerPaintProps[0].paintType;
 
         if (layerType === "circle" && layerPaintProps[0].paintProps) {
@@ -390,6 +393,8 @@ function LayerStyling(props) {
     );
   };
 
+  console.log("LayerStyling", layer)
+
   return (
     <div>
       <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "15px" }}>
@@ -404,6 +409,21 @@ function LayerStyling(props) {
       </Grid>
       <Divider />
       <Grid container spacing={3} style={{ padding: "20px" }}>
+        <Grid item xs={12}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="h6">Layer label visibility</Typography>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={layerLabelVisibility === 'visible'}
+                  onChange={() => setLayerLabelVisibility(layerLabelVisibility === 'visible' ? 'none' : 'visible')}
+                  size="small"
+                />
+              }
+            />
+          </div>
+        </Grid>
+
         <Grid item xs={12}>
           <div
             style={{
