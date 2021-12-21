@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
-import { Grid, ListItemIcon, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase } from "@material-ui/core";
+import { Grid, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase } from "@material-ui/core";
 import get from "lodash/get";
-import Avatar from "react-avatar";
 import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
 import { useHistory } from "react-router-dom";
@@ -19,12 +18,11 @@ import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles((theme) => ({
   rootPadding: {
-    padding: "6px 30px",
+    padding: "6px 15px",
   },
   list: {
     overflowY: "auto",
     maxHeight: "79vh",
-    padding: "0px 30px",
     "& .MuiList-padding": {
       padding: "23px 0px !important",
     },
@@ -80,22 +78,39 @@ export default function Contacts(props) {
   let history = useHistory();
   const classes = useStyles();
   const [search, setSearch] = useState("");
-  const [contacts, setContacts] = useState();
+  const [wells, setWells] = useState([
+    {
+      _id: "1",
+      name: "Sample Well 1",
+    },
+    {
+      _id: "2",
+      name: "Sample Well 2",
+    },
+    {
+      _id: "3",
+      name: "Sample Well 3",
+    },
+    {
+      _id: "4",
+      name: "Sample Well 4",
+    },
+  ]);
   const [isSearchActive, setSearchState] = useState(false);
-  const [filteredContacts, setFilteredContacts] = useState(contacts);
+  const [filteredWells, setFilteredWells] = useState(wells);
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   const [nameAutValue, setNameAutValue] = useState("");
   const [nameAutInputValue, setNameAutInputValue] = useState("");
-  const [addContact, setAddContact] = useState(false);
+  const [addWell, setAddWell] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [mutationLoading, setMutationLoading] = useState(false);
   const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
-  const [addNewContact, { data: addContactData }] = useMutation(ADDCONTACT);
+  // const [addNewContact, { data: addWellData }] = useMutation(ADDCONTACT);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
 
   useEffect(() => {
@@ -111,18 +126,18 @@ export default function Contacts(props) {
   useEffect(() => {
     if (nameAutValue) {
       props.addSelectedContact(nameAutValue);
-      GettingContacts();
+      // GettingContacts();
       // setMutationLoading(true);
-      setAddContact(false);
+      setAddWell(false);
       setNameAutValue("");
     }
   }, [nameAutValue]);
 
-  useEffect(() => {
-    if (get(addContactData, "addContact.contact")) {
-      setNameAutValue({ name: addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id });
-    }
-  }, [addContactData]);
+  // useEffect(() => {
+  //   if (get(addWellData, "addWell.well")) {
+  //     setNameAutValue({ name: addWellData.addWell.well.name, _id: addWellData.addWell.well._id });
+  //   }
+  // }, [addWellData]);
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
@@ -138,44 +153,46 @@ export default function Contacts(props) {
   };
 
   useEffect(() => {
-    let filtered = contacts?.filter((c) => c.toLowerCase().includes(search.toLowerCase()));
-    setFilteredContacts(filtered);
-  }, [search, contacts]);
+    let filteredWells = wells.filter((w) => w.name.toLowerCase().includes(search.toLowerCase()));
+    setFilteredWells(filteredWells);
+  }, [search, wells]);
 
-  const GettingContacts = useCallback(() => {
-    let contactnames = stateApp.activeDeal?.contacts?.map((value) => {
-      if (get(value, "relatedObject.entityDetail.name")) {
-        return value.relatedObject.entityDetail.name;
-      } else if (get(value, "name")) {
-        return value.name;
-      } else {
-        return "Empty";
-      }
-    });
-    setContacts(contactnames);
-  }, [stateApp.activeDeal?.contacts]);
+  // const GettingWells = useCallback(() => {
+  //   let contactnames = stateApp.activeDeal?.contacts?.map((value) => {
+  //     if (get(value, "relatedObject.entityDetail.name")) {
+  //       return value.relatedObject.entityDetail.name;
+  //     } else if (get(value, "name")) {
+  //       return value.name;
+  //     } else {
+  //       return "Empty";
+  //     }
+  //   });
+  //   setWells(contactnames);
+  // }, [stateApp.activeDeal?.contacts]);
 
-  useEffect(() => {
-    GettingContacts();
-  }, [search, props, GettingContacts]);
+  // useEffect(() => {
+  //   GettingWells();
+  // }, [search, props, GettingWells]);
 
   useEffect(() => {
     setMutationLoading(props.loading);
   }, [props.loading]);
 
-  const DeleteContact = async (index) => {
-    const descriptorId = get(stateApp, `activeDeal.contacts[${index}].descriptorId`) || get(stateApp, `activeDeal.contacts[${index}]._id`);
-    let result = await removeDealDescriptor({
-      variables: { id: descriptorId, relatedObjectType: "Contact" },
-      refetchQueries: ["getPipeline", "getContactDeals"],
-      awaitRefetchQueries: true,
-    });
-    let response = await result.data.removeDealDescriptor.success;
-    if (response) {
-      props.getDeal();
-    } else {
-      setMutationLoading(false);
-    }
+  const deleteWell = async (wellId) => {
+    let filteredWells = wells.filter((w) => w._id !== wellId);
+    setWells(filteredWells);
+    // const descriptorId = get(stateApp, `activeDeal.contacts[${index}].descriptorId`) || get(stateApp, `activeDeal.contacts[${index}]._id`);
+    // let result = await removeDealDescriptor({
+    //   variables: { id: descriptorId, relatedObjectType: "Contact" },
+    //   refetchQueries: ["getPipeline", "getContactDeals"],
+    //   awaitRefetchQueries: true,
+    // });
+    // let response = await result.data.removeDealDescriptor.success;
+    // if (response) {
+    //   props.getDeal();
+    // } else {
+    //   setMutationLoading(false);
+    // }
   };
 
   const gotoContact = (index) => {
@@ -185,13 +202,13 @@ export default function Contacts(props) {
       dealDialog: false,
       transactBarView: "Deal",
     }));
-    history.push(`/contact/details/${stateApp.activeDeal?.contacts[index]?._id}?return-url=${history.location.pathname}`);
+    history.push(`/map/wells/7013D1FC-F2F1-478A-A790-0858509489F4/39.1058388/-98.998703`);
   };
 
   return (
     <div style={{ marginRight: "14px" }}>
       <Grid container direction="row" justify="space-between" alignItems="center" className={classes.rootPadding}>
-        {!addContact && (
+        {!addWell && (
           <React.Fragment>
             {!isSearchActive && (
               <Grid item xs={10}>
@@ -233,7 +250,7 @@ export default function Contacts(props) {
             </Grid>
           </React.Fragment>
         )}
-        {addContact && (
+        {addWell && (
           <Grid item xs={11}>
             <AutocompEntityNamesVirtualizeList
               mongoEntitiesArray={mongoEntitiesArray}
@@ -250,11 +267,11 @@ export default function Contacts(props) {
               disabled={props.loading}
               addNew={true}
               addNewOnClick={(value) => {
-                const contact = { name: value };
+                const well = { name: value };
                 // addNewContact({
                 //   variables: {
-                //     contact: {
-                //       ...contact,
+                //     well: {
+                //       ...well,
                 //       createBy: stateApp.user.mongoId,
                 //       lastUpdateBy: stateApp.user.mongoId,
                 //     },
@@ -262,16 +279,16 @@ export default function Contacts(props) {
                 //   refetchQueries: ["getPaginatedContacts", "getContact"],
                 //   awaitRefetchQueries: true,
                 // });
-                console.log("Contact is", contact);
+                console.log("Contact is", well);
               }}
-              onBlur={() => setAddContact((addContact) => !addContact)}
+              onBlur={() => setAddWell((addWell) => !addWell)}
             />
           </Grid>
         )}
         <Grid item xs={1}>
           <IconButton
             onClick={() => {
-              setAddContact((addContact) => !addContact);
+              setAddWell((addWell) => !addWell);
               setSearch("");
             }}
           >
@@ -281,61 +298,52 @@ export default function Contacts(props) {
       </Grid>
       <Divider />
       <div className={classes.list}>
-        <Grid container className={classes.actionGrid}>
-          <Grid item xs={12}>
-            {mutationLoading === true && (
+        {mutationLoading === true && (
+          <Grid container className={classes.actionGrid}>
+            <Grid item xs={12}>
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <CircularProgress size="20px" />
               </div>
-            )}
+            </Grid>
           </Grid>
-        </Grid>
+        )}
 
         <List aria-label="wells list">
-          {filteredContacts && filteredContacts.length > 0 ? (
-            filteredContacts.map((c, i) => (
-              <>
-                <ListItem key={i}>
-                  <ListItemIcon>
-                    <Avatar
-                      color={Avatar.getRandomColor(c, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
-                      fgColor="#000"
-                      name={c}
-                      size="35"
-                      round
-                    />
-                  </ListItemIcon>
+          {filteredWells && filteredWells.length > 0 ? (
+            filteredWells.map((well, index) => (
+              <div style={{ padding: "10px 0px 0px" }}>
+                <ListItem key={index}>
                   <Link
                     style={{
                       cursor: "pointer",
                     }}
                     color="primary"
-                    onClick={() => gotoContact(i)}
+                    onClick={() => gotoContact(index)}
                   >
-                    {c}
+                    {well.name}
                   </Link>
 
-                  {mutationLoading === stateApp.activeDeal?.contacts[i]?._id ? (
+                  {/* {mutationLoading === stateApp.activeDeal?.contacts[index]?._id ? (
                     <ListItemSecondaryAction>
                       <IconButton edge="end" aria-label="delete">
                         <CircularProgress />
                       </IconButton>
                     </ListItemSecondaryAction>
-                  ) : (
-                    <ListItemSecondaryAction
-                      onClick={() => {
-                        DeleteContact(i);
-                        setMutationLoading(stateApp.activeDeal?.contacts[i]?._id);
-                      }}
-                    >
-                      <IconButton edge="end" aria-label="delete">
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  )}
+                  ) : ( */}
+                  <ListItemSecondaryAction
+                    onClick={() => {
+                      deleteWell(well._id);
+                      // setMutationLoading(stateApp.activeDeal?.contacts[index]?._id);
+                    }}
+                  >
+                    <IconButton edge="end" aria-label="delete">
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                  {/* )} */}
                 </ListItem>
                 <Divider />
-              </>
+              </div>
             ))
           ) : (
             <ListItem>
