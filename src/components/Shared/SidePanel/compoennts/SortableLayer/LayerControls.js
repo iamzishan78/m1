@@ -11,7 +11,7 @@ import { AppContext } from "AppContext.js";
 
 import { Grid } from "@material-ui/core";
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import KeyboardArrowRightIcon  from '@material-ui/icons/KeyboardArrowRight';
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 
 import { IconButton } from '@material-ui/core';
 
@@ -94,9 +94,9 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
   const layerStylingControl = layer.layerSettings?.colorable && (
     <IconButton size='small'>
       <Tooltip title="Layer Styling" >
-        <KeyboardArrowRightIcon  
-        fontSize='small' 
-        htmlColor={isHover ? "white" : "#808ba3"} onClick={() => handleColorPicker(layer)} />
+        <KeyboardArrowRightIcon
+          fontSize='small'
+          htmlColor={isHover ? "white" : "#808ba3"} onClick={() => handleColorPicker(layer)} />
       </Tooltip>
     </IconButton>
   );
@@ -150,6 +150,9 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
           alignItems: 'center',
         }}
       >
+        {/* <Grid item xs={4}>
+          {layerClickabilityControl}
+        </Grid> */}
         <Grid item xs={4}>
           {layerClickabilityControl}
         </Grid>
