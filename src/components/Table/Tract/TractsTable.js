@@ -136,6 +136,15 @@ function TractsTable(props) {
     // }, [issues]);
 
     useEffect(() => {
+        if (tableData?.hits?.length > 0) {
+          const objectsIdsArray = tableData?.hits?.map((hit) => hit.contact._id);
+          const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
+          props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
+          props.ifAreContacts(globalOwnerIds);
+        }
+      }, [tableData]);
+
+    useEffect(() => {
         if (tableData && !props.loading) {
             if (tableData?.hits?.length > 0) {
                 const resolvePath = (obj, path) => {
@@ -154,7 +163,7 @@ function TractsTable(props) {
                 }
 
                 const hits = tableData?.hits.map((hit) => {
-                    const tempHit = { ...hit };
+                    let tempHit = { ...hit };
                     TableHeader.forEach((col) => {
                         if (col?.options?.dbName) {
                             tempHit[col.name] = resolvePath(tempHit, col.options.dbName)
@@ -162,6 +171,7 @@ function TractsTable(props) {
                         }
                     })
 
+                    tempHit = props.setGenricData(tempHit, tempHit.contact._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
                     return tempHit
                 })
 
@@ -243,7 +253,7 @@ function TractsTable(props) {
                 }
             })
         }
-    }, [tableData, props.dependencyUpdate, props.loading]);
+    }, [tableData, props.dependencyUpdate]);
 
     // useEffect(() => {
     //     if (issues?.hits?.length > 0 && tableData?.hits?.length > 0) {
