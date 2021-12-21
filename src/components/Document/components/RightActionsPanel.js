@@ -1,10 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import HomeIcon from "@material-ui/icons/HomeOutlined";
 import WellIcon from "components/Shared/svgIcons/well";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
-import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,7 +46,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Drawer(props) {
-  const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles(props);
 
   const drawerIcons = {
@@ -62,7 +60,7 @@ export default function Drawer(props) {
         <HomeIcon {...props} />
       </Badge>
     ),
-    Well: (props) => (
+    Wells: (props) => (
       <Badge
         anchorOrigin={{
           vertical: "top",
@@ -79,10 +77,7 @@ export default function Drawer(props) {
     <div className={classes.root}>
       {Object.keys(drawerIcons).map((key) => (
         <Tooltip title={key} placement="left">
-          <div
-            className={`${classes.icon} ${classes.activeIcon}`}
-            onClick={() => setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))}
-          >
+          <div className={`${classes.icon} ${classes.activeIcon}`} onClick={() => props.setPanel(key)}>
             {drawerIcons[key]({
               opacity: "1",
               height: "30",

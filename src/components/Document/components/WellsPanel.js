@@ -8,13 +8,13 @@ import { useHistory } from "react-router-dom";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "graphQL/useMutationAddContact";
-import { AppContext } from "../../AppContext";
+import { AppContext } from "AppContext";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import IconButton from "@material-ui/core/IconButton";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { REMOVEDEALDESCRIPTOR } from "../../graphQL/useMutationRemoveDealDescriptor";
+import { REMOVEDEALDESCRIPTOR } from "graphQL/useMutationRemoveDealDescriptor";
 import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles((theme) => ({
@@ -243,7 +243,7 @@ export default function Contacts(props) {
               nameAutInputValue={nameAutInputValue}
               setNameAutInputValue={setNameAutInputValue}
               variant="outlined"
-              label="Contact Name"
+              label="Well Name"
               hasNextPage={hasNextPage}
               isNextPageLoading={isNextPageLoading}
               loadNextPage={loadNextPage}
@@ -251,17 +251,18 @@ export default function Contacts(props) {
               addNew={true}
               addNewOnClick={(value) => {
                 const contact = { name: value };
-                addNewContact({
-                  variables: {
-                    contact: {
-                      ...contact,
-                      createBy: stateApp.user.mongoId,
-                      lastUpdateBy: stateApp.user.mongoId,
-                    },
-                  },
-                  refetchQueries: ["getPaginatedContacts", "getContact"],
-                  awaitRefetchQueries: true,
-                });
+                // addNewContact({
+                //   variables: {
+                //     contact: {
+                //       ...contact,
+                //       createBy: stateApp.user.mongoId,
+                //       lastUpdateBy: stateApp.user.mongoId,
+                //     },
+                //   },
+                //   refetchQueries: ["getPaginatedContacts", "getContact"],
+                //   awaitRefetchQueries: true,
+                // });
+                console.log("Contact is", contact);
               }}
               onBlur={() => setAddContact((addContact) => !addContact)}
             />
