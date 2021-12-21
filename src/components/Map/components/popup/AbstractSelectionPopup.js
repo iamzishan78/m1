@@ -186,7 +186,7 @@ export default (props) => {
     } else {
       parcelName = "PLSS Default Name";
     }
-    originalProperties = [abstractShape.properties];
+    originalProperties = abstractShape.properties;
 
     const featureId = hat();
     const newShapeFeature = {
@@ -270,7 +270,7 @@ export default (props) => {
               {isSavingParcel ? (
                 <CircularProgress size={20} color="secondary" />
               ) : (
-                <Tooltip title="Create Parcel">
+                <Tooltip title="Add Shape to Layer">
                   <IconButton size="small" onClick={saveAndOpenParcelDetail} aria-label="Parcel" >
                     <LayerIcon color="secondary" />
                   </IconButton>

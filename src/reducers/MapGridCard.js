@@ -16,13 +16,13 @@ const INIT_STATE = {
 export default function MapGridCardReducer(state = INIT_STATE, action) {
   switch (action.type) {
     case SET_MAP_GRID_CARD_STATE: {
-      console.log("reducer", action.payload);
       return { ...state, ...(action.payload ? action.payload : {}) };
     }
     case TOGGLE_MAP_GRID_ACTIVATED: {
       return {
         ...state,
         mapGridCardActivated: !state.mapGridCardActivated,
+        mapGridCardActiveTap: 0,
         selectedOwner: null,
         selectedOwnerWellIntsSummary: null,
       };

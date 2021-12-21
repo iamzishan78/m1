@@ -132,7 +132,6 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
     const index = newItems.findIndex((item) => item.id === currentItem.current.id);
     currentItem.current = newItems[index];
     setItems(newItems);
-    console.log("in handle change");
   };
 
   const handleDragBegin = (item) => {

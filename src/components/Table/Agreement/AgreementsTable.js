@@ -125,24 +125,41 @@ function AgreementsTable(props) {
     // }, [issues]);
 
     useEffect(() => {
+        if (tableData?.hits?.length > 0) {
+          const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
+        //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
+          props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
+        //   props.ifAreContacts(globalOwnerIds);
+        }
+      }, [tableData]);
+
+    useEffect(() => {
         if (tableData && !props.loading) {
             if (tableData?.hits?.length > 0) {
                 const resolvePath = (obj, path) => {
+                    if (!obj) return null
+                    // if (Array.isArray(obj)) obj = obj[0]
+
                     const parts = path.split(".");
+                    const optionalPath = parts[0].endsWith('?')
+                    if (optionalPath) parts[0] = parts[0].slice(0,-1)
                     if (parts.length == 1) {
-                        return obj[parts[0]];
+                        return obj[parts[0]] ||
+                        (optionalPath && typeof obj !== 'object' ? obj : null);
                     }
-                    return resolvePath(obj[parts[0]], parts.slice(1).join("."));
+                    return resolvePath(obj[parts[0]], parts.slice(1).join(".")) ||
+                    (optionalPath ? resolvePath(obj, parts.slice(1).join(".")) : resolvePath(null, parts.slice(1).join(".")));
                 }
 
                 const hits = tableData?.hits.map((hit) => {
-                    const tempHit = { ...hit };
+                    let tempHit = { ...hit };
                     TableHeader.forEach((col) => {
                         if (col?.options?.dbName) {
                             tempHit[col.name] = resolvePath(tempHit, col.options.dbName)
                         }
                     })
 
+                    tempHit = props.setGenricData(tempHit, tempHit._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
                     return tempHit
                 })
 
@@ -160,7 +177,7 @@ function AgreementsTable(props) {
                                 display: (filterList, onChange, index, column) => {
                                     column.filterKey = headers.find(el => el.name === column.name)?.esKey;
                                     return (
-                                        <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
+                                        <AutoCompleteFilter filterList={[...esFilters, filterList]} column={column} index={index} onChange={onChange}
                                             query={GET_ES_FILTER_LIST} esIndex={esIndex} />
                                     );
                                 }

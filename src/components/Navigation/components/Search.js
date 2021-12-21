@@ -275,19 +275,19 @@ function Search() {
   }, [searchHistoryList]);
 
   // const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(PAGINATEDWELLSQUERY, { fetchPolicy: "network-only", skip: true });
-  const [getESWellsPaginatedList, { data: constDataWells }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
+  const [getESWellsPaginatedList, { data: constDataWells }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
 
   // const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(PAGINATEDOWNERSQUERY, { fetchPolicy: "network-only", skip: true });
-  const [getESOwnersPaginatedList, { data: constDataOwners }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
+  const [getESOwnersPaginatedList, { data: constDataOwners }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
 
   // const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(PAGINATEDOPERATORSQUERY, {
   //   fetchPolicy: "network-only",
   //   skip: true,
   // });
-  const [getESOperatorsPaginatedList, { data: constDataOperators }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
+  const [getESOperatorsPaginatedList, { data: constDataOperators }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
 
   // const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(PAGINATEDLEASESQUERY, { fetchPolicy: "network-only", skip: true });
-  const [getESLeasesPaginatedList, { data: constDataLeases }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
+  const [getESLeasesPaginatedList, { data: constDataLeases }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
   //////////// Search History End//////////////////
   const startPaginationAt = 25;
 
@@ -301,8 +301,8 @@ function Search() {
               first: startPaginationAt,
               keep_alive: "1micros"
             },
-            search: request.input? `wellName:*${request.input}*`: '',
-            sort:[]
+            search: request.input ? `((wellName:*${request.input}*) OR (api:*${request.input}*))` : '',
+            sort: []
           }
         })
         // getPaginatedWells({
@@ -325,8 +325,8 @@ function Search() {
               first: startPaginationAt,
               keep_alive: "1micros"
             },
-            search: request.input? `ownerName:*${request.input}*`: '',
-            sort:[]
+            search: request.input ? `ownerName:*${request.input}*` : '',
+            sort: []
           }
         })
         // getPaginatedOwners({
@@ -349,8 +349,8 @@ function Search() {
               first: startPaginationAt,
               keep_alive: "1micros"
             },
-            search: request.input? `operator:*${request.input}*`: '',
-            sort:[]
+            search: request.input ? `operator:*${request.input}*` : '',
+            sort: []
           }
         })
         // getPaginatedOperators({
@@ -373,8 +373,8 @@ function Search() {
               first: startPaginationAt,
               keep_alive: "1micros"
             },
-            search: request.input? `lease:*${request.input}*`: '',
-            sort:[]
+            search: request.input ? `lease:*${request.input}*` : '',
+            sort: []
           }
         })
         // getPaginatedLeases({
@@ -393,7 +393,7 @@ function Search() {
   //   fetchPolicy: "cache-and-network",
   //   skip: true,
   // });
-  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
 
   const callContactsSearch = React.useMemo(
     () =>
@@ -407,7 +407,7 @@ function Search() {
               keep_alive: "1micros"
             },
             search: `${request.input}`,
-            sort:[]
+            sort: []
           }
         })
         // getPaginatedContacts({
@@ -940,7 +940,6 @@ function Search() {
   ) {
     optionsWithHeader = [header, { ...header, Source: "loader" }];
   }
-  console.log("orig optionsWithHeader", optionsWithHeader);
 
   return (
     <div className={classes.root} style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
@@ -970,7 +969,7 @@ function Search() {
         </Accordion>
       )
       } */}
-      <SearchByTypeSelectField value={searchDropDown} handleChange={handleSearchPanelChange} backgroundColor='transparent' />
+      <SearchByTypeSelectField value={searchDropDown} handleChange={handleSearchPanelChange} color='#ffffff' backgroundColor='#1c2233' />
       <div style={{ width: '10px' }}></div>
 
       <Autocomplete
@@ -1425,7 +1424,6 @@ function Search() {
           </div>
         )}
         renderOption={(option) => {
-          console.log("orig renderOption option", option);
           if (option.Source === "header" || option.group === "loader") return null;
           const parts = parse(option.Primary, Array());
 

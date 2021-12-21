@@ -41,26 +41,28 @@ function ShapeGridWellsTable(props) {
     const [selectedYear, setSelectedYear] = useState(2021)  // production selected year state 
 
     // queries 
-    const [getPaginatedShapeWells, { data: dataShapeWells, variables: variablesShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", skip: true,
+    const [getPaginatedShapeWells, { data: dataShapeWells, variables: variablesShapeWells }] = useLazyQuery(SHAPEWELLS, {
+        fetchPolicy: "cache-and-network", skip: true,
         onCompleted: (dataShapeWells) => {
-        setCount((state, props) => {
-            let newState = state || dataShapeWells?.paginatedShapeWells?.edges?.length;
-            let newStateIncrement = !variablesShapeWells?.pagination?.before &&
-              dataShapeWells?.paginatedShapeWells?.pageInfo?.hasNextPage
-                ? 1
-                : 0;
+            setCount((state, props) => {
+                let newState = state || dataShapeWells?.paginatedShapeWells?.edges?.length;
+                let newStateIncrement = !variablesShapeWells?.pagination?.before &&
+                    dataShapeWells?.paginatedShapeWells?.pageInfo?.hasNextPage
+                    ? 1
+                    : 0;
 
-            return newState + newStateIncrement
-        })
-    },
+                return newState + newStateIncrement
+            })
+        },
     });
-    const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", skip: true,
+    const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, {
+        fetchPolicy: "cache-and-network", skip: true,
         onCompleted: (dataShapeWellsCount) => {
-          setStateApp((state) => ({
-              ...state,
-              shapeGridWellsCount: dataShapeWellsCount?.shapeWellsCount,
-          }));
-      }, 
+            setStateApp((state) => ({
+                ...state,
+                shapeGridWellsCount: dataShapeWellsCount?.shapeWellsCount,
+            }));
+        },
     });
     const tableData = dataShapeWells?.paginatedShapeWells
 
@@ -185,9 +187,9 @@ function ShapeGridWellsTable(props) {
             case "changePage":
                 props.setLoading(true);
                 if (tableState.page > meta.pageInd) {
-                  setCount((state, props) => {
-                    return (tableState.page + 1) * tableState.rowsPerPage
-                  })
+                    setCount((state, props) => {
+                        return (tableState.page + 1) * tableState.rowsPerPage
+                    })
                 }
                 getPaginatedShapeWells({
                     ...pageVariables,
@@ -228,12 +230,12 @@ function ShapeGridWellsTable(props) {
             default:
         }
     }
-    console.log(count, 'comes')
     const options = {
+        ...props.options,
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
         count: stateApp.shapeGridWellsCount || count || 0,
         serverSide: true,
-        search: true,
+        search: false,
     }
     ////////////-----Add your code section here-----///////////////////////
     const getWellOwnersByYear = (selectedYear) => {
@@ -262,7 +264,7 @@ function ShapeGridWellsTable(props) {
                 onTableChange={onTableChange}
                 options={options}
                 parent={props.parent}
-                identifier = {props.identifier}
+                identifier={props.identifier}
                 setColumnsBase={[]}
                 getWellOwnersByYear={getWellOwnersByYear}
             />

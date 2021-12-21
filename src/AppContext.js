@@ -149,6 +149,9 @@ const AppProvider = (props) => {
     pdfView: null,
     selectedAgreement: null,
     bulkUpload: false,
+    revenueDetails: {
+      expandedPanel: true,
+    },
     selectedMeta: null,
     selectedView: null,
 
@@ -274,7 +277,7 @@ const AppProvider = (props) => {
 };
 
 const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
-const isDev = process.env.NODE_ENV === "development" && false;
+const isDev = process.env.REACT_APP_NODE_ENV === "development";
 
 const setApolloHeaders = (config, authToken, idToken) => {
   if (!config) config = {};

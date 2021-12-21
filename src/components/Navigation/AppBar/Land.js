@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 import { Grid, Typography, Button } from "@material-ui/core";
 import Add from "@material-ui/icons/Add";
@@ -8,6 +8,8 @@ import Add from "@material-ui/icons/Add";
 import LandSearch from "../components/LandSearch";
 
 export default function LandAppBar(props) {
+  const location = useLocation();
+
   const { classes } = props;
   const { quickActionsPanelState } = useSelector(({ Land }) => Land);
 
@@ -31,7 +33,12 @@ export default function LandAppBar(props) {
         <Grid container direction="row" display="flex" justify="flex-start" alignItems="center">
           <Grid item md={2.5}>
             <Typography variant="h5" style={{ color: "black", fontWeight: "bold" }}>
-              Agreements
+              {(()=>{
+                switch (location.pathname) {
+                  case '/land/agreements': return "Agreement"
+                  case '/land/tracts': return "Tracts"
+                }
+              })()}
             </Typography>
           </Grid>
           <Grid item md={5} style={{ marginLeft: "20px" }}>
@@ -41,8 +48,13 @@ export default function LandAppBar(props) {
       </Grid>
       <Grid item>
         <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-          <Button color="secondary" variant="contained" startIcon={<Add />} onClick={() => handleListItemClick("/agreement/details")}>
-            Add Agreement
+          <Button color="secondary" variant="contained" startIcon={<Add />}>
+            Add {(()=>{
+                switch (location.pathname) {
+                  case '/land/agreements': return "Agreement"
+                  case '/land/tracts': return "Tract"
+                }
+              })()}
           </Button>
         </div>
       </Grid>

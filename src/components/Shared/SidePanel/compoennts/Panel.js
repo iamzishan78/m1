@@ -106,10 +106,13 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 
   useEffect(() => {
     const mapDefaultPosition = get(updatedMapSettings, "updateUserMapSettings.settings.settings.mapDefaultPosition");
-    if (mapDefaultPosition) {
-      dispatch(showSuccessMessage("Map Default Position saved."));
-    } else if (updatedMapSettings) {
-      dispatch(showErrorMessage("Error in saving Map Default Position."));
+    // Only when position is changed and not style
+    if (mapDefaultPosition && !deepEqualObjects(stateApp.defaultMapVars.center, mapDefaultPosition.center)) {
+      if (mapDefaultPosition) {
+        dispatch(showSuccessMessage("Map Default Position saved."));
+      } else if (updatedMapSettings) {
+        dispatch(showErrorMessage("Error in saving Map Default Position."));
+      }
     }
     setMapVars(mapDefaultPosition);
   }, [updatedMapSettings]);
@@ -237,13 +240,16 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           ))}
         </div>
 
-        <div style={{paddingLeft: '20px', paddingRight: '20px', 
+        <div style={{
+          paddingLeft: '20px', paddingRight: '20px',
         }}>
 
-        <hr style={{border: '1px solid #263451', 
-                    borderRadius: '5px', marginTop: '30px', marginBottom: '10px'}}/>
+          <hr style={{
+            border: '1px solid #263451',
+            borderRadius: '5px', marginTop: '30px', marginBottom: '10px'
+          }} />
 
-        </div> 
+        </div>
 
         <StyledListItem2>
           <ListItemIcon>

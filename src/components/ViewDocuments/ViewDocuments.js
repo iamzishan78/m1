@@ -169,7 +169,6 @@ export default function ViewDocuments(props) {
   });
 
   useEffect(() => {
-    console.log("VIEW FILE RESULT", viewFileResult);
     if (viewFileResult?.viewFile?.uri) {
       let a = document.createElement("a");
       a.href = viewFileResult.viewFile.uri;
@@ -185,7 +184,6 @@ export default function ViewDocuments(props) {
   useEffect(() => {
     let ID = [];
     for (let i = 0; i < files?.getFileDescriptors.length; i++) {
-      // console.log(files?.getFileDescriptors[i].fileId, 'Kumail Test')
       ID.push(files?.getFileDescriptors[i].fileId);
     }
     viewFiles({
@@ -212,8 +210,6 @@ export default function ViewDocuments(props) {
     // Search logic (Search on change in search field text)
     let filtered = allDocuments.filter((doc) => doc.fileName.toLowerCase().includes(documentSearch.toLowerCase()));
     setFilteredDocuments(filtered);
-
-    console.log("DOCS:", documentSearch, allDocuments);
   }, [documentSearch, allDocuments]);
 
   const ExtenstionGetter = (name) => {
@@ -264,17 +260,10 @@ export default function ViewDocuments(props) {
         {filteredDocuments
           ?.filter((doc) => doc.fileState === "active")
           ?.map((doc) => {
-            console.log("FILE", doc);
             return (
               <li className={classes.document} key={doc.fileUrl}>
                 <div className={classes.documentLeft}>
                   <div>
-                    {console.log("VALUE DOC", doc)}
-                    {console.log(
-                      "VALUE DOC TEST",
-                      new RegExp(["jpg", "jpeg", "png", "PNG", "bmp"].join("|")).test(ExtenstionGetter(doc.fileName))
-                    )}
-
                     {/* TEMP COMMENT OUT UNTIL WE GET THE CORRECT URI IN THE QUERY	 */}
                     {/* {new RegExp(
 										["jpg", "jpeg", "png", "bmp"].join("|")

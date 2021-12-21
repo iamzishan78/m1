@@ -2,6 +2,7 @@ import React, { Fragment, useState, useContext, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../AppContext";
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
+import { useMediaQuery } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
@@ -108,7 +109,6 @@ const useStyles = makeStyles((theme) => {
     mainPanelsDiv: {
       height: "100%",
       maxHeight: "100vh",
-      overflow: "auto",
       position: "relative",
       "&::-webkit-scrollbar": {
         width: "0.75em",
@@ -127,10 +127,15 @@ const useStyles = makeStyles((theme) => {
                   ? "calc(91vh - 233px)"
                   : "calc(60vh - 233px)"
                 : mapGridCardActivated === "exp"
-                ? "calc(91vh - 183px)"
-                : "calc(60vh - 183px)",
+                  ? "calc(91vh - 183px)"
+                  : "calc(60vh - 183px)",
+            maxHeight: ({ dockMenu }) => {
+              if (dockMenu === "bottom" || dockMenu === "top") return "calc(100vh - 460px)"
+              else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 157px)"
+              else if (dockMenu === "full") return "calc(100vh - 158px)"
+            }
           },
-        },
+        }
       },
     },
     tapsLabelsButtons: {
@@ -201,6 +206,12 @@ function MapGridCard(props) {
   // contexts
   const [stateApp] = useContext(AppContext);
   const [stateMapControls] = useContext(MapControlsContext);
+  // const dcreenSizes = {
+  //   "1000": useMediaQuery("(min-height: 1000px)"),
+  //   "1200": useMediaQuery("(min-height: 1200px)"),
+  //   "1400": useMediaQuery("(min-height: 1400px)"),
+  //   "1600": useMediaQuery("(min-height: 1600px)")
+  // }
 
   // function state
   const [searchTapValue, SearchTapValue] = useState(platformDataInitialData[0]);
@@ -213,6 +224,10 @@ function MapGridCard(props) {
   const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
 
   const dispatch = useDispatch();
+
+  // React.useEffect(() => {
+  //   console.log(dcreenSizes);
+  // }, [dcreenSizes]);
 
   const setSelectedDockMenu = (state) => {
     if (dockMenu !== state) {
@@ -244,6 +259,7 @@ function MapGridCard(props) {
     mapGridCardActivated,
     mapGridCardActiveTap,
     viewportWells: stateApp.viewportWells,
+    // screenSizes
   });
 
   const handleMainTapChange = (event, newValue) => {
@@ -309,8 +325,9 @@ function MapGridCard(props) {
   const options = {
     toolbarActionMarginRight: "87px !important",
     customToolbar: () => {
+      const dynamicLeftPos = mapGridCardActiveTap !== 2 ? 207 : 107
       return (
-        <div style={{ display: "flex", float: "left", position: "relative", left: "207px", marginRight: "15px" }}>
+        <div style={{ display: "flex", float: "left", position: "relative", left: `${dynamicLeftPos}px`, marginRight: "15px" }}>
           <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
 
           <IconButton
@@ -382,7 +399,7 @@ function MapGridCard(props) {
               className={classes.tapsPanelsPadding}
               //
               style={{ position: "absolute", width: "100vw" }}
-              //
+            //
             >
               <div style={{ position: "relative" }}>
                 <TabPanels
@@ -426,9 +443,9 @@ function MapGridCard(props) {
               value={mapGridCardActiveTap}
               index={2}
               className={classes.tapsPanelsPadding}
-              style={{ position: "absolute", width: "100vw" }}
+            // style={{ position: "absolute", width: "100vw" }}
             >
-              <div style={{ position: "relative" }}>
+              <div style={{ position: "relative" }} classes={classes.gridTables}>
                 <TabPanels
                   value={viewportTapValue}
                   panels={[
@@ -441,6 +458,7 @@ function MapGridCard(props) {
                           setValue={setViewportTapValue}
                         />
                       }
+                      options={options}
                       targetLabel="well"
                       showTracks
                     />,
@@ -453,6 +471,7 @@ function MapGridCard(props) {
                           setValue={setViewportTapValue}
                         />
                       }
+                      options={options}
                       targetLabel="owner"
                       showTracks
                     />,

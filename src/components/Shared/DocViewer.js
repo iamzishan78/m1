@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     },
     border: "0px",
     inset: "unset",
-    width: "calc(100vw - 650px)",
+    width: (props) => props.width ?? "calc(100vw - 650px)",
   },
   paperTwo: {
     backgroundColor: theme.palette.background.paper,
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "1",
     display: "flex",
     flexDirection: "column",
-    position: "sticky   !important",
+    position: "sticky !important",
     top: "85% !important",
     bottom: "0 !important",
     left: "0",
@@ -63,10 +63,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondition = false }) => {
-  const classes = useStyles();
+const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondition = false, width, onCloseHandler = null }) => {
+  const classes = useStyles({ width });
   const [numPages, setNumPages] = useState(null);
-  let [pageNumber, setPageNumber] = useState(1);
+  let [, setPageNumber] = useState(1);
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [pdfState, setpdfState] = useState([]);
   let [zoom, setzoom] = useState(2.0);
@@ -83,7 +83,6 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
   const PageView = (num) => {
     let Page = [];
     for (let i = 1; i <= num; i++) {
-      console.log(i, numPages, "value of I");
       Page.push(i);
     }
     setpdfState(Page);
@@ -94,11 +93,6 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
       let a = document.createElement("a");
       a.href = viewFile.uri;
       a.download = viewFile.name;
-
-      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
-      // a.target = "_blank";
-
-      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
       a.click();
     }
   };
@@ -163,6 +157,9 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
                 <IconButton
                   onClick={() => {
                     setStateApp({ ...stateApp, viewDoc: null });
+                    if (onCloseHandler) {
+                      onCloseHandler();
+                    }
                   }}
                   size="small"
                 >
@@ -206,17 +203,15 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
             </h4>
 
             <div style={{ float: "right" }}>
-              <>
-                <IconButton size="small" style={{ margin: "0 8px" }}>
-                  {stateApp?.viewDoc?.uri ? (
-                    <IconButton size="small" onClick={() => downloadFile(stateApp?.viewDoc)}>
-                      <GetAppIcon />
-                    </IconButton>
-                  ) : (
-                    <CircularProgress size={20} color="secondary" />
-                  )}
-                </IconButton>
-              </>
+              <IconButton size="small" style={{ margin: "0 8px" }}>
+                {stateApp?.viewDoc?.uri ? (
+                  <IconButton size="small" onClick={() => downloadFile(stateApp?.viewDoc)}>
+                    <GetAppIcon />
+                  </IconButton>
+                ) : (
+                  <CircularProgress size={20} color="secondary" />
+                )}
+              </IconButton>
 
               <IconButton
                 onClick={() => {

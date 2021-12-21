@@ -409,7 +409,6 @@ export default function ContactDetailCard(props) {
   }, [contactPurchaseData]);
 
   useEffect(() => {
-    console.log("history.location.pathname", history);
     if (history.location.search.includes("/contact/details")) {
       const id = history.location.search.split("?return-url=/contact/details/")[1].split("/")[0];
       getSecondContact({
@@ -732,9 +731,8 @@ export default function ContactDetailCard(props) {
                         <span className={classes.socialMediaSection}>
                           {contactData.facebook && (
                             <a
-                              href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${
-                                contactData.facebook
-                              }`}
+                              href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${contactData.facebook
+                                }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -743,9 +741,8 @@ export default function ContactDetailCard(props) {
                           )}
                           {contactData.twitter && (
                             <a
-                              href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${
-                                contactData.twitter
-                              }`}
+                              href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${contactData.twitter
+                                }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -754,9 +751,8 @@ export default function ContactDetailCard(props) {
                           )}
                           {contactData.linkedIn && (
                             <a
-                              href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${
-                                contactData.linkedIn
-                              }`}
+                              href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${contactData.linkedIn
+                                }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -962,7 +958,6 @@ export default function ContactDetailCard(props) {
               </Grid>
 
               <Grid item xs={12} className={classes.Comments}>
-                {/* <DocViewer DocStyle={{top:'56% ', left:'40% ', backgroundColor:'white !important',transform: `translate(2.5%, -104.2%)`, width:'1320px',height:'816px'}}></DocViewer> */}
                 <Documents handleOpenExpandableCard={handleOpenExpandableCard} id={contactData._id} user_id={stateApp.user.email} />
                 <Divider />
               </Grid>
@@ -976,7 +971,7 @@ export default function ContactDetailCard(props) {
               header="Contact Data Integration"
               onClose={handleCloseDialog}
               rows={[contactData]}
-              setRows={() => {}}
+              setRows={() => { }}
               updateMelissaTable={() => {
                 getLastMelissaRecord({
                   variables: {

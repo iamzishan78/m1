@@ -196,18 +196,49 @@ export const TableHOC = (Component) => {
                         after: null,
                     },
                     ...(!isEmpty(tableState.sortOrder)) && {
-                        sort:
-                            [{
-                                [columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
-                                    columns.find(el => el.name === tableState.sortOrder?.name)?.name]: {
-                                    order: tableState.sortOrder?.direction,
-                                    // unmapped_type: "null",
-                                    missing: "_last"
+                        sort: (() => {
+                            let field = columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
+                                columns.find(el => el.name === tableState.sortOrder?.name)?.name;
+                            // if (!Array.isArray(field)) field = [ field ]
+                            if (Array.isArray(field)) {
+                                return [
+                                    {
+                                        _script : {
+                                        type : "number",
+                                        script : {
+                                            lang: "painless",
+                                            source: `if (
+                                                    ${field.map(el => `doc['${el}'].isEmpty()`).join(' && ')}
+                                                ) {return 1} else {return 0}`
+                                        },
+                                        order : "asc"
+                                        }
+                                    },
+                                    {
+                                        _script: {
+                                            type: "string",
+                                            script: {
+                                                lang: "painless",
+                                                source: `${field.map(el => `if (!doc['${el}'].isEmpty()) {return doc['${el}'].value}`).join(' else ')}
+                                                    else {return ''}`
+                                            },
+                                            order: tableState.sortOrder?.direction
+                                        }
+                                    }
+                                ]
+                            } else {
+                                return {
+                                    [field]: {
+                                        order: tableState.sortOrder?.direction,
+                                        // unmapped_type: "null",
+                                        missing: "_last"
+                                    }
                                 }
-                            }]
+                            }
+                        })()
                     },
 
-                    filters: [...tableState.esFilters] || [],
+                    ...(tableState.esFilters) && { filters: [...tableState.esFilters] || [] },
                 },
             };
             tableState.filterList.forEach((val, index) => {
@@ -223,6 +254,7 @@ export const TableHOC = (Component) => {
             return {
                 pageESVariables,
                 genericESAction: () => {
+                    console.log("called change")
                     setLoading(true);
                     tableState.page = 0;
                     meta.setPageInd(tableState.page);
@@ -238,8 +270,8 @@ export const TableHOC = (Component) => {
                             pagination: {
                                 pit: tableData.pit,
                                 ...pageESVariables.variables.pagination,
-                                before: rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
-                                after: rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
+                                before: tableState.page === 0 ? null : rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
+                                after: tableState.page === 0 ? null : rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
                             },
                         },
                     });

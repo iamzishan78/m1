@@ -82,30 +82,32 @@ function GridIcon() {
 export default function SearchBarWithToggleButton() {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
+  const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
   let location = useLocation();
   return (
     <div className={classes.root}>
-      <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
-        
-        {/* <SearchByTypeSelectField/> */}
-        <Search />
+      {!mapGridCardActivated && (
+        <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
 
-        {location.pathname === "/documents" ? (
-          <Tooltip title="Add Document">
-            <Button
-              className={classes.gridOnIcon}
-              onClick={() => {
-                console.log(stateApp, "Add Document");
-                setStateApp({ ...stateApp, DocumentDrawer: true });
-              }}
-            >
-              <PostAddOutlinedIcon />
-            </Button>
-          </Tooltip>
-        ) : (
-          <GridIcon />
-        )}
-      </ButtonGroup>
+          {/* <SearchByTypeSelectField/> */}
+          <Search />
+
+          {location.pathname === "/documents" ? (
+            <Tooltip title="Add Document">
+              <Button
+                className={classes.gridOnIcon}
+                onClick={() => {
+                  setStateApp({ ...stateApp, DocumentDrawer: true });
+                }}
+              >
+                <PostAddOutlinedIcon />
+              </Button>
+            </Tooltip>
+          ) : (
+            <GridIcon />
+          )}
+        </ButtonGroup>
+      )}
       {stateApp.searchLoader && (
         <CircularProgress key="loader" style={{ position: "absolute", right: "-38px", top: "8px" }} size={28} color="secondary" />
       )}

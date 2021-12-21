@@ -16,7 +16,7 @@ import { handleSelectedGridChange, setColumnsData } from 'components/Table/helpe
 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
-import { GET_ES_CONTACTS_FILTER } from "graphQL/useQueryESContactsFilter";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { REMOVE_CONTACTS } from "graphQL/useMutationRemoveContact";
 import { GET_ES_CONTACTS } from "graphQL/useQueryESContacts";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
@@ -56,6 +56,7 @@ function ContactsTable(props) {
 
   // function states
   const selectedFilters = useRef([]);
+  const tableRef = useRef();
   const [filters, setFilters] = useState([]);
   const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const [showViewModal, setShowViewModal] = useState(false);
@@ -134,7 +135,7 @@ function ContactsTable(props) {
         return hit;
       });
       props.setRows(JSON.parse(JSON.stringify(hits)));
-      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_CONTACTS_FILTER);
+      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST);
       props.setLoading(false);
     } else if (tableData?.length === 0) {
       props.setLoading(false);
@@ -142,8 +143,9 @@ function ContactsTable(props) {
   }, [ContactsData, tableData, props.dependencyUpdate]);
 
   useEffect(() => {
+    tableRef.current.changePage(0)
     const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns)
-    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_CONTACTS_FILTER);
+    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST);
   }, [selectedGridView]);
 
   const count = tableData?.total || 0;
@@ -170,7 +172,7 @@ function ContactsTable(props) {
     };
   };
 
-  
+
   const viewColumnsChange = (tableColumns) => {
     for (let i = 0; i < tableColumns.length; i++) {
       if (tableColumns[i].display === "true") {
@@ -182,7 +184,7 @@ function ContactsTable(props) {
         columns[i].options.display = false;
       }
     }
-    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_CONTACTS_FILTER);
+    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST);
   };
   ////////////-----Add your code section here-----///////////////////////
   const onTableChange = (action, tableState, rows, meta) => {
@@ -204,7 +206,9 @@ function ContactsTable(props) {
         tableActions.genericESAction();
         break;
       case "changePage":
-        tableActions.changeESPage();
+        if (tableData) {
+          tableActions.changeESPage();
+        }
         break;
       case "viewColumnsChange":
         viewColumnsChange(tableState.columns);
@@ -240,7 +244,6 @@ function ContactsTable(props) {
             );
         },
         (err) => {
-          console.log(err);
           Loader.errorToast("contact-deletion", "Failed to convert to contact");
         }
       );
@@ -257,7 +260,7 @@ function ContactsTable(props) {
     ) {
       view.filters[0].value.range[view.filters[0].field].gte =
         moment().subtract(30, "days").toISOString();
-        view.filters[0].value.range[view.filters[0].field].lte =
+      view.filters[0].value.range[view.filters[0].field].lte =
         moment().toISOString();
     }
     return view;
@@ -297,6 +300,7 @@ function ContactsTable(props) {
           />
         )}
         <Table
+          tableRef={tableRef}
           style={{ backgroundColor: "#fff" }}
           header={header}
           headerComponent={HeaderComponent}

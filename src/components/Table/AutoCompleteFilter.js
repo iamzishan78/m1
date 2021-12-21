@@ -7,7 +7,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-export function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, esIndex }) {
+export function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, esIndex, filters }) {
     const [open, setOpen] = useState(false);
     const [options, setOptions] = useState([]);
     const [value, setValue] = useState({ key: filterList[index][0] });
@@ -47,6 +47,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
         getFilters({
             variables: {
                 esIndex,
+                filters,
                 filterKeys: typeof filterKey !== 'string' ? filterKey : undefined,
                 filterKey: typeof filterKey === 'string' ? filterKey : undefined,
                 search,
@@ -68,14 +69,14 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
             value={value}
             inputValue={search}
             getOptionSelected={(option, value) => option.key === value.key}
-            getOptionLabel={(option) => option?.key?.toString()}
+            getOptionLabel={(option) => option?.key?.toString().replace(/^\,|\,$/gm, "")}
             onChange={(e, value, reason) => {
                 if (reason === 'clear' || !value?.key) {
                     filterList[index].pop()
                     setSearch('')
                     setValue(null)
                 } else {
-                    filterList[index][0] = value.key
+                    filterList[index][0] = value.key.replace(/^\,|\,$/gm, "")
                     setSearch(value.key)
                     setValue(value)
                 }
@@ -87,7 +88,9 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
                 <TextField
                     {...params}
                     label={label}
-                    onChange={(e) => handleChange(e.target.value)}
+                    onChange={(e) => {
+                        handleChange(e.target.value);
+                    }}
                     InputProps={{
                         ...params.InputProps,
                         endAdornment: (

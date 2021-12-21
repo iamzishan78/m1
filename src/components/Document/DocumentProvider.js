@@ -1,8 +1,8 @@
 import React from "react";
-import {DocumentContextProvider  } from "./DocumentContext";
+import { DocumentContextProvider } from "./DocumentContext";
 import { makeStyles } from "@material-ui/core/styles";
 import Document from "./Document";
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
+
 const useStyles = makeStyles((theme) => ({
   DocumentWrapper: {
     width: "100%",

@@ -1,0 +1,76 @@
+import React from "react";
+import clsx from "clsx";
+import { useHistory } from "react-router-dom";
+import { IconButton } from "@material-ui/core";
+import ListItemText from "@material-ui/core/ListItemText";
+import { Divider, Grid, Typography, Drawer } from "@material-ui/core";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import MenuIcon from "@material-ui/icons/Menu";
+
+import { useStyles, StyledMenu, StyledMenuItem } from "./styles";
+import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
+
+export default function QuickActionsPanel({ children, handlePanelStateChange, expandedPanel }) {
+  const classes = useStyles();
+  const history = useHistory();
+
+  const handleMenuItemClick = (path) => {
+    history.push(path);
+  };
+  return (
+    <>
+      <Drawer
+        className={classes.drawer}
+        variant="persistent"
+        anchor="left"
+        open={expandedPanel}
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+      >
+        <Grid container direction="row" justify="space-between" display="flex" className={classes.header}>
+          <Grid item style={{ alignItems: "center" }}>
+            <Typography variant="h6" style={{ fontWeight: "bold" }}>
+              Revenue
+            </Typography>
+          </Grid>
+          <Grid item>
+            <IconButton className={classes.iconArrow} color="secondary" onClick={handlePanelStateChange}>
+              <>
+                <ChevronLeftIcon />
+                <MenuIcon className={classes.menuIcon} />
+              </>
+            </IconButton>
+          </Grid>
+        </Grid>
+        <Divider />
+        <Typography variant="body2" className={classes.quickActionText}>
+          Quick Actions
+        </Typography>
+        <StyledMenu>
+          {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST)
+            .filter((key) => !SIDE_PANEL_MENU_ITEMS_LIST[key].isExcluded)
+            .map((key, index) => (
+              <StyledMenuItem onClick={() => handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)} key={index} isSelected>
+                <ListItemText>{SIDE_PANEL_MENU_ITEMS_LIST[key].title}</ListItemText>
+              </StyledMenuItem>
+            ))}
+        </StyledMenu>
+      </Drawer>
+      <div
+        className={clsx({
+          [classes.revenueRootExpanded]: expandedPanel,
+          [classes.revenueRootCollapsed]: !expandedPanel,
+        })}
+        // style={{ marginTop: "62px" }}
+      >
+        {children}
+      </div>
+      <div className={classes.pulloutBox} onClick={handlePanelStateChange}>
+        {expandedPanel ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
+      </div>
+    </>
+  );
+}

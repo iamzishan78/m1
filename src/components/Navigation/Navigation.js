@@ -7,7 +7,6 @@ import { MapGridContext } from "../../components/MapGridCard/MapGridContext.js";
 
 import { useHistory, useLocation } from "react-router-dom";
 import clsx from "clsx";
-import { useTheme } from "@material-ui/core/styles";
 
 //3rd party packages
 import PropTypes from "prop-types";
@@ -86,7 +85,6 @@ TabPanel.propTypes = {
 
 export default function Navigation(props) {
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
-  const theme = useTheme();
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -97,8 +95,6 @@ export default function Navigation(props) {
   const [openContactForm, setOpenContactForm] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [supportDrawer, setSupportDrawer] = useState(false);
-  const [openFilterCard, setOpenFilterCard] = useState(false);
-  const [value, setValue] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
   const [matchLocation, setMatchLocation] = useState(false);
@@ -138,14 +134,6 @@ export default function Navigation(props) {
   let history = useHistory();
   let location = useLocation();
 
-  const [valueTabsTrack, setValueTabsTrack] = useState(0);
-  const handleTabChange = (event, newValue) => {
-    setValueTabsTrack(newValue);
-    setStateNav((stateNav) => ({
-      trackTabsValue: newValue,
-    }));
-  };
-
   useEffect(() => {
     if (location.pathname === "/" || location.pathname.startsWith("/map/")) {
       setStateNav((state) => ({
@@ -160,6 +148,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/track") {
@@ -175,6 +164,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname.startsWith("/flow")) {
@@ -190,6 +180,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/title") {
@@ -206,6 +197,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/contacts") {
@@ -225,6 +217,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/alerts") {
@@ -240,6 +233,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/dashboard") {
@@ -255,6 +249,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/studio") {
@@ -270,6 +265,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 1,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/activities") {
@@ -285,6 +281,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 1,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/documents") {
@@ -300,6 +297,23 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 1,
+        selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
+      }));
+    } else if (location.pathname.startsWith("/revenue")) {
+      setStateNav((state) => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 0,
+        selectedMenuIndexActivities: 0,
+        selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 1,
         selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname.startsWith("/land")) {
@@ -315,6 +329,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 1,
       }));
     }
@@ -355,9 +370,9 @@ export default function Navigation(props) {
       currentAccounts && currentAccounts.length === 1
         ? currentAccounts[0]
         : (() => {
-            // Add choose account code here
-            return;
-          })();
+          // Add choose account code here
+          return;
+        })();
 
     const logoutRequest = {
       account: currentAccount,
@@ -436,12 +451,8 @@ export default function Navigation(props) {
   );
 
   const handleListItemClick = (path) => {
-    handleRouteChange(path);
-    handleDrawerClose();
-  };
-
-  const handleRouteChange = (path) => {
     history.push(path);
+    handleDrawerClose();
   };
 
   const handleDrawerOpen = () => {
@@ -476,6 +487,14 @@ export default function Navigation(props) {
 
   const matchAgreements = () => {
     return location.pathname === "/landmanagement/agreements"
+  }
+
+  const applyNavigationStyle = () => {
+    if (location.pathname === "/revenue/statements") {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   return (
@@ -518,6 +537,14 @@ export default function Navigation(props) {
             )} */}
 
             {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
+            {location.pathname.startsWith("/revenue/statements") && (
+              <Typography
+                variant="h6"
+                style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.revenueDetails.expandedPanel ? "450px" : "30px" }}
+              >
+                {stateApp.revenueDetails.title}
+              </Typography>
+            )}
 
             {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
@@ -540,6 +567,16 @@ export default function Navigation(props) {
             ) : (
               <div style={{ display: "none" }}></div>
             )}
+            {applyNavigationStyle() && (
+              <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+                <Button onClick={() => {
+                  console.log("add revenue statement functionality and design will be there soon.");
+                  // handleListItemClick("/revenue/statement/details")
+                }} color="primary" variant="contained" startIcon={<Add />}>
+                  Add Statement
+                </Button>
+              </div>
+            )}
             {/* {matchAgreements() && (
               <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
                 <Button onClick={() => handleListItemClick("/agreement/details")} color="primary" variant="contained" startIcon={<Add />}>
@@ -547,9 +584,11 @@ export default function Navigation(props) {
                 </Button>
               </div>
             )} */}
-            <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
-              {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
-            </IconButton>
+            {!location.pathname.startsWith("/revenue/statement/details") && (
+              <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
+                {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
+              </IconButton>
+            )}
           </Toolbar>
         )}
       </AppBar>
