@@ -123,17 +123,17 @@ function AgreementsTable(props) {
     //     }
     // }, [issues]);
 
-    useEffect(() => {
-        if (tableData?.hits?.length > 0) {
-          const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
-        //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
-          props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
-        //   props.ifAreContacts(globalOwnerIds);
-        }
-      }, [tableData]);
+    // useEffect(() => {
+    //     if (tableData?.hits?.length > 0) {
+    //       const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
+    //     //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
+    //       props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
+    //     //   props.ifAreContacts(globalOwnerIds);
+    //     }
+    //   }, [tableData]);
 
     useEffect(() => {
-        if (tableData && !props.loading) {
+        if (tableData) {
             if (tableData?.hits?.length > 0) {
                 const hits = tableData?.hits.map((hit) => {
                     hit.State = hit.originalProperties.State;
