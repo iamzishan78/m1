@@ -125,7 +125,6 @@ export const TableESHOC = (Component) => {
         useEffect(() => {
             if (tableData?.hits?.length > 0 && tableMeta?.initializeGenericData?.actions) {
                 const objectsIdsArray = tableData?.hits?.map((hit) => get(hit, tableMeta?.initializeGenericData?.key));
-                debugger
                 initializeGenericData(objectsIdsArray, tableMeta.initializeGenericData.actions);
             }
         }, [tableData]);

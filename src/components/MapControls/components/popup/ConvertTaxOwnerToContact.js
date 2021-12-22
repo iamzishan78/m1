@@ -102,13 +102,12 @@ const ConvertTaxOwnerToContact = ({
 
   useEffect(() => {
     if (includeFilter) {
-      const { filters, search, polygon } = getMapFilters(stateNav, "", stateApp.gridPolygonString);
+      const { filters, search } = getMapFilters(stateNav, "", '');
       getMapFilterShapeOwnersAndCountAction({
         currentFeature: currentFeature,
         userId: user.mongoId,
         filters,
         search,
-        polygon,
       });
     }
     // eslint-disable-next-line

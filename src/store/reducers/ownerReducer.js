@@ -1,4 +1,4 @@
-import { GET_SHAPE_OWNERS_AND_COUNT } from "store/type";
+import { GET_SHAPE_OWNERS_AND_COUNT, GET_MAP_FILTER_SHAPE_OWNERS_AND_COUNT } from "store/type";
 
 const INIT_STATE = {
   shapeOwners: [],
@@ -7,7 +7,16 @@ const INIT_STATE = {
 
 const ownerReducer = (state = INIT_STATE, action) => {
   switch (action.type) {
+    case GET_SHAPE_OWNERS_AND_COUNT.STARTED: {
+      return { ...state, shapeOwners: [], shapeCount: 0 };
+    }
+    case GET_MAP_FILTER_SHAPE_OWNERS_AND_COUNT.STARTED: {
+      return { ...state, shapeOwners: [], shapeCount: 0 };
+    }
     case GET_SHAPE_OWNERS_AND_COUNT.FULLFILLED: {
+      return { ...state, shapeOwners: action.payload.shapeOwners, shapeCount: action.payload.shapeCount };
+    }
+    case GET_MAP_FILTER_SHAPE_OWNERS_AND_COUNT.FULLFILLED: {
       return { ...state, shapeOwners: action.payload.shapeOwners, shapeCount: action.payload.shapeCount };
     }
 
