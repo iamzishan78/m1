@@ -15,11 +15,12 @@ import TableHeader from 'components/Table/constants/agreements-header-schema';
 import { usetableStyles } from "../Styles";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
+// import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 // import { GET_ES_POTENTIAL_ISSUES } from "graphQL/useQueryPotentialIssue";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
 
 function AgreementsTable(props) {
+    const { esIndex, setESFilters, esFilters } = props;
     const classes = usetableStyles();
 
     // function states 
@@ -29,8 +30,6 @@ function AgreementsTable(props) {
     // const [pIssuesArr, setIssuesArr] = useState([]);
 
     const [esSearch, setESSearch] = useState('');
-    const [esFilters, ESFilters] = useState([]);
-    const setESFilters = (newState) => { setStateIfDeepEqual(ESFilters, newState); };
     const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
     // queries 
@@ -41,21 +40,21 @@ function AgreementsTable(props) {
         }
     });
 
-    const [getESAggsActiveCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
-        onCompleted: (aggsData) => {
-            if(aggsData?.getESAggsList?.aggregations?.activeCount) {
-                props.onActiveCount(aggsData?.getESAggsList?.aggregations?.activeCount?.value)
-            }
-        }
-    });
+    // const [getESAggsActiveCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
+    //     onCompleted: (aggsData) => {
+    //         if(aggsData?.getESAggsList?.aggregations?.activeCount) {
+    //             props.onActiveCount(aggsData?.getESAggsList?.aggregations?.activeCount?.value)
+    //         }
+    //     }
+    // });
 
-    const [getESAggsApprovedCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
-        onCompleted: (aggsData) => {
-            if(aggsData?.getESAggsList?.aggregations?.approvedCount) {
-                props.onApprovedCount(aggsData?.getESAggsList?.aggregations?.approvedCount?.value)
-            }
-        }
-    });
+    // const [getESAggsApprovedCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
+    //     onCompleted: (aggsData) => {
+    //         if(aggsData?.getESAggsList?.aggregations?.approvedCount) {
+    //             props.onApprovedCount(aggsData?.getESAggsList?.aggregations?.approvedCount?.value)
+    //         }
+    //     }
+    // });
 
     // const [getPotentialIssues, { data: potentialIssues }] = useLazyQuery(GET_ES_POTENTIAL_ISSUES, { fetchPolicy: "no-cache" });
 
@@ -64,7 +63,7 @@ function AgreementsTable(props) {
 
 
     const startPaginationAt = 25;
-    const esIndex = 'shapes_flat';
+    // const esIndex = 'shapes_flat';
     const esStaticFilters = [{
         field: "shapeJson.properties.type",
         value: "agreement"
@@ -136,31 +135,12 @@ function AgreementsTable(props) {
     useEffect(() => {
         if (tableData && !props.loading) {
             if (tableData?.hits?.length > 0) {
-                const resolvePath = (obj, path) => {
-                    if (!obj) return null
-                    // if (Array.isArray(obj)) obj = obj[0]
-
-                    const parts = path.split(".");
-                    const optionalPath = parts[0].endsWith('?')
-                    if (optionalPath) parts[0] = parts[0].slice(0,-1)
-                    if (parts.length == 1) {
-                        return obj[parts[0]] ||
-                        (optionalPath && typeof obj !== 'object' ? obj : null);
-                    }
-                    return resolvePath(obj[parts[0]], parts.slice(1).join(".")) ||
-                    (optionalPath ? resolvePath(obj, parts.slice(1).join(".")) : resolvePath(null, parts.slice(1).join(".")));
-                }
-
                 const hits = tableData?.hits.map((hit) => {
-                    let tempHit = { ...hit };
-                    TableHeader.forEach((col) => {
-                        if (col?.options?.dbName) {
-                            tempHit[col.name] = resolvePath(tempHit, col.options.dbName)
-                        }
-                    })
-
-                    tempHit = props.setGenricData(tempHit, tempHit._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
-                    return tempHit
+                    hit.State = hit.originalProperties.State;
+                    hit.County = hit.originalProperties.County;
+                    hit.status = hit.approvalStatus;
+                    hit = props.setGenricData(hit, hit._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
+                    return hit
                 })
 
                 // props.onGettingStatements(hits);
@@ -198,38 +178,38 @@ function AgreementsTable(props) {
             }
 
             props.onAgreementCount(count)
-            getESAggsActiveCount({
-                variables: {
-                    esIndex,
-                    search: esSearch,
-                    filters: [ ...esFilters, {
-                        field: "shapeJson.properties.agreementStatus",
-                        value: "ACTIVE"
-                    }],
-                    aggs: {
-                        activeCount: {
-                            cardinality: { field: "shapeJson.id.keyword" }
-                        }
-                    }
-                }
-            });
-            getESAggsApprovedCount({
-                variables: {
-                    esIndex,
-                    search: esSearch,
-                    filters: [ ...esFilters, {
-                        field: "shapeJson.properties.approvalStatus",
-                        value: "APPROVED"
-                    }],
-                    aggs: {
-                        approvedCount: {
-                            cardinality: { field: "shapeJson.id.keyword" }
-                        }
-                    }
-                }
-            })
+            // getESAggsActiveCount({
+            //     variables: {
+            //         esIndex,
+            //         search: esSearch,
+            //         filters: [ ...esFilters, {
+            //             field: "shapeJson.properties.agreementStatus",
+            //             value: "ACTIVE"
+            //         }],
+            //         aggs: {
+            //             activeCount: {
+            //                 cardinality: { field: "shapeJson.id.keyword" }
+            //             }
+            //         }
+            //     }
+            // });
+            // getESAggsApprovedCount({
+            //     variables: {
+            //         esIndex,
+            //         search: esSearch,
+            //         filters: [ ...esFilters, {
+            //             field: "shapeJson.properties.approvalStatus",
+            //             value: "APPROVED"
+            //         }],
+            //         aggs: {
+            //             approvedCount: {
+            //                 cardinality: { field: "shapeJson.id.keyword" }
+            //             }
+            //         }
+            //     }
+            // })
         }
-    }, [tableData, props.dependencyUpdate, props.loading]);
+    }, [tableData, props.dependencyUpdate]);
 
     // useEffect(() => {
     //     if (issues?.hits?.length > 0 && tableData?.hits?.length > 0) {

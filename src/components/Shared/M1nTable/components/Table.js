@@ -4420,7 +4420,7 @@ function SubTable(props) {
     return dataSet;
   }
 
-  console.log("rows", rows)
+  // console.log("rows", rows)
 
   const CustomTableViewCol = (columnsProps) => {
     if (props.header === "Documents") {
