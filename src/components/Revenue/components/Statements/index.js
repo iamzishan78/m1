@@ -34,7 +34,7 @@ export default function RevenueStatements() {
     <div style={{ padding: "75px 56px", marginTop: 56 }}>
       <AnalyticsCards checks={statements?.length || 0} approvedCount={approvedCount} unapprovedCount={unapprovedCount} potentialIssues={potentialIssuesList} />
       <div style={{ marginTop: 40 }}>
-        <RevenueStatementTable header="Revenue Checks" onGettingPotentialIssues={onGettingPotentialIssues} onGettingStatements={onGettingStatements} parent="RevenueStatementTable" />
+        <RevenueStatementTable header="Revenue Statements" onGettingPotentialIssues={onGettingPotentialIssues} onGettingStatements={onGettingStatements} parent="RevenueStatementTable" />
       </div>
     </div>
   );
