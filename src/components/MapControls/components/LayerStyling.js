@@ -62,12 +62,13 @@ function LayerStyling(props) {
   //   return null;
 
   const ifRgbaConvt = (color) => {
-    if (color.slice(0, 4) === "rgba") return RGBAToHexA(color);
+    if (color?.slice(0, 4) === "rgba") return RGBAToHexA(color);
     else return color;
   };
 
   const layerType = layer.layerPaintProps[0].paintType;
   const initialLayerLabelVisibility = layer.layerPaintProps[0].labelProps?.visibility === 'none' ? 'none' : 'visible';
+  const initialLayerClickable = layer.layerSettings?.interaction?.interactionDetail?.click
 
   const initialFillColor =
     layerType === "fill"
@@ -93,6 +94,7 @@ function LayerStyling(props) {
   const [width, setWidth] = useState(initialWidth);
   const [fillColor, setFillColor] = useState(initialFillColor);
   const [layerLabelVisibility, setLayerLabelVisibility] = useState(initialLayerLabelVisibility);
+  const [layerClickability, setLayerClickability] = useState(initialLayerClickable);
   const [strokeColor, setStrokeColor] = useState(initialStrokeColor);
   const [, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -123,7 +125,8 @@ function LayerStyling(props) {
   const handleApplyChanges = () => {
     if ((stateApp.layers && layer &&
       ((fillColor && fillColor.rgb && fillColor.alpha) || (strokeColor && strokeColor.rgb && strokeColor.alpha))) ||
-      width || layer.layerPaintProps[0].labelProps?.visibility !== layerLabelVisibility
+      width || layer.layerPaintProps[0].labelProps?.visibility !== layerLabelVisibility ||
+      layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability
     ) {
       let currentLayer = { ...layer };
       let fColor;
@@ -139,9 +142,13 @@ function LayerStyling(props) {
 
       if (strokeColor && strokeColor.rgb)
         sColor = strokeColor.rgb.length === 3 ? "rgb(" + strokeColor.rgb.join() + ")" : "rgba(" + strokeColor.rgb.join() + ")";
+      const layerSettings = copy(currentLayer.layerSettings);
+      layerSettings.interaction.interactionDetail.click = layerClickability;
 
       if (currentLayer && currentLayer.layerPaintProps && currentLayer.layerPaintProps[0] && currentLayer.layerPaintProps[0].paintType) {
         const layerPaintProps = copy(currentLayer.layerPaintProps);
+
+
         if (layerPaintProps[0]?.labelProps?.symbolProps?.visibility)
           delete layerPaintProps[0].labelProps.symbolProps.visibility;
 
@@ -343,6 +350,7 @@ function LayerStyling(props) {
 
         currentLayer = {
           ...currentLayer,
+          layerSettings,
           layerPaintProps,
         };
       }
@@ -396,7 +404,7 @@ function LayerStyling(props) {
     );
   };
 
-  console.log("LayerStyling", layer)
+  // console.log("LayerStyling", layer)
 
   return (
     <div>
@@ -427,36 +435,57 @@ function LayerStyling(props) {
           </div>
         </Grid>
 
-        <Grid item xs={12}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <Typography variant="h6">Fill Color</Typography>
-            {layerType === "line" && <WidthPicker />}
-          </div>
-          <Paper>
-            <ColorPickerStyledBox value={fillColor} onChange={(color) => fillColorChange(color)} />
-          </Paper>
-        </Grid>
-        {initialStrokeColor && (
+        {(layer.layerSettings?.interaction?.interactionAble || layer.layerType === 'file layer') &&
           <Grid item xs={12}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <Typography variant="h6">Stroke Color</Typography>
-              {layerType === "circle" && <WidthPicker />}
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography variant="h6">Layer clickability</Typography>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={layerClickability}
+                    onChange={(e) => setLayerClickability(!layerClickability)}
+                    size="small"
+                  />
+                }
+              />
             </div>
-            <Paper>
-              <ColorPickerStyledBox value={strokeColor} onChange={(color) => strokeColorChange(color)} />
-            </Paper>
           </Grid>
-        )}
+        }
+
+        {layer.layerSettings?.colorable &&
+          <>
+            <Grid item xs={12}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography variant="h6">Fill Color</Typography>
+                {layerType === "line" && <WidthPicker />}
+              </div>
+              <Paper>
+                <ColorPickerStyledBox value={fillColor} onChange={(color) => fillColorChange(color)} />
+              </Paper>
+            </Grid>
+            {initialStrokeColor && (
+              <Grid item xs={12}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Typography variant="h6">Stroke Color</Typography>
+                  {layerType === "circle" && <WidthPicker />}
+                </div>
+                <Paper>
+                  <ColorPickerStyledBox value={strokeColor} onChange={(color) => strokeColorChange(color)} />
+                </Paper>
+              </Grid>
+            )}
+          </>}
+
       </Grid>
       <div
         style={{
