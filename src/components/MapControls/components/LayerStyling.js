@@ -67,7 +67,7 @@ function LayerStyling(props) {
   };
 
   const layerType = layer.layerPaintProps[0].paintType;
-  const initialLayerLabelVisibility = layer.layerPaintProps[0].labelProps?.symbolProps?.visibility === 'none' ? 'none' : 'visible';
+  const initialLayerLabelVisibility = layer.layerPaintProps[0].labelProps?.visibility === 'none' ? 'none' : 'visible';
 
   const initialFillColor =
     layerType === "fill"
@@ -123,7 +123,7 @@ function LayerStyling(props) {
   const handleApplyChanges = () => {
     if ((stateApp.layers && layer &&
       ((fillColor && fillColor.rgb && fillColor.alpha) || (strokeColor && strokeColor.rgb && strokeColor.alpha))) ||
-      width || layer.layerPaintProps[0].labelProps?.symbolProps?.visibility !== layerLabelVisibility
+      width || layer.layerPaintProps[0].labelProps?.visibility !== layerLabelVisibility
     ) {
       let currentLayer = { ...layer };
       let fColor;
@@ -142,7 +142,10 @@ function LayerStyling(props) {
 
       if (currentLayer && currentLayer.layerPaintProps && currentLayer.layerPaintProps[0] && currentLayer.layerPaintProps[0].paintType) {
         const layerPaintProps = copy(currentLayer.layerPaintProps);
-        layerPaintProps[0].labelProps.symbolProps.visibility = layerLabelVisibility
+        if (layerPaintProps[0]?.labelProps?.symbolProps?.visibility)
+          delete layerPaintProps[0].labelProps.symbolProps.visibility;
+
+        layerPaintProps[0].labelProps.visibility = layerLabelVisibility
         const layerType = layerPaintProps[0].paintType;
 
         if (layerType === "circle" && layerPaintProps[0].paintProps) {

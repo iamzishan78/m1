@@ -866,15 +866,16 @@ function Map({ type, paramId, lati, longi }) {
           }
         });
       }
+      let showLabel = visible
+      if (prop?.labelProps) {
+        showLabel = prop?.labelProps?.visibility === 'visible' && visible
+      }
 
       if (map.getLayer(layerId)) {
         map.setLayoutProperty(layerId, "visibility", visible ? "visible" : "none");
         if (map.getLayer(`${layerId}_point`)) {
           map.moveLayer(`${layerId}_point`);
-          let showLabel = visible
-          if (prop?.symbolProps) {
-            showLabel = prop?.symbolProps?.visibility === 'visible' && visible
-          }
+
           map.setLayoutProperty(`${layerId}_point`, "visibility", showLabel ? "visible" : "none");
         }
         if (prop.paintProps) {
@@ -907,7 +908,7 @@ function Map({ type, paramId, lati, longi }) {
         map.addLayer(layerConfig);
 
         if (prop.labelProps) {
-          let labelLayout = { visibility: visible ? "visible" : "none" };
+          let labelLayout = { visibility: showLabel ? "visible" : "none" };
           labelLayout = {
             ...labelLayout,
             ...prop.labelProps.symbolProps,
