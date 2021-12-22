@@ -45,7 +45,7 @@ function* convertTaxOwnerToContact(action) {
     const { uri, id, internalKey } = uploadUri.data.data.getUploadContactUri.job;
     
     yield put(toggleBulkUploadAction(!bulkUpload));
-    const res = yield call(Api.fetchBlob, JSON.stringify([owners[0]]), id, internalKey, uri);
+    const res = yield call(Api.fetchBlob, JSON.stringify(owners), id, internalKey, uri);
     if (res?._response?.status === 201) {
       yield call(Api.fetch, CREATE_JOB, { jobId: id });
     }
