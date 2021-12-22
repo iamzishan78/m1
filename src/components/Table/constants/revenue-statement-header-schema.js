@@ -35,9 +35,6 @@ const RevenueStatementHeadCells = [
         name: "tags", label: "Tags", esKey: 'tags.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "validation", label: "Validation", esKey: 'validation.keyword', options: { sort: true, filter: true }
-    },
-    {
         name: "commentsCounter",
         label: " ",
         options: {
@@ -49,6 +46,9 @@ const RevenueStatementHeadCells = [
             print: false,
             viewColumns: false,
         },
+    },
+    {
+        name: "validation", label: "Validation", esKey: 'validation.keyword', options: { sort: true, filter: true }
     },
 ];
 
