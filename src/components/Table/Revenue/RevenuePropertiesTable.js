@@ -63,6 +63,7 @@ function RevenuePropertiesTable(props) {
         filter: "",
       },
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getESPaginatedList, props.parent]);
 
   React.useEffect(() => {

@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Button } from "@material-ui/core";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
@@ -62,6 +62,7 @@ export default function Properties() {
   // props to pass in table
   const esIndex = "properties_flat";
   const startPaginationAt = 10;
+
   // query for Properties Table
   const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(
     GET_ES_PAGINATED_LIST,
@@ -72,11 +73,14 @@ export default function Properties() {
       },
     }
   );
+
+  // dipatching to redux 
   React.useEffect(() => {
     dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getESPaginatedList, elasticData,]);
 
+  // on filter click
   const filterProperties = () => {
     getESPaginatedList({
       variables: {
@@ -87,11 +91,17 @@ export default function Properties() {
         },
         search: ``,
         sort: [],
-        filter: [
+        filters: [
           {
-            field: "county",
-            value: 'US'
-
+            field: "lastCheck.checkDate",
+            value: {
+              range: {
+                "lastCheck.checkDate": {
+                  gte: `${fromDate}-01T00:00:00.000Z`,
+                  lte: `${toDate}-01T00:00:00.000Z`
+                }
+              }
+            }
           }
         ],
       },
@@ -112,7 +122,7 @@ export default function Properties() {
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
               <Grid item>
                 <Button variant="contained" color="secondary">
-                  Save View
+                  ave View
                 </Button>
               </Grid>
               <Grid item>
