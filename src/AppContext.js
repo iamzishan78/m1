@@ -196,7 +196,7 @@ const AppProvider = (props) => {
       if (tenantName) {
         let tenant = tenantsCredentials(tenantName);
         tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
-        tenant.apolloClientEndpoint = isDev ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
+        tenant.apolloClientEndpoint = isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
         let myMSALObjInt = MSALObj(tenant);
         setStateApp((state, props) => {
           return {
@@ -277,7 +277,7 @@ const AppProvider = (props) => {
 };
 
 const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
-const isDev = process.env.REACT_APP_NODE_ENV === "development";
+const isDev = process.env.NODE_ENV === "development";
 
 const setApolloHeaders = (config, authToken, idToken) => {
   if (!config) config = {};
@@ -287,4 +287,4 @@ const setApolloHeaders = (config, authToken, idToken) => {
   return config;
 };
 
-export { AppContext, AppProvider, apolloClientEndpointDev, isDev, setApolloHeaders };
+export { AppContext, AppProvider, setApolloHeaders };
