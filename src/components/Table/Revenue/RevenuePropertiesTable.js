@@ -7,7 +7,6 @@ import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { useLazyQuery } from "@apollo/client";
 
 // QUERIES
-
 import { deepEqualObjects } from "components/Shared/functions";
 
 // Utilities
@@ -107,11 +106,7 @@ function RevenuePropertiesTable(props) {
     }
   };
   return (
-    <Container
-      maxWidth={false}
-      className={classes.container}
-      id={props.id ? props.id : props.parent}
-    >
+    <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}

@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
 import { heatLayers, baseMapLayers } from "./LayerConfig";
 
-const AppContext = createContext([{}, () => {}]);
+const AppContext = createContext([{}, () => { }]);
 
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
@@ -149,9 +149,6 @@ const AppProvider = (props) => {
     pdfView: null,
     selectedAgreement: null,
     bulkUpload: false,
-    revenueDetails: {
-      expandedPanel: true,
-    },
     selectedMeta: null,
     selectedView: null,
 
