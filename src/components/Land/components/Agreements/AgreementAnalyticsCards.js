@@ -55,7 +55,7 @@ export default function AnalyticsCards({
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
-      if (aggsData?.getESAggsList?.aggregations?.activeCount?.value) {
+      if (aggsData?.getESAggsList?.aggregations?.activeCount) {
         const count = aggsData.getESAggsList.aggregations.activeCount.value;
         cards[1].points= count
         cards[2].points= totalCount - count
@@ -68,7 +68,7 @@ export default function AnalyticsCards({
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
-      if (aggsData?.getESAggsList?.aggregations?.approvedCount?.value) {
+      if (aggsData?.getESAggsList?.aggregations?.approvedCount) {
         const count = aggsData.getESAggsList.aggregations.approvedCount.value;
         setCardPoint(totalCount - count, 3)
       }

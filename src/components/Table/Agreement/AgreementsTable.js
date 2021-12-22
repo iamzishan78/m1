@@ -6,7 +6,7 @@ import TableHOC from "components/Table/TableHOC";
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
 
-import { setStateIfDeepEqual, deepEqualObjects, copy } from "components/Shared/functions";
+import { setStateIfDeepEqual, deepEqualObjects } from "components/Shared/functions";
 
 // Header Schemas 
 import TableHeader from 'components/Table/constants/agreements-header-schema';
@@ -17,11 +17,14 @@ import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 // import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 // import { GET_ES_POTENTIAL_ISSUES } from "graphQL/useQueryPotentialIssue";
-import { AutoCompleteFilter } from "../AutoCompleteFilter";
+// import { AutoCompleteFilter } from "../AutoCompleteFilter";
+
+import { setColumnsData } from "components/Table/helpers";
 
 function AgreementsTable(props) {
-    const { esIndex, setESFilters, esFilters } = props;
+    const { esIndex, setESFilters } = props;
     const classes = usetableStyles();
+    const [filters, setFilters] = useState([]);
 
     // function states 
     const [columns, Columns] = useState([]);
@@ -69,7 +72,7 @@ function AgreementsTable(props) {
         value: "agreement"
     }];
     
-    const count = tableData?.total || 0
+    const count = tableData?.total || 0;
     const options = {
         rowsPerPageOptions: [10, 25, 50, 100],
         count: count,
@@ -136,37 +139,48 @@ function AgreementsTable(props) {
         if (tableData) {
             if (tableData?.hits?.length > 0) {
                 const hits = tableData?.hits.map((hit) => {
-                    hit.State = hit.originalProperties.State;
-                    hit.County = hit.originalProperties.County;
-                    hit.status = hit.approvalStatus;
+                    hit.State = hit?.originalProperties?.State;
+                    hit.County = hit?.originalProperties?.County;
+                    hit.status = hit?.approvalStatus;
                     hit = props.setGenricData(hit, hit._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
                     return hit
                 })
 
                 // props.onGettingStatements(hits);
                 props.setRows(hits);
-                let headers = copy(TableHeader)
 
-                headers.forEach((column) => {
-                    if (column?.options?.filter) {
-                        column.options = {
-                            ...column.options,
-                            filter: true,
-                            filterType: 'custom',
-                            filterOptions: {
-                                display: (filterList, onChange, index, column) => {
-                                    column.filterKey = headers.find(el => el.name === column.name)?.esKey;
-                                    return (
-                                        <AutoCompleteFilter filterList={[...esFilters, filterList]} column={column} index={index} onChange={onChange}
-                                            query={GET_ES_FILTER_LIST} esIndex={esIndex} />
-                                    );
-                                }
-                            }
-                        }
-                    }
-                })
+                setColumnsData(
+                    TableHeader,
+                    filters,
+                    JSON.parse(JSON.stringify(TableHeader)),
+                    setColumns,
+                    setFilters,
+                    GET_ES_FILTER_LIST,
+                    esIndex
+                  );
 
-                setColumns(headers);
+                // let headers = copy(TableHeader)
+
+                // headers.forEach((column) => {
+                //     if (column?.options?.filter) {
+                //         column.options = {
+                //             ...column.options,
+                //             filter: true,
+                //             filterType: 'custom',
+                //             filterOptions: {
+                //                 display: (filterList, onChange, index, column) => {
+                //                     column.filterKey = headers.find(el => el.name === column.name)?.esKey;
+                //                     return (
+                //                         <AutoCompleteFilter filterList={[...esFilters, filterList]} column={column} index={index} onChange={onChange}
+                //                             query={GET_ES_FILTER_LIST} esIndex={esIndex} />
+                //                     );
+                //                 }
+                //             }
+                //         }
+                //     }
+                // })
+
+                // setColumns(headers);
                 props.setLoading(false);
             }
             else if (tableData?.hits?.length === 0) {

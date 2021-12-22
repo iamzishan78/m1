@@ -237,8 +237,8 @@ export const TableHOC = (Component) => {
                             }
                         })()
                     },
-
-                    ...(tableState.esFilters) && { filters: [...tableState.esFilters] || [] },
+                    filters: tableState.esFilters ? [...tableState.esFilters ] : []
+                    // ...(tableState.esFilters) && { filters: [...tableState.esFilters] || [] },
                 },
             };
             tableState.filterList.forEach((val, index) => {
