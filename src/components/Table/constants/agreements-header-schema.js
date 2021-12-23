@@ -1,5 +1,6 @@
-import WarningIcon from '@material-ui/icons/Warning';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import WarningIcon from "@material-ui/icons/Warning";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import { history } from "store";
 
 const AgreementsHeadCells = [
   {
@@ -14,6 +15,19 @@ const AgreementsHeadCells = [
       dbName: "shapeJson.properties.agreementNumber",
       sort: true,
       filter: true,
+      customBodyRender: (value, tableMeta, updateValue) => {
+        return (
+          <p
+            onClick={(e) => {
+              e.stopPropagation();
+                history.push(`/map/${tableMeta.rowData[3]}s/${tableMeta.rowData[0]}`);
+            }}
+            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+          >
+            {value}
+          </p>
+        );
+      },
     },
   },
   {
@@ -208,9 +222,9 @@ const AgreementsHeadCells = [
         return (
           <div style={{ display: "flex", "align-items": "center" }}>
             {value?.toLowerCase() === "approved" ? (
-                <CheckCircleIcon style={{ color: 'forestgreen' }} />
+              <CheckCircleIcon style={{ color: "forestgreen" }} />
             ) : (
-                <WarningIcon  style={{ color: 'orange' }} />
+              <WarningIcon style={{ color: "orange" }} />
             )}
           </div>
         );
