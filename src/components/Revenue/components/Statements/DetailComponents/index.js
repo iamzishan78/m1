@@ -362,9 +362,9 @@ export default function DetailComponents(props) {
               </Grid>
             </div>
 
-            <div className="flex justifyEnd alignStart w-100" style={{ maxWidth: 290, marginLeft: 8 }}>
+            {/* <div className="flex justifyEnd alignStart w-100" style={{ maxWidth: 290, marginLeft: 8 }}>
               <img src="https://miro.medium.com/max/1400/1*ybR6fbfwo6XTmWvTjXSOAA.png" alt="map-view" height={200} width={290} style={{ borderRadius: 8 }} />
-            </div>
+            </div> */}
           </div>
           {/**
          * Detail tabs section
