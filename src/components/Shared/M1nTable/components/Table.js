@@ -1584,9 +1584,11 @@ function SubTable(props) {
                       ? tableMeta.rowData[2]
                       : props.parent === "owner_WellInterests"
                         ? tableMeta.rowData[1]
-                        : props.parent === "ownersPerParcel"
+                        : props.parent === "RevenuePropertiesTable"
                           ? tableMeta.rowData[1]
-                          : tableMeta.rowData[0];
+                          : props.parent === "ownersPerParcel"
+                            ? tableMeta.rowData[1]
+                            : tableMeta.rowData[0];
                   if (
                     props.parent === "assocTaxRollInterests" &&
                     props.targetLabel === "parcel"
@@ -2336,7 +2338,7 @@ function SubTable(props) {
                           ) : value?.toLowerCase() === "declined" ? (
                             <div className={classes.declinedBadge} />
                           ) :
-                          <span style={{ color: "#959595" }}>N/A</span>
+                            <span style={{ color: "#959595" }}>N/A</span>
                           }
                           <div>{value?.toLowerCase() === "pending" ? '' : value}</div>
                         </div>
