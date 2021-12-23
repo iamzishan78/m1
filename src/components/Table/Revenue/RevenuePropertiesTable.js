@@ -37,9 +37,7 @@ function RevenuePropertiesTable(props) {
   const [columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const [selectedRows, setSelectedRows] = useState([]);
   const [potentialIssuesList] = useState([]);
-  const extendSearchQuery = ``;
 
-  // const count = tableData?.total || 0
   const options = {
     rowsPerPageOptions: [10, 25, 50, 100],
     searchable: true,
@@ -63,7 +61,7 @@ function RevenuePropertiesTable(props) {
         filter: "",
       },
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getESPaginatedList, props.parent]);
 
   React.useEffect(() => {
@@ -87,14 +85,12 @@ function RevenuePropertiesTable(props) {
       case "filterChange":
       case "resetFilters":
       case "changeRowsPerPage":
-        tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.genericESAction();
         break;
       case "rowSelectionChange":
         setSelectedRows(tableState.selectedRows.data);
         break;
       case "changePage":
-        tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.changeESPage();
         break;
       default:
