@@ -263,10 +263,11 @@ export default function DrawShapes() {
           addCustomShapeProperties(feature, draw);
         }
         setFeatureProperty(draw, feature.id, "shapeEdit", false);
-        drawShapeLayerToggle(stateApp, "none");
+
         let currentFeature = feature;
         setStateApp((state) => {
 
+          drawShapeLayerToggle(state, state.lastSelectedDrawMode === "draw_polygon" ? "visible" : "none");
           if (state.currentFeature) {
             currentFeature = union(feature, state.currentFeature);
             currentFeature.id = state.currentFeature.id
@@ -324,7 +325,8 @@ export default function DrawShapes() {
           //   });
           // }
           const { features } = stateApp.draw.getAll();
-          drawShapeLayerToggle(stateApp, stateApp.shapeEdit || !features || features.length === 0 ? "visible" : "none");
+          drawShapeLayerToggle(stateApp, stateApp.shapeEdit || !features ||
+            features.length === 0 || stateApp.lastSelectedDrawMode === "draw_polygon" ? "visible" : "none");
           return stateApp;
         });
       });
