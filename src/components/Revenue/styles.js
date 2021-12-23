@@ -66,6 +66,7 @@ export const useStyles = makeStyles((theme) => ({
   revenueRootCollapsed: {
     marginLeft: "0px !important",
     width: "100%",
+    transition: "all 0.3s ease-in-out",
   },
   header: {
     padding: "10px 5px 15px 10px",
