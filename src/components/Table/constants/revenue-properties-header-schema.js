@@ -62,13 +62,13 @@ const RevenuePropertiesHeadCells = [
   {
       name: "type",
       label: "Type",
-      esKey: "type.keyword",
+      esKey: "lastCheck.interestType.keyword",
       options: { sort: true, filter: true },
     },
   {
     name: "amount",
-    label: "Amuount",
-    esKey: "amount.keyword",
+    label: "Amount",
+    esKey: "lastCheck.netOwnerValue",
     options: { sort: true, filter: true },
   },
   {
@@ -80,7 +80,7 @@ const RevenuePropertiesHeadCells = [
   {
     name: "lastChecked",
     label: "Last Check Date",
-    esKey: "lastCheck.checkDate.keyword",
+    esKey: "lastCheck.checkDate",
     options: { sort: true, filter: true },
   },
     {

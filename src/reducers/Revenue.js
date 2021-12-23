@@ -31,6 +31,8 @@ export default function Revenue(state = INIT_STATE, action) {
           wellName: eachRow?.well?.wellName,
           status: eachRow?.status,
           checkNumber: eachRow?.lastCheck?.checkNumber,
+          amount: eachRow?.lastCheck?.netOwnerValue,
+          type: eachRow?.lastCheck?.interestType[0],
           lastChecked: new Date(eachRow?.lastCheck?.checkDate).toLocaleDateString(),
         }
       })
