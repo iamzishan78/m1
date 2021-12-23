@@ -50,6 +50,7 @@ import { useLazyQuery } from "@apollo/client";
 import CheckIcon from "@material-ui/icons/Check";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import Add from "@material-ui/icons/Add";
+import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
 
 import ActivitySearch from "./components/ActivitySearch";
 import DocumentSearch from "./components/DocumentSearch";
@@ -500,34 +501,37 @@ export default function Navigation(props) {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: openDrawer,
-        })}
-      >
-        {stateApp.user && (
-          <Toolbar>
-            {location.pathname === "/activities" && (
-              <>
-                <ActivitySearch />
-              </>
-            )}
-            {location.pathname === "/documents" && (
-              <>
-                <DocumentSearch />
-              </>
-            )}
-            {location.pathname === "/contacts" && <ContactSearch />}
-            {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
+      {!location.pathname.startsWith("/revenue/statement/details") && (
+        <AppBar
+          position="fixed"
+          style={{ background: applyNavigationStyle() && "#ffffff", zIndex: applyNavigationStyle() && 1000, boxShadow: applyNavigationStyle() && "0px 0px 3px 0px rgba(0,0,0,0.3)" }}
+          className={clsx(classes.appBar, {
+            [classes.appBarShift]: openDrawer,
+          })}
+        >
 
-            {location.pathname.startsWith("/flow") && <DealSearch />}
-            {location.pathname === "/dashboard" && (
-              <Typography variant="h4" style={{ color: "black", fontWeight: "bold", marginLeft: 15 }}>
-                Dashboard
-              </Typography>
-            )}
-            {/* {location.pathname.startsWith("/landmanagement/agreements") && (
+          {stateApp.user && (
+            <Toolbar>
+              {location.pathname === "/activities" && (
+                <>
+                  <ActivitySearch />
+                </>
+              )}
+              {location.pathname === "/documents" && (
+                <>
+                  <DocumentSearch />
+                </>
+              )}
+              {location.pathname === "/contacts" && <ContactSearch />}
+              {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
+
+              {location.pathname.startsWith("/flow") && <DealSearch />}
+              {location.pathname === "/dashboard" && (
+                <Typography variant="h4" style={{ color: "black", fontWeight: "bold", marginLeft: 15 }}>
+                  Dashboard
+                </Typography>
+              )}
+              {/* {location.pathname.startsWith("/landmanagement/agreements") && (
               <Typography
                 variant="h4"
                 style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.landManagement.expandedPanel ? "450px" : "30px" }}
@@ -536,63 +540,61 @@ export default function Navigation(props) {
               </Typography>
             )} */}
 
-            {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
-            {location.pathname.startsWith("/revenue/statements") && (
-              <Typography
-                variant="h6"
-                style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.revenueDetails.expandedPanel ? "450px" : "30px" }}
-              >
-                {stateApp.revenueDetails.title}
-              </Typography>
-            )}
+              {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
+              {location.pathname.startsWith("/revenue/statements") && (
+                <Typography
+                  variant="h6"
+                  style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.revenueDetails.expandedPanel ? "450px" : "30px" }}
+                >
+                  {stateApp.revenueDetails.title}
+                </Typography>
+              )}
 
-            {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
+              {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
-            {(matchFind || matchDocument) && (
-              <div className={classes.search} id="searchBarDivParent">
-                <SearchBarWithToggleButton />
-              </div>
-            )}
+              {(matchFind || matchDocument) && (
+                <div className={classes.search} id="searchBarDivParent">
+                  <SearchBarWithToggleButton />
+                </div>
+              )}
 
-            <div className={classes.grow1} />
+              <div className={classes.grow1} />
 
-            {matchActivities ? (
-              <div>
+              {matchActivities ? (
+                <div>
+                  <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+                    <Button onClick={handleClickAddActivity} color="secondary" variant="contained" startIcon={<Add />}>
+                      Add Activity
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: "none" }}></div>
+              )}
+              {applyNavigationStyle() && (
                 <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-                  <Button onClick={handleClickAddActivity} color="secondary" variant="contained" startIcon={<Add />}>
-                    Add Activity
+                  <Button onClick={() => handleListItemClick("/revenue/statement/details")}
+                    color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}>
+                    Add Statement
                   </Button>
                 </div>
-              </div>
-            ) : (
-              <div style={{ display: "none" }}></div>
-            )}
-            {applyNavigationStyle() && (
-              <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-                <Button onClick={() => {
-                  console.log("add revenue statement functionality and design will be there soon.");
-                  // handleListItemClick("/revenue/statement/details")
-                }} color="primary" variant="contained" startIcon={<Add />}>
-                  Add Statement
-                </Button>
-              </div>
-            )}
-            {/* {matchAgreements() && (
+              )}
+              {/* {matchAgreements() && (
               <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
                 <Button onClick={() => handleListItemClick("/agreement/details")} color="primary" variant="contained" startIcon={<Add />}>
                   Add Agreement
                 </Button>
               </div>
             )} */}
-            {!location.pathname.startsWith("/revenue/statement/details") && (
+
               <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
                 {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
               </IconButton>
-            )}
-          </Toolbar>
-        )}
-      </AppBar>
 
+            </Toolbar>
+          )}
+        </AppBar>
+      )}
       {stateApp.user && (
         <SideNavigation
           openDrawer={openDrawer}

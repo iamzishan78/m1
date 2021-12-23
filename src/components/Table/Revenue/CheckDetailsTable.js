@@ -33,9 +33,7 @@ function CheckDetailsTable(props) {
         }
     });
 
-
     const tableData = elasticData?.getESPaginatedList;
-
 
     const startPaginationAt = 50;
     const esIndex = 'checkdetails_flat';
@@ -45,14 +43,17 @@ function CheckDetailsTable(props) {
         getESPaginatedList({
             variables: {
                 esIndex,
+                filters: [{
+                    field: "check._id.keyword",
+                    value: props.checkId
+                }],
                 pagination: {
                     first: startPaginationAt,
                     keep_alive: "1micros"
                 },
-                search: props.checkId
             }
         });
-    }, [props.parent]);
+    }, [props.parent, props.checkId]);
 
 
     useEffect(() => {

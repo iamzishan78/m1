@@ -15,7 +15,7 @@ import TableHeader from 'components/Table/constants/revenue-statement-header-sch
 import { usetableStyles } from "../Styles";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-import { GET_ES_SUMMARY } from "graphQL/useQueryESSummary";
+import { GET_ES_POTENTIAL_ISSUES_SUMMARY } from "graphQL/useQueryESSummary";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
 
 
@@ -33,15 +33,17 @@ function RevenueStatementTable(props) {
     // queries 
 
     const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
-        fetchPolicy: "no-cache", onCompleted: () => {
-            props.setLoading(false);
-        }
+        context: { batch: true },
+        fetchPolicy: "no-cache",
     });
 
-    const [getPotentialIssues, { data: potentialIssues }] = useLazyQuery(GET_ES_SUMMARY, { fetchPolicy: "no-cache" });
+    const [getPotentialIssues, { data: potentialIssues }] = useLazyQuery(GET_ES_POTENTIAL_ISSUES_SUMMARY, {
+        context: { batch: true },
+        fetchPolicy: "no-cache",
+    });
 
     const tableData = elasticData?.getESPaginatedList;
-    const issues = potentialIssues?.getESSummary;
+    const issues = potentialIssues?.getESPotentialIssuesSummary;
 
     const startPaginationAt = 25;
     const esIndex = 'checks_flat';
@@ -57,6 +59,9 @@ function RevenueStatementTable(props) {
                 },
             }
         });
+    }, [props.parent]);
+
+    useEffect(() => {
         // Potential Issues
         getPotentialIssues({
             variables: {
@@ -65,7 +70,7 @@ function RevenueStatementTable(props) {
                 extendSearchQuery: "potentialIssues"
             },
         });
-    }, [props.parent]);
+    }, []);
 
 
     //  Potential issues
@@ -78,11 +83,12 @@ function RevenueStatementTable(props) {
                     return issue;
                 }
             });
+            setIssuesArr(allIssues);
             setPotentialIssuesList(allIssues);
         } else {
             setPotentialIssuesList([]);
         }
-    }, [issues]);
+    }, [potentialIssues]);
 
     useEffect(() => {
         if (tableData?.hits?.length > 0) {
