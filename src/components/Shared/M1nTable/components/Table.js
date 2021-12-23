@@ -3936,11 +3936,11 @@ function SubTable(props) {
           handleExpandClick(null, null, null, "inviteUser");
         }
       }
-      if (props.targetLabel === "agreement") {
-        if (rows[dataIndex]?._id) {
-          history.push(`/agreement/details/${rows[dataIndex]?._id}`)
-        }
-      }
+      // if (props.targetLabel === "agreement") {
+      //   if (rows[dataIndex]?._id) {
+      //     history.push(`/agreement/details/${rows[dataIndex]?._id}`)
+      //   }
+      // }
     },
     onChangePage: (pageState) => {
       setPageInd(pageState);
