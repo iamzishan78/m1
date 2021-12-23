@@ -13,19 +13,7 @@ export default function RevenueStatements() {
   const [unapprovedCount, setUnapprovedCount] = useState(0);
   const [potentialIssuesList, setPotentialIssuesList] = useState([]);
 
-  const [addCheck, {}] = useMutation(ADD_CHECK_DATA);
-
-  useEffect(() => {
-    if (statements.length > 0) {
-      const checks = statements?.length;
-      const approved = statements?.filter((statement) => statement.status === "APPROVED" && statement)?.length;
-      setApprovedCount(approved);
-      setUnapprovedCount(Number(checks) - Number(approved));
-    } else {
-      setApprovedCount(0);
-      setUnapprovedCount(0);
-    }
-  }, [statements]);
+  const [addCheck] = useMutation(ADD_CHECK_DATA);
 
   useEffect(() => {
     addCheck({
@@ -61,6 +49,18 @@ export default function RevenueStatements() {
       awaitRefetchQueries: true,
     });
   }, []);
+
+  useEffect(() => {
+    if (statements.length > 0) {
+      const checks = statements?.length;
+      const approved = statements?.filter((statement) => statement.status === "APPROVED" && statement)?.length;
+      setApprovedCount(approved);
+      setUnapprovedCount(Number(checks) - Number(approved));
+    } else {
+      setApprovedCount(0);
+      setUnapprovedCount(0);
+    }
+  }, [statements]);
 
   const onGettingStatements = (statementsList) => {
     setStatements(statementsList);
