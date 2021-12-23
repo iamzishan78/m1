@@ -18,6 +18,27 @@ export function getParcelOriginalProperties(parcel) {
     originalProperties = JSON.parse(originalProperties);
   }
 
+  if (originalProperties && (typeof originalProperties === 'object')) {
+    originalProperty.county = originalProperties.County;
+    if ("State" in originalProperties) {
+      originalProperty.state = originalProperties.State;
+    } else {
+      originalProperty.state = originalProperties.StateAbbreviation;
+    }
+    if ("Section" in originalProperties){
+      originalProperty.section = originalProperties.Section;
+    } else {
+      originalProperty.section = originalProperties.ShortName;
+    }
+    originalProperty.survey = originalProperties.Survey;
+    originalProperty.block = originalProperties.Block;
+    originalProperty.abstract = originalProperties.AbstractName;
+    originalProperty.altSurvey = originalProperties.Grantee;
+    originalProperty.meridian = originalProperties.PrincipalMeridian;
+    originalProperty.range = originalProperties.Range;
+    originalProperty.township = originalProperties.Township;
+  }
+
   if (originalProperties && originalProperties.length > 0) {
     originalProperty.county = originalProperties[0].County;
     if ("State" in originalProperties[0]) {
@@ -25,7 +46,7 @@ export function getParcelOriginalProperties(parcel) {
     } else {
       originalProperty.state = originalProperties[0].StateAbbreviation;
     }
-    if ("Section" in originalProperties[0]){
+    if ("Section" in originalProperties[0]) {
       originalProperty.section = originalProperties[0].Section;
     } else {
       originalProperty.section = originalProperties[0].ShortName;
