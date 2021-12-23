@@ -172,7 +172,7 @@ const SummarySection = ({ checkId }) => {
                 { name: "Net Revenue", value: `${(revSummary?.netOwnerValue?.value).toFixed(2)}` },
                 { name: "Lease Payments", value: "-" },
                 { name: "Other", value: "-" },
-                { name: "Total Income", value: `${(revSummary?.grossRevenue?.value + revSummary?.netOwnerValue?.value + revSummary?.ownerDeducts?.value + revSummary?.ownerTax?.value).toFixed(2)}` },
+                { name: "Total Income", value: `${(revSummary?.netOwnerValue?.value).toFixed(2)}` },
             ]);
         }
     }, [revSummary]);
