@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 import { Grid, Typography, Button } from "@material-ui/core";
 import Add from "@material-ui/icons/Add";
 
-import LandSearch from "../components/LandSearch";
+import LandSearch from "components/Navigation/components/LandSearch";
 
 export default function LandAppBar(props) {
   const location = useLocation();
@@ -28,9 +28,12 @@ export default function LandAppBar(props) {
             <Typography variant="h5" style={{ color: "black", fontWeight: "bold" }}>
               {(() => {
                 switch (location.pathname) {
-                  case '/land/agreements': return "Agreement";
-                  case '/land/tracts': return "Tracts";
-                  default: return "";
+                  case "/land/agreements":
+                    return "Agreement";
+                  case "/land/tracts":
+                    return "Tracts";
+                  default:
+                    return "";
                 }
               })()}
             </Typography>
@@ -43,11 +46,15 @@ export default function LandAppBar(props) {
       <Grid item>
         <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
           <Button color="primary" variant="contained" startIcon={<Add />}>
-            Add {(() => {
+            Add{" "}
+            {(() => {
               switch (location.pathname) {
-                case '/land/agreements': return "Agreement";
-                case '/land/tracts': return "Tract";
-                default: return "";
+                case "/land/agreements":
+                  return "Agreement";
+                case "/land/tracts":
+                  return "Tract";
+                default:
+                  return "";
               }
             })()}
           </Button>

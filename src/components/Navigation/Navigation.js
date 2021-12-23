@@ -60,6 +60,7 @@ import SideNavigation from "./SideNavigation";
 
 // App Bars
 import LandAppBar from "./AppBar/Land";
+import RevenueAppBar from "components/Navigation/AppBar/Revenue";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -86,7 +87,6 @@ TabPanel.propTypes = {
 
 export default function Navigation(props) {
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
-  const { activeModule: activeRevenueModule, actionsPanelState: revenueActionsPanelState } = useSelector((state) => state.Revenue);
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -372,9 +372,9 @@ export default function Navigation(props) {
       currentAccounts && currentAccounts.length === 1
         ? currentAccounts[0]
         : (() => {
-          // Add choose account code here
-          return;
-        })();
+            // Add choose account code here
+            return;
+          })();
 
     const logoutRequest = {
       account: currentAccount,
@@ -491,18 +491,8 @@ export default function Navigation(props) {
   //   return location.pathname === "/landmanagement/agreements"
   // }
 
-  const applyNavigationStyle = () => {
-    if (location.pathname === "/revenue/statements") {
-      return true;
-    } else {
-      return false;
-    }
-  }
   const checkIfIgnoreHeader = () => {
-    if (
-      location.pathname.startsWith("/revenue/statement/details") ||
-      location.pathname.startsWith("/revenue/property/details")
-    ) {
+    if (location.pathname.startsWith("/revenue/statement/details") || location.pathname.startsWith("/revenue/property/details")) {
       return true;
     }
   };
@@ -517,7 +507,6 @@ export default function Navigation(props) {
             [classes.appBarShift]: openDrawer,
           })}
         >
-
           {stateApp.user && (
             <Toolbar>
               {location.pathname === "/activities" && (
@@ -541,14 +530,7 @@ export default function Navigation(props) {
               )}
 
               {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
-              {location.pathname.startsWith("/revenue") && (
-                <Typography
-                  variant="h4"
-                  style={{ color: "black", fontWeight: "bold", marginLeft: revenueActionsPanelState ? "436px" : "10px" }}
-                >
-                  {activeRevenueModule.title}
-                </Typography>
-              )}
+              {location.pathname.startsWith("/revenue") && <RevenueAppBar classes={classes} />}
 
               {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
@@ -571,14 +553,6 @@ export default function Navigation(props) {
               ) : (
                 <div style={{ display: "none" }}></div>
               )}
-              {applyNavigationStyle() && (
-                <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-                  <Button onClick={() => handleListItemClick("/revenue/statement/details")}
-                    color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}>
-                    Add Statement
-                  </Button>
-                </div>
-              )}
               {/* {matchAgreements() && (
               <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
                 <Button onClick={() => handleListItemClick("/agreement/details")} color="primary" variant="contained" startIcon={<Add />}>
@@ -590,7 +564,6 @@ export default function Navigation(props) {
               <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
                 {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
               </IconButton>
-
             </Toolbar>
           )}
         </AppBar>
