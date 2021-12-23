@@ -111,8 +111,8 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
   },
   icon: {
-    height: 64,
-    width: 64,
+    height: 80,
+    width: 80,
     backgroundColor: "lightgrey",
   },
   tabsHeader: {
