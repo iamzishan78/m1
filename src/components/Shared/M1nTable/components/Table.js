@@ -2645,7 +2645,7 @@ function SubTable(props) {
                   }
                   if (column.isCustom && column.type === "text") {
                     let value = null;
-                    if (props.rows[tableMeta.rowIndex].custom_data) {
+                    if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
                       value =
                         props.rows[tableMeta.rowIndex].custom_data[
                           `${column.name}`

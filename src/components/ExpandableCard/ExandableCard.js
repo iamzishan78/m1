@@ -26,11 +26,11 @@ import BugsIcon from "../Shared/svgIcons/bug.js";
 import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import ContactSearch from "./components/ContactSearch";
-
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 // contexts 
 import { AppContext } from "../../AppContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
-import { Avatar, Box, Grid } from "@material-ui/core";
+import { Avatar, Box, Grid, Breadcrumbs, Typography } from "@material-ui/core";
 import FolderIcon from '@material-ui/icons/Folder';
 import { modifyExandableCardStyle } from "components/Shared/functions/shapeLayer";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
@@ -157,6 +157,23 @@ function ExpandableCard(props) {
       color: "#FFFFFF",
       fontSize: "11px",
 
+    },
+    breadcrumb:{
+      backgroundColor: "#F2F2F2",
+      padding: "15px 20px"
+
+    },
+    breadcrumbDiv:{
+      display: "flex",
+      color: "#18AADD",
+      fontSize: "16px",
+      cursor: "pointer",
+    },
+    agreementLink:{
+      cursor: "pointer",
+      "&:hover": {
+        textDecoration: "underline",
+      },
     },
     content: {
       transition: "height 0.1s",
@@ -457,6 +474,7 @@ function ExpandableCard(props) {
     };
   }, [openDialog, props.targetLabel, isExpanded, width]);
 
+  const link = history.pathHistory[history.pathHistory.length - 1]
 
   return (
     <React.Fragment>
@@ -491,6 +509,35 @@ function ExpandableCard(props) {
           open={openBugModal}
           onClose={() => setOpenBugModal(false)}
         />
+        {link === '/land/agreements' && (
+          <Grid container spacing={2} alignItems="center" className={classes.breadcrumb}>
+            <Breadcrumbs
+              separator={<NavigateNextIcon fontSize="small" />}
+              aria-label="breadcrumb"
+            >
+              <Typography
+                style={{
+                  marginLeft: "10px",
+                  fontSize: "16px",
+                }}
+                color="inherit"
+              >
+                <div className={classes.agreementLink} onClick={() => history.push('/land/agreements')}>Agreements</div>
+              </Typography>
+              <Typography
+                style={{
+                  marginLeft: "10px",
+                  fontSize: "16px",
+                }}
+                color="inherit"
+              >
+                <div className={classes.breadcrumbDiv}>
+                  {title}
+                </div>
+              </Typography>
+            </Breadcrumbs>
+          </Grid>
+        )}
         <CardHeader
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
