@@ -177,7 +177,11 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: "bold",
     },
   },
-
+  tabsSectionDetails: {
+    maxHeight: "calc(100vh - 450px)",
+    overflow: "overlay",
+    backgroundColor: "#f3f3f3"
+  }
 }));
 
 const StyledTabs = withStyles({
@@ -379,7 +383,7 @@ export default function DetailComponents(props) {
             </div>
 
 
-            <div style={{ maxHeight: "calc(100vh - 184px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+            <div className={classes.tabsSectionDetails}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
                 <HeaderSection details={checksFlatData} />
               </div>
