@@ -83,7 +83,7 @@ const LandSearch = () => {
         className={classes.contactSearchField}
         margin="dense"
         variant="outlined"
-        placeholder="Search for revenue statements"
+        placeholder="Search by check number or check attribute"
         InputProps={{
           startAdornment: (
             <InputAdornment>

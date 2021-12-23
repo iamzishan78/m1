@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { AppContext } from "AppContext";
 import AnalyticsCards from "components/Revenue/components/Statements/AnalyticsCards";
 import RevenueStatementTable from "components/Table/Revenue/RevenueStatementTable";
 import { ADD_CHECK_DATA } from "graphQL/useMutationAddCheck";
 import { useMutation } from "@apollo/client";
 
 export default function RevenueStatements() {
+  const [stateApp] = useContext(AppContext);
 
   const [statements, setStatements] = useState([]);
   const [approvedCount, setApprovedCount] = useState(0);
   const [unapprovedCount, setUnapprovedCount] = useState(0);
   const [potentialIssuesList, setPotentialIssuesList] = useState([]);
 
-  const [addCheck, { }] = useMutation(ADD_CHECK_DATA);
+  const [addCheck, {}] = useMutation(ADD_CHECK_DATA);
 
   useEffect(() => {
     if (statements.length > 0) {
@@ -25,7 +27,6 @@ export default function RevenueStatements() {
     }
   }, [statements]);
 
-
   useEffect(() => {
     addCheck({
       variables: {
@@ -33,28 +34,27 @@ export default function RevenueStatements() {
           checkAmount: 1.86,
           checkDate: "2021-07-28T00:00:00.000Z",
           checkDetail: {
-            lines: 8
+            lines: 8,
           },
           checkNumber: "543252352",
           depositDate: "2021-08-01T00:00:00.000Z",
           payee: {
-            "_id": {
-              "$oid": "619ada7eb5a69178952b6a87"
+            _id: {
+              $oid: "619ada7eb5a69178952b6a87",
             },
             number: "244913-11",
-            name: "ABC Minerals, LLC"
+            name: "ABC Minerals, LLC",
           },
           payor: {
-            "_id": {
-              "$oid": "619adb36b5a69178952b6a8a"
+            _id: {
+              $oid: "619adb36b5a69178952b6a8a",
             },
-            name: "PIONEER NATURAL RESOURCES"
+            name: "PIONEER NATURAL RESOURCES",
           },
           source: "ENERGYLINK",
           status: "APPROVED",
           sourceId: "224453",
           isDeleted: false,
-
         },
       },
       refetchQueries: ["addCheck"],
@@ -62,20 +62,32 @@ export default function RevenueStatements() {
     });
   }, []);
 
-
   const onGettingStatements = (statementsList) => {
     setStatements(statementsList);
-  }
+  };
 
   const onGettingPotentialIssues = (issues) => {
     setPotentialIssuesList(issues);
-  }
+  };
 
   return (
     <div style={{ padding: "75px 56px", marginTop: 56 }}>
-      <AnalyticsCards checks={statements?.length || 0} approvedCount={approvedCount} unapprovedCount={unapprovedCount} potentialIssues={potentialIssuesList} />
+      <AnalyticsCards
+        checks={statements?.length || 0}
+        approvedCount={approvedCount}
+        unapprovedCount={unapprovedCount}
+        potentialIssues={potentialIssuesList}
+        revenueSearchQuery={stateApp.revenueSearchQuery}
+      />
       <div style={{ marginTop: 40 }}>
-        <RevenueStatementTable header="Revenue Statements" targetLabel="revenueStatements" onGettingPotentialIssues={onGettingPotentialIssues} onGettingStatements={onGettingStatements} parent="RevenueStatementTable" />
+        <RevenueStatementTable
+          header="Revenue Statements"
+          targetLabel="revenueStatements"
+          onGettingPotentialIssues={onGettingPotentialIssues}
+          onGettingStatements={onGettingStatements}
+          parent="RevenueStatementTable"
+          revenueSearchQuery={stateApp.revenueSearchQuery}
+        />
       </div>
     </div>
   );
