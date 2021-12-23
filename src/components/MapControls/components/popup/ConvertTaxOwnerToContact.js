@@ -144,7 +144,7 @@ const ConvertTaxOwnerToContact = ({
     <Drawer anchor="right" open={open}>
       <div className={classes.root}>
         <div className={classes.title}>
-          <h3>Convert to Contact</h3>
+          <h2>Convert to Contact</h2>
           <div style={{ cursor: "pointer" }}>
             <IconButton size="small" onClick={onClose}>
               <CloseIcon />
