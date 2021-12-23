@@ -1218,6 +1218,13 @@ function SubTable(props) {
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
+        if (column.options.customBodyRender) {
+          column.options = {
+            ...column.options,
+            customBodyRender: column.options.customBodyRender,
+          };
+          return;
+        }
         switch (column.name) {
           case "detailCard":
             column.options = {
@@ -1366,7 +1373,7 @@ function SubTable(props) {
                         <span style={{ padding: 10 }}>{rowData[1].state}</span>
                       )}
 
-                      {label === "Country" && (
+                      {(label === "Country" || label === "County") && (
                         <span style={{ padding: 10 }}>{rowData[1].county}</span>
                       )}
                     </>
@@ -2428,7 +2435,7 @@ function SubTable(props) {
               customBodyRender: (value) => {
                 const splitNumber = value.split("_");
                 return (
-                  <p onClick={() => history.push(`/revenue/statement/details?id=${splitNumber[1]}`)} style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}>
+                  <p style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}>
                     {splitNumber[0]}
                   </p>
                 );
@@ -2645,7 +2652,7 @@ function SubTable(props) {
                   }
                   if (column.isCustom && column.type === "text") {
                     let value = null;
-                    if (props.rows[tableMeta.rowIndex].custom_data) {
+                    if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
                       value =
                         props.rows[tableMeta.rowIndex].custom_data[
                         `${column.name}`
@@ -3941,6 +3948,11 @@ function SubTable(props) {
       if (props.targetLabel === "Revenue Properties") {
         history.push('/revenue/property/details')
       }
+      if (props.targetLabel === "revenueStatements") {
+        if (rows[dataIndex]?._id) {
+          history.push(`/revenue/statement/details?id=${rows[dataIndex]?._id}`)
+        }
+      }
     },
     onChangePage: (pageState) => {
       setPageInd(pageState);
@@ -4427,7 +4439,7 @@ function SubTable(props) {
     return dataSet;
   }
 
-  console.log("rows", rows)
+  // console.log("rows", rows)
 
   const CustomTableViewCol = (columnsProps) => {
     if (props.header === "Documents") {
@@ -4513,7 +4525,8 @@ function SubTable(props) {
                 props.parent === "potentialOwnersPerParcel" || /// will need to build a backend for this search
                 props.parent === "associatedWellsPerParcel" || /// will need to build a backend for this search
                 props.parent === "boundary_grid_wells" || /// will need to build a backend for this search
-                props.parent === "boundary_grid_owners" /// will need to build a backend for this search
+                props.parent === "boundary_grid_owners" || /// will need to build a backend for this search
+                props.parent === "RevenueStatementTable"
                 ? false
                 : props.parent !== "search",
             // have to use props.parent here for initial value

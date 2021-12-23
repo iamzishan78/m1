@@ -179,7 +179,8 @@ function DocumentsTable(props) {
         JSON.parse(JSON.stringify(columnsData)),
         setColumns,
         setFilters,
-        GET_ES_DOCUMENTS_FILTER
+        GET_ES_DOCUMENTS_FILTER,
+        'documents_flat'
       );
     }
   }, [metaDataRes]);
@@ -204,7 +205,8 @@ function DocumentsTable(props) {
         JSON.parse(JSON.stringify(updatedColumns)),
         setColumns,
         setFilters,
-        GET_ES_DOCUMENTS_FILTER
+        GET_ES_DOCUMENTS_FILTER,
+        'documents_flat'
       );
       props.setLoading(false);
     } else if (tableData?.length === 0) {
@@ -277,7 +279,8 @@ function DocumentsTable(props) {
         JSON.parse(JSON.stringify(updatedColumns)),
         setColumns,
         setFilters,
-        GET_ES_DOCUMENTS_FILTER
+        GET_ES_DOCUMENTS_FILTER,
+        'documents_flat'
       );
     }
   }, [selectedGridView]);
@@ -310,7 +313,8 @@ function DocumentsTable(props) {
       JSON.parse(JSON.stringify(columns)),
       setColumns,
       setFilters,
-      GET_ES_DOCUMENTS_FILTER
+      GET_ES_DOCUMENTS_FILTER,
+      'documents_flat'
     );
   };
 
@@ -400,7 +404,8 @@ function DocumentsTable(props) {
       JSON.parse(JSON.stringify(columnsData)),
       setColumns,
       setFilters,
-      GET_ES_DOCUMENTS_FILTER
+      GET_ES_DOCUMENTS_FILTER,
+      'documents_flat'
     );
 
     setRefetchList(false)

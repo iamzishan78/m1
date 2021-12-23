@@ -237,10 +237,11 @@ export const TableHOC = (Component) => {
                             }
                         })()
                     },
-
-                    ...(tableState.esFilters) && { filters: [...tableState.esFilters] || [] },
+                    filters: tableState.esFilters ? [...tableState.esFilters ] : []
+                    // ...(tableState.esFilters) && { filters: [...tableState.esFilters] || [] },
                 },
             };
+            console.log("tableState", tableState);
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0) {
                     pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
@@ -254,7 +255,6 @@ export const TableHOC = (Component) => {
             return {
                 pageESVariables,
                 genericESAction: () => {
-                    console.log("called change")
                     setLoading(true);
                     tableState.page = 0;
                     meta.setPageInd(tableState.page);

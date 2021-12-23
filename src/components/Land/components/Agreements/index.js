@@ -1,67 +1,68 @@
 import React, { useState, useContext } from "react";
 import { AppContext } from "AppContext";
-import AnalyticsCards from "../Common/AnalyticsCards";
-import AgreementsTable from "components/Table/Agreement/AgreementsTable";
+import AgreementAnalyticsCards from "components/Land/components/Agreements/AgreementAnalyticsCards";
+import AgreementsTable from "../../../Table/Agreement/AgreementsTable";
+import { setStateIfDeepEqual } from "components/Shared/functions";
 
 function Agreements(props) {
   const [stateApp] = useContext(AppContext);
 
   const [agreementCount, setAgreementCount] = useState(0);
-  const [activeCount, setActiveCount] = useState(0);
-  const [inactiveCount, setInactiveCount] = useState(0);
-  const [approvedCount, setApprovedCount] = useState(0);
-  const [unapprovedCount, setUnapprovedCount] = useState(0);
+  const [esFilters, ESFilters] = useState([]);
+  const setESFilters = (newState) => {
+    setStateIfDeepEqual(ESFilters, newState);
+  };
 
   const onAgreementCount = (count) => {
     setAgreementCount(count);
-  }
+  };
 
-  const onActiveCount = (count) => {
-    setActiveCount(count);
-    setInactiveCount(agreementCount - count);
-  }
+  const esIndex = "shapes_flat";
 
-  const onApprovedCount = (count) => {
-    setApprovedCount(count);
-    setUnapprovedCount(agreementCount - count);
-  }
-
-  const cards = [
+  const cardsDefault = [
     {
       heading: "Total Agreements",
-      points: agreementCount,
+      points: 0,
     },
     {
       heading: "Active",
-      points: activeCount,
+      points: 0,
     },
     {
       heading: "Inactive",
-      points: inactiveCount,
+      points: 0,
     },
     {
       heading: "Unapproved",
-      points: unapprovedCount,
+      points: 0,
       type: "warning",
     },
   ];
 
   return (
     <>
-      <AnalyticsCards cards={cards} />
+      <AgreementAnalyticsCards
+        esIndex={esIndex}
+        esFilters={esFilters}
+        cardsDefault={cardsDefault}
+        totalCount={agreementCount}
+        setESFilters={setESFilters}
+        landSearchQuery={stateApp.landSearchQuery}
+      />
       <div style={{ padding: 30, paddingTop: 0, overflow: "auto" }}>
         <AgreementsTable
+          esIndex={esIndex}
           header="Agreements"
-          onAgreementCount={onAgreementCount}
-          onActiveCount={onActiveCount}
-          onApprovedCount={onApprovedCount}
-          parent="AgreementsTable"
+          esFilters={esFilters}
           targetLabel="agreement"
+          parent="AgreementsTable"
+          setESFilters={setESFilters}
+          onAgreementCount={onAgreementCount}
           landSearchQuery={stateApp.landSearchQuery}
         />
       </div>
     </>
-  )
+  );
 }
 
-export default Agreements
+export default Agreements;

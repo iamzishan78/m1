@@ -1,11 +1,10 @@
 import gql from "graphql-tag";
 
-export const GET_ES_SUMMARY = gql`
-  query getESSummary( $esIndex: String, $extendSearchQuery: String, $size: Int) {
-    getESSummary(
+export const GET_ES_POTENTIAL_ISSUES_SUMMARY = gql`
+  query getESPotentialIssuesSummary( $esIndex: String, $size: Int) {
+    getESPotentialIssuesSummary(
       esIndex: $esIndex, 
       size: $size,
-      extendSearchQuery: $extendSearchQuery,
     )
   }
 `;

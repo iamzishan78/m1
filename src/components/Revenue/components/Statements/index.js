@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import AnalyticsCards from "components/Revenue/components/Statements/AnalyticsCards";
 import RevenueStatementTable from "components/Table/Revenue/RevenueStatementTable";
+import { ADD_CHECK_DATA } from "graphQL/useMutationAddCheck";
+import { useMutation } from "@apollo/client";
 
 export default function RevenueStatements() {
 
@@ -8,6 +10,8 @@ export default function RevenueStatements() {
   const [approvedCount, setApprovedCount] = useState(0);
   const [unapprovedCount, setUnapprovedCount] = useState(0);
   const [potentialIssuesList, setPotentialIssuesList] = useState([]);
+
+  const [addCheck, { }] = useMutation(ADD_CHECK_DATA);
 
   useEffect(() => {
     if (statements.length > 0) {
@@ -22,6 +26,43 @@ export default function RevenueStatements() {
   }, [statements]);
 
 
+  useEffect(() => {
+    addCheck({
+      variables: {
+        checkInput: {
+          checkAmount: 1.86,
+          checkDate: "2021-07-28T00:00:00.000Z",
+          checkDetail: {
+            lines: 8
+          },
+          checkNumber: "543252352",
+          depositDate: "2021-08-01T00:00:00.000Z",
+          payee: {
+            "_id": {
+              "$oid": "619ada7eb5a69178952b6a87"
+            },
+            number: "244913-11",
+            name: "ABC Minerals, LLC"
+          },
+          payor: {
+            "_id": {
+              "$oid": "619adb36b5a69178952b6a8a"
+            },
+            name: "PIONEER NATURAL RESOURCES"
+          },
+          source: "ENERGYLINK",
+          status: "APPROVED",
+          sourceId: "224453",
+          isDeleted: false,
+
+        },
+      },
+      refetchQueries: ["addCheck"],
+      awaitRefetchQueries: true,
+    });
+  }, []);
+
+
   const onGettingStatements = (statementsList) => {
     setStatements(statementsList);
   }
@@ -34,7 +75,7 @@ export default function RevenueStatements() {
     <div style={{ padding: "75px 56px", marginTop: 56 }}>
       <AnalyticsCards checks={statements?.length || 0} approvedCount={approvedCount} unapprovedCount={unapprovedCount} potentialIssues={potentialIssuesList} />
       <div style={{ marginTop: 40 }}>
-        <RevenueStatementTable header="Revenue Statements" onGettingPotentialIssues={onGettingPotentialIssues} onGettingStatements={onGettingStatements} parent="RevenueStatementTable" />
+        <RevenueStatementTable header="Revenue Statements" targetLabel="revenueStatements" onGettingPotentialIssues={onGettingPotentialIssues} onGettingStatements={onGettingStatements} parent="RevenueStatementTable" />
       </div>
     </div>
   );

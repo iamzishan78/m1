@@ -42,7 +42,7 @@ export default function LandAppBar(props) {
       </Grid>
       <Grid item>
         <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-          <Button color="secondary" variant="contained" startIcon={<Add />}>
+          <Button color="primary" variant="contained" startIcon={<Add />}>
             Add {(() => {
               switch (location.pathname) {
                 case '/land/agreements': return "Agreement";

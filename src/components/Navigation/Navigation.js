@@ -50,6 +50,7 @@ import { useLazyQuery } from "@apollo/client";
 import CheckIcon from "@material-ui/icons/Check";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import Add from "@material-ui/icons/Add";
+import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
 
 import ActivitySearch from "./components/ActivitySearch";
 import DocumentSearch from "./components/DocumentSearch";
@@ -516,6 +517,7 @@ export default function Navigation(props) {
             [classes.appBarShift]: openDrawer,
           })}
         >
+
           {stateApp.user && (
             <Toolbar>
               {location.pathname === "/activities" && (
@@ -569,18 +571,14 @@ export default function Navigation(props) {
               ) : (
                 <div style={{ display: "none" }}></div>
               )}
-
               {applyNavigationStyle() && (
                 <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-                  <Button onClick={() => {
-                    console.log("add revenue statement functionality and design will be there soon.");
-                    // handleListItemClick("/revenue/statement/details")
-                  }} color="primary" variant="contained" startIcon={<Add />}>
+                  <Button onClick={() => handleListItemClick("/revenue/statement/details")}
+                    color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}>
                     Add Statement
                   </Button>
                 </div>
               )}
-
               {/* {matchAgreements() && (
               <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
                 <Button onClick={() => handleListItemClick("/agreement/details")} color="primary" variant="contained" startIcon={<Add />}>
@@ -589,16 +587,14 @@ export default function Navigation(props) {
               </div>
             )} */}
 
-              {!location.pathname.startsWith("/revenue/statement/details") && (
-                <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
-                  {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
-                </IconButton>
-              )}
+              <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
+                {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
+              </IconButton>
+
             </Toolbar>
           )}
         </AppBar>
       )}
-
       {stateApp.user && (
         <SideNavigation
           openDrawer={openDrawer}
