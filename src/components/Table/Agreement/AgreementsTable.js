@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
+import moment from "moment";
 
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
@@ -139,6 +140,9 @@ function AgreementsTable(props) {
         if (tableData) {
             if (tableData?.hits?.length > 0) {
                 const hits = tableData?.hits.map((hit) => {
+                    hit.agreementDate = hit.agreementDate? moment(hit.agreementDate).format('MM/DD/YYYY') : null;
+                    hit.effectiveDate = hit.effectiveDate? moment(hit.effectiveDate).format('MM/DD/YYYY') : null;
+                    hit.expirationDate = hit.expirationDate? moment(hit.expirationDate).format('MM/DD/YYYY') : null;
                     hit.State = hit?.originalProperties?.State;
                     hit.County = hit?.originalProperties?.County;
                     hit = props.setGenricData(hit, hit._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
