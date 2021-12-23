@@ -95,8 +95,10 @@ export const setColumnsData = (
   esIndex
 ) => {
   columns.forEach((column, index) => {
+    const tableCol = TableHeader.find((el) => el.name === column.name)
     if (column?.options?.filter) {
       column.options = {
+        ...tableCol.options,
         ...column.options,
         filter: true,
         filterType: "custom",

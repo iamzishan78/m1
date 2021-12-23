@@ -141,7 +141,7 @@ function AgreementsTable(props) {
                 const hits = tableData?.hits.map((hit) => {
                     hit.State = hit?.originalProperties?.State;
                     hit.County = hit?.originalProperties?.County;
-                    hit.status = hit?.approvalStatus;
+                    // hit.status = hit?.approvalStatus;
                     hit = props.setGenricData(hit, hit._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
                     return hit
                 })
