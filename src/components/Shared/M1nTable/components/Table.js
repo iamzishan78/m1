@@ -1218,6 +1218,13 @@ function SubTable(props) {
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
+        if(column.options.customBodyRender){
+          column.options = {
+            ...column.options,
+            customBodyRender: column.options.customBodyRender,
+          };
+          return;
+        }
         switch (column.name) {
           case "detailCard":
             column.options = {
@@ -2638,7 +2645,7 @@ function SubTable(props) {
                   }
                   if (column.isCustom && column.type === "text") {
                     let value = null;
-                    if (props.rows[tableMeta.rowIndex].custom_data) {
+                    if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
                       value =
                         props.rows[tableMeta.rowIndex].custom_data[
                           `${column.name}`
@@ -4420,7 +4427,7 @@ function SubTable(props) {
     return dataSet;
   }
 
-  console.log("rows", rows)
+  // console.log("rows", rows)
 
   const CustomTableViewCol = (columnsProps) => {
     if (props.header === "Documents") {
