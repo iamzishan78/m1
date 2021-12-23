@@ -12,6 +12,7 @@ const AgreementsHeadCells = [
     label: "Agreement #",
     esKey: "shapeJson.properties.agreementNumber.keyword",
     options: {
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
       dbName: "shapeJson.properties.agreementNumber",
       sort: true,
       filter: true,
@@ -35,6 +36,7 @@ const AgreementsHeadCells = [
     label: "Agreement Name",
     esKey: "shapeJson.properties.agreementName.keyword",
     options: {
+      setCellProps: () => ({ style: { minWidth: "250px" } }),
       dbName: "shapeJson.properties.agreementName",
       sort: true,
       filter: true,
