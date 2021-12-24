@@ -1,6 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
+import { Typography, Button } from "@material-ui/core";
+import { Add, ArrowDropDown } from "@material-ui/icons";
 import CheckDetailsTable from "components/Table/Revenue/CheckDetailsTable";
 
 
@@ -30,6 +31,10 @@ const CheckDetailsSection = ({ checkId }) => {
                 <Typography varient="h5" className={classes.titleText}>
                     Check Details
                 </Typography>
+                <Button onClick={() => console.log("/revenue/statement/details")}
+                    color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}>
+                    Add Line Item
+                </Button>
             </div>
             <CheckDetailsTable parent="CheckDetailsTable" header="Check Details" checkId={checkId} />
         </div>
