@@ -85,7 +85,7 @@ function TractsTable(props) {
         rowsPerPageOptions: [10, 25, 50, 100],
         count: count,
         serverSide: true,
-        searchable: true,
+        search: false,
         rowsSelected: selectedRows.map((sR => sR.dataIndex)),
         filter: true,
         searchText: esSearch
