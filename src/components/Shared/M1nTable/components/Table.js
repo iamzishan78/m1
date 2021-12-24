@@ -1218,7 +1218,7 @@ function SubTable(props) {
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
-        if(column.options.customBodyRender){
+        if(column?.options?.customBodyRender){
           column.options = {
             ...column.options,
             customBodyRender: column.options.customBodyRender,
