@@ -66,7 +66,7 @@ function AgreementsTable(props) {
     // const issues = potentialIssues?.getPotentialIssuesSummary;
 
 
-    const startPaginationAt = 25;
+    const startPaginationAt = 10;
     // const esIndex = 'shapes_flat';
     const esStaticFilters = [{
         field: "shapeJson.properties.type",
@@ -76,6 +76,7 @@ function AgreementsTable(props) {
     const count = tableData?.total || 0;
     const options = {
         rowsPerPageOptions: [10, 25, 50, 100],
+        rowsPerPage: 10,
         count: count,
         serverSide: true,
         search: false,
