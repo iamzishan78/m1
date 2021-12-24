@@ -1091,6 +1091,7 @@ function Map({ type, paramId, lati, longi }) {
             stateToUpdate = {
               ...stateToUpdate,
               popupOpen: false,
+              layerSelectionPopup: false,
               selectedUserDefinedLayer: null,
               selectedParcel: null,
               expandedCard: false,
@@ -1105,6 +1106,7 @@ function Map({ type, paramId, lati, longi }) {
             stateToUpdate = {
               ...stateToUpdate,
               popupOpen: false,
+              layerSelectionPopup: false,
               selectedUserDefinedLayer: null,
               selectedParcel: null,
               expandedCard: false,
@@ -1135,6 +1137,7 @@ function Map({ type, paramId, lati, longi }) {
         selectedShape: null,
         expandedCard: false,
         popupOpen: false,
+        layerSelectionPopup: false,
       }));
       const filteredLayer = customLayerData?.allCustomLayers?.find((cl) => cl._id === feature.properties.id);
       let selectedUserDefinedLayer;
@@ -1275,6 +1278,10 @@ function Map({ type, paramId, lati, longi }) {
       let udLayers = [];
       let clusterLayers = [];
 
+      setStateApp((state) => ({
+        ...state, popupOpen: false, layerSelectionPopup: false,
+      }));
+
       stateApp.layers?.forEach((layer) => {
         const interaction = layer.layerSettings.interaction.interactionAble && layer.layerSettings.interaction.interactionDetail.click;
         const visible = layer.layerSettings.showable && layer.layerSettings.visiable !== false;
@@ -1401,20 +1408,29 @@ function Map({ type, paramId, lati, longi }) {
     const mapRightClickHandler = (e) => {
 
       var bbox = [[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]];
-      let features = map.queryRenderedFeatures(bbox);
-      features = features.filter((feature) => feature.source !== "composite" && feature.layer.id !== 'welllines')
+      let features = map.queryRenderedFeatures(bbox, { layers: [...defaultLayers, 'wellpoints'] });
+      features = features.filter((feature) => feature.source !== "composite" && feature.source !== 'abstract_geo_source' && feature.layer.id !== 'welllines')
 
       let coordinates = [e.lngLat.lng, e.lngLat.lat];
       let popUps = document.getElementsByClassName("mapboxgl-popup");
-      if (popUps[0]) popUps[0].remove();
-
-      new mapboxgl.Popup({ offset: 0, closeOnClick: false })
-        .setLngLat(coordinates).setMaxWidth("none").setHTML(`<div id="popupContainer"></div>`).addTo(map);
+      if (popUps?.length > 0) {
+        for (const popUp of popUps) popUp.remove()
+      }
 
       setStateApp((state) => ({
-        ...state,
-        selectionLayers: features, layerSelectionPopup: true, popupOpen: true
+        ...state, layerSelectionPopup: false, popupOpen: false
       }));
+
+      setTimeout(() => {
+        new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+          .setLngLat(coordinates).setMaxWidth("none").setHTML(`<div id="popupContainer"></div>`).addTo(map);
+
+        setStateApp((state) => ({
+          ...state,
+          selectionLayers: features, layerSelectionPopup: true, popupOpen: true
+        }));
+
+      }, 0)
 
       console.log(e, features);
     }
