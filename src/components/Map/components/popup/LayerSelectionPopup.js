@@ -1,18 +1,16 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
-    Grid, Card, CardHeader, CardContent, Accordion, AccordionDetails, AccordionSummary, Typography,
+    Grid, Card, CardHeader, CardContent, Accordion, AccordionSummary, Typography,
     List, ListItem, ListItemText
 } from "@material-ui/core";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import _ from "lodash";
 import LayerSelectionIcon from "components/Shared/svgIcons/layerSelection";
-import $ from "jquery";
 
 // contexts
-import { AppContext } from "AppContext";
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
 
@@ -158,22 +156,9 @@ function LayerSelectionPopup(props) {
             <Card className={classes.card}>
                 <CardHeader
                     classes={{ title: classes.title, subheader: classes.subheader }}
-                    // action={
-                    //     <div className={classes.headerIcons}>
-                    //         <Tooltip title={"Close"} placement="top">
-                    //             <IconButton size={"small"} onClick={handleClose} aria-label="close" className={classes.icons}>
-                    //                 <CloseIcon color="secondary" />
-                    //             </IconButton>
-                    //         </Tooltip>
-                    //     </div>
-                    // }
-                    // Expandable Card Title
                     title={GetTitle()}
-                // Expandable Card Secondary Header
-                // subheader={layer.groupName ? layer.layerName : ""}
                 />
                 <CardContent className={classes.content}>
-                    {/* <Grid container direction="row" alignItems="center" justify="flex" className={classes.contentGrid}> */}
                     {
                         Object.keys(groupFeatures).map((key) =>
                             <Accordion key={key} defaultExpanded={true} className={classes.accordian}>
@@ -196,7 +181,6 @@ function LayerSelectionPopup(props) {
                             </Accordion>
                         )
                     }
-                    {/* </Grid> */}
                 </CardContent>
             </Card>
         </React.Fragment>
