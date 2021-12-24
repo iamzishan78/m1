@@ -5,3 +5,4 @@ export * from "./AddParcelInterest";
 export * from "./MainMap";
 export * from "./Flow";
 export * from "actions/Land";
+export * from "./Revenue";

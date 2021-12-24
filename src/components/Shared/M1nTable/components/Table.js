@@ -1218,7 +1218,7 @@ function SubTable(props) {
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
-        if(column.options.customBodyRender){
+        if (column.options.customBodyRender) {
           column.options = {
             ...column.options,
             customBodyRender: column.options.customBodyRender,
@@ -2204,11 +2204,12 @@ function SubTable(props) {
                       <IconButton
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log("modell download");
                           handleViewFile(
                             props.addAble.type === "parcelRunsheet" ||
                               props.addAble.type === "parcelDocument" ||
-                              props.addAble.type === "wellDocument"
+                              props.addAble.type === "wellDocument" ||
+                              props.addAble.type === "AgreementDocument" ||
+                              props.addAble.type === "UnitDocument"
                               ? row_line.fileId
                               : row_line?._id
                           );
@@ -2468,22 +2469,22 @@ function SubTable(props) {
                       </div>
                     )}
                     {(props.parent === "RevenuePropertiesTable") && (
-                        <div className={classes.flexAlign}>
-                          {value?.toLowerCase() === "approved" ? (
-                            <div className={classes.activeBadge} />
-                          ) : value?.toLowerCase() === "pending" ? (
-                            <div className={classes.pendingBadge} />
-                          ) : value?.toLowerCase() === "declined" ? (
-                            <div className={classes.declinedBadge} />
-                          ) : (
-                            <div className={classes.statusBtnDiv}>
-                              <div className={classes.approveBtn}>Approve</div>
-                              <div className={classes.declineBtn}>Decline</div>
-                            </div>
-                          )}
-                          <div>{value}</div>
-                        </div>
-                      )}
+                      <div className={classes.flexAlign}>
+                        {value?.toLowerCase() === "approved" ? (
+                          <div className={classes.activeBadge} />
+                        ) : value?.toLowerCase() === "pending" ? (
+                          <div className={classes.pendingBadge} />
+                        ) : value?.toLowerCase() === "declined" ? (
+                          <div className={classes.declinedBadge} />
+                        ) : (
+                          <div className={classes.statusBtnDiv}>
+                            <div className={classes.approveBtn}>Approve</div>
+                            <div className={classes.declineBtn}>Decline</div>
+                          </div>
+                        )}
+                        <div>{value}</div>
+                      </div>
+                    )}
                     {props.parent === "AgreementsTable" && (
                       <div style={{ display: "flex", "align-items": "center" }}>
                         {value?.toLowerCase() === "approved"
@@ -2537,7 +2538,7 @@ function SubTable(props) {
               },
             };
             break;
-            case "tractName":
+          case "tractName":
             column.options = {
               ...column.options,
               customBodyRender: (value, tableMeta, updateValue) => {
@@ -2549,10 +2550,28 @@ function SubTable(props) {
                         if (tableMeta.rowData[0]) {
                           history.push(`/tract/details/${tableMeta.rowData[0]}`)
                         }
-                        }} style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}>
+                      }} style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}>
                         {value}
                       </p>
                     )}
+                    {(props.parent === "RevenueStatementTable" ||
+                      props.parent === "RevenuePropertiesTable") && (
+                        <div className={classes.flexAlign}>
+                          {value?.toLowerCase() === "approved" ? (
+                            <div className={classes.activeBadge} />
+                          ) : value?.toLowerCase() === "pending" ? (
+                            <div className={classes.pendingBadge} />
+                          ) : value?.toLowerCase() === "declined" ? (
+                            <div className={classes.declinedBadge} />
+                          ) : (
+                            <div className={classes.statusBtnDiv}>
+                              <div className={classes.approveBtn}>Approve</div>
+                              <div className={classes.declineBtn}>Decline</div>
+                            </div>
+                          )}
+                          <div>{value}</div>
+                        </div>
+                      )}
                   </>
                 );
               },
@@ -3927,6 +3946,9 @@ function SubTable(props) {
         }
       }
 
+      if (props.targetLabel === "Revenue Properties") {
+        history.push('/revenue/property/details')
+      }
       if (props.targetLabel === "revenueStatements") {
         if (rows[dataIndex]?._id) {
           history.push(`/revenue/statement/details?id=${rows[dataIndex]?._id}`)
@@ -4504,7 +4526,8 @@ function SubTable(props) {
                 props.parent === "potentialOwnersPerParcel" || /// will need to build a backend for this search
                 props.parent === "associatedWellsPerParcel" || /// will need to build a backend for this search
                 props.parent === "boundary_grid_wells" || /// will need to build a backend for this search
-                props.parent === "boundary_grid_owners" /// will need to build a backend for this search
+                props.parent === "boundary_grid_owners" || /// will need to build a backend for this search
+                props.parent === "RevenueStatementTable"
                 ? false
                 : props.parent !== "search",
             // have to use props.parent here for initial value

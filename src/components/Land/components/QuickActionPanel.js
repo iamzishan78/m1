@@ -32,7 +32,7 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, qu
       >
         <Grid container direction="row" justify="space-between" display="flex" className={classes.header}>
           <Grid item style={{ alignItems: "center" }}>
-            <Typography variant="h5" style={{ fontWeight: "normal"}}>
+            <Typography variant="h5" style={{ fontWeight: "normal" }}>
               Land Management
             </Typography>
           </Grid>
@@ -68,11 +68,9 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, qu
           position: "relative",
           top: "65px",
           display: "flex",
-          "flex-direction": "column",
+          flexDirection: "column",
           height: "calc(100vh - 65px)",
-          top: "65px",
-          position: "relative",
-          "align-items": "stretch"
+          alignItems: "stretch",
         }}
       >
         {children}

@@ -156,7 +156,7 @@ function WellSearchApiField(props) {
                             valid['selectedWell.Id'] ? "Select a well to get started" : ""
                         }
                         variant="outlined"
-                        label="Search for a well by name or API"
+                        label={props.label}
                         InputLabelProps={{ shrink: true }}
                         onChange={(event) => {
                             callWellSearch2({ input: event.target.value }, (results) => {
@@ -190,6 +190,10 @@ function WellSearchApiField(props) {
 
 
     );
+}
+
+WellSearchApiField.defaultProps = {
+    label: "Search for a well by name or API"
 }
 
 export default WellSearchApiField;

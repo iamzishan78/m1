@@ -1,4 +1,3 @@
-
 const RevenueStatementHeadCells = [
     {
         name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
@@ -23,19 +22,16 @@ const RevenueStatementHeadCells = [
         name: "lines", label: "Lines", esKey: 'checkDetail.lines', options: { sort: true, filter: true }
     },
     {
-        name: "source", label: "CDEX Source", esKey: 'source.keyword', options: { sort: true, filter: true }
+        name: "source", label: "Source", esKey: 'source.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "sourceId", label: "CDEX Check ID", esKey: 'sourceId.keyword', options: { sort: true, filter: true }
+        name: "sourceId", label: "Check ID", esKey: 'sourceId.keyword', options: { sort: true, filter: true }
     },
     {
         name: "status", label: "Status", esKey: 'status.keyword', options: { sort: true, filter: true }
     },
     {
         name: "tags", label: "Tags", esKey: 'tags.keyword', options: { sort: true, filter: true }
-    },
-    {
-        name: "validation", label: "Validation", esKey: 'validation.keyword', options: { sort: true, filter: true }
     },
     {
         name: "commentsCounter",
@@ -49,6 +45,9 @@ const RevenueStatementHeadCells = [
             print: false,
             viewColumns: false,
         },
+    },
+    {
+        name: "validation", label: "Validation", esKey: 'validation.keyword', options: { sort: true, filter: true }
     },
 ];
 

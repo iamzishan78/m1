@@ -60,6 +60,7 @@ import SideNavigation from "./SideNavigation";
 
 // App Bars
 import LandAppBar from "./AppBar/Land";
+import RevenueAppBar from "components/Navigation/AppBar/Revenue";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -371,9 +372,9 @@ export default function Navigation(props) {
       currentAccounts && currentAccounts.length === 1
         ? currentAccounts[0]
         : (() => {
-          // Add choose account code here
-          return;
-        })();
+            // Add choose account code here
+            return;
+          })();
 
     const logoutRequest = {
       account: currentAccount,
@@ -486,30 +487,26 @@ export default function Navigation(props) {
     }));
   };
 
-  const matchAgreements = () => {
-    return location.pathname === "/landmanagement/agreements"
-  }
+  // const matchAgreements = () => {
+  //   return location.pathname === "/landmanagement/agreements"
+  // }
 
-  const applyNavigationStyle = () => {
-    if (location.pathname === "/revenue/statements") {
+  const checkIfIgnoreHeader = () => {
+    if (location.pathname.startsWith("/revenue/statement/details") || location.pathname.startsWith("/revenue/property/details")) {
       return true;
-    } else {
-      return false;
     }
-  }
+  };
 
   return (
     <div className={classes.root}>
       <CssBaseline />
-      {!location.pathname.startsWith("/revenue/statement/details") && (
+      {!checkIfIgnoreHeader() && (
         <AppBar
           position="fixed"
-          style={{ background: applyNavigationStyle() && "#ffffff", zIndex: applyNavigationStyle() && 1000, boxShadow: applyNavigationStyle() && "0px 0px 3px 0px rgba(0,0,0,0.3)" }}
           className={clsx(classes.appBar, {
             [classes.appBarShift]: openDrawer,
           })}
         >
-
           {stateApp.user && (
             <Toolbar>
               {location.pathname === "/activities" && (
@@ -531,24 +528,9 @@ export default function Navigation(props) {
                   Dashboard
                 </Typography>
               )}
-              {/* {location.pathname.startsWith("/landmanagement/agreements") && (
-              <Typography
-                variant="h4"
-                style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.landManagement.expandedPanel ? "450px" : "30px" }}
-              >
-                Agreements
-              </Typography>
-            )} */}
 
               {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
-              {location.pathname.startsWith("/revenue/statements") && (
-                <Typography
-                  variant="h6"
-                  style={{ color: "black", fontWeight: "bold", marginLeft: stateApp.revenueDetails.expandedPanel ? "450px" : "30px" }}
-                >
-                  {stateApp.revenueDetails.title}
-                </Typography>
-              )}
+              {location.pathname.startsWith("/revenue") && <RevenueAppBar classes={classes} />}
 
               {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
@@ -571,14 +553,6 @@ export default function Navigation(props) {
               ) : (
                 <div style={{ display: "none" }}></div>
               )}
-              {applyNavigationStyle() && (
-                <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-                  <Button onClick={() => handleListItemClick("/revenue/statement/details")}
-                    color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}>
-                    Add Statement
-                  </Button>
-                </div>
-              )}
               {/* {matchAgreements() && (
               <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
                 <Button onClick={() => handleListItemClick("/agreement/details")} color="primary" variant="contained" startIcon={<Add />}>
@@ -590,7 +564,6 @@ export default function Navigation(props) {
               <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
                 {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
               </IconButton>
-
             </Toolbar>
           )}
         </AppBar>

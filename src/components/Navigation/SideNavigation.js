@@ -34,7 +34,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
   const theme = useTheme();
 
   return (
-    <div style={{zIndex: 1001}}>
+    <div style={{ zIndex: 1001 }}>
       <Drawer
         variant="permanent"
         anchor="left"
@@ -143,28 +143,6 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               selected: classes.menuListItemSelected,
             }}
             button
-            selected={stateNav.selectedMenuIndexLand === 1}
-            onClick={(event) => {
-              handleListItemClick("/land/agreements");
-            }}
-            key="land"
-          >
-            <div className={classes.tabContent}>
-              <Tooltip title="Land" placement="right" classes={{ tooltip: classes.iconTooltip }}>
-                <ListItemIcon className={classes.sideNavIcon}>
-                  <LandScapeIcon />
-                </ListItemIcon>
-              </Tooltip>
-              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Land" />
-            </div>
-          </ListItem>
-
-          <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
             selected={stateNav.selectedMenuIndexTransact === 1}
             onClick={(event) => handleListItemClick("/flow")}
             key="flow"
@@ -181,6 +159,28 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                   beta
                 </Button>
               </ListItemSecondaryAction>
+            </div>
+          </ListItem>
+
+          <ListItem
+            classes={{
+              root: classes.menuListItem,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexLand === 1}
+            onClick={(event) => {
+              handleListItemClick("/land/agreements");
+            }}
+            key="land"
+          >
+            <div className={classes.tabContent}>
+              <Tooltip title="Land" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <ListItemIcon className={classes.sideNavIcon}>
+                  <LandScapeIcon />
+                </ListItemIcon>
+              </Tooltip>
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Land" />
             </div>
           </ListItem>
 
