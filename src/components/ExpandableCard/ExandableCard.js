@@ -502,8 +502,6 @@ function ExpandableCard(props) {
     };
   }, [openDialog, props.targetLabel, isExpanded, width]);
 
-  const link = history.pathHistory[history.pathHistory.length - 1]
-
   return (
     <React.Fragment>
 
@@ -537,7 +535,7 @@ function ExpandableCard(props) {
           open={openBugModal}
           onClose={() => setOpenBugModal(false)}
         />
-        {link === '/land/agreements' && (
+        {(history.location?.state?.showAgreementBreadcrumb || history.location?.state?.showTractsBreadcrumb) && (
           <Grid container spacing={2} alignItems="center" className={classes.breadcrumb}>
             <Breadcrumbs
               separator={<NavigateNextIcon fontSize="small" />}
@@ -550,7 +548,12 @@ function ExpandableCard(props) {
                 }}
                 color="inherit"
               >
-                <div className={classes.agreementLink} onClick={() => history.push('/land/agreements')}>Agreements</div>
+                {history.location?.state?.showAgreementBreadcrumb && (
+                  <div className={classes.agreementLink} onClick={() => history.push('/land/agreements')}>Agreements</div>
+                )}
+                {history.location?.state?.showTractsBreadcrumb && (
+                  <div className={classes.agreementLink} onClick={() => history.push('/land/tracts')}>Tracts</div>
+                )}
               </Typography>
               <Typography
                 style={{

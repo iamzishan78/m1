@@ -32,7 +32,7 @@ const TractsHeadCells = [
                   <p
                     onClick={(e) => {
                       e.stopPropagation();
-                        history.push(`/map/parcels/${tableMeta.rowData[2]}`);
+                        history.push(`/map/parcels/${tableMeta.rowData[2]}`, { showTractsBreadcrumb: true });
                     }}
                     style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
                   >
