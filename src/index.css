@@ -70,7 +70,7 @@ body {
 }
 
 .blue {
-  color: #3FC0DF
+  color: #3fc0df;
 }
 
 .hideScroll::-webkit-scrollbar {
@@ -78,7 +78,7 @@ body {
 }
 
 .red {
-  color: red
+  color: red;
 }
 
 #TaskTemplateDatePopover,
@@ -160,10 +160,12 @@ body {
   margin-top: 48px !important;
 }
 
-/* Drawer */
-.MuiDrawer-paper {
+/**
+  Drawer - Commented by Ali
+*/
+/* .MuiDrawer-paper {
   z-index: 1001 !important;
-}
+} */
 
 .success svg,
 .warning svg {

@@ -53,7 +53,7 @@ function Agreements(props) {
         <AgreementsTable
           esIndex={esIndex}
           header="Agreements"
-          esFilters={esFilters}          
+          esFilters={esFilters}
           targetLabel="agreement"
           parent="AgreementsTable"
           setESFilters={setESFilters}

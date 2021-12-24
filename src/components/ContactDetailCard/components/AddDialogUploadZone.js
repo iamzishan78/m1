@@ -158,6 +158,7 @@ const Documents = memo((props) => {
 
   const [relatedObjectType, limit] = useMemo(() => {
     if (props.isTransactPage) return ["Deal", 99];
+    if (props.isRevenueDetailPage) return ["Check", 101]
     else return ["Contact", 2];
   }, [props.isTransactPage]);
 

@@ -80,7 +80,7 @@ export const useStyles = makeStyles((theme) => ({
     }),
   },
   drawerClose: {
-    zIndex: 1,
+    zIndex: "1 !important",
     background: "#0e111a",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,

@@ -111,8 +111,8 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
   },
   icon: {
-    height: 64,
-    width: 64,
+    height: 80,
+    width: 80,
     backgroundColor: "lightgrey",
   },
   tabsHeader: {
@@ -177,7 +177,11 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: "bold",
     },
   },
-
+  tabsSectionDetails: {
+    maxHeight: "calc(100vh - 450px)",
+    overflow: "overlay",
+    backgroundColor: "#f3f3f3"
+  }
 }));
 
 const StyledTabs = withStyles({
@@ -251,7 +255,7 @@ export default function DetailComponents(props) {
   });
 
 
-  const checksFlatData = getCheckResult?.findCheck_Flat?.check;
+  const checksFlatData = getCheckResult?.getCheck?.check;
 
   useEffect(() => {
     selectedTabRef.current &&
@@ -328,7 +332,7 @@ export default function DetailComponents(props) {
         </Grid>
       </div>
       <div className="flex justifyBetween alignStart w-100">
-        <div className="w-100" style={{ padding: 20, maxWidth: collapse ? "95%" : "70%" }}>
+        <div className="w-100" style={{ padding: 20, maxWidth: "calc(100% - 380px)" }}>
           {/**
          * Detail title section
          */}
@@ -362,9 +366,9 @@ export default function DetailComponents(props) {
               </Grid>
             </div>
 
-            <div className="flex justifyEnd alignStart w-100" style={{ maxWidth: 290, marginLeft: 8 }}>
+            {/* <div className="flex justifyEnd alignStart w-100" style={{ maxWidth: 290, marginLeft: 8 }}>
               <img src="https://miro.medium.com/max/1400/1*ybR6fbfwo6XTmWvTjXSOAA.png" alt="map-view" height={200} width={290} style={{ borderRadius: 8 }} />
-            </div>
+            </div> */}
           </div>
           {/**
          * Detail tabs section
@@ -379,7 +383,7 @@ export default function DetailComponents(props) {
             </div>
 
 
-            <div style={{ maxHeight: "calc(100vh - 184px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+            <div className={classes.tabsSectionDetails}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
                 <HeaderSection details={checksFlatData} />
               </div>
@@ -395,7 +399,7 @@ export default function DetailComponents(props) {
           </div>
         </div>
 
-        <div className="flex column justifyStart alignStart w-100" style={{ marginTop: 20, marginRight: 24, padding: "16px 10px", background: "#ffffff", borderRadius: 8, minHeight: "100vh", height: "100%", maxWidth: collapse ? 40 : 360, width: "100%" }}>
+        <div className="flex column justifyStart alignStart w-100" style={{ marginTop: 20, marginRight: 24, padding: "16px 10px", background: "#ffffff", borderRadius: 8, maxHeight: "calc(100vh + 135px)", overflow: "auto", height: "100%", maxWidth: collapse ? 40 : 360, width: "100%" }}>
           <div className="flex justifyBetween alignCenter w-100">
             {!collapse && (
               <Typography varient="h5" className={classes.titleText} style={{ textTransform: "uppercase", fontWeight: "bold" }}>
@@ -553,6 +557,7 @@ export default function DetailComponents(props) {
                 filesData={viewFileResult}
                 id={checkId}
                 loading={viewFileLoading}
+                isRevenueDetailPage="Check"
                 setUploadedFileData={setUploadedFileData}
               ></AddDialogeUploadZone>
 

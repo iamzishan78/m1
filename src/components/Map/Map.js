@@ -87,6 +87,7 @@ import {
   setLayerLabelLayout,
   showIfUserDefinedLayer,
 } from "components/Shared/functions/shapeLayer";
+import LayerSelectionPopup from "./components/popup/LayerSelectionPopup";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -201,6 +202,7 @@ function Map({ type, paramId, lati, longi }) {
     }
   };
   const [mapClick, MapClick] = useState(null);
+  const [mapRightClick, MapRightClick] = useState(null);
   const setMapClick = (state) => {
     if (mapClick !== state) {
       MapClick(state);
@@ -866,15 +868,16 @@ function Map({ type, paramId, lati, longi }) {
           }
         });
       }
+      let showLabel = visible
+      if (prop?.labelProps) {
+        showLabel = (!prop?.labelProps?.visibility || prop?.labelProps?.visibility === 'visible') && visible
+      }
 
       if (map.getLayer(layerId)) {
         map.setLayoutProperty(layerId, "visibility", visible ? "visible" : "none");
         if (map.getLayer(`${layerId}_point`)) {
           map.moveLayer(`${layerId}_point`);
-          let showLabel = visible
-          if (prop?.symbolProps) {
-            showLabel = prop?.symbolProps?.visibility === 'visible' && visible
-          }
+
           map.setLayoutProperty(`${layerId}_point`, "visibility", showLabel ? "visible" : "none");
         }
         if (prop.paintProps) {
@@ -907,7 +910,7 @@ function Map({ type, paramId, lati, longi }) {
         map.addLayer(layerConfig);
 
         if (prop.labelProps) {
-          let labelLayout = { visibility: visible ? "visible" : "none" };
+          let labelLayout = { visibility: showLabel ? "visible" : "none" };
           labelLayout = {
             ...labelLayout,
             ...prop.labelProps.symbolProps,
@@ -1395,11 +1398,38 @@ function Map({ type, paramId, lati, longi }) {
         }
       }
     };
+    const mapRightClickHandler = (e) => {
+
+      var bbox = [[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]];
+      let features = map.queryRenderedFeatures(bbox);
+      features = features.filter((feature) => feature.source !== "composite" && feature.layer.id !== 'welllines')
+
+      let coordinates = [e.lngLat.lng, e.lngLat.lat];
+      let popUps = document.getElementsByClassName("mapboxgl-popup");
+      if (popUps[0]) popUps[0].remove();
+
+      new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+        .setLngLat(coordinates).setMaxWidth("none").setHTML(`<div id="popupContainer"></div>`).addTo(map);
+
+      setStateApp((state) => ({
+        ...state,
+        selectionLayers: features, layerSelectionPopup: true, popupOpen: true
+      }));
+
+      console.log(e, features);
+    }
     if (map) {
       if (mapClick && mapClick.mapClickHandler) {
         map.off("click", mapClick.mapClickHandler);
       }
+      if (mapRightClick && mapRightClick.mapRightClickHandler) {
+        map.off("contextmenu", mapRightClick.mapRightClickHandler);
+      }
+      console.log('contextmenu initialized')
+      map.on('contextmenu', mapRightClickHandler);
       map.on("click", mapClickHandler);
+
+      MapRightClick({ mapRightClickHandler })
       setMapClick({ mapClickHandler });
     }
   }, [map, stateApp.layers, customLayerData, stateApp.selectedUserDefinedLayer]);
@@ -6241,6 +6271,20 @@ function Map({ type, paramId, lati, longi }) {
                   parent="map"
                   handleCloseExpandableCard={handleCloseExpandableCard}
                   selectedUserDefinedLayer={stateApp.selectedUserDefinedLayer}
+                  zIndex={3000}
+                  cardWidth="350px"
+                  mouseX={0}
+                  mouseY={0}
+                  position="relative"
+                />
+              </PortalD>
+            )}
+            {stateApp.layerSelectionPopup && (
+              <PortalD id="popupContainer">
+                <LayerSelectionPopup
+                  parent="map"
+                  handleCloseExpandableCard={handleCloseExpandableCard}
+                  selectionLayers={stateApp.selectionLayers}
                   zIndex={3000}
                   cardWidth="350px"
                   mouseX={0}
