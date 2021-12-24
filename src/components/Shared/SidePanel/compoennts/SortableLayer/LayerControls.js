@@ -91,7 +91,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
     }
   };
 
-  const layerStylingControl = layer.layerSettings?.colorable && (
+  const layerStylingControl = (layer.layerSettings?.colorable || layer.layerSettings?.interaction?.interactionAble) && (
     <IconButton size='small'>
       <Tooltip title="Layer Styling" >
         <KeyboardArrowRightIcon
@@ -107,21 +107,13 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
         icon={
           <CancelOutlinedIcon
             fontSize='small'
-            htmlColor={
-              !ifLayerHaveData(layer, stateApp)
-                ? "rgb(127, 149, 199)"
-                : "#12abe0"
-            }
+            htmlColor={!ifLayerHaveData(layer, stateApp) ? "rgb(127, 149, 199)" : "#12abe0"}
           />
         }
         checkedIcon={
           <IconButton size='small'>
             <ClickIcon
-              color={
-                !ifLayerHaveData(layer, stateApp)
-                  ? "rgb(127, 149, 199)"
-                  : "#12abe0"
-              }
+              color={!ifLayerHaveData(layer, stateApp) ? "rgb(127, 149, 199)" : "#12abe0"}
               fontSize='small'
             />
           </IconButton>
@@ -154,7 +146,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
           {layerClickabilityControl}
         </Grid> */}
         <Grid item xs={4}>
-          {layerClickabilityControl}
+          {/* {layerClickabilityControl} */}
         </Grid>
         <Grid item xs={4} className={classes.formControl}>
           <FormControlLabel

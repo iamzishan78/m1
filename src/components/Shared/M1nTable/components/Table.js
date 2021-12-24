@@ -2113,7 +2113,15 @@ function SubTable(props) {
                       <IconButton
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleViewFile(props.addAble.type === "parcelRunsheet" || props.addAble.type === "parcelDocument" || props.addAble.type === "wellDocument" || props.addAble.type === "AgreementDocument" ? row_line.fileId : row_line?._id);
+                          handleViewFile(
+                            props.addAble.type === "parcelRunsheet" ||
+                              props.addAble.type === "parcelDocument" ||
+                              props.addAble.type === "wellDocument" ||
+                              props.addAble.type === "AgreementDocument" ||
+                              props.addAble.type === "UnitDocument"
+                              ? row_line.fileId
+                              : row_line?._id
+                          );
                         }}
                       >
                         <GetAppIcon />
