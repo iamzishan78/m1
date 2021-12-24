@@ -49,7 +49,7 @@ export default function AnalyticsCards({
     const newCards = JSON.parse(JSON.stringify(cards));
     newCards[index].points = count;
     setCards(newCards);
-  }
+  };
 
   const [getESAggsActiveCount] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
@@ -57,9 +57,9 @@ export default function AnalyticsCards({
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.activeCount) {
         const count = aggsData.getESAggsList.aggregations.activeCount.value;
-        cards[1].points= count
-        cards[2].points= totalCount - count
-        setCards(cards)
+        cards[1].points = count;
+        cards[2].points = totalCount - count;
+        setCards(cards);
       }
     },
   });
@@ -70,54 +70,149 @@ export default function AnalyticsCards({
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.approvedCount) {
         const count = aggsData.getESAggsList.aggregations.approvedCount.value;
-        setCardPoint(totalCount - count, 3)
+        setCardPoint(totalCount - count, 3);
       }
     },
   });
 
+  const [getESAggsGrossAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
+    context: { batch: true },
+    fetchPolicy: "no-cache",
+    onCompleted: (aggsData) => {
+      if (aggsData?.getESAggsList?.aggregations?.grossAcresSum) {
+        const grossAcresSum = aggsData.getESAggsList.aggregations.grossAcresSum.value
+        setCardPoint((Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, {maximumFractionDigits: 1}) + 'K', 1)
+        // props.onGrossAcresSum(
+        //   aggsData?.getESAggsList?.aggregations?.grossAcresSum?.value
+        // );
+      }
+    },
+  });
+
+  const [getESAggsNetAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
+    context: { batch: true },
+    fetchPolicy: "no-cache",
+    onCompleted: (aggsData) => {
+      if (aggsData?.getESAggsList?.aggregations?.netAcresSum) {
+        const netAcresSum = aggsData.getESAggsList.aggregations.netAcresSum.value
+        setCardPoint((Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, {maximumFractionDigits: 1}) + 'K', 2)
+        // props.onNetAcresSum(
+        //   aggsData?.getESAggsList?.aggregations?.netAcresSum?.value
+        // );
+      }
+    },
+  });
+
+  const [getESAggsNetRoyaltyAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
+    context: { batch: true },
+    fetchPolicy: "no-cache",
+    onCompleted: (aggsData) => {
+      if (aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum) {
+        const netRoyaltyAcresSum = aggsData.getESAggsList.aggregations.netRoyaltyAcresSum.value
+        setCardPoint((Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, {maximumFractionDigits: 1}) + 'K', 3)
+        // props.onNetRoyaltyAcresSum(
+        //   aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum?.value
+        // );
+      }
+    },
+  });
+
+  const agreementAnalytics = () => {
+    getESAggsActiveCount({
+      variables: {
+        esIndex,
+        search: landSearchQuery ? `${landSearchQuery}*` : "",
+        filters: [
+          ...esFilters,
+          {
+            field: "shapeJson.properties.agreementStatus",
+            value: "ACTIVE",
+          },
+        ],
+        aggs: {
+          activeCount: {
+            cardinality: { field: "shapeJson.id.keyword" },
+          },
+        },
+      },
+    });
+    getESAggsApprovedCount({
+      variables: {
+        esIndex,
+        search: landSearchQuery ? `${landSearchQuery}*` : "",
+        filters: [
+          ...esFilters,
+          {
+            field: "shapeJson.properties.approvalStatus",
+            value: "APPROVED",
+          },
+        ],
+        aggs: {
+          approvedCount: {
+            cardinality: { field: "shapeJson.id.keyword" },
+          },
+        },
+      },
+    });
+  };
+
+  const tractsAnalytics = () => {
+    getESAggsGrossAcresSum({
+      variables: {
+        esIndex,
+        search: landSearchQuery ? `${landSearchQuery}*` : '',
+        filters: esFilters,
+        aggs: {
+          grossAcresSum: {
+            sum: {
+              field: "grossAcres",
+            },
+          },
+        },
+      },
+    });
+    getESAggsNetAcresSum({
+      variables: {
+        esIndex,
+        search: landSearchQuery ? `${landSearchQuery}*` : '',
+        filters: esFilters,
+        aggs: {
+          netAcresSum: {
+            sum: {
+              field: "net_acres",
+            },
+          },
+        },
+      },
+    });
+    getESAggsNetRoyaltyAcresSum({
+      variables: {
+        esIndex,
+        search: landSearchQuery ? `${landSearchQuery}*` : '',
+        filters: esFilters,
+        aggs: {
+          netRoyaltyAcresSum: {
+            sum: {
+              field: "nra",
+            },
+          },
+        },
+      },
+    });
+  };
+
   const getAggsCounts = () => {
     if (totalCount > 0) {
-      getESAggsActiveCount({
-        variables: {
-          esIndex,
-          search: landSearchQuery ? `${landSearchQuery}*` : "",
-          filters: [
-            ...esFilters,
-            {
-              field: "shapeJson.properties.agreementStatus",
-              value: "ACTIVE",
-            },
-          ],
-          aggs: {
-            activeCount: {
-              cardinality: { field: "shapeJson.id.keyword" },
-            },
-          },
-        },
-      });
-      getESAggsApprovedCount({
-        variables: {
-          esIndex,
-          search: landSearchQuery ? `${landSearchQuery}*` : "",
-          filters: [
-            ...esFilters,
-            {
-              field: "shapeJson.properties.approvalStatus",
-              value: "APPROVED",
-            },
-          ],
-          aggs: {
-            approvedCount: {
-              cardinality: { field: "shapeJson.id.keyword" },
-            },
-          },
-        },
-      });
+      if (esIndex === "shapes_flat") {
+        agreementAnalytics();
+      } else if (esIndex === "shapeowners_flat") {
+        tractsAnalytics();
+      }
     }
-  }
+  };
 
   useEffect(() => {
-    setCardPoint(totalCount, 0)
+    setCardPoint(totalCount, 0);
     getAggsCounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalCount]);

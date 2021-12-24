@@ -389,6 +389,17 @@ function Map({ type, paramId, lati, longi }) {
   async function getCustomLayer() {
     const keys = { parcels: "selectedParcel", ...layersWithSelectedShapeKey(), wells: "selectedWell" };
 
+    if(type === 'parcels'){
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        selectedShape: null
+      }));
+    }else{
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        selectedParcel: null
+      }));
+    }
     if (type === "wells") {
       const intervalObj = setInterval(function () {
         if (map.getSource("wellsVT") && paramId?.toLowerCase() !== stateApp.selectedWellId) {

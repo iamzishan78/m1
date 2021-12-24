@@ -1218,7 +1218,7 @@ function SubTable(props) {
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
-        if (column.options.customBodyRender) {
+        if(column?.options?.customBodyRender){
           column.options = {
             ...column.options,
             customBodyRender: column.options.customBodyRender,
@@ -3940,11 +3940,11 @@ function SubTable(props) {
           handleExpandClick(null, null, null, "inviteUser");
         }
       }
-      if (props.targetLabel === "agreement") {
-        if (rows[dataIndex]?._id) {
-          history.push(`/agreement/details/${rows[dataIndex]?._id}`)
-        }
-      }
+      // if (props.targetLabel === "agreement") {
+      //   if (rows[dataIndex]?._id) {
+      //     history.push(`/agreement/details/${rows[dataIndex]?._id}`)
+      //   }
+      // }
 
       if (props.targetLabel === "Revenue Properties") {
         history.push('/revenue/property/details')

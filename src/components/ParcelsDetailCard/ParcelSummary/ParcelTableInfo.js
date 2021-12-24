@@ -12,57 +12,88 @@ import { showErrorMessage } from "actions";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 
+
 const tableData = [
   {
-    label: 'Unit Name',
+    label: 'Parcel Name',
     type: 'text',
-    key: 'uName'
+    key: 'shapeLabel',
+    edit: true,
   },
   {
-    label: 'Unit Number',
+    label: 'State',
     type: 'text',
-    key: 'uNumber'
+    key: 'state',
+    edit: false,
   }, {
-    label: 'Unit Type',
+    label: 'Country',
     type: 'autocomplete',
-    key: 'uType'
+    key: 'county',
+    edit: false,
   }, {
-    label: 'Unit Status',
+    label: 'Survey',
     type: 'autocomplete',
-    options: ['Held by Production'],
-    key: 'uStatus'
+    key: 'survey',
+    showStateTX: true,
+    edit: false,
   }, {
-    label: 'Unit Acres',
+    label: 'Block',
+    type: 'autocomplete',
+    key: 'block',
+    showStateTX: true,
+    edit: false,
+  }, {
+    label: 'Section',
+    type: 'text',
+    key: 'section',
+    showStateTX: true,
+    edit: false,
+  }, {
+    label: 'Abstract',
+    type: 'text',
+    key: 'abstract',
+    showStateTX: true,
+    edit: false,
+  }, {
+    label: 'Alt Survey',
+    type: 'text',
+    key: 'altSurvey',
+    showStateTX: true,
+    edit: false,
+  }, {
+    label: 'Meridian',
+    type: 'text',
+    key: 'meridian',
+    showStateTX: false,
+    edit: false,
+  }, {
+    label: 'Township',
+    type: 'autocomplete',
+    key: 'township',
+    showStateTX: false,
+    edit: false,
+  }, {
+    label: 'Range',
     type: 'number',
-    key: 'uAcres'
+    key: 'range',
+    showStateTX: false,
+    edit: false,
+  }, {
+    label: 'Section',
+    type: 'text',
+    key: 'section',
+    showStateTX: false,
+    edit: false,
+  }, {
+    label: 'Gross Acres',
+    type: 'number',
+    key: 'sdGrossAcres',
+    edit: true,
   }, {
     label: 'Calculated Acres',
     type: 'text',
-    key: 'shapeArea'
-  }, {
-    label: 'Current Operator',
-    type: 'text',
-    key: 'uPrimaryOperator'
-  }, {
-    label: 'Field Name',
-    type: 'text',
-    key: 'uFieldName'
-  }, {
-    label: 'Unit Depth',
-    type: 'number',
-    key: 'uDepth'
-  }, {
-    label: 'Primary Bench',
-    type: 'text',
-    key: 'uPrimaryBench'
-  }, {
-    label: 'Net Royalty Acres (NRA)',
-    type: 'number',
-    key: 'uNetRoyalityAcres'
-  }, {
-    label: 'Unit Pricing (per NRA)',
-    type: 'number',
-    key: 'uUnitPricing'
+    key: 'shapeArea',
+    edit: false,
   }
 ]
 
@@ -163,7 +194,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, showMessage,
   )
 }
 
-export default function UnitTableInfo({ properties, updateProperties, updateCustomProperties, search }) {
+export default function ParcelTableInfo({ properties, updateProperties, updateCustomProperties, search }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [tableDataState, setTableDataState] = useState({});
@@ -173,17 +204,25 @@ export default function UnitTableInfo({ properties, updateProperties, updateCust
 
   const [tableTempProperties, setTableTempProperties] = useState(properties);
 
+  const filterStateData = (data) => {
+    if (tableTempProperties.state === 'TX') {
+      setFilteredTableData(data.filter((data) => data.showStateTX !== false))
+    } else {
+      setFilteredTableData(data.filter((data) => data.showStateTX !== true))
+    }
+  }
 
   useEffect(() => {
-    setFilteredTableData(tableData.concat(properties?.custom_data_arr || []))
+    filterStateData(tableData.concat(properties?.custom_data_arr || []))
     properties?.custom_data_arr?.forEach((data) => {
       tableTempProperties[data.key] = data.value
       tableTempProperties[`${data.key}key`] = data.key
     });
     setTableTempProperties({ ...tableTempProperties })
     setTableDataState({})
-
   }, [properties]);
+
+  console.log("tableTempProperties", tableTempProperties);
 
   useEffect(() => {
     if (search) {
@@ -191,9 +230,9 @@ export default function UnitTableInfo({ properties, updateProperties, updateCust
       const newTableData = td.filter((row) =>
         row.key?.toLowerCase()?.startsWith(search.toLowerCase()) || row.label?.toLowerCase()?.startsWith(search.toLowerCase()) || tableTempProperties[row.key]?.toLowerCase()?.startsWith(search.toLowerCase()))
 
-      setFilteredTableData(newTableData)
+      filterStateData(newTableData)
     } else {
-      setFilteredTableData(tableData.concat(properties?.custom_data_arr || []))
+      filterStateData(tableData.concat(properties?.custom_data_arr || []))
     }
   }, [search]);
 
@@ -231,55 +270,56 @@ export default function UnitTableInfo({ properties, updateProperties, updateCust
       setTableTempProperties({ ...tableTempProperties, [`${data.key}key`]: data.key })
   }
 
-  return <Table
-    className={classes.table}
-    size="small"
-    aria-label="unit table"
-  >
-    <TableBody>
-      {filteredTableData.map((data, index) => <>
-        <TableRow className={index % 2 === 0 ? classes.rowGrey : classes.rowWhite}>
-          <TableCell className={classes.cell1} align="left"
-            onMouseEnter={() => { setEditIconState({ [`${data.key}key`]: true }) }}
-            onMouseLeave={() => { setEditIconState({ [`${data.key}key`]: false }) }}
-          >
-            {data.isCustom ?
-              <> {
-                tableDataState[`${data.key}key`] ?
-                  <TableTextField data={data} value={tableTempProperties[`${data.key}key`]} showMessage={tableDataState[`${data.key}key`] === true}
-                    onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} type='key' />
-                  :
-                  <div style={{ minWidth: '30px', cursor: "pointer" }} >
-                    <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                      <Grid item>
-                        {data.key || '-'}
+
+  return (
+    <Table
+      className={classes.table}
+      size="small"
+      aria-label="parcel table"
+    >
+      <TableBody>
+        {filteredTableData.map((data, index) => <>
+          <TableRow className={index % 2 === 0 ? classes.rowGrey : classes.rowWhite}>
+            <TableCell className={classes.cell1} align="left"
+              onMouseEnter={() => { setEditIconState({ [`${data.key}key`]: true }) }}
+              onMouseLeave={() => { setEditIconState({ [`${data.key}key`]: false }) }}
+            >
+              {data.isCustom ?
+                <> {
+                  tableDataState[`${data.key}key`] ?
+                    <TableTextField data={data} value={tableTempProperties[`${data.key}key`]} showMessage={tableDataState[`${data.key}key`] === true}
+                      onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} type='key' />
+                    :
+                    <div style={{ minWidth: '30px', cursor: "pointer" }} >
+                      <Grid container direction="row" justifyContent="space-between" alignItems="center">
+                        <Grid item>
+                          {data.key || '-'}
+                        </Grid>
+                        <Grid item>
+                          {editIconState[`${data.key}key`] && <Tooltip title={"Edit"} placement="top">
+                            <IconButton
+                              size="small"
+                              onClick={() => { setTableDataState({ [`${data.key}key`]: true }) }}
+                            >
+                              <CreateTwoToneIcon
+                                id="contPencilIcon"
+                                className={classes.pencilIcon}
+                              />
+                            </IconButton>
+                          </Tooltip>}
+                        </Grid>
                       </Grid>
-                      <Grid item>
-                        {editIconState[`${data.key}key`] && <Tooltip title={"Edit"} placement="top">
-                          <IconButton
-                            size="small"
-                            onClick={() => { setTableDataState({ [`${data.key}key`]: true }) }}
-                          >
-                            <CreateTwoToneIcon
-                              id="contPencilIcon"
-                              className={classes.pencilIcon}
-                            />
-                          </IconButton>
-                        </Tooltip>}
-                      </Grid>
-                    </Grid>
-                  </div>
-              } </> : <>{data.label}</>
-            }
+                    </div>
+                } </> : <>{data.label}</>
+              }
 
 
-          </TableCell>
-          <TableCell className={classes.cell2} align="right"
-            onMouseEnter={() => { setEditIconState({ [data.key]: true }) }}
-            onMouseLeave={() => { setEditIconState({ [data.key]: false }) }}
-          >
-            {
-              tableDataState[data.key] ?
+            </TableCell>
+            <TableCell className={classes.cell2} align="right"
+              onMouseEnter={() => { setEditIconState({ [data.key]: data.edit === false ? false : true }) }}
+              onMouseLeave={() => { setEditIconState({ [data.key]: false }) }}
+            >
+              {tableDataState[data.key] ?
                 <>
                   {data.type === 'select' &&
                     <FormControl variant="outlined">
@@ -299,14 +339,20 @@ export default function UnitTableInfo({ properties, updateProperties, updateCust
                         {data.options.map((option) => <MenuItem value={option}>{option}</MenuItem>)}
                       </Select>
                     </FormControl>
-                  }  {(data.type === 'text' || data.type === 'number') &&
+                  }
+                  {(data.type === 'text' || data.type === 'number') &&
+                    <TableTextField data={data} value={tableTempProperties[data.key]} showMessage={tableDataState[data.key] === true}
+                      onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} type='value' />
+                  }
+
+                  {(data.type === 'textarea') &&
                     <TableTextField data={data} value={tableTempProperties[data.key]} showMessage={tableDataState[data.key] === true}
                       onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} type='value' />
                   }
 
                   {data.type === 'autocomplete' &&
                     <>
-                      <AutoCompleteTypeComponent data={data} value={properties[data.key]} shapeType={'Unit'} typeKey={data.key}
+                      <AutoCompleteTypeComponent data={data} value={properties[data.key]} shapeType={'Parcel'} typeKey={data.key}
                         onBlur={() => { setTableDataState({}); setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] }) }}
                         onChange={(e, value) => {
                           e.keyCode = 13
@@ -316,7 +362,7 @@ export default function UnitTableInfo({ properties, updateProperties, updateCust
                     </>
                   }
                 </> :
-                <div style={{ minWidth: '30px', cursor: "pointer" }} >
+                <div style={{ minWidth: '30px', cursor: data.edit !== false ? "pointer" : "none" }} >
                   <Grid container direction="row" justifyContent="space-between" alignItems="center">
                     <Grid item>
                       {data.value || properties[data.key] || '-'}
@@ -336,12 +382,13 @@ export default function UnitTableInfo({ properties, updateProperties, updateCust
                     </Grid>
                   </Grid>
                 </div>
-            }
-          </TableCell>
-        </TableRow>
-      </>
-      )}
-    </TableBody>
-  </Table>
+              }
+            </TableCell>
+          </TableRow>
+        </>
+        )}
+      </TableBody>
+    </Table>
+  );
 
 }
