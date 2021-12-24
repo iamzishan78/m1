@@ -146,6 +146,10 @@ function AgreementsTable(props) {
                     hit.State = hit?.originalProperties?.State;
                     hit.County = hit?.originalProperties?.County;
                     hit = props.setGenricData(hit, hit._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
+                    hit.tags = hit?.tags?.length > 0
+                    ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+                    : [[], 0];
+                    hit.commentsCounter = hit.comments ? hit.comments.length : 0;
                     return hit
                 })
 
