@@ -8,7 +8,7 @@ const INIT_STATE = {
   pipelines: [],
 };
 
-export default (state = INIT_STATE, action) => {
+export default function Flow(state = INIT_STATE, action) {
   switch (action.type) {
     case SET_FLOW_STATE: {
       return { ...state, ...(action.payload ? action.payload : {}) };

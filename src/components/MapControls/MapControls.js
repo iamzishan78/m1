@@ -208,12 +208,13 @@ export default function MapControls(props) {
         if (mapGridCardActiveTap === 1 && mapGridCardActivated) {
           dispatch(toggleMapGridCardAtived());
         } else {
-          dispatch(
-            setMapGridCardState({
-              mapGridCardActivated: true,
-              mapGridCardActiveTap: 1,
-            })
-          );
+          dispatch(toggleMapGridCardAtived());
+          // dispatch(
+          //   setMapGridCardState({
+          //     mapGridCardActivated: true,
+          //     mapGridCardActiveTap: 1,
+          //   })
+          // );
         }
       }
 
@@ -286,7 +287,7 @@ export default function MapControls(props) {
       },
       {
         icon: <AspectRatioOutlinedIcon />,
-        name: "Toggle Zoom Out",
+        name: "Zoom To Default Map Position",
         action: "zoomout",
       },
       // temp delete for marketplace

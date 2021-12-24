@@ -294,7 +294,7 @@ export default function ParcelsDetailCard(props) {
   useEffect(() => {
     if (updatedParcel) {
       if (updatedParcel.updateCustomLayer?.success) {
-        dispatch(showSuccessMessage("Successfully updated the parcel"));
+        dispatch(showSuccessMessage("Successfully updated the tract"));
 
         // Updating stateapp parcel object
         const customLayer = updatedParcel.updateCustomLayer.customLayer;
@@ -468,7 +468,7 @@ export default function ParcelsDetailCard(props) {
               sm={12}
               container>
               <div className={classes.calcSummary}>
-                <p className={classes.parcelSummmary}>Parcel Name</p>
+                <p className={classes.parcelSummmary}>Tract Name</p>
                 <TextField
                   size="small"
                   value={parcelName}

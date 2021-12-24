@@ -11,6 +11,7 @@ import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GridOnIcon from "@material-ui/icons/GridOn";
+import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
 import GpxFixedIcon from "@material-ui/icons/GpsFixed";
 import { default as CheckCircle } from "../../../Shared/svgIcons/check-circle";
 import LayerIcon from "@material-ui/icons/Layers";
@@ -26,10 +27,11 @@ import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { addCustomShapeProperties, drawBoundary } from "../../components/DrawShapes/drawShapesHelpers";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
-import { setMapGridCardState } from "actions";
+import { toggleMapGridCardAtived, setMapGridCardState } from "actions";
 
 import { gql } from "@apollo/client";
 import { setFeatureProperty, drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
+import { shapeTypeLayers } from "components/Shared/functions/shapeLayer";
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
@@ -42,6 +44,7 @@ const ShapeActionsPopup = (props) => {
   const [user, setUser] = useState({ _id: "" });
   const [selectedAction, setSelectedAction] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
+  const [agreementAnchorEl, setAgreementAnchorEl] = useState(null);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [getAbstractGeoContains] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
   const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER, {
@@ -53,7 +56,6 @@ const ShapeActionsPopup = (props) => {
         },
       }
     ) {
-      console.log(`newCustomLayer: ${JSON.stringify(customLayer)}`);
       cache.modify({
         fields: {
           allCustomLayers(existingCustomLayers = [], { readField }) {
@@ -119,7 +121,7 @@ const ShapeActionsPopup = (props) => {
     feature.layer = { id: customLayer.layer };
     let key;
     if (customLayer.layer === 'parcel') key = 'selectedParcel'
-    if (customLayer.layer === 'unit') key = 'selectedShape'
+    if (shapeTypeLayers.includes(customLayer.layer)) key = 'selectedShape'
 
     setStateApp((state) => ({
       ...state,
@@ -140,6 +142,7 @@ const ShapeActionsPopup = (props) => {
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.user.email]);
 
   useEffect(() => {
@@ -155,6 +158,7 @@ const ShapeActionsPopup = (props) => {
     if (get(customLayerInsertedData, "upsertCustomLayer.customLayer") && !customLayerInsertedData.upsertCustomLayer.success) {
       setError(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customLayerInsertedData]);
 
   /**
@@ -164,6 +168,7 @@ const ShapeActionsPopup = (props) => {
     return () => {
       clearFilter();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -179,6 +184,7 @@ const ShapeActionsPopup = (props) => {
         features: [currentFeature],
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.currentFeature]);
 
   const formatNumber = (number) => {
@@ -190,7 +196,7 @@ const ShapeActionsPopup = (props) => {
       selectedFeature = props.selectedFeature;
     }
     if (selectedFeature) {
-      if (selectedFeature.geometry.type === "Polygon") {
+      if (selectedFeature.geometry.type === "Polygon" || selectedFeature.geometry.type === "MultiPolygon") {
         const areaInSqMeters = area(selectedFeature);
         const areaInAcres = convertArea(areaInSqMeters, "meters", "acres");
         return `${formatNumber(Math.round(areaInAcres * 100) / 100)}`;
@@ -223,6 +229,7 @@ const ShapeActionsPopup = (props) => {
       ...state,
       gridPolygonString: getSelectedFeaturePolygonString(),
     }));
+    // dispatch(toggleMapGridCardAtived());
     dispatch(
       setMapGridCardState({
         mapGridCardActivated: true,
@@ -287,17 +294,12 @@ const ShapeActionsPopup = (props) => {
 
   const actionEdit = () => {
     const { selectedFeature } = props;
-
-    console.log("FILTER EDIT TRIGGER STATEAPP", stateApp);
-
     // If shape doesn't exist! AOI case
     if (!stateApp.draw.get(stateApp.currentFeature.id)) {
       stateApp.draw.add(stateApp.currentFeature);
     }
 
     // If filter is applied, then remove it
-
-    console.log("FILTER STATEAPP", stateApp);
     clearFilter();
 
     // if (stateApp.shapeActionsFilterSelected) {
@@ -319,7 +321,7 @@ const ShapeActionsPopup = (props) => {
     drawShapeLayerToggle(stateApp, !stateApp.shapeEdit ? "visible" : "none");
     setStateApp((state) => ({ ...state, currentFeature: selectedFeature, shapeEdit: !state.shapeEdit }));
     if (stateApp.selectedAoi) setSelectedAction("edit-aoi");
-    else setSelectedAction("edit-shape");
+    else if (enableEditOnly) setSelectedAction("edit-shape");
   };
 
   const actionAOI = () => {
@@ -335,7 +337,7 @@ const ShapeActionsPopup = (props) => {
   const calculateShapeCenter = (shapeCoordinates) => polylabel(shapeCoordinates);
 
   const getAbstractGeoSource = (abstractShape) => {
-    if (!abstractShape.properties.State) {
+    if (!abstractShape.properties.State && !abstractShape.properties.StateAbbreviation) {
       const featuresList = stateApp.map.getSource("abstract_geo_source")._data.features;
       const foundFeatures = featuresList.filter((feature) => {
         var intersection = turf.intersect(abstractShape, feature);
@@ -354,7 +356,7 @@ const ShapeActionsPopup = (props) => {
     return abstractShape
   }
 
-  const getParcelUnitName = (abstractShape) => {
+  const getParcelAndShapeName = (abstractShape) => {
     const properties = abstractShape?.properties;
     let township = properties?.Township;
     let range = properties?.Range;
@@ -379,8 +381,8 @@ const ShapeActionsPopup = (props) => {
 
 
     let originalProperties;
-    let parcelName = getParcelUnitName(abstractShape)
-    originalProperties = [abstractShape.properties];
+    let parcelName = getParcelAndShapeName(abstractShape)
+    originalProperties = abstractShape.properties;
 
     const featureId = hat();
     const newShapeFeature = {
@@ -419,7 +421,7 @@ const ShapeActionsPopup = (props) => {
     setStateApp((state) => ({
       ...state,
       selectedParcel: {
-        originalProperties: abstractShape.properties.State === "TX" ? JSON.stringify(abstractShape.properties) : [],
+        originalProperties: abstractShape.properties.State === "TX" ? abstractShape.properties : [],
         sdType: "parcel",
         shapeLabel: parcelName,
         projectName: "",
@@ -436,17 +438,28 @@ const ShapeActionsPopup = (props) => {
     popupCloseAction();
   };
 
-  const saveAndOpenUnitDetail = () => {
+  const saveAndOpenShapeDetail = (layerType, layerSubType) => {
     if (!user._id) {
       return;
     }
     let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
-    let unitInfo = ''
-    if (abstractShape?.properties?.County && abstractShape?.properties?.State) {
-      unitInfo = `${abstractShape?.properties?.County}, ${abstractShape?.properties?.State} - BLK ${abstractShape?.properties?.Block}, SEC ${abstractShape?.properties?.Section}`
+    let shapeSubtitle = ''
+    const state = abstractShape?.properties?.State || abstractShape?.properties?.StateAbbreviation
+    const section = abstractShape?.properties?.Section || abstractShape?.properties?.ShortName
+    let blockTownship = `BLK ${abstractShape?.properties?.Block}`
+    if (!abstractShape?.properties?.Block && abstractShape?.properties?.Township) {
+      blockTownship = `TOWN ${abstractShape?.properties?.Township}`
     }
-    let unitName = getParcelUnitName(abstractShape)
-
+    if (abstractShape?.properties?.County && state) {
+      if (layerType === 'unit') shapeSubtitle = `${abstractShape?.properties?.County}, ${state} - ${blockTownship}, SEC ${section}`
+      if (layerType === 'agreement') shapeSubtitle = `${abstractShape?.properties?.County}, ${state}`
+    }
+    let shapeName = getParcelAndShapeName(abstractShape)
+    let properties = {}
+    if (layerType === 'unit')
+      properties = { uName: shapeName, uNumber: "", uType: "", uOperator: "", uStatus: "" }
+    if (layerType === 'agreement')
+      properties = { agreementName: shapeName, agreementType: layerSubType }
     const featureId = hat();
     const newShapeFeature = {
       id: featureId,
@@ -454,28 +467,22 @@ const ShapeActionsPopup = (props) => {
       geometry: abstractShape.geometry,
       properties: {
         originalProperties: abstractShape.properties,
-        unitInfo,
-        type: "unit",
-        shapeLabel: unitName,
-        uNumber: "",
-        uName: unitName,
-        uType: "",
-        uOperator: "",
-        uStatus: "",
-        uFieldName: "",
-        sdNotes: "",
-        sdGrossAcres: "",
+        shapeSubtitle,
+        type: layerType,
+        layerType,
+        layerSubType,
+        shapeLabel: shapeName,
+        ...properties,
         shapeArea: calculateLandArea(abstractShape),
         shapeCenter: calculateShapeCenter(abstractShape.geometry.coordinates),
-        shapeLabelLayer: "",
         id: featureId,
       },
     };
     const customLayerData = {
       shapeJson: newShapeFeature,
       shape: JSON.stringify(newShapeFeature),
-      layer: "unit",
-      name: unitName,
+      layer: layerSubType || layerType,
+      name: shapeName,
       user: user._id,
     };
 
@@ -551,13 +558,35 @@ const ShapeActionsPopup = (props) => {
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
     });
-    // setSelectedAction("");
-    // stateApp.draw.changeMode("static");
-    // setStateApp((state) => ({ ...state, shapeEdit: false, editDraw: false }));
     setTimeout(() => popupCloseAction(), 0);
   };
 
-  const enableEditOnly = stateApp.currentFeature?.layer?.id === "parcel" || stateApp.currentFeature?.layer?.id === "unit";
+  const confirmShapeEditing = () => {
+    let { featureToEdit, currentFeature } = stateApp;
+    const shapeJson = {
+      ...currentFeature,
+      shapeArea: calculateLandArea(currentFeature),
+      shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates),
+    }
+    const customLayerData = {
+      shapeJson,
+      shape: JSON.stringify(shapeJson),
+      layer: featureToEdit.layer.id,
+      user: stateApp.user.mongoId,
+    };
+    addCustomShapeProperties(currentFeature, stateApp.draw);
+    updateCustomLayer({
+      variables: {
+        customLayerId: featureToEdit.id,
+        customLayer: customLayerData,
+      },
+      refetchQueries: ["getCustomLayers"],
+      awaitRefetchQueries: true,
+    });
+    setTimeout(() => popupCloseAction(), 0);
+  };
+
+  const enableEditOnly = stateApp.featureToEdit?.layer?.id === "parcel" || shapeTypeLayers.includes(stateApp.featureToEdit?.layer?.id)
   const isAoi = stateApp.selectedAoi?.layer?.id === "interest";
   const isCreateParcelMenu = Boolean(anchorEl);
 
@@ -574,9 +603,36 @@ const ShapeActionsPopup = (props) => {
         className={classes.parcelPopover}
       >
         <MenuItem disabled>Shape Layer Type</MenuItem>
-        <MenuItem onClick={saveAndOpenParcelDetail}>Ownership</MenuItem>
-        <MenuItem onClick={saveAndOpenUnitDetail}>Unit Boundary</MenuItem>
-        <MenuItem>Agreement</MenuItem>
+        <MenuItem onClick={(event) => setAgreementAnchorEl(event.currentTarget)} >Agreement</MenuItem>
+        <MenuItem onClick={saveAndOpenParcelDetail}>Tract</MenuItem>
+        <MenuItem onClick={() => saveAndOpenShapeDetail('unit')}>Unit Boundary</MenuItem>
+
+        <Menu
+          id="simple-menu"
+          elevation={0}
+          getContentAnchorEl={null}
+          anchorEl={agreementAnchorEl}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right"
+          }}
+          PaperProps={{
+            style: {
+              left: '10%',
+              transform: 'translateX(105%) translateY(-10%)',
+            }
+          }}
+          open={Boolean(agreementAnchorEl)}
+          onClose={() => setAgreementAnchorEl(null)}
+          className={classes.parcelPopover}
+        >
+          <MenuItem disabled>Agreement Type</MenuItem>
+          <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'contract')}>Contract</MenuItem>
+          <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'deed')}>Deed</MenuItem>
+          <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'lease')}>Lease</MenuItem>
+          <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'surface')}>Surface/Row</MenuItem>
+        </Menu>
+
       </Menu>
       <Fragment>
         <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span> {calculateLandArea()}
@@ -593,7 +649,7 @@ const ShapeActionsPopup = (props) => {
           </Tooltip>
 
           {/* {stateApp.isAbstractedLayersPolygon && ( */}
-          <Tooltip title="Create Parcel" className={enableEditOnly && classes.disableAction}>
+          <Tooltip title="Add Shape to Layer" className={enableEditOnly && classes.disableAction}>
             <IconButton
               size="small"
               disabled={enableEditOnly}
@@ -614,8 +670,24 @@ const ShapeActionsPopup = (props) => {
               <GpxFixedIcon />
             </IconButton>
           </Tooltip>
-
           <span className={classes.divider}></span>
+
+          {
+            stateApp.currentFeature && <Tooltip title="Change Change" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
+              <IconButton size="small" aria-label="Change Change" onClick={() => {
+                stateApp.draw.changeMode('static');
+                setStateApp((state) => ({
+                  ...state,
+                  changeDrawShapeType: true,
+                }));
+              }}>
+                <DrawPoly className={stateApp.shapeEdit ? "selected" : ""} />
+              </IconButton>
+            </Tooltip>
+          }
+
+
+
           <Tooltip title="Edit Active Shape" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
             <IconButton size="small" aria-label="Edit Active Shape" onClick={actionEdit}>
               <EditIcon className={stateApp.shapeEdit ? "selected" : ""} />
@@ -642,6 +714,15 @@ const ShapeActionsPopup = (props) => {
             <span className={classes.multiSelectCheck}>
               <Tooltip title="Confirm Editing">
                 <IconButton size="small" aria-label="Set Boundary" onClick={confirmEditing}>
+                  <CheckCircle />
+                </IconButton>
+              </Tooltip>
+            </span>
+          )}
+          {selectedAction === "edit-shape" && (
+            <span className={classes.multiSelectCheck}>
+              <Tooltip title="Confirm Editing">
+                <IconButton size="small" aria-label="Set Boundary" onClick={confirmShapeEditing}>
                   <CheckCircle />
                 </IconButton>
               </Tooltip>

@@ -82,7 +82,6 @@ const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur
                     </Grid>
                 );
             }}
-            // onInputChange={onInputChange}
             filterOptions={(options, params) => {
                 const inputValue = params.inputValue
                 const filtered = createFilterOptions()(options, { ...params, inputValue });
@@ -96,15 +95,10 @@ const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur
                         _id: "newEntity",
                     });
                 }
-                console.log('Filtered', filtered)
                 return filtered;
             }}
             onChange={(event, newValue) => {
                 onChange(event, newValue);
-                // if (newValue && newValue._id) {
-                //     if (newValue._id !== "newEntity") setType(newValue);
-                //     else setType({ _id: "newEntity", name: newValue.name });
-                // } else setType("");
             }}
             renderInput={(params) => (
                 <TextField

@@ -11,6 +11,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
+import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 import { Grid } from "@material-ui/core";
 import get from "lodash/get";
@@ -88,11 +89,11 @@ const useStyles = makeStyles((theme) => ({
   },
   baseValueChanged: {
     width: "100%",
-    '& .MuiInputBase-input': {
-      color: 'dodgerblue',
-      fontWeight: 'bold'
-    }
-  }
+    "& .MuiInputBase-input": {
+      color: "dodgerblue",
+      fontWeight: "bold",
+    },
+  },
 }));
 
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
@@ -178,13 +179,10 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   // CONTACT
 
-  const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-      nextFetchPolicy: "cache-first",
-    }
-  );
+  const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+  });
 
   const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 
@@ -338,7 +336,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   const calculateNetAcres = (interest) => {
     if (!interest) return null;
-    const netAcres = addTrailingZeros(stateApp.selectedParcel.sdGrossAcres ? (stateApp.selectedParcel.sdGrossAcres * interest).toFixed(8) : null);
+    const netAcres = addTrailingZeros(
+      stateApp.selectedParcel.sdGrossAcres ? (stateApp.selectedParcel.sdGrossAcres * interest).toFixed(8) : null
+    );
     return netAcres;
   };
 
@@ -356,14 +356,14 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     if (stateUpdate) {
       setChangedKeys({ ...changedKeys, netAcres: isChanged });
     } else return isChanged;
-  }
+  };
   const isNRAChanged = (nra, stateUpdate = true) => {
     let calculatedNRA = calculateNRA(newOwner.royalty_interest, newOwner.orri);
-    if (nra === 'NaN') nra = null;
+    if (nra === "NaN") nra = null;
     if (stateUpdate) {
       setChangedKeys({ ...changedKeys, nra: calculatedNRA !== nra });
     } else return calculatedNRA !== nra;
-  }
+  };
 
   const classes = useStyles();
   const modalClass = Modals();
@@ -371,9 +371,11 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     <div className={classes.move}>
       <React.Fragment>
         <RightDialog open={true} handleClickDialogClose={props.onClose} width={"450px"}>
-          <DialogTitle id="customized-dialog-title" style={{ fontWeight: "bold" }}>
-            {selectedRow ? "Update" : "Add"} Parcel Ownership
-            {selectedRow && (
+          <Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
+            <Grid item md={10} xs={10}>
+              <DialogTitle id="customized-dialog-title" style={{ fontWeight: "bold" }}>
+                {selectedRow ? "Update" : "Add"} Parcel Ownership
+                {/* {selectedRow && (
               <IconButton
                 style={{ float: "right", marginRight: "5px" }}
                 onClick={() => {
@@ -385,8 +387,24 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               >
                 <DeleteIcon fontSize="small" />
               </IconButton>
-            )}
-          </DialogTitle>
+            )} */}
+              </DialogTitle>
+            </Grid>
+            <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
+              <IconButton
+                size="small"
+                component="span"
+                style={{
+                  background: "transparent",
+                  align: "center",
+                  float: "right",
+                }}
+                onClick={props.onClose}
+              >
+                <KeyboardTabBlackIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
           <DialogContent className={classes.dialogContent}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -449,7 +467,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       ...newOwner,
                       mineral_interest: value ? addTrailingZeros(value) : null,
                       net_acres: calculateNetAcres(value),
-                      nra: calculateNRA(newOwner.royalty_interest, newOwner.orri, value)
+                      nra: calculateNRA(newOwner.royalty_interest, newOwner.orri, value),
                     });
                   }}
                   onWheel={(e) => e.target.blur()}
@@ -467,7 +485,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     setNewOwner({
                       ...newOwner,
                       royalty_interest: value ? addTrailingZeros(e.target.value) : null,
-                      nra: calculateNRA(value, newOwner.orri)
+                      nra: calculateNRA(value, newOwner.orri),
                     });
                   }}
                   onWheel={(e) => e.target.blur()}
@@ -485,7 +503,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     setNewOwner({
                       ...newOwner,
                       orri: value ? addTrailingZeros(e.target.value) : null,
-                      nra: calculateNRA(value, newOwner.royalty_interest)
+                      nra: calculateNRA(value, newOwner.royalty_interest),
                     });
                   }}
                   onWheel={(e) => e.target.blur()}
@@ -583,7 +601,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                               const netAcres = calculateNetAcres(newOwner.mineral_interest);
                               setNewOwner({
                                 ...newOwner,
-                                net_acres: netAcres
+                                net_acres: netAcres,
                               });
                             }}
                           >
@@ -621,7 +639,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                               const nra = calculateNRA(newOwner.royalty_interest, newOwner.orri);
                               setNewOwner({
                                 ...newOwner,
-                                nra
+                                nra,
                               });
                             }}
                           >

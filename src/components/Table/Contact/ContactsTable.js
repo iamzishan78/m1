@@ -1,27 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Container,
-  Breadcrumbs,
-  Typography,
-  IconButton,
-} from "@material-ui/core";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import get from "lodash/get";
-import { Menu, MenuItem } from "@material-ui/core";
+import { Container } from "@material-ui/core";
+
+import moment from "moment";
 
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
 import Contact from "components/Shared/svgIcons/contact";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
-import { AutoCompleteFilter } from "../AutoCompleteFilter";
+
 import Loader from "components/Loaders";
 import GridView from "components/Shared/GridView";
+import { HeaderComponent } from 'components/Table/helpers'
+import { handleSelectedGridChange, setColumnsData } from 'components/Table/helpers'
 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
-import { GET_ES_CONTACTS_FILTER } from "graphQL/useQueryESContactsFilter";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { REMOVE_CONTACTS } from "graphQL/useMutationRemoveContact";
 import { GET_ES_CONTACTS } from "graphQL/useQueryESContacts";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
@@ -54,16 +49,19 @@ const useStyles = makeStyles((theme) => ({
 
 function ContactsTable(props) {
   const classes = useStyles();
+  const defaultView = {
+    name: "All Contacts",
+    type: 'Default'
+  }
 
   // function states
   const selectedFilters = useRef([]);
+  const tableRef = useRef();
   const [filters, setFilters] = useState([]);
   const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
-  const [selectedGridView, setSelectedGridView] = useState({
-    name: "All Contacts",
-  });
+  const [selectedGridView, setSelectedGridView] = useState(defaultView);
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
@@ -104,20 +102,6 @@ function ContactsTable(props) {
     });
   }, [getESContacts, props.parent, props.contactSearchQuery, selectedGridView]);
 
-  const getContactsAddress = (contact) => {
-    let address = "https://www.google.com/maps/search/";
-    if (contact.address1)
-      address = `${address}${contact.address1.replace(/ /g, "+")}`;
-    if (contact.city)
-      address = `${address},+${contact.city.replace(/ /g, "+")}`;
-    if (contact.state) address = `${address},+${contact.state}`;
-    if (contact.zip) address = `${address}+${contact.zip}`;
-    return {
-      ...contact,
-      fullContactAddress: address,
-    };
-  };
-
   useEffect(() => {
     if (tableData?.hits) {
       const objectsIdsArray = tableData.hits.map((contact) => contact._id);
@@ -151,7 +135,7 @@ function ContactsTable(props) {
         return hit;
       });
       props.setRows(JSON.parse(JSON.stringify(hits)));
-      setColumnsData(JSON.parse(JSON.stringify(columns)));
+      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
       props.setLoading(false);
     } else if (tableData?.length === 0) {
       props.setLoading(false);
@@ -159,94 +143,10 @@ function ContactsTable(props) {
   }, [ContactsData, tableData, props.dependencyUpdate]);
 
   useEffect(() => {
-    if (selectedGridView?.filters) {
-      columns.forEach((column, index) => {
-        setColumnDisplayAndFilter(column);
-        const value = get(
-          selectedGridView?.filters?.find((filter) => {
-            return (
-              JSON.stringify(filter.field) === JSON.stringify(column.esKey)
-            );
-          }),
-          "value",
-          ""
-        );
-        let filterList = [];
-        if (value) {
-          filterList = [value];
-        }
-        if (column?.options?.filter) {
-          column.options.filterList = filterList;
-        }
-      });
-    } else {
-      columns.forEach((column, index) => {
-        setColumnDisplayAndFilter(column);
-        if (column.options) {
-          column.options.filterList = [];
-        }
-      });
-    }
-    setColumnsData(JSON.parse(JSON.stringify(columns)))
+    tableRef.current.changePage(0)
+    const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns)
+    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
   }, [selectedGridView]);
-
-  const setColumnDisplayAndFilter = (column) => {
-    if (selectedGridView?.columns) {
-      if (selectedGridView.columns.includes(column.name)) {
-        column.options.display = true;
-        if (column.esKey && !column.noFilter) {
-          column.options.filter = true;
-        }
-      } else {
-        column.options.display = false;
-        column.options.filter = false;
-      }
-    }else{
-      if(TableHeader.find(col => col.name === column.name).options.display !== false) {
-        column.options.display = true;
-        if (column.esKey && !column.noFilter) {
-          column.options.filter = true;
-        }
-      }else{
-        column.options.display = false;
-        column.options.filter = false;
-      }
-    }
-  }
-
-
-  const setColumnsData = (columns) => {
-    columns.forEach((column, index) => {
-      if (column?.options?.filter) {
-        column.options = {
-          ...column.options,
-          filter: true,
-          filterType: "custom",
-          filterList: filters[index],
-          filterOptions: {
-            display: (filterList, onChange, index, column) => {
-              column.filterKey = TableHeader.find(
-                (el) => el.name === column.name
-              )?.esKey;
-              return (
-                <AutoCompleteFilter
-                  filterList={filterList}
-                  column={column}
-                  index={index}
-                  onChange={onChange}
-                  query={GET_ES_CONTACTS_FILTER}
-                />
-              );
-            },
-          },
-          onFilterChange: (columnChanged, filterList) => {
-            setFilters(filterList);
-          },
-        };
-      }
-    });
-    setColumns(columns);
-  };
 
   const count = tableData?.total || 0;
   const options = {
@@ -257,6 +157,21 @@ function ContactsTable(props) {
     filter: true,
     searchText: props.contactSearchQuery,
   };
+
+  const getContactsAddress = (contact) => {
+    let address = "https://www.google.com/maps/search/";
+    if (contact.address1)
+      address = `${address}${contact.address1.replace(/ /g, "+")}`;
+    if (contact.city)
+      address = `${address},+${contact.city.replace(/ /g, "+")}`;
+    if (contact.state) address = `${address},+${contact.state}`;
+    if (contact.zip) address = `${address}+${contact.zip}`;
+    return {
+      ...contact,
+      fullContactAddress: address,
+    };
+  };
+
 
   const viewColumnsChange = (tableColumns) => {
     for (let i = 0; i < tableColumns.length; i++) {
@@ -269,7 +184,7 @@ function ContactsTable(props) {
         columns[i].options.display = false;
       }
     }
-    setColumnsData(JSON.parse(JSON.stringify(columns)));
+    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
   };
   ////////////-----Add your code section here-----///////////////////////
   const onTableChange = (action, tableState, rows, meta) => {
@@ -291,7 +206,9 @@ function ContactsTable(props) {
         tableActions.genericESAction();
         break;
       case "changePage":
-        tableActions.changeESPage();
+        if (tableData) {
+          tableActions.changeESPage();
+        }
         break;
       case "viewColumnsChange":
         viewColumnsChange(tableState.columns);
@@ -327,15 +244,32 @@ function ContactsTable(props) {
             );
         },
         (err) => {
-          console.log(err);
           Loader.errorToast("contact-deletion", "Failed to convert to contact");
         }
       );
     }
   };
 
+  const handleDefaultView = (view, user) => {
+    if (view.name === "My Contacts") {
+      view.filters[0].value = user.name;
+    }
+    if (
+      view.name === "Recently Modified" ||
+      view.name === "Recently Added"
+    ) {
+      view.filters[0].value.range[view.filters[0].field].gte =
+        moment().subtract(30, "days").toISOString();
+      view.filters[0].value.range[view.filters[0].field].lte =
+        moment().toISOString();
+    }
+    return view;
+  }
+
   const headerProps = {
     columns,
+    Icon: Contact,
+    label: 'Contacts',
     showViewModal,
     setShowSaveAsNew,
     setShowViewModal,
@@ -353,7 +287,9 @@ function ContactsTable(props) {
       >
         {showViewModal && (
           <GridView
+            module="Contacts"
             columns={columns}
+            handleDefaultView={handleDefaultView}
             handleClose={() => setShowViewModal(false)}
             setSelectedGridView={setSelectedGridView}
             selectedGridView={selectedGridView}
@@ -364,6 +300,7 @@ function ContactsTable(props) {
           />
         )}
         <Table
+          tableRef={tableRef}
           style={{ backgroundColor: "#fff" }}
           header={header}
           headerComponent={HeaderComponent}
@@ -390,120 +327,4 @@ function ContactsTable(props) {
   );
 }
 
-const HeaderComponent = ({
-  selectedGridView,
-  setShowViewModal,
-  showViewModal,
-  setShowSaveAsNew,
-  selectedFilters,
-  updateGridView,
-  columns,
-}) => {
-  const [showIcon, setShowIcon] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  return (
-    <div
-      style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
-    >
-      <IconButton onClick={() => setShowViewModal(!showViewModal)}>
-        <Contact />
-      </IconButton>
-
-      <Breadcrumbs
-        separator={<NavigateNextIcon fontSize="small" />}
-        aria-label="breadcrumb"
-      >
-        <Typography
-          style={{
-            marginLeft: "10px",
-            fontSize: "16px",
-          }}
-          color="inherit"
-        >
-          Contacts
-        </Typography>
-        <div>
-          <div
-            style={{
-              display: "flex",
-              color: "#18AADD",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            onClick={(event) => handleClick(event)}
-            onMouseOver={() => setShowIcon(true)}
-            onMouseLeave={() => setShowIcon(false)}
-          >
-            <Typography>
-              <span>{selectedGridView.name}</span>
-            </Typography>
-            <span
-              style={{
-                height: "0px",
-                color: "#18AADD",
-                fontSize: "16px",
-                cursor: "pointer",
-              }}
-            >
-              {showIcon && <ExpandMoreIcon />}
-            </span>
-          </div>
-          <Menu
-            style={{ zIndex: "1305" }}
-            id="menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            getContentAnchorEl={null}
-            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-            transformOrigin={{ vertical: "top", horizontal: "center" }}
-          >
-            <MenuItem
-              style={{ width: "250px" }}
-              onClick={() => {
-                handleClose();
-                updateGridView({
-                  variables: {
-                    gridView: {
-                      _id: selectedGridView._id,
-                      filters: selectedFilters,
-                      columns: columns
-                        .filter((col) => col.options.display)
-                        .map((col) => col.name),
-                    },
-                  },
-                });
-              }}
-              disabled={
-                selectedGridView.type === "Default" ||
-                selectedGridView.name === "All Contacts"
-              }
-            >
-              Update view
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleClose();
-                setShowViewModal(true);
-                setShowSaveAsNew(true);
-              }}
-            >
-              Save as new view
-            </MenuItem>
-          </Menu>
-        </div>
-      </Breadcrumbs>
-    </div>
-  );
-};
 export default React.memo(TableHOC(ContactsTable), deepEqualObjects);

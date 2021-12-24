@@ -16,6 +16,7 @@ const AppProvider = (props) => {
     baseMapLayers: baseMapLayers, // move to a map context -- will be changed with mepler anyways
     heatLayers: heatLayers, // move to a map context -- will be changed with mepler anyways
     apolloClientEndpoint: "",
+    apolloClientFetchOptions: null,
     graphqlScope: null, /// potentially login context?
     user: null, /// potenitally login context or maybe a specific user context??
     signUpUserType: null, /// potenitally login context or maybe a specific user context??
@@ -142,10 +143,15 @@ const AppProvider = (props) => {
     contactSearchQuery: "",
     documentSearchQuery: "",
     isContactSearching: false,
+    landSearchQuery: "",
+    isLandSearching: false,
     viewDoc: null,
     pdfView: null,
     selectedAgreement: null,
     bulkUpload: false,
+    selectedMeta: null,
+    selectedView: null,
+    revenueSearchQuery: "",
 
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
@@ -188,7 +194,7 @@ const AppProvider = (props) => {
       if (tenantName) {
         let tenant = tenantsCredentials(tenantName);
         tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
-        tenant.apolloClientEndpoint = isDev ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
+        tenant.apolloClientEndpoint = isDev && tenantName === "localhost" ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
         let myMSALObjInt = MSALObj(tenant);
         setStateApp((state, props) => {
           return {
@@ -272,10 +278,11 @@ const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
 const isDev = process.env.NODE_ENV === "development";
 
 const setApolloHeaders = (config, authToken, idToken) => {
+  if (!config) config = {};
   if (!config.headers) config.headers = {};
   config.headers["X-ZUMO-AUTH"] = authToken;
   if (isDev) config.headers["X-MS-TOKEN-AAD-ID-TOKEN"] = idToken;
   return config;
 };
 
-export { AppContext, AppProvider, apolloClientEndpointDev, isDev, setApolloHeaders };
+export { AppContext, AppProvider, setApolloHeaders };

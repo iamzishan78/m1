@@ -32,11 +32,8 @@ const UeGridWells = (
 
   useEffect(() => {
     if (dataShapeWells && dataShapeWells.getShapeWells) {
-      console.log("ue mintable 27"); // TODO
       if (dataShapeWells.getShapeWells.length !== 0) {
-        console.log("dataShapeWells.getShapeWells", dataShapeWells.getShapeWells);
         const shapeWellIdArray = dataShapeWells.getShapeWells.map(a => a.Id);
-        console.log("shapeWellIdArray", shapeWellIdArray);
 
         getWells({
           variables: {
@@ -65,7 +62,6 @@ const UeGridWells = (
   /*useEffect(() => {
     if (dataWells?.wells)
       if (props.parent && props.parent === "gridWells" && dataWells) {
-        console.log("ue mintable 28");
         if (
           dataWells.wells &&
           dataWells.wells.results &&
@@ -199,7 +195,7 @@ const UeGridWells = (
       }
   }, [dataWells, dataTagSamples, dataCommentsCounter]);*/
   ////////////Grid Wells end///////////////////////////////////////////////
-  
+
   return {
     columns,
     rows,

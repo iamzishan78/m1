@@ -408,17 +408,16 @@ export default function ContactDetailCard(props) {
     }
   }, [contactPurchaseData]);
 
-  useEffect(()=>{
-    console.log('history.location.pathname',history)
-    if(history.location.search.includes("/contact/details")){
-      const id = history.location.search.split('?return-url=/contact/details/')[1].split('/')[0]
+  useEffect(() => {
+    if (history.location.search.includes("/contact/details")) {
+      const id = history.location.search.split("?return-url=/contact/details/")[1].split("/")[0];
       getSecondContact({
         variables: {
           contactId: id,
         },
       });
     }
-  },[]);
+  }, []);
 
   useEffect(() => {
     if (data && data.contact) {
@@ -480,7 +479,7 @@ export default function ContactDetailCard(props) {
     return contact.name || `${get(contact, "firstName", "")} ${get(contact, "lastName", "")}`;
   };
   return contactData ? (
-    <>
+    <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)", overflow: "scroll" }}>
       <div className={classes.header}>
         <div
           style={{
@@ -491,7 +490,7 @@ export default function ContactDetailCard(props) {
           }}
         >
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-            {isPrevUrlFlowline && get(secondContact,'contact.name', '') && (
+            {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
               <Link
                 style={{
                   marginLeft: "5px",
@@ -504,7 +503,7 @@ export default function ContactDetailCard(props) {
                 Contacts
               </Link>
             )}
-            {isPrevUrlFlowline && get(secondContact,'contact.name', '') && (
+            {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
               <Link
                 style={{
                   marginLeft: "5px",
@@ -513,17 +512,17 @@ export default function ContactDetailCard(props) {
                 }}
                 color="inherit"
                 onClick={() => {
-                  history.push(`/contact/details/${get(secondContact,'contact._id', '')}`);
+                  history.push(`/contact/details/${get(secondContact, "contact._id", "")}`);
                   setStateApp((stateApp) => ({
                     ...stateApp,
-                    selectedContact: get(secondContact,'contact._id', ''),
+                    selectedContact: get(secondContact, "contact._id", ""),
                   }));
                 }}
               >
                 {getName(secondContact.contact)}
               </Link>
             )}
-            {isPrevUrlFlowline && get(secondContact,'contact.name', '') && (
+            {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
               <Link
                 style={{
                   marginLeft: "5px",
@@ -532,13 +531,13 @@ export default function ContactDetailCard(props) {
                 }}
                 color="inherit"
                 onClick={() => {
-                  history.push(history.location.search.split('?return-url=')[1]);
+                  history.push(history.location.search.split("?return-url=")[1]);
                 }}
               >
                 Deals
               </Link>
             )}
-             {isPrevUrlFlowline && get(secondContact,'contact.name', '') && (
+            {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
               <Link
                 style={{
                   marginLeft: "5px",
@@ -546,7 +545,7 @@ export default function ContactDetailCard(props) {
                   cursor: "pointer",
                 }}
                 color="inherit"
-                onClick={() => history.push(history.location.search.split('?return-url=')[1])}
+                onClick={() => history.push(history.location.search.split("?return-url=")[1])}
               >
                 {truncate(stateApp.activeDeal.name, 30)}
               </Link>
@@ -574,7 +573,7 @@ export default function ContactDetailCard(props) {
                 color="inherit"
                 onClick={() => history.push(`/flow/${selectedPipe?._id}`)}
               >
-                {truncate(get(selectedPipe,'name',''), 30)}
+                {truncate(get(selectedPipe, "name", ""), 30)}
               </Link>
             )}
             {isPrevUrlFlowline && selectedPipe && (
@@ -732,9 +731,8 @@ export default function ContactDetailCard(props) {
                         <span className={classes.socialMediaSection}>
                           {contactData.facebook && (
                             <a
-                              href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${
-                                contactData.facebook
-                              }`}
+                              href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${contactData.facebook
+                                }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -743,9 +741,8 @@ export default function ContactDetailCard(props) {
                           )}
                           {contactData.twitter && (
                             <a
-                              href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${
-                                contactData.twitter
-                              }`}
+                              href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${contactData.twitter
+                                }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -754,9 +751,8 @@ export default function ContactDetailCard(props) {
                           )}
                           {contactData.linkedIn && (
                             <a
-                              href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${
-                                contactData.linkedIn
-                              }`}
+                              href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${contactData.linkedIn
+                                }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -962,7 +958,6 @@ export default function ContactDetailCard(props) {
               </Grid>
 
               <Grid item xs={12} className={classes.Comments}>
-                {/* <DocViewer DocStyle={{top:'56% ', left:'40% ', backgroundColor:'white !important',transform: `translate(2.5%, -104.2%)`, width:'1320px',height:'816px'}}></DocViewer> */}
                 <Documents handleOpenExpandableCard={handleOpenExpandableCard} id={contactData._id} user_id={stateApp.user.email} />
                 <Divider />
               </Grid>
@@ -976,7 +971,7 @@ export default function ContactDetailCard(props) {
               header="Contact Data Integration"
               onClose={handleCloseDialog}
               rows={[contactData]}
-              setRows={() => {}}
+              setRows={() => { }}
               updateMelissaTable={() => {
                 getLastMelissaRecord({
                   variables: {
@@ -1090,7 +1085,7 @@ export default function ContactDetailCard(props) {
           </Dialog>
         )}
       </div>
-    </>
+    </div>
   ) : (
     <div
       style={{

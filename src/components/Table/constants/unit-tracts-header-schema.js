@@ -4,16 +4,16 @@ const UnitTractHeadCells = [
     name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
   },
   {
-    name: "state", label: "State", esKey: 'state.keyword', options: { sort: true, filter: true }
+    name: "state", label: "State", esKey: 'state.keyword', options: { sort: true, filter: true }, style: { maxWidth: 70 }
   },
   {
     name: "county", label: "County", esKey: 'county.keyword', options: { sort: true, filter: true }
   },
   {
-    name: "meridian", label: "Meridian", esKey: 'meridian.keyword', options: { sort: true, filter: true }
+    name: "name", label: "Tract Name", esKey: 'name.keyword', options: { sort: true, filter: true }, style: { minWidth: 200, maxWidth: 300 }
   },
   {
-    name: "name", label: "Tract Name", esKey: 'name.keyword', options: { sort: true, filter: true }
+    name: "meridian", label: "Meridian", esKey: 'meridian.keyword', options: { sort: true, filter: true }
   },
   {
     name: "township", label: "Township", esKey: 'township.keyword', options: { sort: true, filter: true }

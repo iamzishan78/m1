@@ -26,7 +26,7 @@ export const TabPanel = (props) => {
       )}
     </Typography>
   );
-}
+};
 
 TabPanel.propTypes = {
   children: PropTypes.node,
@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
   },
   WellsDetailsCardAppBar: {
+    zIndex: 99999,
     backgroundColor: (props) => (props.white ? "#FFFFFF" : "#7a7d82"),
     color: (props) => (props.white ? "rgb(1,17,51)" : "#FFFFFF"),
   },
@@ -65,8 +66,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-const StyledTabs = withStyles(theme => ({
+const StyledTabs = withStyles((theme) => ({
   indicator: {
     display: "flex",
     justifyContent: "center",
@@ -75,9 +75,9 @@ const StyledTabs = withStyles(theme => ({
       maxWidth: 80,
       width: "100%",
       backgroundColor: "#33b4e0",
-    }
-  }
-}))(props => <Tabs {...props} TabIndicatorProps={{ children: <div /> }} />);
+    },
+  },
+}))((props) => <Tabs {...props} TabIndicatorProps={{ children: <div /> }} />);
 
 export default function Taps(props) {
   const classes = useStyles(props);
@@ -99,18 +99,14 @@ export default function Taps(props) {
   return (
     <div
       style={{
-        backgroundColor: props.backgroundColor
-          ? props.backgroundColor
-          : "#efefef",
+        backgroundColor: props.backgroundColor ? props.backgroundColor : "#efefef",
+        height: "calc(100vh - 230px)",
+        overflow: "overlay",
       }}
       className={classes.root}
       id="M1nTaps"
     >
-      <AppBar
-        className={classes.WellsDetailsCardAppBar}
-        position="static"
-        color="default"
-      >
+      <AppBar className={classes.WellsDetailsCardAppBar} position="static" color="default">
         <StyledTabs
           value={value}
           onChange={handleChange}

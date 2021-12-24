@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 
 import { AppContext } from "AppContext";
 
@@ -15,7 +15,6 @@ export const TableHOC = (Component) => {
     return function HOC(props) {
 
         const [rows, Rows] = useState([]);
-        const [addToTable, setAddToTable] = useState(false)
         const setRows = (newState) => { setStateIfDeepEqual(Rows, newState) };
         const [searchedRows, setSearchedRows] = useState([])
 
@@ -100,10 +99,9 @@ export const TableHOC = (Component) => {
 
         useEffect(() => {
             SetDependencyUpdate(!dependencyUpdate)
-            console.log(dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks)
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
-        const initializeGenericData = (ids, actions) => {
+        const initializeGenericData = useCallback((ids, actions) => {
             if (actions.includes("comments")) {
                 getCommentsCounter({
                     query: COMMENTSCOUNTER,
@@ -131,9 +129,18 @@ export const TableHOC = (Component) => {
                     },
                 })
             }
-        }
+        }, [stateApp?.user?.mongoId, getCommentsCounter, getTagSamples, checkIfOwnersAreContacts])
 
-        const setGenricData = (data, id, actions) => {            
+        const ifAreContacts = (ids) => {
+            checkIfOwnersAreContacts({
+                query: IFARECONTACTS,
+                variables: {
+                    idsArray: ids
+                },
+            })
+        };
+
+        const setGenricData = (data, id, actions) => {
 
             if (actions.includes('tracks')) {
                 data.isTracked = false;
@@ -167,47 +174,80 @@ export const TableHOC = (Component) => {
 
             if (actions.includes('ifAreContacts')) {
                 const ifAreContacs = checkIfOwnersAreContactsData?.ifAreContacts || []
-                for (let i = 0; i < ifAreContacs.length; i++) {
-                    if (data.id === ifAreContacs[i].globalOwner || data.globalOwnerId === ifAreContacs[i].globalOwner) {
-                        data.isContact = ifAreContacs[i].isContact;
-                        data.entity = ifAreContacs[i]._id;
-                        break;
+                if (ifAreContacs.length > 0) {
+                    const contact = ifAreContacs.find((ifc) => ifc.globalOwner === data.id || ifc.globalOwner === data.globalOwnerId)
+                    if (contact) {
+                        data.isContact = contact.isContact;
+                        data.entity = contact._id;
                     }
                 }
             }
             return data
-        };
+        }
 
-        const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView={}) => {
+        const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
             let pageESVariables = {
                 variables: {
-                    search: tableState.searchText,
+                    esIndex: tableState.esIndex,
+                    search: tableState.searchText ? `${tableState.searchText}*` : '',
                     pagination: {
                         // pit: tableData?.before_pit,
                         first: tableState.rowsPerPage,
                         after: null,
                     },
                     ...(!isEmpty(tableState.sortOrder)) && {
-                        sort:
-                            [{
-                                [columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
-                                    columns.find(el => el.name === tableState.sortOrder?.name)?.name]: {
-                                    order: tableState.sortOrder?.direction,
-                                    // unmapped_type: "null",
-                                    missing: "_last"
+                        sort: (() => {
+                            let field = columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
+                                columns.find(el => el.name === tableState.sortOrder?.name)?.name;
+                            // if (!Array.isArray(field)) field = [ field ]
+                            if (Array.isArray(field)) {
+                                return [
+                                    {
+                                        _script : {
+                                        type : "number",
+                                        script : {
+                                            lang: "painless",
+                                            source: `if (
+                                                    ${field.map(el => `doc['${el}'].isEmpty()`).join(' && ')}
+                                                ) {return 1} else {return 0}`
+                                        },
+                                        order : "asc"
+                                        }
+                                    },
+                                    {
+                                        _script: {
+                                            type: "string",
+                                            script: {
+                                                lang: "painless",
+                                                source: `${field.map(el => `if (!doc['${el}'].isEmpty()) {return doc['${el}'].value}`).join(' else ')}
+                                                    else {return ''}`
+                                            },
+                                            order: tableState.sortOrder?.direction
+                                        }
+                                    }
+                                ]
+                            } else {
+                                return {
+                                    [field]: {
+                                        order: tableState.sortOrder?.direction,
+                                        // unmapped_type: "null",
+                                        missing: "_last"
+                                    }
                                 }
-                            }]
+                            }
+                        })()
                     },
-
-                    filters: [],
+                    filters: tableState.esFilters ? [...tableState.esFilters ] : []
+                    // ...(tableState.esFilters) && { filters: [...tableState.esFilters] || [] },
                 },
             };
+            console.log("tableState", tableState);
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0) {
                     pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
                 }
             })
-            if(selectedGridView?.filters && selectedGridView.type === 'Default') {
+            if (selectedGridView?.filters && selectedGridView.type === 'Default') {
                 selectedGridView.filters.forEach(filter => {
                     pageESVariables.variables.filters.push(filter)
                 })
@@ -230,8 +270,8 @@ export const TableHOC = (Component) => {
                             pagination: {
                                 pit: tableData.pit,
                                 ...pageESVariables.variables.pagination,
-                                before: rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
-                                after: rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
+                                before: tableState.page === 0 ? null : rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
+                                after: tableState.page === 0 ? null : rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
                             },
                         },
                     });
@@ -274,6 +314,7 @@ export const TableHOC = (Component) => {
                 setRows={setRows}
                 setLoading={setLoading}
                 initializeGenericData={initializeGenericData}
+                ifAreContacts={ifAreContacts}
                 setGenricData={setGenricData}
                 dependencyUpdate={dependencyUpdate}
                 initializeTableActions={initializeTableActions}

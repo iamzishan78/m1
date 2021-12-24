@@ -39,9 +39,9 @@ export default function FilterFromGeo() {
     ) {
       let filter = ["all"];
 
-      if (stateNav.stateName) filter.push(["match", ["get", "state"], stateNav.stateName, true, false]);
+      if (stateNav.stateName?.length !== 0) filter.push(["match", ["get", "state"], stateNav.stateName, true, false]);
 
-      if (stateNav.countyName) filter.push(["match", ["get", "county"], stateNav.countyName, true, false]);
+      if (stateNav.countyName?.length !== 0) filter.push(["match", ["get", "county"], stateNav.countyName, true, false]);
 
       if (stateNav.GrId1) filter.push(["match", ["get", "grid1"], stateNav.GrId1, true, false]);
 

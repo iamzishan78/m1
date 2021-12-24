@@ -1,14 +1,12 @@
-import React, { useRef, useContext, useState, useEffect } from "react";
+import React, { useRef, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../NavigationContext";
 import FilterTags from "./FilterTags";
-import FilterTrackedOwners from "./FilterTrackedOwners";
 import FilterTrackedWells from "./FilterTrackedWells";
 import Grid from "@material-ui/core/Grid";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../../AppContext";
 import { ALLTAGGEDWELLSQUERY } from "../../../graphQL/useQueryAllTaggedWells";
-// import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
 
 const useStyles = makeStyles((theme) => ({
   gridItem: {
@@ -23,7 +21,7 @@ export default function FilterFormProduction() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  const [getAllTaggedWells, { loading, data: dataAllTaggedWells }] = useLazyQuery(ALLTAGGEDWELLSQUERY, {
+  const [getAllTaggedWells, { data: dataAllTaggedWells }] = useLazyQuery(ALLTAGGEDWELLSQUERY, {
     fetchPolicy: "cache-and-network",
   });
 
@@ -72,13 +70,6 @@ export default function FilterFormProduction() {
         <FilterTags />
       </Grid>
 
-      {/* // tracked owners commented and replaced for the next <Grid> block, as well as some css inside FilterTrackedWells component */}
-      {/* <Grid item sm={6} className={classes.gridItem}>
-        <FilterTrackedWells />
-      </Grid>
-      {/* <Grid item sm={6} className={classes.gridItem}>
-        <FilterTrackedOwners />
-      </Grid> */}
       <Grid item sm={12} className={classes.gridItem}>
         <FilterTrackedWells />
       </Grid>

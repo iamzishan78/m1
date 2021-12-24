@@ -9,6 +9,7 @@ import Drawer from "@material-ui/core/Drawer";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import PersonIcon from "@material-ui/icons/Person";
 import DescriptionIcon from "@material-ui/icons/Description";
+// import ImageOutlinedIcon from '@material-ui/icons/ImageOutlined';
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -16,6 +17,8 @@ import MenuIcon from "@material-ui/icons/Menu";
 import FlowIcon from "@material-ui/icons/Repeat";
 import ActivityIcon from "@material-ui/icons/Event";
 import SearchIcon from "@material-ui/icons/Search";
+import BarChartIcon from "@material-ui/icons/BarChart";
+import LandScapeIcon from "components/Shared/svgIcons/LandscapeBlackIcon";
 
 import { M1neralLogoNavNoAuth, useStyles } from "./Common";
 
@@ -31,7 +34,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
   const theme = useTheme();
 
   return (
-    <div>
+    <div style={{ zIndex: 1001 }}>
       <Drawer
         variant="permanent"
         anchor="left"
@@ -156,6 +159,50 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                   beta
                 </Button>
               </ListItemSecondaryAction>
+            </div>
+          </ListItem>
+
+          <ListItem
+            classes={{
+              root: classes.menuListItem,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexLand === 1}
+            onClick={(event) => {
+              handleListItemClick("/land/agreements");
+            }}
+            key="land"
+          >
+            <div className={classes.tabContent}>
+              <Tooltip title="Land" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <ListItemIcon className={classes.sideNavIcon}>
+                  <LandScapeIcon />
+                </ListItemIcon>
+              </Tooltip>
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Land" />
+            </div>
+          </ListItem>
+
+          <ListItem
+            classes={{
+              root: classes.menuListItem,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexRevenue === 1}
+            onClick={(event) => {
+              handleListItemClick("/revenue/statements");
+            }}
+            key="Revenue"
+          >
+            <div className={classes.tabContent}>
+              <Tooltip title="Revenue" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <ListItemIcon className={classes.sideNavIcon}>
+                  <BarChartIcon />
+                </ListItemIcon>
+              </Tooltip>
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Revenue" />
             </div>
           </ListItem>
           <ListItem

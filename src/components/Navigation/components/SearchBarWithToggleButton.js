@@ -7,25 +7,27 @@ import GridOnIcon from "@material-ui/icons/GridOn";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleMapGridCardAtived } from "../../../actions";
+import { toggleMapGridCardAtived } from "actions";
 import PostAddOutlinedIcon from "@material-ui/icons/PostAddOutlined";
 import { useLocation } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 
+// import SearchByTypeSelectField from "components/MapGridCard/components/SearchByTypeSelectField";
+
+
 const useStyles = makeStyles((theme) => ({
   root: {
-    "& .MuiButtonGroup-root": { width: "100%",
-    borderRadius: "25px",
-  },
+    "& .MuiButtonGroup-root": { width: "100%", borderRadius: "25px" },
     "& .MuiAutocomplete-root": {
       flexGrow: "1",
       borderRight: "1px solid rgba(0, 0, 0, 0.23)",
       borderColor: "rgba(1, 17, 51, 0.5)",
       backgroundColor: "#1c2233",
       borderRadius: "25px",
+      // position: 'relative',
 
       "&:hover": {
-        backgroundColor: fade(theme.palette.common.white, 0.25),
+        backgroundColor: "#626687",
         borderRadius: "25px",
         // borderTopRightRadius: "0",
         // borderBottomRightRadius: "0",
@@ -38,17 +40,22 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   gridOnIcon: {
-    color: "#8486af",
+    color: "#d3d3d3",
     backgroundColor: "#1c2233",
+    borderRadius: "25px",
+    marginLeft: "5px",
     "&:hover ": {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
+      backgroundColor: "#626687",
       borderRadius: "25px",
     },
   },
   selected: {
     color: "rgba(23, 170, 221, 1) !important",
+    backgroundColor: "#1c2233",
+    borderRadius: "25px",
+    marginLeft: "5px",
     "&:hover ": {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
+      backgroundColor: "#626687",
       borderRadius: "25px",
     },
   },
@@ -75,28 +82,32 @@ function GridIcon() {
 export default function SearchBarWithToggleButton() {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
+  const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
   let location = useLocation();
   return (
     <div className={classes.root}>
-      <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
-        <Search />
+      {!mapGridCardActivated && (
+        <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
 
-        {location.pathname === "/documents" ? (
-          <Tooltip title="Add Document">
-            <Button
-              className={classes.gridOnIcon}
-              onClick={() => {
-                console.log(stateApp, "Add Document");
-                setStateApp({ ...stateApp, DocumentDrawer: true });
-              }}
-            >
-              <PostAddOutlinedIcon />
-            </Button>
-          </Tooltip>
-        ) : (
-          <GridIcon />
-        )}
-      </ButtonGroup>
+          {/* <SearchByTypeSelectField/> */}
+          <Search />
+
+          {location.pathname === "/documents" ? (
+            <Tooltip title="Add Document">
+              <Button
+                className={classes.gridOnIcon}
+                onClick={() => {
+                  setStateApp({ ...stateApp, DocumentDrawer: true });
+                }}
+              >
+                <PostAddOutlinedIcon />
+              </Button>
+            </Tooltip>
+          ) : (
+            <GridIcon />
+          )}
+        </ButtonGroup>
+      )}
       {stateApp.searchLoader && (
         <CircularProgress key="loader" style={{ position: "absolute", right: "-38px", top: "8px" }} size={28} color="secondary" />
       )}

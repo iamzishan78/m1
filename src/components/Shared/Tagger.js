@@ -18,9 +18,8 @@ import Switch from "@material-ui/core/Switch";
 import ClearIcon from "@material-ui/icons/Clear";
 import "./Tagger.css";
 
-// import value formatters 
+// import value formatters
 import capitalizeFirstLetter from "../Shared/valueformatters/capitalize-first-letter.js";
-
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -48,7 +47,7 @@ const AntSwitch = withStyles((theme) => ({
     boxShadow: "none",
   },
   track: {
-    border: `1px solid ${theme.palette.grey[500]}`,
+    // border: `1px solid ${theme.palette.grey[500]}`,
     borderRadius: 16 / 2,
     opacity: 1,
     backgroundColor: theme.palette.common.white,
@@ -98,28 +97,22 @@ const useStyles = makeStyles((theme) => ({
   },
   input: {
     "& input": {
-      caretColor: ({ showPlusAddIcon }) =>
-        !showPlusAddIcon ? "" : "transparent",
+      caretColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "transparent"),
       color: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "#008ebf"),
-      backgroundColor: ({ showPlusAddIcon }) =>
-        !showPlusAddIcon ? "" : "#D5F4FF",
+      backgroundColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "#D5F4FF"),
       maxWidth: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "33px"),
       width: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "33px"),
       height: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "32px"),
       fontSize: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "25px"),
       margin: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "3px"),
-      padding: ({ showPlusAddIcon }) =>
-        !showPlusAddIcon ? "" : "0px !important",
+      padding: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "0px !important"),
       borderRadius: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "50%"),
       textAlign: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "center"),
       cursor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "pointer"),
       "&:hover": {
         boxShadow: ({ showPlusAddIcon }) =>
-          !showPlusAddIcon
-            ? ""
-            : "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
-        backgroundColor: ({ showPlusAddIcon }) =>
-          !showPlusAddIcon ? "" : "rgba(0, 0, 0, 0.08)",
+          !showPlusAddIcon ? "" : "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
+        backgroundColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "rgba(0, 0, 0, 0.08)"),
       },
       transition: ({ showPlusAddIcon }) =>
         !showPlusAddIcon
@@ -146,24 +139,15 @@ export default function Tags(props) {
 
   const classes = useStyles({ ...props, showPlusAddIcon: showPlusAddIcon() });
 
-  const [getTagsByObjectId, { data: dataTags }] = useLazyQuery(
-    TAGSBYOBJECTIDQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
-  const [getTagsByObjectsIds, { data: dataTagsMultiIds }] = useLazyQuery(
-    TAGSBYOBJECTSIDS,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
-  const [getUserAvailableTags, { data: dataUserAvailableTags }] = useLazyQuery(
-    USERAVAILABLETAGSQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+  const [getTagsByObjectId, { data: dataTags }] = useLazyQuery(TAGSBYOBJECTIDQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
+  const [getTagsByObjectsIds, { data: dataTagsMultiIds }] = useLazyQuery(TAGSBYOBJECTSIDS, {
+    fetchPolicy: "cache-and-network",
+  });
+  const [getUserAvailableTags, { data: dataUserAvailableTags }] = useLazyQuery(USERAVAILABLETAGSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
   const [upsertTag, { data: upsertedTag }] = useMutation(UPSERTTAG);
   const [removeTag] = useMutation(REMOVETAG);
 
@@ -189,15 +173,15 @@ export default function Tags(props) {
   }, [props.targetSourceId, props.multipleIds]);
 
   useEffect(() => {
-    if(upsertedTag?.upsertTag?.tag && props.targetSourceId === 'new'){
+    if (upsertedTag?.upsertTag?.tag && props.targetSourceId === "new") {
       const tags = JSON.parse(JSON.stringify(tagsArray));
       tags.push(upsertedTag.upsertTag.tag);
       setTagsArray(tags);
-      if(props.setTagId){
-        props.setTagId(upsertedTag.upsertTag.tag._id)
+      if (props.setTagId) {
+        props.setTagId(upsertedTag.upsertTag.tag._id);
       }
     }
-  },[upsertedTag])
+  }, [upsertedTag]);
 
   useEffect(() => {
     if (dataTags && dataTags.tagsByObjectId) {
@@ -220,14 +204,11 @@ export default function Tags(props) {
         const element = dataTagsMultiIds.tagsByObjectsIds[i];
         if (
           element.taggedOn.length === props.multipleIds.length &&
-          element.public.filter((v) => v === publicTag).length ===
-          props.multipleIds.length
+          element.public.filter((v) => v === publicTag).length === props.multipleIds.length
         ) {
           tags.push({
             ...element,
-            user: checkIfUserMatch(element.user)
-              ? checkIfUserMatch(element.user)
-              : { name: "", email: "" },
+            user: checkIfUserMatch(element.user) ? checkIfUserMatch(element.user) : { name: "", email: "" },
             public: publicTag,
           });
         }
@@ -250,11 +231,7 @@ export default function Tags(props) {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (
-      dataUserAvailableTags &&
-      dataUserAvailableTags.userAvailableTags &&
-      tagsArray
-    ) {
+    if (dataUserAvailableTags && dataUserAvailableTags.userAvailableTags && tagsArray) {
       let defaultTags = [
         "High Cash Flow",
         "Interested Seller",
@@ -271,23 +248,14 @@ export default function Tags(props) {
             found = true;
           }
         });
-        return (
-          found ||
-          dataUserAvailableTags.userAvailableTags.indexOf(defaultTag) === -1
-        );
+        return found || dataUserAvailableTags.userAvailableTags.indexOf(defaultTag) === -1;
       });
 
-      setUserAvailableTagsArray([
-        ...defaultTags,
-        ...dataUserAvailableTags.userAvailableTags,
-      ]);
+      setUserAvailableTagsArray([...defaultTags, ...dataUserAvailableTags.userAvailableTags]);
     }
   }, [dataUserAvailableTags, tagsArray]);
 
   ///////////////////// INSERTING NEW TAG ///////////////////////////////////////////////
-
-
-
   const UpperAndCleanTagText = (tagText) => {
     return tagText
       .trim()
@@ -318,7 +286,7 @@ export default function Tags(props) {
               tag: tagText,
               public: publicTag,
               user: stateApp.user.mongoId,
-              taggedOn: props.targetSourceId === 'new' ? undefined : props.targetSourceId,
+              taggedOn: props.targetSourceId === "new" ? undefined : props.targetSourceId,
               objectType: props.targetLabel,
             },
           },
@@ -331,7 +299,8 @@ export default function Tags(props) {
             "getWellsIdsFromTagsArray",
             "getOwnersIdsFromTagsArray",
             "getContactsFilterOptions",
-            "getContactWellInterestsFilterOptions"
+            "getContactWellInterestsFilterOptions",
+            "getESPaginatedList",
           ],
           awaitRefetchQueries: true,
         });
@@ -357,7 +326,8 @@ export default function Tags(props) {
               "getOwnersIdsFromTagsArray",
               "getTagsByObjectsIds",
               "getContactsFilterOptions",
-              "getContactWellInterestsFilterOptions"
+              "getContactWellInterestsFilterOptions",
+              "getESPaginatedList",
             ],
             awaitRefetchQueries: true,
           });
@@ -385,6 +355,7 @@ export default function Tags(props) {
           "getTagsByObjectsIds",
           "getPaginatedContacts",
           "getContactsFilterOptions",
+          "getESPaginatedList",
         ],
         awaitRefetchQueries: true,
       });
@@ -407,6 +378,7 @@ export default function Tags(props) {
             "getTagsByObjectsIds",
             "getPaginatedContacts",
             "getContactsFilterOptions",
+            "getESPaginatedList",
           ],
           awaitRefetchQueries: true,
         });
@@ -443,9 +415,7 @@ export default function Tags(props) {
   const cleanDropDownArray = () => {
     const tags = tagsArray.map((tag) => tag.tag);
 
-    let cleanArray = userAvailableTagsArray.filter(
-      (tag) => tags.indexOf(tag) === -1
-    );
+    let cleanArray = userAvailableTagsArray.filter((tag) => tags.indexOf(tag) === -1);
     cleanArray = [...new Set(cleanArray)];
     cleanArray.sort();
     return { cleanArray, tags };
@@ -476,34 +446,33 @@ export default function Tags(props) {
     }
   }, [textValue]);
 
-  const TogglePublicButton = () => {
+  const ToggleSharedButton = () => {
     return (
       <FormGroup style={{ display: "block" }}>
-        {!props.publicLeftBottom && (
-          <h3 style={{ width: "fit-content", margin: "0", float: "left" }}>
-            Tags
-          </h3>
-        )}
-        <FormControlLabel
-          className={`${classes.switchButtom} ${props.publicLeftBottom ? classes.publicLeftBottom : ""
-            } ${!publicTag ? classes.switchTextDeselected : ""}`}
-          control={
-            <React.Fragment>
-              {props.publicLeftBottom && <h4 className="h4Before">Tags</h4>}
-              <AntSwitch
-                checked={publicTag}
-                onChange={() => {
-                  setPublicTag(!publicTag);
-                }}
-                name="checkedC"
-              />
+        {!props.publicLeftBottom && <h3 style={{ width: "fit-content", margin: "0", float: "left" }}>Tags</h3>}
+        {props.shareable && (
+          <FormControlLabel
+            className={`${classes.switchButtom} ${props.publicLeftBottom ? classes.publicLeftBottom : ""} ${
+              !publicTag ? classes.switchTextDeselected : ""
+            }`}
+            control={
+              <React.Fragment>
+                {props.publicLeftBottom && <h4 className="h4Before">Tags</h4>}
+                <AntSwitch
+                  checked={publicTag}
+                  onChange={() => {
+                    setPublicTag(!publicTag);
+                  }}
+                  name="checkedC"
+                />
 
-              {props.publicLeftBottom && <h4 className="h4After">Shared</h4>}
-            </React.Fragment>
-          }
-          label="Shared"
-          labelPlacement="start"
-        />
+                {props.publicLeftBottom && <h4 className="h4After">Shared</h4>}
+              </React.Fragment>
+            }
+            label="Shared"
+            labelPlacement="start"
+          />
+        )}
       </FormGroup>
     );
   };
@@ -513,7 +482,7 @@ export default function Tags(props) {
       {!loadingTags ? (
         <Grid container>
           <Grid item xs={12}>
-            <TogglePublicButton />
+            <ToggleSharedButton />
           </Grid>
           <Grid item xs={12}>
             <Autocomplete
@@ -528,20 +497,11 @@ export default function Tags(props) {
               freeSolo
               renderTags={(value, getTagProps) =>
                 value.map((tag, index) => {
-                  if (
-                    (publicTag && tag.public) ||
-                    (!publicTag &&
-                      !tag.public &&
-                      stateApp.user.email === tag.user.email)
-                  ) {
+                  if ((publicTag && tag.public) || (!publicTag && !tag.public && stateApp.user.email === tag.user.email)) {
                     return (
                       <Chip
                         key={index}
-                        id={
-                          !props.multipleIds
-                            ? tag._id
-                            : tag.ids.join("???|||///")
-                        }
+                        id={!props.multipleIds ? tag._id : tag.ids.join("???|||///")}
                         label={tag.tag}
                         {...getTagProps({ index })}
                         deleteIcon={<ClearIcon />}
@@ -555,7 +515,6 @@ export default function Tags(props) {
                   {...params}
                   variant="outlined"
                   className={classes.input}
-                  // label={!props.publicLeftBottom ? "Tags" : null}
                   placeholder={!showPlusAddIcon() ? "" : "+"}
                   fullWidth
                   value={textValue}
@@ -563,7 +522,9 @@ export default function Tags(props) {
                     setTextValue(e.target.value);
                   }}
                   onClick={() => {
-                    setTFActive(true);
+                    if (props.type === "textfield") {
+                      setTFActive(true);
+                    }
                   }}
                   onBlur={() => {
                     setTFActive(false);
@@ -572,11 +533,6 @@ export default function Tags(props) {
               )}
             />
           </Grid>
-          {/* {props.publicLeftBottom && (
-            <Grid item xs={12}>
-              <TogglePublicButton />
-            </Grid>
-          )} */}
         </Grid>
       ) : (
         <CircularProgress color="secondary"></CircularProgress>
@@ -584,3 +540,8 @@ export default function Tags(props) {
     </div>
   );
 }
+
+Tags.defaultProps = {
+  shareable: true,
+  type: "textfield",
+};

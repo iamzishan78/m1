@@ -1,0 +1,99 @@
+
+
+export const showIfUserDefinedLayer = (stateApp) => {
+    return stateApp.selectedUserDefinedLayer !== null &&
+        stateApp.currentFeature?.source !== "parcels_source" &&
+        stateApp.currentFeature?.source !== "units_source" &&
+        stateApp.currentFeature?.source !== "interests_source" &&
+
+        stateApp.currentFeature?.source !== "agreements_source" &&
+        stateApp.currentFeature?.source !== "contracts_source" &&
+        stateApp.currentFeature?.source !== "deeds_source" &&
+        stateApp.currentFeature?.source !== "leases_source" &&
+        stateApp.currentFeature?.source !== "surfaces_source"
+
+}
+
+export const layersWithSelectedShapeKey = () => {
+    const layers = ['units', 'agreements', 'contracts', 'deeds', 'leases', 'surfaces'];
+    const keys = {}
+    layers.forEach((key) => { keys[key] = 'selectedShape' })
+    return keys
+}
+
+export const ifDefaultLayers = (identifier) => {
+    return identifier === "Parcels" || identifier === "Area of Interest" || identifier === "Units" || identifier === "Agreements" ||
+        identifier === "Contracts" || identifier === "Deeds" || identifier === "Leases" || identifier === "Surfaces"
+}
+
+export const ifDefaultSources = (source) => {
+    return source === "parcels_source" || source === "interests_source" || source === "units_source" || source === "agreements_source" ||
+        source === "contracts_source" || source === "deeds_source" || source === "leases_source" || source === "surfaces_source"
+}
+
+export const ifGenericShapeSource = (source) => {
+    return source === "units_source" || source === "agreements_source" ||
+        source === "contracts_source" || source === "deeds_source" || source === "leases_source" || source === "surfaces_source"
+}
+
+export const setLayerLabelLayout = (layerId, labelLayout) => {
+    if (layerId === "parcel") {
+        labelLayout = {
+            ...labelLayout,
+            "text-size": ["interpolate", ["linear"], ["zoom"], 12, 12, 15, 28],
+        };
+    } else if (layerId === "interest") {
+        labelLayout = {
+            ...labelLayout,
+            "text-size": ["interpolate", ["linear"], ["zoom"], 9, 16, 11, 32, 15, 54],
+        };
+    } else if (layerId === "unit" || layerId === "agreement" ||
+        layerId === "contract" || layerId === "lease" || layerId === "deed" || layerId === "surface") {
+        labelLayout = {
+            ...labelLayout,
+            "text-size": ["interpolate", ["linear"], ["zoom"], 12, 12, 15, 28],
+        };
+    }
+    return labelLayout
+}
+
+export const shapeTypeLayers = ["unit", "agreement", "contract", "lease", "deed", "surface"]
+export const defaultLayers = ["interest", "parcel", "unit", "agreement", "contract", "lease", "deed", "surface"]
+export const agreementLayers = ["agreement", "contract", "lease", "deed", "surface"]
+
+export const modifyExandableCardStyle = (selectedShape) => {
+    let backgroundColor = '#112040'
+    let headerIcons = {}
+    let icons = {}
+    let headerLabelColor = '#ababab'
+    if (selectedShape) {
+        backgroundColor = 'white'
+        headerIcons = {
+            '& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary, & .MuiIconButton-label ': {
+                // "&:hover": {
+                //   backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
+                // },
+                color: '#7f7f7f !important',
+                'svg': {
+                    fill: '#7f7f7f !important'
+                }
+
+            },
+            '& .MuiIconButton-root, & .MuiButtonBase-root': {
+                "&:hover": {
+                    backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
+                },
+            },
+            '& .MuiIconButton-label svg': {
+                color: '#7f7f7f !important',
+                fill: '#7f7f7f !important'
+            }
+        }
+        icons = {
+            "&:hover": {
+                backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
+            }
+        }
+    }
+    return { backgroundColor, headerIcons, icons, headerLabelColor }
+}

@@ -35,8 +35,12 @@
     "@turf/turf": "^6.3.0",
     "@welldone-software/why-did-you-render": "^6.1.1",
     "amcharts": "^3.14.5",
-    "array-move": "^3.0.1",
+    "apollo-link": "^1.2.14",
+    "apollo-link-batch-http": "^1.2.14",
+    "apollo-link-http": "^1.5.17",
+    "array-move": "^4.0.0",
     "autosuggest-highlight": "^3.1.1",
+    "chroma-js": "^2.1.2",
     "connected-react-router": "^6.9.1",
     "date-fns": "^2.19.0",
     "deck.gl": "^8.4.10",
@@ -100,8 +104,9 @@
     "react-router-dom": "^5.2.0",
     "react-router-redux": "^4.0.8",
     "react-scripts": "^4.0.3",
+    "react-select": "^5.2.1",
     "react-sizeme": "^3.0.2",
-    "react-sortable-hoc": "^1.11.0",
+    "react-sortable-hoc": "^2.0.0",
     "react-sortly": "^3.0.4",
     "react-time-ago": "^7.1.1",
     "react-toastify": "^7.0.4",
@@ -123,8 +128,11 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "esbuild-start": "craco start",
     "build": "react-scripts build",
+    "esbuild-build": "craco build",
     "test": "react-scripts test",
+    "esbuild-test": "craco test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -150,6 +158,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.3"
+    "@craco/craco": "^6.4.3",
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "craco-esbuild": "^0.4.3"
   }
 }

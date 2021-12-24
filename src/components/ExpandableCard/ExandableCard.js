@@ -26,12 +26,14 @@ import BugsIcon from "../Shared/svgIcons/bug.js";
 import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import ContactSearch from "./components/ContactSearch";
-
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 // contexts 
 import { AppContext } from "../../AppContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
-import { Avatar, Box, Grid } from "@material-ui/core";
+import { Avatar, Box, Grid, Breadcrumbs, Typography } from "@material-ui/core";
 import FolderIcon from '@material-ui/icons/Folder';
+import { modifyExandableCardStyle } from "components/Shared/functions/shapeLayer";
+import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
 
 
@@ -98,45 +100,10 @@ function ExpandableCard(props) {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
-    if (props.targetLabel === "activity" || props.targetLabel === "parcel" || props.targetLabel === "unit") {
-      setTitle(props.title);
-    }
+    setTitle(props.title);
   }, [props.title, props.targetLabel]);
 
-  let backgroundColor = '#112040'
-  let headerIcons = {}
-  let icons = {}
-  let headerLabelColor = '#ababab'
-  if (stateApp.selectedShape || stateApp.selectedParcel) {
-    backgroundColor = 'white'
-    headerIcons = {
-      '& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary, & .MuiIconButton-label ': {
-        // "&:hover": {
-        //   backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
-        // },
-        color: '#7f7f7f !important',
-        'svg': {
-          fill: '#7f7f7f !important'
-        }
-
-      },
-      '& .MuiIconButton-root, & .MuiButtonBase-root': {
-        "&:hover": {
-          backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
-        },
-      },
-      '& .MuiIconButton-label svg': {
-        color: '#7f7f7f !important',
-        fill: '#7f7f7f !important'
-      }
-    }
-    icons = {
-      "&:hover": {
-        backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
-      }
-    }
-  }
-
+  const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(stateApp.selectedShape || stateApp.selectedParcel)
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -190,6 +157,23 @@ function ExpandableCard(props) {
       color: "#FFFFFF",
       fontSize: "11px",
 
+    },
+    breadcrumb:{
+      backgroundColor: "#F2F2F2",
+      padding: "15px 20px"
+
+    },
+    breadcrumbDiv:{
+      display: "flex",
+      color: "#18AADD",
+      fontSize: "16px",
+      cursor: "pointer",
+    },
+    agreementLink:{
+      cursor: "pointer",
+      "&:hover": {
+        textDecoration: "underline",
+      },
     },
     content: {
       transition: "height 0.1s",
@@ -288,7 +272,7 @@ function ExpandableCard(props) {
       setToggleExpand(false);
       setExpanded(true);
       if (parent === "table" && targetLabel === "well") setWidth("50vw");
-      else setWidth("100vw");
+      else setWidth("100%");
     }
     setHeight(cardHeightExpanded);
 
@@ -351,6 +335,7 @@ function ExpandableCard(props) {
         popupOpen: false,
         selectedWell: null,
         selectedParcel: null,
+        selectedShape: null,
         selectedPermit: null,
         expandedCard: false,
         viewDoc: null,
@@ -377,8 +362,8 @@ function ExpandableCard(props) {
           marginRight: "48px",
         }}
       >
-        {(targetLabel === "unit"
-        ) &&
+        {(stateApp.selectedShape
+        ) ?
           <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
             <Grid item><Avatar color='#1a2341'>
               <FolderIcon fontColor='#1a2341' />
@@ -388,13 +373,17 @@ function ExpandableCard(props) {
               <Box className='name'>
                 {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
               </Box>
-              {subTitle && (<Box className='description'>{subTitle}</Box>)}
-              <Box className='type' >Unit</Box>
+              <Box className='description'>{subTitle}</Box>
+              {stateApp.selectedShape.type === 'unit' && <Box className='type' >Unit</Box>}
+              {stateApp.selectedShape.type === 'agreement' && <Box className='type' >{agreementTypes.find((at) => at.value === stateApp.selectedShape?.agreementType)?.label || ''}</Box>}
             </Grid>
-          </Grid>
-        }
+          </Grid> : <> {
+            (targetLabel !== "contact" && targetLabel !== "parcel"
+            ) &&
+            <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
+          }
 
-        {(targetLabel === "parcel") && (props.expanded === true) &&
+{(targetLabel === "parcel") && (props.expanded === true) &&
           <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
             <Grid item><Avatar color='#1a2341'>
               <FolderIcon fontColor='#1a2341' />
@@ -422,25 +411,20 @@ function ExpandableCard(props) {
           </Grid>
         )}
 
-        {
-          (targetLabel !== "contact" && targetLabel !== "unit"
-          ) &&
-          <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
-        }
+            {
+              (targetLabel === "contact"
+                && parent !== 'table'
+              ) && <ContactSearch />
+            }
 
-        {
-          (targetLabel === "contact"
-            && parent !== 'table'
-          ) && <ContactSearch />
+            {
+              (targetLabel === "contact"
+                && parent !== 'table'
+              ) &&
+              <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
+            }
+          </>
         }
-
-        {
-          (targetLabel === "contact"
-            && parent !== 'table'
-          ) &&
-          <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
-        }
-
       </div >
     );
   };
@@ -454,7 +438,7 @@ function ExpandableCard(props) {
   };
 
   const deleteFunc = async () => {
-    if (targetLabel === "parcel" || targetLabel === "unit" || targetLabel === "expandedParcel") {
+    if (targetLabel === "parcel" || stateApp.selectedShape || targetLabel === "expandedParcel") {
       setDeleteLoading(true);
       await deleteCustomLayer();
       setDeleteLoading(false);
@@ -497,8 +481,8 @@ function ExpandableCard(props) {
       showDrawShapesPopup: true,
       selectedUserDefinedLayer: state.selectedParcel?.feature || state.selectedShape?.feature,
       currentFeature: state.selectedParcel?.feature || state.selectedShape?.feature,
+      featureToEdit: state.selectedParcel?.feature || state.selectedShape?.feature,
       openDrawShapesControl: true,
-      editParcel: true,
       editDraw: true,
     }));
     handleClose();
@@ -507,7 +491,7 @@ function ExpandableCard(props) {
   useEffect(() => {
     ///Set body style overflow hidden when card is fully expanded
     const disableBodyScrollBarIfExpanded = () => {
-      if (width === '100vw') {
+      if (width === '100%') {
         document.body.style.overflow = 'hidden';
       }
     };
@@ -518,6 +502,7 @@ function ExpandableCard(props) {
     };
   }, [openDialog, props.targetLabel, isExpanded, width]);
 
+  const link = history.pathHistory[history.pathHistory.length - 1]
 
   return (
     <React.Fragment>
@@ -552,12 +537,41 @@ function ExpandableCard(props) {
           open={openBugModal}
           onClose={() => setOpenBugModal(false)}
         />
+        {link === '/land/agreements' && (
+          <Grid container spacing={2} alignItems="center" className={classes.breadcrumb}>
+            <Breadcrumbs
+              separator={<NavigateNextIcon fontSize="small" />}
+              aria-label="breadcrumb"
+            >
+              <Typography
+                style={{
+                  marginLeft: "10px",
+                  fontSize: "16px",
+                }}
+                color="inherit"
+              >
+                <div className={classes.agreementLink} onClick={() => history.push('/land/agreements')}>Agreements</div>
+              </Typography>
+              <Typography
+                style={{
+                  marginLeft: "10px",
+                  fontSize: "16px",
+                }}
+                color="inherit"
+              >
+                <div className={classes.breadcrumbDiv}>
+                  {title}
+                </div>
+              </Typography>
+            </Breadcrumbs>
+          </Grid>
+        )}
         <CardHeader
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
             <div className={classes.headerIcons}>
               {
-                (targetLabel === 'parcel' || targetLabel === 'unit') && (
+                (targetLabel === 'parcel' || stateApp.selectedShape) && (
                   <Tooltip title={`Edit ${targetLabel}`} placement="top">
                     <IconButton
                       // size="small"
@@ -574,6 +588,7 @@ function ExpandableCard(props) {
               }
               {targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
+                !stateApp?.selectedShape &&
                 (
                   <CommentsWithIcon
                     objectId={targetSourceId.toLowerCase()}
@@ -584,6 +599,7 @@ function ExpandableCard(props) {
 
               {targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
+                !stateApp?.selectedShape &&
                 targetLabel !== "recent_submitted_permits" && (
                   <TaggerWithIcon
                     objectId={targetSourceId.toLowerCase()}
@@ -633,7 +649,8 @@ function ExpandableCard(props) {
 
 
               {stateExpandableCard.expanded &&
-                ["activity", "parcel", "expandedParcel", "unit"].includes(targetLabel) &&
+                (["activity", "parcel", "expandedParcel"].includes(targetLabel) || stateApp.selectedShape) &&
+
                 title !== "Add Activity" && (
                   <Tooltip title={`Delete ${targetLabel}`} placement="top">
                     {isDeletingCustomLayer || deleteLoading ? (
@@ -660,7 +677,7 @@ function ExpandableCard(props) {
                   && targetLabel !== "well"
                   && targetLabel !== "expandedWell"
                   && targetLabel !== "parcel"
-                  && targetLabel !== "unit"
+                  && !stateApp.selectedShape
                   && targetLabel !== "expandedParcel"
                   && targetLabel !== "recent_submitted_permits"
                   ? (

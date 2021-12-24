@@ -56,7 +56,6 @@ export default function UploadZone(props) {
 
   useEffect(() => {
     if (addFileData && addFileData?.addFileDescriptor?.success) {
-      console.log("File added: ", addFileData);
       const uri = addFileData.addFileDescriptor.file.uri;
       const interal_key = addFileData.addFileDescriptor.file.internalKey;
       const file_id = addFileData.addFileDescriptor.file.id;
@@ -75,7 +74,6 @@ export default function UploadZone(props) {
             },
           })
           .then((res) => {
-            console.log(res);
             if (res?._response?.status === 201) {
               // props.getRecentFiles();
               if (!props.relatedObjectId && props.setUploadedFileData) {
@@ -114,11 +112,7 @@ export default function UploadZone(props) {
     <>
       <DropzoneAreaBase
         onAdd={handleFileInput}
-        // onDelete={(fileObj) => console.log("Removed File:", fileObj)}
         showAlerts={props.relatedObjectType === "Contact"}
-        onAlert={(message, variant) => {
-          console.log(`${variant}: ${message}`);
-        }}
         filesLimit={1}
         dropzoneProps={{
           disabled: props.loading || addFileLoading || props.disabled,
@@ -172,9 +166,9 @@ export default function UploadZone(props) {
 
         maxFileSize={104857600}
         dropzoneClass={classes.dropzoneClass}
-        // getFileAddedMessage={(value) => {
-        // 	alert("File is been added", value);
-        // }}
+      // getFileAddedMessage={(value) => {
+      // 	alert("File is been added", value);
+      // }}
       ></DropzoneAreaBase>
       {(props.loading || addFileLoading) && (
         <div style={{ display: "flex", justifyContent: "center" }}>

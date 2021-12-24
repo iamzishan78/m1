@@ -13,6 +13,7 @@ import { default as CheckCircle } from "../../../Shared/svgIcons/check-circle";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
 import { addCustomShapeProperties } from "../DrawShapes/drawShapesHelpers";
+import { drawShapeLayerToggle } from "components/MapControls/commonHelper";
 
 const DrawShapesPopup = (props) => {
   const { classes, children } = props;
@@ -58,6 +59,7 @@ const DrawShapesPopup = (props) => {
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.user.email]);
 
   useEffect(() => {
@@ -78,11 +80,18 @@ const DrawShapesPopup = (props) => {
         ...state,
         multiSelectLandGrids: !state.multiSelectLandGrids,
         editDraw: false,
+        lastSelectedDrawMode: shape.mode,
+        changeDrawShapeType: false
       }));
     } else {
-      setStateApp((state) => ({ ...state, editDraw: true, isDrawing: true }));
+      setStateApp((state) => ({
+        ...state, editDraw: true, isDrawing: true, lastSelectedDrawMode: shape.mode,
+        changeDrawShapeType: false
+      }));
       props.handleClose();
     }
+    if (shape.mode === 'draw_polygon')
+      drawShapeLayerToggle(stateApp, "visible");
     stateApp.draw.changeMode(shape.mode);
   };
 
@@ -123,15 +132,19 @@ const DrawShapesPopup = (props) => {
 
     setStateApp((state) => ({
       ...state,
+      selectedAbstracts: [],
       currentFeature: newFeature,
       multiSelectLandGrids: false,
       isAbstractedLayersPolygon: true,
       showShapeActionsPopup: true
     }));
     addCustomShapeProperties(newFeature, draw);
-    stateApp.draw.changeMode("direct_select", {
-      featureId: newFeature.id,
-    });
+
+    stateApp.draw.changeMode('draw_polygon');
+
+    // stateApp.draw.changeMode("direct_select", {
+    //   featureId: newFeature.id,
+    // });
   };
 
   const parcelLabel = stateApp.selectedAbstracts.length > 1 ? "tracts" : "tract";

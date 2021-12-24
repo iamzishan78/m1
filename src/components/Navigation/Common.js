@@ -41,7 +41,7 @@ export const useStyles = makeStyles((theme) => ({
     width: `${drawerWidth}px`,
     flexShrink: 0,
     whiteSpace: "nowrap",
-    zIndex: "2 !important",
+    zIndex: 1,
   },
   filterTabs: {
     paddingRight: "25px",
@@ -80,6 +80,7 @@ export const useStyles = makeStyles((theme) => ({
     }),
   },
   drawerClose: {
+    zIndex: "1 !important",
     background: "#0e111a",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
@@ -90,7 +91,7 @@ export const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       width: theme.spacing(6) + 4,
     },
-    borderRight: "1px solid rgb(38 52 81)",
+    borderRight: "1px solid rgb(38 52 81) !important",
   },
   toolbar: {
     display: "flex",
@@ -101,6 +102,7 @@ export const useStyles = makeStyles((theme) => ({
     width: props.user ? "calc(100% - 52px)" : "calc(100% - 0px)",
     position: "absolute",
     left: props.user ? "52px" : "0px",
+    height: "100%",
   }),
   grow1: {
     flexGrow: 1,
@@ -117,7 +119,7 @@ export const useStyles = makeStyles((theme) => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: "rgb(21 38 74)",
+    // backgroundColor: "rgb(21 38 74)",
     marginRight: theme.spacing(2),
     marginLeft: "425px !important",
     width: "34%",
@@ -461,6 +463,9 @@ export const useStyles = makeStyles((theme) => ({
     marginRight: 12,
     border: "1px solid #263451",
     borderRadius: "5px",
+    "& svg": {
+      fontSize: "1.5rem",
+    },
   },
   sideNavText: {
     flex: 2,

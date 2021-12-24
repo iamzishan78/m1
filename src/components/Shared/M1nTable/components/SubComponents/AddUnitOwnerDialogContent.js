@@ -9,17 +9,18 @@ import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 import { Grid } from "@material-ui/core";
+import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 
-import { AppContext } from "../../../../../AppContext";
-import { Modals } from "../../../../../styles/Modal";
+import { AppContext } from "AppContext";
+import { Modals } from "styles/Modal";
 import { useMutation } from "@apollo/client";
 import { ADD_OWNER_TOA_SHAPE } from "graphQL/useMutationAddOwnerToAShape";
-import { UPDATE_SHAPE_OWNER } from "graphQL/useMutationUpdateShapeOwner";
+import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
-import { showErrorMessage, showSuccessMessage } from "../../../../../actions";
-import { setStateIfDeepEqual } from "../../../functions";
-import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
+import { showErrorMessage, showSuccessMessage } from "actions";
+import { setStateIfDeepEqual } from "components/Shared/functions";
+import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import { addTrailingZeros } from "components/Shared/functions";
 import { Controller, useForm } from "react-hook-form";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
@@ -54,17 +55,17 @@ const useStyles = makeStyles((theme) => ({
   },
   baseValueChanged: {
     width: "100%",
-    '& .MuiInputBase-input': {
-      color: 'dodgerblue',
-      fontWeight: 'bold'
-    }
-  }
+    "& .MuiInputBase-input": {
+      color: "dodgerblue",
+      fontWeight: "bold",
+    },
+  },
 }));
 
 export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, ...props }) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const { control, reset, setValue, register, getValues, watch } = useForm();
+  const { control, reset, setValue, getValues } = useForm();
 
   const [newOwner, setNewOwner] = useState({
     working_interest: null,
@@ -77,10 +78,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const [changedKeys, setChangedKeys] = useState({});
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
-  const [nameAutInputValue, NameAutInputValue] = useState("");
-  const setNameAutInputValue = (newState) => {
-    setStateIfDeepEqual(NameAutInputValue, newState);
-  };
 
   useEffect(() => {
     if (selectedRow) {
@@ -109,8 +106,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         competitor_offer_price: competitor_offer_price || null,
         offer_price: offer_price || null,
         customLayer,
-      })
-
+      });
     }
   }, [selectedRow]);
 
@@ -122,17 +118,16 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   // CONTACT
 
-
   const [addOwnerToAShape, { data: mutationData }] = useMutation(ADD_OWNER_TOA_SHAPE);
 
-  const [updateShapeOwner, { data: updateData }] = useMutation(UPDATE_SHAPE_OWNER);
+  const [updateShapeOwners, { data: updateData }] = useMutation(UPDATE_SHAPE_OWNERS);
 
   useEffect(() => {
     let type = null;
     if (mutationData && mutationData.addOwnerToAShape) {
       type = { name: "add", success: mutationData.addOwnerToAShape.success };
-    } else if (updateData && updateData.updateShapeOwner) {
-      type = { name: "update", success: updateData.updateShapeOwner.success };
+    } else if (updateData && updateData.updateShapeOwners) {
+      type = { name: "update", success: updateData.updateShapeOwners.success };
     }
 
     if (type) {
@@ -170,7 +165,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       customLayer: props.customLayerId,
     });
     setNameAutValue(null);
-    setNameAutInputValue("");
     // setSelectedRow(null);
   };
 
@@ -187,9 +181,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       // else ownerToAdd.ownerEntity = nameAutValue._id;
 
       Object.keys(ownerToAdd).forEach((key) => {
-        if (['working_interest', 'royalty_interest', 'orri', 'nri', 'nra'].includes(key))
-          ownerToAdd[key] = addTrailingZeros(ownerToAdd[key])
-      })
+        if (["working_interest", "royalty_interest", "orri", "nri", "nra"].includes(key))
+          ownerToAdd[key] = addTrailingZeros(ownerToAdd[key]);
+      });
       if (nameAutValue._id && nameAutValue.name) {
         // now that we are using descriptors we ONLY want the contact _id
         ownerToAdd.ownerEntity = nameAutValue._id;
@@ -198,17 +192,20 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
       if (selectedRow) {
         ownerToAdd._id = selectedRow._id;
-        updateShapeOwner({
+        updateShapeOwners({
           variables: {
             shapeType: props.shapeType,
-            shapeOwner: {
-              shapeId: props.shapeId,
-              ...ownerToAdd,
-              createBy: stateApp.user.mongoId,
-              lastUpdateBy: stateApp.user.mongoId,
-            },
+            shapeOwners: [
+              {
+                shapeId: props.shapeId,
+                relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
+                ...ownerToAdd,
+                createBy: stateApp.user.mongoId,
+                lastUpdateBy: stateApp.user.mongoId,
+              },
+            ],
           },
-          refetchQueries: ["getESShapeOwners", "getESShapeOwnersFilter"],
+          refetchQueries: ["getESPaginatedList", "getESFilterList"],
           awaitRefetchQueries: true,
         });
       } else {
@@ -217,12 +214,13 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             shapeType: props.shapeType,
             shapeOwner: {
               shapeId: props.shapeId,
+              relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
               ...ownerToAdd,
               createBy: stateApp.user.mongoId,
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: ["getESShapeOwners", "getESShapeOwnersFilter"],
+          refetchQueries: ["getESPaginatedList", "getESFilterList"],
           awaitRefetchQueries: true,
         });
       }
@@ -233,7 +231,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   const calculateNetAcres = (interest) => {
     if (!interest) return null;
-    const netAcres = addTrailingZeros(stateApp.selectedShape.sdGrossAcres ? (stateApp.selectedShape.sdGrossAcres * interest).toFixed(8) : null);
+    const netAcres = addTrailingZeros(
+      stateApp.selectedShape.sdGrossAcres ? (stateApp.selectedShape.sdGrossAcres * interest).toFixed(8) : null
+    );
     return netAcres;
   };
 
@@ -249,14 +249,14 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     if (stateUpdate) {
       setChangedKeys({ ...changedKeys, netAcres: isChanged });
     } else return isChanged;
-  }
+  };
   const isNRAChanged = (nra, stateUpdate = true) => {
     let calculatedNRA = calculateNRA(newOwner.royalty_interest, newOwner.orri);
-    if (nra === 'NaN') nra = null;
+    if (nra === "NaN") nra = null;
     if (stateUpdate) {
       setChangedKeys({ ...changedKeys, nra: calculatedNRA !== nra });
     } else return calculatedNRA !== nra;
-  }
+  };
 
   // const royalty_interest = watch('royalty_interest')
   // const orri = watch('orri')
@@ -271,9 +271,11 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     <div className={classes.move}>
       <React.Fragment>
         <RightDialog open={true} handleClickDialogClose={props.onClose} width={"450px"}>
-          <DialogTitle id="customized-dialog-title" style={{ fontWeight: "bold" }}>
-            {selectedRow ? "Update" : "Add"} Unit Ownership
-            {selectedRow && (
+          <Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
+            <Grid item md={10} xs={10}>
+              <DialogTitle id="customized-dialog-title" style={{ fontWeight: "bold" }}>
+                {selectedRow ? "Update" : "Add"} Unit Ownership
+                {/* {selectedRow && (
               <IconButton
                 style={{ "float": "right", marginRight: "5px" }}
                 onClick={() => {
@@ -285,8 +287,25 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               >
                 <DeleteIcon fontSize="small" />
               </IconButton>
-            )}
-          </DialogTitle>
+            )} */}
+              </DialogTitle>
+            </Grid>
+            <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
+              <IconButton
+                size="small"
+                component="span"
+                style={{
+                  background: "transparent",
+                  // paddingLeft: "10px",
+                  align: "center",
+                  float: "right",
+                }}
+                onClick={props.onClose}
+              >
+                <KeyboardTabBlackIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
           <DialogContent className={classes.dialogContent}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -307,7 +326,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        props.onChange(e.target.value)
+                        props.onChange(e.target.value);
                       }}
                       fullWidth
                       defaultValue=""
@@ -328,8 +347,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        props.onChange(e.target.value)
-                        setValue('nra', calculateNRA(e.target.value, getValues().orri))
+                        props.onChange(e.target.value);
+                        setValue("nra", calculateNRA(e.target.value, getValues().orri));
                       }}
                       fullWidth
                       defaultValue=""
@@ -350,8 +369,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        props.onChange(e.target.value)
-                        setValue('nra', calculateNRA(getValues().royalty_interest, e.target.value))
+                        props.onChange(e.target.value);
+                        setValue("nra", calculateNRA(getValues().royalty_interest, e.target.value));
                       }}
                       fullWidth
                       defaultValue=""
@@ -373,14 +392,13 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        props.onChange(e.target.value)
+                        props.onChange(e.target.value);
                       }}
                       fullWidth
                       defaultValue=""
                     />
                   )}
                 />
-
 
                 {/* <TextField
                   type="number"
@@ -410,8 +428,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        props.onChange(e.target.value)
-                        setValue('nra', calculateNRA(e.target.value, getValues().orri))
+                        props.onChange(e.target.value);
+                        setValue("nra", calculateNRA(e.target.value, getValues().orri));
                       }}
                       InputProps={{
                         endAdornment: (
@@ -420,7 +438,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                               <IconButton
                                 aria-label="toggle royality-acres"
                                 onClick={() => {
-                                  setValue('nra', calculateNRA(getValues().royalty_interest, getValues().orri))
+                                  setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri));
                                 }}
                               >
                                 <AutorenewIcon />
@@ -434,7 +452,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     />
                   )}
                 />
-
               </Grid>
               <Grid item xs={12}>
                 <h3>Seller Asking Price</h3>
@@ -449,7 +466,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        props.onChange(e.target.value)
+                        props.onChange(e.target.value);
                       }}
                       InputProps={{
                         inputComponent: CurrencyFormatCustom,
@@ -473,7 +490,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        props.onChange(e.target.value)
+                        props.onChange(e.target.value);
                       }}
                       InputProps={{
                         inputComponent: CurrencyFormatCustom,
@@ -498,7 +515,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        props.onChange(e.target.value)
+                        props.onChange(e.target.value);
                       }}
                       InputProps={{
                         inputComponent: CurrencyFormatCustom,
@@ -509,7 +526,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   )}
                 />
               </Grid>
-
             </Grid>
           </DialogContent>
           <DialogActions className={classes.dialogAction}>

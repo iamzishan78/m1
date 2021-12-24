@@ -8,22 +8,29 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Typography from "@material-ui/core/Typography";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { CONTACT_PURCHASE_DATA } from "graphQL/useQueryContactPurchaseData";
 
 import { CONTACT } from "graphQL/useQueryContact";
 import MelissaTable from "./components/MelissaTable";
 import { LASTMELISSARECORD } from "graphQL/useQueryGetMelissaRecords";
-import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
 
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
-import { getBasicInfoContent, getBasicInfoExpContent, getBasicPurchaseInfoContent, getBasicPurchaseInfoExpContent } from 'components/ContactDetailedInfo/helper'
+import {
+  getBasicInfoContent,
+  getBasicInfoExpContent,
+  getBasicPurchaseInfoContent,
+  getBasicPurchaseInfoExpContent,
+} from "components/ContactDetailedInfo/helper";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
+    position: "absolute",
+    top: "65px",
+    maxHeight: "calc(100vh - 65px)",
+    overflowY: "overlay",
   },
   dataSect: {
     borderTop: "2px solid #C9C9C9",
@@ -61,14 +68,11 @@ export default function ContactDetailedInfoCard() {
   const [loading, setLoading] = useState(false);
   const [purchaseData, setPurchaseData] = useState([]);
   const [selectedPurchaseData, setSelectedPurchaseData] = useState("");
-  const contactId =
-    history.location.pathname.split("/")[
-      history.location.pathname.split("/").length - 2
-    ];
+  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 2];
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
   const [getContactPurchaseData, { data: contactPurchaseData }] = useLazyQuery(CONTACT_PURCHASE_DATA);
-  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(LASTMELISSARECORD, { fetchPolicy: "network-only" } );
+  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(LASTMELISSARECORD, { fetchPolicy: "network-only" });
 
   useEffect(() => {
     if (contactId) {
@@ -81,7 +85,7 @@ export default function ContactDetailedInfoCard() {
         variables: {
           contactId: contactId,
         },
-      })
+      });
       getLastMelissaRecord({
         variables: {
           contactId: contactId,
@@ -103,12 +107,9 @@ export default function ContactDetailedInfoCard() {
   useEffect(() => {
     if (contactPurchaseData?.getContactPurchaseData?.length > 0) {
       setPurchaseData(contactPurchaseData?.getContactPurchaseData);
-      setSelectedPurchaseData(contactPurchaseData.getContactPurchaseData[0]._id)
+      setSelectedPurchaseData(contactPurchaseData.getContactPurchaseData[0]._id);
     }
   }, [contactPurchaseData]);
-
-
-
 
   useEffect(() => {
     if (mData && mData.getLastMelissaRecord.success === true) {
@@ -131,10 +132,7 @@ export default function ContactDetailedInfoCard() {
   return contactData ? (
     <div className={classes.root}>
       <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-        <Breadcrumbs
-          separator={<NavigateNextIcon fontSize="small" />}
-          aria-label="breadcrumb"
-        >
+        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
           {checkModuleHistory() && (
             <Link
               className={classes.linkClass}
@@ -184,7 +182,7 @@ export default function ContactDetailedInfoCard() {
               marginLeft: "5px",
             }}
           >
-            Detailed Information 
+            Detailed Information
           </Typography>
         </Breadcrumbs>
       </Toolbar>
@@ -199,10 +197,13 @@ export default function ContactDetailedInfoCard() {
       <FeatureFlag feature={FEATURES.IDICORE}>
         <MelissaTable
           header="Purchased Data"
-          options={purchaseData ? purchaseData.map(data => ({_id: data._id, date: data.sysDateTime})): [] }
+          options={purchaseData ? purchaseData.map((data) => ({ _id: data._id, date: data.sysDateTime })) : []}
           id={contactData?._id}
           entity={contactData?.entity}
-          rows={{ ...getBasicPurchaseInfoContent(purchaseData.find((purchaseData) => purchaseData._id === selectedPurchaseData)), ...getBasicPurchaseInfoExpContent(purchaseData.find((purchaseData) => purchaseData._id === selectedPurchaseData)) }}
+          rows={{
+            ...getBasicPurchaseInfoContent(purchaseData.find((purchaseData) => purchaseData._id === selectedPurchaseData)),
+            ...getBasicPurchaseInfoExpContent(purchaseData.find((purchaseData) => purchaseData._id === selectedPurchaseData)),
+          }}
           wrapperClass={classes.dataSect}
           melissaData={melissaData}
           selectedPurchaseData={selectedPurchaseData}

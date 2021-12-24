@@ -23,6 +23,7 @@ import { PAGINATEDWELLSQUERY } from "graphQL/useQueryPaginatedWells";
 import { PAGINATEDOWNERSQUERY } from "graphQL/useQueryPaginatedOwner";
 import { PAGINATEDOPERATORSQUERY } from "graphQL/useQueryPaginatedOperators";
 import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
+import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
 const leaseIndexName = 'lease-index-v2';
 const operatorIndexName = 'operator-index';
@@ -32,11 +33,12 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     "& .MuiInput-root": {
-      height: "50px",
+      height: "41px",
       paddingRight: "8px",
+      backgroundColor: "white"
     },
     "& > div": {
-      width: "100%",
+      width: "350px",
     },
   },
   inputAdornment: {
@@ -72,22 +74,36 @@ function MapGridCardSearch(props) {
 
   ///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
 
-  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    { fetchPolicy: "cache-and-network", skip: true }
-  );
+  // const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
+  //   PAGINATEDCONTACTSQUERY,
+  //   { fetchPolicy: "cache-and-network", skip: true }
+  // );
+
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
 
   const callContactsSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
 
-        /// this function takes the search request and sends it to gql
         getPaginatedContacts({
           variables: {
-            search: request.input,
-          },
-        });
+            esIndex: "contacts_flat",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: `${request.input}`,
+            sort:[]
+          }
+        })
+
+        /// this function takes the search request and sends it to gql
+        // getPaginatedContacts({
+        //   variables: {
+        //     search: request.input,
+        //   },
+        // });
 
       }, 500),
     []
@@ -105,7 +121,7 @@ function MapGridCardSearch(props) {
       var newOptions = [];
       var newOptions = [
 
-        ...constDataContacts.paginatedContacts.edges.map((result) => {
+        ...constDataContacts.getESPaginatedList.hits.map((result) => {
 
           result = { ...result.node };
           //result.Source = contactIndexName;
@@ -142,37 +158,68 @@ function MapGridCardSearch(props) {
 
 
 
-  const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(
-    PAGINATEDWELLSQUERY,
-    { fetchPolicy: "network-only", skip: true }
-  );
+  // const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(
+  //   PAGINATEDWELLSQUERY,
+  //   { fetchPolicy: "network-only", skip: true }
+  // );
+  const [getESWellsPaginatedList, { data: constDataWells }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
-  const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(
-    PAGINATEDOWNERSQUERY,
-    { fetchPolicy: "network-only", skip: true }
-  );
+  // const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(
+  //   PAGINATEDOWNERSQUERY,
+  //   { fetchPolicy: "network-only", skip: true }
+  // );
+  const [getESOwnersPaginatedList, { data: constDataOwners }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
-  const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(
-    PAGINATEDOPERATORSQUERY,
-    { fetchPolicy: "network-only", skip: true }
-  );
+  // const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(
+  //   PAGINATEDOPERATORSQUERY,
+  //   { fetchPolicy: "network-only", skip: true }
+  // );
+  const [getESOperatorsPaginatedList, { data: constDataOperators }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
-  const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(
-    PAGINATEDLEASESQUERY,
-    { fetchPolicy: "network-only", skip: true }
-  );
+  // const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(
+  //   PAGINATEDLEASESQUERY,
+  //   { fetchPolicy: "network-only", skip: true }
+  // );
+  const [getESLeasesPaginatedList, { data: constDataLeases }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" } );
 
+  const startPaginationAt = 50;
+
+
+  // const getShapeFilter = (shapeFilter) => {
+  //   const coordinates = [];
+  //   if(shapeFilter && typeof shapeFilter === 'string' && shapeFilter.includes('POLYGON')){
+  //     let data = shapeFilter.replace('POLYGON((', '').replace('))', '');
+  //     data = data.split(',');
+  //     for(let i=0; i<data.length; i++){
+  //       const coor = data[i].trim().split(' ');
+  //       coordinates.push([parseFloat(coor[0]), parseFloat(coor[1])])
+  //     }
+  //   }
+  //   return coordinates;
+  // };
 
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-
-        getPaginatedWells({
+        // const shapeFilter = getShapeFilter(request.navFilter.shapeFilter);
+        getESWellsPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top
+            // polygon: shapeFilter.length > 0 ? shapeFilter: null,
+            esIndex: "platformData:wells",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: request.input? `((wellName:*${request.input}*) OR (api:*${request.input}*))`: '',
+            sort:[],
           }
         })
+        // getPaginatedWells({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top
+        //   }
+        // })
 
       }, 500),
     []
@@ -181,12 +228,23 @@ function MapGridCardSearch(props) {
   const callOwnerSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        getPaginatedOwners({
+        getESOwnersPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top
+            esIndex: "platformData:globalowner",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: request.input? `ownerName:*${request.input}*`: '',
+            sort:[]
           }
         })
+        // getPaginatedOwners({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top
+        //   }
+        // })
       }, 500),
     []
   );
@@ -194,12 +252,23 @@ function MapGridCardSearch(props) {
   const callOperatorSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        getPaginatedOperators({
+        getESOperatorsPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top
+            esIndex: "platformData:operator",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: request.input? `operator:*${request.input}*`: '',
+            sort:[]
           }
         })
+        // getPaginatedOperators({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top
+        //   }
+        // })
       }, 500),
     []
   );
@@ -207,13 +276,23 @@ function MapGridCardSearch(props) {
   const callLeaseSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-
-        getPaginatedLeases({
+        getESLeasesPaginatedList({
           variables: {
-            search: request.input,
-            pageOverride: top
+            esIndex: "platformData:lease",
+            pagination: {
+              first: startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: request.input? `lease:*${request.input}*`: '',
+            sort:[]
           }
         })
+        // getPaginatedLeases({
+        //   variables: {
+        //     search: request.input,
+        //     pageOverride: top
+        //   }
+        // })
 
       }, 500),
     []
@@ -251,7 +330,7 @@ function MapGridCardSearch(props) {
     if (constDataOperators) {
 
       newOptions = [
-        ...constDataOperators.paginatedOperators.edges.map((result) => {
+        ...constDataOperators.getESPaginatedList.hits.map((result) => {
           return {
             ...result,
             Source: operatorIndexName,
@@ -276,7 +355,7 @@ function MapGridCardSearch(props) {
 
       let newOptions = [];
       newOptions = [
-        ...constDataWells.paginatedWells.edges.map((well) => {
+        ...constDataWells.getESPaginatedList.hits.map((well) => {
           return {
             ...well,
             Source: wellCogIndexName,
@@ -300,7 +379,7 @@ function MapGridCardSearch(props) {
       let newOptions = []
 
       newOptions = [
-        ...constDataLeases.paginatedLeases.edges.map((result) => {
+        ...constDataLeases.getESPaginatedList.hits.map((result) => {
           return {
             ...result,
             Source: leaseIndexName,
@@ -336,7 +415,7 @@ function MapGridCardSearch(props) {
     if (constDataOwners) {
       let newOptions
       newOptions = [
-        ...constDataOwners.paginatedOwners.edges.map((result) => {
+        ...constDataOwners.getESPaginatedList.hits.map((result) => {
           return {
             ...result,
             Source: 'globalowner-index',
@@ -363,7 +442,10 @@ function MapGridCardSearch(props) {
         props.searchOption == "well"
           ? callWellSearch({
             input: searchInputValue,
-            searchTop
+            searchTop,
+            // navFilter: {
+            //   shapeFilter: stateApp.gridPolygonString
+            // }
           })
           : null,
         props.searchOption == "owner"
@@ -432,6 +514,7 @@ function MapGridCardSearch(props) {
     callContactsSearch,
     callMapboxSearch,
     props.searchOption,
+    // stateApp.gridPolygonString
   ]);
 
 
@@ -446,7 +529,9 @@ function MapGridCardSearch(props) {
       <TextField
         id="mapGridCardSearch-basic"
         type="search"
+        placeholder={`Search across ${props.searchOption} datasets`}
         InputProps={{
+          disableUnderline: true,
           startAdornment: (
             <InputAdornment
               className={classes.inputAdornment}

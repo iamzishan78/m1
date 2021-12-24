@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from "@material-ui/core";
@@ -12,15 +12,12 @@ import * as LayerFiltersComponents from "components/Shared/SidePanel/compoennts/
 const useStyles = makeStyles(() => ({
   root: {
     backgroundColor: "#0e111a",
-    height: "calc(100vh - 103px)",
+    height: "calc(100vh - 172px)",
     fontFamily: "Poppins",
     display: "block",
     color: "white",
-    padding: "10px",
+    padding: "0px 10px",
     overflow: "overlay",
-    "& .MuiTypography-root": {
-      padding: "15px 5px",
-    },
   },
   accordionRoot: {
     borderRadius: "5px",
@@ -39,8 +36,54 @@ const useStyles = makeStyles(() => ({
     },
   },
   accordionDetails: {
-    backgroundColor: "white",
+    backgroundColor: "#101d29",
     padding: 0,
+    // overridding the default text fields colors
+    "& svg": {
+      fill: "white",
+    },
+    "& label": {
+      color: "white",
+    },
+    "& label.Mui-focused": {
+      color: "white",
+    },
+    "& label.Mui-disabled": {
+      color: "#adadad",
+    },
+    "& input": {
+      color: "white !important",
+    },
+    "& .MuiInputBase-adornedStart:before": {
+      borderBottomColor: "white",
+    },
+    "& .MuiInputBase-adornedStart:after": {
+      borderBottomColor: "white",
+    },
+    "& .MuiInput-underline:before": {
+      borderBottomColor: "white",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "white",
+    },
+    "& .MuiOutlinedInput-root": {
+      color: "white",
+      "& fieldset": {
+        borderColor: "white",
+      },
+      "&:hover fieldset": {
+        borderColor: "white",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "white",
+      },
+      "&.Mui-disabled fieldset": {
+        borderColor: "#adadad",
+      },
+      "&.Mui-disabled svg": {
+        fill: "#adadad !important",
+      },
+    },
   },
   accordionHeading: {
     display: "flex",
@@ -89,39 +132,23 @@ const wellFiltersParams = [
 ];
 const ownershipFiltersParams = ["interestName", "ownerTypeName", "filterOwnerCount", "filterHasOwnerCount", "filterOwnerConfidence"];
 const tagFiltersParams = ["selectedTags", "filterTrackedWells"];
+const filterTypes = {
+  Geography: { component: "GeographyFilter", countKey: "geographyFilterCount" },
+  Wells: { component: "WellFilter", countKey: "wellFilterCount" },
+  Production: { component: "ProductionFilter", countKey: "productionFilterCount" },
+  Ownership: { component: "OwnershipFilter", countKey: "ownershipFilterCount" },
+  Tags: { component: "TagsFilter", countKey: "tagFilterCount" },
+};
 
 const LayerFilters = () => {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [filterTypes, setFilters] = useState({
-    Geography: { component: "GeographyFilter", appliedFiltersCount: 0 },
-    Wells: { component: "WellFilter", appliedFiltersCount: 0 },
-    Production: { component: "ProductionFilter", appliedFiltersCount: 0 },
-    Ownership: { component: "OwnershipFilter", appliedFiltersCount: 0 },
-    Tags: { component: "TagsFilter", appliedFiltersCount: 0 },
-  });
-
-  useEffect(() => {
-    checkGeoFiltersChange();
-    checkProdFiltersChange();
-    checkWellFiltersChange();
-    checkOwnershipFiltersChange();
-    checkTagFiltersChange();
-  }, [stateNav]);
-
-  const getFiltersCount = (params) => {
-    let count = 0;
-    params.forEach((filter) => {
-      if ((!Array.isArray(stateNav[filter]) && stateNav[filter]) || (Array.isArray(stateNav[filter]) && stateNav[filter].length)) count++;
-    });
-    return count;
-  };
 
   const resetFilters = (params, additionalParamsToReset = {}) => {
     const geoFiltersToReset = {};
     params.forEach((param) => {
       if (!Array.isArray(stateNav[param]) && stateNav[param]) geoFiltersToReset[param] = null;
-      else {
+      else if (Array.isArray(stateNav[param]) && stateNav[param].length > 0) {
         geoFiltersToReset[param] = [];
       }
     });
@@ -129,41 +156,6 @@ const LayerFilters = () => {
       ...stateNav,
       ...geoFiltersToReset,
       ...additionalParamsToReset,
-    }));
-  };
-
-  const checkGeoFiltersChange = () => {
-    setFilters((prevState) => ({
-      ...prevState,
-      Geography: { ...filterTypes.Geography, appliedFiltersCount: getFiltersCount(geoFiltersParams) },
-    }));
-  };
-
-  const checkWellFiltersChange = () => {
-    setFilters((prevState) => ({
-      ...prevState,
-      Wells: { ...filterTypes.Wells, appliedFiltersCount: getFiltersCount(wellFiltersParams) },
-    }));
-  };
-
-  const checkProdFiltersChange = () => {
-    setFilters((prevState) => ({
-      ...prevState,
-      Production: { ...filterTypes.Production, appliedFiltersCount: getFiltersCount(prodFiltersParams) },
-    }));
-  };
-
-  const checkOwnershipFiltersChange = () => {
-    setFilters((prevState) => ({
-      ...prevState,
-      Ownership: { ...filterTypes.Ownership, appliedFiltersCount: getFiltersCount(ownershipFiltersParams) },
-    }));
-  };
-
-  const checkTagFiltersChange = () => {
-    setFilters((prevState) => ({
-      ...prevState,
-      Tags: { ...prevState.Tags, appliedFiltersCount: getFiltersCount(tagFiltersParams) },
     }));
   };
 
@@ -206,7 +198,6 @@ const LayerFilters = () => {
 
   return (
     <div className={classes.root}>
-      <Typography variant="h6">Filters</Typography>
       {Object.keys(filterTypes).map((filterType, index) => (
         <Accordion className={classes.accordionRoot}>
           <AccordionSummary
@@ -214,14 +205,12 @@ const LayerFilters = () => {
             id="panel1a-header"
             expandIcon={<ExpandMoreIcon />}
             defaultExpanded={index === 0}
-            style={{ borderLeft: filterTypes[filterType].appliedFiltersCount > 0 ? "5px solid #18aadd" : "transparent" }}
+            style={{ borderLeft: stateNav[filterTypes[filterType].countKey] > 0 ? "5px solid #18aadd" : "transparent" }}
           >
             <Grid container direction="row" justify="space-between" alignItems="center">
               <Grid item className={classes.accordionHeading}>
-                <Typography>{filterType}</Typography>
-                {filterTypes[filterType].appliedFiltersCount > 0 && (
-                  <Chip color="info" label={filterTypes[filterType].appliedFiltersCount} />
-                )}
+                <Typography style={{ padding: "15px 5px" }}>{filterType}</Typography>
+                {stateNav[filterTypes[filterType].countKey] > 0 && <Chip color="info" label={stateNav[filterTypes[filterType].countKey]} />}
               </Grid>
               <Grid item className={classes.clearIcon}>
                 <IconButton
