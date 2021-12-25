@@ -413,7 +413,7 @@ function Map({ type, paramId, lati, longi }) {
       }, 3000);
       return;
     }
-    if (!stateApp[keys[type]] || paramId !== stateApp[keys[type]]?.id) {
+    // if (!stateApp[keys[type]] || paramId !== stateApp[keys[type]]?.id) {
       const { data: layer } = await client.query({
         query: CUSTOMLAYER,
         variables: {
@@ -427,9 +427,11 @@ function Map({ type, paramId, lati, longi }) {
         jsonLayer.layer = { id: layer.customLayer.layer };
         jsonLayer.id = layer.customLayer._id;
 
-        findBoundsMap([jsonLayer], map);
+        if( !loading){
+          findBoundsMap([jsonLayer], map);
 
-        drawBoundary(map, jsonLayer);
+          drawBoundary(map, jsonLayer);
+        }
 
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -442,12 +444,11 @@ function Map({ type, paramId, lati, longi }) {
           expandedCard: true,
         }));
       }
-    }
+    // }
   }
 
   useEffect(() => {
     if (
-      !loading &&
       paramId
       // parcelId !== stateApp.selectedParcel?.id
     ) {
