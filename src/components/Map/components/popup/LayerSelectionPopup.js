@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
         width: (props) => props.cardWidth,
         height: (props) => (props.expanded ? props.height : "inherit"),
         opacity: 0.85,
-        background: "black",
+        background: "#0E111A",
         borderStyle: "solid",
         borderWidth: "thin",
         "& .MuiCardHeader-action": {
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
     },
     content: {
         transition: "height 0.1s",
-        background: "black",
+        background: "#0E111A",
         padding: "0 !important",
         overflowY: "auto",
         height: "325px",
@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     },
     accordian: {
         color: 'white',
-        background: 'black',
+        background: '#0E111A',
         margin: '0px !important',
         '& ..MuiCardHeader-root': {
             paddingBottom: '0px'
