@@ -1209,7 +1209,7 @@ function SubTable(props) {
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
-        if(column?.options?.customBodyRender){
+        if (column?.options?.customBodyRender) {
           column.options = {
             ...column.options,
             customBodyRender: column.options.customBodyRender,
@@ -4516,7 +4516,8 @@ function SubTable(props) {
                 props.parent === "associatedWellsPerParcel" || /// will need to build a backend for this search
                 props.parent === "boundary_grid_wells" || /// will need to build a backend for this search
                 props.parent === "boundary_grid_owners" || /// will need to build a backend for this search
-                props.parent === "RevenueStatementTable"
+                props.parent === "RevenueStatementTable" || /// will need to build a backend for this search
+                props.parent === "RevenuePropertiesTable" /// will need to build a backend for this search
                 ? false
                 : props.parent !== "search",
             // have to use props.parent here for initial value
