@@ -17,7 +17,6 @@ import {
 import TableHeader from "components/Table/constants/agreements-header-schema";
 
 // Utilities
-import { usetableStyles } from "../Styles";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 // import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
@@ -27,18 +26,35 @@ import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { setColumnsData } from "components/Table/helpers";
 
 const useStyles = makeStyles((theme) => ({
-    agreementTable: {
-      "& ::-webkit-scrollbar": {
-        height: "0.7em !important",
+  agreementTable: {
+    "& ::-webkit-scrollbar": {
+      height: "0.7em !important",
+    },
+  },
+  container: {
+    padding: 0,
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": {
+          maxHeight: "55vh",
+          "@media (max-height:900px)": {
+            maxHeight: "52vh",
+          },
+          "@media (max-height:800px)": {
+            maxHeight: "48vh",
+          },
+          "@media (max-height:768px)": {
+            maxHeight: "45vh",
+          },
+        },
       },
     },
-  }));
+  },
+}));
 
-  
 function AgreementsTable(props) {
   const { esIndex, setESFilters } = props;
-  const classes = usetableStyles();
-  const agreementClasses = useStyles()
+  const agreementClasses = useStyles();
   const [filters, setFilters] = useState([]);
 
   // function states
@@ -173,9 +189,7 @@ function AgreementsTable(props) {
           hit.State = hit?.originalProperties?.State;
           hit.County = hit?.originalProperties?.County;
           hit = props.setGenricData(hit, hit._id, [
-            "comments",
             "tracks",
-            "tags",
             "ifAreContacts",
           ]);
           hit.tags =
@@ -328,7 +342,7 @@ function AgreementsTable(props) {
     <div className={agreementClasses.agreementTable}>
       <Container
         maxWidth={false}
-        className={classes.container}
+        className={agreementClasses.container}
         id={props.id ? props.id : props.parent}
       >
         <Table
