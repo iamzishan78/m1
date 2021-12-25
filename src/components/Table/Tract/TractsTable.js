@@ -31,6 +31,22 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
       padding: 0,
+      "& div": {
+        "&>.MuiPaper-root": {
+          "&>:nth-child(3)": {
+            maxHeight: "55vh",
+            "@media (max-height:900px)": {
+              maxHeight: "52vh",
+            },
+            "@media (max-height:800px)": {
+              maxHeight: "48vh",
+            },
+            "@media (max-height:768px)": {
+              maxHeight: "45vh",
+            },
+          },
+        },
+      },
   }
 }));
 
