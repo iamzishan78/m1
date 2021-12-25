@@ -633,7 +633,10 @@ const ShapeActionsPopup = (props) => {
         id="convert-button"
         anchorEl={anchorConvertEl}
         open={showConvertMenu}
-        onClose={() => setAnchorConvertEl(null)}
+        onClose={() => {
+          setShowConvertMenu(false)
+          setAnchorConvertEl(null)
+        }}
         MenuListProps={{
           "aria-labelledby": "convert-button",
         }}
