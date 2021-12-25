@@ -15,7 +15,7 @@ import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoComple
 
 const tableData = [
   {
-    label: 'Parcel Name',
+    label: 'Tract Name',
     type: 'text',
     key: 'shapeLabel',
     edit: true,
@@ -222,7 +222,6 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
     setTableDataState({})
   }, [properties]);
 
-  console.log("tableTempProperties", tableTempProperties);
 
   useEffect(() => {
     if (search) {
