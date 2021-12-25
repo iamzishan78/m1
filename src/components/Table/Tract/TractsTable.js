@@ -6,7 +6,7 @@ import TableHOC from "components/Table/TableHOC";
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
 
-import { setStateIfDeepEqual, deepEqualObjects, copy } from "components/Shared/functions";
+import { setStateIfDeepEqual, deepEqualObjects } from "components/Shared/functions";
 
 // Header Schemas 
 import TableHeader from 'components/Table/constants/tracts-header-schema';
@@ -15,12 +15,15 @@ import TableHeader from 'components/Table/constants/tracts-header-schema';
 import { usetableStyles } from "../Styles";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
+// import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 // import { GET_ES_POTENTIAL_ISSUES } from "graphQL/useQueryPotentialIssue";
-import { AutoCompleteFilter } from "../AutoCompleteFilter";
+// import { AutoCompleteFilter } from "../AutoCompleteFilter";
+import { setColumnsData } from "components/Table/helpers";
 
 function TractsTable(props) {
+    const { esIndex, setESFilters } = props;
     const classes = usetableStyles();
+    const [filters, setFilters] = useState([]);
 
     // function states 
     const [columns, Columns] = useState([]);
@@ -29,11 +32,7 @@ function TractsTable(props) {
     // const [pIssuesArr, setIssuesArr] = useState([]);
 
     const [esSearch, setESSearch] = useState('');
-    const [esFilters, ESFilters] = useState([]);
-    const setESFilters = (newState) => {
 
-        setStateIfDeepEqual(ESFilters, newState); 
-    };
     const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
     // queries 
@@ -44,29 +43,29 @@ function TractsTable(props) {
         }
     });
 
-    const [getESAggsGrossAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
-        onCompleted: (aggsData) => {
-            if(aggsData?.getESAggsList?.aggregations?.grossAcresSum) {
-                props.onGrossAcresSum(aggsData?.getESAggsList?.aggregations?.grossAcresSum?.value)
-            }
-        }
-    });
+    // const [getESAggsGrossAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
+    //     onCompleted: (aggsData) => {
+    //         if(aggsData?.getESAggsList?.aggregations?.grossAcresSum) {
+    //             props.onGrossAcresSum(aggsData?.getESAggsList?.aggregations?.grossAcresSum?.value)
+    //         }
+    //     }
+    // });
 
-    const [getESAggsNetAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
-        onCompleted: (aggsData) => {
-            if(aggsData?.getESAggsList?.aggregations?.netAcresSum) {
-                props.onNetAcresSum(aggsData?.getESAggsList?.aggregations?.netAcresSum?.value)
-            }
-        }
-    });
+    // const [getESAggsNetAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
+    //     onCompleted: (aggsData) => {
+    //         if(aggsData?.getESAggsList?.aggregations?.netAcresSum) {
+    //             props.onNetAcresSum(aggsData?.getESAggsList?.aggregations?.netAcresSum?.value)
+    //         }
+    //     }
+    // });
 
-    const [getESAggsNetRoyaltyAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
-        onCompleted: (aggsData) => {
-            if(aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum) {
-                props.onNetRoyaltyAcresSum(aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum?.value)
-            }
-        }
-    });
+    // const [getESAggsNetRoyaltyAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
+    //     onCompleted: (aggsData) => {
+    //         if(aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum) {
+    //             props.onNetRoyaltyAcresSum(aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum?.value)
+    //         }
+    //     }
+    // });
 
     // const [getPotentialIssues, { data: potentialIssues }] = useLazyQuery(GET_ES_POTENTIAL_ISSUES, { fetchPolicy: "no-cache" });
 
@@ -75,7 +74,7 @@ function TractsTable(props) {
 
 
     const startPaginationAt = 25;
-    const esIndex = 'shapeowners_flat';
+    // const esIndex = 'shapeowners_flat';
     const esStaticFilters = [{
         field: "shape.layer",
         value: "parcel"
@@ -135,70 +134,79 @@ function TractsTable(props) {
     //     }
     // }, [issues]);
 
-    useEffect(() => {
-        if (tableData?.hits?.length > 0) {
-          const objectsIdsArray = tableData?.hits?.map((hit) => hit.contact._id);
-          const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
-          props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
-          props.ifAreContacts(globalOwnerIds);
-        }
-      }, [tableData]);
 
     useEffect(() => {
-        if (tableData && !props.loading) {
+        if (tableData) {
             if (tableData?.hits?.length > 0) {
-                const resolvePath = (obj, path) => {
-                    if (!obj) return null
-                    // if (Array.isArray(obj)) obj = obj[0]
+                // const resolvePath = (obj, path) => {
+                //     if (!obj) return null
+                //     // if (Array.isArray(obj)) obj = obj[0]
 
-                    const parts = path.split(".");
-                    const optionalPath = parts[0].endsWith('?')
-                    if (optionalPath) parts[0] = parts[0].slice(0,-1)
-                    if (parts.length == 1) {
-                        return obj[parts[0]] ||
-                        (optionalPath && typeof obj !== 'object' ? obj : null);
-                    }
-                    return resolvePath(obj[parts[0]], parts.slice(1).join(".")) ||
-                    (optionalPath ? resolvePath(obj, parts.slice(1).join(".")) : resolvePath(null, parts.slice(1).join(".")));
-                }
+                //     const parts = path.split(".");
+                //     const optionalPath = parts[0].endsWith('?')
+                //     if (optionalPath) parts[0] = parts[0].slice(0,-1)
+                //     if (parts.length == 1) {
+                //         return obj[parts[0]] ||
+                //         (optionalPath && typeof obj !== 'object' ? obj : null);
+                //     }
+                //     return resolvePath(obj[parts[0]], parts.slice(1).join(".")) ||
+                //     (optionalPath ? resolvePath(obj, parts.slice(1).join(".")) : resolvePath(null, parts.slice(1).join(".")));
+                // }
 
                 const hits = tableData?.hits.map((hit) => {
-                    let tempHit = { ...hit };
-                    TableHeader.forEach((col) => {
-                        if (col?.options?.dbName) {
-                            tempHit[col.name] = resolvePath(tempHit, col.options.dbName)
-                            if (col.name === 'QtrCalls') tempHit[col.name] = tempHit[col.name]?.filter(el => el)?.map((qtr, i) => `${qtr}/${i + 1}`)?.join()
-                        }
-                    })
 
-                    tempHit = props.setGenricData(tempHit, tempHit.contact._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
-                    return tempHit
+                    // let tempHit = { ...hit}
+                    // TableHeader.forEach((col) => {
+                    //     if (col?.options?.dbName) {
+                    //         tempHit[col.name] = resolvePath(tempHit, col.options.dbName)
+                    //         if (col.name === 'QtrCalls') tempHit[col.name] = tempHit[col.name]?.filter(el => el)?.map((qtr, i) => `${qtr}/${i + 1}`)?.join()
+                    //     }
+                    // })
+                    // tempHit = props.setGenricData(tempHit, tempHit.contact._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
+
+                    hit.QtrCalls = hit.qtr?.filter(el => el)?.map((qtr, i) => `${qtr}/${i + 1}`)?.join()
+                    hit.tags = hit?.tags?.length > 0
+                    ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+                    : [[], 0];
+                    hit.commentsCounter = hit.comments ? hit.comments.length : 0;
+                    return hit
                 })
 
                 // props.onGettingStatements(hits);
                 props.setRows(hits);
-                let headers = copy(TableHeader)
+                // let headers = copy(TableHeader)
 
-                headers.forEach((column) => {
-                    if (column?.options?.filter) {
-                        column.options = {
-                            ...column.options,
-                            filter: true,
-                            filterType: 'custom',
-                            filterOptions: {
-                                display: (filterList, onChange, index, column) => {
-                                    column.filterKey = headers.find(el => el.name === column.name)?.esKey;
-                                    return (
-                                        <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-                                            query={GET_ES_FILTER_LIST} esIndex={esIndex} filters={esFilters} />
-                                    );
-                                }
-                            }
-                        }
-                    }
-                })
+                // headers.forEach((column) => {
+                //     if (column?.options?.filter) {
+                //         column.options = {
+                //             ...column.options,
+                //             filter: true,
+                //             filterType: 'custom',
+                //             filterOptions: {
+                //                 display: (filterList, onChange, index, column) => {
+                //                     column.filterKey = headers.find(el => el.name === column.name)?.esKey;
+                //                     return (
+                //                         <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
+                //                             query={GET_ES_FILTER_LIST} esIndex={esIndex} filters={esFilters} />
+                //                     );
+                //                 }
+                //             }
+                //         }
+                //     }
+                // })
 
-                setColumns(headers);
+                // setColumns(headers);
+
+                setColumnsData(
+                    TableHeader,
+                    filters,
+                    JSON.parse(JSON.stringify(TableHeader)),
+                    setColumns,
+                    setFilters,
+                    GET_ES_FILTER_LIST,
+                    esIndex
+                  );
+
                 props.setLoading(false);
             }
             else if (tableData?.hits?.length === 0) {
@@ -210,48 +218,48 @@ function TractsTable(props) {
             }
 
             props.onTractCount(count)
-            getESAggsGrossAcresSum({
-                variables: {
-                    esIndex,
-                    search: esSearch,
-                    filters: esFilters,
-                    aggs: {
-                        grossAcresSum: {
-                            sum: {
-                                field: "grossAcres"
-                            }
-                        }
-                    }
-                }
-            });
-            getESAggsNetAcresSum({
-                variables: {
-                    esIndex,
-                    search: esSearch,
-                    filters: esFilters,
-                    aggs: {
-                        netAcresSum: {
-                            sum: {
-                                field: "net_acres"
-                            }
-                        }
-                    }
-                }
-            })
-            getESAggsNetRoyaltyAcresSum({
-                variables: {
-                    esIndex,
-                    search: esSearch,
-                    filters: esFilters,
-                    aggs: {
-                        netRoyaltyAcresSum: {
-                            sum: {
-                                field: "nra"
-                            }
-                        }
-                    }
-                }
-            })
+            // getESAggsGrossAcresSum({
+            //     variables: {
+            //         esIndex,
+            //         search: esSearch,
+            //         filters: esFilters,
+            //         aggs: {
+            //             grossAcresSum: {
+            //                 sum: {
+            //                     field: "grossAcres"
+            //                 }
+            //             }
+            //         }
+            //     }
+            // });
+            // getESAggsNetAcresSum({
+            //     variables: {
+            //         esIndex,
+            //         search: esSearch,
+            //         filters: esFilters,
+            //         aggs: {
+            //             netAcresSum: {
+            //                 sum: {
+            //                     field: "net_acres"
+            //                 }
+            //             }
+            //         }
+            //     }
+            // })
+            // getESAggsNetRoyaltyAcresSum({
+            //     variables: {
+            //         esIndex,
+            //         search: esSearch,
+            //         filters: esFilters,
+            //         aggs: {
+            //             netRoyaltyAcresSum: {
+            //                 sum: {
+            //                     field: "nra"
+            //                 }
+            //             }
+            //         }
+            //     }
+            // })
         }
     }, [tableData, props.dependencyUpdate]);
 

@@ -21,7 +21,7 @@ const AgreementsHeadCells = [
           <p
             onClick={(e) => {
               e.stopPropagation();
-                history.push(`/map/${tableMeta.rowData[3]}s/${tableMeta.rowData[0]}`);
+                history.push(`/map/${tableMeta.rowData[3]}s/${tableMeta.rowData[0]}`, { showAgreementBreadcrumb: true });
             }}
             style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
           >

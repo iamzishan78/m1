@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { AppContext } from "AppContext";
-import AgreementAnalyticsCards from "components/Land/components/Agreements/AgreementAnalyticsCards";
+import AnalyticsCards from "components/Land/components/Common/AnalyticsCards";
 import AgreementsTable from "../../../Table/Agreement/AgreementsTable";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 
@@ -41,7 +41,7 @@ function Agreements(props) {
 
   return (
     <>
-      <AgreementAnalyticsCards
+      <AnalyticsCards
         esIndex={esIndex}
         esFilters={esFilters}
         cardsDefault={cardsDefault}
