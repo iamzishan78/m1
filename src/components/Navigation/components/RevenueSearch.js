@@ -1,10 +1,11 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useMemo } from "react";
 import { InputAdornment, TextField, IconButton, Tooltip } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 
 import { AppContext } from "AppContext";
+import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
 
 const useStyles = makeStyles((theme) => ({
   search: {
@@ -57,10 +58,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const LandSearch = () => {
+const LandSearch = ({ activeModule }) => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [search, setSearch] = useState("");
+
+  const searchPlaceholder = useMemo(() => {
+    switch (activeModule.title) {
+      case SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title:
+        return "Search by check number or attribute";
+      case SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title:
+        return "Search by property number or attribute";
+      default:
+        return "";
+    }
+  }, [activeModule]);
 
   return (
     <div className={classes.search}>
@@ -82,7 +94,7 @@ const LandSearch = () => {
         className={classes.contactSearchField}
         margin="dense"
         variant="outlined"
-        placeholder="Search by check number or check attribute"
+        placeholder={searchPlaceholder}
         InputProps={{
           startAdornment: (
             <InputAdornment>
