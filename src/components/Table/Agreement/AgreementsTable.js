@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
 
 function AgreementsTable(props) {
   const { esIndex, setESFilters } = props;
-  const agreementClasses = useStyles();
+  const classes = useStyles();
   const [filters, setFilters] = useState([]);
 
   // function states
@@ -339,10 +339,10 @@ function AgreementsTable(props) {
   };
 
   return (
-    <div className={agreementClasses.agreementTable}>
+    <div className={classes.agreementTable}>
       <Container
         maxWidth={false}
-        className={agreementClasses.container}
+        className={classes.container}
         id={props.id ? props.id : props.parent}
       >
         <Table
