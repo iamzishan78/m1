@@ -1144,8 +1144,6 @@ function SubTable(props) {
   };
 
   ////setting all icons columns/////
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [menuID, setMenuID] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserIndex, setSelectedUserIndex] = useState(null);
   const [isUMSettings, setUsermanagementSettings] = useState([]);
@@ -1157,13 +1155,6 @@ function SubTable(props) {
     setM1nSelectedRowsIds([]);
   };
 
-  const changeAdminAccess = () => {
-    selectedUser.adminAccess = !selectedUser.adminAccess;
-    rows !== null
-      ? setExpandedObject([rows, selectedUser])
-      : setExpandedObject([props.rows, selectedUser]);
-    closeMenu();
-  };
 
   const openMenu = (event, rowIndex, user) => {
     event.stopPropagation();
@@ -1482,7 +1473,6 @@ function SubTable(props) {
                 },
               };
             }
-
             break;
           case "adminAccess":
             {
@@ -1500,7 +1490,6 @@ function SubTable(props) {
                 }),
               };
             }
-
             break;
           case "parcelIcon": //// open parcel detail card
             {
