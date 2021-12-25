@@ -296,6 +296,7 @@ export default function UnitDetailCard(props) {
                 relatedObjectType='Shape'
                 name='Unit'
                 header={<DocumentHeader />}
+                addAble={{ type: "UnitDocument" }}
                 dense
               />
             </div>
