@@ -2425,7 +2425,7 @@ function SubTable(props) {
               customBodyRender: (value) => {
                 const splitNumber = value.split("_");
                 return (
-                  <p style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}>
+                  <p style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer", ...column.style }}>
                     {splitNumber[0]}
                   </p>
                 );
