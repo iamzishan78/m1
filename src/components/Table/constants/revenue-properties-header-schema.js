@@ -22,6 +22,7 @@ const RevenuePropertiesHeadCells = [
     label: "Payor Name",
     esKey: "operator.name.keyword",
     options: { sort: true, filter: true },
+    style: { minWidth: 150 }
   },
   {
     name: "state",
