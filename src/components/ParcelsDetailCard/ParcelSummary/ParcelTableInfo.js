@@ -15,7 +15,7 @@ import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoComple
 
 const tableData = [
   {
-    label: 'Parcel Name',
+    label: 'Tract Name',
     type: 'text',
     key: 'shapeLabel',
     edit: true,
