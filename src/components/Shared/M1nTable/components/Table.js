@@ -2419,13 +2419,17 @@ function SubTable(props) {
               },
             };
             break;
-          case "checkNumber":
+          case "number":
             column.options = {
               ...column.options,
               customBodyRender: (value) => {
                 const splitNumber = value.split("_");
+                let styles = { ...column.style };
+                if (props.parent === "RevenuePropertiesTable") {
+                  styles = { ...styles, fontWeight: 600, color: "#17aadd", cursor: "pointer" };
+                }
                 return (
-                  <p style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer", ...column.style }}>
+                  <p style={styles}>
                     {splitNumber[0]}
                   </p>
                 );
