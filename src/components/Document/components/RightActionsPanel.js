@@ -53,26 +53,15 @@ export default function Drawer(props) {
   const classes = useStyles(props);
   const { activePanel, setPanel } = props;
 
+
   const drawerIcons = {
     Home: (props) => (
-      <Badge
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        color="primary"
-      >
+      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary">
         <HomeIcon {...props} />
       </Badge>
     ),
     Wells: (props) => (
-      <Badge
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        color="#919aa3"
-      >
+      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary" >
         <WellIcon {...props} />
       </Badge>
     ),
@@ -84,8 +73,7 @@ export default function Drawer(props) {
         <Tooltip title={key} placement="left">
           <div
             className={`${classes.icon} ${activePanel === key ? classes.activeIcon : classes.inactiveIcon}`}
-            onClick={() => setPanel(key)}
-          >
+            onClick={() => setPanel(key)}>
             {drawerIcons[key]({
               opacity: "1",
               height: "30",
