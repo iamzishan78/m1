@@ -71,15 +71,18 @@ const useStyles = makeStyles((theme) => ({
         },
         color: "white",
     },
-    contentGrid: {
-        padding: 20,
-    },
     accordian: {
         color: 'white',
         background: 'black',
         margin: '0px !important',
+        '& ..MuiCardHeader-root': {
+            paddingBottom: '0px'
+        },
         '& .MuiSvgIcon-root': {
             color: 'white'
+        },
+        '& .MuiAccordionSummary-root.Mui-expanded': {
+            minHeight: '48px'
         },
         '& .MuiAccordionSummary-content.Mui-expanded': {
             minHeight: '12px',
@@ -96,34 +99,24 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function GetTitle() {
-    const classes = useStyles();
 
-    const [search, setSearch] = useState('');
-    return (
-        <Grid container direction="row" justifyContent="space-between" alignItems="center">
-            <Grid item>
-                <Grid container direction="row" spacing={1} alignItems="center">
-                    <Grid item>
-                        <LayerSelectionIcon className={classes.icons} />
-                    </Grid>
-                    <Grid item>
-                        Available Layers
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item>
-                <ExpandableSearch setSearch={setSearch} search={search} />
-            </Grid>
-        </Grid>
-    );
-};
+const startsWith = (value, keys) => {
+    let val = false
+    keys.forEach(key => {
+        if (key && key.toString().toLowerCase().startsWith(value.toLowerCase())) {
+            val = true
+            return
+        }
+    })
+    return val
+}
 
 function LayerSelectionPopup(props) {
     const classes = useStyles(props);
     const history = useHistory();
+    const [search, setSearch] = useState('');
     // contexts
-    const { selectionLayers } = props;
+    let { selectionLayers } = props;
 
     const getSourceName = (name) => {
         name = name.replace('VT', '').replace('_source', '')
@@ -131,10 +124,17 @@ function LayerSelectionPopup(props) {
     }
 
     const getLayerName = (layer) => {
-        if (layer.source === 'wellsVT') {
-            return layer.properties.wellName
-        } else
-            return layer.properties.shapeLabel
+        if (layer.properties) {
+            const properties = layer?.properties
+            if (layer.source === 'wellsVT') {
+                return `${properties.api}-${properties.wellName}`
+            } else if (layer.source === 'parcels_source') {
+                return properties.shapeLabel
+            } else if (layer.source === 'units_source') {
+                return `${properties.uNumber ? properties.uNumber + '-' : ''}${properties.shapeLabel}`
+            } else
+                return `${properties.agreementNumber ? properties.agreementNumber + '-' : ''}${properties.agreementName}`
+        }
     }
 
     const selectLayer = (layer) => {
@@ -147,9 +147,50 @@ function LayerSelectionPopup(props) {
 
         history.location.pathname !== newPath && history.replace(newPath);
     }
-
+    if (search)
+        selectionLayers = selectionLayers.filter((selectionLayer) => {
+            const properties = selectionLayer?.properties
+            if (selectionLayer.source === 'wellsVT') {
+                return startsWith(search, [properties.api, properties.wellName])
+            } else if (selectionLayer.source === 'parcels_source') {
+                return startsWith(search, [properties.shapeLabel])
+            } else if (selectionLayer.source === 'units_source') {
+                return startsWith(search, [properties.uNumber, properties.shapeLabel])
+            } else
+                return startsWith(search, [properties.agreementNumber, properties.agreementName])
+        })
     const groupFeatures = _.groupBy(selectionLayers, 'source');
-    console.log(groupFeatures)
+    // console.log(groupFeatures)
+
+    function GetTitle() {
+        const classes = useStyles();
+
+        const [clicked, setClicked] = useState(false);
+
+        let style
+        if (!clicked && search.length === 0) {
+            style = { visibility: 'visible', }
+        } else {
+            style = { opacity: 0, height: 0, visibility: 'hidden' }
+        }
+        return (
+            <Grid container direction="row" justifyContent="space-between" alignItems="center">
+                <Grid item style={style}>
+                    <Grid container direction="row" spacing={1} alignItems="center">
+                        <Grid item>
+                            <LayerSelectionIcon className={classes.icons} />
+                        </Grid>
+                        <Grid item>
+                            Available Layers
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item>
+                    <ExpandableSearch setSearch={setSearch} search={search} setClicked={setClicked} focusColor='inherit' hoverColor={'inherit'} />
+                </Grid>
+            </Grid>
+        );
+    };
 
     return (
         <React.Fragment>
@@ -157,7 +198,8 @@ function LayerSelectionPopup(props) {
                 <CardHeader
                     classes={{ title: classes.title, subheader: classes.subheader }}
                     title={GetTitle()}
-                />
+                >
+                </CardHeader >
                 <CardContent className={classes.content}>
                     {
                         Object.keys(groupFeatures).map((key) =>

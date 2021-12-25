@@ -1406,21 +1406,29 @@ function Map({ type, paramId, lati, longi }) {
       }
     };
     const mapRightClickHandler = (e) => {
-
-      var bbox = [[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]];
-      let features = map.queryRenderedFeatures(bbox, { layers: [...defaultLayers, 'wellpoints'] });
-      features = features.filter((feature) => feature.source !== "composite" && feature.source !== 'abstract_geo_source' && feature.layer.id !== 'welllines')
-
-      let coordinates = [e.lngLat.lng, e.lngLat.lat];
+      setStateApp((state) => ({
+        ...state, layerSelectionPopup: false, popupOpen: false
+      }));
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps?.length > 0) {
         for (const popUp of popUps) popUp.remove()
       }
 
-      setStateApp((state) => ({
-        ...state, layerSelectionPopup: false, popupOpen: false
-      }));
+      var bbox = [[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]];
+      let features = map.queryRenderedFeatures(bbox, { layers: [...defaultLayers] });
+      if (features?.length === 0)
+        return ''
 
+      const shape = features.find((feature) => feature.source !== 'wellsVT')
+      const shapeBbox = turf.bbox(shape)
+      const southWest = [shapeBbox[0], shapeBbox[1]];
+      const northEast = [shapeBbox[2], shapeBbox[3]];
+      const polygon = [map.project(northEast), map.project(southWest)];
+
+      let wellsFeatures = map.queryRenderedFeatures(polygon, { layers: ['wellpoints'] });
+      features = features.concat(wellsFeatures)
+
+      let coordinates = [e.lngLat.lng, e.lngLat.lat];
       setTimeout(() => {
         new mapboxgl.Popup({ offset: 0, closeOnClick: false })
           .setLngLat(coordinates).setMaxWidth("none").setHTML(`<div id="popupContainer"></div>`).addTo(map);
@@ -1432,7 +1440,7 @@ function Map({ type, paramId, lati, longi }) {
 
       }, 0)
 
-      console.log(e, features);
+      // console.log(e, features);
     }
     if (map) {
       if (mapClick && mapClick.mapClickHandler) {
@@ -1441,7 +1449,6 @@ function Map({ type, paramId, lati, longi }) {
       if (mapRightClick && mapRightClick.mapRightClickHandler) {
         map.off("contextmenu", mapRightClick.mapRightClickHandler);
       }
-      console.log('contextmenu initialized')
       map.on('contextmenu', mapRightClickHandler);
       map.on("click", mapClickHandler);
 
