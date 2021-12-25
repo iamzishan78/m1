@@ -52,14 +52,19 @@ export default function Portfolio({ onChangeDates }) {
   const [toDate, setToDate] = React.useState(null);
 
   useEffect(() => {
+    handleDateTypeChange(CUSTOM_DATES.LAST_MONTH);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (onChangeDates) onChangeDates(fromDate, toDate);
-  }, [fromDate, toDate]);
+  }, [onChangeDates, fromDate, toDate]);
 
   const getFlaggedMoment = (moment) => {
     return moment >= 10 ? moment : `0${moment}`;
   };
 
-  const hadnleDateTypeChange = (date) => {
+  const handleDateTypeChange = (date) => {
     const currentYear = Math.round(new Date().getFullYear());
     const currentMonth = Math.ceil(new Date().getMonth());
     const currentQuarter = Math.ceil((new Date().getMonth() + 1) / 3);
@@ -110,12 +115,13 @@ export default function Portfolio({ onChangeDates }) {
           <Autocomplete
             size="small"
             onChange={(event, newValue) => {
-              hadnleDateTypeChange(newValue);
+              handleDateTypeChange(newValue);
             }}
             options={Object.values(CUSTOM_DATES)}
             renderInput={(params) => (
               <TextField {...params} variant="outlined" label="Date Range" placeholder="" style={{ backgroundColor: "white" }} />
             )}
+            defaultValue={CUSTOM_DATES.LAST_MONTH}
             disableListWrap
             id="custom-date-dropdown"
           />
