@@ -122,7 +122,7 @@ export default function Properties() {
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
               <Grid item>
                 <Button variant="contained" color="secondary">
-                  ave View
+                  Save View
                 </Button>
               </Grid>
               <Grid item>
