@@ -565,6 +565,17 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     fontSize: "smaller",
   },
+  warningCol: {
+    display: "flex",
+    color: "#f1af29",
+    "& svg": {
+      fill: "#f1af29 !important"
+    },
+    "& div": {
+      marginTop: "3px",
+      fontSize: "initial"
+    }
+  }
 }));
 
 function SubTable(props) {
@@ -2451,7 +2462,7 @@ function SubTable(props) {
           case "status":
             column.options = {
               ...column.options,
-              customBodyRender: (value) => {
+              customBodyRender: (value, tableMeta) => {
                 return (
                   <>
                     {props.parent === "RevenueStatementTable" && (
@@ -2462,31 +2473,43 @@ function SubTable(props) {
                       </div>
                     )}
                     {(props.parent === "RevenuePropertiesTable") && (
-                      <div className={classes.flexAlign}>
-                        {value?.toLowerCase() === "approved" ? (
-                          <div className={classes.activeBadge} />
-                        ) : value?.toLowerCase() === "pending" ? (
-                          <div className={classes.pendingBadge} />
-                        ) : value?.toLowerCase() === "declined" ? (
-                          <div className={classes.declinedBadge} />
+                      <>
+                        {!tableMeta.rowData[8] && !tableMeta.rowData[8] ? (
+                          <div className={classes.warningCol}>
+                            <WarningIcon />
+                            <div>Unmapped</div>
+                          </div>
                         ) : (
-                          <div className={classes.statusBtnDiv}>
-                            <div className={classes.approveBtn}>Approve</div>
-                            <div className={classes.declineBtn}>Decline</div>
+                          <div className={classes.flexAlign}>
+                            {value?.toLowerCase() === "approved" ? (
+                              <div className={classes.activeBadge} />
+                            ) : value?.toLowerCase() === "pending" ? (
+                              <div className={classes.pendingBadge} />
+                            ) : value?.toLowerCase() === "declined" ? (
+                              <div className={classes.declinedBadge} />
+                            ) : (
+                              <div className={classes.statusBtnDiv}>
+                                <div className={classes.approveBtn}>Approve</div>
+                                <div className={classes.declineBtn}>Decline</div>
+                              </div>
+                            )}
+                            <div>{value}</div>
                           </div>
                         )}
-                        <div>{value}</div>
-                      </div>
-                    )}
-                    {props.parent === "AgreementsTable" && (
-                      <div style={{ display: "flex", "align-items": "center" }}>
-                        {value?.toLowerCase() === "approved"
-                          ? (<div style={{ background: "#17c10d", height: 12, "min-width": 12, marginRight: 8, borderRadius: "50%" }} />)
-                          : (<div style={{ background: "#ffa800", height: 12, "min-width": 12, marginRight: 8, borderRadius: "50%" }} />)
-                        }
-                        {value}
-                      </div>
-                    )}
+                      </>
+                    )
+                    }
+                    {
+                      props.parent === "AgreementsTable" && (
+                        <div style={{ display: "flex", "align-items": "center" }}>
+                          {value?.toLowerCase() === "approved"
+                            ? (<div style={{ background: "#17c10d", height: 12, "min-width": 12, marginRight: 8, borderRadius: "50%" }} />)
+                            : (<div style={{ background: "#ffa800", height: 12, "min-width": 12, marginRight: 8, borderRadius: "50%" }} />)
+                          }
+                          {value}
+                        </div>
+                      )
+                    }
                   </>
                 );
               },
