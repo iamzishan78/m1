@@ -114,7 +114,7 @@ export default function Portfolio({ onChangeDates }) {
             }}
             options={Object.values(CUSTOM_DATES)}
             renderInput={(params) => (
-              <TextField {...params} variant="outlined" label="Custom" placeholder="" style={{ backgroundColor: "white" }} />
+              <TextField {...params} variant="outlined" label="Date Range" placeholder="" style={{ backgroundColor: "white" }} />
             )}
             disableListWrap
             id="custom-date-dropdown"
