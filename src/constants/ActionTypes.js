@@ -26,3 +26,7 @@ export const MAP_LAYERS_FILTERS_PANEL_EXPANDED = "MAP_LAYERS_FILTERS_PANEL_EXPAN
 
 // Flow
 export const SET_FLOW_STATE = "SET_FLOW_STATE";
+
+// Documents
+export const SET_DOCUMENT_ID_AS_DESCRIPTOR = 'SET_DOCUMENT_ID_AS_DESCRIPTOR' // will be used for fetching wells attached
+export const WELLS_FROM_DOCUMENTS = 'WELLS_FROM_DOCUMENTS'
