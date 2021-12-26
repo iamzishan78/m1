@@ -174,7 +174,7 @@ function LayerSelectionPopup(props) {
             style = { opacity: 0, height: 0, visibility: 'hidden' }
         }
         return (
-            <Grid container direction="row" justifyContent="space-between" alignItems="center">
+            <Grid container direction="row" justifyContent="space-between" style={{ justifyContent: 'space-between' }} alignItems="center">
                 <Grid item style={style}>
                     <Grid container direction="row" spacing={1} alignItems="center">
                         <Grid item>
