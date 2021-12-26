@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
         '& .MuiListItem-root, & .MuiList-padding': {
             paddingTop: '0px',
             paddingBottom: '0px',
-            color: '#8d8d8e'
+            color: '#d3d3d3'
         }
     }
 }));
@@ -185,7 +185,7 @@ function LayerSelectionPopup(props) {
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item>
+                <Grid item >
                     <ExpandableSearch setSearch={setSearch} search={search} setClicked={setClicked} focusColor='inherit' hoverColor={'inherit'} />
                 </Grid>
             </Grid>
