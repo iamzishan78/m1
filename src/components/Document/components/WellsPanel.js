@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
-import { Grid, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase } from "@material-ui/core";
+import { Grid, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase, Button } from "@material-ui/core";
 import get from "lodash/get";
 import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
@@ -14,6 +14,7 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import IconButton from "@material-ui/core/IconButton";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { REMOVEDEALDESCRIPTOR } from "graphQL/useMutationRemoveDealDescriptor";
+import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument'
 import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles((theme) => ({
@@ -126,9 +127,13 @@ export default function Contacts(props) {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
+  const [getWellsFromDocument, { data: wellsFromDocument }] = useLazyQuery(GETWELLSFROMDOCUMENTS, {
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+  });
   // const [addNewContact, { data: addWellData }] = useMutation(ADDCONTACT);
-  const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
-
+  const [removeDealDescriptor,] = useMutation(REMOVEDEALDESCRIPTOR);
+  console.log('wellDescriptorData', wellsFromDocument)
   useEffect(() => {
     //will also run during initial mount
     setIsNextPageLoading(true);
@@ -229,6 +234,7 @@ export default function Contacts(props) {
             {!isSearchActive && (
               <Grid item xs={10}>
                 <Typography variant="h6">Wells</Typography>
+                <Button onClick={() => getWellsFromDocument()}>Click</Button>
               </Grid>
             )}
             <Grid item xs={1}>
