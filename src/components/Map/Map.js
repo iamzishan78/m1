@@ -386,6 +386,21 @@ function Map({ type, paramId, lati, longi }) {
     };
   };
 
+  useEffect(() => {
+    return () => {
+      setStateApp((state) => ({
+        ...state,
+        popupOpen: false,
+        selectedWell: null,
+        selectedParcel: null,
+        selectedShape: null,
+        selectedPermit: null,
+        expandedCard: false,
+        viewDoc: null,
+      }));
+    }
+  },[]);
+
   async function getCustomLayer() {
     const keys = { parcels: "selectedParcel", ...layersWithSelectedShapeKey(), wells: "selectedWell" };
 

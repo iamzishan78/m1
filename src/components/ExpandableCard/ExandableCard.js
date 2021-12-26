@@ -383,33 +383,33 @@ function ExpandableCard(props) {
             <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
           }
 
-{(targetLabel === "parcel") && (props.expanded === true) &&
-          <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
-            <Grid item><Avatar color='#1a2341'>
-              <FolderIcon fontColor='#1a2341' />
-            </Avatar>
+          {(targetLabel === "parcel") && (props.expanded === true) &&
+            <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+              <Grid item><Avatar color='#1a2341'>
+                <FolderIcon fontColor='#1a2341' />
+              </Avatar>
+              </Grid>
+              <Grid item>
+                <Box className='name'>
+                  {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
+                </Box>
+                {subTitle && (<Box className='description'>{subTitle}</Box>)}
+                <Box className='type' >Tract</Box>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Box className='name'>
+          }
+
+          {(targetLabel === "parcel") && (props.expanded === false) && (
+            <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+              <Box className='name'
+                style={{
+                  fontSize: 14,
+                  marginTop: -6
+                }}>
                 {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
               </Box>
-              {subTitle && (<Box className='description'>{subTitle}</Box>)}
-              <Box className='type' >Parcel</Box>
             </Grid>
-          </Grid>
-        }
-
-        {(targetLabel === "parcel") && (props.expanded === false) && (
-          <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
-            <Box className='name'
-              style={{
-                fontSize: 14,
-                marginTop: -6
-              }}>
-              {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
-            </Box>
-          </Grid>
-        )}
+          )}
 
             {
               (targetLabel === "contact"
@@ -591,6 +591,7 @@ function ExpandableCard(props) {
               }
               {targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
+                targetLabel !== "parcel" &&
                 !stateApp?.selectedShape &&
                 (
                   <CommentsWithIcon
@@ -602,6 +603,7 @@ function ExpandableCard(props) {
 
               {targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
+                targetLabel !== "parcel" &&
                 !stateApp?.selectedShape &&
                 targetLabel !== "recent_submitted_permits" && (
                   <TaggerWithIcon

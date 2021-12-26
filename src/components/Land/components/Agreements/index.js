@@ -49,7 +49,7 @@ function Agreements(props) {
         setESFilters={setESFilters}
         landSearchQuery={stateApp.landSearchQuery}
       />
-      <div style={{ padding: 30, paddingTop: 0, overflow: "auto" }}>
+      <div style={{ padding: 30, paddingTop: 0 }}>
         <AgreementsTable
           esIndex={esIndex}
           header="Agreements"
