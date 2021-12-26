@@ -565,6 +565,17 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     fontSize: "smaller",
   },
+  warningCol: {
+    display: "flex",
+    color: "#f1af29",
+    "& svg": {
+      fill: "#f1af29 !important"
+    },
+    "& div": {
+      marginTop: "3px",
+      fontSize: "initial"
+    }
+  }
 }));
 
 function SubTable(props) {
@@ -1144,8 +1155,6 @@ function SubTable(props) {
   };
 
   ////setting all icons columns/////
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [menuID, setMenuID] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserIndex, setSelectedUserIndex] = useState(null);
   const [isUMSettings, setUsermanagementSettings] = useState([]);
@@ -1157,13 +1166,6 @@ function SubTable(props) {
     setM1nSelectedRowsIds([]);
   };
 
-  const changeAdminAccess = () => {
-    selectedUser.adminAccess = !selectedUser.adminAccess;
-    rows !== null
-      ? setExpandedObject([rows, selectedUser])
-      : setExpandedObject([props.rows, selectedUser]);
-    closeMenu();
-  };
 
   const openMenu = (event, rowIndex, user) => {
     event.stopPropagation();
@@ -1218,7 +1220,7 @@ function SubTable(props) {
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
-        if(column?.options?.customBodyRender){
+        if (column?.options?.customBodyRender) {
           column.options = {
             ...column.options,
             customBodyRender: column.options.customBodyRender,
@@ -1482,7 +1484,6 @@ function SubTable(props) {
                 },
               };
             }
-
             break;
           case "adminAccess":
             {
@@ -1500,7 +1501,6 @@ function SubTable(props) {
                 }),
               };
             }
-
             break;
           case "parcelIcon": //// open parcel detail card
             {
@@ -2430,13 +2430,17 @@ function SubTable(props) {
               },
             };
             break;
-          case "checkNumber":
+          case "number":
             column.options = {
               ...column.options,
               customBodyRender: (value) => {
                 const splitNumber = value.split("_");
+                let styles = { ...column.style };
+                if (props.parent === "RevenuePropertiesTable") {
+                  styles = { ...styles, fontWeight: 600, color: "#17aadd", cursor: "pointer" };
+                }
                 return (
-                  <p style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}>
+                  <p style={styles}>
                     {splitNumber[0]}
                   </p>
                 );
@@ -2458,7 +2462,7 @@ function SubTable(props) {
           case "status":
             column.options = {
               ...column.options,
-              customBodyRender: (value) => {
+              customBodyRender: (value, tableMeta) => {
                 return (
                   <>
                     {props.parent === "RevenueStatementTable" && (
@@ -2469,31 +2473,43 @@ function SubTable(props) {
                       </div>
                     )}
                     {(props.parent === "RevenuePropertiesTable") && (
-                      <div className={classes.flexAlign}>
-                        {value?.toLowerCase() === "approved" ? (
-                          <div className={classes.activeBadge} />
-                        ) : value?.toLowerCase() === "pending" ? (
-                          <div className={classes.pendingBadge} />
-                        ) : value?.toLowerCase() === "declined" ? (
-                          <div className={classes.declinedBadge} />
+                      <>
+                        {!tableMeta.rowData[8] && !tableMeta.rowData[8] ? (
+                          <div className={classes.warningCol}>
+                            <WarningIcon />
+                            <div>Unmapped</div>
+                          </div>
                         ) : (
-                          <div className={classes.statusBtnDiv}>
-                            <div className={classes.approveBtn}>Approve</div>
-                            <div className={classes.declineBtn}>Decline</div>
+                          <div className={classes.flexAlign}>
+                            {value?.toLowerCase() === "approved" ? (
+                              <div className={classes.activeBadge} />
+                            ) : value?.toLowerCase() === "pending" ? (
+                              <div className={classes.pendingBadge} />
+                            ) : value?.toLowerCase() === "declined" ? (
+                              <div className={classes.declinedBadge} />
+                            ) : (
+                              <div className={classes.statusBtnDiv}>
+                                <div className={classes.approveBtn}>Approve</div>
+                                <div className={classes.declineBtn}>Decline</div>
+                              </div>
+                            )}
+                            <div>{value}</div>
                           </div>
                         )}
-                        <div>{value}</div>
-                      </div>
-                    )}
-                    {props.parent === "AgreementsTable" && (
-                      <div style={{ display: "flex", "align-items": "center" }}>
-                        {value?.toLowerCase() === "approved"
-                          ? (<div style={{ background: "#17c10d", height: 12, "min-width": 12, marginRight: 8, borderRadius: "50%" }} />)
-                          : (<div style={{ background: "#ffa800", height: 12, "min-width": 12, marginRight: 8, borderRadius: "50%" }} />)
-                        }
-                        {value}
-                      </div>
-                    )}
+                      </>
+                    )
+                    }
+                    {
+                      props.parent === "AgreementsTable" && (
+                        <div style={{ display: "flex", "align-items": "center" }}>
+                          {value?.toLowerCase() === "approved"
+                            ? (<div style={{ background: "#17c10d", height: 12, "min-width": 12, marginRight: 8, borderRadius: "50%" }} />)
+                            : (<div style={{ background: "#ffa800", height: 12, "min-width": 12, marginRight: 8, borderRadius: "50%" }} />)
+                          }
+                          {value}
+                        </div>
+                      )
+                    }
                   </>
                 );
               },
@@ -4527,7 +4543,8 @@ function SubTable(props) {
                 props.parent === "associatedWellsPerParcel" || /// will need to build a backend for this search
                 props.parent === "boundary_grid_wells" || /// will need to build a backend for this search
                 props.parent === "boundary_grid_owners" || /// will need to build a backend for this search
-                props.parent === "RevenueStatementTable"
+                props.parent === "RevenueStatementTable" || /// will need to build a backend for this search
+                props.parent === "RevenuePropertiesTable" /// will need to build a backend for this search
                 ? false
                 : props.parent !== "search",
             // have to use props.parent here for initial value
