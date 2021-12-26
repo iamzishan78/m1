@@ -27,22 +27,28 @@ export default function RevenueAppBar(props) {
               {activeModule.title}
             </Typography>
           </Grid>
-          {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title && (
-            <Grid item md={5} style={{ marginLeft: "20px" }}>
-              <RevenueSearch />
-            </Grid>
-          )}
+          {(
+            activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title ||
+            activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title
+          ) && (
+              <Grid item md={5} style={{ marginLeft: "20px" }}>
+                <RevenueSearch activeModule={activeModule} />
+              </Grid>
+            )}
         </Grid>
       </Grid>
-      {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title && (
-        <Grid item>
-          <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-            <Button color="primary" variant="contained" startIcon={<Add />}>
-              Add {activeModule.title}
-            </Button>
-          </div>
-        </Grid>
-      )}
+      {(
+        activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title ||
+        activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title
+      ) && (
+          <Grid item>
+            <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+              <Button color="primary" variant="contained" startIcon={<Add />}>
+                Add {activeModule.title}
+              </Button>
+            </div>
+          </Grid>
+        )}
     </Grid>
   );
 }

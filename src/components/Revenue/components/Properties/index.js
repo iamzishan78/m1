@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+import { AppContext } from "AppContext";
 import { Grid, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
@@ -49,6 +50,7 @@ const cards = [
 
 export default function Portfolio() {
   const classes = useStyles();
+  const [stateApp] = useContext(AppContext);
 
   return (
     <>
@@ -71,7 +73,13 @@ export default function Portfolio() {
       </div>
       <AnalyticsCards cards={cards} />
       <div className={classes.propertyTableContainer}>
-        <RevenuePropertiesTable header="Properties" parent="RevenuePropertiesTable" loading={false} dense={true} />
+        <RevenuePropertiesTable
+          header="Properties"
+          parent="RevenuePropertiesTable"
+          loading={false}
+          dense={true}
+          revenueSearchQuery={stateApp.revenueSearchQuery}
+        />
       </div>
     </>
   );

@@ -69,12 +69,12 @@ function RevenuePropertiesTable(props) {
           first: startPaginationAt,
           keep_alive: "1micros",
         },
-        search: ``,
+        search: props.revenueSearchQuery,
         sort: [],
         filter: "",
       },
     });
-  }, [getESPaginatedList, props.parent]);
+  }, [getESPaginatedList, props.parent, props.revenueSearchQuery]);
 
   const onTableChange = (action, tableState, rows, meta) => {
     tableState.esIndex = esIndex;

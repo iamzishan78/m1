@@ -57,9 +57,10 @@ function RevenueStatementTable(props) {
                     first: startPaginationAt,
                     keep_alive: "1micros"
                 },
+                search: props.revenueSearchQuery,
             }
         });
-    }, [props.parent]);
+    }, [getESPaginatedList, props.parent, props.revenueSearchQuery]);
 
     useEffect(() => {
         // Potential Issues
