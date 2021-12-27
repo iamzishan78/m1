@@ -70,6 +70,7 @@ export const formatTaxOwners = (owners, formData) => {
       tags: formData.tags,
       name: newFullName,
       lastUpdateBy: formData.userId,
+      campaignName: formData.campaign?.name,
       zip: owners[i].Zip,
       city: owners[i].City,
       state: owners[i].State,
