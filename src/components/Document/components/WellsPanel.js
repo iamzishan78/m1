@@ -234,7 +234,11 @@ export default function Contacts(props) {
             {!isSearchActive && (
               <Grid item xs={10}>
                 <Typography variant="h6">Wells</Typography>
-                <Button onClick={() => getWellsFromDocument()}>Click</Button>
+                <Button onClick={() => getWellsFromDocument({
+                  variables: {
+                    descriptorObject: "618a64f7a4c4bc232896964a" // static id for testing
+                  }
+                })}>Click</Button>
               </Grid>
             )}
             <Grid item xs={1}>

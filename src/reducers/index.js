@@ -6,7 +6,6 @@ import MapGridCard from "./MapGridCard";
 import AddParcelInterest from "./AddParcelInterest";
 import MainMap from "./MainMap";
 import Flow from "./Flow";
-import Documents from './Documents'
 
 const createRootReducer = (history) =>
   combineReducers({
@@ -17,7 +16,6 @@ const createRootReducer = (history) =>
     AddParcelInterest,
     MainMap,
     Flow,
-    Documents
   });
 
 export default createRootReducer;
