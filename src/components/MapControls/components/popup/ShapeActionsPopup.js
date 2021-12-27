@@ -667,7 +667,7 @@ const ShapeActionsPopup = (props) => {
 
           <Tooltip title="Area of Interest" className={enableEditOnly && classes.disableAction}>
             <IconButton size="small" disabled={enableEditOnly} onClick={actionAOI} aria-label="Area of Interest">
-              <GpxFixedIcon />
+              <span style={{ color: 'white' }}>AOI</span>
             </IconButton>
           </Tooltip>
           <span className={classes.divider}></span>
