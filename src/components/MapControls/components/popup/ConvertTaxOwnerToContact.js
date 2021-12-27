@@ -170,7 +170,7 @@ const ConvertTaxOwnerToContact = ({
                 value={contactStatus}
                 menuPlacement="auto"
                 onChange={(e) => {
-                  props.onChange(e.value);
+                  props.onChange(e.target.value);
                 }}
                 className={classes.fullWidth}
                 isDisabled={stateApp.selectedMeta}
