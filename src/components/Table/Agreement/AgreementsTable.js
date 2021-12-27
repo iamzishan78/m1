@@ -19,9 +19,7 @@ import TableHeader from "components/Table/constants/agreements-header-schema";
 // Utilities
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-// import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
-// import { GET_ES_POTENTIAL_ISSUES } from "graphQL/useQueryPotentialIssue";
-// import { AutoCompleteFilter } from "../AutoCompleteFilter";
+import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
 import { setColumnsData } from "components/Table/helpers";
 
@@ -177,6 +175,7 @@ function AgreementsTable(props) {
     if (tableData) {
       if (tableData?.hits?.length > 0) {
         const hits = tableData?.hits.map((hit) => {
+          hit.agreementType = agreementTypes.find(type => type.value === hit.agreementType)?.label
           hit.agreementDate = hit.agreementDate
             ? moment(new Date(hit.agreementDate)).format("MM/DD/YYYY")
             : null;
