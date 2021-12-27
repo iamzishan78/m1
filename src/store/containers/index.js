@@ -15,9 +15,10 @@ import { getShapeOwnersSelectors } from "store/selectors/index";
 
 const convertTaxOwnerProps = (state) => {
   const { campaignList } = state.contact;
-  const { shapeCount } = state.owner;
+  const { shapeCount, fetching } = state.owner;
   return {
     shapeOwners: getShapeOwnersSelectors(state),
+    fetching,
     shapeCount,
     campaignList,
   };

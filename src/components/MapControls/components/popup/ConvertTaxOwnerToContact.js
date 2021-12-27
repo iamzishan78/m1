@@ -10,6 +10,7 @@ import Select from "@material-ui/core/Select";
 import { makeStyles } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 import { AppContext } from "AppContext";
 import Tags from "components/Shared/Tagger";
@@ -67,6 +68,7 @@ const ConvertTaxOwnerToContact = ({
   getContactCampaignAction,
   campaignList,
   shapeCount,
+  fetching,
   onClose,
   open,
 }) => {
@@ -254,7 +256,7 @@ const ConvertTaxOwnerToContact = ({
                 style={{ backgroundColor: "#00abed", color: "white" }}
                 onClick={onConvert}
               >
-                Convert
+                {fetching? <CircularProgress size={14} /> :'Convert'}
               </Button>
             </Grid>
           </Grid>
