@@ -128,7 +128,6 @@ const categoryOptions = [
 ];
 
 const MetaField = ({ category, columns }) => {
-  console.log("category", category)
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState("new");
   const [metaData, setMetaData] = useState(null);
@@ -136,7 +135,6 @@ const MetaField = ({ category, columns }) => {
   const [selectFilter, setSelectFilter] = useState(
     categoryOptions[categoryOptions.length - 1].value
   );
-  console.log("categoryOptions", categoryOptions);
   const [filter, setFilter] = useState("");
   const [showAddDescription, setShowAddDescription] = useState(false);
   const { control, reset, setValue, register, getValues, watch } = useForm();
@@ -191,7 +189,6 @@ const MetaField = ({ category, columns }) => {
   useEffect(() => {
     if (metaData?.length > 0) {
       let data = metaData;
-      console.log("metaData", data);
       if (selectFilter !== "All") {
         data = metaData.filter((d) => d.category === selectFilter);
       }
@@ -263,8 +260,6 @@ const MetaField = ({ category, columns }) => {
       selectedMeta: null,
     }));
   };
-
-  console.log("selectedTab", selectedTab);
 
   return (
     <Dialog

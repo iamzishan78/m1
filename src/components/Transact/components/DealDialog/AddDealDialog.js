@@ -324,7 +324,6 @@ function AddDealDialog(props) {
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   let [transactData, setTransactData] = useState(props.transactData ? { ...props.transactData } : null);
 
-  console.log("pipelineId", pipelineId, selectedPipe);
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
   const [getDeal, { data: getDealResult }] = useLazyQuery(GETDEAL, {
@@ -581,9 +580,6 @@ function AddDealDialog(props) {
   const [target, setTarget] = useState({});
 
   useEffect(() => {
-    console.log("===========");
-    console.log("FLOW TRANSACT BAR VIEW", stateApp.transactBarView);
-
     if (stateApp.transactBarView !== "Deal") {
       if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
         addUpdateDeal(null, false);
@@ -1213,7 +1209,7 @@ function AddDealDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
@@ -1251,7 +1247,7 @@ function AddDealDialog(props) {
             <div className={classes.contentRoot}>
               <Drawer dealSettingsNumber={getSubtaskNumber()} />
               {stateApp.transactBarView !== "Deal" &&
-              (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
+                (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>
               ) : (
                 <div className={classes.inputFieldRoot}>
