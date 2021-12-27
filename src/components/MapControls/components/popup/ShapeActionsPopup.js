@@ -14,6 +14,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import GridOnIcon from "@material-ui/icons/GridOn";
 import OfflineBoltIcon from '@material-ui/icons/OfflineBoltOutlined';
 import CloudDownloadOutlinedIcon from '@material-ui/icons/CloudDownloadOutlined';
+import { default as DrawPoly } from "@material-ui/icons/AddBox";
+import GpxFixedIcon from "@material-ui/icons/GpsFixed";
 import { default as CheckCircle } from "../../../Shared/svgIcons/check-circle";
 import ConvertContact from "components/Shared/svgIcons/convert_contact";
 import LayerIcon from "@material-ui/icons/Layers";
@@ -741,6 +743,23 @@ const ShapeActionsPopup = (props) => {
               <span style={{ color: 'white' }}>AOI</span>
             </IconButton>
           </Tooltip>
+          <span className={classes.divider}></span>
+
+          {
+            stateApp.currentFeature && <Tooltip title="Add shape" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
+              <IconButton size="small" aria-label="Add shape" onClick={() => {
+                stateApp.draw.changeMode('static');
+                setStateApp((state) => ({
+                  ...state,
+                  changeDrawShapeType: true,
+                }));
+              }}>
+                <DrawPoly className={stateApp.shapeEdit ? "selected" : ""} />
+              </IconButton>
+            </Tooltip>
+          }
+
+
 
           <Tooltip title="Edit Active Shape" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
             <IconButton size="small" aria-label="Edit Active Shape" onClick={actionEdit}>
