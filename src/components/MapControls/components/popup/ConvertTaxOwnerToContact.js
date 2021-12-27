@@ -20,6 +20,8 @@ import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { NavigationContext } from "components/Navigation/NavigationContext";
 import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 
+import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "557px",
@@ -45,21 +47,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
   },
 }));
-
-const contactStatusOptions = [
-  {
-    label: "Unqualified Lead",
-    value: "UnqualLead",
-  },
-  {
-    label: "Qualified Lead",
-    value: "QualLead",
-  },
-  {
-    label: "Contact",
-    value: "Contact",
-  },
-];
 
 const ConvertTaxOwnerToContact = ({
   getMapFilterShapeOwnersAndCountAction,
