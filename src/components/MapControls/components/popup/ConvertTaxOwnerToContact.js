@@ -140,6 +140,7 @@ const ConvertTaxOwnerToContact = ({
   const onConvert = () => {
     const values = getValues();
     convertTaxOwnerToContactAction({ ...values, tags: newTagsIds, userId });
+    onClose()
   };
 
   return (
