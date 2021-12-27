@@ -222,7 +222,7 @@ const AgreementsHeadCells = [
       filter: true,
       customBodyRender: (value, tableMeta, updateValue) => {
         return (
-          <div style={{ display: "flex", "align-items": "center" }}>
+          <div style={{ display: "flex", alignItems: "center" }}>
             {value?.toLowerCase() === "approved" ? (
               <CheckCircleIcon style={{ color: "forestgreen" }} />
             ) : (

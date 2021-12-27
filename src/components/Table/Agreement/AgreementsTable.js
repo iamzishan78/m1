@@ -178,13 +178,13 @@ function AgreementsTable(props) {
       if (tableData?.hits?.length > 0) {
         const hits = tableData?.hits.map((hit) => {
           hit.agreementDate = hit.agreementDate
-            ? moment(hit.agreementDate).format("MM/DD/YYYY")
+            ? moment(new Date(hit.agreementDate)).format("MM/DD/YYYY")
             : null;
           hit.effectiveDate = hit.effectiveDate
-            ? moment(hit.effectiveDate).format("MM/DD/YYYY")
+            ? moment(new Date(hit.effectiveDate)).format("MM/DD/YYYY")
             : null;
           hit.expirationDate = hit.expirationDate
-            ? moment(hit.expirationDate).format("MM/DD/YYYY")
+            ? moment(new Date(hit.expirationDate)).format("MM/DD/YYYY")
             : null;
           hit.State = hit?.originalProperties?.State;
           hit.County = hit?.originalProperties?.County;
