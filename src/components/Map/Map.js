@@ -399,17 +399,17 @@ function Map({ type, paramId, lati, longi }) {
         viewDoc: null,
       }));
     }
-  },[]);
+  }, []);
 
   async function getCustomLayer() {
     const keys = { parcels: "selectedParcel", ...layersWithSelectedShapeKey(), wells: "selectedWell" };
 
-    if(type === 'parcels'){
+    if (type === 'parcels') {
       setStateApp((stateApp) => ({
         ...stateApp,
         selectedShape: null
       }));
-    }else{
+    } else {
       setStateApp((stateApp) => ({
         ...stateApp,
         selectedParcel: null
@@ -429,36 +429,36 @@ function Map({ type, paramId, lati, longi }) {
       return;
     }
     // if (!stateApp[keys[type]] || paramId !== stateApp[keys[type]]?.id) {
-      const { data: layer } = await client.query({
-        query: CUSTOMLAYER,
-        variables: {
-          id: paramId,
-        },
-      });
-      if (layer?.customLayer) {
-        let jsonLayer = JSON.parse(layer.customLayer.shape);
-        if (layer.customLayer.shapeJson) jsonLayer = copy(layer.customLayer.shapeJson);
+    const { data: layer } = await client.query({
+      query: CUSTOMLAYER,
+      variables: {
+        id: paramId,
+      },
+    });
+    if (layer?.customLayer) {
+      let jsonLayer = JSON.parse(layer.customLayer.shape);
+      if (layer.customLayer.shapeJson) jsonLayer = copy(layer.customLayer.shapeJson);
 
-        jsonLayer.layer = { id: layer.customLayer.layer };
-        jsonLayer.id = layer.customLayer._id;
+      jsonLayer.layer = { id: layer.customLayer.layer };
+      jsonLayer.id = layer.customLayer._id;
 
-        if( !loading){
-          findBoundsMap([jsonLayer], map);
+      if (!loading) {
+        findBoundsMap([jsonLayer], map);
 
-          drawBoundary(map, jsonLayer);
-        }
-
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          [keys[type]]: {
-            ...jsonLayer.properties,
-            feature: jsonLayer,
-            id: layer.customLayer._id,
-          },
-          popupOpen: false,
-          expandedCard: true,
-        }));
+        drawBoundary(map, jsonLayer);
       }
+
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        [keys[type]]: {
+          ...jsonLayer.properties,
+          feature: jsonLayer,
+          id: layer.customLayer._id,
+        },
+        popupOpen: false,
+        expandedCard: true,
+      }));
+    }
     // }
   }
 
@@ -1442,8 +1442,6 @@ function Map({ type, paramId, lati, longi }) {
         ...state,
         selectionLayers: features, layerSelectionPopup: true, popupOpen: true
       }));
-
-      console.log(e, features);
     }
     if (map) {
       if (mapClick && mapClick.mapClickHandler) {
@@ -1452,7 +1450,6 @@ function Map({ type, paramId, lati, longi }) {
       if (mapRightClick && mapRightClick.mapRightClickHandler) {
         map.off("contextmenu", mapRightClick.mapRightClickHandler);
       }
-      console.log('contextmenu initialized')
       map.on('contextmenu', mapRightClickHandler);
       map.on("click", mapClickHandler);
 

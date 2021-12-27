@@ -404,8 +404,6 @@ function LayerStyling(props) {
     );
   };
 
-  // console.log("LayerStyling", layer)
-
   return (
     <div>
       <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "15px" }}>

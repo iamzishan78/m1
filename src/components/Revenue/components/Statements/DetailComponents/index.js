@@ -509,7 +509,6 @@ export default function DetailComponents(props) {
                   onKeyDown={(e) => {
                     if (e.keyCode === 13) {
                       setFocusSate(false);
-                      console.log("sample description will go for save: " + description);
                       setDescription("");
                     }
                   }}
@@ -524,7 +523,6 @@ export default function DetailComponents(props) {
                   }}
                 />
               </Grid>
-
 
               <div onClick={() => {
                 setStateApp((stateApp) => ({
