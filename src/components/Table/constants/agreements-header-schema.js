@@ -21,7 +21,10 @@ const AgreementsHeadCells = [
           <p
             onClick={(e) => {
               e.stopPropagation();
-                history.push(`/map/${tableMeta.rowData[3]}s/${tableMeta.rowData[0]}`, { showAgreementBreadcrumb: true });
+              history.push(
+                `/map/${tableMeta.rowData[3]}s/${tableMeta.rowData[0]}`,
+                { showAgreementBreadcrumb: true }
+              );
             }}
             style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
           >
@@ -57,6 +60,7 @@ const AgreementsHeadCells = [
     label: "Subtype",
     esKey: "shapeJson.properties.agreementSubtype.keyword",
     options: {
+      setCellProps: () => ({ style: { minWidth: "170px" } }),
       dbName: "shapeJson.properties.agreementSubtype",
       sort: true,
       filter: true,
@@ -67,6 +71,7 @@ const AgreementsHeadCells = [
     label: "Rights",
     esKey: "shapeJson.properties.rightsType.keyword",
     options: {
+      setCellProps: () => ({ style: { minWidth: "170px" } }),
       dbName: "shapeJson.properties.rightsType",
       sort: true,
       filter: true,
@@ -87,6 +92,12 @@ const AgreementsHeadCells = [
     label: "Grantee (Party 2)",
     esKey: "shapeJson.properties.grantee.keyword",
     options: {
+      customHeadLabelRender: () => (
+        <>
+          <div>Grantee</div>
+          <div>(Party 2)</div>
+        </>
+      ),
       dbName: "shapeJson.properties.grantee",
       sort: true,
       filter: true,
@@ -137,6 +148,7 @@ const AgreementsHeadCells = [
     label: "Status",
     esKey: "shapeJson.properties.agreementStatus.keyword",
     options: {
+      setCellProps: () => ({ style: { minWidth: "250px" } }),
       dbName: "shapeJson.properties.agreementStatus",
       sort: true,
       filter: true,
@@ -144,7 +156,7 @@ const AgreementsHeadCells = [
   },
   {
     name: "reportGrossAcres",
-    label: "RPT GRS",
+    label: "Report GRS",
     esKey: "shapeJson.properties.reportGrossAcres.keyword",
     options: {
       dbName: "shapeJson.properties.reportGrossAcres",
@@ -178,6 +190,7 @@ const AgreementsHeadCells = [
     label: "State",
     esKey: "shapeJson.properties.originalProperties.State.keyword",
     options: {
+      setCellProps: () => ({ style: { maxWidth: "50px" } }),
       dbName: "shapeJson.properties.originalProperties.State",
       sort: true,
       filter: true,
