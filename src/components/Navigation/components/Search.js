@@ -351,7 +351,7 @@ function Search() {
       },
       "units": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `layer:unit AND name:*${request.input}*` : '',
+        search: (request) => request.input ? `layer:unit AND name:${request.input}*` : '',
         formatOptions: (data) => {
           return {
             ...data, Source: 'shapes_flat', Primary: data.name, Secondary: null
@@ -361,7 +361,7 @@ function Search() {
 
       "tracts": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `layer:parcel AND name:*${request.input}*` : '',
+        search: (request) => request.input ? `layer:parcel AND name:${request.input}*` : '',
         formatOptions: (data) => {
           return {
             ...data, Source: 'shapes_flat', Primary: data.name, Secondary: null
@@ -370,7 +370,7 @@ function Search() {
       },
       "agreements": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `shapeJson.properties.type:(agreement) AND name:*${request.input}*` : '',
+        search: (request) => request.input ? `shapeJson.properties.type:(agreement) AND name:${request.input} *` : '',
         formatOptions: (data) => {
           return {
             ...data, Source: 'shapes_flat', Primary: data.name, Secondary: null
