@@ -24,6 +24,7 @@ function RevenuePropertiesTable(props) {
   // rearranging the data according to the requirements.
   const tableData = elasticData?.getESPaginatedList?.hits?.map((eachRow) => {
     return {
+      _id: eachRow._id,
       name: eachRow.name,
       number: eachRow.number,
       payorName: eachRow?.operator?.name,

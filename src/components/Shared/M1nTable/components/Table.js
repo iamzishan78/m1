@@ -4772,7 +4772,7 @@ function SubTable(props) {
                   <Tags
                     targetSourceId={expandedObject}
                     targetLabel={
-                      trueTargetLabel ? trueTargetLabel : props.targetLabel
+                      trueTargetLabel ?? props.targetLabel
                     }
                     multipleIds={
                       m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
