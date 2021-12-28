@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
-import { AppContext, apolloClientEndpointDev, isDev, setApolloHeaders } from "../../AppContext";
+import { AppContext, setApolloHeaders } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import SignInCard from "./SignInCard";
@@ -146,14 +146,14 @@ const Login = (props) => {
           const accountObj = tokenResponse
             ? tokenResponse.account
             : (() => {
-                const currentAccounts = stateApp.myMSALObj.getAllAccounts();
-                return currentAccounts && currentAccounts.length === 1
-                  ? currentAccounts[0]
-                  : (() => {
-                      // hoose account code here
-                      return;
-                    })();
-              })();
+              const currentAccounts = stateApp.myMSALObj.getAllAccounts();
+              return currentAccounts && currentAccounts.length === 1
+                ? currentAccounts[0]
+                : (() => {
+                  // hoose account code here
+                  return;
+                })();
+            })();
 
           if (accountObj) {
             // We need to reject id tokens that were not issued with the default sign-in policy.
@@ -188,26 +188,13 @@ const Login = (props) => {
             // Passing first account as default for now
             finishAADAuth(accountObj);
           } else {
-            if (tokenResponse && tokenResponse.tokenType === "Bearer") {
-              // No account object available, but access token was retrieved
-              console.log("access_token acquired at: " + new Date().toString());
-            } else if (tokenResponse === null) {
-              // tokenResponse was null, attempt sign in or enter unauthenticated state for app
-            } else {
-              console.log("tokenResponse was not null but did not have any tokens: " + tokenResponse);
-            }
             setLoading(false);
-
             sessionStorage.clear();
             window.location.replace(window.location.origin);
           }
         })
         .catch((error) => {
-          console.log(error);
-
           if (error.errorMessage && error.errorMessage.includes("AADB2C90118")) {
-            console.log(stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword));
-
             stateApp.myMSALObj.loginRedirect({
               authority: stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword),
             });
@@ -216,8 +203,6 @@ const Login = (props) => {
           }
 
           if (error.errorMessage && error.errorMessage.includes("AADB2C90085")) {
-            console.log("retrying with forced login bypassing session cookies");
-
             let request = loginRequest();
             request.extraQueryParameters = { prompt: "login" };
             stateApp.myMSALObj.loginRedirect(request);
@@ -273,7 +258,6 @@ const Login = (props) => {
         stateApp.myMSALObj = myMSALObj; /////
         const loginResponse = await signInPopup(loginRequest(tenant.graphqlScope)).catch((error) => {
           //do some error stuff
-          console.log(error);
           updateTenantFlags(error);
           setLoadingSigInButton(false);
         });
@@ -491,24 +475,16 @@ const Login = (props) => {
   }
 
   async function signInPopup(request) {
-    console.log("request made to signIn at: " + new Date().toString());
-    console.log("scopes requested: " + request.scopes.toString());
-
     const loginResponse = await stateApp.myMSALObj.loginPopup(request).catch(function (error) {
       console.log(error);
     });
-    console.log(loginResponse);
     if (stateApp.myMSALObj.getAllAccounts()) {
       return loginResponse;
     }
   }
 
   async function getTokenRedirect(request) {
-    console.log("request made to getTokenRedirect at: " + new Date().toString());
-    console.log("scopes requested: " + request.scopes.toString());
-
     return await stateApp.myMSALObj.acquireTokenSilent(request).catch(async (error) => {
-      console.log("silent token acquisition fails.");
       console.error(error);
 
       request.forceRefresh = true;
@@ -517,28 +493,6 @@ const Login = (props) => {
         console.error(error);
       });
     });
-  }
-
-  async function callMSGraph(endpoint, accessToken) {
-    const headers = new Headers();
-    const bearer = `Bearer ${accessToken}`;
-
-    headers.append("Authorization", bearer);
-
-    const options = {
-      method: "GET",
-      headers: headers,
-    };
-
-    console.log("request made to Graph profile at: " + new Date().toString());
-
-    return await fetch(endpoint, options)
-      .then((response) => response.json())
-      .then((response) => {
-        console.log(response);
-        return response;
-      })
-      .catch((error) => console.log(error));
   }
 
   async function callAuthGraphQL(endpoint, idToken, accessToken) {
@@ -550,8 +504,6 @@ const Login = (props) => {
       body: JSON.stringify({ id_token: idToken, access_token: accessToken }),
     };
 
-    console.log("request made to GraphQL login at: " + new Date().toString());
-
     return await fetch(endpoint, options)
       .then(async (response) => {
         if (!response.ok) {
@@ -561,7 +513,6 @@ const Login = (props) => {
         return response.json();
       })
       .then((response) => {
-        console.log(response);
         return response;
       })
       .catch((error) => {
@@ -580,13 +531,10 @@ const Login = (props) => {
       headers: headers,
     };
 
-    console.log("request made to GraphQL profile at: " + new Date().toString());
-
     return await fetch(endpoint, options)
       .then((response) => response.json())
       .then((response) => response[0])
       .then((response) => {
-        console.log(response);
         return response;
       })
       .catch((error) => console.log(error));
@@ -711,7 +659,7 @@ const Login = (props) => {
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
         }}
-        // style={{ overflowY: "scroll !important"}}
+      // style={{ overflowY: "scroll !important"}}
       >
         {renderBody}
       </div>

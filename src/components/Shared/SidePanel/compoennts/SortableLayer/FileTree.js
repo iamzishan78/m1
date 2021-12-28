@@ -146,16 +146,21 @@ const FileTree = ({ layerMap, panelItems }) => {
       // if layer into group
       groupIndex = items.findIndex((item) => item.id === newItem.id);
       const parent = findParent(items, groupIndex);
-      if (parent.type === "group") {
+      if (parent.type === "group" && ((oldItem.groupName === 'Agreements' && parent.name === 'Agreements') || (oldItem.groupName !== 'Agreements' && parent.name !== 'Agreements'))) {
         items[groupIndex].groupName = parent.name;
         items[groupIndex].groupId = parent.id;
       } else {
         return revert();
       }
     } else if (oldItem.depth === 1 && newItem.depth === 0) {
-      groupIndex = items.findIndex((item) => item.id === newItem.id);
-      items[groupIndex].groupName = null;
-      items[groupIndex].groupId = null;
+      if (oldItem.groupName === 'Agreements') {
+        return revert();
+      } else {
+        groupIndex = items.findIndex((item) => item.id === newItem.id);
+        items[groupIndex].groupName = null;
+        items[groupIndex].groupId = null;
+      }
+
     }
     if (groupIndex) {
       groupIndex = layersWithoutGroup.findIndex((item) => item.id === newItem.id);
@@ -188,7 +193,7 @@ const FileTree = ({ layerMap, panelItems }) => {
   };
 
   const updateLayer = (layer) => {
-    const currentLayers = [...panelItems];
+    const currentLayers = [...items];
     //// saving to stateApp
     const index = panelItems.findIndex((item) => item._id === layer._id);
     currentLayers[index] = layer;

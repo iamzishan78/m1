@@ -46,14 +46,9 @@ function WellSearchApiField(props) {
                     headers: headers,
                 };
 
-                console.log(
-                    "request made to wellheader-index search at: " + new Date().toString()
-                );
-
                 fetch(endpoint, options)
                     .then((response) => response.json())
                     .then((response) => {
-                        console.log(response);
                         callback(response);
                     })
                     .catch((error) => {

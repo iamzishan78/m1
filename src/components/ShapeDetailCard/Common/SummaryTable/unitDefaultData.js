@@ -24,7 +24,8 @@ const tableData = [
     }, {
         label: 'Calculated Acres',
         type: 'text',
-        key: 'shapeArea'
+        key: 'shapeArea',
+        nonEditable: true
     }, {
         label: 'Current Operator',
         type: 'text',

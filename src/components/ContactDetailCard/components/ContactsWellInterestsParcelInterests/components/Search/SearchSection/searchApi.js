@@ -46,7 +46,6 @@ export const callOwnerSearch = debounce((request, callback) => {
     fetch(endpoint, options)
         .then((response) => response.json())
         .then((response) => {
-            console.log(response);
             callback(response);
         })
         .catch((error) => {

@@ -1,4 +1,5 @@
 import React from "react";
+import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -9,7 +10,7 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 export default function DeleteConfirmationDialogContent(props) {
   const modalClass = Modals();
   return (
-    <React.Fragment>
+    <Dialog style={{ zIndex: 1301 }} open={true}>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
         {props.header}
         <HighlightOffIcon
@@ -47,6 +48,6 @@ export default function DeleteConfirmationDialogContent(props) {
           Delete
         </Button>
       </DialogActions>
-    </React.Fragment>
+    </Dialog>
   );
 }

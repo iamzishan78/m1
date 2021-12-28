@@ -41,7 +41,7 @@ export const useStyles = makeStyles((theme) => ({
     width: `${drawerWidth}px`,
     flexShrink: 0,
     whiteSpace: "nowrap",
-    zIndex: "2 !important",
+    zIndex: 1,
   },
   filterTabs: {
     paddingRight: "25px",
@@ -80,6 +80,7 @@ export const useStyles = makeStyles((theme) => ({
     }),
   },
   drawerClose: {
+    zIndex: "1 !important",
     background: "#0e111a",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
