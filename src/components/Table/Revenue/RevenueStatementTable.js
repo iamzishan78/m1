@@ -78,8 +78,8 @@ function RevenueStatementTable(props) {
     useEffect(() => {
         if (issues?.hits?.length > 0) {
             const allIssues = issues?.hits.filter((issue) => {
-                const checkAmt = issue?.checkAmt?.value.toFixed(2);
-                const checkDetailAmt = issue?.checkDetailAmt?.value.toFixed(2);
+                const checkAmt = issue?.checkAmt?.value?.toFixed(2);
+                const checkDetailAmt = issue?.checkDetailAmt?.value?.toFixed(2);
                 if (Number(checkAmt) !== Number(checkDetailAmt)) {
                     return issue;
                 }
@@ -146,8 +146,8 @@ function RevenueStatementTable(props) {
     useEffect(() => {
         if (pIssuesArr.length > 0) {
             const allIssues = pIssuesArr?.filter((issue) => {
-                const checkAmt = issue?.checkAmt?.value.toFixed(2);
-                const checkDetailAmt = issue?.checkDetailAmt?.value.toFixed(2);
+                const checkAmt = issue?.checkAmt?.value?.toFixed(2);
+                const checkDetailAmt = issue?.checkDetailAmt?.value?.toFixed(2);
                 if (Number(checkAmt) !== Number(checkDetailAmt)) {
                     return issue;
                 }

@@ -36,6 +36,9 @@ function RevenuePropertiesTable(props) {
       status: eachRow?.well?.status,
       checkNumber: eachRow?.lastCheck?.checkNumber,
       lastChecked: new Date(eachRow?.lastCheck?.checkDate).toLocaleDateString(),
+      tags: eachRow.tags?.length > 0
+        ? [[eachRow.tags.map((tag) => tag.tag)], eachRow.tags.length]
+        : [[], 0]
     };
   });
 
