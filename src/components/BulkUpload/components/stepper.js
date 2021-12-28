@@ -254,7 +254,7 @@ export default function CustomizedSteppers(props) {
       });
       getUploadContactUri({
         variables: {
-          jobName: stateNav.bulkUploadFromMap ? 'Parcel Interests' : 'Contacts',
+          jobName: stateNav.bulkUploadFromMap ? 'ParcelInterests' : 'Contacts',
           userId: userID,
         },
       });
