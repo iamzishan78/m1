@@ -10,7 +10,7 @@ import Grid from "@material-ui/core/Grid";
 
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import { Typography } from "@material-ui/core";
-import { platformDataInitialData } from "./data";
+import { platformDataInitialData, userDefinedInitialData } from "./data";
 
 const StyledMenu = withStyles({
   paper: {
@@ -70,8 +70,8 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '16px',
     padding: '6px 12px',
     borderRight: '25px',
-    "& .MuiButton-startIcon":{
-        color: (props) => `${props.color ? props.color : "#757575"}!important`,
+    "& .MuiButton-startIcon": {
+      color: (props) => `${props.color ? props.color : "#757575"}!important`,
     }
   },
 
@@ -88,86 +88,94 @@ const useStyles = makeStyles((theme) => ({
 
 const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color }) => {
 
-    const classes = useStyles({ backgroundColor, color });
-    const [search, setSearch] = useState('');
-    const [anchorEl, setAnchorEl] = React.useState(null);
+  const classes = useStyles({ backgroundColor, color });
+  const [search, setSearch] = useState('');
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const platformData = useMemo(() => {
-        return platformDataInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase()))
+  const platformData = useMemo(() => {
+    return platformDataInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase()))
 
-    }, [search])
+  }, [search])
 
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
+  const userDefinedData = useMemo(() => {
+    return userDefinedInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase()))
 
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+  }, [search])
 
-    const SelectedIcon = value.Icon
-    return (
-        <>
-            <Button
-                className={classes.menuButton}
-                aria-controls="customized-menu"
-                aria-haspopup="true"
-                startIcon={<SelectedIcon color={color ? color : '#757575'} opacity={1} />}
-                endIcon={<ArrowDropDownIcon style={{ color: color ? color: '#757575' }} />}
-                onClick={handleClick}
-            >
-                <span style={{ color: color ? color: '#757575' }}>
-                    {value.label}
-                </span>
-            </Button>
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-            <StyledMenu
-                id="customized-menu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-            >
-                <Grid>
-                    <Grid container className={classes.underlinedHeader} direction="row" justifyContent="space-between" alignItems="center" >
-                        <Grid item>
-                            <Typography variant="h6">
-                                Platform Data
-                            </Typography>
-                        </Grid>
-                        <Grid item>
-                            <ExpandableSearch setSearch={setSearch} search={search} />
-                        </Grid>
-                    </Grid>
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
-                    {platformData.map((icon) => {
-                        const Icon = icon.Icon
-                        return <StyledMenuItem key={icon.index} selected={icon.index === value.index} onClick={() => { handleChange(icon); handleClose(); }}>
-                            <ListItemIcon>
-                                {/* <Icon className={classes.icon} fontSize="small" /> */}
-                                <Icon className={classes.icon} fontSize="small" color="#bdc7d1" opacity="1" />
-                            </ListItemIcon>
-                            <ListItemText primary={icon.label} />
-                        </StyledMenuItem>
-                    })}
+  const SelectedIcon = value.Icon
+  return (
+    <>
+      <Button
+        className={classes.menuButton}
+        aria-controls="customized-menu"
+        aria-haspopup="true"
+        startIcon={<SelectedIcon color={color ? color : '#757575'} opacity={1} />}
+        endIcon={<ArrowDropDownIcon style={{ color: color ? color : '#757575' }} />}
+        onClick={handleClick}
+      >
+        <span style={{ color: color ? color : '#757575' }}>
+          {value.label}
+        </span>
+      </Button>
 
-                    {/* <Grid container className={classes.underlinedHeader} direction="row" justifyContent="space-between" alignItems="center" >
-                                <Grid item>
-                                    <Typography variant="h6">
-                                        Pheasant Data
-                                    </Typography>
-                                </Grid>
-                            </Grid>
+      <StyledMenu
+        id="customized-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <Grid>
+          <Grid container className={platformData.length > 0 ? classes.underlinedHeader : ''} direction="row" justifyContent="space-between" alignItems="center" >
+            <Grid item>
+              {platformData.length > 0 &&
+                <Typography variant="h6">
+                  Platform Data
+                </Typography>
 
-                            {platformData.map((icon) => {
-                                return <StyledMenuItem selected={icon.index === value} onClick={() => handleChange(icon.index)}>
-                                    <Box borderColor={"red"} borderLeft={4}>
-                                        <ListItemIcon>
-                                        </ListItemIcon>
-                                    </Box>
-                                    <ListItemText primary={icon.label} />
-                                </StyledMenuItem>
-                            })} */}
+              }
+            </Grid>
+            <Grid item>
+              <ExpandableSearch setSearch={setSearch} search={search} />
+            </Grid>
+          </Grid>
+
+          {platformData.map((icon) => {
+            const Icon = icon.Icon
+            return <StyledMenuItem key={icon.index} selected={icon.value === value.value} onClick={() => { handleChange(icon); handleClose(); }}>
+              <ListItemIcon>
+                <Icon className={classes.icon} fontSize="small" color="#bdc7d1" opacity="1" />
+              </ListItemIcon>
+              <ListItemText primary={icon.label} />
+            </StyledMenuItem>
+          })}
+
+          <Grid container className={classes.underlinedHeader} direction="row" justifyContent="space-between" alignItems="center" >
+            <Grid item>
+              <Typography variant="h6">
+                User Defined Data
+              </Typography>
+            </Grid>
+          </Grid>
+
+          {userDefinedData.map((icon) => {
+            const Icon = icon.Icon
+            return <StyledMenuItem key={icon.index} selected={icon.value === value.value} onClick={() => { handleChange(icon); handleClose() }}>
+              <ListItemIcon>
+                <Icon className={classes.icon} fontSize="small" color="#bdc7d1" opacity="1" />
+              </ListItemIcon>
+
+              <ListItemText primary={icon.label} />
+            </StyledMenuItem>
+          })}
         </Grid>
       </StyledMenu>
     </>
