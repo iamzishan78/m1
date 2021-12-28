@@ -5,22 +5,24 @@ const RevenuePropertiesHeadCells = [
   },
 
   {
-    name: "propertyCode",
-    label: "Property Code",
-    esKey: "propertyCode.keyword",
+    name: "number",
+    label: "Property#",
+    esKey: "number.keyword",
     options: { sort: true, filter: true },
+    style: { minWidth: 150 }
   },
   {
-    name: "propertyName",
+    name: "name",
     label: "Property Name",
-    esKey: "propertyName.keyword",
+    esKey: "name.keyword",
     options: { sort: true, filter: true },
   },
   {
     name: "payorName",
     label: "Payor Name",
-    esKey: "payor.name.keyword",
+    esKey: "operator.name.keyword",
     options: { sort: true, filter: true },
+    style: { minWidth: 150 }
   },
   {
     name: "state",
@@ -31,7 +33,7 @@ const RevenuePropertiesHeadCells = [
   {
     name: "country",
     label: "Country",
-    esKey: "country.keyword",
+    esKey: "county.keyword",
     options: { sort: true, filter: true },
   },
   {
@@ -43,14 +45,14 @@ const RevenuePropertiesHeadCells = [
 
   {
     name: "wellApiNumber",
-    label: "Well Api#",
-    esKey: "wellApiNumber.keyword",
+    label: "Well API",
+    esKey: "well.apiNumber.keyword",
     options: { sort: true, filter: true },
   },
   {
     name: "wellName",
     label: "Well Name",
-    esKey: "wellName.keyword",
+    esKey: "well.wellName.keyword",
     options: { sort: true, filter: true },
   },
   {
@@ -60,35 +62,36 @@ const RevenuePropertiesHeadCells = [
     options: { sort: true, filter: true },
   },
   {
-      name: "type",
-      label: "Type",
-      esKey: "type.keyword",
-      options: { sort: true, filter: true },
-    },
+    name: "type",
+    label: "Type",
+    esKey: "type.keyword",
+    options: { sort: true, filter: true },
+  },
   {
     name: "amount",
-    label: "Amuount",
+    label: "Decimal",
     esKey: "amount.keyword",
     options: { sort: true, filter: true },
   },
   {
     name: "checkNumber",
     label: "Check #",
-    esKey: "checkNumber.keyword",
+    esKey: "lastCheck.checkNumber.keyword",
+    options: { sort: true, filter: true },
+    style: { minWidth: 100 }
+  },
+  {
+    name: "lastChecked",
+    label: "Last Check",
+    esKey: "lastCheck.checkDate.keyword",
     options: { sort: true, filter: true },
   },
   {
-    name: "lastCheckDate",
-    label: "Last Check Date",
-    esKey: "lastCheckDate.keyword",
+    name: "tags",
+    label: "Tags",
+    esKey: "tags.keyword",
     options: { sort: true, filter: true },
   },
-    {
-      name: "tags",
-      label: "Tags",
-      esKey: "tags.keyword",
-      options: { sort: true, filter: true },
-    },
   {
     name: "commentsCounter",
     label: " ",

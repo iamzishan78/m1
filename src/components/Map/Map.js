@@ -386,9 +386,35 @@ function Map({ type, paramId, lati, longi }) {
     };
   };
 
+  useEffect(() => {
+    return () => {
+      setStateApp((state) => ({
+        ...state,
+        popupOpen: false,
+        selectedWell: null,
+        selectedParcel: null,
+        selectedShape: null,
+        selectedPermit: null,
+        expandedCard: false,
+        viewDoc: null,
+      }));
+    }
+  }, []);
+
   async function getCustomLayer() {
     const keys = { parcels: "selectedParcel", ...layersWithSelectedShapeKey(), wells: "selectedWell" };
 
+    if (type === 'parcels') {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        selectedShape: null
+      }));
+    } else {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        selectedParcel: null
+      }));
+    }
     if (type === "wells") {
       const intervalObj = setInterval(function () {
         if (map.getSource("wellsVT") && paramId?.toLowerCase() !== stateApp.selectedWellId) {
@@ -402,41 +428,42 @@ function Map({ type, paramId, lati, longi }) {
       }, 3000);
       return;
     }
-    if (!stateApp[keys[type]] || paramId !== stateApp[keys[type]]?.id) {
-      const { data: layer } = await client.query({
-        query: CUSTOMLAYER,
-        variables: {
-          id: paramId,
-        },
-      });
-      if (layer?.customLayer) {
-        let jsonLayer = JSON.parse(layer.customLayer.shape);
-        if (layer.customLayer.shapeJson) jsonLayer = copy(layer.customLayer.shapeJson);
+    // if (!stateApp[keys[type]] || paramId !== stateApp[keys[type]]?.id) {
+    const { data: layer } = await client.query({
+      query: CUSTOMLAYER,
+      variables: {
+        id: paramId,
+      },
+    });
+    if (layer?.customLayer) {
+      let jsonLayer = JSON.parse(layer.customLayer.shape);
+      if (layer.customLayer.shapeJson) jsonLayer = copy(layer.customLayer.shapeJson);
 
-        jsonLayer.layer = { id: layer.customLayer.layer };
-        jsonLayer.id = layer.customLayer._id;
+      jsonLayer.layer = { id: layer.customLayer.layer };
+      jsonLayer.id = layer.customLayer._id;
 
+      if (!loading) {
         findBoundsMap([jsonLayer], map);
 
         drawBoundary(map, jsonLayer);
-
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          [keys[type]]: {
-            ...jsonLayer.properties,
-            feature: jsonLayer,
-            id: layer.customLayer._id,
-          },
-          popupOpen: false,
-          expandedCard: true,
-        }));
       }
+
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        [keys[type]]: {
+          ...jsonLayer.properties,
+          feature: jsonLayer,
+          id: layer.customLayer._id,
+        },
+        popupOpen: false,
+        expandedCard: true,
+      }));
     }
+    // }
   }
 
   useEffect(() => {
     if (
-      !loading &&
       paramId
       // parcelId !== stateApp.selectedParcel?.id
     ) {
@@ -1439,8 +1466,6 @@ function Map({ type, paramId, lati, longi }) {
         }));
 
       }, 0)
-
-      // console.log(e, features);
     }
     if (map) {
       if (mapClick && mapClick.mapClickHandler) {

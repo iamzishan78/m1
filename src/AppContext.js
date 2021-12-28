@@ -151,6 +151,7 @@ const AppProvider = (props) => {
     bulkUpload: false,
     selectedMeta: null,
     selectedView: null,
+    revenueSearchQuery: "",
 
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
@@ -193,7 +194,7 @@ const AppProvider = (props) => {
       if (tenantName) {
         let tenant = tenantsCredentials(tenantName);
         tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
-        tenant.apolloClientEndpoint = isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
+        tenant.apolloClientEndpoint = isDev && tenantName === "localhost" ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
         let myMSALObjInt = MSALObj(tenant);
         setStateApp((state, props) => {
           return {

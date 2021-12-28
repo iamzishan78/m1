@@ -32,7 +32,7 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
       >
         <Grid container direction="row" justify="space-between" display="flex" className={classes.header}>
           <Grid item style={{ alignItems: "center" }}>
-            <Typography variant="h6" style={{ fontWeight: "bold" }}>
+            <Typography variant="h5" style={{ fontWeight: "normal" }}>
               Revenue
             </Typography>
           </Grid>
@@ -68,7 +68,7 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
           [classes.revenueRootExpanded]: expandedPanel,
           [classes.revenueRootCollapsed]: !expandedPanel,
         })}
-        // style={{ marginTop: "62px" }}
+      // style={{ marginTop: "62px" }}
       >
         {children}
       </div>

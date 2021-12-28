@@ -1,24 +1,17 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import { Grid, Typography, Button } from "@material-ui/core";
 import Add from "@material-ui/icons/Add";
 
-import LandSearch from "../components/LandSearch";
+import LandSearch from "components/Navigation/components/LandSearch";
 
 export default function LandAppBar(props) {
   const location = useLocation();
 
   const { classes } = props;
   const { quickActionsPanelState } = useSelector(({ Land }) => Land);
-
-  const history = useHistory();
-
-  const handleListItemClick = (path) => {
-    history.push(path);
-    // handleDrawerClose();
-  };
 
   return (
     <Grid
@@ -33,10 +26,14 @@ export default function LandAppBar(props) {
         <Grid container direction="row" display="flex" justify="flex-start" alignItems="center">
           <Grid item md={2.5}>
             <Typography variant="h5" style={{ color: "black", fontWeight: "bold" }}>
-              {(()=>{
+              {(() => {
                 switch (location.pathname) {
-                  case '/land/agreements': return "Agreement"
-                  case '/land/tracts': return "Tracts"
+                  case "/land/agreements":
+                    return "Agreement";
+                  case "/land/tracts":
+                    return "Tracts";
+                  default:
+                    return "";
                 }
               })()}
             </Typography>
@@ -48,13 +45,18 @@ export default function LandAppBar(props) {
       </Grid>
       <Grid item>
         <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-          <Button color="secondary" variant="contained" startIcon={<Add />}>
-            Add {(()=>{
-                switch (location.pathname) {
-                  case '/land/agreements': return "Agreement"
-                  case '/land/tracts': return "Tract"
-                }
-              })()}
+          <Button color="primary" variant="contained" startIcon={<Add />}>
+            Add{" "}
+            {(() => {
+              switch (location.pathname) {
+                case "/land/agreements":
+                  return "Agreement";
+                case "/land/tracts":
+                  return "Tract";
+                default:
+                  return "";
+              }
+            })()}
           </Button>
         </div>
       </Grid>
