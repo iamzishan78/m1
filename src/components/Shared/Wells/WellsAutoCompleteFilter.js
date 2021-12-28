@@ -761,7 +761,6 @@ function Search(props) {
               />
             )}
             renderOption={(option) => {
-              console.log("orig renderOption option", option);
               if (option.Source === "header" || option.group === "loader")
                 return null;
               // eslint-disable-next-line no-array-constructor

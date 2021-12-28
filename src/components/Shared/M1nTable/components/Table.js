@@ -1701,7 +1701,6 @@ function SubTable(props) {
                           }}
                           aria-label="show comments"
                           onMouseOver={() => {
-                            console.log("hover Effect Table");
                             if (
                               m1nSelectedRowsIndexes.indexOf(
                                 tableMeta.rowIndex
@@ -1767,7 +1766,6 @@ function SubTable(props) {
                         }}
                         aria-label="show address"
                         onMouseOver={() => {
-                          console.log("hover Effect Table");
                           if (
                             m1nSelectedRowsIndexes.indexOf(
                               tableMeta.rowIndex
@@ -4200,8 +4198,6 @@ function SubTable(props) {
         }
       }
 
-      // console.log("SHAPE PROPS", props);
-
       if (
         props.header === "Well Interests" &&
         props.parent === "owner_WellInterests"
@@ -4455,8 +4451,6 @@ function SubTable(props) {
     }));
     return dataSet;
   }
-
-  // console.log("rows", rows)
 
   const CustomTableViewCol = (columnsProps) => {
     if (props.header === "Documents") {

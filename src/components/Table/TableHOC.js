@@ -203,15 +203,15 @@ export const TableHOC = (Component) => {
                             if (Array.isArray(field)) {
                                 return [
                                     {
-                                        _script : {
-                                        type : "number",
-                                        script : {
-                                            lang: "painless",
-                                            source: `if (
+                                        _script: {
+                                            type: "number",
+                                            script: {
+                                                lang: "painless",
+                                                source: `if (
                                                     ${field.map(el => `doc['${el}'].isEmpty()`).join(' && ')}
                                                 ) {return 1} else {return 0}`
-                                        },
-                                        order : "asc"
+                                            },
+                                            order: "asc"
                                         }
                                     },
                                     {
@@ -237,11 +237,10 @@ export const TableHOC = (Component) => {
                             }
                         })()
                     },
-                    filters: tableState.esFilters ? [...tableState.esFilters ] : []
+                    filters: tableState.esFilters ? [...tableState.esFilters] : []
                     // ...(tableState.esFilters) && { filters: [...tableState.esFilters] || [] },
                 },
             };
-
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0) {
                     pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })

@@ -83,7 +83,7 @@ const LandSearch = ({ activeModule }) => {
           setTimeout(() => {
             setStateApp((stateApp) => ({
               ...stateApp,
-              revenueSearchQuery: e.target.value,
+              revenueSearchQuery: `${e.target.value}*`,
             }));
           }, 500);
         }}
@@ -114,7 +114,7 @@ const LandSearch = ({ activeModule }) => {
                     setSearch("");
                     setStateApp((stateApp) => ({
                       ...stateApp,
-                      revenueSearchQuery: "",
+                      revenueSearchQuery: "*",
                       // isLandSearching: true,
                     }));
                   }}

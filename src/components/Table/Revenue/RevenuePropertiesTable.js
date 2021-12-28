@@ -19,9 +19,6 @@ function RevenuePropertiesTable(props) {
     GET_ES_PAGINATED_LIST,
     {
       fetchPolicy: "no-cache",
-      onCompleted: () => {
-        console.log("compeleted");
-      },
     }
   );
   // rearranging the data according to the requirements.
