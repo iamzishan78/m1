@@ -131,7 +131,7 @@ const ExportWellsOwners = ({
     <Drawer anchor="right" open={open}>
       <div className={classes.root}>
         <div className={classes.title}>
-          <h3>Export Data to CSV</h3>
+          <h1>Export Data to CSV</h1>
           <div style={{ cursor: "pointer" }}>
             <IconButton size="small" onClick={onClose}>
               <CloseIcon />
