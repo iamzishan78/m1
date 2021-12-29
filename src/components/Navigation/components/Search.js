@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -27,12 +28,12 @@ import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
 import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
 import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";
 import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
-import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+// import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
-import { PAGINATEDWELLSQUERY } from "graphQL/useQueryPaginatedWells";
-import { PAGINATEDOWNERSQUERY } from "graphQL/useQueryPaginatedOwner";
-import { PAGINATEDOPERATORSQUERY } from "graphQL/useQueryPaginatedOperators";
-import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
+// import { PAGINATEDWELLSQUERY } from "graphQL/useQueryPaginatedWells";
+// import { PAGINATEDOWNERSQUERY } from "graphQL/useQueryPaginatedOwner";
+// import { PAGINATEDOPERATORSQUERY } from "graphQL/useQueryPaginatedOperators";
+// import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
 // custom components
@@ -198,6 +199,7 @@ function Search() {
 
   // loaders
   const [loading, setLoading] = React.useState(false);
+  const history = useHistory();
   const classes = useStyles({ mapGridCardActivated });
 
   // queries
@@ -351,7 +353,7 @@ function Search() {
       },
       "units": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `layer:unit AND name:${request.input} *` : '',
+        search: (request) => request.input ? `layer:unit AND name:${request.input}*` : '',
         formatOptions: (data) => {
           return {
             ...data, Source: 'shapes_flat', Primary: data.name, Secondary: null
@@ -361,7 +363,7 @@ function Search() {
 
       "tracts": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `layer:parcel AND name:${request.input} *` : '',
+        search: (request) => request.input ? `layer:parcel AND name:${request.input}*` : '',
         formatOptions: (data) => {
           return {
             ...data, Source: 'shapes_flat', Primary: data.name, Secondary: null
@@ -370,7 +372,7 @@ function Search() {
       },
       "agreements": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `shapeJson.properties.type:(agreement) AND shapeJson.properties.agreementName:${request.input} *` : '',
+        search: (request) => request.input ? `shapeJson.properties.type:(agreement) AND shapeJson.properties.agreementName:${request.input}*` : '',
         formatOptions: (data) => {
           return {
             ...data, Source: 'shapes_flat', Primary: data?.shapeJson?.properties?.agreementName, Secondary: null
@@ -381,13 +383,13 @@ function Search() {
 
   const callESSearch = React.useMemo(
     () =>
-      debounce((request, top, callback) => {
+      debounce((request) => {
         const { esIndex, search } = esCallData[searchOption]
         getESPaginatedList({
           variables: {
             esIndex,
             pagination: {
-              first: startPaginationAt,
+              first: request.searchTop ? request.searchTop : startPaginationAt,
               keep_alive: "1micros"
             },
             search: search(request),
@@ -459,6 +461,7 @@ function Search() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    searchTop,
     searchInputValue,
     callESSearch,
     callMapboxSearch,
@@ -652,6 +655,12 @@ function Search() {
 
       //// setting map loader
       setStateApp((stateApp) => ({ ...stateApp, mapCircularLoaderAct: true, searchLoader: true }));
+
+      if (newValue.layer === "unit" || newValue.layer === "parcel" || newValue?.shapeJson?.properties?.type === "agreement") {
+        let newPath
+        newPath = `/map/${newValue.layer}s/${newValue._id}`;
+        history.location.pathname !== newPath && history.replace(newPath);
+      }
 
       //// if well, with lat long
       if (newValue && newValue.Source === wellCogIndexName && newValue.Longitude && newValue.Latitude) {
@@ -959,21 +968,21 @@ function Search() {
                         className={classes.groupsButton}
                         onClick={() => {
                           setSearchTop(200);
-                          setSearchOption(
-                            option.group === "Tax Owners"
-                              ? "tax owners"
-                              : option.group === "Wells"
-                                ? "wells"
-                                : option.group === "Operators"
-                                  ? "operators"
-                                  : option.group === "Leases"
-                                    ? "leases"
-                                    : option.group === "Contacts"
-                                      ? "contacts"
-                                      : option.group === "Locations"
-                                        ? "locations"
-                                        : "all"
-                          );
+                          // setSearchOption(
+                          //   option.group === "Tax Owners"
+                          //     ? "tax owners"
+                          //     : option.group === "Wells"
+                          //       ? "wells"
+                          //       : option.group === "Operators"
+                          //         ? "operators"
+                          //         : option.group === "Leases"
+                          //           ? "leases"
+                          //           : option.group === "Contacts"
+                          //             ? "contacts"
+                          //             : option.group === "Locations"
+                          //               ? "locations"
+                          //               : "all"
+                          // );
                         }}
                       >
                         See All Results
