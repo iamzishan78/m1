@@ -111,6 +111,7 @@ export default function Contacts(props) {
   const [nameAutValue, setNameAutValue] = useState("");
   const [nameAutInputValue, setNameAutInputValue] = useState("");
   const [addWell, setAddWell] = useState(false);
+  const [deletedRow, setDeletedRow] = useState('')
   const [stateApp, setStateApp] = useContext(AppContext);
 
   //Queries
@@ -139,7 +140,7 @@ export default function Contacts(props) {
         descriptorObject: stateApp.selectedDocument._id
       }
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Settng the wells in the State on every change
@@ -309,14 +310,14 @@ export default function Contacts(props) {
                     {well.wellName}
                   </Link>
 
-                  {deleteWellLoading ? (
+                  {deleteWellLoading && deletedRow === well._id ? (
                     <ListItemSecondaryAction>
                       <IconButton edge="end" aria-label="delete">
                         <CircularProgress size='20px' />
                       </IconButton>
                     </ListItemSecondaryAction>
                   ) : (
-                    <ListItemSecondaryAction onClick={() => deleteWell(well._id)}>
+                    <ListItemSecondaryAction onClick={() =>{setDeletedRow(well._id); deleteWell(well._id)}}>
                       <IconButton edge="end" aria-label="delete" className={classes.deleteIcon}>
                         <DeleteIcon />
                       </IconButton>
