@@ -64,6 +64,7 @@ const ExportWellsOwners = ({
   const { currentFeature, user } = stateApp;
   const { control, watch } = useForm();
   const [includeFilter, setIncludeFilter] = useState(false);
+  const [includeWellInterestData, setIncludeWellInterestData] = useState(false);
 
   const exportWells = watch("exportWells", false);
   const exportOwners = watch("exportOwners", false);
@@ -71,17 +72,19 @@ const ExportWellsOwners = ({
   useEffect(() => {
     if (!includeFilter) {
       getShapeOwnersAndWellsAction({
+        includeWellInterestData,
         currentFeature: currentFeature,
         userId: user.mongoId,
       });
     }
     // eslint-disable-next-line
-  }, [includeFilter]);
+  }, [includeFilter, includeWellInterestData]);
 
   useEffect(() => {
     if (includeFilter) {
       const { filters, search } = getMapFilters(stateNav, "", "");
       getMapFilterShapeOwnersAndWellsAction({
+        includeWellInterestData,
         currentFeature: currentFeature,
         userId: user.mongoId,
         filters,
@@ -91,6 +94,7 @@ const ExportWellsOwners = ({
     // eslint-disable-next-line
   }, [
     includeFilter,
+    includeWellInterestData,
     stateNav.operatorName,
     stateNav.typeName,
     stateNav.profileName,
@@ -185,7 +189,16 @@ const ExportWellsOwners = ({
             <label className={classes.bold}>{shapeCount} selected</label>
           </div>
         </div>
-
+        <div className={classes.title}>
+          <h4>Include Well Interest Data</h4>
+          <div>
+            <Switch
+              checked={includeWellInterestData}
+              onChange={() => setIncludeWellInterestData(!includeWellInterestData)}
+              name="includeWellInterestData"
+            />
+          </div>
+        </div>
         <div className={classes.title}>
           <h4>Include map filters</h4>
           <div>

@@ -47,7 +47,7 @@ function* getShapeOwnersAndCount(action) {
 
 function* getShapeOwnersAndWells(action) {
   try {
-    const { currentFeature, userId } = action.payload;
+    const { currentFeature, userId, includeWellInterestData } = action.payload;
 
     const wellsCount = yield call(Api.fetch, GET_ES_PAGINATED_LIST, {
       esIndex: "platformData:wells",
@@ -72,16 +72,28 @@ function* getShapeOwnersAndWells(action) {
       (well) => well.Id
     );
 
-    const taxOwners = yield call(Api.fetch, OWNERS_INTEREST_BY_WELL_IDS, {
-      wellIds: wellIds,
-      selectedYear: "2021",
-    });
+    let taxOwners = [];
 
+    if(includeWellInterestData){
+      const response = yield call(Api.fetch, OWNERS_INTEREST_BY_WELL_IDS, {
+        wellIds: wellIds,
+        selectedYear: "2021",
+      });
+      taxOwners = response?.data?.data?.ownersInterestByWellIds;
+    }
+
+    if(!includeWellInterestData){
+      const response = yield call(Api.fetch, OWNERS_BY_WELL_IDS, {
+        wellIds: wellIds,
+        selectedYear: "2021",
+      });
+      taxOwners = response?.data?.data?.ownersByWellIds;
+    }
 
     yield put(
       getShapeOwnersAndWellsAction.FULLFILLED({
-        shapeOwners: taxOwners?.data?.data?.ownersInterestByWellIds,
-        shapeCount: taxOwners?.data?.data?.ownersInterestByWellIds?.length,
+        shapeOwners: taxOwners,
+        shapeCount: taxOwners?.length,
         wells: wells?.data?.data?.getESPaginatedList?.hits,
         wellsCount: wellsCount?.data?.data?.getESPaginatedList?.total,
       })
@@ -138,7 +150,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
 
 function* getMapFilterShapeOwnersAndWells(action) {
   try {
-    const { currentFeature, filters, search, userId } = action.payload;
+    const { currentFeature, filters, search, userId, includeWellInterestData } = action.payload;
 
     const wellsCount = yield call(Api.fetch, GET_ES_PAGINATED_LIST, {
       esIndex: "platformData:wells",
