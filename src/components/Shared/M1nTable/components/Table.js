@@ -568,7 +568,7 @@ const useStyles = makeStyles((theme) => ({
   warningCol: {
     display: "flex",
     color: "#f1af29",
-    pointer: "cursor",
+    cursor: "pointer",
     "& svg": {
       fill: "#f1af29 !important"
     },
