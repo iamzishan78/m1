@@ -9,6 +9,7 @@ import Switch from "@material-ui/core/Switch";
 import { makeStyles } from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 
 import { AppContext } from "AppContext";
@@ -51,6 +52,7 @@ const ExportWellsOwners = ({
   shapeOwners,
   shapeCount,
   wellsCount,
+  fetching,
   onClose,
   wells,
   open,
@@ -211,7 +213,7 @@ const ExportWellsOwners = ({
                 style={{ backgroundColor: "#00abed", color: "white" }}
                 onClick={onExport}
               >
-                Export
+                {fetching? <CircularProgress size={14} /> :'Export'}
               </Button>
             </Grid>
           </Grid>

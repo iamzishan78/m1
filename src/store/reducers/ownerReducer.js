@@ -1,4 +1,5 @@
 import {
+  RESET_SHAPE_OWNER,
   GET_SHAPE_OWNERS_AND_COUNT,
   GET_SHAPE_OWNERS_AND_WELLS,
   GET_MAP_FILTER_SHAPE_OWNERS_AND_COUNT,
@@ -15,10 +16,11 @@ const INIT_STATE = {
 
 const ownerReducer = (state = INIT_STATE, action) => {
   switch (action.type) {
-    case GET_SHAPE_OWNERS_AND_COUNT.STARTED: {
-      return { ...state, shapeOwners: [], fetching: true };
-    }
-    case GET_MAP_FILTER_SHAPE_OWNERS_AND_COUNT.STARTED: {
+    
+    case GET_SHAPE_OWNERS_AND_COUNT.STARTED:
+    case GET_SHAPE_OWNERS_AND_WELLS.STARTED:
+    case GET_MAP_FILTER_SHAPE_OWNERS_AND_COUNT.STARTED:
+    case  GET_MAP_FILTER_SHAPE_OWNERS_AND_WELLS.STARTED: {
       return { ...state, shapeOwners: [], fetching: true };
     }
     case GET_SHAPE_OWNERS_AND_COUNT.FULLFILLED: {
@@ -57,7 +59,9 @@ const ownerReducer = (state = INIT_STATE, action) => {
         fetching: false,
       };
     }
-
+    case RESET_SHAPE_OWNER:{
+      return { ...state, wells: [], wellsCount: 0, shapeOwners: [], shapeCount: 0, fetching: false};
+    }
     default:
       return state;
   }

@@ -4,7 +4,7 @@ import Api from "api";
 import { getSelectedFeaturePolygonString } from "utils/helper";
 import { SHAPE_OWNERS } from "graphQL/useQueryPaginatedShapeOwners";
 import { SHAPEOWNERSCOUNT } from "graphQL/useQueryShapeOwnersCount";
-import { OWNERS_BY_WELL_IDS } from "graphQL/useQueryOwnersByWellIds";
+import { OWNERS_BY_WELL_IDS, OWNERS_INTEREST_BY_WELL_IDS } from "graphQL/useQueryOwnersByWellIds";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import {
   getShapeOwnersAndCountAction,
@@ -72,7 +72,7 @@ function* getShapeOwnersAndWells(action) {
       (well) => well.Id
     );
 
-    const taxOwners = yield call(Api.fetch, OWNERS_BY_WELL_IDS, {
+    const taxOwners = yield call(Api.fetch, OWNERS_INTEREST_BY_WELL_IDS, {
       wellIds: wellIds,
       selectedYear: "2021",
     });
@@ -80,8 +80,8 @@ function* getShapeOwnersAndWells(action) {
 
     yield put(
       getShapeOwnersAndWellsAction.FULLFILLED({
-        shapeOwners: taxOwners?.data?.data?.ownersByWellIds,
-        shapeCount: taxOwners?.data?.data?.ownersByWellIds?.length,
+        shapeOwners: taxOwners?.data?.data?.ownersInterestByWellIds,
+        shapeCount: taxOwners?.data?.data?.ownersInterestByWellIds?.length,
         wells: wells?.data?.data?.getESPaginatedList?.hits,
         wellsCount: wellsCount?.data?.data?.getESPaginatedList?.total,
       })
@@ -165,15 +165,15 @@ function* getMapFilterShapeOwnersAndWells(action) {
       (well) => well.Id
     );
 
-    const taxOwners = yield call(Api.fetch, OWNERS_BY_WELL_IDS, {
+    const taxOwners = yield call(Api.fetch, OWNERS_INTEREST_BY_WELL_IDS, {
       wellIds: wellIds,
       selectedYear: "2021",
     });
 
     yield put(
       getMapFilterShapeOwnersAndWellsAction.FULLFILLED({
-        shapeOwners: taxOwners.data.data.ownersByWellIds,
-        shapeCount: taxOwners.data.data.ownersByWellIds.length,
+        shapeOwners: taxOwners.data.data.ownersInterestByWellIds,
+        shapeCount: taxOwners.data.data.ownersInterestByWellIds.length,
         wells: wells?.data?.data?.getESPaginatedList?.hits,
         wellsCount: wellsCount?.data?.data?.getESPaginatedList?.total,
       })

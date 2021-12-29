@@ -44,11 +44,12 @@ export const ConvertTaxOwnerToContactContainer = connect(
 )(ConvertTaxOwnerToContact);
 
 const exportWellsOwnersProps = (state) => {
-  const { shapeCount, wellsCount, shapeOwners, wells } = state.owner;
+  const { shapeCount, wellsCount, shapeOwners, wells, fetching } = state.owner;
   return {
     shapeOwners,
     shapeCount,
     wellsCount,
+    fetching,
     wells
   };
 };

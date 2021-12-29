@@ -1,4 +1,5 @@
 import {
+  RESET_SHAPE_OWNER,
   GET_SHAPE_OWNERS_AND_WELLS,
   GET_SHAPE_OWNERS_AND_COUNT,
   GET_MAP_FILTER_SHAPE_OWNERS_AND_COUNT,
@@ -46,3 +47,5 @@ export const getMapFilterShapeOwnersAndWellsAction = {
   }),
   REJECTED: () => ({ type: GET_MAP_FILTER_SHAPE_OWNERS_AND_WELLS.REJECTED }),
 };
+
+export const resetShapeOwnerAction = () => ({ type: RESET_SHAPE_OWNER })

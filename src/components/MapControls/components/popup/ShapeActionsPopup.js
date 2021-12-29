@@ -39,6 +39,7 @@ import { setFeatureProperty, drawShapeLayerToggle, findBoundsMap } from "compone
 import { shapeTypeLayers } from "components/Shared/functions/shapeLayer";
 import LimitExceedPopUp from "components/MapControls/components/popup/LimitExceedPopup"
 import { ConvertTaxOwnerToContactContainer, ExportWellsOwnersContainer } from 'store/containers'
+import { resetShapeOwnerAction } from "store/actions/ownerActions";
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
@@ -830,10 +831,16 @@ const ShapeActionsPopup = (props) => {
       </Modal>
       <LimitExceedPopUp open={limitExceed} onClose={() => setLimitExceed(false)} />
       {convertTaxOwnerModal && (
-        <ConvertTaxOwnerToContactContainer open={convertTaxOwnerModal} onClose={() => setConvertTaxOwnerModal(false)}/>
+        <ConvertTaxOwnerToContactContainer open={convertTaxOwnerModal} onClose={() => {
+          setConvertTaxOwnerModal(false)
+          dispatch(resetShapeOwnerAction())
+        }}/>
       )}
       {exportCSVModal && (
-        <ExportWellsOwnersContainer open={exportCSVModal} onClose={() => setExportCSVModal(false)}/>
+        <ExportWellsOwnersContainer open={exportCSVModal} onClose={() => {
+          setExportCSVModal(false)
+          dispatch(resetShapeOwnerAction())
+        }}/>
       )}
     </Fragment>
   );
