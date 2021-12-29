@@ -1,5 +1,8 @@
 import moment from "moment";
+import uniq from 'lodash/uniq';
+
 import { getSession } from "utils/user";
+import { wellsKeys } from "utils/data";
 import { tenantsCredentials } from "components/Login/AADAuthConfig";
 
 const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
@@ -198,14 +201,7 @@ export const getMapFilters = (stateNav, searchInput, gridPolygonString) => {
   return { search, filters, polygon };
 };
 
-export const jsonToCSV = (wells) => {
-  const keys = [];
-  let csv = "";
-  Object.keys(wells[0]).forEach((key) => {
-    csv = `${csv ? csv + "," : ""}${key}`;
-    keys.push(key);
-  });
-
+const dataToCsv = (wells, keys, csv) => {
   for (let i = 0; i < wells.length; i++) {
     csv = csv + "\n";
     for (let j = 0; j < keys.length; j++) {
@@ -214,10 +210,28 @@ export const jsonToCSV = (wells) => {
         csv = `${j!==0 ? csv + "," : csv}"${value}"`;
       }else{
         let stringValue = JSON.stringify(value);
-        stringValue = stringValue.replace(/"/g,'')
+        stringValue = stringValue ? stringValue.replace(/"/g,'') : '';
         csv = `${j!==0 ? csv + "," : csv}"${stringValue}"`;
       } 
     }
   }
   return csv
+}
+
+export const jsonToCSV = (wells) => {
+  const keys = [];
+  let csv = "";
+  Object.keys(wells[0]).forEach((key) => {
+    csv = `${csv ? csv + "," : ""}${key}`;
+    keys.push(key);
+  });
+  return dataToCsv(wells, keys, csv)
+};
+
+export const wellsToCSV = (wells) => {
+  let csv = "";
+  for(let i = 0; i < wellsKeys.length; i++) {
+    csv = `${csv ? csv + "," : ""}${wellsKeys[i]}`;
+  }
+  return dataToCsv(wells, wellsKeys, csv)
 };
