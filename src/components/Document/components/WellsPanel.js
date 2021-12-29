@@ -1,21 +1,28 @@
-import React, { useEffect, useState, useContext, useCallback } from "react";
-import { Grid, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase, Button } from "@material-ui/core";
-import get from "lodash/get";
-import SearchIcon from "@material-ui/icons/Search";
-import AddIcon from "@material-ui/icons/Add";
+import React, { useEffect, useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
-import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
-import { ADDCONTACT } from "graphQL/useMutationAddContact";
-import { AppContext } from "AppContext";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { Grid, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase } from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
+import Link from "@material-ui/core/Link";
+import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import IconButton from "@material-ui/core/IconButton";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { REMOVEDEALDESCRIPTOR } from "graphQL/useMutationRemoveDealDescriptor";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import { AppContext } from "AppContext";
+
+//Components
+import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
+
+// Hooks
+import { useLazyQuery, useMutation } from "@apollo/client";
+
+// Queries
+import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument'
-import Link from "@material-ui/core/Link";
+
+// Mutations
+import { DELETEWELLFROMFILEDESCRIPTOR } from 'graphQL/useMutationDeleteWellFromFileDescriptor'
+
 
 const useStyles = makeStyles((theme) => ({
   rootPadding: {
@@ -95,26 +102,9 @@ export default function Contacts(props) {
   let history = useHistory();
   const classes = useStyles();
   const [search, setSearch] = useState("");
-  const [wells, setWells] = useState([
-    {
-      _id: "1",
-      name: "Sample Well 1",
-    },
-    {
-      _id: "2",
-      name: "Sample Well 2",
-    },
-    {
-      _id: "3",
-      name: "Sample Well 3",
-    },
-    {
-      _id: "4",
-      name: "Sample Well 4",
-    },
-  ]);
+
   const [isSearchActive, setSearchState] = useState(false);
-  const [filteredWells, setFilteredWells] = useState(wells);
+  const [filteredWells, setFilteredWells] = useState([]);
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
@@ -122,18 +112,42 @@ export default function Contacts(props) {
   const [nameAutInputValue, setNameAutInputValue] = useState("");
   const [addWell, setAddWell] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [mutationLoading, setMutationLoading] = useState(false);
+
+  //Queries
   const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
-  const [getWellsFromDocument, { data: wellsFromDocument }] = useLazyQuery(GETWELLSFROMDOCUMENTS, {
+  const [getWellsFromDocument, { data: wellsFromDocument, loading: getWellsLoading }] = useLazyQuery(GETWELLSFROMDOCUMENTS, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
-  // const [addNewContact, { data: addWellData }] = useMutation(ADDCONTACT);
-  const [removeDealDescriptor,] = useMutation(REMOVEDEALDESCRIPTOR);
-  console.log('wellDescriptorData', wellsFromDocument)
+
+  // Mutattions
+  const [deleteWellFromDescriptor, { loading: deleteWellLoading }] = useMutation(DELETEWELLFROMFILEDESCRIPTOR, {
+    onCompleted: () => getWellsFromDocument({
+      variables: {
+        descriptorObject: stateApp.selectedDocument._id
+      }
+    })
+  });
+
+  // fetching wells from File Descriptor
+  useEffect(() => {
+    getWellsFromDocument({
+      variables: {
+        descriptorObject: stateApp.selectedDocument._id
+      }
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Settng the wells in the State on every change
+  useEffect(() => {
+    const wellDescriptor = wellsFromDocument?.getWellDescriptors[0]
+    setFilteredWells(wellDescriptor?.wells)
+  }, [wellsFromDocument])
+
   useEffect(() => {
     //will also run during initial mount
     setIsNextPageLoading(true);
@@ -147,18 +161,11 @@ export default function Contacts(props) {
   useEffect(() => {
     if (nameAutValue) {
       props.addSelectedContact(nameAutValue);
-      // GettingContacts();
-      // setMutationLoading(true);
       setAddWell(false);
       setNameAutValue("");
     }
   }, [nameAutValue]);
 
-  // useEffect(() => {
-  //   if (get(addWellData, "addWell.well")) {
-  //     setNameAutValue({ name: addWellData.addWell.well.name, _id: addWellData.addWell.well._id });
-  //   }
-  // }, [addWellData]);
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
@@ -173,47 +180,11 @@ export default function Contacts(props) {
     fetchMorePaginatedContacts(pageVariables);
   };
 
-  useEffect(() => {
-    let filteredWells = wells.filter((w) => w.name.toLowerCase().includes(search.toLowerCase()));
-    setFilteredWells(filteredWells);
-  }, [search, wells]);
-
-  // const GettingWells = useCallback(() => {
-  //   let contactnames = stateApp.activeDeal?.contacts?.map((value) => {
-  //     if (get(value, "relatedObject.entityDetail.name")) {
-  //       return value.relatedObject.entityDetail.name;
-  //     } else if (get(value, "name")) {
-  //       return value.name;
-  //     } else {
-  //       return "Empty";
-  //     }
-  //   });
-  //   setWells(contactnames);
-  // }, [stateApp.activeDeal?.contacts]);
-
-  // useEffect(() => {
-  //   GettingWells();
-  // }, [search, props, GettingWells]);
-
-  useEffect(() => {
-    setMutationLoading(props.loading);
-  }, [props.loading]);
-
+  // delete well from File Descriptor
   const deleteWell = async (wellId) => {
-    let filteredWells = wells.filter((w) => w._id !== wellId);
-    setWells(filteredWells);
-    // const descriptorId = get(stateApp, `activeDeal.contacts[${index}].descriptorId`) || get(stateApp, `activeDeal.contacts[${index}]._id`);
-    // let result = await removeDealDescriptor({
-    //   variables: { id: descriptorId, relatedObjectType: "Contact" },
-    //   refetchQueries: ["getPipeline", "getContactDeals"],
-    //   awaitRefetchQueries: true,
-    // });
-    // let response = await result.data.removeDealDescriptor.success;
-    // if (response) {
-    //   props.getDeal();
-    // } else {
-    //   setMutationLoading(false);
-    // }
+    await deleteWellFromDescriptor({
+      variables: { descriptorId: stateApp?.selectedDocument?._id, wellId: wellId },
+    })
   };
 
   const gotoContact = (index) => {
@@ -234,11 +205,6 @@ export default function Contacts(props) {
             {!isSearchActive && (
               <Grid item xs={10}>
                 <Typography variant="h6">Wells</Typography>
-                <Button onClick={() => getWellsFromDocument({
-                  variables: {
-                    descriptorObject: "618a64f7a4c4bc232896964a" // static id for testing
-                  }
-                })}>Click</Button>
               </Grid>
             )}
             <Grid item xs={1}>
@@ -324,7 +290,7 @@ export default function Contacts(props) {
       </Grid>
       <Divider />
       <div className={classes.list}>
-        {mutationLoading === true && (
+        {getWellsLoading === true && (
           <Grid container className={classes.actionGrid}>
             <Grid item xs={12}>
               <div style={{ display: "flex", justifyContent: "center" }}>
@@ -340,27 +306,22 @@ export default function Contacts(props) {
               <div style={{ padding: "10px 0px 0px" }}>
                 <ListItem key={index}>
                   <Link className={classes.wellLink} color="primary" onClick={() => gotoContact(index)}>
-                    {well.name}
+                    {well.wellName}
                   </Link>
 
-                  {/* {mutationLoading === stateApp.activeDeal?.contacts[index]?._id ? (
+                  {deleteWellLoading ? (
                     <ListItemSecondaryAction>
                       <IconButton edge="end" aria-label="delete">
-                        <CircularProgress />
+                        <CircularProgress size='20px' />
                       </IconButton>
                     </ListItemSecondaryAction>
-                  ) : ( */}
-                  <ListItemSecondaryAction
-                    onClick={() => {
-                      deleteWell(well._id);
-                      // setMutationLoading(stateApp.activeDeal?.contacts[index]?._id);
-                    }}
-                  >
-                    <IconButton edge="end" aria-label="delete" className={classes.deleteIcon}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                  {/* )} */}
+                  ) : (
+                    <ListItemSecondaryAction onClick={() => deleteWell(well._id)}>
+                      <IconButton edge="end" aria-label="delete" className={classes.deleteIcon}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  )}
                 </ListItem>
                 <Divider />
               </div>
