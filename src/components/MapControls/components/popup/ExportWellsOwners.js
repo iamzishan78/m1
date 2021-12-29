@@ -1,4 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
@@ -6,10 +7,13 @@ import Drawer from "@material-ui/core/Drawer";
 import Button from "@material-ui/core/Button";
 import Switch from "@material-ui/core/Switch";
 import { makeStyles } from "@material-ui/core";
+import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 
 import { AppContext } from "AppContext";
-import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
+import { getMapFilters, jsonToCSV } from "utils/helper";
+import { NavigationContext } from "components/Navigation/NavigationContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,29 +39,91 @@ const useStyles = makeStyles((theme) => ({
   bold: {
     fontWeight: "bold",
   },
+  checkbox: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
 }));
 
-
 const ExportWellsOwners = ({
-  getShapeOwnersAndCountAction,
+  getMapFilterShapeOwnersAndWellsAction,
+  getShapeOwnersAndWellsAction,
+  shapeOwners,
+  shapeCount,
+  wellsCount,
   onClose,
+  wells,
   open,
 }) => {
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
+  const [stateNav] = useContext(NavigationContext);
+
   const { currentFeature, user } = stateApp;
+  const { control, watch } = useForm();
   const [includeFilter, setIncludeFilter] = useState(false);
 
+  const exportWells = watch("exportWells", false);
+  const exportOwners = watch("exportOwners", false);
 
   useEffect(() => {
-    getShapeOwnersAndCountAction({
-      currentFeature: currentFeature,
-      userId: user.mongoId,
-    });
+    if (!includeFilter) {
+      getShapeOwnersAndWellsAction({
+        currentFeature: currentFeature,
+        userId: user.mongoId,
+      });
+    }
     // eslint-disable-next-line
-  }, []);
+  }, [includeFilter]);
 
-  const onConvert = () => {};
+  useEffect(() => {
+    if (includeFilter) {
+      const { filters, search } = getMapFilters(stateNav, "", "");
+      getMapFilterShapeOwnersAndWellsAction({
+        currentFeature: currentFeature,
+        userId: user.mongoId,
+        filters,
+        search,
+      });
+    }
+    // eslint-disable-next-line
+  }, [
+    includeFilter,
+    stateNav.operatorName,
+    stateNav.typeName,
+    stateNav.profileName,
+    stateNav.statusName,
+    stateNav.statusName,
+    stateNav.spudDateFrom,
+    stateNav.spudDateTo,
+    stateNav.permitDateFrom,
+    stateNav.permitDateTo,
+    stateApp.gridPolygonString,
+    stateNav.completetionDateFrom,
+    stateNav.completetionDateTo,
+    stateNav.firstProdDateFrom,
+    stateNav.firstProdDateTo,
+  ]);
+
+  const onExport = () => {
+    if (exportWells) {
+      const csvWells = jsonToCSV(wells);
+      const hiddenElement = document.createElement("a");
+      hiddenElement.href = "data:attachment/text," + encodeURIComponent(csvWells);
+      hiddenElement.target = "_blank";
+      hiddenElement.download = "wells.csv";
+      hiddenElement.click();
+    }
+    if (exportOwners) {
+      const owners = jsonToCSV(shapeOwners.map(owner => owner.node));
+      const hiddenElement = document.createElement("a");
+      hiddenElement.href = "data:attachment/text," + encodeURIComponent(owners);
+      hiddenElement.target = "_blank";
+      hiddenElement.download = "taxOwners.csv";
+      hiddenElement.click();
+    }
+    onClose()
+  };
 
   return (
     <Drawer anchor="right" open={open}>
@@ -70,6 +136,54 @@ const ExportWellsOwners = ({
             </IconButton>
           </div>
         </div>
+        <label className={classes.bold}>Available Data Elements</label>
+
+        <div className={classes.field}>
+          <div className={classes.checkbox}>
+            <div>
+              <Controller
+                control={control}
+                name="exportWells"
+                defaultValue={false}
+                render={(props) => (
+                  <Checkbox
+                    {...props}
+                    disabled={wellsCount === 0}
+                    onChange={(e) => {
+                      props.onChange(e.target.checked);
+                    }}
+                  />
+                )}
+              />
+              <label className={classes.bold}>Wells</label>
+            </div>
+            <label className={classes.bold}>{wellsCount} selected</label>
+          </div>
+        </div>
+
+        <div className={classes.field}>
+          <div className={classes.checkbox}>
+            <div>
+              <Controller
+                control={control}
+                name="exportOwners"
+                defaultValue={false}
+                render={(props) => (
+                  <Checkbox
+                    {...props}
+                    disabled={shapeCount === 0}
+                    onChange={(e) => {
+                      props.onChange(e.target.checked);
+                    }}
+                  />
+                )}
+              />
+              <label className={classes.bold}>Tax Owners</label>
+            </div>
+            <label className={classes.bold}>{shapeCount} selected</label>
+          </div>
+        </div>
+
         <div className={classes.title}>
           <h4>Include map filters</h4>
           <div>
@@ -95,9 +209,9 @@ const ExportWellsOwners = ({
                 variant="contained"
                 component="span"
                 style={{ backgroundColor: "#00abed", color: "white" }}
-                onClick={onConvert}
+                onClick={onExport}
               >
-                Convert
+                Export
               </Button>
             </Grid>
           </Grid>

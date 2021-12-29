@@ -85,7 +85,7 @@ export const formatTaxOwners = (owners, formData) => {
 };
 
 export const getSearchQuery = (extendSearchQuery, filters) => {
-  let query = extendSearchQuery
+  let query = extendSearchQuery;
   Object.entries(filters).map((filter, index) => {
     for (let i = 0; i < filter[1]?.length; i++) {
       if (query && i === 0) {
@@ -122,24 +122,23 @@ export const getFilters = (filters) => {
 };
 
 export const getShapeFilter = (polygon) => {
-    const coordinates = [];
-    if(polygon && typeof polygon === 'string' && polygon.includes('POLYGON')){
-      let data = polygon.replace('POLYGON((', '').replace('))', '');
-      data = data.split(',');
-      for(let i=0; i<data.length; i++){
-        const coor = data[i].trim().split(' ');
-        coordinates.push([parseFloat(coor[0]), parseFloat(coor[1])])
-      }
+  const coordinates = [];
+  if (polygon && typeof polygon === "string" && polygon.includes("POLYGON")) {
+    let data = polygon.replace("POLYGON((", "").replace("))", "");
+    data = data.split(",");
+    for (let i = 0; i < data.length; i++) {
+      const coor = data[i].trim().split(" ");
+      coordinates.push([parseFloat(coor[0]), parseFloat(coor[1])]);
     }
-    return coordinates.length > 0 ? coordinates : undefined;
-}
+  }
+  return coordinates.length > 0 ? coordinates : undefined;
+};
 
 export const getContactsAddress = (contact) => {
   let address = "https://www.google.com/maps/search/";
   if (contact.address1)
     address = `${address}${contact.address1.replace(/ /g, "+")}`;
-  if (contact.city)
-    address = `${address},+${contact.city.replace(/ /g, "+")}`;
+  if (contact.city) address = `${address},+${contact.city.replace(/ /g, "+")}`;
   if (contact.state) address = `${address},+${contact.state}`;
   if (contact.zip) address = `${address}+${contact.zip}`;
   return {
@@ -148,7 +147,7 @@ export const getContactsAddress = (contact) => {
   };
 };
 
-export const getMapFilters = (stateNav, searchInput, gridPolygonString) => { 
+export const getMapFilters = (stateNav, searchInput, gridPolygonString) => {
   const extendSearchQuery = searchInput
     ? `((wellName:*${searchInput}*) OR (api:*${searchInput}*))`
     : "";
@@ -175,7 +174,7 @@ export const getMapFilters = (stateNav, searchInput, gridPolygonString) => {
         : null,
       to: stateNav.permitDateTo
         ? moment.parseZone(stateNav.permitDateTo).utc(true).valueOf()
-        : null
+        : null,
     },
     completionDate: {
       from: stateNav.completetionDateFrom
@@ -183,7 +182,7 @@ export const getMapFilters = (stateNav, searchInput, gridPolygonString) => {
         : null,
       to: stateNav.completetionDateTo
         ? moment.parseZone(stateNav.completetionDateTo).utc(true).valueOf()
-        : null
+        : null,
     },
     firstProductionDate: {
       from: stateNav.firstProdDateFrom
@@ -191,10 +190,34 @@ export const getMapFilters = (stateNav, searchInput, gridPolygonString) => {
         : null,
       to: stateNav.firstProdDateTo
         ? moment.parseZone(stateNav.firstProdDateTo).utc(true).valueOf()
-        : null
+        : null,
     },
   });
-  
+
   const polygon = getShapeFilter(gridPolygonString);
   return { search, filters, polygon };
+};
+
+export const jsonToCSV = (wells) => {
+  const keys = [];
+  let csv = "";
+  Object.keys(wells[0]).forEach((key) => {
+    csv = `${csv ? csv + "," : ""}${key}`;
+    keys.push(key);
+  });
+
+  for (let i = 0; i < wells.length; i++) {
+    csv = csv + "\n";
+    for (let j = 0; j < keys.length; j++) {
+      const value =  wells[i][keys[j]]
+      if(typeof value === "string") {
+        csv = `${j!==0 ? csv + "," : csv}"${value}"`;
+      }else{
+        let stringValue = JSON.stringify(value);
+        stringValue = stringValue.replace(/"/g,'')
+        csv = `${j!==0 ? csv + "," : csv}"${stringValue}"`;
+      } 
+    }
+  }
+  return csv
 };

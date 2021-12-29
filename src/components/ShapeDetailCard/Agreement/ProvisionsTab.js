@@ -110,7 +110,6 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
     useEffect(() => { reset({ provisions }) }, [provisions])
 
     const addRemoveProvision = (addProvision, provision) => {
-        debugger
         if (addProvision) {
             setSelectedProvision(provision.type)
             let addProvision = { agreement: id, type: provision.type, isDeleted: false, startDate: undefined, endDate: undefined }

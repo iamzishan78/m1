@@ -4,7 +4,9 @@ import { bindActionCreators } from "redux";
 import ConvertTaxOwnerToContact from "components/MapControls/components/popup/ConvertTaxOwnerToContact";
 import ExportWellsOwners from "components/MapControls/components/popup/ExportWellsOwners";
 import {
+  getShapeOwnersAndWellsAction,
   getShapeOwnersAndCountAction,
+  getMapFilterShapeOwnersAndWellsAction,
   getMapFilterShapeOwnersAndCountAction,
 } from "store/actions/ownerActions";
 import {
@@ -42,19 +44,20 @@ export const ConvertTaxOwnerToContactContainer = connect(
 )(ConvertTaxOwnerToContact);
 
 const exportWellsOwnersProps = (state) => {
-  const { campaignList } = state.contact;
-  const { shapeCount } = state.owner;
+  const { shapeCount, wellsCount, shapeOwners, wells } = state.owner;
   return {
+    shapeOwners,
     shapeCount,
-    campaignList,
+    wellsCount,
+    wells
   };
 };
 
 const exportWellsOwnersDispatch = (dispatch) => {
   return bindActionCreators(
     {
-      getShapeOwnersAndCountAction: getShapeOwnersAndCountAction.STARTED,
-      getContactCampaignAction: getContactCampaignAction.STARTED,
+      getShapeOwnersAndWellsAction: getShapeOwnersAndWellsAction.STARTED,
+      getMapFilterShapeOwnersAndWellsAction: getMapFilterShapeOwnersAndWellsAction.STARTED
     },
     dispatch
   );
