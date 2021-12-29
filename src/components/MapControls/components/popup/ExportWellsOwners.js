@@ -13,7 +13,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 
 import { AppContext } from "AppContext";
-import { getMapFilters, jsonToCSV } from "utils/helper";
+import { getMapFilters, jsonToCSV, wellsToCSV } from "utils/helper";
 import { NavigationContext } from "components/Navigation/NavigationContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -113,7 +113,7 @@ const ExportWellsOwners = ({
 
   const onExport = () => {
     if (exportWells) {
-      const csvWells = jsonToCSV(wells);
+      const csvWells = wellsToCSV(wells);
       const hiddenElement = document.createElement("a");
       hiddenElement.href = "data:attachment/text," + encodeURIComponent(csvWells);
       hiddenElement.target = "_blank";

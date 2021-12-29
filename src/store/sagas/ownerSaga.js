@@ -1,10 +1,14 @@
 import { call, takeLatest, put } from "redux-saga/effects";
+import get from 'lodash/get';
 
 import Api from "api";
 import { getSelectedFeaturePolygonString } from "utils/helper";
 import { SHAPE_OWNERS } from "graphQL/useQueryPaginatedShapeOwners";
 import { SHAPEOWNERSCOUNT } from "graphQL/useQueryShapeOwnersCount";
-import { OWNERS_BY_WELL_IDS, OWNERS_INTEREST_BY_WELL_IDS } from "graphQL/useQueryOwnersByWellIds";
+import {
+  OWNERS_BY_WELL_IDS,
+  OWNERS_INTEREST_BY_WELL_IDS,
+} from "graphQL/useQueryOwnersByWellIds";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import {
   getShapeOwnersAndCountAction,
@@ -26,18 +30,20 @@ function* getShapeOwnersAndCount(action) {
     const shapeOwnerCount = yield call(Api.fetch, SHAPEOWNERSCOUNT, {
       polygon,
     });
+
     const shapeOwner = yield call(Api.fetch, SHAPE_OWNERS, {
       polygon,
       userId,
       pagination: {
-        first: shapeOwnerCount?.data?.data?.shapeOwnersCount,
+        first: get(shapeOwnerCount, 'data.data.shapeOwnersCount', 0),
         after: null,
       },
     });
+
     yield put(
       getShapeOwnersAndCountAction.FULLFILLED({
-        shapeOwners: shapeOwner?.data?.data?.paginatedShapeOwners?.edges,
-        shapeCount: shapeOwnerCount?.data?.data?.shapeOwnersCount,
+        shapeOwners: get(shapeOwner, 'data.data.paginatedShapeOwners.edges', []),
+        shapeCount: get(shapeOwnerCount, 'data.data.shapeOwnersCount', 0)
       })
     );
   } catch (error) {
@@ -62,40 +68,40 @@ function* getShapeOwnersAndWells(action) {
       esIndex: "platformData:wells",
       polygon: currentFeature?.geometry?.coordinates[0],
       pagination: {
-        first: wellsCount?.data?.data?.getESPaginatedList?.total,
+        first: get(wellsCount,'data.data.getESPaginatedList.total', 0),
         after: null,
       },
     });
 
-
-    const wellIds = wells.data.data.getESPaginatedList.hits.map(
+    const wellIds = get(wells, 'data.data.getESPaginatedList.hits',[]).map(
       (well) => well.Id
     );
 
     let taxOwners = [];
 
-    if(includeWellInterestData){
-      const response = yield call(Api.fetch, OWNERS_INTEREST_BY_WELL_IDS, {
-        wellIds: wellIds,
-        selectedYear: "2021",
-      });
-      taxOwners = response?.data?.data?.ownersInterestByWellIds;
+    if(wellIds?.length > 0){
+      if (includeWellInterestData) {
+        const response = yield call(Api.fetch, OWNERS_INTEREST_BY_WELL_IDS, {
+          wellIds: wellIds,
+          selectedYear: "2021",
+        });
+        taxOwners = get(response, 'data.data.ownersInterestByWellIds',[]);
+      }
+  
+      if (!includeWellInterestData) {
+        const response = yield call(Api.fetch, OWNERS_BY_WELL_IDS, {
+          wellIds: wellIds,
+          selectedYear: "2021",
+        });
+        taxOwners = get(response, 'data.data.ownersByWellIds',[]);
+      }
     }
-
-    if(!includeWellInterestData){
-      const response = yield call(Api.fetch, OWNERS_BY_WELL_IDS, {
-        wellIds: wellIds,
-        selectedYear: "2021",
-      });
-      taxOwners = response?.data?.data?.ownersByWellIds;
-    }
-
     yield put(
       getShapeOwnersAndWellsAction.FULLFILLED({
         shapeOwners: taxOwners,
-        shapeCount: taxOwners?.length,
-        wells: wells?.data?.data?.getESPaginatedList?.hits,
-        wellsCount: wellsCount?.data?.data?.getESPaginatedList?.total,
+        shapeCount: taxOwners.length,
+        wells: get(wells, 'data.data.getESPaginatedList.hits', []),
+        wellsCount: get(wellsCount, 'data.data.getESPaginatedList.total', 0),
       })
     );
   } catch (error) {
@@ -124,23 +130,27 @@ function* getMapFilterShapeOwnersAndCount(action) {
       filters,
       polygon: currentFeature?.geometry?.coordinates[0],
       pagination: {
-        first: wellsCount?.data?.data?.getESPaginatedList?.total,
+        first: get(wellsCount, 'data.data.getESPaginatedList.total', 0),
         after: null,
       },
     });
-    const wellIds = wells.data.data.getESPaginatedList.hits.map(
+    const wellIds = get(wells, 'data.data.getESPaginatedList.hits',[]).map(
       (well) => well.Id
     );
 
-    const taxOwners = yield call(Api.fetch, OWNERS_BY_WELL_IDS, {
-      wellIds: wellIds,
-      selectedYear: "2021",
-    });
+    let taxOwners = [];
+
+    if(wellIds?.length > 0){
+      taxOwners = yield call(Api.fetch, OWNERS_BY_WELL_IDS, {
+        wellIds: wellIds,
+        selectedYear: "2021",
+      });
+    }
 
     yield put(
       getMapFilterShapeOwnersAndCountAction.FULLFILLED({
-        shapeOwners: taxOwners.data.data.ownersByWellIds,
-        shapeCount: taxOwners.data.data.ownersByWellIds.length
+        shapeOwners: get(taxOwners, 'data.data.ownersByWellIds', []),
+        shapeCount: get(taxOwners, 'data.data.ownersByWellIds.length', 0),
       })
     );
   } catch (error) {
@@ -150,7 +160,8 @@ function* getMapFilterShapeOwnersAndCount(action) {
 
 function* getMapFilterShapeOwnersAndWells(action) {
   try {
-    const { currentFeature, filters, search, userId, includeWellInterestData } = action.payload;
+    const { currentFeature, filters, search, userId, includeWellInterestData } =
+      action.payload;
 
     const wellsCount = yield call(Api.fetch, GET_ES_PAGINATED_LIST, {
       esIndex: "platformData:wells",
@@ -169,25 +180,39 @@ function* getMapFilterShapeOwnersAndWells(action) {
       filters,
       polygon: currentFeature?.geometry?.coordinates[0],
       pagination: {
-        first: wellsCount?.data?.data?.getESPaginatedList?.total,
+        first: get(wellsCount, 'data.data.getESPaginatedList.total', 0),
         after: null,
       },
     });
-    const wellIds = wells.data.data.getESPaginatedList.hits.map(
+
+    const wellIds = get(wells, 'data.data.getESPaginatedList.hits',[]).map(
       (well) => well.Id
     );
 
-    const taxOwners = yield call(Api.fetch, OWNERS_INTEREST_BY_WELL_IDS, {
-      wellIds: wellIds,
-      selectedYear: "2021",
-    });
+    let taxOwners = [];
+
+    if(wellIds?.length > 0){  
+      if (includeWellInterestData) {
+        const response = yield call(Api.fetch, OWNERS_INTEREST_BY_WELL_IDS, {
+          wellIds: wellIds,
+          selectedYear: "2021",
+        });
+        taxOwners = get(response, 'data.data.ownersInterestByWellIds',[]);
+      } else {
+        const response = yield call(Api.fetch, OWNERS_BY_WELL_IDS, {
+          wellIds: wellIds,
+          selectedYear: "2021",
+        });
+        taxOwners = get(response, 'data.data.ownersByWellIds',[]);
+      }
+    }
 
     yield put(
       getMapFilterShapeOwnersAndWellsAction.FULLFILLED({
-        shapeOwners: taxOwners.data.data.ownersInterestByWellIds,
-        shapeCount: taxOwners.data.data.ownersInterestByWellIds.length,
-        wells: wells?.data?.data?.getESPaginatedList?.hits,
-        wellsCount: wellsCount?.data?.data?.getESPaginatedList?.total,
+        shapeOwners: taxOwners,
+        shapeCount: taxOwners?.length,
+        wells: get(wells, 'data.data.getESPaginatedList.hits',[]),
+        wellsCount: get(wellsCount, 'data.data.getESPaginatedList.total',0),
       })
     );
   } catch (error) {
