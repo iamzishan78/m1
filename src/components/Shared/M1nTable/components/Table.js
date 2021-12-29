@@ -44,7 +44,7 @@ import CellContentEdition from "./SubComponents/CellContentEdition";
 import Avatar from "react-avatar";
 import RoomIcon from "@material-ui/icons/Room";
 import { useDispatch } from "react-redux";
-import { setMapGridCardState } from "../../../../actions";
+import { setMapGridCardState, setRevenueKey } from "actions";
 import { deepEqualObjects, setStateIfDeepEqual } from "../../functions";
 import InviteUserDialog from "./SubComponents/InviteUserDialog";
 import ReinviteUserDialog from "./SubComponents/ReinviteUserDialog";
@@ -58,7 +58,7 @@ import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
 import debounce from "lodash/debounce";
 import isEmpty from "lodash/isEmpty";
 import AssessmentIcon from "@material-ui/icons/Assessment";
-import { WELLQUERY } from "../../../../graphQL/useQueryWell";
+import { WELLQUERY } from "graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
 import WellTableStyles from "../customStyles/WellTableStyle";
 import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
@@ -78,20 +78,20 @@ import SearchWells from "components/Shared/Wells/WellsAutoCompleteFilter";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 
 // contexts
-import { AppContext } from "../../../../AppContext";
-import { NavigationContext } from "../../../Navigation/NavigationContext";
+import { AppContext } from "AppContext";
+import { NavigationContext } from "components/Navigation/NavigationContext";
 
 // mui components
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 
 // functions / value formatters
-import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
-import vf_currency from "../../../Shared/valueformatters/vf_currency";
-import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
-import convert_date from "../../../Shared/valueformatters/convert_date.js";
-import get_file_icon from "../../../Shared/functions/get_file_icon.js";
+import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter.js";
+import vf_currency from "components/Shared/valueformatters/vf_currency";
+import ticksToDateString from "components/Shared/valueformatters/ticks-to-string.js";
+import convert_date from "components/Shared/valueformatters/convert_date.js";
+import get_file_icon from "components/Shared/functions/get_file_icon.js";
 
-import RightDialog from "../../../ContactDetailCard/components/RightDialog";
+import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
@@ -99,10 +99,10 @@ import CustomFieldText from "components/Shared/M1nTable/components/SubComponents
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
 
 // queries
-import { OWNERSLATSLONS } from "../../../../graphQL/useQueryOwnerLatsLonsArray";
-import { OPERATORSLATSLONS } from "../../../../graphQL/useQueryOperatorLatsLonsArray";
-import { LEASELATSLONS } from "../../../../graphQL/useQueryLeaseLatsLonsArray";
-import { CONTACTWELLS } from "../../../../graphQL/useQueryContactWells";
+import { OWNERSLATSLONS } from "graphQL/useQueryOwnerLatsLonsArray";
+import { OPERATORSLATSLONS } from "graphQL/useQueryOperatorLatsLonsArray";
+import { LEASELATSLONS } from "graphQL/useQueryLeaseLatsLonsArray";
+import { CONTACTWELLS } from "graphQL/useQueryContactWells";
 import { Typography } from "@material-ui/core";
 import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 
@@ -568,6 +568,7 @@ const useStyles = makeStyles((theme) => ({
   warningCol: {
     display: "flex",
     color: "#f1af29",
+    pointer: "cursor",
     "& svg": {
       fill: "#f1af29 !important"
     },
@@ -623,7 +624,7 @@ function SubTable(props) {
   const [isSearchOpen, openSearch] = useState(false);
   const [handleSearch, setHandleSearch] = useState(() => () => { });
   const [dataWell, setDataWell] = useState();
-  const [tooltip, showTooltip] = useState(false);
+  const [activeRowIndex, setActiveRowIndex] = useState("null");
 
   // deep state
   const setFirstMount = (newState) => {
@@ -733,6 +734,11 @@ function SubTable(props) {
       a.click();
     }
   }, [viewFileResult]);
+
+  useEffect(() => {
+    console.log('console from table component');
+  }, [activeRowIndex]);
+
   // handlers
   const handleWellFlyTo = (value) => {
     // setting state to fly to the selected well
@@ -2473,7 +2479,12 @@ function SubTable(props) {
                     {(props.parent === "RevenuePropertiesTable") && (
                       <>
                         {!tableMeta.rowData[8] && !tableMeta.rowData[8] ? (
-                          <div className={classes.warningCol}>
+                          <div
+                            className={classes.warningCol}
+                            onClick={() => {
+                              dispatch(setRevenueKey('wellApiDropdownIndex', tableMeta.rowIndex));
+                            }}
+                          >
                             <WarningIcon />
                             <div>Unmapped</div>
                           </div>
@@ -2594,12 +2605,13 @@ function SubTable(props) {
           case "wellApiNumber":
             column.options = {
               ...column.options,
-              customBodyRender: (value) => {
+              customBodyRender: (value, tableMeta) => {
                 return (
                   <>
                     <SearchWells
                       contactId={"props.contactData._id"}
                       value={value}
+                      rowIndex={tableMeta.rowIndex}
                     />
                   </>
                 );
