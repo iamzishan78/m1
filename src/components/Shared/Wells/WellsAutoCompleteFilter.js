@@ -13,16 +13,16 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import CloseRoundedIcon from "@material-ui/icons/CloseRounded";
 // contexts
-import { AppContext } from "../../../AppContext";
+import { AppContext } from "AppContext";
 // queries
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
-import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
-import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";
-import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
+import { USERSEARCHHISTORY } from "graphQL/useQueryUserSearchHistory";
+import { ADDSEARCHHISTORY } from "graphQL/useMutationAddSearchHistory";
+import { UPDATESEARCHHISTORY } from "graphQL/useMutationUpdateSearchHistory";
+import { REMOVESEARCHHISTORY } from "graphQL/useMutationRemoveSearchHistory";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 // custom components
-import { setMapGridCardState } from "../../../actions";
+import { setMapGridCardState } from "actions";
 import { deepEqualObjects } from "../../Shared/functions";
 import WellIcon from "../../Shared/svgIcons/well";
 // 3rd party components
