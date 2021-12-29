@@ -6,7 +6,7 @@ import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import * as Components from "components/Land/components";
 
 //Actions
-import { toggleLandActionsPanel } from "actions";
+import { toggleLandActionsPanel, setActiveModuleLand } from "actions";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
   PORTFOLIO: {
@@ -34,7 +34,7 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
 export default function Revenue() {
   const location = useLocation();
   const dispatch = useDispatch();
-  const { quickActionsPanelState } = useSelector(({ Land }) => Land);
+  const { quickActionsPanelState, activeModule } = useSelector(({ Land }) => Land);
 
   //   useEffect(() => {
   //     const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => item.link === location.pathname);
@@ -49,12 +49,19 @@ export default function Revenue() {
   //     }
   //   }, [location.pathname]);
 
+  useEffect(() => {
+    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => item.link === location.pathname);
+    if (option) {
+      dispatch(setActiveModuleLand(option));
+    }
+  }, [location.pathname]);
+
   const handlePanelStateChange = (state) => {
     dispatch(toggleLandActionsPanel(state));
   };
 
   return (
-    <QuickActionPanel handlePanelStateChange={handlePanelStateChange} quickActionsPanelState={quickActionsPanelState}>
+    <QuickActionPanel handlePanelStateChange={handlePanelStateChange} quickActionsPanelState={quickActionsPanelState} activeModule={activeModule}>
       {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
         <Switch>
           <Route

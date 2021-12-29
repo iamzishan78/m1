@@ -228,7 +228,7 @@ export default function AnalyticsCards({
       className={classes.root}
     >
       {cards.map((card, index) => (
-        <Grid item md={3}>
+        <Grid item md={3} key={index}>
           <Card variant="outlined" className={classes.card}>
             <CardContent className={classes.cardContent}>
               <Typography

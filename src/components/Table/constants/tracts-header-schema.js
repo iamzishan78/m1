@@ -27,6 +27,7 @@ const TractsHeadCells = [
             dbName: "shape.shapeJson.properties.shapeLabel",
             sort: true, 
             filter: true,
+            setCellProps: () => ({ style: { minWidth: "250px" } }),
             customBodyRender: (value, tableMeta, updateValue) => {
                 return (
                   <p
@@ -62,7 +63,7 @@ const TractsHeadCells = [
         }
     },
     {
-        name: "SurveyMeridian", label: "Survey/Meridian", esKey: [
+        name: "SurveyMeridian", label: "Survey/ Meridian", esKey: [
             'shape.shapeJson.properties.originalProperties.Survey.keyword',
             'shape.shapeJson.properties.originalProperties.PrincipalMeridian.keyword'
         ], 
@@ -81,7 +82,7 @@ const TractsHeadCells = [
     //     }
     // },
     {
-        name: "BlockTownship", label: "Block/Township", esKey: [
+        name: "BlockTownship", label: "Block/ Township", esKey: [
             'shape.shapeJson.properties.originalProperties.Block.keyword',
             'shape.shapeJson.properties.originalProperties.Township.keyword'
         ], 
@@ -100,7 +101,7 @@ const TractsHeadCells = [
     //     }
     // },
     {
-        name: "SectionRange", label: "Section/Range", esKey: [
+        name: "SectionRange", label: "Section/ Range", esKey: [
             'shape.shapeJson.properties.originalProperties.Section.keyword',
             'shape.shapeJson.properties.originalProperties.Range.keyword'
         ], 
@@ -119,7 +120,7 @@ const TractsHeadCells = [
     //     }
     // },
     {
-        name: "AbstractSection", label: "Abstract/Section", esKey: [
+        name: "AbstractSection", label: "Abstract/ Section", esKey: [
             'shape.shapeJson.properties.originalProperties.AbstractName.keyword',
             'shape.shapeJson.properties.originalProperties.ShortName.keyword'
         ], 
