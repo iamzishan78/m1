@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#757575 !important",
     backgroundColor: (props) => `${props.backgroundColor}!important`,
     borderRadius: '16px',
-    padding: '6px 12px',
+    padding: '6px 24px',
     borderRight: '25px',
     "& .MuiButton-startIcon": {
       color: (props) => `${props.color ? props.color : "#757575"}!important`,
