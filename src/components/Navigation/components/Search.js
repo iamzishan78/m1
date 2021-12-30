@@ -58,6 +58,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
+import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
 
 const leaseIndexName = "lease-index-v2";
 const operatorIndexName = "operator-index";
@@ -372,10 +373,10 @@ function Search() {
       },
       "agreements": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `shapeJson.properties.type:(agreement) AND shapeJson.properties.agreementName:${request.input}*` : '',
+        search: (request) => request.input ? `shapeJson.properties.type:(agreement) AND shapeJson.properties.shapeLabel:${request.input}*` : '',
         formatOptions: (data) => {
           return {
-            ...data, Source: 'shapes_flat', Primary: data?.shapeJson?.properties?.agreementName, Secondary: null
+            ...data, Source: 'shapes_flat', Primary: data?.shapeJson?.properties?.shapeLabel, Secondary: capitalizeFirstLetter(data.layer)
           }
         }
       }
