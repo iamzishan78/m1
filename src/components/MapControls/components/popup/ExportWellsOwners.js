@@ -40,6 +40,10 @@ const useStyles = makeStyles((theme) => ({
   bold: {
     fontWeight: "bold",
   },
+  value: {
+    fontWeight: "bold",
+    alignSelf: "center",
+  },
   checkbox: {
     display: "flex",
     justifyContent: "space-between",
@@ -49,6 +53,8 @@ const useStyles = makeStyles((theme) => ({
 const ExportWellsOwners = ({
   getMapFilterShapeOwnersAndWellsAction,
   getShapeOwnersAndWellsAction,
+  shapeOwnersInterest,
+  shapeInterestCount,
   shapeOwners,
   shapeCount,
   wellsCount,
@@ -64,27 +70,25 @@ const ExportWellsOwners = ({
   const { currentFeature, user } = stateApp;
   const { control, watch } = useForm();
   const [includeFilter, setIncludeFilter] = useState(false);
-  const [includeWellInterestData, setIncludeWellInterestData] = useState(false);
 
   const exportWells = watch("exportWells", false);
   const exportOwners = watch("exportOwners", false);
+  const exportOwnersInterest = watch("exportOwnersInterest", false);
 
   useEffect(() => {
     if (!includeFilter) {
       getShapeOwnersAndWellsAction({
-        includeWellInterestData,
         currentFeature: currentFeature,
         userId: user.mongoId,
       });
     }
     // eslint-disable-next-line
-  }, [includeFilter, includeWellInterestData]);
+  }, [includeFilter]);
 
   useEffect(() => {
     if (includeFilter) {
       const { filters, search } = getMapFilters(stateNav, "", "");
       getMapFilterShapeOwnersAndWellsAction({
-        includeWellInterestData,
         currentFeature: currentFeature,
         userId: user.mongoId,
         filters,
@@ -94,7 +98,6 @@ const ExportWellsOwners = ({
     // eslint-disable-next-line
   }, [
     includeFilter,
-    includeWellInterestData,
     stateNav.operatorName,
     stateNav.typeName,
     stateNav.profileName,
@@ -126,6 +129,14 @@ const ExportWellsOwners = ({
       hiddenElement.href = "data:attachment/text," + encodeURIComponent(owners);
       hiddenElement.target = "_blank";
       hiddenElement.download = "taxOwners.csv";
+      hiddenElement.click();
+    }
+    if (exportOwnersInterest) {
+      const owners = jsonToCSV(shapeOwnersInterest.map(owner => owner.node));
+      const hiddenElement = document.createElement("a");
+      hiddenElement.href = "data:attachment/text," + encodeURIComponent(owners);
+      hiddenElement.target = "_blank";
+      hiddenElement.download = "taxOwnersInterest.csv";
       hiddenElement.click();
     }
     onClose()
@@ -163,7 +174,7 @@ const ExportWellsOwners = ({
               />
               <label className={classes.bold}>Wells</label>
             </div>
-            <label className={classes.bold}>{wellsCount} selected</label>
+            <label className={classes.value}>{wellsCount} selected</label>
           </div>
         </div>
 
@@ -184,19 +195,31 @@ const ExportWellsOwners = ({
                   />
                 )}
               />
-              <label className={classes.bold}>Tax Owners</label>
+              <label className={classes.bold}>Tax Owners (unique list of owners)</label>
             </div>
-            <label className={classes.bold}>{shapeCount} selected</label>
+            <label className={classes.value}>{shapeCount} selected</label>
           </div>
         </div>
-        <div className={classes.title}>
-          <h4>Include Well Interest Data</h4>
-          <div>
-            <Switch
-              checked={includeWellInterestData}
-              onChange={() => setIncludeWellInterestData(!includeWellInterestData)}
-              name="includeWellInterestData"
-            />
+        <div className={classes.field}>
+          <div className={classes.checkbox}>
+            <div>
+              <Controller
+                control={control}
+                name="exportOwnersInterest"
+                defaultValue={false}
+                render={(props) => (
+                  <Checkbox
+                    {...props}
+                    disabled={shapeCount === 0}
+                    onChange={(e) => {
+                      props.onChange(e.target.checked);
+                    }}
+                  />
+                )}
+              />
+              <label className={classes.bold}>Tax Owners Interests(includes well interests)</label>
+            </div>
+            <label className={classes.value}>{shapeInterestCount} selected</label>
           </div>
         </div>
         <div className={classes.title}>

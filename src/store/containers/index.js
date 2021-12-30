@@ -44,8 +44,10 @@ export const ConvertTaxOwnerToContactContainer = connect(
 )(ConvertTaxOwnerToContact);
 
 const exportWellsOwnersProps = (state) => {
-  const { shapeCount, wellsCount, shapeOwners, wells, fetching } = state.owner;
+  const { shapeCount, wellsCount, shapeOwners, wells, shapeOwnersInterest, shapeInterestCount, fetching } = state.owner;
   return {
+    shapeOwnersInterest,
+    shapeInterestCount,
     shapeOwners,
     shapeCount,
     wellsCount,
