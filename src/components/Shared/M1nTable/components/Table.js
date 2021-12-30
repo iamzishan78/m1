@@ -3654,7 +3654,7 @@ function SubTable(props) {
         buttonLabel = "ADD DOCUMENT";
         // menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
       }
-      if (props.addAble.type === "revenueStatement") {
+      if (props.addAble.type === "revenueStatementDetails") {
         buttonLabel = "+ ADD LINE ITEM";
       }
 
@@ -3692,7 +3692,7 @@ function SubTable(props) {
           handleExpandClick(null, null, null, "addParcelInterestsToEntity");
         if (props.addAble.type && props.addAble.type === "inviteUser")
           handleExpandClick(null, null, null, "inviteUser");
-        if (props.addAble.type === "revenueStatement")
+        if (props.addAble.type === "revenueStatementDetails")
           routeChange('/revenue/statement/line-item');
       };
 
@@ -3770,7 +3770,7 @@ function SubTable(props) {
             {(props.addAble.type === "contact" ||
               props.addAble.type === "ownerToParcel" ||
               props.addAble.type === "ownerToUnit" ||
-              props.addAble.type === "revenueStatement") && (
+              props.addAble.type === "revenueStatementDetails") && (
                 <ButtonDropDown options={options} />
               )}
 
@@ -4479,10 +4479,6 @@ function SubTable(props) {
           className={tableStyle}
           title={getHeaders()}
           data={props.parent === "ownersPerParcel" ? searchedRows : props.addAble?.type === "revenueStatement" ? getRevenueStatementRows() : rows ? rows : []}
-          // columns={
-          //   props.parent === "ownersPerParcel" ? false :
-          //   (columns ? columns : [])}
-
           columns={columns ? columns : []}
           components={{
             TableViewCol: CustomTableViewCol,
