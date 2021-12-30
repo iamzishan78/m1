@@ -370,8 +370,21 @@ export default function Tags(props) {
 
   ///////////////////// DELETING A TAG ///////////////////////////////////////////////
 
+  const removeTagFromList = (id) => {
+    const tags = JSON.parse(JSON.stringify(tagsArray));
+    const index = tags.findIndex(tag => tag._id === id);
+    if( index > -1) {
+      tags.splice(index, 1);
+    }
+    setTagsArray(tags);
+    if (props.removeTagId) {
+      props.removeTagId(id)
+    }
+  }
+
   const DeleteTag = (TagIdOIds) => {
-    if (!props.multipleIds)
+    if (!props.multipleIds){
+      removeTagFromList(TagIdOIds)
       removeTag({
         variables: {
           tagId: TagIdOIds,
@@ -391,10 +404,12 @@ export default function Tags(props) {
         ],
         awaitRefetchQueries: true,
       });
+    }
     else {
       let ids = TagIdOIds.split("???|||///");
 
       for (let i = 0; i < ids.length; i++) {
+        removeTagFromList(ids[i])
         removeTag({
           variables: {
             tagId: ids[i],

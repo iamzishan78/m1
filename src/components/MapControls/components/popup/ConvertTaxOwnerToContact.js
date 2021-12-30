@@ -124,6 +124,15 @@ const ConvertTaxOwnerToContact = ({
     setNewTagsIds(ids);
   };
 
+  const removeTagId = (id) => {
+    const ids = JSON.parse(JSON.stringify(newTagsIds));
+    const index = ids.findIndex(e => e === id);
+    if( index > -1) {
+      ids.splice(index, 1);
+    }
+    setNewTagsIds(ids);
+  };
+
   const onConvert = () => {
     const values = getValues();
     convertTaxOwnerToContactAction({ ...values, tags: newTagsIds, userId });
@@ -224,6 +233,7 @@ const ConvertTaxOwnerToContact = ({
           <Tags
             variant="standard"
             setTagId={setTagId}
+            removeTagId={removeTagId}
             targetLabel="contact"
             targetSourceId="new"
           />
