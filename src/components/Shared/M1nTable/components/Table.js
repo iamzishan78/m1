@@ -3654,6 +3654,9 @@ function SubTable(props) {
         buttonLabel = "ADD DOCUMENT";
         // menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
       }
+      if (props.addAble.type === "revenueStatement") {
+        buttonLabel = "+ ADD LINE ITEM";
+      }
 
       const addAction = (e) => {
         e.stopPropagation();
@@ -3689,6 +3692,8 @@ function SubTable(props) {
           handleExpandClick(null, null, null, "addParcelInterestsToEntity");
         if (props.addAble.type && props.addAble.type === "inviteUser")
           handleExpandClick(null, null, null, "inviteUser");
+        if (props.addAble.type === "revenueStatement")
+          routeChange('/revenue/statement/line-item');
       };
 
       const options = [
@@ -3699,13 +3704,6 @@ function SubTable(props) {
         },
         menuOptions,
       ];
-      const getSelectedRows = () => {
-        const selectedRows = [];
-        for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
-          selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
-        }
-        return selectedRows;
-      };
 
       return (
         <>
@@ -3771,16 +3769,12 @@ function SubTable(props) {
               )}
             {(props.addAble.type === "contact" ||
               props.addAble.type === "ownerToParcel" ||
-              props.addAble.type === "ownerToUnit") && (
+              props.addAble.type === "ownerToUnit" ||
+              props.addAble.type === "revenueStatement") && (
                 <ButtonDropDown options={options} />
               )}
 
             {props.header === "Documents" && (
-              // <ButtonDropDown options={options} onClick={() => {
-              //   setStateApp({ ...stateApp, DocumentDrawer: true, selectedDocument: {} })
-              // }}>
-              //   <PostAddIcon></PostAddIcon>
-              // </ButtonDropDown>
               <ButtonGroup
                 variant="contained"
                 style={{ height: "40px" }}
@@ -4484,7 +4478,7 @@ function SubTable(props) {
           innerRef={props.tableRef}
           className={tableStyle}
           title={getHeaders()}
-          data={props.parent === "ownersPerParcel" ? searchedRows : props.addAble?.type === "RevenueStatement" ? getRevenueStatementRows() : rows ? rows : []}
+          data={props.parent === "ownersPerParcel" ? searchedRows : props.addAble?.type === "revenueStatement" ? getRevenueStatementRows() : rows ? rows : []}
           // columns={
           //   props.parent === "ownersPerParcel" ? false :
           //   (columns ? columns : [])}
