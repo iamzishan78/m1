@@ -125,7 +125,6 @@ function MapGridCardSearch(props) {
     () =>
       debounce((request, top, callback) => {
         const { esIndex, search } = esCallData[props.searchOption]
-        debugger;
         getESPaginatedList({
           variables: {
             esIndex,

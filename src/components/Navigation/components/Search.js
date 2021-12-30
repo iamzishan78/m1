@@ -356,8 +356,9 @@ function Search() {
         esIndex: "shapes_flat",
         search: (request) => request.input ? `layer:unit AND name:${request.input}*` : '',
         formatOptions: (data) => {
+          const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State}` : null
           return {
-            ...data, Source: 'shapes_flat', Primary: data.name, Secondary: null
+            ...data, Source: 'shapes_flat', Primary: data.name, Secondary
           }
         }
       },
@@ -366,8 +367,9 @@ function Search() {
         esIndex: "shapes_flat",
         search: (request) => request.input ? `layer:parcel AND name:${request.input}*` : '',
         formatOptions: (data) => {
+          const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State}` : null
           return {
-            ...data, Source: 'shapes_flat', Primary: data.name, Secondary: null
+            ...data, Source: 'shapes_flat', Primary: data.name, Secondary
           }
         }
       },
