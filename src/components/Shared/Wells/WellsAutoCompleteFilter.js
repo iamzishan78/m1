@@ -21,6 +21,7 @@ import { ADDSEARCHHISTORY } from "graphQL/useMutationAddSearchHistory";
 import { UPDATESEARCHHISTORY } from "graphQL/useMutationUpdateSearchHistory";
 import { REMOVESEARCHHISTORY } from "graphQL/useMutationRemoveSearchHistory";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
 // custom components
 import { setMapGridCardState, setRevenueKey } from "actions";
 import { deepEqualObjects } from "../../Shared/functions";
@@ -194,6 +195,7 @@ function Search(props) {
   const [addSearchHistory] = useMutation(ADDSEARCHHISTORY);
   const [updateSearchHistory] = useMutation(UPDATESEARCHHISTORY);
   const [removeSearchHistory] = useMutation(REMOVESEARCHHISTORY);
+  const [updateProperty] = useMutation(UPDATE_PROPERTY);
 
   useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.mongoId) {
@@ -282,8 +284,9 @@ function Search(props) {
   const callMapboxSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${request.input}.json?access_token=${stateApp.mapboxglAccessToken
-          }&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
+        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${request.input}.json?access_token=${
+          stateApp.mapboxglAccessToken
+        }&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -322,78 +325,16 @@ function Search(props) {
   }, [searchInputValue, callWellSearch, callMapboxSearch, searchOption, searchTop]);
 
   const handleChange = (newValue) => {
-    if (
-      !value ||
-      (newValue &&
-        (value.Id !== newValue.Id ||
-          value.Source !== newValue.Source ||
-          value.Primary !== newValue.Primary ||
-          value.Secondary !== newValue.Secondary))
-    ) {
-      //// setting search history
-      const setSearchHistory = (search) => {
-        if (search.searchId) {
-          ///update
-          updateSearchHistory({
-            variables: {
-              searchId: search.searchId,
-            },
-            refetchQueries: ["getSearchHistory"],
-            awaitRefetchQueries: true,
-          });
-          delete newValue.searchId;
-        } else {
-          ///add
-          addSearchHistory({
-            variables: {
-              searchHistory: {
-                searchData: search,
-                user: stateApp.user.mongoId,
-              },
-            },
-            refetchQueries: ["getSearchHistory"],
-            awaitRefetchQueries: true,
-          });
-        }
-      };
-
-      setSearchHistory(newValue);
-      setValue(newValue);
-
-      dispatch(
-        setMapGridCardState({
-          mapGridCardActiveTap: 0,
-          searchInputValue: newValue.Primary ? newValue.Primary : newValue.Secondary ? newValue.Secondary : "",
-          lastSearch: newValue,
-        })
-      );
-
-      //// setting map loader
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        mapCircularLoaderAct: true,
-        searchLoader: true,
-      }));
-
-      //// if well, with lat long
-      if (newValue && newValue.Source === wellCogIndexName && newValue.Longitude && newValue.Latitude) {
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          fitBounds: null,
-          selectedWell: null,
-          selectedWellId: newValue.Id ? newValue.Id.toLowerCase() : null,
-          wellSelectedCoordinates: [newValue.Longitude, newValue.Latitude],
-          wellListFromSearch: [
-            {
-              id: newValue.Id,
-              longitude: newValue.Longitude,
-              latitude: newValue.Latitude,
-            },
-          ],
-        }));
-        stateApp.toggleLayersActivity("Search", true);
-      }
-    }
+    updateProperty({
+      variables: {
+        property: {
+          _id: props.rowData[0],
+          associatedWell: newValue.Id,
+        },
+      },
+      refetchQueries: ["getESPaginatedList"],
+      awaitRefetchQueries: true,
+    });
   };
 
   //// setting the buttons header /////
@@ -413,12 +354,12 @@ function Search(props) {
 
   const handleClose = () => {
     setEnableSearch(false);
-    dispatch(setRevenueKey('wellApiDropdownIndex', -1));
-  }
+    dispatch(setRevenueKey("wellApiDropdownIndex", -1));
+  };
 
   return (
     <div className={classes.root}>
-      {(!enableSearch && wellApiDropdownIndex !== props.rowIndex) ? (
+      {!enableSearch && wellApiDropdownIndex !== props.rowIndex ? (
         <div className={classes.placeholderDiv} onClick={() => setEnableSearch(!enableSearch)}>
           {props.value}
         </div>
@@ -526,27 +467,27 @@ function Search(props) {
                       <div>
                         {((searchInputValue && searchInputValue !== "") ||
                           (stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0)) && (
-                            <Tooltip title="Clear" placement="top">
-                              <IconButton
-                                size="small"
-                                onClick={() => {
-                                  setValue("");
-                                  dispatch(
-                                    setMapGridCardState({
-                                      searchInputValue: "",
-                                      searchResultData: [],
-                                    })
-                                  );
-                                  setStateApp((state) => ({
-                                    ...state,
-                                    wellListFromSearch: [],
-                                  }));
-                                }}
-                              >
-                                <ClearIcon htmlColor="#fff" />
-                              </IconButton>
-                            </Tooltip>
-                          )}
+                          <Tooltip title="Clear" placement="top">
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                setValue("");
+                                dispatch(
+                                  setMapGridCardState({
+                                    searchInputValue: "",
+                                    searchResultData: [],
+                                  })
+                                );
+                                setStateApp((state) => ({
+                                  ...state,
+                                  wellListFromSearch: [],
+                                }));
+                              }}
+                            >
+                              <ClearIcon htmlColor="#fff" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
                         <Tooltip title="Search History" placement="top">
                           <IconButton
                             size="small"
