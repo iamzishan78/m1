@@ -34,6 +34,12 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/revenue/statement/details",
     component: "RevenueStatementDetails",
   },
+  REVENUE_STATEMENT_LINE_ITEM: {
+    isExcluded: true,
+    title: "Revenue Statement",
+    link: "/revenue/statement/details/line-item",
+    component: "RevenueStatementLineItem",
+  },
 };
 
 export default function Revenue() {
@@ -46,7 +52,7 @@ export default function Revenue() {
     if (option) {
       dispatch(setActiveModule(option));
     }
-  }, [location.pathname]);
+  }, [location.pathname, dispatch]);
 
   const handlePanelStateChange = () => {
     dispatch(toggleActionsPanel(!actionsPanelState));

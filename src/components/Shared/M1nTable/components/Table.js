@@ -3693,7 +3693,7 @@ function SubTable(props) {
         if (props.addAble.type && props.addAble.type === "inviteUser")
           handleExpandClick(null, null, null, "inviteUser");
         if (props.addAble.type === "revenueStatementDetails")
-          routeChange('/revenue/statement/line-item');
+          routeChange('/revenue/statement/details/line-item');
       };
 
       const options = [
