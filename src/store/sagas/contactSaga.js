@@ -1,4 +1,5 @@
 import { call, takeLatest, put, select } from "redux-saga/effects";
+import get from 'lodash/get';
 
 import Api from "api";
 import {
@@ -8,6 +9,7 @@ import {
 import { campaignVariables } from "utils/data";
 import { formatTaxOwners, copy } from "utils/helper";
 import { CREATE_JOB } from "graphQL/useMutationCreateJob";
+import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { toggleBulkUploadAction} from 'store/actions/commonActions';
 import { GET_UPLOAD_CONTACT_URI } from "graphQL/useQueryGetUploadContactUri";
@@ -45,9 +47,15 @@ function* convertTaxOwnerToContact(action) {
     const { uri, id, internalKey } = uploadUri.data.data.getUploadContactUri.job;
     
     yield put(toggleBulkUploadAction(!bulkUpload));
-    const res = yield call(Api.fetchBlob, JSON.stringify(owners), id, internalKey, uri);
+    const res = yield call(Api.fetchBlob, JSON.stringify([owners[0]]), id, internalKey, uri);
     if (res?._response?.status === 201) {
-      yield call(Api.fetch, CREATE_JOB, { jobId: id });
+      const jobResponse = yield call(Api.fetch, CREATE_JOB, { jobId: id, sendEmail: false });
+      yield call(Api.fetch, UPDATE_JOB, {
+        job: {
+          _id: id,
+          createJobResponse: get(jobResponse,'data.data.createJob.body',null),
+        }
+      });
     }
     
   } catch (error) {
