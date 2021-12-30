@@ -140,7 +140,7 @@ export default function Tags(props) {
   const [publicTag, setPublicTag] = useState(true);
 
   const showPlusAddIcon = () => {
-    if (tFActive || textValue) return false;
+    if (tFActive || textValue || props.hidePlusIcon) return false;
     return true;
   };
 
