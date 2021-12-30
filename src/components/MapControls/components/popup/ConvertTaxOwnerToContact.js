@@ -222,6 +222,7 @@ const ConvertTaxOwnerToContact = ({
         </div>
         <div className={classes.field}>
           <Tags
+            variant="standard"
             setTagId={setTagId}
             targetLabel="contact"
             targetSourceId="new"

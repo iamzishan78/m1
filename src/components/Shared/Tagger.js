@@ -557,7 +557,7 @@ export default function Tags(props) {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  variant="outlined"
+                  variant={props.variant ? props.variant :"outlined"}
                   className={classes.input}
                   // label={!props.publicLeftBottom ? "Tags" : null}
                   placeholder={!showPlusAddIcon() ? "" : "+"}
