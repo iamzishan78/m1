@@ -256,11 +256,8 @@ export default function Tags(props) {
       tagsArray
     ) {
       let defaultTags = [
-        "High Cash Flow",
+        "Do Not Contact",
         "Interested Seller",
-        "Recent Death",
-        "Recent Divorce",
-        "Recently Inherited",
         "Out Of State Seller",
       ];
 

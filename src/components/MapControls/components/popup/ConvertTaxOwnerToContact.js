@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     width: "100%",
     alignItems: "center",
-    padding: "10px 0px",
+    padding: "0px 0px",
     "& svg": {
       fill: "#757575 !important",
     },
@@ -41,7 +41,13 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   field: {
+    marginTop: 30,
+    fontSize: "16px",
+
+  },
+  tags: {
     marginTop: 20,
+
   },
   bold: {
     fontWeight: "bold",
@@ -143,7 +149,7 @@ const ConvertTaxOwnerToContact = ({
     <Drawer anchor="right" open={open}>
       <div className={classes.root}>
         <div className={classes.title}>
-          <h2>Convert to Contact</h2>
+          <h1>Convert to Contact</h1>
           <div style={{ cursor: "pointer" }}>
             <IconButton size="small" onClick={onClose}>
               <CloseIcon />
@@ -155,7 +161,7 @@ const ConvertTaxOwnerToContact = ({
           <div>{shapeCount} selected</div>
         </div>
         <div className={classes.title}>
-          <h4>Include map filters</h4>
+          <h3>Include map filters</h3>
           <div>
             <Switch
               checked={includeFilter}
@@ -192,7 +198,7 @@ const ConvertTaxOwnerToContact = ({
           />
         </div>
         <div className={classes.field}>
-          <label className={classes.bold}>Owner Name</label>
+          <label className={classes.bold}>Contact Owner</label>
           <Controller
             control={control}
             name="contactOwner"
@@ -229,13 +235,14 @@ const ConvertTaxOwnerToContact = ({
             )}
           />
         </div>
-        <div className={classes.field}>
+        <div  className={classes.tags} >
           <Tags
             variant="standard"
             setTagId={setTagId}
             removeTagId={removeTagId}
             targetLabel="contact"
             targetSourceId="new"
+
           />
         </div>
         <Box pt={6} mt={6} mb={6} mr={2}>
