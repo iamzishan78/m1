@@ -22,6 +22,7 @@ import {
   GET_MAP_FILTER_SHAPE_OWNERS_AND_WELLS,
   GET_MAP_FILTER_SHAPE_OWNERS_AND_COUNT,
 } from "store/type";
+import { showErrorMessage } from "actions";
 
 function* getShapeOwnersAndCount(action) {
   try {
@@ -91,13 +92,20 @@ function* getShapeOwnersAndWells(action) {
         selectedYear: "2021",
       });
     }
-    
+
+    if(get(taxOwnersInterest,'data.errors', []).length > 0){
+      yield put(showErrorMessage("Failed to fetch Tax Owners Interest"));
+
+    }
+    if(get(taxOwners,'data.errors', []).length > 0){
+      yield put(showErrorMessage("Failed to fetch Tax Owners"));
+    }
     yield put(
       getShapeOwnersAndWellsAction.FULLFILLED({
         shapeOwners: get(taxOwners, 'data.data.ownersByWellIds',[]),
         shapeCount: get(taxOwners, 'data.data.ownersByWellIds.length',0),
-        shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',0),
-        shapeInterestCount: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds.length',[]),
+        shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',[]),
+        shapeInterestCount: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds.length',0),
         wells: get(wells, 'data.data.getESPaginatedList.hits', []),
         wellsCount: get(wellsCount, 'data.data.getESPaginatedList.total', 0),
       })
@@ -143,6 +151,10 @@ function* getMapFilterShapeOwnersAndCount(action) {
         wellIds: wellIds,
         selectedYear: "2021",
       });
+    }
+
+    if(get(taxOwners,'data.errors', []).length > 0){
+      yield put(showErrorMessage("Failed to fetch Tax Owners"));
     }
 
     yield put(
@@ -202,12 +214,20 @@ function* getMapFilterShapeOwnersAndWells(action) {
       });
     }
 
+    if(get(taxOwnersInterest,'data.errors', []).length > 0){
+      yield put(showErrorMessage("Failed to fetch Tax Owners Interest"));
+
+    }
+    if(get(taxOwners,'data.errors', []).length > 0){
+      yield put(showErrorMessage("Failed to fetch Tax Owners"));
+    }
+
     yield put(
       getMapFilterShapeOwnersAndWellsAction.FULLFILLED({
         shapeOwners: get(taxOwners, 'data.data.ownersByWellIds',[]),
         shapeCount: get(taxOwners, 'data.data.ownersByWellIds.length',0),
-        shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',0),
-        shapeInterestCount: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds.length',[]),
+        shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',[]),
+        shapeInterestCount: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds.length',0),
         wells: get(wells, 'data.data.getESPaginatedList.hits',[]),
         wellsCount: get(wellsCount, 'data.data.getESPaginatedList.total',0),
       })

@@ -65,7 +65,11 @@ const ownerReducer = (state = INIT_STATE, action) => {
         fetching: false,
       };
     }
-    case RESET_SHAPE_OWNER:{
+    case RESET_SHAPE_OWNER:
+    case GET_SHAPE_OWNERS_AND_COUNT.REJECTED:
+    case GET_SHAPE_OWNERS_AND_WELLS.REJECTED:
+    case GET_MAP_FILTER_SHAPE_OWNERS_AND_COUNT.REJECTED:
+    case  GET_MAP_FILTER_SHAPE_OWNERS_AND_WELLS.REJECTED: {
       return { ...state, wells: [], wellsCount: 0, shapeOwners: [], shapeCount: 0, shapeOwnersInterest: [], shapeInterestCount: 0, fetching: false};
     }
     default:

@@ -133,11 +133,25 @@ const useStyles = makeStyles((theme) => {
                 : mapGridCardActivated === "exp"
                   ? "calc(91vh - 183px)"
                   : "calc(60vh - 183px)",
-            maxHeight: ({ dockMenu }) => {
-              if (dockMenu === "bottom" || dockMenu === "top") return "calc(100vh - 590px)"
-              else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 157px)"
-              else if (dockMenu === "full") return "calc(100vh - 158px)"
-            }
+            // maxHeight: ({ dockMenu }) => {
+            //   if (dockMenu === "bottom" || dockMenu === "top") return "calc(100vh - 590px)"
+            //   else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 157px)"
+            //   else if (dockMenu === "full") return "calc(100vh - 158px)"
+            // },
+            "@media (max-height:930px)": {
+              maxHeight: ({ dockMenu }) => {
+                if (dockMenu === "bottom" || dockMenu === "top") return "calc(100vh - 590px)"
+                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 157px)"
+                else if (dockMenu === "full") return "calc(100vh - 158px)"
+              }
+            },
+            "@media (max-height:1600px)": {
+              maxHeight: ({ dockMenu }) => {
+                if (dockMenu === "bottom" || dockMenu === "top") return "calc(100vh - 640px)"
+                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 157px)"
+                else if (dockMenu === "full") return "calc(100vh - 158px)"
+              }
+            },
           },
         }
       },
