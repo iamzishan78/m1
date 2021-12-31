@@ -58,7 +58,7 @@ export const setLayerLabelLayout = (layerId, labelLayout) => {
 }
 
 export const shapeTypeLayers = ["unit", "agreement", "contract", "lease", "deed", "surface"]
-export const defaultLayers = ["interest", "parcel", "unit", "agreement", "contract", "lease", "deed", "surface"]
+export const defaultLayers = ["interest", "parcel", "unit", "contract", "lease", "deed", "surface"]
 export const agreementLayers = ["agreement", "contract", "lease", "deed", "surface"]
 
 export const modifyExandableCardStyle = (selectedShape) => {

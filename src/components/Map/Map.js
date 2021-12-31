@@ -1118,6 +1118,7 @@ function Map({ type, paramId, lati, longi }) {
             stateToUpdate = {
               ...stateToUpdate,
               popupOpen: false,
+              layerSelectionPopup: false,
               selectedUserDefinedLayer: null,
               selectedParcel: null,
               expandedCard: false,
@@ -1132,6 +1133,7 @@ function Map({ type, paramId, lati, longi }) {
             stateToUpdate = {
               ...stateToUpdate,
               popupOpen: false,
+              layerSelectionPopup: false,
               selectedUserDefinedLayer: null,
               selectedParcel: null,
               expandedCard: false,
@@ -1162,6 +1164,7 @@ function Map({ type, paramId, lati, longi }) {
         selectedShape: null,
         expandedCard: false,
         popupOpen: false,
+        layerSelectionPopup: false,
       }));
       const filteredLayer = customLayerData?.allCustomLayers?.find((cl) => cl._id === feature.properties.id);
       let selectedUserDefinedLayer;
@@ -1302,6 +1305,10 @@ function Map({ type, paramId, lati, longi }) {
       let udLayers = [];
       let clusterLayers = [];
 
+      setStateApp((state) => ({
+        ...state, popupOpen: false, layerSelectionPopup: false,
+      }));
+
       stateApp.layers?.forEach((layer) => {
         const interaction = layer.layerSettings.interaction.interactionAble && layer.layerSettings.interaction.interactionDetail.click;
         const visible = layer.layerSettings.showable && layer.layerSettings.visiable !== false;
@@ -1426,22 +1433,39 @@ function Map({ type, paramId, lati, longi }) {
       }
     };
     const mapRightClickHandler = (e) => {
+      setStateApp((state) => ({
+        ...state, layerSelectionPopup: false, popupOpen: false
+      }));
+      let popUps = document.getElementsByClassName("mapboxgl-popup");
+      if (popUps?.length > 0) {
+        for (const popUp of popUps) popUp.remove()
+      }
 
       var bbox = [[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]];
-      let features = map.queryRenderedFeatures(bbox);
-      features = features.filter((feature) => feature.source !== "composite" && feature.layer.id !== 'welllines')
+      let features = map.queryRenderedFeatures(bbox, { layers: [...defaultLayers] });
+      if (features?.length === 0)
+        return ''
+
+      const shape = features.find((feature) => feature.source !== 'wellsVT')
+      const shapeBbox = turf.bbox(shape)
+      const southWest = [shapeBbox[0], shapeBbox[1]];
+      const northEast = [shapeBbox[2], shapeBbox[3]];
+      const polygon = [map.project(northEast), map.project(southWest)];
+
+      let wellsFeatures = map.queryRenderedFeatures(polygon, { layers: ['wellpoints'] });
+      features = features.concat(wellsFeatures)
 
       let coordinates = [e.lngLat.lng, e.lngLat.lat];
-      let popUps = document.getElementsByClassName("mapboxgl-popup");
-      if (popUps[0]) popUps[0].remove();
+      setTimeout(() => {
+        new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+          .setLngLat(coordinates).setMaxWidth("none").setHTML(`<div id="popupContainer"></div>`).addTo(map);
 
-      new mapboxgl.Popup({ offset: 0, closeOnClick: false })
-        .setLngLat(coordinates).setMaxWidth("none").setHTML(`<div id="popupContainer"></div>`).addTo(map);
+        setStateApp((state) => ({
+          ...state,
+          selectionLayers: features, layerSelectionPopup: true, popupOpen: true
+        }));
 
-      setStateApp((state) => ({
-        ...state,
-        selectionLayers: features, layerSelectionPopup: true, popupOpen: true
-      }));
+      }, 0);
     }
     if (map) {
       if (mapClick && mapClick.mapClickHandler) {
