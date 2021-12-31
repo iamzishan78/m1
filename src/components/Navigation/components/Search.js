@@ -354,11 +354,12 @@ function Search() {
       },
       "units": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `layer:unit AND name:${request.input}*` : '',
+        search: (request) => request.input ? `layer:unit AND (name:${request.input}* OR shapeJson.properties.uNumber:${request.input}*)` : '',
         formatOptions: (data) => {
-          const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State}` : null
+          const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State || ''}` : null
+          const Primary = data?.shapeJson?.properties?.uNumber ? `${data?.shapeJson?.properties?.uNumber} - ${data.name}` : data.name
           return {
-            ...data, Source: 'shapes_flat', Primary: data.name, Secondary
+            ...data, Source: 'shapes_flat', Primary, Secondary
           }
         }
       },
@@ -367,7 +368,7 @@ function Search() {
         esIndex: "shapes_flat",
         search: (request) => request.input ? `layer:parcel AND name:${request.input}*` : '',
         formatOptions: (data) => {
-          const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State}` : null
+          const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State || ''}` : null
           return {
             ...data, Source: 'shapes_flat', Primary: data.name, Secondary
           }
@@ -663,6 +664,10 @@ function Search() {
         let newPath
         newPath = `/map/${newValue.layer}s/${newValue._id}`;
         history.location.pathname !== newPath && history.replace(newPath);
+
+        setTimeout(() => {
+          setStateApp((stateApp) => ({ ...stateApp, mapCircularLoaderAct: false, searchLoader: false }));
+        }, 2000)
       }
 
       //// if well, with lat long
