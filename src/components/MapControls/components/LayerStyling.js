@@ -441,7 +441,7 @@ function LayerStyling(props) {
         {(layer.layerSettings?.interaction?.interactionAble || layer.layerType === 'file layer') &&
           <Grid item xs={12}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="h6">Layer clickability</Typography>
+              <Typography variant="h6">Layer clickable</Typography>
               <FormControlLabel
                 control={
                   <Switch

@@ -3,7 +3,7 @@ import SvgIcon from '@material-ui/core/SvgIcon'
 
 function UnitIcon(props) {
   return (
-    <SvgIcon {...props} viewBox="0 0 125 125">
+    <SvgIcon {...props} viewBox="15 0 115 115">
       <g>
         <path d="M111.875,116.327h-89.75c-0.881,0-1.659-0.577-1.914-1.421c-0.255-0.843,0.071-1.755,0.805-2.243
 		c1.735-1.162,6.694-5.21,6.694-8.448V22.049c0-7.322-6.155-9.459-6.217-9.479c-0.931-0.311-1.499-1.25-1.342-2.218
