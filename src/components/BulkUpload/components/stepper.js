@@ -23,7 +23,7 @@ import { showErrorMessage } from "actions";
 import { ADDBULKCONTACT } from "../../../graphQL/useMutationAddBulkContacts";
 import { CREATE_JOB } from "graphQL/useMutationCreateJob";
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
-import { GET_UPLOAD_CONTACT_URI } from "graphQL/useQueryGetUploadContactUri";
+import { GET_JOB_UPLOAD_URI } from "graphQL/useQueryGetJobUploadUri";
 import { showSuccessMessage } from "../../../actions";
 import { BlockBlobClient } from "@azure/storage-blob";
 
@@ -183,7 +183,7 @@ export default function CustomizedSteppers(props) {
   const steps = getSteps();
   const dispatch = useDispatch();
   // const [createBulkContacts] = useMutation(ADDBULKCONTACT);
-  const [getUploadContactUri, { data: contactUploadUri }] = useLazyQuery(GET_UPLOAD_CONTACT_URI, {
+  const [getJobUploadUri, { data: contactUploadUri }] = useLazyQuery(GET_JOB_UPLOAD_URI, {
     fetchPolicy: "no-cache",
   });
   const [createJob, { data: createJobData }] = useMutation(CREATE_JOB);
@@ -206,16 +206,16 @@ export default function CustomizedSteppers(props) {
   }, [createJobData, jobId])
 
   useEffect(() => {
-    if (contactUploadUri?.getUploadContactUri?.success &&
+    if (contactUploadUri?.getJobUploadUri?.success &&
       !processing) {
       setProcessing(true);
       setStateApp((state) => ({
         ...state,
         bulkUpload: !stateApp.bulkUpload,
       }));
-      const uri = contactUploadUri.getUploadContactUri.job.uri;
-      const id = contactUploadUri.getUploadContactUri.job.id;
-      const interal_key = contactUploadUri.getUploadContactUri.job.internalKey;
+      const uri = contactUploadUri.getJobUploadUri.job.uri;
+      const id = contactUploadUri.getJobUploadUri.job.id;
+      const interal_key = contactUploadUri.getJobUploadUri.job.internalKey;
 
       setJobId(id)
 
@@ -252,9 +252,10 @@ export default function CustomizedSteppers(props) {
         element.lastUpdateBy = userID;
         delete element.tableData;
       });
-      getUploadContactUri({
+      getJobUploadUri({
         variables: {
-          jobName: stateNav.bulkUploadFromMap ? 'ParcelInterests' : 'Contacts',
+          jobName: stateNav.bulkUploadFromMap ? 'Parcel Interests' : 'Contacts',
+          jobType: stateNav.bulkUploadFromMap ? 'parcelInterests' : 'contacts',
           userId: userID,
         },
       });
