@@ -1,18 +1,18 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from "@material-ui/core/CardContent";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import Tooltip from "@material-ui/core/Tooltip";
+import {
+    Grid, Card, CardHeader, CardContent, Accordion, AccordionSummary, Typography,
+    List, ListItem, ListItemText
+} from "@material-ui/core";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
+import _ from "lodash";
 import LayerSelectionIcon from "components/Shared/svgIcons/layerSelection";
-import $ from "jquery";
 
 // contexts
-import { AppContext } from "AppContext";
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
+import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,8 +26,8 @@ const useStyles = makeStyles((theme) => ({
         transition: "width 0.1s, height 0.1s, left 0.1s, top 0.1s",
         width: (props) => props.cardWidth,
         height: (props) => (props.expanded ? props.height : "inherit"),
-        opacity: 0.7,
-        background: "black",
+        opacity: 0.85,
+        background: "#0E111A",
         borderStyle: "solid",
         borderWidth: "thin",
         "& .MuiCardHeader-action": {
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
     },
     content: {
         transition: "height 0.1s",
-        background: "black",
+        background: "#0E111A",
         padding: "0 !important",
         overflowY: "auto",
         height: "325px",
@@ -71,89 +71,158 @@ const useStyles = makeStyles((theme) => ({
         },
         color: "white",
     },
-    contentGrid: {
-        padding: 20,
+    accordian: {
+        color: 'white',
+        background: '#0E111A',
+        margin: '0px !important',
+        '& ..MuiCardHeader-root': {
+            paddingBottom: '0px'
+        },
+        '& .MuiSvgIcon-root': {
+            color: 'white'
+        },
+        '& .MuiAccordionSummary-root.Mui-expanded': {
+            minHeight: '48px'
+        },
+        '& .MuiAccordionSummary-content.Mui-expanded': {
+            minHeight: '12px',
+            margin: '0px'
+        },
+        '& .MuiListItem-button:hover': {
+            backgroundColor: 'rgb(184 184 184 / 29%)'
+        },
+        '& .MuiListItem-root, & .MuiList-padding': {
+            paddingTop: '0px',
+            paddingBottom: '0px',
+            color: '#d3d3d3'
+        }
     }
 }));
 
-function GetTitle() {
-    const classes = useStyles();
-    const [search, setSearch] = useState('');
-    return (
-        <Grid container direction="row" justifyContent="space-between" alignItems="center">
-            <Grid item>
-                <Grid container direction="row" spacing={1} alignItems="center">
-                    <Grid item>
-                        <LayerSelectionIcon className={classes.icons} />
-                    </Grid>
-                    <Grid item>
-                        Available Layers
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item>
-                <ExpandableSearch setSearch={setSearch} search={search} />
-            </Grid>
-        </Grid>
-    );
-};
+
+const startsWith = (value, keys) => {
+    let val = false
+    keys.forEach(key => {
+        if (key && key.toString().toLowerCase().startsWith(value.toLowerCase())) {
+            val = true
+            return
+        }
+    })
+    return val
+}
 
 function LayerSelectionPopup(props) {
     const classes = useStyles(props);
+    const history = useHistory();
+    const [search, setSearch] = useState('');
     // contexts
-    const [, setStateApp] = useContext(AppContext);
-    const { selectionLayers, parent } = props;
+    let { selectionLayers } = props;
 
-    const handleClose = () => {
-        if (parent === "map") {
-            if ($("#tempPopupHolder").length) {
-                let popUps = document.getElementsByClassName("mapboxgl-popup");
-                if (popUps[0]) popUps[0].remove();
-            }
+    const getSourceName = (name) => {
+        name = name.replace('VT', '').replace('_source', '')
+        return capitalizeFirstLetter(name)
+    }
 
-            setStateApp((state) => ({
-                ...state,
-                layerSelectionPopup: false, popupOpen: false
-            }));
+    const getLayerName = (layer) => {
+        if (layer.properties) {
+            const properties = layer?.properties
+            if (layer.source === 'wellsVT') {
+                return `${properties.api}-${properties.wellName}`
+            } else if (layer.source === 'parcels_source') {
+                return properties.shapeLabel
+            } else if (layer.source === 'units_source') {
+                return `${properties.uNumber ? properties.uNumber + '-' : ''}${properties.shapeLabel}`
+            } else
+                return `${properties.agreementNumber ? properties.agreementNumber + '-' : ''}${properties.agreementName}`
         }
+    }
+
+    const selectLayer = (layer) => {
+        let newPath
+        if (layer.source === 'wellsVT') {
+            newPath = `/map/wells/${layer.properties.id}/${layer.properties.latitude}/${layer.properties.longitude}`;
+        } else {
+            newPath = `/map/${layer.source.replace("_source", "")}/${layer.properties.id}`;
+        }
+
+        history.location.pathname !== newPath && history.replace(newPath);
+    }
+    if (search)
+        selectionLayers = selectionLayers.filter((selectionLayer) => {
+            const properties = selectionLayer?.properties
+            if (selectionLayer.source === 'wellsVT') {
+                return startsWith(search, [properties.api, properties.wellName])
+            } else if (selectionLayer.source === 'parcels_source') {
+                return startsWith(search, [properties.shapeLabel])
+            } else if (selectionLayer.source === 'units_source') {
+                return startsWith(search, [properties.uNumber, properties.shapeLabel])
+            } else
+                return startsWith(search, [properties.agreementNumber, properties.agreementName])
+        })
+    const groupFeatures = _.groupBy(selectionLayers, 'source');
+    // console.log(groupFeatures)
+
+    function GetTitle() {
+        const classes = useStyles();
+
+        const [clicked, setClicked] = useState(false);
+
+        let style
+        if (!clicked && search.length === 0) {
+            style = { visibility: 'visible', }
+        } else {
+            style = { opacity: 0, height: 0, visibility: 'hidden' }
+        }
+        return (
+            <Grid container direction="row" justifyContent="space-between" style={{ justifyContent: 'space-between' }} alignItems="center">
+                <Grid item style={style}>
+                    <Grid container direction="row" spacing={1} alignItems="center">
+                        <Grid item>
+                            <LayerSelectionIcon className={classes.icons} />
+                        </Grid>
+                        <Grid item>
+                            Available Layers
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item >
+                    <ExpandableSearch setSearch={setSearch} search={search} setClicked={setClicked} focusColor='inherit' hoverColor={'inherit'} />
+                </Grid>
+            </Grid>
+        );
     };
-
-
 
     return (
         <React.Fragment>
             <Card className={classes.card}>
                 <CardHeader
                     classes={{ title: classes.title, subheader: classes.subheader }}
-                    // action={
-                    //     <div className={classes.headerIcons}>
-                    //         <Tooltip title={"Close"} placement="top">
-                    //             <IconButton size={"small"} onClick={handleClose} aria-label="close" className={classes.icons}>
-                    //                 <CloseIcon color="secondary" />
-                    //             </IconButton>
-                    //         </Tooltip>
-                    //     </div>
-                    // }
-                    // Expandable Card Title
                     title={GetTitle()}
-                // Expandable Card Secondary Header
-                // subheader={layer.groupName ? layer.layerName : ""}
-                />
+                >
+                </CardHeader >
                 <CardContent className={classes.content}>
-                    <Grid container direction="row" alignItems="center" justify="flex" className={classes.contentGrid}>
-                        {/* {Object.keys(properties)
-                            .filter((prop) => prop !== "shapeCenter")
-                            .map((prop) => (
-                                <>
-                                    <Grid item xs={5}>
-                                        {prop}
-                                    </Grid>
-                                    <Grid item xs={7} style={{ fontWeight: "bold" }}>
-                                        {properties[prop]}
-                                    </Grid>
-                                </>
-                            ))} */}
-                    </Grid>
+                    {
+                        Object.keys(groupFeatures).map((key) =>
+                            <Accordion key={key} defaultExpanded={true} className={classes.accordian}>
+                                <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel1a-content"
+                                    id="panel1a-header"
+                                >
+                                    <Typography className={classes.heading}>{getSourceName(key)}</Typography>
+                                </AccordionSummary>
+                                <List component="nav" aria-label="secondary mailbox folders">
+                                    {
+                                        groupFeatures[key].map((layer) =>
+                                            <ListItem key={layer.layer.id} button onClick={() => { selectLayer(layer) }}>
+                                                <ListItemText primary={getLayerName(layer)} />
+                                            </ListItem>)
+                                    }
+
+                                </List>
+                            </Accordion>
+                        )
+                    }
                 </CardContent>
             </Card>
         </React.Fragment>

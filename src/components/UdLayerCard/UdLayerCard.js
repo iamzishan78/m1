@@ -79,6 +79,11 @@ function UdLayerCard(props) {
   const classes = useStyles(props);
   // contexts
   const [, setStateApp] = useContext(AppContext);
+
+
+  if (!props.selectedUserDefinedLayer) {
+    return <></>
+  }
   const {
     selectedUserDefinedLayer: { layer, properties },
     parent,

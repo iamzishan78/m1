@@ -117,6 +117,7 @@ export default function AgreementDetailCard(props) {
     }
 
     shape.properties.shapeLabel = shapeLabel;
+    shape.name = shapeLabel;
     shape.properties.name = shapeLabel;
     setStateApp((state) => ({
       ...state,
