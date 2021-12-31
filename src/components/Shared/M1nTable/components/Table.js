@@ -2204,11 +2204,12 @@ function SubTable(props) {
                       <IconButton
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log("modell download");
                           handleViewFile(
                             props.addAble.type === "parcelRunsheet" ||
                               props.addAble.type === "parcelDocument" ||
-                              props.addAble.type === "wellDocument"
+                              props.addAble.type === "wellDocument" ||
+                              props.addAble.type === "AgreementDocument" ||
+                              props.addAble.type === "UnitDocument"
                               ? row_line.fileId
                               : row_line?._id
                           );

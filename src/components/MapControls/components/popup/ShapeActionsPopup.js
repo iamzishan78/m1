@@ -11,7 +11,7 @@ import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GridOnIcon from "@material-ui/icons/GridOn";
-import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
+import { default as DrawPoly } from "@material-ui/icons/AddBox";
 import GpxFixedIcon from "@material-ui/icons/GpsFixed";
 import { default as CheckCircle } from "../../../Shared/svgIcons/check-circle";
 import LayerIcon from "@material-ui/icons/Layers";
@@ -667,14 +667,14 @@ const ShapeActionsPopup = (props) => {
 
           <Tooltip title="Area of Interest" className={enableEditOnly && classes.disableAction}>
             <IconButton size="small" disabled={enableEditOnly} onClick={actionAOI} aria-label="Area of Interest">
-              <GpxFixedIcon />
+              <span style={{ color: 'white' }}>AOI</span>
             </IconButton>
           </Tooltip>
           <span className={classes.divider}></span>
 
           {
-            stateApp.currentFeature && <Tooltip title="Change Change" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
-              <IconButton size="small" aria-label="Change Change" onClick={() => {
+            stateApp.currentFeature && <Tooltip title="Add shape" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
+              <IconButton size="small" aria-label="Add shape" onClick={() => {
                 stateApp.draw.changeMode('static');
                 setStateApp((state) => ({
                   ...state,

@@ -142,7 +142,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     setStateApp((stateApp) => ({
       ...stateApp,
       mapVars: { ...stateApp.mapVars, styleId: style.name },
-      defaultMapVars: { ...stateApp.defaultMapVars, styleId: style.name },
+      defaultMapVars: { ...stateApp.mapVars, styleId: style.name },
     }));
     updateUserMapSettings({
       variables: {
