@@ -149,17 +149,17 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     height: "23px",
   },
-  placeholderDiv: {
+  placeholderDiv: ({ wellValue }) => ({
     color: "#c99229",
     fontWeight: "bold",
     cursor: "pointer",
     textAlign: "center",
     minWidth: "150px",
-    border: "1px solid #c99229 ",
+    border: wellValue ? "1px solid #c99229" : "",
     padding: theme.spacing(1),
     borderRadius: "5px",
     marginRight: theme.spacing(2),
-  },
+  }),
   closeIcon: {
     cursor: "pointer",
   },
@@ -183,7 +183,7 @@ function Search(props) {
   // loaders
   const [loadingWells, setLoadingWells] = React.useState(false);
 
-  const classes = useStyles({ mapGridCardActivated });
+  const classes = useStyles({ mapGridCardActivated, wellValue: props.value });
 
   const [getSearchHistory, { data: searchHistoryData }] =
     useLazyQuery(USERSEARCHHISTORY);
@@ -288,11 +288,9 @@ function Search(props) {
   const callMapboxSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${
-          request.input
-        }.json?access_token=${
-          stateApp.mapboxglAccessToken
-        }&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
+        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${request.input
+          }.json?access_token=${stateApp.mapboxglAccessToken
+          }&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -385,8 +383,8 @@ function Search(props) {
           searchInputValue: newValue.Primary
             ? newValue.Primary
             : newValue.Secondary
-            ? newValue.Secondary
-            : "",
+              ? newValue.Secondary
+              : "",
           lastSearch: newValue,
         })
       );
@@ -581,27 +579,27 @@ function Search(props) {
                         {((searchInputValue && searchInputValue !== "") ||
                           (stateApp.wellListFromSearch &&
                             stateApp.wellListFromSearch.length > 0)) && (
-                          <Tooltip title="Clear" placement="top">
-                            <IconButton
-                              size="small"
-                              onClick={() => {
-                                setValue("");
-                                dispatch(
-                                  setMapGridCardState({
-                                    searchInputValue: "",
-                                    searchResultData: [],
-                                  })
-                                );
-                                setStateApp((state) => ({
-                                  ...state,
-                                  wellListFromSearch: [],
-                                }));
-                              }}
-                            >
-                              <ClearIcon htmlColor="#fff" />
-                            </IconButton>
-                          </Tooltip>
-                        )}
+                            <Tooltip title="Clear" placement="top">
+                              <IconButton
+                                size="small"
+                                onClick={() => {
+                                  setValue("");
+                                  dispatch(
+                                    setMapGridCardState({
+                                      searchInputValue: "",
+                                      searchResultData: [],
+                                    })
+                                  );
+                                  setStateApp((state) => ({
+                                    ...state,
+                                    wellListFromSearch: [],
+                                  }));
+                                }}
+                              >
+                                <ClearIcon htmlColor="#fff" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
                         <Tooltip title="Search History" placement="top">
                           <IconButton
                             size="small"
@@ -633,7 +631,7 @@ function Search(props) {
                           style={{
                             width: document.getElementById("searchBarDivParent")
                               ? document.getElementById("searchBarDivParent")
-                                  .offsetWidth
+                                .offsetWidth
                               : "400px",
                           }}
                           className={classes.historyPopover}
@@ -683,13 +681,13 @@ function Search(props) {
                                         <Grid item>
                                           {option.Source ===
                                             wellCogIndexName && (
-                                            <WellIcon
-                                              className={classes.icon}
-                                              color={"#757575"}
-                                              opacity="1.0"
-                                              small
-                                            />
-                                          )}
+                                              <WellIcon
+                                                className={classes.icon}
+                                                color={"#757575"}
+                                                opacity="1.0"
+                                                small
+                                              />
+                                            )}
 
                                           {option.Source === "mapboxSearch" && (
                                             <LocationOnIcon
@@ -763,7 +761,6 @@ function Search(props) {
               />
             )}
             renderOption={(option) => {
-              console.log("orig renderOption option", option);
               if (option.Source === "header" || option.group === "loader")
                 return null;
               // eslint-disable-next-line no-array-constructor

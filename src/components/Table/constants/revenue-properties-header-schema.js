@@ -6,9 +6,10 @@ const RevenuePropertiesHeadCells = [
 
   {
     name: "number",
-    label: "Property Code",
+    label: "Property#",
     esKey: "number.keyword",
     options: { sort: true, filter: true },
+    style: { minWidth: 150 }
   },
   {
     name: "name",
@@ -21,6 +22,7 @@ const RevenuePropertiesHeadCells = [
     label: "Payor Name",
     esKey: "operator.name.keyword",
     options: { sort: true, filter: true },
+    style: { minWidth: 150 }
   },
   {
     name: "state",
@@ -43,14 +45,14 @@ const RevenuePropertiesHeadCells = [
 
   {
     name: "wellApiNumber",
-    label: "Well Api#",
+    label: "Well API",
     esKey: "well.apiNumber.keyword",
     options: { sort: true, filter: true },
   },
   {
     name: "wellName",
     label: "Well Name",
-    esKey: "wellName.keyword",
+    esKey: "well.wellName.keyword",
     options: { sort: true, filter: true },
   },
   {
@@ -60,14 +62,14 @@ const RevenuePropertiesHeadCells = [
     options: { sort: true, filter: true },
   },
   {
-      name: "type",
-      label: "Type",
-      esKey: "type.keyword",
-      options: { sort: true, filter: true },
-    },
+    name: "type",
+    label: "Type",
+    esKey: "type.keyword",
+    options: { sort: true, filter: true },
+  },
   {
     name: "amount",
-    label: "Amuount",
+    label: "Decimal",
     esKey: "amount.keyword",
     options: { sort: true, filter: true },
   },
@@ -76,19 +78,20 @@ const RevenuePropertiesHeadCells = [
     label: "Check #",
     esKey: "lastCheck.checkNumber.keyword",
     options: { sort: true, filter: true },
+    style: { minWidth: 100 }
   },
   {
     name: "lastChecked",
-    label: "Last Check Date",
+    label: "Last Check",
     esKey: "lastCheck.checkDate.keyword",
     options: { sort: true, filter: true },
   },
-    {
-      name: "tags",
-      label: "Tags",
-      esKey: "tags.keyword",
-      options: { sort: true, filter: true },
-    },
+  {
+    name: "tags",
+    label: "Tags",
+    esKey: "tags.keyword",
+    options: { sort: true, filter: true },
+  },
   {
     name: "commentsCounter",
     label: " ",

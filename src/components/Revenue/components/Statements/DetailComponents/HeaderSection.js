@@ -42,7 +42,6 @@ export default function HeaderFunction(props) {
       updateCheck(props?.details);
     }
   }, [props]);
-  console.log("check", check)
 
   return (
     <div className={classes.root}>
@@ -75,7 +74,6 @@ export default function HeaderFunction(props) {
         <Grid item xs={4}>
           <AutoComplete
             variant="filled"
-            onChange={(value) => console.log("value", value)}
             label="Purchaser Name"
             options={[check?.payor?.name]}
             value={check?.payor?.name || null}
@@ -89,7 +87,6 @@ export default function HeaderFunction(props) {
             style={{ marginBottom: -16 }}
             onClick={(e) => {
               e.stopPropagation();
-              console.log("e", e);
             }}
             aria-label="show purchaser name"
           >
@@ -132,7 +129,6 @@ export default function HeaderFunction(props) {
         {/* Owner name */}
         <Grid item xs={4}>
           <AutoComplete
-            onChange={(value) => console.log("value", value)}
             label="Owner Name"
             options={[check?.payee?.name]}
             value={check?.payee?.name || null}
@@ -146,7 +142,6 @@ export default function HeaderFunction(props) {
             style={{ marginBottom: -16 }}
             onClick={(e) => {
               e.stopPropagation();
-              console.log("e", e);
             }}
             aria-label="show purchaser name"
           >

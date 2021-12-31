@@ -103,7 +103,7 @@ function ExpandableCard(props) {
     setTitle(props.title);
   }, [props.title, props.targetLabel]);
 
-  const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(stateApp.selectedShape)
+  const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(stateApp.selectedShape || stateApp.selectedParcel)
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -348,6 +348,7 @@ function ExpandableCard(props) {
   };
 
   const getTitle = () => {
+
     if (!title) {
       return "--";
     }
@@ -377,10 +378,38 @@ function ExpandableCard(props) {
               {stateApp.selectedShape.type === 'agreement' && <Box className='type' >{agreementTypes.find((at) => at.value === stateApp.selectedShape?.agreementType)?.label || ''}</Box>}
             </Grid>
           </Grid> : <> {
-            (targetLabel !== "contact"
+            (targetLabel !== "contact" && targetLabel !== "parcel"
             ) &&
             <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
           }
+
+          {(targetLabel === "parcel") && (props.expanded === true) &&
+            <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+              <Grid item><Avatar color='#1a2341'>
+                <FolderIcon fontColor='#1a2341' />
+              </Avatar>
+              </Grid>
+              <Grid item>
+                <Box className='name'>
+                  {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
+                </Box>
+                {subTitle && (<Box className='description'>{subTitle}</Box>)}
+                <Box className='type' >Tract</Box>
+              </Grid>
+            </Grid>
+          }
+
+          {(targetLabel === "parcel") && (props.expanded === false) && (
+            <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+              <Box className='name'
+                style={{
+                  fontSize: 14,
+                  marginTop: -6
+                }}>
+                {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
+              </Box>
+            </Grid>
+          )}
 
             {
               (targetLabel === "contact"
@@ -399,7 +428,6 @@ function ExpandableCard(props) {
       </div >
     );
   };
-
 
   const openConfirmationDialog = () => {
     setOpenDialog(true);
@@ -474,8 +502,6 @@ function ExpandableCard(props) {
     };
   }, [openDialog, props.targetLabel, isExpanded, width]);
 
-  const link = history.pathHistory[history.pathHistory.length - 1]
-
   return (
     <React.Fragment>
 
@@ -509,7 +535,7 @@ function ExpandableCard(props) {
           open={openBugModal}
           onClose={() => setOpenBugModal(false)}
         />
-        {link === '/land/agreements' && (
+        {(history.location?.state?.showAgreementBreadcrumb || history.location?.state?.showTractsBreadcrumb) && (
           <Grid container spacing={2} alignItems="center" className={classes.breadcrumb}>
             <Breadcrumbs
               separator={<NavigateNextIcon fontSize="small" />}
@@ -522,7 +548,12 @@ function ExpandableCard(props) {
                 }}
                 color="inherit"
               >
-                <div className={classes.agreementLink} onClick={() => history.push('/land/agreements')}>Agreements</div>
+                {history.location?.state?.showAgreementBreadcrumb && (
+                  <div className={classes.agreementLink} onClick={() => history.push('/land/agreements')}>Agreements</div>
+                )}
+                {history.location?.state?.showTractsBreadcrumb && (
+                  <div className={classes.agreementLink} onClick={() => history.push('/land/tracts')}>Tracts</div>
+                )}
               </Typography>
               <Typography
                 style={{
@@ -560,6 +591,7 @@ function ExpandableCard(props) {
               }
               {targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
+                targetLabel !== "parcel" &&
                 !stateApp?.selectedShape &&
                 (
                   <CommentsWithIcon
@@ -571,6 +603,7 @@ function ExpandableCard(props) {
 
               {targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
+                targetLabel !== "parcel" &&
                 !stateApp?.selectedShape &&
                 targetLabel !== "recent_submitted_permits" && (
                   <TaggerWithIcon
