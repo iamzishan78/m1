@@ -17,8 +17,6 @@ import { AppContext } from "AppContext";
 // queries
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { USERSEARCHHISTORY } from "graphQL/useQueryUserSearchHistory";
-import { ADDSEARCHHISTORY } from "graphQL/useMutationAddSearchHistory";
-import { UPDATESEARCHHISTORY } from "graphQL/useMutationUpdateSearchHistory";
 import { REMOVESEARCHHISTORY } from "graphQL/useMutationRemoveSearchHistory";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
@@ -191,9 +189,6 @@ function Search(props) {
   //////////// Search History Begin//////////////////
 
   // Search History Queries and Mutations
-
-  const [addSearchHistory] = useMutation(ADDSEARCHHISTORY);
-  const [updateSearchHistory] = useMutation(UPDATESEARCHHISTORY);
   const [removeSearchHistory] = useMutation(REMOVESEARCHHISTORY);
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
 
@@ -284,9 +279,8 @@ function Search(props) {
   const callMapboxSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${request.input}.json?access_token=${
-          stateApp.mapboxglAccessToken
-        }&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
+        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${request.input}.json?access_token=${stateApp.mapboxglAccessToken
+          }&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -329,12 +323,13 @@ function Search(props) {
       variables: {
         property: {
           _id: props.rowData[0],
-          associatedWell: newValue.Id,
+          well: newValue,
         },
       },
       refetchQueries: ["getESPaginatedList"],
       awaitRefetchQueries: true,
     });
+    handleClose();
   };
 
   //// setting the buttons header /////
@@ -467,27 +462,27 @@ function Search(props) {
                       <div>
                         {((searchInputValue && searchInputValue !== "") ||
                           (stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0)) && (
-                          <Tooltip title="Clear" placement="top">
-                            <IconButton
-                              size="small"
-                              onClick={() => {
-                                setValue("");
-                                dispatch(
-                                  setMapGridCardState({
-                                    searchInputValue: "",
-                                    searchResultData: [],
-                                  })
-                                );
-                                setStateApp((state) => ({
-                                  ...state,
-                                  wellListFromSearch: [],
-                                }));
-                              }}
-                            >
-                              <ClearIcon htmlColor="#fff" />
-                            </IconButton>
-                          </Tooltip>
-                        )}
+                            <Tooltip title="Clear" placement="top">
+                              <IconButton
+                                size="small"
+                                onClick={() => {
+                                  setValue("");
+                                  dispatch(
+                                    setMapGridCardState({
+                                      searchInputValue: "",
+                                      searchResultData: [],
+                                    })
+                                  );
+                                  setStateApp((state) => ({
+                                    ...state,
+                                    wellListFromSearch: [],
+                                  }));
+                                }}
+                              >
+                                <ClearIcon htmlColor="#fff" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
                         <Tooltip title="Search History" placement="top">
                           <IconButton
                             size="small"
