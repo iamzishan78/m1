@@ -11,13 +11,12 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import { AppContext } from "AppContext";
 
 //Components
-import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
+import WellSearchApiFieldES from 'components/Shared/Forms/Fields/WellSearchApiFieldES'
 
 // Hooks
 import { useLazyQuery, useMutation } from "@apollo/client";
 
 // Queries
-import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument'
 
 // Mutations
@@ -105,20 +104,11 @@ export default function Contacts(props) {
 
   const [isSearchActive, setSearchState] = useState(false);
   const [filteredWells, setFilteredWells] = useState([]);
-  const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-  const [hasNextPage, setHasNextPage] = useState(true);
-  const [isNextPageLoading, setIsNextPageLoading] = useState(false);
-  const [nameAutValue, setNameAutValue] = useState("");
-  const [nameAutInputValue, setNameAutInputValue] = useState("");
   const [addWell, setAddWell] = useState(false);
   const [deletedRow, setDeletedRow] = useState('')
   const [stateApp, setStateApp] = useContext(AppContext);
 
   //Queries
-  const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
-  });
   const [getWellsFromDocument, { data: wellsFromDocument, loading: getWellsLoading }] = useLazyQuery(GETWELLSFROMDOCUMENTS, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
@@ -133,7 +123,7 @@ export default function Contacts(props) {
     })
   });
 
-  // fetching wells from File Descriptor
+  // Fetching wells from descriptor
   useEffect(() => {
     getWellsFromDocument({
       variables: {
@@ -149,37 +139,6 @@ export default function Contacts(props) {
     setFilteredWells(wellDescriptor?.wells)
   }, [wellsFromDocument])
 
-  useEffect(() => {
-    //will also run during initial mount
-    setIsNextPageLoading(true);
-    getPaginatedContacts({
-      variables: {
-        search: nameAutInputValue,
-      },
-    });
-  }, [getPaginatedContacts, nameAutInputValue]);
-
-  useEffect(() => {
-    if (nameAutValue) {
-      props.addSelectedContact(nameAutValue);
-      setAddWell(false);
-      setNameAutValue("");
-    }
-  }, [nameAutValue]);
-
-
-  useEffect(() => {
-    if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray(allContacts?.paginatedContacts?.edges?.map((el) => el.node));
-      setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
-      setIsNextPageLoading(false);
-    }
-  }, [allContacts]);
-
-  const loadNextPage = async (pageVariables) => {
-    setIsNextPageLoading(true);
-    fetchMorePaginatedContacts(pageVariables);
-  };
 
   // delete well from File Descriptor
   const deleteWell = async (wellId) => {
@@ -245,37 +204,7 @@ export default function Contacts(props) {
         )}
         {addWell && (
           <Grid item xs={11}>
-            <AutocompEntityNamesVirtualizeList
-              mongoEntitiesArray={mongoEntitiesArray}
-              setMongoEntitiesArray={setMongoEntitiesArray}
-              nameAutValue={nameAutValue}
-              setNameAutValue={setNameAutValue}
-              nameAutInputValue={nameAutInputValue}
-              setNameAutInputValue={setNameAutInputValue}
-              variant="outlined"
-              label="Well Name"
-              hasNextPage={hasNextPage}
-              isNextPageLoading={isNextPageLoading}
-              loadNextPage={loadNextPage}
-              disabled={props.loading}
-              addNew={true}
-              addNewOnClick={(value) => {
-                const well = { name: value };
-                // addNewContact({
-                //   variables: {
-                //     well: {
-                //       ...well,
-                //       createBy: stateApp.user.mongoId,
-                //       lastUpdateBy: stateApp.user.mongoId,
-                //     },
-                //   },
-                //   refetchQueries: ["getPaginatedContacts", "getContact"],
-                //   awaitRefetchQueries: true,
-                // });
-                console.log("Contact is", well);
-              }}
-              onBlur={() => setAddWell((addWell) => !addWell)}
-            />
+            <WellSearchApiFieldES />
           </Grid>
         )}
         <Grid item xs={1}>
