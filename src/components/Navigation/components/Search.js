@@ -406,7 +406,7 @@ function Search() {
 
   useEffect(() => {
     let newOptions = []
-    if (esSearchData) {
+    if (esSearchData?.getESPaginatedList?.hits) {
       const { formatOptions } = esCallData[searchOption]
       newOptions = [
         ...esSearchData.getESPaginatedList.hits.map((result) => {
@@ -414,8 +414,8 @@ function Search() {
         }),
       ];
       setOptions(newOptions);
-      setLoading(false)
     }
+    setLoading(false)
   }, [esSearchData])
 
 
