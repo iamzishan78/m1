@@ -274,8 +274,6 @@ function Search(props) {
     }
   }, [constDataWells]);
 
-  //////// >>>>>>>>> END
-
   const callMapboxSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {

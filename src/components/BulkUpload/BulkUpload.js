@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { matchRoutes } from "react-router-config";
 import { AppContext } from "../../AppContext";
@@ -9,11 +9,16 @@ import Link from "@material-ui/core/Link";
 import Typography from "@material-ui/core/Typography";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Stepper from "./components/stepper";
+import { Menu, MenuItem } from "@material-ui/core";
+import M1neral_headers from "./jobHeaders"
 
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "white",
+    top: "64px",
+    position: "relative",
   },
   header: {
     borderBottom: "1px solid rgba(224, 224, 224, 1)",
@@ -25,6 +30,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const rawJobs = [
+  { name: 'Import Contacts', type: 'CONTACTS' },
+  { name: 'Interest Owner Upload', type: 'PARCELINTERESTS' },
+  { name: 'Check Detail Upload', type: 'CHECKDETAILS' }
+]
+
 export default function BulkUpload(props) {
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
@@ -33,6 +44,17 @@ export default function BulkUpload(props) {
 
   const checkModuleHistory = () => {
     return !!stateNav.bulkUploadFromMap && 'Map' || !!stateNav.bulkUploadFromContacts && 'Contacts';
+  };
+
+  const jobs = rawJobs.filter((job) => ( stateNav.bulkUploadFromMap ? 'CONTACTS' : 'PARCELINTERESTS' ) !== job.type)
+  const [selectedJob, setSelectedJob] = useState(jobs[0]);
+  const [showIcon, setShowIcon] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
   useEffect(() => {
@@ -45,393 +67,19 @@ export default function BulkUpload(props) {
       }));
     };
   }, []);
-  const M1neral_headers = [
-    {
-      label: "Contact Id",
-      mapped_key: "",
-      required: false,
-      actual_key: "contactId",
-    },
-    {
-      label: "Full Name",
-      mapped_key: "",
-      required: false,
-      actual_key: "name",
-    },
-    {
-      label: "First Name",
-      mapped_key: "",
-      required: false,
-      actual_key: "firstName",
-    },
-    {
-      label: "Last Name",
-      mapped_key: "",
-      required: false,
-      actual_key: "lastName",
-    },
-    {
-      label: "Middle Name",
-      mapped_key: "",
-      required: false,
-      actual_key: "middleName",
-    },
-    {
-      label: "Suffix",
-      mapped_key: "",
-      required: false,
-      actual_key: "suffix",
-    },
-    {
-      label: "Age",
-      mapped_key: "",
-      required: false,
-      actual_key: "age",
-    },
-    {
-      label: "Relative Names",
-      mapped_key: "",
-      required: false,
-      actual_key: "relatives",
-    },
-    {
-      label: "Primary Address 1",
-      mapped_key: "",
-      required: false,
-      actual_key: "address1",
-    },
-    {
-      label: "Primary Address 2",
-      mapped_key: "",
-      required: false,
-      actual_key: "address2",
-    },
-    {
-      label: "City",
-      mapped_key: "",
-      required: false,
-      actual_key: "city",
-    },
-    {
-      label: "State",
-      mapped_key: "",
-      required: false,
-      actual_key: "state",
-    },
-    {
-      label: "Zip",
-      mapped_key: "",
-      required: false,
-      actual_key: "zip",
-    },
-    {
-      label: "Country",
-      mapped_key: "",
-      required: false,
-      actual_key: "country",
-    },
-    {
-      label: "Primary Email",
-      mapped_key: "",
-      required: false,
-      actual_key: "primaryEmail",
-    },
-    {
-      label: "Email 2",
-      mapped_key: "",
-      required: false,
-      actual_key: "secondaryEmail",
-    },
-    {
-      label: "Email 3",
-      mapped_key: "",
-      required: false,
-      actual_key: "email3",
-    },
-    {
-      label: "Primary Home Phone",
-      mapped_key: "",
-      required: false,
-      actual_key: "homePhone",
-    },
-    {
-      label: "Home Phone 2",
-      mapped_key: "",
-      required: false,
-      actual_key: "homePhone2",
-    },
-    {
-      label: "Home Phone 3",
-      mapped_key: "",
-      required: false,
-      actual_key: "homePhone3",
-    },
-    {
-      label: "Primary Mobile Phone",
-      mapped_key: "",
-      required: false,
-      actual_key: "mobilePhone",
-    },
-    {
-      label: "Mobile Phone 2",
-      mapped_key: "",
-      required: false,
-      actual_key: "mobilephone2",
-    },
-    {
-      label: "Mobile Phone 3",
-      mapped_key: "",
-      required: false,
-      actual_key: "mobilephone3",
-    },
-    {
-      label: "Primary Work Phone",
-      mapped_key: "",
-      required: false,
-      actual_key: "AltPhone",
-    },
-    {
-      label: "Work Phone 2",
-      mapped_key: "",
-      required: false,
-      actual_key: "AltPhone2",
-    },
-    {
-      label: "Work Phone 3",
-      mapped_key: "",
-      required: false,
-      actual_key: "AltPhone3",
-    },
-    {
-      label: "Company Name",
-      mapped_key: "",
-      required: false,
-      actual_key: "companyName",
-    },
-    {
-      label: "Job Title",
-      mapped_key: "",
-      required: false,
-      actual_key: "jobTitle",
-    },
-    {
-      label: "Industry Type",
-      mapped_key: "",
-      required: false,
-      actual_key: "industryType",
-    },
-    {
-      label: "LinkedIn Profile",
-      mapped_key: "",
-      required: false,
-      actual_key: "linkedIn",
-    },
-    {
-      label: "Facebook Profile",
-      mapped_key: "",
-      required: false,
-      actual_key: "facebook",
-    },
-    {
-      label: "Twitter Profile",
-      mapped_key: "",
-      required: false,
-      actual_key: "twitter",
-    },
-    {
-      label: "Lead Source",
-      mapped_key: "",
-      required: false,
-      actual_key: "leadSource",
-    },
-    {
-      label: "Territory",
-      mapped_key: "",
-      required: false,
-      actual_key: "territory",
-    },
-    {
-      label: "Campaign Name",
-      mapped_key: "",
-      required: false,
-      actual_key: "campaignName",
-    },
-    {
-      label: "Website",
-      mapped_key: "",
-      required: false,
-      actual_key: "website",
-    },
-    {
-      label: "Contact Owner",
-      mapped_key: "",
-      required: false,
-      actual_key: "contactOwner",
-    },
-    // {
-    //   label: "Comments",
-    //   mapped_key: "",
-    //   required: false,
-    //   actual_key: "notes",
-    // },
-    // {
-    //   label: "Lead Stage",
-    //   mapped_key: "",
-    //   required: false,
-    //   actual_key: "leadStage",
-    // },
-    // {
-    //   label: "Status",
-    //   mapped_key: "",
-    //   required: false,
-    //   actual_key: "status",
-    // },
-    // {
-    //   label: "Time Zone",
-    //   mapped_key: "",
-    //   required: false,
-    //   actual_key: "timeZone",
-    // },
-    // {
-    //   label: "Title",
-    //   mapped_key: "",
-    //   required: false,
-    //   actual_key: "title",
-    // },
-    // {
-    //   label: "Global Owner",
-    //   mapped_key: "",
-    //   required: false,
-    //   actual_key: "globalOwner",
-    // },
-    // {
-    //   label: "Created By",
-    //   mapped_key: "",
-    //   required: false,
-    //   actual_key: "createBy",
-    // },
-    // {
-    //   label: "Last Update",
-    //   mapped_key: "",
-    //   required: false,
-    //   actual_key: "lastUpdate",
-    // },
-    // {
-    //   label: "Last Updated By",
-    //   mapped_key: "",
-    //   required: false,
-    //   actual_key: "lastUpdateBy",
-    // },
-    {
-      label: "Parcel Id",
-      mapped_key: "",
-      required: false,
-      actual_key: "parcelId",
-    },
-    {
-      label: "Parcel Name",
-      mapped_key: "",
-      required: false,
-      actual_key: "parcelName",
-    },
-    {
-      label: "Surface Interest",
-      mapped_key: "",
-      required: false,
-      actual_key: "surface_interest"
-    },
-    {
-      label: "Mineral Interest",
-      mapped_key: "",
-      required: false,
-      actual_key: "mineral_interest"
-    },
-    {
-      label: "Royalty Interest",
-      mapped_key: "",
-      required: false,
-      actual_key: "royalty_interest"
-    },
-    {
-      label: "Overriding Royalty",
-      mapped_key: "",
-      required: false,
-      actual_key: "orri"
-    },
-    {
-      label: "Record Title",
-      mapped_key: "",
-      required: false,
-      actual_key: "record_title"
-    },
-    {
-      label: "Operating Rights",
-      mapped_key: "",
-      required: false,
-      actual_key: "operating_rights"
-    },
-    {
-      label: "Net Revenue Interest",
-      mapped_key: "",
-      required: false,
-      actual_key: "nri"
-    },
-    {
-      label: "Net Acres",
-      mapped_key: "",
-      required: false,
-      actual_key: "net_acres"
-    },
-    {
-      label: "Net Royalty Acres",
-      mapped_key: "",
-      required: false,
-      actual_key: "nra"
-    },
-    {
-      label: "Depth From",
-      mapped_key: "",
-      required: false,
-      actual_key: "depthFrom"
-    },
-    {
-      label: "Depth To",
-      mapped_key: "",
-      required: false,
-      actual_key: "depthTo"
-    },
-    {
-      label: "QTR1",
-      mapped_key: "",
-      required: false,
-      actual_key: "qtr[0]"
-    },
-    {
-      label: "QTR2",
-      mapped_key: "",
-      required: false,
-      actual_key: "qtr[1]"
-    },
-    {
-      label: "QTR3",
-      mapped_key: "",
-      required: false,
-      actual_key: "qtr[2]"
-    },
-    {
-      label: "QTR4",
-      mapped_key: "",
-      required: false,
-      actual_key: "qtr[3]"
-    },
-  ];
+
+  useEffect(() => {
+    reset_state();
+  }, [selectedJob]);
+  
   const reset_state = () => {
     setStateApp((state) => ({
       ...state,
       csvContactsListToSend: [],
       activeStepNumber: 0,
       csvContactsList: [],
-      m1neralHeaders: M1neral_headers,
+      jobType: selectedJob.type,
+      m1neralHeaders: M1neral_headers[selectedJob.type],
       mappedHeadersFromCSV: [],
     }));
   };
@@ -453,54 +101,103 @@ export default function BulkUpload(props) {
           aria-label="breadcrumb"
         >
           {previousRoute[0] && <Link
-              style={{
-                marginLeft: "5px",
-                fontSize: "16px",
-                cursor: "pointer",
-              }}
-              color="inherit"
-              onClick={() => {
-                setStateNav((stateApp) => ({
-                  ...stateApp,
-                  bulkUploadFromMap: false,
-                }));
-                history.push(previousRoute[0]?.match?.url);
-              }}
-            >
-              {previousRoute[0]?.route?.title}
-            </Link>
+            style={{
+              marginLeft: "5px",
+              fontSize: "16px",
+              cursor: "pointer",
+            }}
+            color="inherit"
+            onClick={() => {
+              setStateNav((stateApp) => ({
+                ...stateApp,
+                bulkUploadFromMap: false,
+              }));
+              history.push(previousRoute[0]?.match?.url);
+            }}
+          >
+            {previousRoute[0]?.route?.title}
+          </Link>
           }
           {stateApp.selectedParcel?.shapeLabel && <Link
+            style={{
+              marginLeft: "5px",
+              fontSize: "16px",
+              cursor: "pointer",
+            }}
+            color="inherit"
+            onClick={() => {
+              setStateNav((stateApp) => ({
+                ...stateApp,
+                bulkUploadFromMap: false,
+              }));
+
+              history.push(previousRoute[0]?.match?.url);
+            }}
+          >
+            {stateApp.selectedParcel?.shapeLabel}
+          </Link>
+          }
+          <div>
+            <div
               style={{
-                marginLeft: "5px",
+                display: "flex",
+                color: "#18AADD",
                 fontSize: "16px",
                 cursor: "pointer",
               }}
-              color="inherit"
-              onClick={() => {
-                setStateNav((stateApp) => ({
-                  ...stateApp,
-                  bulkUploadFromMap: false,
-                }));
-                
-                history.push(previousRoute[0]?.match?.url);
+              onClick={(event) => {
+                handleClick(event)
               }}
+              onMouseOver={() => setShowIcon(true)}
+              onMouseLeave={() => setShowIcon(false)}
             >
-              {stateApp.selectedParcel?.shapeLabel}
-            </Link>
-          }
-          <Typography
-            style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}
-          >
-            {
-              stateNav.bulkUploadFromMap 
-                ? 'Interest Owner Upload'
-                : 'Import Contacts'
-            }
-          </Typography>
+              <Typography
+                style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}
+              >
+                { selectedJob.name }
+                <span
+                  style={{
+                    height: "0px",
+                    color: "#18AADD",
+                    fontSize: "16px",
+                    cursor: "pointer",
+                    "vertical-align": "middle"
+                  }}
+                >
+                  {showIcon && <ExpandMoreIcon />}
+                </span>
+              </Typography>
+              <Menu
+                style={{ zIndex: "1305" }}
+                id="menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={(e) => {
+                  e.stopPropagation()
+                  handleClose()
+                }}
+                getContentAnchorEl={null}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                transformOrigin={{ vertical: "top", horizontal: "center" }}
+              >
+                { jobs.map((job) =>
+                  < MenuItem
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleClose();
+                      setSelectedJob(job)
+                    }}
+                  >
+                    { job.name }
+                  </MenuItem>
+                )}
+              </Menu>
+            </div>
+          </div>
         </Breadcrumbs>
       </div>
-      <Stepper {...{ routes: props.routes }}>{props.children}</Stepper>
+      <Stepper {...{ routes: props.routes, selectedJob }}>{props.children}</Stepper>
     </div>
   );
 }
