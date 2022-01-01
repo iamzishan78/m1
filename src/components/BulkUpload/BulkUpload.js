@@ -46,7 +46,7 @@ export default function BulkUpload(props) {
     return !!stateNav.bulkUploadFromMap && 'Map' || !!stateNav.bulkUploadFromContacts && 'Contacts';
   };
 
-  const jobs = rawJobs.filter((job) => stateNav.bulkUploadFromMap ? 'CONTACTS' : 'PARCELINTERESTS' !== job.type)
+  const jobs = rawJobs.filter((job) => ( stateNav.bulkUploadFromMap ? 'CONTACTS' : 'PARCELINTERESTS' ) !== job.type)
   const [selectedJob, setSelectedJob] = useState(jobs[0]);
   const [showIcon, setShowIcon] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
