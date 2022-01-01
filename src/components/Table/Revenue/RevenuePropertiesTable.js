@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Container } from "@material-ui/core";
+import { Warning as WarningIcon } from "@material-ui/icons";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 import TableHeader from "components/Table/constants/revenue-properties-header-schema";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
-import { useLazyQuery } from "@apollo/client";
+import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { setRevenueKey } from "actions";
 
 // QUERIES
 import { deepEqualObjects } from "components/Shared/functions";
@@ -14,6 +18,7 @@ import { usetableStyles } from "../Styles";
 
 function RevenuePropertiesTable(props) {
   const classes = usetableStyles();
+  const dispatch = useDispatch();
   // query
   const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(
     GET_ES_PAGINATED_LIST,
@@ -21,6 +26,7 @@ function RevenuePropertiesTable(props) {
       fetchPolicy: "no-cache",
     }
   );
+  const [updateProperty] = useMutation(UPDATE_PROPERTY);
   // rearranging the data according to the requirements.
   const tableData = elasticData?.getESPaginatedList?.hits?.map((eachRow) => {
     return {
@@ -33,7 +39,7 @@ function RevenuePropertiesTable(props) {
       source: eachRow?.source,
       wellApiNumber: eachRow?.well?.apiNumber,
       wellName: eachRow?.well?.wellName,
-      status: eachRow?.well?.status,
+      status: eachRow?.status,
       checkNumber: eachRow?.lastCheck?.checkNumber,
       lastChecked: new Date(eachRow?.lastCheck?.checkDate).toLocaleDateString(),
       tags: eachRow.tags?.length > 0
@@ -61,6 +67,43 @@ function RevenuePropertiesTable(props) {
   };
   // added dummy rows for just display
 
+  React.useEffect(() => {
+    const statusIndex = columns.findIndex(c => c.name === 'status');
+    if (statusIndex !== -1) {
+      columns[statusIndex].options.customBodyRender = ((value, tableMeta) => (
+        <>
+          {!tableMeta.rowData[8] ? (
+            <div
+              className={classes.warningCol}
+              onClick={() => {
+                dispatch(setRevenueKey("wellApiDropdownIndex", tableMeta.rowIndex));
+              }}
+            >
+              <WarningIcon />
+              <div>Unmapped</div>
+            </div>
+          ) : (
+            <div className={classes.flexAlign}>
+              {value?.toLowerCase() === "approved" ? (
+                <div className={classes.activeBadge} />
+              ) : value?.toLowerCase() === "pending" ? (
+                <div className={classes.pendingBadge} />
+              ) : value?.toLowerCase() === "declined" ? (
+                <div className={classes.declinedBadge} />
+              ) : (
+                <div className={classes.statusBtnDiv}>
+                  <div className={classes.approveBtn} onClick={() => handleStatusChange(tableMeta.rowData[0], 'approved')}>Approve</div>
+                  <div className={classes.declineBtn} onClick={() => handleStatusChange(tableMeta.rowData[0], 'declined')}>Decline</div>
+                </div>
+              )}
+              <div>{value}</div>
+            </div>
+          )}
+        </>
+      ));
+    }
+  }, [columns]);
+
   // fetaching data
   React.useEffect(() => {
     getESPaginatedList({
@@ -76,6 +119,22 @@ function RevenuePropertiesTable(props) {
       },
     });
   }, [getESPaginatedList, props.parent, props.revenueSearchQuery]);
+
+  const handleStatusChange = (_id, status) => {
+    let property = {
+      _id,
+    };
+    if (status === 'declined') {
+      property = { ...property, status: '', well: {} };
+    }
+    updateProperty({
+      variables: {
+        property,
+      },
+      refetchQueries: ["getESPaginatedList"],
+      awaitRefetchQueries: true,
+    });
+  };
 
   const onTableChange = (action, tableState, rows, meta) => {
     tableState.esIndex = esIndex;
