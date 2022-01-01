@@ -184,7 +184,7 @@ export default function Contacts(props) {
   // delete well from File Descriptor
   const deleteWell = async (wellId) => {
     await deleteWellFromDescriptor({
-      variables: { descriptorId: stateApp?.selectedDocument?._id, wellId: wellId },
+      variables: { descriptorId: stateApp?.selectedDocument?._id, wellGlobalId: wellId },
     })
   };
 
@@ -310,14 +310,14 @@ export default function Contacts(props) {
                     {well.wellName}
                   </Link>
 
-                  {deleteWellLoading && deletedRow === well._id ? (
+                  {deleteWellLoading && deletedRow === well.id ? (
                     <ListItemSecondaryAction>
                       <IconButton edge="end" aria-label="delete">
                         <CircularProgress size='20px' />
                       </IconButton>
                     </ListItemSecondaryAction>
                   ) : (
-                    <ListItemSecondaryAction onClick={() =>{setDeletedRow(well._id); deleteWell(well._id)}}>
+                    <ListItemSecondaryAction onClick={() => { setDeletedRow(well.id); deleteWell(well.id) }}>
                       <IconButton edge="end" aria-label="delete" className={classes.deleteIcon}>
                         <DeleteIcon />
                       </IconButton>
