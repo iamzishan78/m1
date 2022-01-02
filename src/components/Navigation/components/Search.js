@@ -321,6 +321,7 @@ function Search() {
         formatOptions: (data) => {
           return {
             ...data, ...data.node, Primary: data.name || "--",
+            Source: contactIndexName,
             Secondary: data.address1 || data.city || data.state ? data.address1 + ' ' + data.city + ', ' + data.state + ' ' + data.zip : "--"
           }
         }
