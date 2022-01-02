@@ -738,6 +738,9 @@ function Search() {
             contactId: newValue._id,
           },
         });
+
+        const newPath = `/contact/details/${newValue._id}`;
+        history.location.pathname !== newPath && history.replace(newPath);
       }
 
       //// if mapboxSearch
