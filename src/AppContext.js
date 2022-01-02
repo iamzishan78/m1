@@ -123,6 +123,7 @@ const AppProvider = (props) => {
     currentFeature: undefined,
     wellListFromSearch: [],
     wellListFromTagsFilter: [],
+    jobType: null,
     m1neralHeaders: [],
     mappedHeadersFromCSV: [],
     viewportWells: null,

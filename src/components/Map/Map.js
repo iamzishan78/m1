@@ -1104,6 +1104,7 @@ function Map({ type, paramId, lati, longi }) {
         if (state.isDrawing) return state;
         let stateToUpdate = {
           ...state,
+          selectedShape: null,
           selectedPermit: null,
         }
         if (feature && feature.properties) {
@@ -1466,6 +1467,8 @@ function Map({ type, paramId, lati, longi }) {
         }));
 
       }, 0)
+
+      // console.log(e, features);
     }
     if (map) {
       if (mapClick && mapClick.mapClickHandler) {
