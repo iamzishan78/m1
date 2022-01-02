@@ -707,13 +707,10 @@ function SubTable(props) {
   const [getOperatorWells, { data: dataOperatorWells }] =
     useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
-  const [getContactsWells, { data: dataContactWells }] =
-    useLazyQuery(CONTACTWELLS);
 
-  const [viewFile, { data: viewFileResult, loading: viewFileLoading }] =
-    useLazyQuery(VIEWFILEQUERY, {
-      fetchPolicy: "no-cache",
-    });
+  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "no-cache",
+  });
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
   };
@@ -1701,12 +1698,7 @@ function SubTable(props) {
                           }}
                           aria-label="show comments"
                           onMouseOver={() => {
-                            if (
-                              m1nSelectedRowsIndexes.indexOf(
-                                tableMeta.rowIndex
-                              ) !== -1 &&
-                              m1nSelectedRowsIndexes.length > 1
-                            )
+                            if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
                               multiSelectMouseHoverColor(id, "#dadbde");
                           }}
                           onMouseOut={() => {
@@ -1766,12 +1758,7 @@ function SubTable(props) {
                         }}
                         aria-label="show address"
                         onMouseOver={() => {
-                          if (
-                            m1nSelectedRowsIndexes.indexOf(
-                              tableMeta.rowIndex
-                            ) !== -1 &&
-                            m1nSelectedRowsIndexes.length > 1
-                          )
+                          if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
                             multiSelectMouseHoverColor(id, "#dadbde");
                         }}
                         onMouseOut={() => {
@@ -4198,10 +4185,7 @@ function SubTable(props) {
         }
       }
 
-      if (
-        props.header === "Well Interests" &&
-        props.parent === "owner_WellInterests"
-      ) {
+      if (props.header === "Well Interests" && props.parent === "owner_WellInterests") {
         const pageVariables = {
           variables: {
             pagination: {
