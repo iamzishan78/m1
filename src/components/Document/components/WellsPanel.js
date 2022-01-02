@@ -21,6 +21,7 @@ import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument'
 
 // Mutations
 import { DELETEWELLFROMFILEDESCRIPTOR } from 'graphQL/useMutationDeleteWellFromFileDescriptor'
+import { ADD_WELL_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddWellToFileDescriptor'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -123,6 +124,14 @@ export default function Contacts(props) {
     })
   });
 
+  const [addWellToFileDescriptor, { loading: addWellLoading }] = useMutation(ADD_WELL_TO_FILE_DESCRIPTOR, {
+    onCompleted: () => getWellsFromDocument({
+      variables: {
+        descriptorObject: stateApp.selectedDocument._id
+      }
+    })
+  });
+
   // Fetching wells from descriptor
   useEffect(() => {
     getWellsFromDocument({
@@ -147,16 +156,42 @@ export default function Contacts(props) {
     })
   };
 
-  const gotoContact = (index) => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      selectedContact: stateApp.activeDeal?.contacts[index]?._id,
-      dealDialog: false,
-      transactBarView: "Deal",
-    }));
-    history.push(`/map/wells/7013D1FC-F2F1-478A-A790-0858509489F4/39.1058388/-98.998703`);
-  };
+  // fetching well from autocomplete
+  const getSelectedWell = async (well) => {
+    let wellData = {
+      ...well,
+      createdBy: stateApp?.user?._id
 
+    }
+    setAddWell(false)
+    await addWellToFileDescriptor({
+      variables: { descriptorId: stateApp?.selectedDocument?._id, wellData: wellData },
+    })
+  }
+
+  // const gotoContact = (index) => {
+  //   setStateApp((stateApp) => ({
+  //     ...stateApp,
+  //     selectedContact: stateApp.activeDeal?.contacts[index]?._id,
+  //     dealDialog: false,
+  //     transactBarView: "Deal",
+  //   }));
+  //   history.push(`/map/wells/7013D1FC-F2F1-478A-A790-0858509489F4/39.1058388/-98.998703`);
+  // };
+
+  // searching existing well
+  const searchExistingWell = (value) => {
+    setSearch(value)
+    let existingWells = filteredWells
+    if (value !== '') {
+      const searchedWells = existingWells.filter(well => well.wellName.toLowerCase().includes(value))
+      setFilteredWells(searchedWells)
+
+    } else {
+      const wellDescriptor = wellsFromDocument?.getWellDescriptors[0]
+      setFilteredWells(wellDescriptor?.wells)
+    }
+  }
   return (
     <div style={{ marginRight: "14px" }}>
       <Grid container direction="row" justify="space-between" alignItems="center" className={classes.rootPadding}>
@@ -196,7 +231,7 @@ export default function Contacts(props) {
                       setSearchState(false);
                     }, 300)
                   }
-                  onChange={(evt) => setSearch(evt.target.value)}
+                  onChange={(evt) => searchExistingWell(evt.target.value)}
                 />
               </div>
             </Grid>
@@ -204,7 +239,7 @@ export default function Contacts(props) {
         )}
         {addWell && (
           <Grid item xs={11}>
-            <WellSearchApiFieldES />
+            <WellSearchApiFieldES getSelectedWell={getSelectedWell} />
           </Grid>
         )}
         <Grid item xs={1}>
@@ -220,7 +255,7 @@ export default function Contacts(props) {
       </Grid>
       <Divider />
       <div className={classes.list}>
-        {getWellsLoading === true && (
+        {(getWellsLoading === true || addWellLoading === true) && (
           <Grid container className={classes.actionGrid}>
             <Grid item xs={12}>
               <div style={{ display: "flex", justifyContent: "center" }}>
@@ -235,7 +270,9 @@ export default function Contacts(props) {
             filteredWells.map((well, index) => (
               <div style={{ padding: "10px 0px 0px" }}>
                 <ListItem key={index}>
-                  <Link className={classes.wellLink} color="primary" onClick={() => gotoContact(index)}>
+                  <Link className={classes.wellLink} color="primary"
+                  // onClick={() => gotoContact(index)}
+                  >
                     {well.wellName}
                   </Link>
 

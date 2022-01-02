@@ -54,11 +54,17 @@ function WellSearchApiField(props) {
         setFoundWells(allESWell)
     }, [constDataWells])
 
+    // ON change of selected well
+    const onChange = (well) => {
+        props.getSelectedWell(well);
+        setSelectedWell(well);
+    }
+
     return (
         <FormControl variant="outlined" fullWidth size="small">
             <Autocomplete
                 options={foundWells || []}
-                onChange={(e, well) => { setSelectedWell(well); }}
+                onChange={(e, well) => { onChange(well) }}
                 value={selectedWell}
                 getOptionLabel={(option, value) => option.wellName}
                 filterOptions={(x) => x}
