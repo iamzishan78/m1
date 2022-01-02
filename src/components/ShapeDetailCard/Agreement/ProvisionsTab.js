@@ -22,6 +22,7 @@ import { CREATE_AGREEMENT_PROVISION } from "graphQL/useMutationCreateAgreementPr
 import debounce from "lodash/debounce";
 import AutoCompleteWithNewOption from "components/Shared/Forms/Fields/AutoCompleteWithNewOption";
 import { GET_PROVISION_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetProvisionAutoCompleteList";
+import { copy } from "components/Shared/functions";
 
 const styles = makeStyles(() => ({
     root: {
@@ -145,6 +146,14 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
     const getParty = (item) => {
         return item?.parties && item?.parties[0] ? item?.parties[0] : item?.parties
     }
+    const getCurrentParty = (index) => {
+        const formValues = copy(getValues());
+        if (formValues?.provisions) {
+            const item = formValues?.provisions[index]
+            const parties = item?.parties && item?.parties[0] ? item?.parties[0] : item?.parties
+            return parties && parties?._id ? parties : parties && parties[0]?._id ? parties[0] : null
+        }
+    }
 
     return <Grid container direction="column" spacing={5} className={classes.root}>
         <Grid item>
@@ -185,8 +194,9 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
         </Grid>
         <Grid item>
             {
-                fields.map((item, index) =>
-                    <Grid key={item.id} container direction="column" spacing={2}
+                fields.map((item, index) => {
+                    const currentParty = getCurrentParty(index)
+                    return (<Grid key={item.id} container direction="column" spacing={2}
                         className={`${classes.provisionCard} ${selectionProvision === item.type ? classes.provisionCardSelected : ''}`}
                         onClick={() => setSelectedProvision(item.type)}>
                         <Grid item>
@@ -339,16 +349,16 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                 <Grid item md={2} style={{ height: '0px' }}>
                                     <IconButton
                                         size={"medium"}
-                                        color={getParty(item) ? 'primary' : 'secondary'}
+                                        color={currentParty?._id ? 'primary' : 'secondary'}
                                         onClick={(e) => {
-                                            if (getParty(item)?._id) {
+                                            if (currentParty?._id) {
                                                 e.stopPropagation();
-                                                history.push(`/contact/details/${getParty(item)._id}`);
+                                                history.push(`/contact/details/${currentParty._id}`);
                                             }
                                         }}
                                         aria-label="show contact"
                                     >
-                                        {getParty(item) ? <ContactCardIcon /> : <ContactCardDisabledIcon />}
+                                        {currentParty?._id ? <ContactCardIcon /> : <ContactCardDisabledIcon />}
 
                                     </IconButton>
                                     <CommentsWithIcon
@@ -365,7 +375,8 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                             <TextField id="p-value" label="Full Description" variant="outlined" fullWidth multiline rows={4} name={`provisions[${index}].description`}
                                 inputRef={register()} defaultValue={item.description} onChange={() => handleChange(item, index)} />
                         </Grid>
-                    </Grid>
+                    </Grid>)
+                }
                 )
             }
             <Grid item>

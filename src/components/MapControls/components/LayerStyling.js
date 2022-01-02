@@ -66,30 +66,31 @@ function LayerStyling(props) {
     else return color;
   };
 
-  const layerType = layer.layerPaintProps[0].paintType;
-  const initialLayerLabelVisibility = layer.layerPaintProps[0].labelProps?.visibility === 'none' ? 'none' : 'visible';
+
+  const layerType = layer.layerPaintProps[0]?.paintType;
+  const initialLayerLabelVisibility = layer.layerPaintProps[0]?.labelProps?.visibility === 'none' ? 'none' : 'visible';
   const initialLayerClickable = layer.layerSettings?.interaction?.interactionDetail?.click
 
   const initialFillColor =
     layerType === "fill"
-      ? ifRgbaConvt(layer.layerPaintProps[0].paintProps["fill-color"])
+      ? ifRgbaConvt(layer.layerPaintProps[0]?.paintProps["fill-color"])
       : layerType === "line"
-        ? ifRgbaConvt(layer.layerPaintProps[0].paintProps["line-color"])
-        : ifRgbaConvt(layer.layerPaintProps[0].paintProps["circle-color"]);
+        ? ifRgbaConvt(layer.layerPaintProps[0]?.paintProps["line-color"])
+        : ifRgbaConvt(layer.layerPaintProps[0]?.paintProps["circle-color"]);
   const initialStrokeColor =
     layerType === "fill"
-      ? ifRgbaConvt(layer.layerPaintProps[0].paintProps["fill-outline-color"])
+      ? ifRgbaConvt(layer.layerPaintProps[0]?.paintProps["fill-outline-color"])
       : layerType === "line"
         ? undefined
-        : ifRgbaConvt(layer.layerPaintProps[0].paintProps["circle-stroke-color"]);
+        : ifRgbaConvt(layer.layerPaintProps[0]?.paintProps["circle-stroke-color"]);
 
   let initialWidth;
   if (layerType === "circle")
-    initialWidth = layer.layerPaintProps[0].paintProps["circle-stroke-width"]
-      ? layer.layerPaintProps[0].paintProps["circle-stroke-width"]
+    initialWidth = layer.layerPaintProps[0]?.paintProps["circle-stroke-width"]
+      ? layer.layerPaintProps[0]?.paintProps["circle-stroke-width"]
       : 0;
   if (layerType === "line")
-    initialWidth = layer.layerPaintProps[0].paintProps["line-width"] ? layer.layerPaintProps[0].paintProps["line-width"] : 1;
+    initialWidth = layer.layerPaintProps[0]?.paintProps["line-width"] ? layer.layerPaintProps[0]?.paintProps["line-width"] : 1;
 
   const [width, setWidth] = useState(initialWidth);
   const [fillColor, setFillColor] = useState(initialFillColor);
@@ -152,7 +153,8 @@ function LayerStyling(props) {
         if (layerPaintProps[0]?.labelProps?.symbolProps?.visibility)
           delete layerPaintProps[0].labelProps.symbolProps.visibility;
 
-        layerPaintProps[0].labelProps.visibility = layerLabelVisibility
+        if (layerPaintProps[0]?.labelProps?.visibility)
+          layerPaintProps[0].labelProps.visibility = layerLabelVisibility
         const layerType = layerPaintProps[0].paintType;
 
         if (layerType === "circle" && layerPaintProps[0].paintProps) {
@@ -405,7 +407,7 @@ function LayerStyling(props) {
   };
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "15px" }}>
         <Grid item>
           <Typography variant="h5">{layer.layerName}</Typography>
@@ -418,25 +420,27 @@ function LayerStyling(props) {
       </Grid>
       <Divider />
       <Grid container spacing={3} style={{ padding: "20px" }}>
-        <Grid item xs={12}>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography variant="h6">Layer label visibility</Typography>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={layerLabelVisibility === 'visible'}
-                  onChange={() => setLayerLabelVisibility(layerLabelVisibility === 'visible' ? 'none' : 'visible')}
-                  size="small"
-                />
-              }
-            />
-          </div>
-        </Grid>
+        {layer.layerSettings?.colorable &&
+          <Grid item xs={12}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography variant="h6">Layer label visibility</Typography>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={layerLabelVisibility === 'visible'}
+                    onChange={() => setLayerLabelVisibility(layerLabelVisibility === 'visible' ? 'none' : 'visible')}
+                    size="small"
+                  />
+                }
+              />
+            </div>
+          </Grid>
+        }
 
         {(layer.layerSettings?.interaction?.interactionAble || layer.layerType === 'file layer') &&
           <Grid item xs={12}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="h6">Layer clickability</Typography>
+              <Typography variant="h6">Layer clickable</Typography>
               <FormControlLabel
                 control={
                   <Switch
