@@ -3098,6 +3098,9 @@ function SubTable(props) {
         buttonLabel = "ADD DOCUMENT";
         // menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
       }
+      if (props.addAble.type === "revenueStatementDetails") {
+        buttonLabel = "+ ADD LINE ITEM";
+      }
 
       const addAction = (e) => {
         e.stopPropagation();
@@ -3127,7 +3130,10 @@ function SubTable(props) {
         if (props.addAble.type && props.addAble.type === "parcelInterestsToEntity")
           // handleExpandClick(null, null, null, "addOwnerToParcel");
           handleExpandClick(null, null, null, "addParcelInterestsToEntity");
-        if (props.addAble.type && props.addAble.type === "inviteUser") handleExpandClick(null, null, null, "inviteUser");
+        if (props.addAble.type && props.addAble.type === "inviteUser")
+          handleExpandClick(null, null, null, "inviteUser");
+        if (props.addAble.type === "revenueStatementDetails")
+          routeChange('/revenue/statement/details/line-item');
       };
 
       const options = [
@@ -3138,13 +3144,6 @@ function SubTable(props) {
         },
         menuOptions,
       ];
-      const getSelectedRows = () => {
-        const selectedRows = [];
-        for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
-          selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
-        }
-        return selectedRows;
-      };
 
       return (
         <>

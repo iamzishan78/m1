@@ -1,14 +1,12 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { useHistory } from "react-router-dom";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, TextField, Tabs, Tab, Grid, Avatar, Breadcrumbs, FormControl, InputAdornment } from "@material-ui/core";
-import { LocalAtm as CurrencyIcon, NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
-import Link from "@material-ui/core/Link";
+import { Typography, IconButton, TextField, Tabs, Tab, Grid, Avatar, FormControl, InputAdornment } from "@material-ui/core";
+import { LocalAtm as CurrencyIcon } from "@material-ui/icons";
 import Tags from "components/Shared/Tagger";
 import MetaField from "components/Table/helpers/MetaField";
 import { useLocation } from "react-router";
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import AddIcon from "@material-ui/icons/Add";
 import CommentComponent from "components/Shared/CommentComponent";
 import AddDialogeUploadZone from "components/ContactDetailCard/components/AddDialogUploadZone";
@@ -25,13 +23,9 @@ import CustomAvatar from "components/Shared/ui/CustomAvatar";
 import HeaderSection from "./HeaderSection";
 import SummarySection from "./SummarySection";
 import CheckDetailsSection from "./CheckDetailsSection";
+import NavHeader from "components/Revenue/components/Common/NavHeader";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    minHeight: "100vh",
-    backgroundColor: "#f3f3f3",
-    width: "100%",
-  },
   gridStyle: {
     display: "flex",
     flexDirection: "row",
@@ -82,15 +76,10 @@ const useStyles = makeStyles((theme) => ({
   dealOwnerLabel: {
     marginLeft: 4,
   },
-  navSection: {
-    minHeight: 56,
-    padding: "10px 20px",
-    backgroundColor: "#fff",
-  },
   detailHeader: {
     backgroundColor: "#fff",
     padding: "20px 20px 8px 24px",
-    borderRadius: 8
+    borderRadius: 8,
   },
   title: {
     display: "flex",
@@ -103,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
     background: "#263451",
     padding: "6px 16px",
     borderRadius: 16,
-    width: "max-content"
+    width: "max-content",
   },
   highlight: {
     color: "#ffffff",
@@ -119,7 +108,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "20px 20px 0px 20px",
     background: "#ffffff",
     borderTopLeftRadius: 8,
-    borderTopRightRadius: 8
+    borderTopRightRadius: 8,
   },
   tabsSection: {
     marginTop: 24,
@@ -128,13 +117,13 @@ const useStyles = makeStyles((theme) => ({
     padding: "20px 30px",
     background: "#ffffff",
     borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8
+    borderBottomRightRadius: 8,
   },
   summarySection: {
     padding: 20,
     background: "#ffffff",
     borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8
+    borderBottomRightRadius: 8,
   },
   tags: {
     "& fieldset": {
@@ -153,15 +142,15 @@ const useStyles = makeStyles((theme) => ({
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
   descriptionInput: {
-    width: '100%',
+    width: "100%",
     margin: "20px 0 0",
-    '& .MuiTextField-root': {
-      backgroundColor: '#fffcdc',
+    "& .MuiTextField-root": {
+      backgroundColor: "#fffcdc",
       borderRadius: 4,
     },
-    '& .MuiOutlinedInput-notchedOutline': {
-      border: 'none'
-    }
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "none",
+    },
   },
   foodText: {
     position: "absolute",
@@ -180,8 +169,8 @@ const useStyles = makeStyles((theme) => ({
   tabsSectionDetails: {
     maxHeight: "calc(100vh - 450px)",
     overflow: "overlay",
-    backgroundColor: "#f3f3f3"
-  }
+    backgroundColor: "#f3f3f3",
+  },
 }));
 
 const StyledTabs = withStyles({
@@ -228,7 +217,6 @@ const StyledTab = withStyles((theme) => ({
 }))((props) => <Tab disableRipple {...props} />);
 
 export default function DetailComponents(props) {
-  const history = useHistory();
   const classes = useStyles(props);
   const [tab, setTab] = useState(0);
   const [checkId, setCheckId] = useState(null);
@@ -243,7 +231,7 @@ export default function DetailComponents(props) {
   const [ownerId, setOwnerId] = useState("");
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  // queries 
+  // queries
   const [getCheck, { data: getCheckResult }] = useLazyQuery(GETCHECK, {
     fetchPolicy: "no-cache",
   });
@@ -253,7 +241,6 @@ export default function DetailComponents(props) {
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
   });
-
 
   const checksFlatData = getCheckResult?.getCheck?.check;
 
@@ -265,7 +252,6 @@ export default function DetailComponents(props) {
         inline: "start",
       });
   }, [tab]);
-
 
   useEffect(() => {
     if (search !== "") {
@@ -283,7 +269,6 @@ export default function DetailComponents(props) {
     }
   }, [search]);
 
-
   useEffect(() => {
     if (userLists && userLists.allMongoUsers) {
       setUsers(
@@ -296,46 +281,17 @@ export default function DetailComponents(props) {
     }
   }, [userLists]);
 
-
   const setUploadedFileData = (uploadedfile) => {
     setUploadedFiles([...uploadedFiles, uploadedfile]);
   };
 
-
   return (
-    <div className={classes.root}>
-      {/**
-       * Detail Header
-       */}
-      <div className={classes.navSection}>
-        <Grid container alignItems="center" direction="row" display="flex" justify="space-between">
-          <Grid item>
-            <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-              <Link
-                style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer", fontWeight: "bold" }}
-                color="inherit"
-                onClick={() => history.push("/revenue/statements")}
-              >
-                Revenue Statements
-              </Link>
-
-              {checksFlatData && (
-                <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
-              )}
-            </Breadcrumbs>
-          </Grid>
-          <Grid item>
-            <IconButton onClick={() => history.push("/revenue/statements")}>
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </Grid>
-        </Grid>
-      </div>
+    <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor["name"]}`}>
       <div className="flex justifyBetween alignStart w-100">
         <div className="w-100" style={{ padding: 20, maxWidth: "calc(100% - 380px)" }}>
           {/**
-         * Detail title section
-         */}
+           * Detail title section
+           */}
           <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
             <div className="flex column alignStart justifyStart w-100">
               <div className={classes.title}>
@@ -344,22 +300,24 @@ export default function DetailComponents(props) {
                 </IconButton>
                 <div className={classes.titleText}>
                   {checksFlatData && (
-                    <Typography style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}>{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
+                    <Typography
+                      style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
+                    >{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
                   )}
                   {checksFlatData && (
-                    <Typography variant="subtitle1" style={{ marginLeft: 8 }}>{moment.utc(checksFlatData.checkDate).format("MM/DD/YYYY")}</Typography>
+                    <Typography variant="subtitle1" style={{ marginLeft: 8 }}>
+                      {moment.utc(checksFlatData.checkDate).format("MM/DD/YYYY")}
+                    </Typography>
                   )}
                   <div className={classes.highlighter}>
-                    <Typography className={classes.highlight} variant="highlight">Revenue Check</Typography>
+                    <Typography className={classes.highlight} variant="highlight">
+                      Revenue Check
+                    </Typography>
                   </div>
                 </div>
               </div>
 
-              <Grid
-                item
-                xs={12}
-                style={{ marginTop: 16 }}
-              >
+              <Grid item xs={12} style={{ marginTop: 16 }}>
                 <div className={classes.tags}>
                   <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
                 </div>
@@ -371,8 +329,8 @@ export default function DetailComponents(props) {
             </div> */}
           </div>
           {/**
-         * Detail tabs section
-         */}
+           * Detail tabs section
+           */}
           <div className={classes.tabsSection}>
             <div className={classes.tabsHeader}>
               <StyledTabs value={tab} onChange={(event, tab) => setTab(tab)} aria-label="ant example">
@@ -381,7 +339,6 @@ export default function DetailComponents(props) {
                 <StyledTab label="Check Details" />
               </StyledTabs>
             </div>
-
 
             <div className={classes.tabsSectionDetails}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
@@ -399,7 +356,21 @@ export default function DetailComponents(props) {
           </div>
         </div>
 
-        <div className="flex column justifyStart alignStart w-100" style={{ marginTop: 20, marginRight: 24, padding: "16px 10px", background: "#ffffff", borderRadius: 8, maxHeight: "calc(100vh + 135px)", overflow: "auto", height: "100%", maxWidth: collapse ? 40 : 360, width: "100%" }}>
+        <div
+          className="flex column justifyStart alignStart w-100"
+          style={{
+            marginTop: 20,
+            marginRight: 24,
+            padding: "16px 10px",
+            background: "#ffffff",
+            borderRadius: 8,
+            maxHeight: "calc(100vh + 135px)",
+            overflow: "auto",
+            height: "100%",
+            maxWidth: collapse ? 40 : 360,
+            width: "100%",
+          }}
+        >
           <div className="flex justifyBetween alignCenter w-100">
             {!collapse && (
               <Typography varient="h5" className={classes.titleText} style={{ textTransform: "uppercase", fontWeight: "bold" }}>
@@ -408,21 +379,20 @@ export default function DetailComponents(props) {
             )}
 
             <div className="flex alignCenter">
-              {!collapse ?
+              {!collapse ? (
                 <span onClick={() => setCollapse(true)}>
                   <ArrowForwardIcon style={{ fontSize: 18, cursor: "pointer" }} />
                 </span>
-                :
+              ) : (
                 <span onClick={() => setCollapse(false)}>
                   <ArrowBackIcon style={{ fontSize: 18, cursor: "pointer" }} />
                 </span>
-              }
+              )}
             </div>
           </div>
 
           {!collapse && (
             <div className="flex column justifyStart w-100">
-
               <div style={{ marginTop: 10, marginLeft: 4 }}>
                 <FormControl variant="outlined" fullWidth size="small">
                   <Grid container className={classes.gridStyle}>
@@ -514,36 +484,45 @@ export default function DetailComponents(props) {
                   }}
                   onFocus={() => setFocusSate(true)}
                   InputProps={{
-                    endAdornment: (
-                      onFocusDescription === true &&
+                    endAdornment: onFocusDescription === true && (
                       <p className={classes.foodText}>
                         <span>Return</span> to save
                       </p>
-                    )
+                    ),
                   }}
                 />
               </Grid>
 
-              <div onClick={() => {
-                setStateApp((stateApp) => ({
-                  ...stateApp,
-                  showFieldModal: true,
-                }))
-              }}
-                className="flex alignCenter" style={{ background: "#f2f2f2", borderRadius: 8, padding: "6px 16px", marginLeft: 4, marginTop: 8, maxWidth: "max-content", cursor: "pointer" }}>
+              <div
+                onClick={() => {
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    showFieldModal: true,
+                  }));
+                }}
+                className="flex alignCenter"
+                style={{
+                  background: "#f2f2f2",
+                  borderRadius: 8,
+                  padding: "6px 16px",
+                  marginLeft: 4,
+                  marginTop: 8,
+                  maxWidth: "max-content",
+                  cursor: "pointer",
+                }}
+              >
                 <span>
                   <AddIcon style={{ marginTop: 4, marginRight: 4, fontSize: 16, alignItems: "center" }} htmlColor="#000000" />
                 </span>
                 {` Add`}
               </div>
 
-
               <div className="flex justifyBetween alignCenter" style={{ padding: "20px 16px", marginBottom: -56 }}>
                 <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents</h4>
                 <h4
                   className={classes.viewAll}
                   onClick={() => {
-                    console.log("navigate to view all page for documents")
+                    console.log("navigate to view all page for documents");
                   }}
                 >
                   View All
@@ -559,20 +538,16 @@ export default function DetailComponents(props) {
                 setUploadedFileData={setUploadedFileData}
               ></AddDialogeUploadZone>
 
-
-
               <div className={classes.tags} style={{ marginTop: -32 }}>
                 <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
               </div>
-              <CommentComponent targetLabel={'check'} targetSourceId={checkId} />
+              <CommentComponent targetLabel={"check"} targetSourceId={checkId} />
             </div>
           )}
         </div>
       </div>
 
-      {stateApp.showFieldModal && (
-        <MetaField columns={[]} category="Check" />
-      )}
-    </div >
+      {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
+    </NavHeader>
   );
 }

@@ -30,9 +30,15 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
   },
   REVENUE_STATEMENT_DETAILS: {
     isExcluded: true,
-    title: "Revenue Statement",
+    title: "Revenue Statements",
     link: "/revenue/statement/details",
     component: "RevenueStatementDetails",
+  },
+  REVENUE_STATEMENT_LINE_ITEM: {
+    isExcluded: true,
+    title: "Revenue Statements",
+    link: "/revenue/statement/details/line-item",
+    component: "RevenueStatementLineItem",
   },
 };
 
@@ -42,11 +48,11 @@ export default function Revenue() {
   const { actionsPanelState, activeModule } = useSelector((state) => state.Revenue);
 
   useEffect(() => {
-    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => item.link === location.pathname);
+    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => location.pathname.startsWith(item.link));
     if (option) {
       dispatch(setActiveModule(option));
     }
-  }, [location.pathname]);
+  }, [location.pathname, dispatch]);
 
   const handlePanelStateChange = () => {
     dispatch(toggleActionsPanel(!actionsPanelState));
