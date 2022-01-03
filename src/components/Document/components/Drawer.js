@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
@@ -17,6 +17,8 @@ import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 
 import DetailsPanel from "./Details";
 import WellPanel from "./WellsPanel";
+import { DocumentContext } from "../DocumentContext";
+
 
 const useStyles = makeStyles({
   list: {
@@ -147,7 +149,22 @@ export default function DocumentDrawer() {
     right: false,
   });
   const [anchorEl, setAnchorEl] = useState();
+
   const [stateApp, setStateApp] = React.useContext(AppContext);
+  const { getWellsFromDocument, wells } = React.useContext(DocumentContext)
+
+
+
+  // Fetching wells from descriptor
+  useEffect(() => {
+    getWellsFromDocument({
+      variables: {
+        descriptorObject: stateApp.selectedDocument._id
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateApp.selectedDocument._id])
+
 
   const documentInitial = {
     documentName: "",
@@ -350,7 +367,7 @@ export default function DocumentDrawer() {
           </div>
         </div>
         <div className={classes.contentRoot}>
-          <RightActionsPanel activePanel={activePanel} setPanel={setPanel} />
+          <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} />
           <div style={{ marginRight: "60px" }}>
             {activePanel === "Home" && (
               <DetailsPanel
@@ -387,7 +404,7 @@ export default function DocumentDrawer() {
             onClose={handleDeleteCancel}
             deleteFunc={handleDeleteAccept}
             m1nSelectedRowsIds={[document._id]}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected documents?
           </DeleteConfirmationDialogContent>

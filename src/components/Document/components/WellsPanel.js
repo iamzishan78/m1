@@ -9,15 +9,13 @@ import IconButton from "@material-ui/core/IconButton";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import { AppContext } from "AppContext";
+import { DocumentContext } from "../DocumentContext";
 
 //Components
 import WellSearchApiFieldES from 'components/Shared/Forms/Fields/WellSearchApiFieldES'
 
 // Hooks
-import { useLazyQuery, useMutation } from "@apollo/client";
-
-// Queries
-import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument'
+import { useMutation } from "@apollo/client";
 
 // Mutations
 import { DELETEWELLFROMFILEDESCRIPTOR } from 'graphQL/useMutationDeleteWellFromFileDescriptor'
@@ -104,16 +102,12 @@ export default function Contacts(props) {
   const [search, setSearch] = useState("");
 
   const [isSearchActive, setSearchState] = useState(false);
-  const [filteredWells, setFilteredWells] = useState([]);
   const [addWell, setAddWell] = useState(false);
   const [deletedRow, setDeletedRow] = useState('')
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
 
-  //Queries
-  const [getWellsFromDocument, { data: wellsFromDocument, loading: getWellsLoading }] = useLazyQuery(GETWELLSFROMDOCUMENTS, {
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
-  });
+  const { getWellsFromDocument, wells, wellsFromDocument, getWellsLoading, setWells } = React.useContext(DocumentContext)
+
 
   // Mutattions
   const [deleteWellFromDescriptor, { loading: deleteWellLoading }] = useMutation(DELETEWELLFROMFILEDESCRIPTOR, {
@@ -141,13 +135,6 @@ export default function Contacts(props) {
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  // Settng the wells in the State on every change
-  useEffect(() => {
-    const wellDescriptor = wellsFromDocument?.getWellDescriptors[0]
-    setFilteredWells(wellDescriptor?.wells)
-  }, [wellsFromDocument])
-
 
   // delete well from File Descriptor
   const deleteWell = async (wellId) => {
@@ -182,14 +169,14 @@ export default function Contacts(props) {
   // searching existing well
   const searchExistingWell = (value) => {
     setSearch(value)
-    let existingWells = filteredWells
+    let existingWells = wells
     if (value !== '') {
       const searchedWells = existingWells.filter(well => well.wellName.toLowerCase().includes(value))
-      setFilteredWells(searchedWells)
+      setWells(searchedWells)
 
     } else {
       const wellDescriptor = wellsFromDocument?.getWellDescriptors[0]
-      setFilteredWells(wellDescriptor?.wells)
+      setWells(wellDescriptor?.wells)
     }
   }
   return (
@@ -266,8 +253,8 @@ export default function Contacts(props) {
         )}
 
         <List aria-label="wells list">
-          {filteredWells && filteredWells.length > 0 ? (
-            filteredWells.map((well, index) => (
+          {wells && wells.length > 0 ? (
+            wells.map((well, index) => (
               <div style={{ padding: "10px 0px 0px" }}>
                 <ListItem key={index}>
                   <Link className={classes.wellLink} color="primary"

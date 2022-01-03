@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Drawer(props) {
   const classes = useStyles(props);
-  const { activePanel, setPanel } = props;
+  const { activePanel, setPanel, wellsCount } = props;
 
 
   const drawerIcons = {
@@ -61,7 +61,7 @@ export default function Drawer(props) {
       </Badge>
     ),
     Wells: (props) => (
-      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary" >
+      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary" badgeContent={wellsCount} >
         <WellIcon {...props} />
       </Badge>
     ),
