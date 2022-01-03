@@ -663,7 +663,7 @@ export default function DocumentDrawer() {
                           value={value}
                           onCustomKeyChange={(value) => {
                             const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
-                            custom_data[meta.name] = value ? value : null // empty string is falsey so null
+                            custom_data[meta.name] = value ? value : null; // empty string is falsey so null
                             setNewDocument({
                               ...newDocument,
                               custom_data,
