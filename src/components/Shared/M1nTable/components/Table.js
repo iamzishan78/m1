@@ -2123,10 +2123,10 @@ function SubTable(props) {
                   <>
                     {props.parent === "RevenueStatementTable" && (
                       <div className="flex justifyStart alignCenter">
-                        {value.toLowerCase() === "approved" && (
+                        {value?.toLowerCase() === "approved" && (
                           <div style={{ background: "#17c10d", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />
                         )}
-                        {value.toLowerCase() === "imported" && (
+                        {value?.toLowerCase() === "imported" && (
                           <div style={{ background: "#ffa800", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />
                         )}
                         {value}
