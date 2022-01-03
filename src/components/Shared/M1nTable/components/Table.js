@@ -1497,7 +1497,7 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : props.parent === "RevenueStatementTable"
-                            ? tableMeta.rowData[1].split("_")[1]
+                            ? tableMeta.rowData[1]?.split("_")[1]
                             : tableMeta.rowData[0];
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
@@ -1811,7 +1811,7 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : props.parent === "RevenueStatementTable"
-                            ? tableMeta.rowData[1].split("_")[1]
+                            ? tableMeta.rowData[1]?.split("_")[1]
                             : tableMeta.rowData[0];
 
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
