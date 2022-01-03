@@ -1466,9 +1466,7 @@ function Map({ type, paramId, lati, longi }) {
           selectionLayers: features, layerSelectionPopup: true, popupOpen: true
         }));
 
-      }, 0)
-
-      // console.log(e, features);
+      }, 0);
     }
     if (map) {
       if (mapClick && mapClick.mapClickHandler) {

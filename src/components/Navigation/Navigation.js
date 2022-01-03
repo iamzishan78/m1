@@ -372,9 +372,9 @@ export default function Navigation(props) {
       currentAccounts && currentAccounts.length === 1
         ? currentAccounts[0]
         : (() => {
-            // Add choose account code here
-            return;
-          })();
+          // Add choose account code here
+          return;
+        })();
 
     const logoutRequest = {
       account: currentAccount,
@@ -487,14 +487,14 @@ export default function Navigation(props) {
     }));
   };
 
-  // const matchAgreements = () => {
-  //   return location.pathname === "/landmanagement/agreements"
-  // }
-
   const checkIfIgnoreHeader = () => {
     if (location.pathname.startsWith("/revenue/statement/details") || location.pathname.startsWith("/revenue/property/details")) {
       return true;
     }
+    return false;
+  };
+  const matchAgreements = () => {
+    return location.pathname === "/landmanagement/agreements";
   };
 
   return (
