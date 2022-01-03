@@ -739,8 +739,9 @@ function Search() {
           },
         });
 
-        const newPath = `/contact/details/${newValue._id}`;
-        history.location.pathname !== newPath && history.replace(newPath);
+      //when uncommented this takes you from map search bar directly to contact detail card for selected contact 
+        //const newPath = `/contact/details/${newValue._id}`;
+       // history.location.pathname !== newPath && history.replace(newPath);
       }
 
       //// if mapboxSearch
