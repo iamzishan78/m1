@@ -76,7 +76,7 @@ export default function Portfolio() {
         <RevenuePropertiesTable
           header="Properties"
           parent="RevenuePropertiesTable"
-          targetLabel="property"
+          targetLabel="Revenue Properties"
           loading={false}
           dense={true}
           revenueSearchQuery={stateApp.revenueSearchQuery}
