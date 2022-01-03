@@ -129,10 +129,10 @@ const useStyles = makeStyles((theme) => {
               mapGridCardActiveTap === 0
                 ? mapGridCardActivated === "exp"
                   ? "calc(91vh - 233px)"
-                  : "calc(56vh - 233px)"
+                  : "calc(58.75vh - 233px)"
                 : mapGridCardActivated === "exp"
                   ? "calc(91vh - 183px)"
-                  : "calc(56vh - 183px)",
+                  : "calc(58.75vh - 183px)",
             // maxHeight: ({ dockMenu }) => {
             //   if (dockMenu === "bottom" || dockMenu === "top") return "calc(100vh - 590px)"
             //   else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 157px)"
@@ -140,14 +140,14 @@ const useStyles = makeStyles((theme) => {
             // },
             "@media (max-height:930px)": {
               maxHeight: ({ dockMenu }) => {
-                if (dockMenu === "bottom" || dockMenu === "top") return "calc(100vh - 590px)"
+                if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 590px)"
                 else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 157px)"
                 else if (dockMenu === "full") return "calc(100vh - 158px)"
               }
             },
             "@media (max-height:1600px)": {
               maxHeight: ({ dockMenu }) => {
-                if (dockMenu === "bottom" || dockMenu === "top") return "calc(100vh - 640px)"
+                if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 640px)"
                 else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 157px)"
                 else if (dockMenu === "full") return "calc(100vh - 158px)"
               }
