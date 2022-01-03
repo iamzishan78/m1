@@ -41,6 +41,9 @@ import LimitExceedPopUp from "components/MapControls/components/popup/LimitExcee
 import { ConvertTaxOwnerToContactContainer, ExportWellsOwnersContainer } from 'store/containers'
 import { resetShapeOwnerAction } from "store/actions/ownerActions";
 
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
+
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
   const { classes, children, toggleSpatialDataCard, showSpatialDataCard, popupCloseAction } = props;
@@ -695,22 +698,26 @@ const ShapeActionsPopup = (props) => {
       <Fragment>
         <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span> {calculateLandArea()}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
-          <Tooltip title="Area of Interest" className={enableEditOnly && classes.disableAction}>
-            <IconButton 
-              size="small"
-              disabled={enableEditOnly}
-              aria-label="Parcel"
-              id="convert-button"
-              aria-controls="convert-button"
-              aria-haspopup="true"
-              onClick={(event) => {
-                setAnchorConvertEl(event.currentTarget)
-                setShowConvertMenu(true)
-              }}
-            >
-              <OfflineBoltIcon />
-            </IconButton>
-          </Tooltip>
+
+          <FeatureFlag feature={FEATURES.MAPSHAPEEXPORT}>
+            <Tooltip title="Area of Interest" className={enableEditOnly && classes.disableAction}>
+              <IconButton
+                size="small"
+                disabled={enableEditOnly}
+                aria-label="Parcel"
+                id="convert-button"
+                aria-controls="convert-button"
+                aria-haspopup="true"
+                onClick={(event) => {
+                  setAnchorConvertEl(event.currentTarget)
+                  setShowConvertMenu(true)
+                }}
+              >
+                <OfflineBoltIcon />
+              </IconButton>
+            </Tooltip>
+          </FeatureFlag>
+
           <Tooltip title="Grid" className={enableEditOnly && classes.disableAction}>
             <IconButton disabled={enableEditOnly} size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
               <GridOnIcon className={mapGridCardActivated ? "selected" : ""} />
