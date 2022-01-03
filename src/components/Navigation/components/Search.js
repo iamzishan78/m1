@@ -321,6 +321,7 @@ function Search() {
         formatOptions: (data) => {
           return {
             ...data, ...data.node, Primary: data.name || "--",
+            Source: contactIndexName,
             Secondary: data.address1 || data.city || data.state ? data.address1 + ' ' + data.city + ', ' + data.state + ' ' + data.zip : "--"
           }
         }
@@ -406,7 +407,7 @@ function Search() {
 
   useEffect(() => {
     let newOptions = []
-    if (esSearchData) {
+    if (esSearchData?.getESPaginatedList?.hits) {
       const { formatOptions } = esCallData[searchOption]
       newOptions = [
         ...esSearchData.getESPaginatedList.hits.map((result) => {
@@ -414,8 +415,8 @@ function Search() {
         }),
       ];
       setOptions(newOptions);
-      setLoading(false)
     }
+    setLoading(false)
   }, [esSearchData])
 
 
@@ -737,6 +738,10 @@ function Search() {
             contactId: newValue._id,
           },
         });
+
+      //when uncommented this takes you from map search bar directly to contact detail card for selected contact 
+        //const newPath = `/contact/details/${newValue._id}`;
+       // history.location.pathname !== newPath && history.replace(newPath);
       }
 
       //// if mapboxSearch

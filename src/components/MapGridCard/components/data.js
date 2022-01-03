@@ -23,5 +23,5 @@ export const userDefinedInitialData = [
   { index: 0, value: "agreement", Icon: FolderIcon, label: "Agreements" },
   { index: 1, value: "tract", Icon: TractIcon, label: "Tracts" },
   { index: 2, value: "unit", Icon: UnitIcon, label: "Units" },
-  { index: 4, value: "contacts", Icon: ContactIcon, label: "Contacts" },
+ // { index: 4, value: "contacts", Icon: ContactIcon, label: "Contacts" },
 ];

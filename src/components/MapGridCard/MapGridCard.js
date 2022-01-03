@@ -125,12 +125,12 @@ const useStyles = makeStyles((theme) => {
               mapGridCardActiveTap === 0
                 ? mapGridCardActivated === "exp"
                   ? "calc(91vh - 233px)"
-                  : "calc(60vh - 233px)"
+                  : "calc(56vh - 233px)"
                 : mapGridCardActivated === "exp"
                   ? "calc(91vh - 183px)"
-                  : "calc(60vh - 183px)",
+                  : "calc(56vh - 183px)",
             maxHeight: ({ dockMenu }) => {
-              if (dockMenu === "bottom" || dockMenu === "top") return "calc(100vh - 460px)"
+              if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 460px)"
               else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 157px)"
               else if (dockMenu === "full") return "calc(100vh - 158px)"
             }
