@@ -96,12 +96,12 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
   const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
 
   const platformData = useMemo(() => {
-    return platformDataInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase()))
+    return platformDataInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())).filter(data => isShapeGridOnly ? data.shapeGrid ? true : false : true)
 
   }, [search])
 
   const userDefinedData = useMemo(() => {
-    return userDefinedInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase()))
+    return userDefinedInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())).filter(data => isShapeGridOnly ? data.shapeGrid ? true : false : true)
 
   }, [search])
 
