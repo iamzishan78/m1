@@ -140,7 +140,7 @@ export default function Tags(props) {
   const [publicTag, setPublicTag] = useState(true);
 
   const showPlusAddIcon = () => {
-    if (tFActive || textValue) return false;
+    if (tFActive || textValue || props.hidePlusIcon) return false;
     return true;
   };
 
@@ -256,11 +256,8 @@ export default function Tags(props) {
       tagsArray
     ) {
       let defaultTags = [
-        "High Cash Flow",
+        "Do Not Contact",
         "Interested Seller",
-        "Recent Death",
-        "Recent Divorce",
-        "Recently Inherited",
         "Out Of State Seller",
       ];
 
@@ -370,8 +367,21 @@ export default function Tags(props) {
 
   ///////////////////// DELETING A TAG ///////////////////////////////////////////////
 
+  const removeTagFromList = (id) => {
+    const tags = JSON.parse(JSON.stringify(tagsArray));
+    const index = tags.findIndex(tag => tag._id === id);
+    if( index > -1) {
+      tags.splice(index, 1);
+    }
+    setTagsArray(tags);
+    if (props.removeTagId) {
+      props.removeTagId(id)
+    }
+  }
+
   const DeleteTag = (TagIdOIds) => {
-    if (!props.multipleIds)
+    if (!props.multipleIds){
+      removeTagFromList(TagIdOIds)
       removeTag({
         variables: {
           tagId: TagIdOIds,
@@ -391,10 +401,12 @@ export default function Tags(props) {
         ],
         awaitRefetchQueries: true,
       });
+    }
     else {
       let ids = TagIdOIds.split("???|||///");
 
       for (let i = 0; i < ids.length; i++) {
+        removeTagFromList(ids[i])
         removeTag({
           variables: {
             tagId: ids[i],
@@ -557,7 +569,7 @@ export default function Tags(props) {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  variant="outlined"
+                  variant={props.variant ? props.variant :"outlined"}
                   className={classes.input}
                   // label={!props.publicLeftBottom ? "Tags" : null}
                   placeholder={!showPlusAddIcon() ? "" : "+"}

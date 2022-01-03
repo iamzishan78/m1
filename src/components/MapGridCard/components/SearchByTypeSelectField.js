@@ -88,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color }) => {
+const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, isShapeGridOnly }) => {
 
   const classes = useStyles({ backgroundColor, color });
   const [search, setSearch] = useState('');
