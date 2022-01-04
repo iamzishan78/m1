@@ -7,6 +7,26 @@ import NavHeader from "components/Revenue/components/Common/NavHeader";
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(3)
+  },
+  inputModeButton: {
+    width: '200px',
+    fontWeight: 600,
+    fontSize: "initial",
+    borderRadius: "6px",
+    height: "34px",
+    color: "#767676",
+    textTransform: "none",
+    border: "1px solid #938e8e"
+  },
+  exitButton: {
+    color: "white",
+    background: "rgb(24, 170, 221)",
+    width: '170px',
+    fontWeight: 600,
+    fontSize: "initial",
+    borderRadius: "6px",
+    height: "34px",
+    textTransform: "none"
   }
 }));
 
@@ -18,10 +38,10 @@ export default function LineItem(props) {
       <div className={classes.root}>
         <Grid container display="flex" direction="row" alignItems="center" justify="space-between">
           <Grid item>
-            <Button variant="outlined">Input Mode</Button>
+            <Button variant="outlined" className={classes.inputModeButton}>Input Mode</Button>
           </Grid>
           <Grid item>
-            <Button variant="contained" color="primary">Input Mode</Button>
+            <Button variant="contained" className={classes.exitButton}>Exit</Button>
           </Grid>
         </Grid>
       </div>
