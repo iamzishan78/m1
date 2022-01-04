@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Grid, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import moment from "moment";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -63,6 +64,13 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
     return moment >= 10 ? moment : `0${moment}`;
   };
 
+  const getLastMonthStartDate = () => {
+    return new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1);
+  }
+  const getLastMonthEndDate = () => {
+    return new Date(new Date().getFullYear(), new Date().getMonth(), 0);
+  }
+
   const handleDateTypeChange = (date) => {
     const currentYear = Math.round(new Date().getFullYear());
     const currentMonth = Math.ceil(new Date().getMonth());
@@ -70,7 +78,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
     switch (date) {
       case CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH:
         setFromDate(`${currentYear}-01`);
-        setToDate(`${currentYear}-${getFlaggedMoment(currentMonth)}`);
+        setToDate(moment().subtract(1, 'months').startOf('month').format('yyyy-MM'));
         break;
       case CUSTOM_DATES.THIS_YEAR_TO_DATE:
         setFromDate(`${currentYear}-01`);
@@ -78,20 +86,21 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
         break;
       case CUSTOM_DATES.LAST_YEAR_TO_DATE:
         setFromDate(`${currentYear - 1}-01`);
-        setToDate(`${currentYear - 1}-${getFlaggedMoment(currentMonth + 1)}`);
+        setToDate(`${currentYear}-${getFlaggedMoment(currentMonth + 1)}`);
         break;
       case CUSTOM_DATES.LAST_MONTH:
-        const lastMonth = new Date().getMonth();
-        setFromDate(`${currentYear}-${getFlaggedMoment(lastMonth)}`);
-        setToDate(`${currentYear}-${getFlaggedMoment(lastMonth)}`);
+        setFromDate(`${getLastMonthStartDate().getFullYear()}-${getLastMonthStartDate().getMonth() + 1}`);
+        setToDate(`${getLastMonthEndDate().getFullYear()}-${getLastMonthEndDate().getMonth() + 1}`);
         break;
       case CUSTOM_DATES.THIS_MONTH:
         setFromDate(`${currentYear}-${getFlaggedMoment(currentMonth + 1)}`);
         setToDate(`${currentYear}-${getFlaggedMoment(currentMonth + 1)}`);
         break;
       case CUSTOM_DATES.LAST_QUARTER:
-        setFromDate(`${currentYear}-${getFlaggedMoment(currentQuarter * 3 - 5)}`);
-        setToDate(`${currentYear}-${getFlaggedMoment(currentQuarter * 3 - 3)}`);
+        var lastQuarterStartDate = moment().subtract(1, 'quarter').startOf('quarter').format("yyyy-MM");
+        var lastQuarterEndDate = moment().subtract(1, 'quarter').endOf('quarter').format("yyyy-MM");
+        setFromDate(lastQuarterStartDate);
+        setToDate(lastQuarterEndDate);
         break;
       case CUSTOM_DATES.THIS_QUARTER:
         setFromDate(`${currentYear}-${getFlaggedMoment(currentQuarter * 3 - 2)}`);
@@ -108,7 +117,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
   };
 
   return (
-    <Grid item xs={7} md={8} style={{ marginTop: "4px" }}>
+    <Grid item xs={8} md={8} style={{ marginTop: "4px" }}>
       <Grid container direction="row" display="flex" alignItems="center" spacing={3}>
         <Grid item xs={3} style={{ marginTop: "2px" }}>
           <Autocomplete
@@ -125,7 +134,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
             id="custom-date-dropdown"
           />
         </Grid>
-        <Grid item>
+        <Grid item xs={4} >
           <TextField
             size="small"
             margin="dense"
@@ -135,8 +144,6 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
             fullWidth
             value={fromDate}
             className={classes.inputFieldDate}
-            onChange={(e) => setFromDate(e.target.value)}
-
             InputLabelProps={{
               shrink: true,
             }}
@@ -148,14 +155,18 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
               },
             }}
             onChange={(event) => {
-              setFromDate(event.target.value);
+              if (event.target.value == "") {
+                setFromDate(`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`)
+              } else {
+                setFromDate(event.target.value);
+              }
             }}
           />
         </Grid>
         <Grid>
           <label>to</label>
         </Grid>
-        <Grid item>
+        <Grid item xs={4} >
           <TextField
             size="small"
             margin="dense"
@@ -165,7 +176,13 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
             fullWidth
             value={toDate}
             className={classes.inputFieldDate}
-            onChange={(e) => setToDate(e.target.value)}
+            onChange={(event) => {
+              if (event.target.value == "") {
+                setToDate(`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`)
+              } else {
+                setToDate(event.target.value);
+              }
+            }}
             InputLabelProps={{
               shrink: true,
             }}
@@ -175,9 +192,6 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
                 focused: classes.focused,
                 notchedOutline: classes.notchedOutline,
               },
-            }}
-            onChange={(event) => {
-              setToDate(event.target.value);
             }}
           />
         </Grid>

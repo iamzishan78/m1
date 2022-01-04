@@ -63,7 +63,7 @@ export default function Properties() {
   const [toDate, setToDate] = React.useState(null);
   // props to pass in table
   const esIndex = "properties_flat";
-  const startPaginationAt = 10;
+  const startPaginationAt = 25;
 
   // query for Properties Table
   const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(
@@ -84,6 +84,9 @@ export default function Properties() {
 
   // on filter click
   const filterProperties = () => {
+    console.log("fromDate: ", fromDate);
+    console.log("toDate: ", toDate);
+
     getESPaginatedList({
       variables: {
         esIndex,
@@ -117,10 +120,10 @@ export default function Properties() {
           direction="row"
           display="flex"
           justify="space-between"
-          style={{ padding: "0px 78px" }}
+          style={{ padding: "0px 32px" }}
         >
           <CustomDates fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} />
-          <Grid item xs={5} md={4}>
+          <Grid item xs={4} md={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
               <Grid item>
                 <Button variant="contained" color="secondary">
