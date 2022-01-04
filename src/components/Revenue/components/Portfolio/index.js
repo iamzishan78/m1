@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Grid, Button, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
@@ -52,11 +52,31 @@ export default function Portfolio() {
   const classes = useStyles();
   const [fromDate, setFromDate] = React.useState(null);
   const [toDate, setToDate] = React.useState(null);
+  const [monthsInterval, setMonths] = useState([]);
+
+  const onChangeDates = (fromDate, toDate) => {
+    const months = [];
+    if (fromDate && toDate) {
+      const fromYear = Number(fromDate.split("-")[0]),
+        toYear = Number(toDate.split("-")[0]),
+        fromMonth = Number(fromDate.split("-")[1]),
+        toMonth = Number(toDate.split("-")[1]);
+      for (let year = fromYear; year <= toYear; year++) {
+        const startMonth = year === fromYear ? fromMonth : 1;
+        const endMonth = year === toYear ? toMonth : 12;
+        for (let month = startMonth; month <= endMonth; month++) {
+          months.push(`${month}/${year}`);
+        }
+      }
+    }
+    setMonths(months);
+  };
+
   return (
     <>
       <div className={classes.actionBar}>
-        <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 78px" }}>
-          <CustomDates fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} />
+        <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 36px" }}>
+          <CustomDates onChangeDates={onChangeDates} fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} />
           <Grid item xs={5} md={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
               <Grid item>
@@ -73,7 +93,7 @@ export default function Portfolio() {
       </div>
       <AnalyticsCards cards={cards} />
       <Divider className={classes.divider} />
-      <DetailTabsSection />
+      <DetailTabsSection monthsInterval={monthsInterval} />
     </>
   );
 }

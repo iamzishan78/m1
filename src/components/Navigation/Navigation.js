@@ -50,12 +50,17 @@ import { useLazyQuery } from "@apollo/client";
 import CheckIcon from "@material-ui/icons/Check";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import Add from "@material-ui/icons/Add";
+import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
 
 import ActivitySearch from "./components/ActivitySearch";
 import DocumentSearch from "./components/DocumentSearch";
 import ContactSearch from "./components/ContactSearch";
 import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
 import SideNavigation from "./SideNavigation";
+
+// App Bars
+import LandAppBar from "./AppBar/Land";
+import RevenueAppBar from "components/Navigation/AppBar/Revenue";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -82,7 +87,6 @@ TabPanel.propTypes = {
 
 export default function Navigation(props) {
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
-  const { activeModule: activeRevenueModule, actionsPanelState: revenueActionsPanelState } = useSelector((state) => state.Revenue);
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -147,6 +151,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/track") {
       setStateNav((state) => ({
@@ -162,6 +167,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname.startsWith("/flow")) {
       setStateNav((state) => ({
@@ -177,6 +183,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/title") {
       setStateNav((state) => ({
@@ -193,6 +200,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/contacts") {
       setStateGrid((state) => ({
@@ -212,6 +220,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/alerts") {
       setStateNav((state) => ({
@@ -227,6 +236,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/dashboard") {
       setStateNav((state) => ({
@@ -242,6 +252,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/studio") {
       setStateNav((state) => ({
@@ -257,6 +268,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/activities") {
       setStateNav((state) => ({
@@ -272,6 +284,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 1,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname === "/documents") {
       setStateNav((state) => ({
@@ -287,6 +300,7 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 1,
         selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
       }));
     } else if (location.pathname.startsWith("/revenue")) {
       setStateNav((state) => ({
@@ -302,6 +316,23 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 1,
+        selectedMenuIndexLand: 0,
+      }));
+    } else if (location.pathname.startsWith("/land")) {
+      setStateNav((state) => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 0,
+        selectedMenuIndexActivities: 0,
+        selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 1,
       }));
     }
   }, [location, setStateNav]);
@@ -341,9 +372,9 @@ export default function Navigation(props) {
       currentAccounts && currentAccounts.length === 1
         ? currentAccounts[0]
         : (() => {
-            // Add choose account code here
-            return;
-          })();
+          // Add choose account code here
+          return;
+        })();
 
     const logoutRequest = {
       account: currentAccount,
@@ -460,6 +491,10 @@ export default function Navigation(props) {
     if (location.pathname.startsWith("/revenue/statement/details") || location.pathname.startsWith("/revenue/property/details")) {
       return true;
     }
+    return false;
+  };
+  const matchAgreements = () => {
+    return location.pathname === "/landmanagement/agreements";
   };
 
   return (
@@ -493,14 +528,9 @@ export default function Navigation(props) {
                   Dashboard
                 </Typography>
               )}
-              {location.pathname.startsWith("/revenue") && (
-                <Typography
-                  variant="h4"
-                  style={{ color: "black", fontWeight: "bold", marginLeft: revenueActionsPanelState ? "436px" : "10px" }}
-                >
-                  {activeRevenueModule.title}
-                </Typography>
-              )}
+
+              {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
+              {location.pathname.startsWith("/revenue") && <RevenueAppBar classes={classes} />}
 
               {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
@@ -523,6 +553,14 @@ export default function Navigation(props) {
               ) : (
                 <div style={{ display: "none" }}></div>
               )}
+              {/* {matchAgreements() && (
+              <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+                <Button onClick={() => handleListItemClick("/agreement/details")} color="primary" variant="contained" startIcon={<Add />}>
+                  Add Agreement
+                </Button>
+              </div>
+            )} */}
+
               <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
                 {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
               </IconButton>
@@ -530,7 +568,6 @@ export default function Navigation(props) {
           )}
         </AppBar>
       )}
-
       {stateApp.user && (
         <SideNavigation
           openDrawer={openDrawer}

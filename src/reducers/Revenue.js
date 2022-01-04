@@ -21,8 +21,9 @@ export default function Revenue(state = INIT_STATE, action) {
       // formatting values here
       const formattedData = action.payload?.data?.getESPaginatedList?.hits?.map((eachRow) => {
         return {
+          _id: eachRow._id,
           name: eachRow.name,
-          propertyCode: eachRow.number,
+          number: eachRow.number,
           payorName: eachRow?.operator?.name,
           state: eachRow.state,
           country: eachRow?.county,
@@ -34,6 +35,9 @@ export default function Revenue(state = INIT_STATE, action) {
           amount: eachRow?.lastCheck?.netOwnerValue,
           type: eachRow?.lastCheck?.interestType[0],
           lastChecked: new Date(eachRow?.lastCheck?.checkDate).toLocaleDateString(),
+          tags: eachRow.tags?.length > 0
+            ? [[eachRow.tags.map((tag) => tag.tag)], eachRow.tags.length]
+            : [[], 0]
         }
       })
       return { ...state, revenueProperties: { loading: action.payload.loading, data: formattedData } };

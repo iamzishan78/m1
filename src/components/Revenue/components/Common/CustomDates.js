@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Grid, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -47,14 +47,23 @@ const CUSTOM_DATES = {
 };
 
 // fromDate and toDate should be passed from the parent
-export default function Portfolio({ fromDate, setFromDate, toDate, setToDate }) {
+export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate }) {
   const classes = useStyles();
+
+  useEffect(() => {
+    handleDateTypeChange(CUSTOM_DATES.LAST_MONTH);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (onChangeDates) onChangeDates(fromDate, toDate);
+  }, [onChangeDates, fromDate, toDate]);
 
   const getFlaggedMoment = (moment) => {
     return moment >= 10 ? moment : `0${moment}`;
   };
 
-  const hadnleDateTypeChange = (date) => {
+  const handleDateTypeChange = (date) => {
     const currentYear = Math.round(new Date().getFullYear());
     const currentMonth = Math.ceil(new Date().getMonth());
     const currentQuarter = Math.ceil((new Date().getMonth() + 1) / 3);
@@ -93,8 +102,8 @@ export default function Portfolio({ fromDate, setFromDate, toDate, setToDate }) 
         setToDate(`${currentYear - 1}-12`);
         break;
       default:
-        setFromDate(null);
-        setToDate(null);
+        setFromDate("");
+        setToDate("");
     }
   };
 
@@ -105,12 +114,13 @@ export default function Portfolio({ fromDate, setFromDate, toDate, setToDate }) 
           <Autocomplete
             size="small"
             onChange={(event, newValue) => {
-              hadnleDateTypeChange(newValue);
+              handleDateTypeChange(newValue);
             }}
             options={Object.values(CUSTOM_DATES)}
             renderInput={(params) => (
-              <TextField {...params} variant="outlined" label="Custom" placeholder="" style={{ backgroundColor: "white" }} />
+              <TextField {...params} variant="outlined" label="Date Range" placeholder="" style={{ backgroundColor: "white" }} />
             )}
+            defaultValue={CUSTOM_DATES.LAST_MONTH}
             disableListWrap
             id="custom-date-dropdown"
           />
@@ -137,6 +147,9 @@ export default function Portfolio({ fromDate, setFromDate, toDate, setToDate }) 
                 notchedOutline: classes.notchedOutline,
               },
             }}
+            onChange={(event) => {
+              setFromDate(event.target.value);
+            }}
           />
         </Grid>
         <Grid>
@@ -162,6 +175,9 @@ export default function Portfolio({ fromDate, setFromDate, toDate, setToDate }) 
                 focused: classes.focused,
                 notchedOutline: classes.notchedOutline,
               },
+            }}
+            onChange={(event) => {
+              setToDate(event.target.value);
             }}
           />
         </Grid>

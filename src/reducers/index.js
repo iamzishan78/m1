@@ -6,6 +6,7 @@ import MapGridCard from "./MapGridCard";
 import AddParcelInterest from "./AddParcelInterest";
 import MainMap from "./MainMap";
 import Flow from "./Flow";
+import Land from "./Land";
 import Revenue from "./Revenue";
 
 const createRootReducer = (history) =>
@@ -17,6 +18,7 @@ const createRootReducer = (history) =>
     AddParcelInterest,
     MainMap,
     Flow,
+    Land,
     Revenue,
   });
 

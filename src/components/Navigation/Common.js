@@ -463,6 +463,9 @@ export const useStyles = makeStyles((theme) => ({
     marginRight: 12,
     border: "1px solid #263451",
     borderRadius: "5px",
+    "& svg": {
+      fontSize: "1.5rem",
+    },
   },
   sideNavText: {
     flex: 2,

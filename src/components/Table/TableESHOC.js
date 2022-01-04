@@ -103,7 +103,6 @@ export const TableESHOC = (Component) => {
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
 
-
         useEffect(() => {
             getESPaginatedList({
                 variables: {

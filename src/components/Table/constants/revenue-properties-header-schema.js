@@ -5,10 +5,11 @@ const RevenuePropertiesHeadCells = [
   },
 
   {
-    name: "propertyCode",
-    label: "Property Code",
+    name: "number",
+    label: "Property#",
     esKey: "number.keyword",
     options: { sort: true, filter: true },
+    style: { minWidth: 150 }
   },
   {
     name: "name",
@@ -21,6 +22,7 @@ const RevenuePropertiesHeadCells = [
     label: "Payor Name",
     esKey: "operator.name.keyword",
     options: { sort: true, filter: true },
+    style: { minWidth: 150 }
   },
   {
     name: "state",
@@ -43,7 +45,7 @@ const RevenuePropertiesHeadCells = [
 
   {
     name: "wellApiNumber",
-    label: "Well Api#",
+    label: "Well API",
     esKey: "well.apiNumber.keyword",
     options: { sort: true, filter: true },
   },
@@ -60,15 +62,15 @@ const RevenuePropertiesHeadCells = [
     options: { sort: true, filter: true },
   },
   {
-      name: "type",
-      label: "Type",
-      esKey: "lastCheck.interestType.keyword",
-      options: { sort: true, filter: true },
-    },
+    name: "type",
+    label: "Type",
+    esKey: "type.keyword",
+    options: { sort: true, filter: true },
+  },
   {
     name: "amount",
-    label: "Amount",
-    esKey: "lastCheck.netOwnerValue",
+    label: "Decimal",
+    esKey: "amount.keyword",
     options: { sort: true, filter: true },
   },
   {
@@ -76,19 +78,20 @@ const RevenuePropertiesHeadCells = [
     label: "Check #",
     esKey: "lastCheck.checkNumber.keyword",
     options: { sort: true, filter: true },
+    style: { minWidth: 100 }
   },
   {
     name: "lastChecked",
-    label: "Last Check Date",
-    esKey: "lastCheck.checkDate",
+    label: "Last Check",
+    esKey: "lastCheck.checkDate.keyword",
     options: { sort: true, filter: true },
   },
-    {
-      name: "tags",
-      label: "Tags" ,
-      esKey: "tags.keyword",
-      options: { sort: true, filter: true },
-    },
+  {
+    name: "tags",
+    label: "Tags",
+    esKey: "tags.keyword",
+    options: { sort: true, filter: true },
+  },
   {
     name: "commentsCounter",
     label: " ",

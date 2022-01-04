@@ -196,18 +196,49 @@ export const TableHOC = (Component) => {
                         after: null,
                     },
                     ...(!isEmpty(tableState.sortOrder)) && {
-                        sort:
-                            [{
-                                [columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
-                                    columns.find(el => el.name === tableState.sortOrder?.name)?.name]: {
-                                    order: tableState.sortOrder?.direction,
-                                    // unmapped_type: "null",
-                                    missing: "_last"
+                        sort: (() => {
+                            let field = columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
+                                columns.find(el => el.name === tableState.sortOrder?.name)?.name;
+                            // if (!Array.isArray(field)) field = [ field ]
+                            if (Array.isArray(field)) {
+                                return [
+                                    {
+                                        _script: {
+                                            type: "number",
+                                            script: {
+                                                lang: "painless",
+                                                source: `if (
+                                                    ${field.map(el => `doc['${el}'].isEmpty()`).join(' && ')}
+                                                ) {return 1} else {return 0}`
+                                            },
+                                            order: "asc"
+                                        }
+                                    },
+                                    {
+                                        _script: {
+                                            type: "string",
+                                            script: {
+                                                lang: "painless",
+                                                source: `${field.map(el => `if (!doc['${el}'].isEmpty()) {return doc['${el}'].value}`).join(' else ')}
+                                                    else {return ''}`
+                                            },
+                                            order: tableState.sortOrder?.direction
+                                        }
+                                    }
+                                ]
+                            } else {
+                                return {
+                                    [field]: {
+                                        order: tableState.sortOrder?.direction,
+                                        // unmapped_type: "null",
+                                        missing: "_last"
+                                    }
                                 }
-                            }]
+                            }
+                        })()
                     },
-
-                    filters: [],
+                    filters: tableState.esFilters ? [...tableState.esFilters] : []
+                    // ...(tableState.esFilters) && { filters: [...tableState.esFilters] || [] },
                 },
             };
             tableState.filterList.forEach((val, index) => {

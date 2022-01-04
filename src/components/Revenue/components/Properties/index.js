@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+import { AppContext } from "AppContext";
 import { Grid, Button } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
@@ -55,6 +56,7 @@ const cards = [
 
 export default function Properties() {
   const classes = useStyles();
+  const [stateApp] = useContext(AppContext);
   // redux
   const dispatch = useDispatch();
   const [fromDate, setFromDate] = React.useState(null);
@@ -134,7 +136,16 @@ export default function Properties() {
       </div>
       <AnalyticsCards cards={cards} />
       <div className={classes.propertyTableContainer}>
-        <RevenuePropertiesTable header="Properties" parent="RevenuePropertiesTable" dense={true} esIndex={esIndex} startPaginationAt={startPaginationAt} />
+        <RevenuePropertiesTable
+          header="Properties"
+          parent="RevenuePropertiesTable"
+          targetLabel="Revenue Properties"
+          loading={false}
+          dense={true}
+          revenueSearchQuery={stateApp.revenueSearchQuery}
+          esIndex={esIndex}
+          startPaginationAt={startPaginationAt}
+        />
       </div>
     </>
   );
