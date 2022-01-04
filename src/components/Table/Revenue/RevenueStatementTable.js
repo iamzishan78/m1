@@ -13,7 +13,7 @@ import TableHeader from 'components/Table/constants/revenue-statement-header-sch
 
 // Utilities
 import { usetableStyles } from "../Styles";
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_PAGINATED_REVENUE_LIST } from "graphQL/useQueryESPaginatedRevenueList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { GET_ES_POTENTIAL_ISSUES_SUMMARY } from "graphQL/useQueryESSummary";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
@@ -32,7 +32,7 @@ function RevenueStatementTable(props) {
 
     // queries 
 
-    const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
+    const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_REVENUE_LIST, {
         context: { batch: true },
         fetchPolicy: "no-cache",
     });
@@ -42,7 +42,7 @@ function RevenueStatementTable(props) {
         fetchPolicy: "no-cache",
     });
 
-    const tableData = elasticData?.getESPaginatedList;
+    const tableData = elasticData?.getESPaginatedRevenueList;
     const issues = potentialIssues?.getESPotentialIssuesSummary;
 
     const startPaginationAt = 25;
