@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
 import { Grid, Button } from "@material-ui/core";
 
@@ -33,27 +34,37 @@ const useStyles = makeStyles((theme) => ({
     height: "500px",
     border: "1px solid #c1c1c1",
     marginTop: "22px",
-    borderRadius: "4px"
+    borderRadius: "4px",
+    alignItems: "center",
   }
 }));
 
 export default function LineItem(props) {
   const classes = useStyles();
+  const history = useHistory();
+  const [showPdfSection, setSectionState] = useState(true);
+
+  const toggleState = () => {
+    setSectionState(!showPdfSection);
+  }
 
   return (
     <NavHeader title="94782044-EXXON MOBIL CORP">
       <div className={classes.root}>
         <Grid container display="flex" direction="row" alignItems="center" justify="space-between">
           <Grid item>
-            <Button variant="outlined" className={classes.inputModeButton}>Input Mode</Button>
+            <Button variant="outlined" className={classes.inputModeButton} onClick={toggleState}>Input Mode</Button>
           </Grid>
           <Grid item>
-            <Button variant="contained" className={classes.exitButton}>Exit</Button>
+            <Button variant="contained" className={classes.exitButton} onClick={() => history.push("/revenue/statements")}>Exit</Button>
           </Grid>
         </Grid>
-        <div className={classes.pdfViewerRoot}>
-          {/* <PdfViewer /> */}
-        </div>
+        {showPdfSection && (
+          <div className={classes.pdfViewerRoot}>
+            PDF viewer here
+            {/* <PdfViewer /> */}
+          </div>
+        )}
       </div>
     </NavHeader>
   );
