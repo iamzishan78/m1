@@ -363,6 +363,15 @@ function Search(props) {
             id="cognitive-search-autocomplete"
             getOptionLabel={(option, value) => option.Primary || searchInputValue}
             forcePopupIcon
+            onBlur={() => {
+              setValue(null)
+              dispatch(
+                setMapGridCardState({
+                  searchInputValue: "",
+                  searchResultData: [],
+                })
+              );
+            }} // for clearing the value
             filterOptions={(x) => x}
             options={optionsWithHeader}
             style={{ width: "100%" }}
@@ -449,8 +458,9 @@ function Search(props) {
                 {...params}
                 variant="outlined"
                 fullWidth
+                autoFocus={true}
                 style={{ width: "100%" }}
-                value="Saad"
+                onBlur={() => setEnableSearch(!enableSearch)}
                 placeholder="Search by well name, API, owner, operator or a location"
                 InputProps={{
                   ...params.InputProps,
@@ -656,9 +666,9 @@ function Search(props) {
                 </Grid>
               );
             }}
-          />
-          &nbsp; <CloseRoundedIcon onClick={handleClose} className={classes.closeIcon} />
-        </>
+            />
+            &nbsp; <CloseRoundedIcon onClick={handleClose} className={classes.closeIcon} />
+          </>
       )}
     </div>
   );

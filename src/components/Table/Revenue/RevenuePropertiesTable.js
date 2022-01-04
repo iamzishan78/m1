@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import { Container } from "@material-ui/core";
+import { useDispatch, useSelector } from "react-redux";
 import { Warning as WarningIcon } from "@material-ui/icons";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
@@ -12,14 +12,19 @@ import { setRevenueKey } from "actions";
 
 // QUERIES
 import { deepEqualObjects } from "components/Shared/functions";
-
 // Utilities
 import { usetableStyles } from "../Styles";
+// actions
+import { setRevenuePropertyData } from "actions";
+
 
 function RevenuePropertiesTable(props) {
   const classes = usetableStyles();
+  // redux
   const dispatch = useDispatch();
-  // query
+  const { revenueProperties } = useSelector((state) => state.Revenue);
+
+  // query for Properties Table
   const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(
     GET_ES_PAGINATED_LIST,
     {
@@ -52,11 +57,7 @@ function RevenuePropertiesTable(props) {
   const [columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const [selectedRows, setSelectedRows] = useState([]);
   const [potentialIssuesList] = useState([]);
-  const esIndex = "properties_flat";
-  const startPaginationAt = 10;
-  const extendSearchQuery = ``;
 
-  // const count = tableData?.total || 0
   const options = {
     rowsPerPageOptions: [10, 25, 50, 100],
     searchable: true,
@@ -65,7 +66,6 @@ function RevenuePropertiesTable(props) {
     count: 10,
     serverSide: true,
   };
-  // added dummy rows for just display
 
   React.useEffect(() => {
     const statusIndex = columns.findIndex(c => c.name === 'status');
@@ -108,9 +108,9 @@ function RevenuePropertiesTable(props) {
   React.useEffect(() => {
     getESPaginatedList({
       variables: {
-        esIndex,
+        esIndex: props.esIndex,
         pagination: {
-          first: startPaginationAt,
+          first: props.startPaginationAt,
           keep_alive: "1micros",
         },
         search: props.revenueSearchQuery,
@@ -136,13 +136,18 @@ function RevenuePropertiesTable(props) {
     });
   };
 
+  React.useEffect(() => {
+    dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getESPaginatedList, elasticData,]);
+
   const onTableChange = (action, tableState, rows, meta) => {
-    tableState.esIndex = esIndex;
-    tableState.sort = [];
+    tableState.esIndex = props.esIndex;
+    // tableState.sort = [];
     const tableActions = props.initializeTableActions(
       tableState,
       meta,
-      tableData,
+      revenueProperties,
       columns,
       getESPaginatedList
     );
@@ -152,26 +157,25 @@ function RevenuePropertiesTable(props) {
       case "filterChange":
       case "resetFilters":
       case "changeRowsPerPage":
-        tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.genericESAction();
         break;
       case "rowSelectionChange":
         setSelectedRows(tableState.selectedRows.data);
         break;
       case "changePage":
-        tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.changeESPage();
         break;
       default:
     }
   };
+
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
         columns={columns}
-        rows={tableData}
+        rows={revenueProperties?.data}
         total={false}
         potentialIssues={potentialIssuesList}
         addAble={{ type: "RevenueProperties" }}
