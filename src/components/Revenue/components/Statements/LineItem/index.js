@@ -61,8 +61,7 @@ export default function LineItem(props) {
         </Grid>
         {showPdfSection && (
           <div className={classes.pdfViewerRoot}>
-            PDF viewer here
-            {/* <PdfViewer /> */}
+            <PdfViewer />
           </div>
         )}
       </div>

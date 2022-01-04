@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, IconButton, CircularProgress } from "@material-ui/core";
 import { Close as CloseIcon, GetApp as GetAppIcon } from "@material-ui/icons";
+import ZoomInIcon from "@material-ui/icons/ZoomIn";
+import ZoomOutIcon from "@material-ui/icons/ZoomOut";
 import { Document, Page } from "react-pdf";
+import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -25,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     },
     paperTwo: {
         backgroundColor: theme.palette.background.paper,
-        height: "950px",
+        height: "570px",
         boxShadow: theme.shadows[5],
         padding: theme.spacing(2, 4, 3),
         overflow: "scroll",
@@ -45,10 +48,10 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         flexDirection: "column",
         position: "sticky !important",
-        top: "85% !important",
-        bottom: "0 !important",
+        bottom: "20px !important",
         left: "0",
         width: "3.875rem",
+        backgroundColor: "#fff",
     },
 }));
 
@@ -56,6 +59,8 @@ export default function PdfViewer(props) {
     const classes = useStyles();
     const [pdfState, setpdfState] = useState([]);
     const [numPages, setNumPages] = useState(null);
+    let [zoom, setzoom] = useState(2.0);
+    const [stateApp, setStateApp] = React.useContext(AppContext);
 
     useEffect(() => {
         PageView(numPages);
@@ -82,7 +87,7 @@ export default function PdfViewer(props) {
     }
     return (
         <>
-            {/* <div style={DocStyle} className={classes.paperTwo}>
+            <div className={classes.paperTwo}>
                 <Grid item xs={12} style={{ minHeight: "35px", width: "100%" }}>
                     <h4
                         style={{
@@ -91,24 +96,24 @@ export default function PdfViewer(props) {
                             fontSize: "1.1rem",
                         }}
                     >
-                        {stateApp?.viewDoc?.name}
+                        PDF Viewer
                     </h4>
 
                     <div style={{ float: "right" }}>
                         <IconButton size="small" style={{ margin: "0 8px" }}>
-                            {stateApp?.viewDoc?.uri ? (
-                                <IconButton size="small" onClick={() => downloadFile(stateApp?.viewDoc)}>
-                                    <GetAppIcon />
-                                </IconButton>
-                            ) : (
+                            {/* {stateApp?.viewDoc?.uri ? ( */}
+                            <IconButton size="small" /*onClick={() => downloadFile(stateApp?.viewDoc)}*/>
+                                <GetAppIcon />
+                            </IconButton>
+                            {/* ) : (
                                 <CircularProgress size={20} color="secondary" />
-                            )}
+                            )} */}
                         </IconButton>
 
                         <IconButton
-                            onClick={() => {
-                                setStateApp({ ...stateApp, viewDoc: null });
-                            }}
+                            // onClick={() => {
+                            //     setStateApp({ ...stateApp, viewDoc: null });
+                            // }}
                             size="small"
                         >
                             <CloseIcon className={classes.closeIcon} fontSize="small" />
@@ -129,12 +134,29 @@ export default function PdfViewer(props) {
                     >
                         {pdfState?.map((value, key) => {
                             return (
-                                <Page key={key} pageNumber={value} scale={1.5} style={{ display: "grid", justifyContent: "center", width: "100%" }} />
+                                <Page key={key} pageNumber={value} scale={zoom} style={{ display: "grid", justifyContent: "center", width: "100%" }} />
                             );
                         })}
                     </Document>
                 </div>
-            </div> */}
+                <div className={classes.ZoomIcons}>
+                    {" "}
+                    <IconButton
+                        onClick={() => {
+                            setzoom(zoom + 0.25);
+                        }}
+                    >
+                        <ZoomInIcon fontSize={"large"} />
+                    </IconButton>
+                    <IconButton
+                        onClick={() => {
+                            setzoom(zoom - 0.25);
+                        }}
+                    >
+                        <ZoomOutIcon fontSize={"large"} />
+                    </IconButton>
+                </div>
+            </div>
         </>
     )
 }
