@@ -104,7 +104,7 @@ export default function Contacts(props) {
   const [isSearchActive, setSearchState] = useState(false);
   const [addWell, setAddWell] = useState(false);
   const [deletedRow, setDeletedRow] = useState('')
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   const { getWellsFromDocument, wells, wellsFromDocument, getWellsLoading, setWells } = React.useContext(DocumentContext)
 
@@ -156,15 +156,21 @@ export default function Contacts(props) {
     })
   }
 
-  // const gotoContact = (index) => {
-  //   setStateApp((stateApp) => ({
-  //     ...stateApp,
-  //     selectedContact: stateApp.activeDeal?.contacts[index]?._id,
-  //     dealDialog: false,
-  //     transactBarView: "Deal",
-  //   }));
-  //   history.push(`/map/wells/7013D1FC-F2F1-478A-A790-0858509489F4/39.1058388/-98.998703`);
-  // };
+  const goToWell = (well) => {
+    
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedWell: well,
+      wellDetailCardOpen: true,
+      expandedCard: true,
+      openWellDetails: true,
+      popupOpen: false, 
+      selectedWellId: well?.id,
+      // wellSelectedCoordinates: [Number(well?.longitude), Number(well?.latitude)],
+    }));
+    // console.log(`/map/wells/${well?.id.toUpperCase()}/${well?.latitude}/${well?.longitude}`);
+    history.push(`/map/wells/${well?.id.toUpperCase()}/${well?.latitude}/${well?.longitude}`);
+  };
 
   // searching existing well
   const searchExistingWell = (value) => {
@@ -257,9 +263,7 @@ export default function Contacts(props) {
             wells.map((well, index) => (
               <div style={{ padding: "10px 0px 0px" }}>
                 <ListItem key={index}>
-                  <Link className={classes.wellLink} color="primary"
-                  // onClick={() => gotoContact(index)}
-                  >
+                  <Link className={classes.wellLink} color="primary" onClick={() => goToWell(well)}>
                     {well.wellName}
                   </Link>
 
