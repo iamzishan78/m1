@@ -14,6 +14,7 @@ import { useLazyQuery } from "@apollo/client";
 import { GETCHECK } from "graphQL/useQueryCheck";
 import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
+import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import moment from "moment";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { AppContext } from "AppContext";
@@ -231,9 +232,41 @@ export default function DetailComponents(props) {
   const [ownerId, setOwnerId] = useState("");
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [fileRequestCounter, setFileRequestCounter] = useState(1);
   // queries
   const [getCheck, { data: getCheckResult }] = useLazyQuery(GETCHECK, {
     fetchPolicy: "no-cache",
+  });
+  const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
+    fetchPolicy: "cache-and-network",
+    onCompleted: ({ getFileDescriptors }) => {
+      let allActive = true;
+
+      if (getFileDescriptors)
+        for (let i = 0; i < getFileDescriptors.length; i++) {
+          if (getFileDescriptors[i].fileState !== "active") {
+            allActive = false;
+            break;
+          }
+        }
+
+      if (!allActive) {
+        if (fileRequestCounter <= 40) {
+          let waitBeforeRequestAgain = setTimeout(() => {
+            setFileRequestCounter(fileRequestCounter + 1);
+            getRecentFiles({
+              variables: {
+                relatedObjectId: stateApp.activeDeal?.cardId,
+                relatedObjectType: "Deal",
+              },
+            });
+            clearTimeout(waitBeforeRequestAgain);
+          }, 1000);
+        } else {
+          setFileRequestCounter(1);
+        }
+      } else setFileRequestCounter(1);
+    },
   });
   const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
     fetchPolicy: "no-cache",
@@ -258,8 +291,11 @@ export default function DetailComponents(props) {
       const checkId = search.replace("?id=", "");
       if (checkId) {
         setCheckId(checkId);
-        viewFiles({
-          variables: { fileIds: checkId },
+        getRecentFiles({
+          variables: {
+            relatedObjectId: checkId,
+            relatedObjectType: "Check",
+          },
         });
         getCheck({
           variables: { id: checkId },
@@ -268,6 +304,19 @@ export default function DetailComponents(props) {
       }
     }
   }, [search]);
+
+  useEffect(() => {
+    let ID = [];
+    for (let i = 0; i < files?.getFileDescriptors.length; i++) {
+      ID.push(files?.getFileDescriptors[i].fileId);
+    }
+    for (let i = 0; i < uploadedFiles.length; i++) {
+      ID.push(uploadedFiles[i].addFileDescriptor.file.id);
+    }
+    viewFiles({
+      variables: { fileIds: ID },
+    });
+  }, [files, uploadedFiles, viewFiles]);
 
   useEffect(() => {
     if (userLists && userLists.allMongoUsers) {
@@ -530,7 +579,6 @@ export default function DetailComponents(props) {
               </div>
 
               <AddDialogeUploadZone
-                isTransactPage={false}
                 filesData={viewFileResult}
                 id={checkId}
                 loading={viewFileLoading}
@@ -538,7 +586,7 @@ export default function DetailComponents(props) {
                 setUploadedFileData={setUploadedFileData}
               ></AddDialogeUploadZone>
 
-              <div className={classes.tags} style={{ marginTop: -32 }}>
+              <div className={classes.tags}>
                 <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
               </div>
               <CommentComponent targetLabel={"check"} targetSourceId={checkId} />

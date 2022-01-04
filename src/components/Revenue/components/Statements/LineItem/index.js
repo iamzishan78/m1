@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/styles";
 import { Grid, Button } from "@material-ui/core";
 
 import NavHeader from "components/Revenue/components/Common/NavHeader";
+import PdfViewer from "components/Revenue/components/Statements/LineItem/PdfViewer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,6 +28,12 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "6px",
     height: "34px",
     textTransform: "none"
+  },
+  pdfViewerRoot: {
+    height: "500px",
+    border: "1px solid #c1c1c1",
+    marginTop: "22px",
+    borderRadius: "4px"
   }
 }));
 
@@ -44,6 +51,9 @@ export default function LineItem(props) {
             <Button variant="contained" className={classes.exitButton}>Exit</Button>
           </Grid>
         </Grid>
+        <div className={classes.pdfViewerRoot}>
+          {/* <PdfViewer /> */}
+        </div>
       </div>
     </NavHeader>
   );
