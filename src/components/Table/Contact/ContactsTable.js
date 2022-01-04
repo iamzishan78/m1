@@ -68,6 +68,17 @@ function ContactsTable(props) {
     setStateIfDeepEqual(Columns, newState);
   };
 
+  const esSearch = (() => {
+    let searchString = ""
+    if (props.contactSearchQuery) {
+      searchString = props.contactSearchQuery.split(/\s+/)
+    }
+
+    return searchString
+      ? `(name:(${searchString.join('* AND ')}*))^4 OR (name:(${searchString.join('* ')}*))^2 OR (_all:(${searchString.join('* ')}*))`
+      : ""
+  })();
+
   // queries
   const [getESContacts, { data: ContactsData, loading }] = useLazyQuery(
     GET_ES_CONTACTS,
@@ -98,7 +109,7 @@ function ContactsTable(props) {
           first: startPaginationAt,
           keep_alive: "1micros",
         },
-        search: props.contactSearchQuery ? `${props.contactSearchQuery}` : "",
+        search: esSearch,
         filters: selectedGridView?.filters ? selectedGridView?.filters : [],
       },
     });
