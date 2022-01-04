@@ -3194,16 +3194,15 @@ function SubTable(props) {
                   {buttonLabel}
                 </Button>
               )}
-            {(props.addAble.type === "contact" || props.addAble.type === "ownerToParcel" || props.addAble.type === "ownerToUnit") && (
-              <ButtonDropDown options={options} />
-            )}
+            {(
+              props.addAble.type === "contact" ||
+              props.addAble.type === "ownerToParcel" ||
+              props.addAble.type === "ownerToUnit" ||
+              props.addAble.type === "revenueStatementDetails") && (
+                <ButtonDropDown options={options} />
+              )}
 
             {props.header === "Documents" && (
-              // <ButtonDropDown options={options} onClick={() => {
-              //   setStateApp({ ...stateApp, DocumentDrawer: true, selectedDocument: {} })
-              // }}>
-              //   <PostAddIcon></PostAddIcon>
-              // </ButtonDropDown>
               <ButtonGroup variant="contained" style={{ height: "40px" }} color="primary" aria-label="split button">
                 <Button
                   color="primary"
