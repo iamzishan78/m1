@@ -15,7 +15,7 @@ export const platformDataInitialData = [
   { index: 1, value: "owner", Icon: TaxOwnerIcon, label: "Tax Owners", shapeGrid: true },
   { index: 2, value: "operator", Icon: OperatorIcon, label: "Operators", shapeGrid: false },
   // { index: 3, value: "lease", Icon: LeaseIcon, label: "Leases" },
-  { index: 4, value: "contacts", Icon: ContactIcon, label: "Contacts", shapeGrid: false },
+  // { index: 4, value: "contacts", Icon: ContactIcon, label: "Contacts", shapeGrid: false },
 ];
 
 
