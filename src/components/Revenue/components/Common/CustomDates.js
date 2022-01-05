@@ -123,7 +123,11 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
           <Autocomplete
             size="small"
             onChange={(event, newValue) => {
-              handleDateTypeChange(newValue);
+              if (newValue === null) {
+                handleDateTypeChange("This Month");
+              } else {
+                handleDateTypeChange(newValue);
+              }
             }}
             options={Object.values(CUSTOM_DATES)}
             renderInput={(params) => (

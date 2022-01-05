@@ -61,6 +61,7 @@ export default function Properties() {
   const dispatch = useDispatch();
   const [fromDate, setFromDate] = React.useState(null);
   const [toDate, setToDate] = React.useState(null);
+  const [cardSummary, setCardSummary] = React.useState(null);
   // props to pass in table
   const esIndex = "properties_flat";
   const startPaginationAt = 25;
@@ -84,9 +85,6 @@ export default function Properties() {
 
   // on filter click
   const filterProperties = () => {
-    console.log("fromDate: ", fromDate);
-    console.log("toDate: ", toDate);
-
     getESPaginatedList({
       variables: {
         esIndex,
@@ -112,6 +110,30 @@ export default function Properties() {
       },
     });
   }
+
+
+  const handleSummary = (totalCount, activeCount, inactiveCount, unmapped) => {
+    setCardSummary([
+      {
+        heading: "Total Properties",
+        points: totalCount,
+      },
+      {
+        heading: "Active",
+        points: activeCount,
+      },
+      {
+        heading: "Inactive",
+        points: inactiveCount,
+      },
+      {
+        heading: "Unmapped",
+        points: unmapped,
+        type: "warning",
+      },
+    ])
+  }
+
   return (
     <>
       <div className={classes.actionBar}>
@@ -137,7 +159,7 @@ export default function Properties() {
           </Grid>
         </Grid>
       </div>
-      <AnalyticsCards cards={cards} />
+      <AnalyticsCards cards={cardSummary} />
       <div className={classes.propertyTableContainer}>
         <RevenuePropertiesTable
           header="Properties"
@@ -145,6 +167,7 @@ export default function Properties() {
           targetLabel="Revenue Properties"
           loading={false}
           dense={true}
+          cardSummary={handleSummary}
           revenueSearchQuery={stateApp.revenueSearchQuery}
           esIndex={esIndex}
           startPaginationAt={startPaginationAt}

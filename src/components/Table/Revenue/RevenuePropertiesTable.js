@@ -139,7 +139,7 @@ function RevenuePropertiesTable(props) {
   React.useEffect(() => {
     dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getESPaginatedList, elasticData,]);
+  }, [getESPaginatedList, elasticData]);
 
   const onTableChange = (action, tableState, rows, meta) => {
     tableState.esIndex = props.esIndex;
@@ -168,6 +168,16 @@ function RevenuePropertiesTable(props) {
       default:
     }
   };
+
+  React.useEffect(() => {
+    if (revenueProperties?.data) {
+      const activeCount = revenueProperties?.data.filter((item) => item.status == "approved");
+      const ummappedCount = revenueProperties?.data.filter((item) => item.status != "approved");
+      props.cardSummary(revenueProperties?.data.length, activeCount.length, revenueProperties?.data.length - activeCount.length, ummappedCount.length);
+    } else {
+      props.cardSummary(0, 0, 0, 0);
+    }
+  }, [revenueProperties]);
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
