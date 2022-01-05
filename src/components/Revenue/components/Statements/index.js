@@ -15,40 +15,40 @@ export default function RevenueStatements() {
 
   const [addCheck] = useMutation(ADD_CHECK_DATA);
 
-  useEffect(() => {
-    addCheck({
-      variables: {
-        checkInput: {
-          checkAmount: 1.86,
-          checkDate: "2021-07-28T00:00:00.000Z",
-          checkDetail: {
-            lines: 8,
-          },
-          checkNumber: "543252352",
-          depositDate: "2021-08-01T00:00:00.000Z",
-          payee: {
-            _id: {
-              $oid: "619ada7eb5a69178952b6a87",
-            },
-            number: "244913-11",
-            name: "ABC Minerals, LLC",
-          },
-          payor: {
-            _id: {
-              $oid: "619adb36b5a69178952b6a8a",
-            },
-            name: "PIONEER NATURAL RESOURCES",
-          },
-          source: "ENERGYLINK",
-          status: "APPROVED",
-          sourceId: "224453",
-          isDeleted: false,
-        },
-      },
-      refetchQueries: ["addCheck"],
-      awaitRefetchQueries: true,
-    });
-  }, []);
+  // useEffect(() => {
+  //   addCheck({
+  //     variables: {
+  //       checkInput: {
+  //         checkAmount: 1.86,
+  //         checkDate: "2021-07-28T00:00:00.000Z",
+  //         checkDetail: {
+  //           lines: 8,
+  //         },
+  //         checkNumber: "543252352",
+  //         depositDate: "2021-08-01T00:00:00.000Z",
+  //         payee: {
+  //           _id: {
+  //             $oid: "619ada7eb5a69178952b6a87",
+  //           },
+  //           number: "244913-11",
+  //           name: "ABC Minerals, LLC",
+  //         },
+  //         payor: {
+  //           _id: {
+  //             $oid: "619adb36b5a69178952b6a8a",
+  //           },
+  //           name: "PIONEER NATURAL RESOURCES",
+  //         },
+  //         source: "ENERGYLINK",
+  //         status: "APPROVED",
+  //         sourceId: "224453",
+  //         isDeleted: false,
+  //       },
+  //     },
+  //     refetchQueries: ["addCheck"],
+  //     awaitRefetchQueries: true,
+  //   });
+  // }, []);
 
   useEffect(() => {
     if (statements.length > 0) {

@@ -1494,12 +1494,12 @@ function SubTable(props) {
                       ? tableMeta.rowData[2]
                       : props.parent === "owner_WellInterests"
                         ? tableMeta.rowData[1]
-                        : props.parent === "ownersPerParcel"
-                          ? tableMeta.rowData[1]
-                          : props.parent === "RevenueStatementTable"
-                            ? tableMeta.rowData[1].split("_")[1]
-                            : tableMeta.rowData[0];
-                  if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
+                          : props.parent === "ownersPerParcel"
+                            ? tableMeta.rowData[1]
+                            : props.parent === "RevenueStatementTable"
+                              ? tableMeta.rowData[1]?.split("_")[1]
+                              : tableMeta.rowData[0];
+                              if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
                   if (props.parent === "TractsTable" && props.targetLabel === "tract") {
@@ -1811,7 +1811,7 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : props.parent === "RevenueStatementTable"
-                            ? tableMeta.rowData[1].split("_")[1]
+                            ? tableMeta.rowData[1]?.split("_")[1]
                             : tableMeta.rowData[0];
 
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
@@ -2123,10 +2123,10 @@ function SubTable(props) {
                   <>
                     {props.parent === "RevenueStatementTable" && (
                       <div className="flex justifyStart alignCenter">
-                        {value.toLowerCase() === "approved" && (
+                        {value?.toLowerCase() === "approved" && (
                           <div style={{ background: "#17c10d", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />
                         )}
-                        {value.toLowerCase() === "imported" && (
+                        {value?.toLowerCase() === "imported" && (
                           <div style={{ background: "#ffa800", height: 12, width: 12, marginRight: 8, borderRadius: "50%" }} />
                         )}
                         {value}
@@ -3098,6 +3098,9 @@ function SubTable(props) {
         buttonLabel = "ADD DOCUMENT";
         // menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
       }
+      if (props.addAble.type === "revenueStatementDetails") {
+        buttonLabel = "+ ADD LINE ITEM";
+      }
 
       const addAction = (e) => {
         e.stopPropagation();
@@ -3127,7 +3130,10 @@ function SubTable(props) {
         if (props.addAble.type && props.addAble.type === "parcelInterestsToEntity")
           // handleExpandClick(null, null, null, "addOwnerToParcel");
           handleExpandClick(null, null, null, "addParcelInterestsToEntity");
-        if (props.addAble.type && props.addAble.type === "inviteUser") handleExpandClick(null, null, null, "inviteUser");
+        if (props.addAble.type && props.addAble.type === "inviteUser")
+          handleExpandClick(null, null, null, "inviteUser");
+        if (props.addAble.type === "revenueStatementDetails")
+          routeChange('/revenue/statement/details/line-item');
       };
 
       const options = [
@@ -3138,13 +3144,6 @@ function SubTable(props) {
         },
         menuOptions,
       ];
-      const getSelectedRows = () => {
-        const selectedRows = [];
-        for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
-          selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
-        }
-        return selectedRows;
-      };
 
       return (
         <>
@@ -3355,7 +3354,8 @@ function SubTable(props) {
       // }
 
       if (props.targetLabel === "Revenue Properties") {
-        history.push("/revenue/property/details");
+        // need stopPropagation
+        // history.push("/revenue/property/details");
       }
       if (props.targetLabel === "revenueStatements") {
         if (rows[dataIndex]?._id) {

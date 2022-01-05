@@ -204,7 +204,7 @@ function RevenueStatementTable(props) {
                 rows={props.rows}
                 total={false}
                 potentialIssues={potentialIssuesList}
-                addAble={{ type: "RevenueStatement" }}
+                addAble={{ type: "revenueStatement" }}
                 loading={props.loading}
                 targetLabel={props.targetLabel}
                 uploadIcon={null}
