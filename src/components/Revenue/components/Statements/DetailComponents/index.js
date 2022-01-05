@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, IconButton, TextField, Tabs, Tab, Grid, Avatar, FormControl, InputAdornment } from "@material-ui/core";
 import { LocalAtm as CurrencyIcon } from "@material-ui/icons";
@@ -25,6 +26,8 @@ import HeaderSection from "./HeaderSection";
 import SummarySection from "./SummarySection";
 import CheckDetailsSection from "./CheckDetailsSection";
 import NavHeader from "components/Revenue/components/Common/NavHeader";
+
+import { setRevenueKey } from "actions";
 
 const useStyles = makeStyles((theme) => ({
   gridStyle: {
@@ -219,6 +222,9 @@ const StyledTab = withStyles((theme) => ({
 
 export default function DetailComponents(props) {
   const classes = useStyles(props);
+  const dispatch = useDispatch();
+  const { statements } = useSelector(({ Revenue }) => Revenue);
+
   const [tab, setTab] = useState(0);
   const [checkId, setCheckId] = useState(null);
   const selectedTabRef = useRef(null);
@@ -256,8 +262,8 @@ export default function DetailComponents(props) {
             setFileRequestCounter(fileRequestCounter + 1);
             getRecentFiles({
               variables: {
-                relatedObjectId: stateApp.activeDeal?.cardId,
-                relatedObjectType: "Deal",
+                relatedObjectId: checkId,
+                relatedObjectType: "Check",
               },
             });
             clearTimeout(waitBeforeRequestAgain);
@@ -276,6 +282,11 @@ export default function DetailComponents(props) {
   });
 
   const checksFlatData = getCheckResult?.getCheck?.check;
+
+  useEffect(() => {
+    if (getCheckResult?.getCheck?.check)
+      dispatch(setRevenueKey('statements', { ...statements, activeStatement: getCheckResult?.getCheck?.check }));
+  }, [getCheckResult, dispatch]);
 
   useEffect(() => {
     selectedTabRef.current &&
@@ -306,16 +317,31 @@ export default function DetailComponents(props) {
   }, [search]);
 
   useEffect(() => {
-    let ID = [];
-    for (let i = 0; i < files?.getFileDescriptors.length; i++) {
-      ID.push(files?.getFileDescriptors[i].fileId);
+    if (files?.getFileDescriptors) {
+      let ID = [];
+      for (let i = 0; i < files.getFileDescriptors.length; i++) {
+        ID.push(files.getFileDescriptors[i].fileId);
+      }
+      for (let i = 0; i < uploadedFiles.length; i++) {
+        ID.push(uploadedFiles[i].addFileDescriptor.file.id);
+      }
+      viewFiles({
+        variables: { fileIds: ID },
+      });
+      //! Getting most recent uploaded pdf file
+      let recentFile = null;
+      files.getFileDescriptors.filter(d => d.fileName.split(".")?.[1]?.toLowerCase() === 'pdf').forEach((d, index) => {
+        let descriptor = d;
+        descriptor = { ...descriptor, dateTime: moment(descriptor.dateTime, "MM/DD/YYYY HH:mm Z") };
+        if (index === 0) recentFile = descriptor;
+        else {
+          if (recentFile.dateTime < descriptor.dateTime) {
+            recentFile = descriptor;
+          }
+        }
+      });
+      dispatch(setRevenueKey('statements', { ...statements, recentFile }));
     }
-    for (let i = 0; i < uploadedFiles.length; i++) {
-      ID.push(uploadedFiles[i].addFileDescriptor.file.id);
-    }
-    viewFiles({
-      variables: { fileIds: ID },
-    });
   }, [files, uploadedFiles, viewFiles]);
 
   useEffect(() => {
