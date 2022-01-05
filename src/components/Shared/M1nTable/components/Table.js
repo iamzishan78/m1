@@ -1494,12 +1494,12 @@ function SubTable(props) {
                       ? tableMeta.rowData[2]
                       : props.parent === "owner_WellInterests"
                         ? tableMeta.rowData[1]
-                        : props.parent === "ownersPerParcel"
-                          ? tableMeta.rowData[1]
-                          : props.parent === "RevenueStatementTable"
-                            ? tableMeta.rowData[1]?.split("_")[1]
-                            : tableMeta.rowData[0];
-                  if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
+                          : props.parent === "ownersPerParcel"
+                            ? tableMeta.rowData[1]
+                            : props.parent === "RevenueStatementTable"
+                              ? tableMeta.rowData[1]?.split("_")[1]
+                              : tableMeta.rowData[0];
+                              if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
                   if (props.parent === "TractsTable" && props.targetLabel === "tract") {
@@ -3353,7 +3353,8 @@ function SubTable(props) {
       // }
 
       if (props.targetLabel === "Revenue Properties") {
-        history.push("/revenue/property/details");
+        // need stopPropagation
+        // history.push("/revenue/property/details");
       }
       if (props.targetLabel === "revenueStatements") {
         if (rows[dataIndex]?._id) {
