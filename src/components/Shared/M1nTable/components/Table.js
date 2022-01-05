@@ -301,7 +301,7 @@ const useStyles = makeStyles((theme) => ({
       opacity: "1",
       transition: "opacity 1s ease-out",
       webkitTransition: "opacity 1s ease-out",
-      zIndex: 999,
+      // zIndex: 999,
       position: "sticky",
     },
     "& tbody": {
