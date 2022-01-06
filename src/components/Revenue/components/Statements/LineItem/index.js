@@ -51,7 +51,7 @@ export default function LineItem(props) {
   };
 
   return (
-    <NavHeader title="94782044-EXXON MOBIL CORP">
+    <NavHeader title={`${activeStatement?.checkNumber} - ${activeStatement?.payor["name"]}`}>
       <div className={classes.root}>
         <Grid container display="flex" direction="row" alignItems="center" justify="space-between">
           <Grid item>
@@ -60,7 +60,7 @@ export default function LineItem(props) {
             </Button>
           </Grid>
           <Grid item>
-            <Button variant="contained" className={classes.exitButton} onClick={() => history.push(`/revenue/statement/details?id=${activeStatement._id}`)}>
+            <Button variant="contained" className={classes.exitButton} onClick={() => history.push(`/revenue/statement/details?id=${activeStatement?._id}`)}>
               Exit
             </Button>
           </Grid>
