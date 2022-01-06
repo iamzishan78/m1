@@ -287,6 +287,7 @@ export default function DetailComponents(props) {
   useEffect(() => {
     if (getCheckResult?.getCheck?.check)
       dispatch(setRevenueKey('statements', { ...statements, activeStatement: getCheckResult?.getCheck?.check }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getCheckResult, dispatch]);
 
   useEffect(() => {
@@ -329,8 +330,8 @@ export default function DetailComponents(props) {
       viewFiles({
         variables: { fileIds: ID },
       });
-      //! Getting most recent uploaded pdf file
-      let recentFile = null;
+      //* Getting most recent uploaded pdf file
+      let recentFile = {};
       files.getFileDescriptors.filter(d => d.fileName.split(".")?.[1]?.toLowerCase() === 'pdf').forEach((d, index) => {
         let descriptor = d;
         descriptor = { ...descriptor, dateTime: moment(descriptor.dateTime, "MM/DD/YYYY HH:mm Z") };
@@ -362,7 +363,7 @@ export default function DetailComponents(props) {
   };
 
   return (
-    <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor["name"]}`}>
+    <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor?.["name"]}`}>
       <div className="flex justifyBetween alignStart w-100">
         <div className="w-100" style={{ padding: 20, maxWidth: "calc(100% - 380px)" }}>
           {/**
