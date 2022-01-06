@@ -26,6 +26,7 @@ import HeaderSection from "./HeaderSection";
 import SummarySection from "./SummarySection";
 import CheckDetailsSection from "./CheckDetailsSection";
 import NavHeader from "components/Revenue/components/Common/NavHeader";
+import DocViewer from "components/Shared/DocViewer";
 
 import { setRevenueKey } from "actions";
 
@@ -622,6 +623,11 @@ export default function DetailComponents(props) {
       </div>
 
       {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
+
+      {/**
+       * Component for viewing selected pdf file
+       */}
+      <DocViewer width="calc(80vw)" />
     </NavHeader>
   );
 }
