@@ -5,6 +5,7 @@ import { Grid, Button } from "@material-ui/core";
 
 import NavHeader from "components/Revenue/components/Common/NavHeader";
 import PdfViewer from "components/Revenue/components/Statements/LineItem/PdfViewer";
+import CheckDetailsEditableTable from "./CheckDetailsEditableTable";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,6 +49,7 @@ export default function LineItem(props) {
     setSectionState(!showPdfSection);
   };
 
+  const checkId = window.location.search.replace("?id=", '')
   return (
     <NavHeader title="94782044-EXXON MOBIL CORP">
       <div className={classes.root}>
@@ -68,6 +70,8 @@ export default function LineItem(props) {
             <PdfViewer togglePdfViewState={togglePdfViewState} />
           </div>
         )}
+
+        <CheckDetailsEditableTable parent="CheckDetailsTable" header="Check Details" checkId={checkId} />
       </div>
     </NavHeader>
   );

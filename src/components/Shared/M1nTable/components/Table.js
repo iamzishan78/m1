@@ -1494,12 +1494,12 @@ function SubTable(props) {
                       ? tableMeta.rowData[2]
                       : props.parent === "owner_WellInterests"
                         ? tableMeta.rowData[1]
-                          : props.parent === "ownersPerParcel"
-                            ? tableMeta.rowData[1]
-                            : props.parent === "RevenueStatementTable"
-                              ? tableMeta.rowData[1]?.split("_")[1]
-                              : tableMeta.rowData[0];
-                              if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
+                        : props.parent === "ownersPerParcel"
+                          ? tableMeta.rowData[1]
+                          : props.parent === "RevenueStatementTable"
+                            ? tableMeta.rowData[1]?.split("_")[1]
+                            : tableMeta.rowData[0];
+                  if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
                   if (props.parent === "TractsTable" && props.targetLabel === "tract") {
@@ -3132,8 +3132,10 @@ function SubTable(props) {
           handleExpandClick(null, null, null, "addParcelInterestsToEntity");
         if (props.addAble.type && props.addAble.type === "inviteUser")
           handleExpandClick(null, null, null, "inviteUser");
-        if (props.addAble.type === "revenueStatementDetails")
-          routeChange('/revenue/statement/details/line-item');
+        if (props.addAble.type === "revenueStatementDetails") {
+          routeChange('/revenue/statement/details/line-item' + window.location.search);
+        }
+
       };
 
       const options = [
