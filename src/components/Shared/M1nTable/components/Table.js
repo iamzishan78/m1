@@ -1566,8 +1566,9 @@ function SubTable(props) {
                           if (m1nSelectedRowsIndexes?.length > 0) {
                             let selectedRows = m1nSelectedRowsIndexes.map((index) => rows[index]);
                             selectedRows = selectedRows.filter((row) => !row.isContact);
-                            if (selectedRows.length > 0)
+                            if (selectedRows.length > 0) {
                               return handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, selectedRows, "multipleOwnerToContact");
+                            }
                           }
 
                           if (value && value !== "false") {
@@ -1632,7 +1633,9 @@ function SubTable(props) {
                                 },
                                 "makeOwnerAContact"
                               );
-                            } else handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, tableMeta.rowData[0], "makeOwnerAContact");
+                            } else {
+                              handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, tableMeta.rowData[0], "makeOwnerAContact");
+                            }
                             // Code is not used as we are opening different model from above
                           }
                         }}

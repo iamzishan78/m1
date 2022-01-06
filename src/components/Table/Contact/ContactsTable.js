@@ -71,7 +71,7 @@ function ContactsTable(props) {
   const esSearch = (() => {
     let searchString = ""
     if (props.contactSearchQuery) {
-      searchString = props.contactSearchQuery.split(/\s+/)
+      searchString = props.contactSearchQuery.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
     }
 
     return searchString

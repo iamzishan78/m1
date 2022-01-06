@@ -328,7 +328,16 @@ function Search() {
       },
       "tax owners": {
         esIndex: "platformData:globalowner",
-        search: (request) => request.input ? `ownerName:*${request.input}*` : '',
+        search: (request) => (() => {
+          let searchString = ""
+          if (request.input) {
+            searchString = request.input.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
+          }
+      
+          return searchString
+            ? `(ownerName:(${searchString.join('* AND ')}*))^4 OR (ownerName:(${searchString.join('* ')}*))^2 OR (_all:(${searchString.join('* ')}*))`
+            : ""
+        })(),
         formatOptions: (data) => {
           return {
             ...data, Source: 'globalowner-index', Primary: data.OwnerName, Secondary: `${data.StreetAddress}\n${data.City}\n${data.State}\n${data.Zip}`,
