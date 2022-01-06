@@ -76,6 +76,36 @@ export const createShapeLabelLayer = feature => {
     }
   };
 };
+export const drawWellBoundary = (map, coordinates) => {
+  if (map.getLayer("well-point")) map.removeLayer("well-point");
+  if (map.getSource("well-select-point")) map.removeSource("well-select-point");
+  if (coordinates.length > 0) {
+    map.addSource("well-select-point", {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: coordinates,
+            },
+          },
+        ],
+      },
+    });
+    map.addLayer({
+      id: "well-point",
+      type: "circle",
+      source: "well-select-point",
+      paint: {
+        "circle-radius": 5,
+        "circle-color": "yellow",
+      },
+    });
+  }
+}
 
 export const drawBoundary = (map, selectedUserDefinedLayer) => {
   // let mapSourceData = map.getSource(source)._data;
