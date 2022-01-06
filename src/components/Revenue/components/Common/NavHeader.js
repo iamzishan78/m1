@@ -17,12 +17,18 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px 20px",
     backgroundColor: "#fff",
   },
+  title: {
+    color: "#18AADD",
+    fontSize: "16px",
+    marginLeft: "5px",
+    cursor: "pointer"
+  }
 }));
 
 export default function DetailComponents(props) {
   const history = useHistory();
   const classes = useStyles(props);
-  const { title } = props;
+  const { title, onClickFunc } = props;
 
   const { activeModule } = useSelector(({ Revenue }) => Revenue);
 
@@ -42,7 +48,14 @@ export default function DetailComponents(props) {
               >
                 {activeModule.title}
               </Link>
-              <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{title}</Typography>
+              <Typography
+                className={classes.title}
+                onClick={() => {
+                  if (onClickFunc) onClickFunc();
+                }}
+              >
+                {title}
+              </Typography>
             </Breadcrumbs>
           </Grid>
           <Grid item>

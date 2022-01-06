@@ -50,8 +50,12 @@ export default function LineItem(props) {
     setSectionState(!showPdfSection);
   };
 
+  const redirectHandler = () => {
+    history.push(`/revenue/statement/details?id=${activeStatement?._id}`);
+  }
+
   return (
-    <NavHeader title={`${activeStatement?.checkNumber} - ${activeStatement?.payor["name"]}`}>
+    <NavHeader title={`${activeStatement?.checkNumber} - ${activeStatement?.payor["name"]}`} onClickFunc={redirectHandler}>
       <div className={classes.root}>
         <Grid container display="flex" direction="row" alignItems="center" justify="space-between">
           <Grid item>
@@ -60,7 +64,7 @@ export default function LineItem(props) {
             </Button>
           </Grid>
           <Grid item>
-            <Button variant="contained" className={classes.exitButton} onClick={() => history.push(`/revenue/statement/details?id=${activeStatement?._id}`)}>
+            <Button variant="contained" className={classes.exitButton} onClick={redirectHandler}>
               Exit
             </Button>
           </Grid>
