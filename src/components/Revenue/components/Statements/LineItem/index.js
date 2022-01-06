@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import { Grid, Button } from "@material-ui/core";
 
@@ -43,6 +44,7 @@ export default function LineItem(props) {
   const classes = useStyles();
   const history = useHistory();
   const [showPdfSection, setSectionState] = useState(true);
+  const { activeStatement } = useSelector(({ Revenue }) => Revenue.statements);
 
   const togglePdfViewState = () => {
     setSectionState(!showPdfSection);
@@ -58,7 +60,7 @@ export default function LineItem(props) {
             </Button>
           </Grid>
           <Grid item>
-            <Button variant="contained" className={classes.exitButton} onClick={() => history.push("/revenue/statements")}>
+            <Button variant="contained" className={classes.exitButton} onClick={() => history.push(`/revenue/statement/details?id=${activeStatement._id}`)}>
               Exit
             </Button>
           </Grid>
