@@ -32,6 +32,7 @@ import { CREATEDESCRIPTORFILE } from "graphQL/useMutationCreateDescriptorFile";
 import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
 import { GET_DOCUMENTS } from "graphQL/useQueryDocuments";
 import { setStateIfDeepEqual } from "components/Shared/functions";
+import AutoCompleteDocumentList from "components/Shared/Forms/Fields/AutoCompleteDocumentList";
 
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
@@ -517,7 +518,16 @@ export default function RelatedFile(props) {
                   alignItems: "start",
                 }}
               >
-                <Autocomplete
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <AutoCompleteDocumentList 
+                      search={search}
+                      setSearch={setSearch}
+                      onSelect={onSearcSelected}
+                    />
+                  </Grid>
+                </Grid>
+                {/* <Autocomplete
                   defaultValue={search}
                   value={search}
                   disableListWrap
@@ -592,7 +602,7 @@ export default function RelatedFile(props) {
                       size="small"
                     />
                   )}
-                />
+                 /> */}
               </ListItem>
             )}
           </>
