@@ -142,7 +142,7 @@ function RevenueStatementTable(props) {
 
             headers.forEach((column) => {
                 if (column?.options?.filter) {
-                    const customFilterOptions = column.customFilterOptions;
+                    const custom = column.custom;
                     column.options = {
                         ...column.options,
                         filter: true,
@@ -152,7 +152,7 @@ function RevenueStatementTable(props) {
                                 column.filterKey = headers.find(el => el.name === column.name)?.esKey;
                                 return (
                                     <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-                                        query={GET_ES_FILTER_LIST} esIndex={esIndex} customFilterOptions={customFilterOptions} />
+                                        query={GET_ES_FILTER_LIST} esIndex={esIndex} custom={custom} />
                                 );
                             }
                         }

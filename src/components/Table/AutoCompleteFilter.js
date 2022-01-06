@@ -7,7 +7,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-export function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, esIndex, filters, customFilterOptions }) {
+export function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, esIndex, filters, custom }) {
     const [open, setOpen] = useState(false);
     const [options, setOptions] = useState([]);
     const [value, setValue] = useState({ key: filterList[index][0] });
@@ -23,10 +23,10 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
     }, [filterList[index][0]]);
 
     useEffect(() => {
-        if(!customFilterOptions){
+        if(!custom?.filterOptions){
             getFiltersAction("");
         }else{
-            setOptions(customFilterOptions)
+            setOptions(custom?.filterOptions)
         }
     }, []);
 
@@ -57,6 +57,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
                 search,
                 extendSearchQuery,
                 size: 50,
+                key_as_string: custom?.key_as_string
             },
         });
     };

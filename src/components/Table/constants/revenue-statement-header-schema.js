@@ -28,12 +28,18 @@ const RevenueStatementHeadCells = [
     label: "Check Date",
     esKey: "checkDate",
     options: { sort: true, filter: true },
+    custom:{
+      key_as_string: true,
+    }
   },
   {
     name: "depositDate",
     label: "Deposit Date",
     esKey: "depositDate",
     options: { sort: true, filter: true },
+    custom:{
+      key_as_string: true,
+    }
   },
   {
     name: "lines",
@@ -83,14 +89,16 @@ const RevenueStatementHeadCells = [
     label: "Validation",
     esKey: "validation.keyword",
     options: { sort: true, filter: true },
-    customFilterOptions: [
-      {
-        key: "Validated",
-      },
-      {
-        key: "Potential Issues",
-      },
-    ],
+    custom:{
+      filterOptions: [
+        {
+          key: "Validated",
+        },
+        {
+          key: "Potential Issues",
+        },
+      ],
+    }
   },
 ];
 
