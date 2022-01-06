@@ -16,6 +16,8 @@ import TableHeader from "components/Table/constants/map-grid-tax-owners-header-s
 // Utilities
 import { usetableStyles } from "../Styles";
 
+const genericDataActions = ['comments', 'tags', 'ifAreContacts']
+
 function MapGridTaxOwnersTable(props) {
   const classes = usetableStyles();
   const searchInput = useSelector(
@@ -26,26 +28,37 @@ function MapGridTaxOwnersTable(props) {
     return headers;
   };
 
-  const setTableMeta = React.useMemo(
-    () =>
-      debounce((request, top, callback) => {
-        props.setTableMeta(request);
-      }, 500),
-    []
-  );
+  const formatHits = (hits) => {
+    hits = hits.map((hit) => {
+      hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
+      return hit;
+    });
+    return hits
+  }
 
   useEffect(() => {
-    setTableMeta({
+    props.setTableMeta({
       addableName: "Tax Owners",
-      extendSearchQuery: searchInput ? `ownerName:*${searchInput}*`: '',
+      extendSearchQuery: (() => {
+        let searchString = ""
+        if (searchInput) {
+          searchString = searchInput.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
+        }
+    
+        return searchString
+          ? `(ownerName:(${searchString.join('* AND ')}*))^4 OR (ownerName:(${searchString.join('* ')}*))^2 OR (_all:(${searchString.join('* ')}*))`
+          : ""
+      })(),
       TableHeader: copy(TableHeader),
       esIndex: "platformData:globalowner",
       startPaginationAt: 25,
       formatColumns,
+      formatHits,
+      initializeGenericData: { key: 'id', actions: ['comments', 'tracks', 'tags', 'ifAreContacts'] }
     });
     // eslint-disable-next-line
   }, [
-    searchInput,
+    searchInput
   ]);
 
   return (

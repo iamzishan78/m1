@@ -1,6 +1,6 @@
 const ownersColumnHeaders = [
   {
-    name: "entity",
+    name: "id",
     options: {
       display: false,
       filter: false,
