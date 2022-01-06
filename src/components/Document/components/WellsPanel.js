@@ -8,6 +8,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+
+//Contexts
 import { AppContext } from "AppContext";
 import { DocumentContext } from "../DocumentContext";
 
@@ -97,10 +99,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Contacts(props) {
+  // Initials
   let history = useHistory();
   const classes = useStyles();
-  const [search, setSearch] = useState("");
 
+  // States
+  const [search, setSearch] = useState("");
   const [isSearchActive, setSearchState] = useState(false);
   const [addWell, setAddWell] = useState(false);
   const [deletedRow, setDeletedRow] = useState('')
@@ -157,19 +161,22 @@ export default function Contacts(props) {
   }
 
   const goToWell = (well) => {
-    
-    setStateApp((stateApp) => ({
+
+    // sending to wells page
+    history.push(`/map/wells/${well?.id.toUpperCase()}/${well?.latitude}/${well?.longitude}`);
+
+    setStateApp({
       ...stateApp,
-      selectedWell: well,
+      DocumentDrawer: false,
+      selectedDocument: {},
       wellDetailCardOpen: true,
       expandedCard: true,
       openWellDetails: true,
-      popupOpen: false, 
+      popupOpen: false,
       selectedWellId: well?.id,
-      // wellSelectedCoordinates: [Number(well?.longitude), Number(well?.latitude)],
-    }));
-    // console.log(`/map/wells/${well?.id.toUpperCase()}/${well?.latitude}/${well?.longitude}`);
-    history.push(`/map/wells/${well?.id.toUpperCase()}/${well?.latitude}/${well?.longitude}`);
+      wellSelectedCoordinates: [Number(well?.longitude), Number(well?.latitude)],
+    });
+
   };
 
   // searching existing well
