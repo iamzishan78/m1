@@ -33,27 +33,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const cards = [
-  {
-    heading: "Total Properties",
-    points: "1,463",
-  },
-  {
-    heading: "Active",
-    points: "992",
-  },
-  {
-    heading: "Inactive",
-    points: "471",
-  },
-  {
-    heading: "Unmapped",
-    points: "17",
-    type: "warning",
-  },
-];
-
-
 export default function Properties() {
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
