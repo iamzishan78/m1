@@ -493,7 +493,7 @@ export default function Navigation(props) {
                 <DocumentSearch />
               </>
             )}
-            {location.pathname === "/contacts" && <ContactSearch />}
+           {(location.pathname === "/contacts" ||location.pathname === "/contacts/") && <ContactSearch />}
             {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
 
             {location.pathname.startsWith("/flow") && <DealSearch />}

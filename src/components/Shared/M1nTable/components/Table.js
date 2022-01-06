@@ -1774,8 +1774,8 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
-                  const docInfo = rows.find((row) => row._id === row_line._id);
-                  let docExtention = docInfo?.fileName?.split(".")?.[1]?.toLowerCase();
+                  const docInfo = row_line;
+                  let docExtention = row_line?.fileName?.split(".")?.[1]?.toLowerCase();
                   return (
                     <div style={{ marginRight: "10px", display: "flex", justifyContent: "left", alignItems: "center" }}>
                       <IconButton
@@ -1786,6 +1786,7 @@ function SubTable(props) {
                               props.addAble.type === "parcelDocument" ||
                               props.addAble.type === "wellDocument" ||
                               props.addAble.type === "AgreementDocument" ||
+                              props.addAble.type === "document" ||
                               props.addAble.type === "UnitDocument"
                               ? row_line.fileId
                               : row_line?._id
