@@ -612,9 +612,9 @@ export default function DetailComponents(props) {
                 setUploadedFileData={setUploadedFileData}
               ></AddDialogeUploadZone>
 
-              <div className={classes.tags}>
+              {/* <div className={classes.tags} style={{ marginTop: -32 }}>
                 <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
-              </div>
+              </div> */}
               <CommentComponent targetLabel={"check"} targetSourceId={checkId} />
             </div>
           )}

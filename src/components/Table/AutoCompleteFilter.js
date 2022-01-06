@@ -76,7 +76,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
                     setSearch('')
                     setValue(null)
                 } else {
-                    filterList[index][0] = value.key.replace(/^\,|\,$/gm, "")
+                    filterList[index][0] = typeof value.key === 'string' ? value.key.replace(/^\,|\,$/gm, "") : value.key
                     setSearch(value.key)
                     setValue(value)
                 }
