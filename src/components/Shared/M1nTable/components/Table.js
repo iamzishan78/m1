@@ -3099,7 +3099,7 @@ function SubTable(props) {
         // menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
       }
       if (props.addAble.type === "revenueStatementDetails") {
-        buttonLabel = "+ ADD LINE ITEM";
+        buttonLabel = "+ INPUT DETAILS";
       }
 
       const addAction = (e) => {
