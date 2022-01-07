@@ -244,7 +244,7 @@ export const TableHOC = (Component) => {
             };
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0) {
-                    if(columns[index].customFilterOptions?.length > 0){
+                    if(columns[index].custom?.filterOptions?.length > 0){
                         pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0] })
                     }else{
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
