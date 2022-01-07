@@ -9,6 +9,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ExpandIcon from "./components/svgIcons/ExpandIcon";
 import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Tooltip from "@material-ui/core/Tooltip";
 import Dialog from "@material-ui/core/Dialog";
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -30,7 +31,7 @@ import ContactSearch from "./components/ContactSearch";
 // contexts 
 import { AppContext } from "../../AppContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
-import { Avatar, Box, Grid } from "@material-ui/core";
+import { Avatar, Box, Grid, Breadcrumbs, Typography, } from "@material-ui/core";
 import FolderIcon from '@material-ui/icons/Folder';
 import { modifyExandableCardStyle } from "components/Shared/functions/shapeLayer";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
@@ -48,7 +49,7 @@ function ExpandableCard(props) {
     ExpandableCardContext
   );
   const [openBugModal, setOpenBugModal] = useState(false);
-  const [toggleExpand, setToggleExpand] = useState(false);
+  const [toggleExpand, setToggleExpand] = useState(true);
   const [isExpanded, setExpanded] = useState([]);
   const [title, setTitle] = useState(props.title);
   const [subTitle] = useState(props.subTitle);
@@ -209,6 +210,19 @@ function ExpandableCard(props) {
         color: '#1a2341',
         fontSize: '2.3rem'
       }
+    },
+    breadcrumContainer: {
+      padding: "15px",
+      background: "white",
+      color: "lightgrey",
+    },
+    prevlocation: {
+      marginLeft: "10px",
+      fontSize: "16px",
+      cursor: "pointer"
+    },
+    currentLocation: {
+      color: "#18AADD", fontSize: "16px"
     }
   }));
 
@@ -243,9 +257,6 @@ function ExpandableCard(props) {
   }, [props.zIndex]);
 
   const handleExpand = () => {
-
-    // if (parent === "map" && $("#popupContainer").length) {
-    // }
 
     if (toggleExpand === false) {
       setToggleExpand(true);
@@ -453,6 +464,20 @@ function ExpandableCard(props) {
     };
   }, [openDialog, props.targetLabel, isExpanded, width]);
 
+  const DisplayBreadCrums = () => {
+    return <div className={classes.breadcrumContainer}>
+      <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+        <Typography className={classes.prevlocation} color="inherit" onClick={() => history.push('/documents')}>
+          Documents
+        </Typography>
+        <Typography className={classes.prevlocation} color="inherit">
+          Wells
+        </Typography>
+        <Typography className={classes.currentLocation}> {title.toUpperCase()}</Typography>
+      </Breadcrumbs>
+    </div>
+  }
+
 
   return (
     <React.Fragment>
@@ -479,7 +504,6 @@ function ExpandableCard(props) {
       )}
 
 
-
       <Card className={classes.card}>
 
         {/* Modal popup for reporting bugs on expandable card  */}
@@ -487,6 +511,9 @@ function ExpandableCard(props) {
           open={openBugModal}
           onClose={() => setOpenBugModal(false)}
         />
+
+        <DisplayBreadCrums />
+
         <CardHeader
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={

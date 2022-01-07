@@ -163,18 +163,12 @@ export default function Contacts(props) {
   const goToWell = (well) => {
 
     // sending to wells page
-    history.push(`/map/wells/${well?.id.toUpperCase()}/${well?.latitude}/${well?.longitude}`);
+    history.push(`/map/wells/${well?.id.toUpperCase()}`);
 
     setStateApp({
       ...stateApp,
       DocumentDrawer: false,
       selectedDocument: {},
-      wellDetailCardOpen: true,
-      expandedCard: true,
-      openWellDetails: true,
-      popupOpen: false,
-      selectedWellId: well?.id,
-      wellSelectedCoordinates: [Number(well?.longitude), Number(well?.latitude)],
     });
 
   };

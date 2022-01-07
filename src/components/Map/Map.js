@@ -411,14 +411,13 @@ function Map({ type, paramId, lati, longi }) {
       const currentFeature = { ...(await getElasticWell(paramId)) }
       if (currentFeature?.Id)
         currentFeature.id = currentFeature.Id
-      setStateApp((stateApp) => ({
+      setStateApp({
         ...stateApp,
         selectedWell: currentFeature,
         selectedWellId: paramId.toLowerCase(),
-        // wellSelectedCoordinates: [Number(longi), Number(lati)],
         popupOpen: false,
         expandedCard: true,
-      }));
+      });
       setShowExpandableCard(true)
       findBoundsMap([currentFeature.geoJSON], map);
       drawWellBoundary(map, [currentFeature.Longitude, currentFeature.Latitude])
@@ -5983,8 +5982,8 @@ function Map({ type, paramId, lati, longi }) {
       // mathematical formula for screen fit
       const alpha = 0.01;
       const bbox = [
-        [stateApp.selectedWell.longitude - 1.5 * alpha, stateApp.selectedWell.latitude],
-        [stateApp.selectedWell.longitude + 0.5 * alpha, stateApp.selectedWell.latitude],
+        [stateApp?.selectedWell?.longitude - 1.5 * alpha, stateApp?.selectedWell?.latitude],
+        [stateApp?.selectedWell?.longitude + 0.5 * alpha, stateApp?.selectedWell?.latitude],
       ];
 
       // map may be null when wellDetailCard is launched from somewhere else

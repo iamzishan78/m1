@@ -34,6 +34,7 @@ function WellSearchApiField(props) {
             debounce((request, callback) => {
                 getESWellsPaginatedList({
                     variables: {
+                        // polygon: {},
                         esIndex: "platformData:wells",
                         pagination: {
                             first: startPaginationAt,
