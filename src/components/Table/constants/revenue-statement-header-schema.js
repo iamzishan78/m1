@@ -15,6 +15,7 @@ const RevenueStatementHeadCells = [
       filter: true,
       customBodyRender: (value, tableMeta, updateValue) => {
         return (
+          value ? 
           <p
             onClick={(e) => {
               e.stopPropagation();
@@ -23,7 +24,8 @@ const RevenueStatementHeadCells = [
             style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
           >
             {value}
-          </p>
+          </p> :
+          <p style={{ color: '#898989b0' }}>N/A</p>
         );
       }, 
     },
@@ -39,7 +41,13 @@ const RevenueStatementHeadCells = [
     name: "checkAmount",
     label: "Check Amount",
     esKey: "checkAmount",
-    options: { sort: true, filter: true },
+    options: { 
+      sort: true, 
+      filter: true,               
+      customBodyRender: (value) => {
+        return value ? <p style={{ fontWeight: 600 }}>{ value ? `$${value}` : '' }</p> : <p style={{ color: '#898989b0' }}>N/A</p>;
+      }, 
+    },
   },
   {
     name: "checkDate",
