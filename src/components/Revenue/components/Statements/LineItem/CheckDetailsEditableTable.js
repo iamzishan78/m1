@@ -19,6 +19,7 @@ import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import get from 'lodash/get'
 import set from 'lodash/set'
 import { Grid, Input, Select } from 'components/Shared/SpreadsheetGrid'
+import { AutoCompleteField } from "./AutoCompleteField";
 
 
 const Rows = [];
@@ -99,24 +100,23 @@ function CheckDetailsEditableTable(props) {
     const onFieldChange = (rowId, field) => (value) => {
         const row = rows.find((r) => r._id === rowId);
         set(row, field, value)
-        // rows[rowId][field] = value;
         setRows([].concat(rows))
     }
 
-    const cols = () => RevenueStatementHeadCells.map((cell) => {
+    const cols = () => RevenueStatementHeadCells.map((cell, index) => {
         cell.value = (row, { focus }) => {
             return (
 
 
-                // <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-                //     query={GET_ES_FILTER_LIST} esIndex={esIndex} />
+                <AutoCompleteField column={cell} index={index} onChange={onFieldChange}
+                    query={GET_ES_FILTER_LIST} esIndex={esIndex} />
 
 
-                <Input
-                    value={get(row, cell.id)}
-                    focus={focus}
-                    onChange={onFieldChange(row._id, cell.id)}
-                />
+                // <Input
+                //     value={get(row, cell.id)}
+                //     focus={focus}
+                //     onChange={onFieldChange(row._id, cell.id)}
+                // />
             );
         }
         return cell;
