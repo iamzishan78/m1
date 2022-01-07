@@ -1496,10 +1496,8 @@ function SubTable(props) {
                         ? tableMeta.rowData[1]
                           : props.parent === "ownersPerParcel"
                             ? tableMeta.rowData[1]
-                            : props.parent === "RevenueStatementTable"
-                              ? tableMeta.rowData[1]?.split("_")[1]
                               : tableMeta.rowData[0];
-                              if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
+                  if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
                   if (props.parent === "TractsTable" && props.targetLabel === "tract") {
@@ -1802,7 +1800,6 @@ function SubTable(props) {
 
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
-
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
@@ -1810,8 +1807,6 @@ function SubTable(props) {
                         ? tableMeta.rowData[1]
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
-                          : props.parent === "RevenueStatementTable"
-                            ? tableMeta.rowData[1]?.split("_")[1]
                             : tableMeta.rowData[0];
 
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
@@ -3356,7 +3351,7 @@ function SubTable(props) {
         // need stopPropagation
         // history.push("/revenue/property/details");
       }
-      if (props.targetLabel === "revenueStatements") {
+      if (props.targetLabel === "check") {
         if (rows[dataIndex]?._id) {
           history.push(`/revenue/statement/details?id=${rows[dataIndex]?._id}`);
         }

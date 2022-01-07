@@ -134,6 +134,10 @@ function RevenueStatementTable(props) {
                 hit.depositDate = hit.depositDate
                   ? moment(new Date(hit.depositDate)).format("MM/DD/YYYY")
                   : null;
+                hit.tags = hit?.tags?.length > 0
+                  ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+                  : [[], 0];
+                hit.commentsCounter = hit.comments ? hit.comments.length : 0;
                 return hit;
             });
             props.onGettingStatements(hits);
