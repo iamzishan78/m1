@@ -83,8 +83,8 @@ const useStyles = makeStyles((theme) => ({
   },
   detailHeader: {
     backgroundColor: "#fff",
-    padding: "20px 20px 8px 24px",
-    borderRadius: 8,
+    padding: "20px 20px 8px 45px",
+    marginTop: "7px",
   },
   title: {
     display: "flex",
@@ -286,7 +286,7 @@ export default function DetailComponents(props) {
 
   useEffect(() => {
     if (getCheckResult?.getCheck?.check)
-      dispatch(setRevenueKey('statements', { ...statements, activeStatement: getCheckResult?.getCheck?.check }));
+      dispatch(setRevenueKey("statements", { ...statements, activeStatement: getCheckResult?.getCheck?.check }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getCheckResult, dispatch]);
 
@@ -332,17 +332,19 @@ export default function DetailComponents(props) {
       });
       //* Getting most recent uploaded pdf file
       let recentFile = {};
-      files.getFileDescriptors.filter(d => d.fileName.split(".")?.[1]?.toLowerCase() === 'pdf').forEach((d, index) => {
-        let descriptor = d;
-        descriptor = { ...descriptor, dateTime: moment(descriptor.dateTime, "MM/DD/YYYY HH:mm Z") };
-        if (index === 0) recentFile = descriptor;
-        else {
-          if (recentFile.dateTime < descriptor.dateTime) {
-            recentFile = descriptor;
+      files.getFileDescriptors
+        .filter((d) => d.fileName.split(".")?.[1]?.toLowerCase() === "pdf")
+        .forEach((d, index) => {
+          let descriptor = d;
+          descriptor = { ...descriptor, dateTime: moment(descriptor.dateTime, "MM/DD/YYYY HH:mm Z") };
+          if (index === 0) recentFile = descriptor;
+          else {
+            if (recentFile.dateTime < descriptor.dateTime) {
+              recentFile = descriptor;
+            }
           }
-        }
-      });
-      dispatch(setRevenueKey('statements', { ...statements, recentFile }));
+        });
+      dispatch(setRevenueKey("statements", { ...statements, recentFile }));
     }
   }, [files, uploadedFiles, viewFiles]);
 
@@ -364,47 +366,48 @@ export default function DetailComponents(props) {
 
   return (
     <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor?.["name"]}`}>
-      <div className="flex justifyBetween alignStart w-100">
-        <div className="w-100" style={{ padding: 20, maxWidth: "calc(100% - 380px)" }}>
-          {/**
-           * Detail title section
-           */}
-          <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
-            <div className="flex column alignStart justifyStart w-100">
-              <div className={classes.title}>
-                <IconButton className={classes.icon}>
-                  <CurrencyIcon fontSize="large" />
-                </IconButton>
-                <div className={classes.titleText}>
-                  {checksFlatData && (
-                    <Typography
-                      style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
-                    >{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
-                  )}
-                  {checksFlatData && (
-                    <Typography variant="subtitle1" style={{ marginLeft: 8 }}>
-                      {moment.utc(checksFlatData.checkDate).format("MM/DD/YYYY")}
-                    </Typography>
-                  )}
-                  <div className={classes.highlighter}>
-                    <Typography className={classes.highlight} variant="highlight">
-                      Revenue Check
-                    </Typography>
-                  </div>
-                </div>
+      {/**
+       * Detail title section
+       */}
+      <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
+        <div className="flex column alignStart justifyStart w-100">
+          <div className={classes.title}>
+            <IconButton className={classes.icon}>
+              <CurrencyIcon fontSize="large" />
+            </IconButton>
+            <div className={classes.titleText}>
+              {checksFlatData && (
+                <Typography
+                  style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
+                >{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
+              )}
+              {checksFlatData && (
+                <Typography variant="subtitle1" style={{ marginLeft: 8 }}>
+                  {moment.utc(checksFlatData.checkDate).format("MM/DD/YYYY")}
+                </Typography>
+              )}
+              <div className={classes.highlighter}>
+                <Typography className={classes.highlight} variant="highlight">
+                  Revenue Check
+                </Typography>
               </div>
-
-              <Grid item xs={12} style={{ marginTop: 16 }}>
-                <div className={classes.tags}>
-                  <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
-                </div>
-              </Grid>
             </div>
+          </div>
 
-            {/* <div className="flex justifyEnd alignStart w-100" style={{ maxWidth: 290, marginLeft: 8 }}>
+          <Grid item xs={12} style={{ marginTop: 16 }}>
+            <div className={classes.tags}>
+              <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
+            </div>
+          </Grid>
+        </div>
+
+        {/* <div className="flex justifyEnd alignStart w-100" style={{ maxWidth: 290, marginLeft: 8 }}>
               <img src="https://miro.medium.com/max/1400/1*ybR6fbfwo6XTmWvTjXSOAA.png" alt="map-view" height={200} width={290} style={{ borderRadius: 8 }} />
             </div> */}
-          </div>
+      </div>
+
+      <div className="flex justifyBetween alignStart w-100">
+        <div className="w-100" style={{ padding: 20, maxWidth: "calc(100% - 380px)" }}>
           {/**
            * Detail tabs section
            */}
