@@ -46,10 +46,9 @@ const CUSTOM_DATES = {
   LAST_YEAR: "Last Year",
 };
 
-export default function Portfolio({ onChangeDates }) {
+// fromDate and toDate should be passed from the parent
+export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate }) {
   const classes = useStyles();
-  const [fromDate, setFromDate] = React.useState(null);
-  const [toDate, setToDate] = React.useState(null);
 
   useEffect(() => {
     handleDateTypeChange(CUSTOM_DATES.LAST_MONTH);
@@ -136,6 +135,8 @@ export default function Portfolio({ onChangeDates }) {
             fullWidth
             value={fromDate}
             className={classes.inputFieldDate}
+            onChange={(e) => setFromDate(e.target.value)}
+
             InputLabelProps={{
               shrink: true,
             }}
@@ -164,6 +165,7 @@ export default function Portfolio({ onChangeDates }) {
             fullWidth
             value={toDate}
             className={classes.inputFieldDate}
+            onChange={(e) => setToDate(e.target.value)}
             InputLabelProps={{
               shrink: true,
             }}

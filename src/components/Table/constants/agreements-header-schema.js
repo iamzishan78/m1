@@ -22,7 +22,7 @@ const AgreementsHeadCells = [
             onClick={(e) => {
               e.stopPropagation();
               history.push(
-                `/map/${tableMeta.rowData[3]}s/${tableMeta.rowData[0]}`,
+                `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
                 { showAgreementBreadcrumb: true }
               );
             }}
