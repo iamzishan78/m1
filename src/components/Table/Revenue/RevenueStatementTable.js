@@ -7,7 +7,7 @@ import moment from "moment";
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
 
-import { setStateIfDeepEqual, deepEqualObjects, copy } from "components/Shared/functions";
+import { setStateIfDeepEqual, deepEqualObjects } from "components/Shared/functions";
 
 // Header Schemas 
 import TableHeader from 'components/Table/constants/revenue-statement-header-schema';
@@ -18,7 +18,7 @@ import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { GET_VALIDATION_CHECK } from "graphQL/useQueryValidationCheck";
 import { GET_ES_POTENTIAL_ISSUES_SUMMARY } from "graphQL/useQueryESSummary";
-import { AutoCompleteFilter } from "../AutoCompleteFilter";
+import { setColumnsData } from "components/Table/helpers";
 
 
 function RevenueStatementTable(props) {
@@ -26,6 +26,7 @@ function RevenueStatementTable(props) {
 
     // function states 
     const [columns, Columns] = useState([]);
+    const [filters, setFilters] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
     const [potentialIssuesList, setPotentialIssuesList] = useState([]);
     const [pIssuesArr, setIssuesArr] = useState([]);
@@ -142,29 +143,17 @@ function RevenueStatementTable(props) {
             });
             props.onGettingStatements(hits);
             props.setRows(hits);
-            let headers = copy(TableHeader)
 
-            headers.forEach((column) => {
-                if (column?.options?.filter) {
-                    const custom = column.custom;
-                    column.options = {
-                        ...column.options,
-                        filter: true,
-                        filterType: 'custom',
-                        filterOptions: {
-                            display: (filterList, onChange, index, column) => {
-                                column.filterKey = headers.find(el => el.name === column.name)?.esKey;
-                                return (
-                                    <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-                                        query={GET_ES_FILTER_LIST} esIndex={esIndex} custom={custom} />
-                                );
-                            }
-                        }
-                    }
-                }
-            })
+            setColumnsData(
+                TableHeader,
+                filters,
+                JSON.parse(JSON.stringify(TableHeader)),
+                setColumns,
+                setFilters,
+                GET_ES_FILTER_LIST,
+                esIndex
+            );
 
-            setColumns(headers);
             props.setLoading(false);
         }
         else if (tableData?.hits?.length === 0) {

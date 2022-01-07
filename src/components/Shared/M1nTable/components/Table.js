@@ -3351,11 +3351,6 @@ function SubTable(props) {
         // need stopPropagation
         // history.push("/revenue/property/details");
       }
-      if (props.targetLabel === "check") {
-        if (rows[dataIndex]?._id) {
-          history.push(`/revenue/statement/details?id=${rows[dataIndex]?._id}`);
-        }
-      }
     },
     onChangePage: (pageState) => {
       setPageInd(pageState);

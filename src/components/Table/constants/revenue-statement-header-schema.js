@@ -1,3 +1,5 @@
+import { history } from "store";
+
 const RevenueStatementHeadCells = [
   {
     name: "_id",
@@ -8,7 +10,23 @@ const RevenueStatementHeadCells = [
     name: "checkNumber",
     label: "Check Number",
     esKey: "checkNumber.keyword",
-    options: { sort: true, filter: true },
+    options: { 
+      sort: true, 
+      filter: true,
+      customBodyRender: (value, tableMeta, updateValue) => {
+        return (
+          <p
+            onClick={(e) => {
+              e.stopPropagation();
+              history.push(`/revenue/statement/details?id=${tableMeta.rowData[0]}`);
+            }}
+            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+          >
+            {value}
+          </p>
+        );
+      }, 
+    },
   },
   {
     name: "purchaserName",
@@ -86,9 +104,15 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "validation",
+    label: " ",
+    esKey: "validation.keyword",
+    options: { sort: false, filter: false, viewColumns: false },
+  },
+  {
+    name: "validation",
     label: "Validation",
     esKey: "validation.keyword",
-    options: { sort: true, filter: true },
+    options: { display: false, sort: false, filter: true, viewColumns: false },
     custom:{
       filterOptions: [
         {

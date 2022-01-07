@@ -97,6 +97,7 @@ export const setColumnsData = (
   columns.forEach((column, index) => {
     const tableCol = TableHeader.find((el) => el.name === column.name)
     if (column?.options?.filter) {
+      const custom = column.custom;
       column.options = {
         ...tableCol.options,
         ...column.options,
@@ -116,6 +117,7 @@ export const setColumnsData = (
                 index={index}
                 onChange={onChange}
                 query={query}
+                custom={custom}
               />
             );
           },
