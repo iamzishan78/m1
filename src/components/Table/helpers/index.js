@@ -91,7 +91,8 @@ export const setColumnsData = (
   columns,
   setColumns,
   setFilters,
-  query
+  query,
+  esIndex
 ) => {
   columns.forEach((column, index) => {
     if (column?.options?.filter) {
@@ -107,6 +108,7 @@ export const setColumnsData = (
             )?.esKey;
             return (
               <AutoCompleteFilter
+                esIndex={esIndex}
                 filterList={filterList}
                 column={column}
                 index={index}

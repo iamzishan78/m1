@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from "react";
+import React, { useContext, useState, useEffect, useCallback, useRef } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { Button, Tooltip, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -33,8 +33,11 @@ export const TableESHOC = (Component) => {
 
         const [tableMeta, setTableMeta] = useState([]);
 
-        const [rows, Rows] = useState([]);
-        const setRows = (newState) => { setStateIfDeepEqual(Rows, newState) };
+        const [rows, setRows] = useState([]);
+        // const [rows, Rows] = useState([]);
+        // const setRows = (newState) => { 
+        //     setStateIfDeepEqual(Rows, newState) 
+        // };
         const [searchedRows, setSearchedRows] = useState([])
 
         const [selectedRows, setSelectedRows] = useState([]);
@@ -54,10 +57,20 @@ export const TableESHOC = (Component) => {
             }
         });
 
+        // have to use refs because callbacks aren't guaranteed to get current state
         const [tracksByObjectType, { data: constDataTracks }] = useLazyQuery(TRACKSBYOBJECTTYPE, { fetchPolicy: "cache-and-network", });
+        const constDataTracksRef = useRef();
+        constDataTracksRef.current = constDataTracks;
         const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(COMMENTSCOUNTER, { fetchPolicy: "cache-and-network", });
+        const dataCommentsCounterRef = useRef();
+        dataCommentsCounterRef.current = dataCommentsCounter;
         const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES, { fetchPolicy: "cache-and-network", });
-        const [checkIfOwnersAreContacts, { data: checkIfOwnersAreContactsData },] = useLazyQuery(IFARECONTACTS, { fetchPolicy: "cache-and-network", });
+        const dataTagSamplesRef = useRef();
+        dataTagSamplesRef.current = dataTagSamples;
+        const [checkIfOwnersAreContacts, { data: checkIfOwnersAreContactsData }] = useLazyQuery(IFARECONTACTS, { fetchPolicy: "cache-and-network", });
+        const checkIfOwnersAreContactsDataRef = useRef();
+        checkIfOwnersAreContactsDataRef.current = checkIfOwnersAreContactsData;
+
 
         const [dependencyUpdate, SetDependencyUpdate] = useState(false);
 
@@ -97,26 +110,26 @@ export const TableESHOC = (Component) => {
             }
         }, [stateApp.user, props.targetLabel, props.showTracks]);
 
-
         useEffect(() => {
             SetDependencyUpdate(!dependencyUpdate)
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
-
-
         useEffect(() => {
-            getESPaginatedList({
-                variables: {
-                    esIndex: tableMeta.esIndex,
-                    pagination: {
-                        first: tableMeta.startPaginationAt,
-                        keep_alive: "1micros"
-                    },
-                    search: tableMeta.extendSearchQuery
-                }
-            });
-        }, [tableMeta?.esIndex]);
-
+            if(tableMeta?.esIndex){
+                getESPaginatedList({
+                    variables: {
+                        esIndex: tableMeta.esIndex,
+                        pagination: {
+                            first: tableMeta.startPaginationAt,
+                            keep_alive: "1micros"
+                        },
+                        search: tableMeta.extendSearchQuery,
+                        filters: tableMeta.filters ? tableMeta.filters : [],
+                        polygon: tableMeta.polygon? tableMeta.polygon : undefined
+                    }
+                });
+            }
+        }, [tableMeta]);
 
         useEffect(() => {
             if (tableData?.hits?.length > 0 && tableMeta?.initializeGenericData?.actions) {
@@ -124,7 +137,6 @@ export const TableESHOC = (Component) => {
                 initializeGenericData(objectsIdsArray, tableMeta.initializeGenericData.actions);
             }
         }, [tableData]);
-
 
         useEffect(() => {
             if (tableData?.hits?.length > 0) {
@@ -163,7 +175,10 @@ export const TableESHOC = (Component) => {
                 setRows([]);
                 setLoading(false);
             }
-        }, [tableData, dependencyUpdate]);
+        }, [
+            tableData, 
+            dependencyUpdate
+        ]);
 
         const initializeGenericData = useCallback((ids, actions) => {
             if (actions.includes("comments")) {
@@ -204,27 +219,51 @@ export const TableESHOC = (Component) => {
             })
         };
 
-        const setGenricData = (data, id, actions) => {
-
+        const setGenricData = (data, id, actions, genericDataActions) => {
             if (actions.includes('tracks')) {
                 data.isTracked = false;
-                for (let i = 0; i < dataTracks?.tracksByObjectType.length; i++) {
-                    if (id === dataTracks?.tracksByObjectType[i].trackOn) {
+                const tracks = dataTracks?.tracksByObjectTypeRef?.current || [];
+                for (let i = 0; i < tracks?.length; i++) {
+                    if (id === tracks[i].trackOn) {
                         data.isTracked = true;
                         break;
                     }
                 }
             }
             if (actions.includes('comments')) {
-                data.commentsCounter = data.comments.length;
+                data.commentsCounter = !genericDataActions?.includes('comments')
+                    ? data.comments?.length 
+                    : (() => {
+                        const comments = dataCommentsCounterRef?.current?.commentsCounter || []
+                        let commentsCounter = 0
+                        for (let i = 0; i < comments.length; i++) {
+                            if (id === comments[i]._id) {
+                                commentsCounter = comments[i].total;
+                                break;
+                            }
+                        }
+                        return commentsCounter
+                    })();
             }
             if (actions.includes('tags')) {
-                if (data?.tags[0] && data?.tags[0].tag)
-                    data.tags = [data.tags.map(t => (t.tag)), data.tags.length];
+                data.tags = !genericDataActions?.includes('tags')
+                    ? data?.tags && data?.tags?.[0] && data?.tags?.[0].tag &&
+                        [data.tags.map(t => (t.tag)), data.tags.length]
+                    : (() => {
+                        const tags = dataTagSamplesRef?.current?.tagSamples || []
+                        let newTags = [[], 0];
+                        for (let i = 0; i < tags.length; i++) {
+                            if (id === tags[i]._id) {
+                                newTags = [tags[i].tags, tags[i].total];
+                                break;
+                            }
+                        }
+                        return newTags
+                })();
             }
 
             if (actions.includes('ifAreContacts')) {
-                const ifAreContacs = checkIfOwnersAreContactsData?.ifAreContacts || []
+                const ifAreContacs = checkIfOwnersAreContactsDataRef?.current?.ifAreContacts || []
                 if (ifAreContacs.length > 0) {
                     const contact = ifAreContacs.find((ifc) => ifc.globalOwner === data.id || ifc.globalOwner === data.globalOwnerId)
                     if (contact) {
@@ -239,6 +278,7 @@ export const TableESHOC = (Component) => {
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
             let pageESVariables = {
                 variables: {
+                    polygon: tableState.polygon ? tableState.polygon: undefined,
                     esIndex: tableState.esIndex,
                     search: tableState.searchText ? `${tableState.searchText}*` : '',
                     pagination: {
@@ -258,7 +298,7 @@ export const TableESHOC = (Component) => {
                             }]
                     },
 
-                    filters: [],
+                    filters: tableState.filters,
                 },
             };
             tableState.filterList.forEach((val, index) => {
@@ -305,7 +345,9 @@ export const TableESHOC = (Component) => {
         }
 
         const onTableChange = (action, tableState, rows, meta) => {
-            tableState.esIndex = tableMeta.esIndex
+            tableState.esIndex = tableMeta.esIndex;
+            tableState.filters = tableMeta.filters ? tableMeta.filters : [];
+            tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
             const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
             switch (action) {
                 case "search":

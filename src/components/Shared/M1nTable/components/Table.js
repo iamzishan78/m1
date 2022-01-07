@@ -1098,6 +1098,7 @@ function SubTable(props) {
               ...column.options,
               customBodyRender: (value, tableMeta, updateValue) => {
                 let id = props.targetLabel + tableMeta.columnIndex;
+                console.log('table detail card', props.parent, props.targetLabel)
                 if (props.parent !== "search" && props.targetLabel !== "well") {
 
                   return (
@@ -1565,8 +1566,9 @@ function SubTable(props) {
                           if (m1nSelectedRowsIndexes?.length > 0) {
                             let selectedRows = m1nSelectedRowsIndexes.map((index) => rows[index]);
                             selectedRows = selectedRows.filter((row) => !row.isContact);
-                            if (selectedRows.length > 0)
+                            if (selectedRows.length > 0) {
                               return handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, selectedRows, "multipleOwnerToContact");
+                            }
                           }
 
                           if (value && value !== "false") {
@@ -1631,7 +1633,9 @@ function SubTable(props) {
                                 },
                                 "makeOwnerAContact"
                               );
-                            } else handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, tableMeta.rowData[0], "makeOwnerAContact");
+                            } else {
+                              handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, tableMeta.rowData[0], "makeOwnerAContact");
+                            }
                             // Code is not used as we are opening different model from above
                           }
                         }}
@@ -1773,8 +1777,8 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
-                  const docInfo = rows.find((row) => row._id === row_line._id);
-                  let docExtention = docInfo?.fileName?.split(".")?.[1]?.toLowerCase();
+                  const docInfo = row_line;
+                  let docExtention = row_line?.fileName?.split(".")?.[1]?.toLowerCase();
                   return (
                     <div style={{ marginRight: "10px", display: "flex", justifyContent: "left", alignItems: "center" }}>
                       <IconButton
@@ -1785,6 +1789,7 @@ function SubTable(props) {
                               props.addAble.type === "parcelDocument" ||
                               props.addAble.type === "wellDocument" ||
                               props.addAble.type === "AgreementDocument" ||
+                              props.addAble.type === "document" ||
                               props.addAble.type === "UnitDocument"
                               ? row_line.fileId
                               : row_line?._id
@@ -3443,7 +3448,7 @@ function SubTable(props) {
               props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
-                || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+                // || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
                 ? false : null,
 
@@ -3452,7 +3457,7 @@ function SubTable(props) {
               props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
-                || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+                // || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
                 ? false : null,
 
@@ -3468,6 +3473,7 @@ function SubTable(props) {
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+                || props.parent === 'search'       /// will need to build a backend for this search 
 
               )
 

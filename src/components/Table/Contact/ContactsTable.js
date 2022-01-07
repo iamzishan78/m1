@@ -21,6 +21,8 @@ import { REMOVE_CONTACTS } from "graphQL/useMutationRemoveContact";
 import { GET_ES_CONTACTS } from "graphQL/useQueryESContacts";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 
+import { getContactsAddress } from 'utils/helper';
+
 import {
   deepEqualObjects,
   setStateIfDeepEqual,
@@ -66,6 +68,17 @@ function ContactsTable(props) {
     setStateIfDeepEqual(Columns, newState);
   };
 
+  const esSearch = (() => {
+    let searchString = ""
+    if (props.contactSearchQuery) {
+      searchString = props.contactSearchQuery.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
+    }
+
+    return searchString
+      ? `(name:(${searchString.join('* AND ')}*))^4 OR (name:(${searchString.join('* ')}*))^2 OR (_all:(${searchString.join('* ')}*))`
+      : ""
+  })();
+
   // queries
   const [getESContacts, { data: ContactsData, loading }] = useLazyQuery(
     GET_ES_CONTACTS,
@@ -96,7 +109,7 @@ function ContactsTable(props) {
           first: startPaginationAt,
           keep_alive: "1micros",
         },
-        search: props.contactSearchQuery ? `${props.contactSearchQuery}` : "",
+        search: esSearch,
         filters: selectedGridView?.filters ? selectedGridView?.filters : [],
       },
     });
@@ -135,7 +148,7 @@ function ContactsTable(props) {
         return hit;
       });
       props.setRows(JSON.parse(JSON.stringify(hits)));
-      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST);
+      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
       props.setLoading(false);
     } else if (tableData?.length === 0) {
       props.setLoading(false);
@@ -145,7 +158,7 @@ function ContactsTable(props) {
   useEffect(() => {
     tableRef.current.changePage(0)
     const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns)
-    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST);
+    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
   }, [selectedGridView]);
 
   const count = tableData?.total || 0;
@@ -156,20 +169,6 @@ function ContactsTable(props) {
     search: false,
     filter: true,
     searchText: props.contactSearchQuery,
-  };
-
-  const getContactsAddress = (contact) => {
-    let address = "https://www.google.com/maps/search/";
-    if (contact.address1)
-      address = `${address}${contact.address1.replace(/ /g, "+")}`;
-    if (contact.city)
-      address = `${address},+${contact.city.replace(/ /g, "+")}`;
-    if (contact.state) address = `${address},+${contact.state}`;
-    if (contact.zip) address = `${address}+${contact.zip}`;
-    return {
-      ...contact,
-      fullContactAddress: address,
-    };
   };
 
 
@@ -184,7 +183,7 @@ function ContactsTable(props) {
         columns[i].options.display = false;
       }
     }
-    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST);
+    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
   };
   ////////////-----Add your code section here-----///////////////////////
   const onTableChange = (action, tableState, rows, meta) => {

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -27,12 +28,12 @@ import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
 import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
 import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";
 import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
-import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+// import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
-import { PAGINATEDWELLSQUERY } from "graphQL/useQueryPaginatedWells";
-import { PAGINATEDOWNERSQUERY } from "graphQL/useQueryPaginatedOwner";
-import { PAGINATEDOPERATORSQUERY } from "graphQL/useQueryPaginatedOperators";
-import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
+// import { PAGINATEDWELLSQUERY } from "graphQL/useQueryPaginatedWells";
+// import { PAGINATEDOWNERSQUERY } from "graphQL/useQueryPaginatedOwner";
+// import { PAGINATEDOPERATORSQUERY } from "graphQL/useQueryPaginatedOperators";
+// import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
 // custom components
@@ -42,6 +43,9 @@ import WellIcon from "../../Shared/svgIcons/well";
 import LeaseGrayIcon from "../../Shared/svgIcons/lease-gray";
 import OperatorIcon from "../../Shared/svgIcons/operator";
 import LeaseIcon from "../../Shared/svgIcons/lease";
+import TractIcon from "components/Shared/svgIcons/tract";
+import UnitIcon from "components/Shared/svgIcons/unit";
+import FolderIcon from "@material-ui/icons/Folder";
 import SearchByTypeSelectField from "components/MapGridCard/components/SearchByTypeSelectField";
 import { platformDataInitialData } from "components/MapGridCard/components/data";
 
@@ -54,6 +58,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
+import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
 
 const leaseIndexName = "lease-index-v2";
 const operatorIndexName = "operator-index";
@@ -194,12 +199,8 @@ function Search() {
   const [searchHistoryList, setSearchHistoryList] = React.useState([]);
 
   // loaders
-  const [loadingWells, setLoadingWells] = React.useState(false);
-  const [loadingOwners, setLoadingOwners] = React.useState(false);
-  const [loadingLeases, setLoadingLeases] = React.useState(false);
-  const [loadingContacts, setLoadingContacts] = React.useState(false);
-  const [loadingOperators, setLoadingOperators] = React.useState(false);
-  const [loadingMapboxSearch, setLoadingMapboxSearch] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const history = useHistory();
   const classes = useStyles({ mapGridCardActivated });
 
   // queries
@@ -274,266 +275,9 @@ function Search() {
     }
   }, [searchHistoryList]);
 
-  // const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(PAGINATEDWELLSQUERY, { fetchPolicy: "network-only", skip: true });
-  const [getESWellsPaginatedList, { data: constDataWells }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
-
-  // const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(PAGINATEDOWNERSQUERY, { fetchPolicy: "network-only", skip: true });
-  const [getESOwnersPaginatedList, { data: constDataOwners }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
-
-  // const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(PAGINATEDOPERATORSQUERY, {
-  //   fetchPolicy: "network-only",
-  //   skip: true,
-  // });
-  const [getESOperatorsPaginatedList, { data: constDataOperators }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
-
-  // const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(PAGINATEDLEASESQUERY, { fetchPolicy: "network-only", skip: true });
-  const [getESLeasesPaginatedList, { data: constDataLeases }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
+  const [getESPaginatedList, { data: esSearchData }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
   //////////// Search History End//////////////////
   const startPaginationAt = 25;
-
-  const callWellSearch = React.useMemo(
-    () =>
-      debounce((request, top, callback) => {
-        getESWellsPaginatedList({
-          variables: {
-            esIndex: "platformData:wells",
-            pagination: {
-              first: startPaginationAt,
-              keep_alive: "1micros"
-            },
-            search: request.input ? `((wellName:*${request.input}*) OR (api:*${request.input}*))` : '',
-            sort: []
-          }
-        })
-        // getPaginatedWells({
-        //   variables: {
-        //     search: request.input,
-        //     pageOverride: top,
-        //   },
-        // });
-      }, 500),
-    []
-  );
-
-  const callOwnerSearch = React.useMemo(
-    () =>
-      debounce((request, top, callback) => {
-        getESOwnersPaginatedList({
-          variables: {
-            esIndex: "platformData:globalowner",
-            pagination: {
-              first: startPaginationAt,
-              keep_alive: "1micros"
-            },
-            search: request.input ? `ownerName:*${request.input}*` : '',
-            sort: []
-          }
-        })
-        // getPaginatedOwners({
-        //   variables: {
-        //     search: request.input,
-        //     pageOverride: top,
-        //   },
-        // });
-      }, 500),
-    []
-  );
-
-  const callOperatorSearch = React.useMemo(
-    () =>
-      debounce((request, top, callback) => {
-        getESOperatorsPaginatedList({
-          variables: {
-            esIndex: "platformData:operator",
-            pagination: {
-              first: startPaginationAt,
-              keep_alive: "1micros"
-            },
-            search: request.input ? `operator:*${request.input}*` : '',
-            sort: []
-          }
-        })
-        // getPaginatedOperators({
-        //   variables: {
-        //     search: request.input,
-        //     pageOverride: top,
-        //   },
-        // });
-      }, 500),
-    []
-  );
-
-  const callLeaseSearch = React.useMemo(
-    () =>
-      debounce((request, top, callback) => {
-        getESLeasesPaginatedList({
-          variables: {
-            esIndex: "platformData:lease",
-            pagination: {
-              first: startPaginationAt,
-              keep_alive: "1micros"
-            },
-            search: request.input ? `lease:*${request.input}*` : '',
-            sort: []
-          }
-        })
-        // getPaginatedLeases({
-        //   variables: {
-        //     search: request.input,
-        //     pageOverride: top,
-        //   },
-        // });
-      }, 500),
-    []
-  );
-
-  ///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
-
-  // const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-  //   fetchPolicy: "cache-and-network",
-  //   skip: true,
-  // });
-  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
-
-  const callContactsSearch = React.useMemo(
-    () =>
-      debounce((request, top, callback) => {
-        /// this function takes the search request and sends it to gql
-        getPaginatedContacts({
-          variables: {
-            esIndex: "contacts_flat",
-            pagination: {
-              first: startPaginationAt,
-              keep_alive: "1micros"
-            },
-            search: `${request.input}`,
-            sort: []
-          }
-        })
-        // getPaginatedContacts({
-        //   variables: {
-        //     search: request.input,
-        //   },
-        // });
-      }, 500),
-    []
-  );
-
-  useEffect(() => {
-    let newOptions = [];
-    if (constDataOperators) {
-      newOptions = [
-        ...constDataOperators.getESPaginatedList.hits.map((result) => {
-          return {
-            ...result,
-            Source: operatorIndexName,
-            Primary: result.Operator,
-            Secondary: null,
-          };
-        }),
-      ];
-
-      // setMaxMinOperatosScore(maxMinScore(constDataOperators.paginatedOperators.edges));
-
-      setOptions(newOptions);
-      setLoadingOperators(false);
-    }
-  }, [constDataOperators]);
-
-  useEffect(() => {
-    if (constDataWells) {
-      let newOptions = [];
-      newOptions = [
-        ...constDataWells.getESPaginatedList.hits.map((well) => {
-          return {
-            ...well,
-            Source: wellCogIndexName,
-            Primary: well.WellName,
-            Secondary: well.ApiNumber,
-          };
-        }),
-      ];
-      // setMaxMinWellsScore(maxMinScore(constDataWells.paginatedWells.edges));
-
-      setOptions(newOptions);
-      setLoadingWells(false);
-    }
-  }, [constDataWells]);
-  useEffect(() => {
-    if (constDataLeases) {
-      let newOptions = [];
-
-      newOptions = [
-        ...constDataLeases.getESPaginatedList.hits.map((result) => {
-          return {
-            ...result,
-            Source: leaseIndexName,
-            Primary: result.Lease && (result.Lease === "" || result.Lease === "N/A" || result.Lease === "(N/A)") ? "--" : result.Lease,
-            Secondary:
-              result.LeaseId && (result.LeaseId === "" || result.LeaseId === "N/A" || result.LeaseId === "(N/A)") ? null : result.LeaseId,
-          };
-        }),
-      ];
-      // setMaxMinLeasesScore(maxMinScore(constDataLeases.paginatedLeases.edges));
-
-      setOptions(newOptions);
-      setLoadingLeases(false);
-    }
-  }, [constDataLeases]);
-
-  useEffect(() => {
-    if (constDataOwners) {
-      let newOptions;
-      newOptions = [
-        ...constDataOwners.getESPaginatedList.hits.map((result) => {
-          return {
-            ...result,
-            Source: ownerCogIndexName,
-            Primary: result.OwnerName,
-            Secondary: `${result.StreetAddress}\n${result.City}\n${result.State}\n${result.Zip}`,
-          };
-        }),
-      ];
-
-      // setMaxMinOwnersScore(maxMinScore(constDataOwners.paginatedOwners.edges));
-      setOptions(newOptions);
-      setLoadingOwners(false);
-    }
-  }, [constDataOwners]);
-
-  useEffect(() => {
-    // this use effect takes the contactdata once it comes in from the gql query
-    // and flattens things into an array
-    // that presents options up to the search menu bar (called newOptions)
-    if (constDataContacts) {
-      var newOptions = [];
-      var newOptions = [
-        ...constDataContacts.getESPaginatedList.hits.map((result) => {
-          // result = { ...result.node };
-          result.Source = contactIndexName;
-
-          if (result.name) {
-            result.Primary = result.name;
-          } else {
-            result.Primary = "--";
-          }
-
-          if (result.address1 || result.city || result.state) {
-            result.Secondary = result.address1 + " " + result.city + ", " + result.state + " " + result.zip;
-          } else {
-            result.Secondary = "--";
-          }
-
-          return result;
-        }),
-        ...newOptions,
-      ];
-      setOptions(newOptions);
-      setLoadingContacts(false);
-    }
-  }, [constDataContacts]);
-
-  //////// >>>>>>>>> END
 
   const callMapboxSearch = React.useMemo(
     () =>
@@ -561,7 +305,131 @@ function Search() {
     []
   );
 
-  React.useEffect(() => {
+
+  const esCallData = React.useMemo(
+    () => ({
+      "wells": {
+        esIndex: "platformData:wells",
+        search: (request) => request.input ? `((wellName:*${request.input}*) OR (api:*${request.input}*))` : '',
+        formatOptions: (data) => {
+          return { ...data, Source: wellCogIndexName, Primary: data.WellName, Secondary: data.ApiNumber }
+        }
+      },
+      "contacts": {
+        esIndex: "contacts_flat",
+        search: (request) => `${request.input}`,
+        formatOptions: (data) => {
+          return {
+            ...data, ...data.node, Primary: data.name || "--",
+            Source: contactIndexName,
+            Secondary: data.address1 || data.city || data.state ? data.address1 + ' ' + data.city + ', ' + data.state + ' ' + data.zip : "--"
+          }
+        }
+      },
+      "tax owners": {
+        esIndex: "platformData:globalowner",
+        search: (request) => (() => {
+          let searchString = ""
+          if (request.input) {
+            searchString = request.input.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
+          }
+      
+          return searchString
+            ? `(ownerName:(${searchString.join('* AND ')}*))^4 OR (ownerName:(${searchString.join('* ')}*))^2 OR (_all:(${searchString.join('* ')}*))`
+            : ""
+        })(),
+        formatOptions: (data) => {
+          return {
+            ...data, Source: 'globalowner-index', Primary: data.OwnerName, Secondary: `${data.StreetAddress}\n${data.City}\n${data.State}\n${data.Zip}`,
+          }
+        }
+      },
+      "operators": {
+        esIndex: "platformData:operator",
+        search: (request) => request.input ? `operator:*${request.input}*` : '',
+
+        formatOptions: (data) => {
+          return { ...data, Source: operatorIndexName, Primary: data.Operator, Secondary: null }
+        }
+      },
+      "leases": {
+        esIndex: "platformData:lease",
+        search: (request) => request.input ? `lease:*${request.input}*` : '',
+        formatOptions: (data) => {
+          return {
+            ...data, Source: leaseIndexName, Primary: data.Lease && ["", "N/A", "(N/A)"].includes(data.Lease) ? "--" : data.Lease,
+            Secondary: data.LeaseId && ["", "N/A", "(N/A)"].includes(data.LeaseId) ? null : data.LeaseId
+          }
+        }
+      },
+      "units": {
+        esIndex: "shapes_flat",
+        search: (request) => request.input ? `layer:unit AND (name:${request.input}* OR shapeJson.properties.uNumber:${request.input}*)` : '',
+        formatOptions: (data) => {
+          const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State || ''}` : null
+          const Primary = data?.shapeJson?.properties?.uNumber ? `${data?.shapeJson?.properties?.uNumber} - ${data.name}` : data.name
+          return {
+            ...data, Source: 'shapes_flat', Primary, Secondary
+          }
+        }
+      },
+
+      "tracts": {
+        esIndex: "shapes_flat",
+        search: (request) => request.input ? `layer:parcel AND name:${request.input}*` : '',
+        formatOptions: (data) => {
+          const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State || ''}` : null
+          return {
+            ...data, Source: 'shapes_flat', Primary: data.name, Secondary
+          }
+        }
+      },
+      "agreements": {
+        esIndex: "shapes_flat",
+        search: (request) => request.input ? `shapeJson.properties.type:(agreement) AND shapeJson.properties.shapeLabel:${request.input}*` : '',
+        formatOptions: (data) => {
+          return {
+            ...data, Source: 'shapes_flat', Primary: data?.shapeJson?.properties?.shapeLabel, Secondary: capitalizeFirstLetter(data.layer)
+          }
+        }
+      }
+    }), [searchOption]);
+
+  const callESSearch = React.useMemo(
+    () =>
+      debounce((request) => {
+        const { esIndex, search } = esCallData[searchOption]
+        getESPaginatedList({
+          variables: {
+            esIndex,
+            pagination: {
+              first: request.searchTop ? request.searchTop : startPaginationAt,
+              keep_alive: "1micros"
+            },
+            search: search(request),
+            sort: [],
+          }
+        })
+      }, 500),
+    [searchOption]
+  );
+
+  useEffect(() => {
+    let newOptions = []
+    if (esSearchData?.getESPaginatedList?.hits) {
+      const { formatOptions } = esCallData[searchOption]
+      newOptions = [
+        ...esSearchData.getESPaginatedList.hits.map((result) => {
+          return formatOptions(result);
+        }),
+      ];
+      setOptions(newOptions);
+    }
+    setLoading(false)
+  }, [esSearchData])
+
+
+  useEffect(() => {
     if (!mapGridCardActivated) {
       if (searchInputValue === "") {
         setOptions(value ? [value] : []);
@@ -569,67 +437,50 @@ function Search() {
         setStateApp((state) => ({ ...state, wellListFromSearch: [] }));
         return undefined;
       }
-      (async () => {
-        let newOptions = [];
-        Promise.all([
-          searchOption == "all" || searchOption == "wells" ? callWellSearch({ input: searchInputValue }, searchTop) : null,
-          searchOption == "all" || searchOption == "tax owners" ? callOwnerSearch({ input: searchInputValue }, searchTop) : null,
-          searchOption == "all" || searchOption == "operators" ? callOperatorSearch({ input: searchInputValue }, searchTop) : null,
-          searchOption == "all" || searchOption == "leases" ? callLeaseSearch({ input: searchInputValue }, searchTop) : null,
+      if (searchOption === "location") {
+        callMapboxSearch({ input: searchInputValue }, searchTop, (results) => {
+          let newOptions = [];
+          if (results) {
+            let resultsMod = results.features
+              ? results.features.map((result) => {
+                return {
+                  ...result,
+                  Id: result.id,
+                  Source: "mapboxSearch",
+                  Score: result.relevance ? result.relevance : 0,
+                  Primary: result.text ? result.text : "",
+                  Secondary: result.place_name
+                    ? result.place_name.indexOf(result.text + ", ") === 0
+                      ? result.place_name.slice(result.place_name.indexOf(", ") + 2, result.place_name.length)
+                      : result.place_name
+                    : "",
+                };
+              })
+              : [];
 
-          searchOption == "all" || searchOption == "contacts" ? callContactsSearch({ input: searchInputValue }, searchTop) : null,
+            newOptions = [...newOptions, ...resultsMod];
+            setMaxMinMapboxSearchScore(maxMinScore(resultsMod));
+          }
 
-          // searchOption == "all" || searchOption == "parcels"
-          //   ? callParcelSearch(
-          //       { input: searchInputValue },
-          //       searchTop,
-          //     )
-          //   : null,
-
-          searchOption == "all" || searchOption == "locations"
-            ? callMapboxSearch({ input: searchInputValue }, searchTop, (results) => {
-              if (results) {
-                let resultsMod = results.features
-                  ? results.features.map((result) => {
-                    return {
-                      ...result,
-                      Id: result.id,
-                      Source: "mapboxSearch",
-                      Score: result.relevance ? result.relevance : 0,
-                      Primary: result.text ? result.text : "",
-                      Secondary: result.place_name
-                        ? result.place_name.indexOf(result.text + ", ") === 0
-                          ? result.place_name.slice(result.place_name.indexOf(", ") + 2, result.place_name.length)
-                          : result.place_name
-                        : "",
-                    };
-                  })
-                  : [];
-
-                newOptions = [...newOptions, ...resultsMod];
-                setMaxMinMapboxSearchScore(maxMinScore(resultsMod));
-              }
-
-              setOptions(newOptions);
-              setLoadingMapboxSearch(false);
-            })
-            : null,
-        ]);
-      })();
+          setOptions(newOptions);
+          setLoading(false)
+        })
+      } else {
+        callESSearch({
+          input: searchInputValue,
+          searchTop,
+        })
+      }
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    searchTop,
     searchInputValue,
-    callWellSearch,
-    callOwnerSearch,
-    callOperatorSearch,
-    callLeaseSearch,
-    callContactsSearch,
-    // callParcelSearch,
+    callESSearch,
     callMapboxSearch,
     searchOption,
-    searchTop,
   ]);
-
   //// getting wells data from owners ////
 
   useEffect(() => {
@@ -819,6 +670,16 @@ function Search() {
       //// setting map loader
       setStateApp((stateApp) => ({ ...stateApp, mapCircularLoaderAct: true, searchLoader: true }));
 
+      if (newValue.layer === "unit" || newValue.layer === "parcel" || newValue?.shapeJson?.properties?.type === "agreement") {
+        let newPath
+        newPath = `/map/${newValue.layer}s/${newValue._id}`;
+        history.location.pathname !== newPath && history.replace(newPath);
+
+        setTimeout(() => {
+          setStateApp((stateApp) => ({ ...stateApp, mapCircularLoaderAct: false, searchLoader: false }));
+        }, 2000)
+      }
+
       //// if well, with lat long
       if (newValue && newValue.Source === wellCogIndexName && newValue.Longitude && newValue.Latitude) {
         setStateApp((stateApp) => ({
@@ -886,6 +747,10 @@ function Search() {
             contactId: newValue._id,
           },
         });
+
+      //when uncommented this takes you from map search bar directly to contact detail card for selected contact 
+        //const newPath = `/contact/details/${newValue._id}`;
+       // history.location.pathname !== newPath && history.replace(newPath);
       }
 
       //// if mapboxSearch
@@ -928,16 +793,7 @@ function Search() {
 
   let optionsWithHeader = [header, ...options];
   //// adding loader ////
-  if (
-    (searchOption === "all" &&
-      (loadingWells || loadingOwners || loadingOperators || loadingLeases || loadingContacts || loadingMapboxSearch)) ||
-    (searchOption === "wells" && loadingWells) ||
-    (searchOption === "tax owners" && loadingOwners) ||
-    (searchOption === "operators" && loadingOperators) ||
-    (searchOption === "leases" && loadingLeases) ||
-    (searchOption === "contacts" && loadingContacts) ||
-    (searchOption === "locations" && loadingMapboxSearch)
-  ) {
+  if (loading) {
     optionsWithHeader = [header, { ...header, Source: "loader" }];
   }
 
@@ -985,6 +841,10 @@ function Search() {
           if (option.Source === leaseIndexName) return "Leases";
           if (option.Source === contactIndexName) return "Contacts";
           if (option.Source === "mapboxSearch") return "Locations";
+          if (option.layer === "unit") return "Units";
+          if (option.layer === "parcel") return "Tracts";
+          if (option?.shapeJson?.properties?.type === "agreement") return "Agreements"
+
           if (option.Source === "loader") return "loader";
           return "header";
         }}
@@ -1130,21 +990,21 @@ function Search() {
                         className={classes.groupsButton}
                         onClick={() => {
                           setSearchTop(200);
-                          setSearchOption(
-                            option.group === "Tax Owners"
-                              ? "tax owners"
-                              : option.group === "Wells"
-                                ? "wells"
-                                : option.group === "Operators"
-                                  ? "operators"
-                                  : option.group === "Leases"
-                                    ? "leases"
-                                    : option.group === "Contacts"
-                                      ? "contacts"
-                                      : option.group === "Locations"
-                                        ? "locations"
-                                        : "all"
-                          );
+                          // setSearchOption(
+                          //   option.group === "Tax Owners"
+                          //     ? "tax owners"
+                          //     : option.group === "Wells"
+                          //       ? "wells"
+                          //       : option.group === "Operators"
+                          //         ? "operators"
+                          //         : option.group === "Leases"
+                          //           ? "leases"
+                          //           : option.group === "Contacts"
+                          //             ? "contacts"
+                          //             : option.group === "Locations"
+                          //               ? "locations"
+                          //               : "all"
+                          // );
                         }}
                       >
                         See All Results
@@ -1189,29 +1049,10 @@ function Search() {
 
             if (newInputValue !== "") {
               //// setting loader
-              if (searchOption === "all") {
-                setLoadingWells(true);
-                setLoadingOwners(true);
-                setLoadingOperators(true);
-                setLoadingLeases(true);
-                setLoadingContacts(true);
-                setLoadingMapboxSearch(true);
-              }
-              if (searchOption === "wells") setLoadingWells(true);
-              if (searchOption === "tax owners") setLoadingOwners(true);
-              if (searchOption === "operators") setLoadingOperators(true);
-              if (searchOption === "leases") setLoadingLeases(true);
-              if (searchOption === "contacts") setLoadingContacts(true);
-              if (searchOption === "locations") setLoadingMapboxSearch(true);
+              setLoading(true)
             } else {
-              // setValue(null);
               setOptions([]);
-              setLoadingWells(false);
-              setLoadingOwners(false);
-              setLoadingOperators(false);
-              setLoadingLeases(false);
-              setLoadingContacts(false);
-              setLoadingMapboxSearch(false);
+              setLoading(false)
             }
           }
         }}
@@ -1365,6 +1206,15 @@ function Search() {
                                           {option.Source === operatorIndexName && (
                                             <OperatorIcon className={classes.icon} color={"#757575"} />
                                           )}
+                                          {option.layer === 'unit' && (
+                                            <UnitIcon className={classes.icon} color={"#757575"} />
+                                          )}
+                                          {option.layer === 'parcel' && (
+                                            <TractIcon className={classes.icon} color={"#757575"} />
+                                          )}
+                                          {option?.shapeJson?.properties?.type === 'agreement' && (
+                                            <FolderIcon className={classes.icon} color={"#757575"} />
+                                          )}
                                           {option.Source === wellCogIndexName && (
                                             <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
                                           )}
@@ -1433,6 +1283,15 @@ function Search() {
                 <Grid item>
                   {option.Source === ownerCogIndexName && <PersonIcon className={classes.icon} />}
                   {option.Source === operatorIndexName && <OperatorIcon className={classes.icon} color={"#757575"} />}
+                  {option.layer === 'unit' && (
+                    <UnitIcon className={classes.icon} color={"#757575"} />
+                  )}
+                  {option.layer === 'parcel' && (
+                    <TractIcon className={classes.icon} color={"#757575"} />
+                  )}
+                  {option?.shapeJson?.properties?.type === 'agreement' && (
+                    <FolderIcon className={classes.icon} color={"#757575"} />
+                  )}
                   {option.Source === wellCogIndexName && <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />}
                   {option.Source === leaseIndexName && (
                     <div>

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "AppContext";
 import { useQuery } from "@apollo/client";
 import { useMutation } from "@apollo/client";
+import { useSelector } from 'react-redux';
 
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_JOBS_STATUS } from "graphQL/useQueryGetJobStatus";
@@ -9,6 +10,8 @@ import Loader from "components/Loaders/serverLoader";
 
 const ContactBulkProgress = () => {
     const [stateApp] = useContext(AppContext);
+    const bulkUpload = useSelector((state) => state.common.bulkUpload);
+
     const [pollingStarted,  setPollingStarted] = useState(false);
   
     const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB);
@@ -21,7 +24,7 @@ const ContactBulkProgress = () => {
         stopPolling()
         refetch()
       }
-    },[stateApp.bulkUpload])
+    },[stateApp.bulkUpload, bulkUpload])
 
     useEffect(() => {
       if(dataJobs?.getJobsStatus?.jobs?.length > 0){
@@ -89,4 +92,4 @@ const ContactBulkProgress = () => {
     );
   };
 
-export default ContactBulkProgress
+export default ContactBulkProgress;

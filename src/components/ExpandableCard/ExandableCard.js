@@ -261,13 +261,9 @@ function ExpandableCard(props) {
 
 
     if (props.targetLabel === "well" || props.targetLabel === "expandedWell") {
-      const newPath = `/map/wells/${stateApp.selectedWell.id}/${stateApp.wellSelectedCoordinates[1]}/${stateApp.wellSelectedCoordinates[0]}`;
+      const newPath = `/map/wells/${stateApp.selectedWell.id}`;
       history.location.pathname !== newPath && history.replace(newPath)
-      setStateApp((state) => ({
-        ...state,
-        wellDetailCardOpen: true,
-        popupOpen: false,
-      }));
+      setStateApp((state) => ({ ...state, wellDetailCardOpen: true, popupOpen: false }));
 
 
     } else if (props.targetLabel === "parcel" || props.targetLabel === "expandedParcel") {
