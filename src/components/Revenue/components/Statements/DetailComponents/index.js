@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, IconButton, TextField, Tabs, Tab, Grid, Avatar, FormControl, InputAdornment } from "@material-ui/core";
 import { LocalAtm as CurrencyIcon } from "@material-ui/icons";
@@ -14,6 +15,7 @@ import { useLazyQuery } from "@apollo/client";
 import { GETCHECK } from "graphQL/useQueryCheck";
 import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
+import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import moment from "moment";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { AppContext } from "AppContext";
@@ -24,6 +26,9 @@ import HeaderSection from "./HeaderSection";
 import SummarySection from "./SummarySection";
 import CheckDetailsSection from "./CheckDetailsSection";
 import NavHeader from "components/Revenue/components/Common/NavHeader";
+import DocViewer from "components/Shared/DocViewer";
+
+import { setRevenueKey } from "actions";
 
 const useStyles = makeStyles((theme) => ({
   gridStyle: {
@@ -218,6 +223,9 @@ const StyledTab = withStyles((theme) => ({
 
 export default function DetailComponents(props) {
   const classes = useStyles(props);
+  const dispatch = useDispatch();
+  const { statements } = useSelector(({ Revenue }) => Revenue);
+
   const [tab, setTab] = useState(0);
   const [checkId, setCheckId] = useState(null);
   const selectedTabRef = useRef(null);
@@ -231,9 +239,41 @@ export default function DetailComponents(props) {
   const [ownerId, setOwnerId] = useState("");
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [fileRequestCounter, setFileRequestCounter] = useState(1);
   // queries
   const [getCheck, { data: getCheckResult }] = useLazyQuery(GETCHECK, {
     fetchPolicy: "no-cache",
+  });
+  const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
+    fetchPolicy: "cache-and-network",
+    onCompleted: ({ getFileDescriptors }) => {
+      let allActive = true;
+
+      if (getFileDescriptors)
+        for (let i = 0; i < getFileDescriptors.length; i++) {
+          if (getFileDescriptors[i].fileState !== "active") {
+            allActive = false;
+            break;
+          }
+        }
+
+      if (!allActive) {
+        if (fileRequestCounter <= 40) {
+          let waitBeforeRequestAgain = setTimeout(() => {
+            setFileRequestCounter(fileRequestCounter + 1);
+            getRecentFiles({
+              variables: {
+                relatedObjectId: checkId,
+                relatedObjectType: "Check",
+              },
+            });
+            clearTimeout(waitBeforeRequestAgain);
+          }, 1000);
+        } else {
+          setFileRequestCounter(1);
+        }
+      } else setFileRequestCounter(1);
+    },
   });
   const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
     fetchPolicy: "no-cache",
@@ -243,6 +283,12 @@ export default function DetailComponents(props) {
   });
 
   const checksFlatData = getCheckResult?.getCheck?.check;
+
+  useEffect(() => {
+    if (getCheckResult?.getCheck?.check)
+      dispatch(setRevenueKey('statements', { ...statements, activeStatement: getCheckResult?.getCheck?.check }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getCheckResult, dispatch]);
 
   useEffect(() => {
     selectedTabRef.current &&
@@ -258,8 +304,11 @@ export default function DetailComponents(props) {
       const checkId = search.replace("?id=", "");
       if (checkId) {
         setCheckId(checkId);
-        viewFiles({
-          variables: { fileIds: checkId },
+        getRecentFiles({
+          variables: {
+            relatedObjectId: checkId,
+            relatedObjectType: "Check",
+          },
         });
         getCheck({
           variables: { id: checkId },
@@ -268,6 +317,34 @@ export default function DetailComponents(props) {
       }
     }
   }, [search]);
+
+  useEffect(() => {
+    if (files?.getFileDescriptors) {
+      let ID = [];
+      for (let i = 0; i < files.getFileDescriptors.length; i++) {
+        ID.push(files.getFileDescriptors[i].fileId);
+      }
+      for (let i = 0; i < uploadedFiles.length; i++) {
+        ID.push(uploadedFiles[i].addFileDescriptor.file.id);
+      }
+      viewFiles({
+        variables: { fileIds: ID },
+      });
+      //* Getting most recent uploaded pdf file
+      let recentFile = {};
+      files.getFileDescriptors.filter(d => d.fileName.split(".")?.[1]?.toLowerCase() === 'pdf').forEach((d, index) => {
+        let descriptor = d;
+        descriptor = { ...descriptor, dateTime: moment(descriptor.dateTime, "MM/DD/YYYY HH:mm Z") };
+        if (index === 0) recentFile = descriptor;
+        else {
+          if (recentFile.dateTime < descriptor.dateTime) {
+            recentFile = descriptor;
+          }
+        }
+      });
+      dispatch(setRevenueKey('statements', { ...statements, recentFile }));
+    }
+  }, [files, uploadedFiles, viewFiles]);
 
   useEffect(() => {
     if (userLists && userLists.allMongoUsers) {
@@ -286,7 +363,7 @@ export default function DetailComponents(props) {
   };
 
   return (
-    <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor["name"]}`}>
+    <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor?.["name"]}`}>
       <div className="flex justifyBetween alignStart w-100">
         <div className="w-100" style={{ padding: 20, maxWidth: "calc(100% - 380px)" }}>
           {/**
@@ -530,7 +607,6 @@ export default function DetailComponents(props) {
               </div>
 
               <AddDialogeUploadZone
-                isTransactPage={false}
                 filesData={viewFileResult}
                 id={checkId}
                 loading={viewFileLoading}
@@ -538,9 +614,9 @@ export default function DetailComponents(props) {
                 setUploadedFileData={setUploadedFileData}
               ></AddDialogeUploadZone>
 
-              <div className={classes.tags} style={{ marginTop: -32 }}>
+              {/* <div className={classes.tags} style={{ marginTop: -32 }}>
                 <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
-              </div>
+              </div> */}
               <CommentComponent targetLabel={"check"} targetSourceId={checkId} />
             </div>
           )}
@@ -548,6 +624,11 @@ export default function DetailComponents(props) {
       </div>
 
       {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
+
+      {/**
+       * Component for viewing selected pdf file
+       */}
+      <DocViewer width="calc(80vw)" />
     </NavHeader>
   );
 }
