@@ -7,7 +7,7 @@ export const tenantsCredentials = (tenantName) => {
   let found;
   for (let i = 0; i < tenants.length; i++) {
     if (tenants[i].name.toUpperCase() === tenantName.toUpperCase())
-    found = tenants[i];
+      found = tenants[i];
   }
   return copy(found);
 };
