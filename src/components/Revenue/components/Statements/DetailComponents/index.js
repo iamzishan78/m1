@@ -107,7 +107,12 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     height: 80,
     width: 80,
-    backgroundColor: "lightgrey",
+    backgroundColor: "#d5f4ff",
+    borderRadius: 12,
+    "& svg": {
+      fontSize: "3.1875rem",
+      fill: "#263451"
+    }
   },
   tabsHeader: {
     padding: "20px 20px 0px 20px",
@@ -373,7 +378,7 @@ export default function DetailComponents(props) {
         <div className="flex column alignStart justifyStart w-100">
           <div className={classes.title}>
             <IconButton className={classes.icon}>
-              <CurrencyIcon fontSize="large" />
+              <CurrencyIcon />
             </IconButton>
             <div className={classes.titleText}>
               {checksFlatData && (
