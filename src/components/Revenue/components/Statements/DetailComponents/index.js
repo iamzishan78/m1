@@ -98,6 +98,8 @@ const useStyles = makeStyles((theme) => ({
     padding: "5px 16px",
     borderRadius: 16,
     width: "max-content",
+    transform: "translateX(5px) translateY(11px)",
+    height: "32px"
   },
   highlight: {
     color: "#ffffff",
@@ -135,12 +137,15 @@ const useStyles = makeStyles((theme) => ({
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
   },
+  tagsContainer: {
+    display: "flex",
+    flexDirection: "row",
+  },
   tags: {
     "& fieldset": {
       border: "none",
     },
   },
-
   viewAll: {
     textDecoration: "underline",
     margin: "0 0 8px 0",
@@ -386,19 +391,18 @@ export default function DetailComponents(props) {
                   style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
                 >{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
               )}
-              <div className={classes.highlighter}>
-                <Typography className={classes.highlight} variant="highlight">
-                  Revenue Check
-                </Typography>
+              <div className={classes.tagsContainer}>
+                <div className={classes.highlighter}>
+                  <Typography className={classes.highlight} variant="highlight">
+                    Revenue Check
+                  </Typography>
+                </div>
+                <div className={classes.tags}>
+                  <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom onlyTags />
+                </div>
               </div>
             </div>
           </div>
-
-          <Grid item xs={12} style={{ marginTop: 16 }}>
-            <div className={classes.tags}>
-              <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
-            </div>
-          </Grid>
         </div>
 
         {/* <div className="flex justifyEnd alignStart w-100" style={{ maxWidth: 290, marginLeft: 8 }}>
