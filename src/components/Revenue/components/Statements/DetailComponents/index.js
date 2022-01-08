@@ -198,7 +198,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   tabsSectionDetails: {
-    maxHeight: "calc(100vh - 450px)",
+    maxHeight: "calc(100vh - 280px)",
     overflow: "overlay",
     backgroundColor: "#f3f3f3",
   },
@@ -230,6 +230,30 @@ const useStyles = makeStyles((theme) => ({
           fill: "red !important",
         },
       },
+    },
+  },
+  tabsDetailContainer: ({ collapse }) => ({
+    padding: 20,
+    maxWidth: !collapse ? "calc(100% - 380px)" : "100%",
+  }),
+  commentsContainer: {
+    position: "fixed",
+    bottom: "34px",
+    width: "336px",
+  },
+  menuIcon: {
+    background: "transparent",
+    paddingLeft: "10px",
+    align: "center",
+    "& svg": {
+      fill: "#808080 !important",
+    },
+  },
+  metaPanelCloseIcon: {
+    "& svg": {
+      fontSize: 18,
+      cursor: "pointer",
+      fill: "#808080 !important",
     },
   },
 }));
@@ -464,19 +488,10 @@ export default function DetailComponents(props) {
               </StyledTabs>
             </div>
             <div className={classes.metaActions}>
-              <Button startIcon={<InfoOutlinedIcon />} onClick={() => setCollapse(false)}>
+              <Button startIcon={<InfoOutlinedIcon />} onClick={() => setCollapse(!collapse)}>
                 Metadata
               </Button>
-              <IconButton
-                size="small"
-                component="span"
-                style={{
-                  background: "transparent",
-                  paddingLeft: "10px",
-                  align: "center",
-                }}
-                onClick={handleMenuClick}
-              >
+              <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
                 <MoreHorizIcon size="medium" />
               </IconButton>
             </div>
@@ -485,7 +500,7 @@ export default function DetailComponents(props) {
       </div>
 
       <div className="flex justifyBetween alignStart w-100">
-        <div className="w-100" style={{ padding: 20, maxWidth: "calc(100% - 380px)" }}>
+        <div className={`w-100 ${classes.tabsDetailContainer}`}>
           {/**
            * Detail tabs section
            */}
@@ -515,10 +530,10 @@ export default function DetailComponents(props) {
               padding: "16px 10px",
               background: "#ffffff",
               borderRadius: 8,
-              maxHeight: "calc(100vh + 135px)",
               overflow: "auto",
-              height: "100%",
-              maxWidth: collapse ? 40 : 360,
+              height: "calc(100vh - 285px)",
+              maxHeight: "calc(100vh - 285px)",
+              maxWidth: 360,
               width: "100%",
             }}
           >
@@ -532,8 +547,8 @@ export default function DetailComponents(props) {
               </Typography>
 
               <div className="flex alignCenter">
-                <span onClick={() => setCollapse(true)}>
-                  <ArrowForwardIcon style={{ fontSize: 18, cursor: "pointer" }} />
+                <span onClick={() => setCollapse(true)} className={classes.metaPanelCloseIcon}>
+                  <ArrowForwardIcon />
                 </span>
               </div>
             </div>
@@ -686,7 +701,9 @@ export default function DetailComponents(props) {
               {/* <div className={classes.tags} style={{ marginTop: -32 }}>
                 <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
               </div> */}
-              <CommentComponent targetLabel={"check"} targetSourceId={checkId} />
+              <div className={classes.commentsContainer}>
+                <CommentComponent targetLabel={"check"} targetSourceId={checkId} />
+              </div>
             </div>
           </div>
         )}
