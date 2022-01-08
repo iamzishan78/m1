@@ -531,8 +531,8 @@ export default function DetailComponents(props) {
               background: "#ffffff",
               borderRadius: 8,
               overflow: "auto",
-              height: "calc(100vh - 285px)",
-              maxHeight: "calc(100vh - 285px)",
+              height: "calc(100vh - 280px)",
+              maxHeight: "calc(100vh - 280px)",
               maxWidth: 360,
               width: "100%",
             }}
