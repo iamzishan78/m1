@@ -95,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
   },
   highlighter: {
     background: "#263451",
-    padding: "6px 16px",
+    padding: "5px 16px",
     borderRadius: 16,
     width: "max-content",
   },
@@ -385,11 +385,6 @@ export default function DetailComponents(props) {
                 <Typography
                   style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
                 >{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
-              )}
-              {checksFlatData && (
-                <Typography variant="subtitle1" style={{ marginLeft: 8 }}>
-                  {moment.utc(checksFlatData.checkDate).format("MM/DD/YYYY")}
-                </Typography>
               )}
               <div className={classes.highlighter}>
                 <Typography className={classes.highlight} variant="highlight">
