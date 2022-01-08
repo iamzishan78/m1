@@ -8,22 +8,22 @@
 }
 
 .SpreadsheetGrid__header {
-    display: flex;
+    /* display: flex; */
     white-space: nowrap;
 }
 
 .SpreadsheetGrid__headCell {
     display: inline-flex;
     position: relative;
-    color: white;
-    font-size: 12px;
+    color: black;
+    font-size: 0.875rem;
     line-height: 14px;
     font-weight: 500;
     white-space: nowrap;
     border-bottom: none;
     padding: 10px 8px 8px 8px;
     text-align: left;
-    background-color: #827789;
+    background-color: #F2F2F2;
     align-items: center;
     border-bottom: 1px solid rgba(37, 33, 40, 0.12);
 }
@@ -52,7 +52,7 @@
     border-top: none;
     vertical-align: middle;
     white-space: normal;
-    font-size: 13px;
+    font-size: 0.875rem;
     line-height: 15px;
     text-overflow: ellipsis;
     padding: 10px;
@@ -76,7 +76,7 @@
 }
 
 .SpreadsheetGrid__cell_active {
-    box-shadow: inset 0 0 0 2px #ff7a00;
+    box-shadow: inset 0 0 0 2px #12abe0;
     z-index: 2;
 }
 

@@ -7,7 +7,7 @@ const RevenueStatementHeadCells = [
         name: "checkNumber", label: "Check Number", esKey: 'checkNumber.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "purchaserName", label: "Purchaser Name", esKey: 'payor.name', options: { sort: true, filter: true }
+        name: "purchaserName", label: "Purchaser Name", esKey: 'payor.name.keyword', options: { sort: true, filter: true }, style: { minWidth: 250 }
     },
     {
         name: "checkAmount", label: "Check Amount", esKey: 'checkAmount', options: { sort: true, filter: true }
@@ -30,9 +30,9 @@ const RevenueStatementHeadCells = [
     {
         name: "status", label: "Status", esKey: 'status.keyword', options: { sort: true, filter: true }
     },
-    {
-        name: "tags", label: "Tags", esKey: 'tags.keyword', options: { sort: true, filter: true }
-    },
+    // {
+    //     name: "tags", label: "Tags", esKey: 'tags.keyword', options: { sort: true, filter: true }
+    // },
     {
         name: "commentsCounter",
         label: " ",

@@ -46,49 +46,49 @@ for (let i = 1; i < 6; i++) {
 
 const RevenueStatementHeadCells = [
     {
-        id: "property.number", title: "Property Code", esKey: 'propert.number.keyword'
+        id: "property.number", title: "Property Code", filterKey: 'property.number.keyword'
     },
     {
-        id: "property.name", title: "Property Name", esKey: 'property.name.keyword'
+        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword'
     },
     {
-        id: "property.state", title: "State", esKey: 'property.state.keyword'
+        id: "property.state", title: "State", filterKey: 'property.state.keyword'
     },
     {
-        id: "property.county", title: "County", esKey: 'property.county.keyword'
+        id: "property.county", title: "County", filterKey: 'property.county.keyword'
     },
     {
-        id: "date", title: "Sales Date", esKey: 'date'
+        id: "date", title: "Sales Date", filterKey: 'date'
     },
     {
-        id: "product", title: "Product", esKey: 'product.keyword'
+        id: "product", title: "Product", filterKey: 'product.keyword'
     },
     {
-        id: "disbursement", title: "Decimal Interest", esKey: 'disbursement.keyword'
+        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement.keyword'
     },
     {
-        id: "interestType", title: "Type", esKey: 'interestType.keyword'
+        id: "interestType", title: "Type", filterKey: 'interestType.keyword'
     },
     {
-        id: "price", title: "Avg Price", esKey: 'price'
+        id: "price", title: "Avg Price", filterKey: 'price'
     },
     {
-        id: "grossOwnerVolume", title: "Sales Vol", esKey: 'grossOwnerVolume'
+        id: "grossOwnerVolume", title: "Sales Vol", filterKey: 'grossOwnerVolume'
     },
     {
-        id: "grossOwnerValue", title: "Gross Rev", esKey: 'grossOwnerValue'
+        id: "grossOwnerValue", title: "Gross Rev", filterKey: 'grossOwnerValue'
     },
     {
-        id: "ownerTax", title: "Severence", esKey: 'ownerTax'
+        id: "ownerTax", title: "Severence", filterKey: 'ownerTax'
     },
     {
-        id: "ownerDeducts", title: "Deduct Amt", esKey: 'ownerDeducts'
+        id: "ownerDeducts", title: "Deduct Amt", filterKey: 'ownerDeducts'
     },
     {
-        id: "deductType", title: "Deduct Cd", esKey: 'deductType.keyword'
+        id: "deductType", title: "Deduct Cd", filterKey: 'deductType.keyword'
     },
     {
-        id: "netOwnerValue", title: "Owner Net Rev", esKey: 'netOwnerValue'
+        id: "netOwnerValue", title: "Owner Net Rev", filterKey: 'netOwnerValue'
     }
 ];
 
@@ -106,19 +106,20 @@ function CheckDetailsEditableTable(props) {
     const cols = () => RevenueStatementHeadCells.map((cell, index) => {
         cell.value = (row, { focus }) => {
             return (
-
-
-                <AutoCompleteField column={cell} index={index} onChange={onFieldChange}
-                    query={GET_ES_FILTER_LIST} esIndex={esIndex} />
-
-
-                // <Input
-                //     value={get(row, cell.id)}
-                //     focus={focus}
-                //     onChange={onFieldChange(row._id, cell.id)}
-                // />
+                <>
+                    {
+                        focus ? <AutoCompleteField label={cell.title} value={get(row, cell.id)} column={cell} index={index} onChange={onFieldChange(row._id, cell.id)}
+                            query={GET_ES_FILTER_LIST} esIndex={esIndex} /> :
+                            <Input
+                                value={get(row, cell.id)}
+                                focus={focus}
+                                onChange={onFieldChange(row._id, cell.id)}
+                            />
+                    }
+                </>
             );
         }
+        cell.width = 200
         return cell;
     })
 
@@ -127,64 +128,6 @@ function CheckDetailsEditableTable(props) {
     }, [props.rows])
 
 
-    const initColumns = () => {
-        return [
-            {
-                title: 'First name',
-                value: (row, { focus }) => {
-                    return (
-                        <Input
-                            value={row.firstName}
-                            focus={focus}
-                            onChange={onFieldChange(row.id, 'firstName')}
-                        />
-                    );
-                },
-                id: 'firstName'
-            },
-            {
-                title: 'Second name',
-                value: (row, { focus }) => {
-                    return (
-                        <Input
-                            value={row.secondName}
-                            focus={focus}
-                            onChange={onFieldChange(row.id, 'secondName')}
-                        />
-                    );
-                },
-                id: 'secondName'
-            },
-            {
-                title: 'Position',
-                value: (row, { focus }) => {
-                    return (
-                        <Select
-                            selectedId={row.positionId}
-                            isOpen={focus}
-                            items={positions}
-                            onChange={onFieldChange(row.id, 'positionId')}
-                        />
-                    );
-                },
-                id: 'position'
-            },
-            {
-                title: 'Age',
-                value: (row, { focus }) => {
-                    return (
-                        <Input
-                            value={row.age}
-                            focus={focus}
-                            onChange={onFieldChange(row.id, 'age')}
-                        />
-                    );
-                },
-                id: 'age',
-                width: 10
-            }
-        ];
-    }
 
     const [columns, setColumns] = useState(cols());
 
@@ -252,7 +195,7 @@ function CheckDetailsEditableTable(props) {
                         filterType: 'custom',
                         filterOptions: {
                             display: (filterList, onChange, index, column) => {
-                                column.filterKey = headers.find(el => el.name === column.name)?.esKey;
+                                column.filterKey = headers.find(el => el.name === column.name)?.filterKey;
                                 return (
                                     <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
                                         query={GET_ES_FILTER_LIST} esIndex={esIndex} />
@@ -304,49 +247,24 @@ function CheckDetailsEditableTable(props) {
     }
 
     return (
-        <Container
-            maxWidth={false}
-            className={classes.container}
-            id={props.id ? props.id : props.parent}
-
-        >
-
-            <div className="DataTable">
-                <Grid
-                    columns={columns}
-                    rows={rows}
-                    getRowKey={row => row.id}
-                    rowHeight={50}
-                    isColumnsResizable
-                    focusOnSingleClick
-                    onColumnResize={onColumnResize}
-                    // focusOnSingleClick={props.focusOnSingleClick}
-                    // disabledCellChecker={(row, columnId) => {
-                    //     return columnId === 'age';
-                    // }}
-                    isScrollable={props.isScrollable}
-                />
-            </div>
-
-            {/* <Table
-                style={{ backgroundColor: "#fff" }}
-                header={props.header}
+        <div className="DataTable" style={{ marginTop: "100px", backgroundColor: "#fff", overflow: "scroll" }}>
+            <Grid
                 columns={columns}
-                rows={props.rows}
-                total={false}
-                addAble={{ type: "revenueStatementDetails" }}
-                loading={props.loading}
-                targetLabel={props.targetLabel}
-                uploadIcon={null}
-                dense={props.dense ? props.dense : undefined}
-                orderByTracks={false}
-                startPaginationAt={null}
-                onTableChange={onTableChange}
-                options={options}
-                parent={props.parent}
-                setColumnsBase={[]}
-            /> */}
-        </Container>
+                rows={rows}
+                getRowKey={row => row.id}
+                rowHeight={74}
+                headerHeight={74}
+                cellWidth={100}
+                isColumnsResizable
+                focusOnSingleClick
+                onColumnResize={onColumnResize}
+            // focusOnSingleClick={props.focusOnSingleClick}
+            // disabledCellChecker={(row, columnId) => {
+            //     return columnId === 'age';
+            // }}
+            // isScrollable
+            />
+        </div>
     );
 }
 

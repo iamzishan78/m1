@@ -10,7 +10,6 @@ import SearchIcon from "@material-ui/icons/Search";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
-import AddIcon from "@material-ui/icons/Add";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -21,9 +20,7 @@ import { AppContext } from "../../AppContext";
 import { GETRECENTCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 import { DELETEDESCRIPTORFILE } from "../../graphQL/useMutationDeleteDescriptorFile";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "../../graphQL/useQueryViewFile";
-import { useDispatch } from "react-redux";
 import UploadZone from "./UploadZone";
-import CardMedia from "@material-ui/core/CardMedia";
 
 // functions
 import get_file_icon from "../../components/Shared/functions/get_file_icon.js";

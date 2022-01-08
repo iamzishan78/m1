@@ -28,10 +28,10 @@ const CheckDetailsSection = ({ checkId }) => {
         <div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
             <div className={`${classes.titleField} flex justifyBetween alignCenter w-100`}>
                 <Typography varient="h5" className={classes.titleText}>
-                    Check Details
+                    CHECK DETAILS
                 </Typography>
             </div>
-            <CheckDetailsTable parent="CheckDetailsTable" header="Check Details" checkId={checkId} />
+            <CheckDetailsTable parent="CheckDetailsTable" header="CHECK DETAILS" checkId={checkId} />
         </div>
     )
 }

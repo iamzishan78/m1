@@ -18,8 +18,11 @@ const SpreadsheetCell = (props) => {
             onClick={onClick}
             onDoubleClick={onDoubleClick}
             style={{
-                width: width + '%'
+                width: width + 'px'
             }}
+        // style={{
+        //     width: 'auto'
+        // }}
         >
             {children}
         </div>

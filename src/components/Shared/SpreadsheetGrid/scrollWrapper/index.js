@@ -103,12 +103,12 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
                 sumOfWidth += columnWidthValues[id];
             });
 
-            if (Math.round(sumOfWidth) > 100) {
-                console.error('react-spreadsheet-grid ERROR: The sum of column width values in ' +
-                    'the "columnWidthValues" property is more then 100 percents! ' +
-                    'The values are not being used in this condition!');
-                columnWidthValues = {};
-            }
+            // if (Math.round(sumOfWidth) > 100) {
+            //     console.error('react-spreadsheet-grid ERROR: The sum of column width values in ' +
+            //         'the "columnWidthValues" property is more then 100 percents! ' +
+            //         'The values are not being used in this condition!');
+            //     columnWidthValues = {};
+            // }
 
             let restTableWidth = 100;
             let restColumnsCount = cells.length;
@@ -367,13 +367,15 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
                                 style={{
                                     height: this.props.headerHeight + 'px',
                                     width: columnWidthValues
-                                        ? columnWidthValues[columns[i].id] + '%'
+                                        ? columnWidthValues[columns[i].id] + 'px'
                                         : 'auto'
+                                    // width: 'auto'
                                 }}
                             >
                                 {typeof column.title === 'string' ? column.title : column.title()}
+                                {/*
                                 {this.props.isColumnsResizable && i !== columns.length - 1 &&
-                                    this.renderResizer()}
+                                    this.renderResizer()} */}
                             </div>
                         );
                     })
@@ -402,7 +404,9 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
                     style={{
                         height: this.props.isScrollable
                             ? `calc(100% - ${this.props.headerHeight}px)`
-                            : 'auto'
+                            : 'auto',
+                        // overflow: 'scroll',
+                        backgroundColor: 'white',
                     }}
                 >
                     <ScrollDummy

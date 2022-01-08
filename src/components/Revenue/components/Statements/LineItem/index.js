@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import { Grid, Button } from "@material-ui/core";
 
@@ -44,14 +45,19 @@ export default function LineItem(props) {
   const classes = useStyles();
   const history = useHistory();
   const [showPdfSection, setSectionState] = useState(true);
+  const { activeStatement } = useSelector(({ Revenue }) => Revenue.statements);
 
   const togglePdfViewState = () => {
     setSectionState(!showPdfSection);
   };
 
   const checkId = window.location.search.replace("?id=", '')
+  const redirectHandler = () => {
+    history.push(`/revenue/statement/details?id=${activeStatement?._id}`);
+  }
+
   return (
-    <NavHeader title="94782044-EXXON MOBIL CORP">
+    <NavHeader title={`${activeStatement?.checkNumber} - ${activeStatement?.payor["name"]}`} onClickFunc={redirectHandler}>
       <div className={classes.root}>
         <Grid container display="flex" direction="row" alignItems="center" justify="space-between">
           <Grid item>
@@ -60,7 +66,7 @@ export default function LineItem(props) {
             </Button>
           </Grid>
           <Grid item>
-            <Button variant="contained" className={classes.exitButton} onClick={() => history.push("/revenue/statements")}>
+            <Button variant="contained" className={classes.exitButton} onClick={redirectHandler}>
               Exit
             </Button>
           </Grid>

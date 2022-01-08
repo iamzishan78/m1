@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import _ from "underscore";
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, IconButton, CircularProgress } from "@material-ui/core";
@@ -107,15 +108,17 @@ export default function PdfViewer({ togglePdfViewState }) {
           </h4>
 
           <div style={{ float: "right" }}>
-            <IconButton size="small" style={{ margin: "0 8px" }}>
-              {!fileLoading ? (
-                <IconButton size="small" onClick={downloadFile}>
-                  <GetAppIcon />
-                </IconButton>
-              ) : (
-                <CircularProgress size={20} color="secondary" />
-              )}
-            </IconButton>
+            {!_.isEmpty(recentFile) && (
+              <IconButton size="small" style={{ margin: "0 8px" }}>
+                {!fileLoading ? (
+                  <IconButton size="small" onClick={downloadFile}>
+                    <GetAppIcon />
+                  </IconButton>
+                ) : (
+                  <CircularProgress size={20} color="secondary" />
+                )}
+              </IconButton>
+            )}
 
             <IconButton onClick={togglePdfViewState} size="small">
               <CloseIcon className={classes.closeIcon} fontSize="small" />

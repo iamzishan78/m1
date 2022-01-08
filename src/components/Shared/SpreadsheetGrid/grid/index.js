@@ -19,7 +19,7 @@ class SpreadsheetGrid extends React.PureComponent {
         this.getCellClassName = this.getCellClassName.bind(this);
 
         this.state = {
-            allRows: this.props.allRows
+            allRows: this.props.allRows,
         };
     }
 
@@ -311,6 +311,8 @@ class SpreadsheetGrid extends React.PureComponent {
                     transform: `translate3d(0, ${this.calculatePosition()}, 0)`
                 }}
             >
+                {/* {this.props.renderHeader()} */}
+
                 {this.renderBody()}
             </div>
         );

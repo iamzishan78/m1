@@ -26,6 +26,7 @@ import HeaderSection from "./HeaderSection";
 import SummarySection from "./SummarySection";
 import CheckDetailsSection from "./CheckDetailsSection";
 import NavHeader from "components/Revenue/components/Common/NavHeader";
+import DocViewer from "components/Shared/DocViewer";
 
 import { setRevenueKey } from "actions";
 
@@ -286,6 +287,7 @@ export default function DetailComponents(props) {
   useEffect(() => {
     if (getCheckResult?.getCheck?.check)
       dispatch(setRevenueKey('statements', { ...statements, activeStatement: getCheckResult?.getCheck?.check }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getCheckResult, dispatch]);
 
   useEffect(() => {
@@ -328,8 +330,8 @@ export default function DetailComponents(props) {
       viewFiles({
         variables: { fileIds: ID },
       });
-      //! Getting most recent uploaded pdf file
-      let recentFile = null;
+      //* Getting most recent uploaded pdf file
+      let recentFile = {};
       files.getFileDescriptors.filter(d => d.fileName.split(".")?.[1]?.toLowerCase() === 'pdf').forEach((d, index) => {
         let descriptor = d;
         descriptor = { ...descriptor, dateTime: moment(descriptor.dateTime, "MM/DD/YYYY HH:mm Z") };
@@ -361,7 +363,7 @@ export default function DetailComponents(props) {
   };
 
   return (
-    <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor["name"]}`}>
+    <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor?.["name"]}`}>
       <div className="flex justifyBetween alignStart w-100">
         <div className="w-100" style={{ padding: 20, maxWidth: "calc(100% - 380px)" }}>
           {/**
@@ -612,9 +614,9 @@ export default function DetailComponents(props) {
                 setUploadedFileData={setUploadedFileData}
               ></AddDialogeUploadZone>
 
-              <div className={classes.tags}>
+              {/* <div className={classes.tags} style={{ marginTop: -32 }}>
                 <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
-              </div>
+              </div> */}
               <CommentComponent targetLabel={"check"} targetSourceId={checkId} />
             </div>
           )}
@@ -622,6 +624,11 @@ export default function DetailComponents(props) {
       </div>
 
       {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
+
+      {/**
+       * Component for viewing selected pdf file
+       */}
+      <DocViewer width="calc(80vw)" />
     </NavHeader>
   );
 }
