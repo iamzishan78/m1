@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, TextField, Tabs, Tab, Grid, Avatar, FormControl, InputAdornment } from "@material-ui/core";
-import { LocalAtm as CurrencyIcon } from "@material-ui/icons";
+import { Typography, IconButton, TextField, Tabs, Tab, Grid, Avatar, FormControl, InputAdornment, Button } from "@material-ui/core";
+import { LocalAtm as CurrencyIcon, InfoOutlined as InfoOutlinedIcon } from "@material-ui/icons";
 import Tags from "components/Shared/Tagger";
 import MetaField from "components/Table/helpers/MetaField";
 import { useLocation } from "react-router";
@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
   },
   detailHeader: {
     backgroundColor: "#fff",
-    padding: "20px 20px 8px 45px",
+    padding: "20px 27px 0px 45px",
     marginTop: "7px",
   },
   title: {
@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 16,
     width: "max-content",
     transform: "translateX(5px) translateY(11px)",
-    height: "32px"
+    height: "32px",
   },
   highlight: {
     color: "#ffffff",
@@ -113,18 +113,15 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 12,
     "& svg": {
       fontSize: "3.1875rem",
-      fill: "#263451"
-    }
+      fill: "#263451",
+    },
   },
   tabsHeader: {
-    padding: "20px 20px 0px 20px",
     background: "#ffffff",
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
-  tabsSection: {
-    marginTop: 24,
-  },
+  tabsSection: {},
   headerSection: {
     padding: "20px 30px",
     background: "#ffffff",
@@ -186,11 +183,26 @@ const useStyles = makeStyles((theme) => ({
     overflow: "overlay",
     backgroundColor: "#f3f3f3",
   },
+  actionsContainer: {
+    display: "flex",
+    direction: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  metaActions: {
+    marginTop: "2px",
+    "& button": {
+      backgroundColor: "#eceded",
+      color: "grey",
+      fontWeight: "bold",
+      textTransform: "capitalize",
+      padding: "6px 12px",
+    },
+  },
 }));
 
 const StyledTabs = withStyles({
   root: {
-    borderBottom: "1px solid #e8e8e8",
     textTransform: "capitalize",
   },
   indicator: {
@@ -403,6 +415,19 @@ export default function DetailComponents(props) {
               </div>
             </div>
           </div>
+
+          <div className={classes.actionsContainer}>
+            <div className={classes.tabsHeader}>
+              <StyledTabs value={tab} onChange={(event, tab) => setTab(tab)} aria-label="ant example">
+                <StyledTab label="Header" />
+                <StyledTab label="Summary" />
+                <StyledTab label="Check Details" />
+              </StyledTabs>
+            </div>
+            <div className={classes.metaActions}>
+              <Button startIcon={<InfoOutlinedIcon />}>Metadata</Button>
+            </div>
+          </div>
         </div>
 
         {/* <div className="flex justifyEnd alignStart w-100" style={{ maxWidth: 290, marginLeft: 8 }}>
@@ -416,14 +441,6 @@ export default function DetailComponents(props) {
            * Detail tabs section
            */}
           <div className={classes.tabsSection}>
-            <div className={classes.tabsHeader}>
-              <StyledTabs value={tab} onChange={(event, tab) => setTab(tab)} aria-label="ant example">
-                <StyledTab label="Header" />
-                <StyledTab label="Summary" />
-                <StyledTab label="Check Details" />
-              </StyledTabs>
-            </div>
-
             <div className={classes.tabsSectionDetails}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
                 <HeaderSection details={checksFlatData} />
