@@ -97,10 +97,8 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
         setToDate(`${currentYear}-${getFlaggedMoment(currentMonth + 1)}`);
         break;
       case CUSTOM_DATES.LAST_QUARTER:
-        var lastQuarterStartDate = moment().subtract(1, 'quarter').startOf('quarter').format("yyyy-MM");
-        var lastQuarterEndDate = moment().subtract(1, 'quarter').endOf('quarter').format("yyyy-MM");
-        setFromDate(lastQuarterStartDate);
-        setToDate(lastQuarterEndDate);
+        setFromDate(moment().subtract(1, 'quarter').startOf('quarter').format("yyyy-MM"));
+        setToDate(moment().subtract(1, 'quarter').endOf('quarter').format("yyyy-MM"));
         break;
       case CUSTOM_DATES.THIS_QUARTER:
         setFromDate(`${currentYear}-${getFlaggedMoment(currentQuarter * 3 - 2)}`);
@@ -111,8 +109,8 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
         setToDate(`${currentYear - 1}-12`);
         break;
       default:
-        setFromDate("");
-        setToDate("");
+        setFromDate(`${currentYear}-${getFlaggedMoment(currentMonth + 1)}`);
+        setToDate(`${currentYear}-${getFlaggedMoment(currentMonth + 1)}`);
     }
   };
 

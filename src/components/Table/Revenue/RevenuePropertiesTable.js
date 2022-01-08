@@ -143,7 +143,7 @@ function RevenuePropertiesTable(props) {
 
   const onTableChange = (action, tableState, rows, meta) => {
     tableState.esIndex = props.esIndex;
-    // tableState.sort = [];
+    tableState.sort = [];
     const tableActions = props.initializeTableActions(
       tableState,
       meta,

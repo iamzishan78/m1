@@ -2113,7 +2113,7 @@ function SubTable(props) {
               customBodyRender: (value) => {
                 let styles = { ...column.style };
                 styles = { ...styles, fontWeight: 600, color: "#17aadd", cursor: "pointer" };
-                return <p style={styles}>{value}</p>;
+                return value ? <p style={styles}>{value}</p> : <span style={{ color: "#959595" }}>N/A</span>;
               },
             };
             break;
@@ -2121,7 +2121,7 @@ function SubTable(props) {
             column.options = {
               ...column.options,
               customBodyRender: (value) => {
-                return <p style={{ fontWeight: 600 }}>{`$${value}`}</p>;
+                return value ? <p style={{ fontWeight: 600 }}>{value}</p> : <span style={{ color: "#959595" }}>N/A</span>;
               },
             };
             break;
