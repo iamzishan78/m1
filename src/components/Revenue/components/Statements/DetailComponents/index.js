@@ -1,13 +1,32 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, TextField, Tabs, Tab, Grid, Avatar, FormControl, InputAdornment, Button } from "@material-ui/core";
-import { LocalAtm as CurrencyIcon, InfoOutlined as InfoOutlinedIcon } from "@material-ui/icons";
+import {
+  Typography,
+  IconButton,
+  TextField,
+  Tabs,
+  Tab,
+  Grid,
+  Avatar,
+  FormControl,
+  InputAdornment,
+  Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@material-ui/core";
+import {
+  LocalAtm as CurrencyIcon,
+  InfoOutlined as InfoOutlinedIcon,
+  Delete as DeleteIcon,
+  MoreHoriz as MoreHorizIcon,
+} from "@material-ui/icons";
 import Tags from "components/Shared/Tagger";
 import MetaField from "components/Table/helpers/MetaField";
 import { useLocation } from "react-router";
-import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import AddIcon from "@material-ui/icons/Add";
 import CommentComponent from "components/Shared/CommentComponent";
 import AddDialogeUploadZone from "components/ContactDetailCard/components/AddDialogUploadZone";
@@ -188,15 +207,29 @@ const useStyles = makeStyles((theme) => ({
     direction: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    width: "100%",
   },
-  metaActions: {
+  metaActions: ({ collapse }) => ({
     marginTop: "2px",
     "& button": {
-      backgroundColor: "#eceded",
+      backgroundColor: !collapse ? "#eceded" : "#fff",
       color: "grey",
       fontWeight: "bold",
       textTransform: "capitalize",
       padding: "6px 12px",
+      "&:hover": {
+        backgroundColor: !collapse ? "#eceded" : "#fff",
+      },
+    },
+  }),
+  menu: {
+    "& .MuiListItem-root": {
+      "& .MuiListItemIcon-root": {
+        minWidth: "30px",
+        "& .MuiSvgIcon-root": {
+          fill: "red !important",
+        },
+      },
     },
   },
 }));
@@ -244,7 +277,6 @@ const StyledTab = withStyles((theme) => ({
 }))((props) => <Tab disableRipple {...props} />);
 
 export default function DetailComponents(props) {
-  const classes = useStyles(props);
   const dispatch = useDispatch();
   const { statements } = useSelector(({ Revenue }) => Revenue);
 
@@ -259,9 +291,12 @@ export default function DetailComponents(props) {
   const { search } = location;
   const [users, setUsers] = useState([]);
   const [ownerId, setOwnerId] = useState("");
+  const [anchorEl, setAnchorEl] = useState();
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
+
+  const classes = useStyles({ ...props, collapse });
   // queries
   const [getCheck, { data: getCheckResult }] = useLazyQuery(GETCHECK, {
     fetchPolicy: "no-cache",
@@ -386,6 +421,10 @@ export default function DetailComponents(props) {
     setUploadedFiles([...uploadedFiles, uploadedfile]);
   };
 
+  const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
+
+  const handleMenuClose = () => setAnchorEl(null);
+
   return (
     <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor?.["name"]}`}>
       {/**
@@ -425,14 +464,24 @@ export default function DetailComponents(props) {
               </StyledTabs>
             </div>
             <div className={classes.metaActions}>
-              <Button startIcon={<InfoOutlinedIcon />}>Metadata</Button>
+              <Button startIcon={<InfoOutlinedIcon />} onClick={() => setCollapse(false)}>
+                Metadata
+              </Button>
+              <IconButton
+                size="small"
+                component="span"
+                style={{
+                  background: "transparent",
+                  paddingLeft: "10px",
+                  align: "center",
+                }}
+                onClick={handleMenuClick}
+              >
+                <MoreHorizIcon size="medium" />
+              </IconButton>
             </div>
           </div>
         </div>
-
-        {/* <div className="flex justifyEnd alignStart w-100" style={{ maxWidth: 290, marginLeft: 8 }}>
-              <img src="https://miro.medium.com/max/1400/1*ybR6fbfwo6XTmWvTjXSOAA.png" alt="map-view" height={200} width={290} style={{ borderRadius: 8 }} />
-            </div> */}
       </div>
 
       <div className="flex justifyBetween alignStart w-100">
@@ -457,42 +506,38 @@ export default function DetailComponents(props) {
           </div>
         </div>
 
-        <div
-          className="flex column justifyStart alignStart w-100"
-          style={{
-            marginTop: 20,
-            marginRight: 24,
-            padding: "16px 10px",
-            background: "#ffffff",
-            borderRadius: 8,
-            maxHeight: "calc(100vh + 135px)",
-            overflow: "auto",
-            height: "100%",
-            maxWidth: collapse ? 40 : 360,
-            width: "100%",
-          }}
-        >
-          <div className="flex justifyBetween alignCenter w-100">
-            {!collapse && (
-              <Typography varient="h5" className={classes.titleText} style={{ textTransform: "uppercase", fontWeight: "bold" }}>
+        {!collapse && (
+          <div
+            className="flex column justifyStart alignStart w-100"
+            style={{
+              marginTop: 20,
+              marginRight: 24,
+              padding: "16px 10px",
+              background: "#ffffff",
+              borderRadius: 8,
+              maxHeight: "calc(100vh + 135px)",
+              overflow: "auto",
+              height: "100%",
+              maxWidth: collapse ? 40 : 360,
+              width: "100%",
+            }}
+          >
+            <div className="flex justifyBetween alignCenter w-100">
+              <Typography
+                varient="h5"
+                className={classes.titleText}
+                style={{ textTransform: "uppercase", fontWeight: "bold", marginLeft: "5px" }}
+              >
                 Metadata
               </Typography>
-            )}
 
-            <div className="flex alignCenter">
-              {!collapse ? (
+              <div className="flex alignCenter">
                 <span onClick={() => setCollapse(true)}>
                   <ArrowForwardIcon style={{ fontSize: 18, cursor: "pointer" }} />
                 </span>
-              ) : (
-                <span onClick={() => setCollapse(false)}>
-                  <ArrowBackIcon style={{ fontSize: 18, cursor: "pointer" }} />
-                </span>
-              )}
+              </div>
             </div>
-          </div>
 
-          {!collapse && (
             <div className="flex column justifyStart w-100">
               <div style={{ marginTop: 10, marginLeft: 4 }}>
                 <FormControl variant="outlined" fullWidth size="small">
@@ -643,8 +688,8 @@ export default function DetailComponents(props) {
               </div> */}
               <CommentComponent targetLabel={"check"} targetSourceId={checkId} />
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
@@ -653,6 +698,28 @@ export default function DetailComponents(props) {
        * Component for viewing selected pdf file
        */}
       <DocViewer width="calc(80vw)" />
+
+      {/**
+       * Menu for meta data
+       */}
+      <Menu
+        id="dealMenu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        className={classes.menu}
+        getContentAnchorEl={null}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <MenuItem>
+          <ListItemIcon>
+            <DeleteIcon size="medium" />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
     </NavHeader>
   );
 }
