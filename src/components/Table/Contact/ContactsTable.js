@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Container } from "@material-ui/core";
-
+import isEmpty from "lodash/isEmpty";
 import moment from "moment";
 
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
@@ -157,8 +157,11 @@ function ContactsTable(props) {
 
   useEffect(() => {
     tableRef.current.changePage(0)
-    const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns)
-    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
+    tableRef.current.isFetching = false;
+    if(!isEmpty(selectedGridView)){
+      const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns, true)
+      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
+    }
   }, [selectedGridView]);
 
   const count = tableData?.total || 0;
@@ -205,6 +208,10 @@ function ContactsTable(props) {
         tableActions.genericESAction();
         break;
       case "changePage":
+        if(tableRef.current.isFetching === false){
+          tableRef.current.isFetching = true
+          return;
+        }
         if (tableData) {
           tableActions.changeESPage();
         }
