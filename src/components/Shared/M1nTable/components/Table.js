@@ -1494,12 +1494,12 @@ function SubTable(props) {
                       ? tableMeta.rowData[2]
                       : props.parent === "owner_WellInterests"
                         ? tableMeta.rowData[1]
-                          : props.parent === "ownersPerParcel"
-                            ? tableMeta.rowData[1]
-                            : props.parent === "RevenueStatementTable"
-                              ? tableMeta.rowData[1]?.split("_")[1]
-                              : tableMeta.rowData[0];
-                              if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
+                        : props.parent === "ownersPerParcel"
+                          ? tableMeta.rowData[1]
+                          : props.parent === "RevenueStatementTable"
+                            ? tableMeta.rowData[1]?.split("_")[1]
+                            : tableMeta.rowData[0];
+                  if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
                   if (props.parent === "TractsTable" && props.targetLabel === "tract") {
@@ -3099,7 +3099,7 @@ function SubTable(props) {
         // menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
       }
       if (props.addAble.type === "revenueStatementDetails") {
-        buttonLabel = "+ INPUT DETAILS";
+        buttonLabel = "INPUT MODE";
       }
 
       const addAction = (e) => {
@@ -3184,7 +3184,8 @@ function SubTable(props) {
             {(props.addAble.type === "wellInterest" ||
               props.addAble.type === "deals" ||
               props.addAble.type === "suggestedOwnerToParcel" ||
-              (props.addAble && props.parent === "UserManagement")) && (
+              (props.addAble && props.parent === "UserManagement") ||
+              props.addAble.type === "revenueStatementDetails") && (
                 <Button
                   color="secondary"
                   className={classes.multiSelectionTopBarButtons}
@@ -3197,8 +3198,7 @@ function SubTable(props) {
             {(
               props.addAble.type === "contact" ||
               props.addAble.type === "ownerToParcel" ||
-              props.addAble.type === "ownerToUnit" ||
-              props.addAble.type === "revenueStatementDetails") && (
+              props.addAble.type === "ownerToUnit") && (
                 <ButtonDropDown options={options} />
               )}
 
