@@ -13,7 +13,7 @@ const useStyles = makeStyles(() => ({
         borderBottomRightRadius: 8
     },
     titleField: {
-        padding: 20
+        padding: 10
     },
     titleText: {
         textTransform: "uppercase",
@@ -28,10 +28,11 @@ const CheckDetailsSection = ({ checkId }) => {
         <div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
             <div className={`${classes.titleField} flex justifyBetween alignCenter w-100`}>
                 <Typography varient="h5" className={classes.titleText}>
-                    CHECK DETAILS
+                    {/* CHECK DETAILS */}
                 </Typography>
-            </div>
-            <CheckDetailsTable parent="CheckDetailsTable" header="CHECK DETAILS" checkId={checkId} />
+            </div> 
+
+            <CheckDetailsTable parent="CheckDetailsTable" header="Check Details" checkId={checkId} />
         </div>
     )
 }

@@ -6,6 +6,9 @@ import { Typography, IconButton, Grid, Breadcrumbs } from "@material-ui/core";
 import { NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
 
+// Components
+import ProfileMenu from "components/Profile/ProfileMenu";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: "100vh",
@@ -59,9 +62,7 @@ export default function DetailComponents(props) {
             </Breadcrumbs>
           </Grid>
           <Grid item>
-            <IconButton onClick={() => history.push("/revenue/statements")}>
-              <CloseIcon fontSize="small" />
-            </IconButton>
+            <ProfileMenu />
           </Grid>
         </Grid>
       </div>
