@@ -321,7 +321,7 @@ export default function DocumentDrawer() {
       >
         <div style={{ flexShrink: 0 }}>
           <div className={classes.titleSection}>
-            <div>{stateApp.selectedDocument?.fileId ? <h3>Document Detail</h3> : <h3>Add New Document</h3>}</div>
+            <div>{stateApp.selectedDocument?.fileId ? <h2>Document Detail</h2> : <h2>Add New Document</h2>}</div>
             <div style={{ cursor: "pointer" }}>
               {stateApp.selectedDocument?.fileId && (
                 <IconButton
