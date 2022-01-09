@@ -1,5 +1,4 @@
 import moment from "moment";
-import uniq from 'lodash/uniq';
 
 import { getSession } from "utils/user";
 import { wellsKeys } from "utils/data";
@@ -9,7 +8,7 @@ const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
 const isDev = process.env.REACT_APP_NODE_ENV === "development";
 
 export const copy = (data) => {
-  return JSON.parse(JSON.stringify(data));
+  return data ? JSON.parse(JSON.stringify(data)) : null;
 };
 
 export const getURL = () => {
@@ -94,9 +93,8 @@ export const getSearchQuery = (extendSearchQuery, filters) => {
       if (query && i === 0) {
         query = query + " AND ";
       }
-      query = `${query} ${i === 0 ? "(" : "OR"} ${filter[0]}.keyword:(${
-        filter[1][i]
-      }) ${i === filter[1].length - 1 ? ")" : ""}`;
+      query = `${query} ${i === 0 ? "(" : "OR"} ${filter[0]}.keyword:(${filter[1][i]
+        }) ${i === filter[1].length - 1 ? ")" : ""}`;
     }
     return true;
   });
@@ -205,14 +203,14 @@ const dataToCsv = (wells, keys, csv) => {
   for (let i = 0; i < wells.length; i++) {
     csv = csv + "\n";
     for (let j = 0; j < keys.length; j++) {
-      const value =  wells[i][keys[j]]
-      if(typeof value === "string") {
-        csv = `${j!==0 ? csv + "," : csv}"${value}"`;
-      }else{
+      const value = wells[i][keys[j]]
+      if (typeof value === "string") {
+        csv = `${j !== 0 ? csv + "," : csv}"${value}"`;
+      } else {
         let stringValue = JSON.stringify(value);
-        stringValue = stringValue ? stringValue.replace(/"/g,'') : '';
-        csv = `${j!==0 ? csv + "," : csv}"${stringValue}"`;
-      } 
+        stringValue = stringValue ? stringValue.replace(/"/g, '') : '';
+        csv = `${j !== 0 ? csv + "," : csv}"${stringValue}"`;
+      }
     }
   }
   return csv
@@ -230,7 +228,7 @@ export const jsonToCSV = (wells) => {
 
 export const wellsToCSV = (wells) => {
   let csv = "";
-  for(let i = 0; i < wellsKeys.length; i++) {
+  for (let i = 0; i < wellsKeys.length; i++) {
     csv = `${csv ? csv + "," : ""}${wellsKeys[i]}`;
   }
   return dataToCsv(wells, wellsKeys, csv)
