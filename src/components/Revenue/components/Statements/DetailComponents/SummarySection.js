@@ -15,7 +15,11 @@ export const TabButtons = ({ tab, actiiveId, setActive }) => {
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        padding: 20
+        paddingTop: 0,
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingBottom: 20
+
     },
     textTransform: {
         fontWeight: "bold",
@@ -213,7 +217,7 @@ const SummarySection = ({ checkId }) => {
     return (
         <div className={`${classes.root} flex column justifyStart alignStart w-100`}>
             <Typography varient="h6" className={classes.textTransform}>
-                Summary
+                {/* Summary */}
             </Typography>
             <div className={`${classes.tabButtons} flex justifyBetween alignCenter w-100`}>
                 {summaryTabs.map((tab, index) => (
