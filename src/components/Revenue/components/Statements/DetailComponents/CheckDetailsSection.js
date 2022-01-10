@@ -6,7 +6,7 @@ import CheckDetailsTable from "components/Table/Revenue/CheckDetailsTable";
 
 const useStyles = makeStyles(() => ({
     sectionCard: {
-        padding: "0px 15px",
+        padding: "0px 15px 20px 15px",
         maxWidth: "100%",
         margin: "0 auto",
         background: "#ffffff",
