@@ -55,18 +55,17 @@ const ContactBulkProgress = () => {
       })
     }
 
-    const downloadResults = (job, onCloseToast) => {
+    const downloadResults = async (job, onCloseToast) => {
       if (job?.resultsPayload?.datasets) {
-        job?.resultsPayload?.datasets.map((dataset) => {
+        for (const dataset of job?.resultsPayload?.datasets) {
+        // job?.resultsPayload?.datasets.map(async (dataset) => {
           let a = document.createElement("a");
           a.href = dataset.uri;
           a.download = dataset.fileName;
           a.click();
-          // const hiddenElement = document.createElement("a");
-          // hiddenElement.href = dataset.uri;
-          // hiddenElement.download = dataset.fileName;
-          // hiddenElement.click();
-        })
+
+          await new Promise(resolve => setTimeout(resolve, 1 * 300));
+        }
         onCloseToast(job._id)
       }
     }
