@@ -2091,7 +2091,20 @@ function SubTable(props) {
               },
             };
             break;
-          case "number":
+          case "propertyNumber":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                const splitNumber = value.split("_");
+                return (
+                  <p style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}>
+                    {splitNumber[0]}
+                  </p>
+                );
+              },
+            };
+            break;
+          case "checkNumber":
             column.options = {
               ...column.options,
               customBodyRender: (value) => {
