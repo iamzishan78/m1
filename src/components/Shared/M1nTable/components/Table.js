@@ -3129,8 +3129,10 @@ function SubTable(props) {
           handleExpandClick(null, null, null, "addParcelInterestsToEntity");
         if (props.addAble.type && props.addAble.type === "inviteUser")
           handleExpandClick(null, null, null, "inviteUser");
-        if (props.addAble.type === "revenueStatementDetails")
-          routeChange('/revenue/statement/details/line-item');
+        if (props.addAble.type === "revenueStatementDetails") {
+          routeChange('/revenue/statement/details/line-item' + window.location.search);
+        }
+
       };
 
       const options = [

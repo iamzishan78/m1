@@ -6,6 +6,7 @@ import { Grid, Button } from "@material-ui/core";
 
 import NavHeader from "components/Revenue/components/Common/NavHeader";
 import PdfViewer from "components/Revenue/components/Statements/LineItem/PdfViewer";
+import CheckDetailsEditableTable from "./CheckDetailsEditableTable";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,6 +51,7 @@ export default function LineItem(props) {
     setSectionState(!showPdfSection);
   };
 
+  const checkId = window.location.search.replace("?id=", '')
   const redirectHandler = () => {
     history.push(`/revenue/statement/details?id=${activeStatement?._id}`);
   }
@@ -74,6 +76,8 @@ export default function LineItem(props) {
             <PdfViewer togglePdfViewState={togglePdfViewState} />
           </div>
         )}
+
+        <CheckDetailsEditableTable parent="CheckDetailsTable" header="Check Details" checkId={checkId} />
       </div>
     </NavHeader>
   );
