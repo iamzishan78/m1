@@ -19,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: 20,
         paddingRight: 20,
         paddingBottom: 20
-
     },
     textTransform: {
         fontWeight: "bold",

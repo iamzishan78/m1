@@ -6,6 +6,7 @@ import CheckDetailsTable from "components/Table/Revenue/CheckDetailsTable";
 
 const useStyles = makeStyles(() => ({
     sectionCard: {
+        padding: "0px 15px",
         maxWidth: "100%",
         margin: "0 auto",
         background: "#ffffff",
@@ -30,7 +31,7 @@ const CheckDetailsSection = ({ checkId }) => {
                 <Typography varient="h5" className={classes.titleText}>
                     {/* CHECK DETAILS */}
                 </Typography>
-            </div> 
+            </div>
 
             <CheckDetailsTable parent="CheckDetailsTable" header="Check Details" checkId={checkId} />
         </div>
