@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Typography } from "@material-ui/core";
+import { Typography, Grid, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { useLazyQuery } from "@apollo/client";
 import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
@@ -36,16 +36,16 @@ const useStyles = makeStyles((theme) => ({
         color: "#959595"
     },
     graphCard: {
-        padding: 20,
         border: "2px solid #959595",
         borderRadius: 8,
-        marginRight: 32
+        maxWidth: "440px",
+        padding: "0px 45px"
     },
     dataCardWidth: {
         maxWidth: 400,
     },
     dataCardMargin: {
-        margin: "0 0 16px"
+        margin: "22px 0px"
     },
     productNameBox: {
         background: "#00000070",
@@ -70,6 +70,14 @@ const useStyles = makeStyles((theme) => ({
         textAlign: "center",
         margin: 0
     },
+    analyticTable: {
+        width: "240px",
+        marginLeft: "45px",
+        "& .MuiDivider-root": {
+            backgroundColor: "#c5c5c5",
+            height: "1.5px"
+        }
+    }
 }));
 
 
@@ -171,7 +179,7 @@ const SummarySection = ({ checkId }) => {
         if (revSummary) {
             setRevenueSummaryDetails([
                 { name: "Gross Revenue", value: `${revSummary?.grossRevenue?.value.toFixed(2)}` },
-                { name: "Adjustment", value: `${(revSummary?.ownerDeducts?.value + revSummary?.ownerTax?.value).toFixed(2)}` },
+                { name: "Adjustment", value: `(${(revSummary?.ownerDeducts?.value + revSummary?.ownerTax?.value).toFixed(2)})` },
                 { name: "Net Revenue", value: `${(revSummary?.netOwnerValue?.value).toFixed(2)}` },
                 { name: "Lease Payments", value: "-" },
                 { name: "Other", value: "-" },
@@ -226,31 +234,43 @@ const SummarySection = ({ checkId }) => {
 
             {/* Revenue */}
             {activeTabId === 1 && (
-                <div className="flex justifyBetween alignCenter w-100">
-                    <div className="flex column justifyBetween alignStart w-100">
+                <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3}>
+                    <Grid item xs={6}>
                         <div className={classes.graphCard}>
-                            <img src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
-                                alt="static donut chart image" height={300} width={300} />
+                            <img
+                                src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
+                                alt="static donut chart"
+                                height={300}
+                                width={300}
+                            />
                         </div>
-                    </div>
-                    <div className="flex column justifyBetween alignCenter w-100">
-                        {revenueSummaryDetails?.length > 0 && revenueSummaryDetails.map((item, index) => (
-                            <div key={index + 1} className={`${classes.dataCardWidth} ${classes.dataCardMargin} flex justifyBetween alignCenter w-100`}>
-                                <div className="flex alignCenter justifyStart">
-                                    <Typography varient="h6" className={classes.textTransform}>
-                                        {item.name || ""}
-                                    </Typography>
-                                </div>
+                    </Grid>
+                    <Grid item xs={5}>
+                        <div className={classes.analyticTable}>
+                            {revenueSummaryDetails?.length > 0 && revenueSummaryDetails.map((item, index) => (
+                                <>
+                                    {item.name === "Total Income" && <Divider />}
+                                    <div
+                                        key={index + 1}
+                                        className={`${classes.dataCardWidth} ${classes.dataCardMargin} flex justifyBetween alignCenter w-100`}
+                                    >
+                                        <div className="flex alignCenter justifyStart">
+                                            <Typography varient="h6" className={classes.textTransform}>
+                                                {item.name || ""}
+                                            </Typography>
+                                        </div>
 
-                                <div className="flex alignStart justifyStart">
-                                    <Typography varient="h6" className={classes.textTransform}>
-                                        {`${item.value || 0}`}
-                                    </Typography>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                                        <div className="flex" style={{ minWidth: "60px", alignItems: "center", justifyContent: "center" }}>
+                                            <Typography varient="h6" className={classes.textTransform}>
+                                                {`${item.value || 0}`}
+                                            </Typography>
+                                        </div>
+                                    </div>
+                                </>
+                            ))}
+                        </div>
+                    </Grid>
+                </Grid>
             )}
 
             {/* Products */}
