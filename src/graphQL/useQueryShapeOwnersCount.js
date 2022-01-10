@@ -9,3 +9,13 @@ export const SHAPEOWNERSCOUNT = gql`
     )
   }
 `;
+
+export const SHAPEOWNERSINTERESTCOUNT = gql`
+  query getShapeOwnersInterestCount(
+    $polygon: JSON, $pagination: JSON, $filters: [JSON]
+  ) {
+    shapeOwnersInterestCount(
+      polygon: $polygon, pagination: $pagination, filters: $filters
+    )
+  }
+`;

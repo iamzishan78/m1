@@ -4,6 +4,7 @@ import {
   GET_SHAPE_OWNERS_AND_COUNT,
   GET_MAP_FILTER_SHAPE_OWNERS_AND_COUNT,
   GET_MAP_FILTER_SHAPE_OWNERS_AND_WELLS,
+  EXEC_ASYNC_EXPORT_JOB
 } from "store/type";
 
 export const getShapeOwnersAndCountAction = {
@@ -46,6 +47,15 @@ export const getMapFilterShapeOwnersAndWellsAction = {
     payload,
   }),
   REJECTED: () => ({ type: GET_MAP_FILTER_SHAPE_OWNERS_AND_WELLS.REJECTED }),
+};
+
+export const execAsyncExportJobAction = {
+  STARTED: (payload) => ({ type: EXEC_ASYNC_EXPORT_JOB.STARTED, payload }),
+  FULLFILLED: (payload) => ({
+    type: EXEC_ASYNC_EXPORT_JOB.FULLFILLED,
+    payload,
+  }),
+  REJECTED: () => ({ type: EXEC_ASYNC_EXPORT_JOB.REJECTED }),
 };
 
 export const resetShapeOwnerAction = () => ({ type: RESET_SHAPE_OWNER })

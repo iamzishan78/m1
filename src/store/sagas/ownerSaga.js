@@ -1,26 +1,32 @@
-import { call, takeLatest, put } from "redux-saga/effects";
+import { call, takeLatest, put, getContext, select } from "redux-saga/effects";
 import get from 'lodash/get';
 
 import Api from "api";
 import { getSelectedFeaturePolygonString } from "utils/helper";
 import { SHAPE_OWNERS } from "graphQL/useQueryPaginatedShapeOwners";
-import { SHAPEOWNERSCOUNT } from "graphQL/useQueryShapeOwnersCount";
+import { SHAPEOWNERSCOUNT, SHAPEOWNERSINTERESTCOUNT } from "graphQL/useQueryShapeOwnersCount";
 import {
+  OWNERS_BY_WELL_IDS_COUNTS,
   OWNERS_BY_WELL_IDS,
+  OWNERS_INTEREST_BY_WELL_IDS_COUNTS,
   OWNERS_INTEREST_BY_WELL_IDS,
 } from "graphQL/useQueryOwnersByWellIds";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
+import { CREATE_JOB } from "graphQL/useMutationCreateJob";
 import {
   getShapeOwnersAndCountAction,
   getShapeOwnersAndWellsAction,
   getMapFilterShapeOwnersAndWellsAction,
   getMapFilterShapeOwnersAndCountAction,
+  execAsyncExportJobAction
 } from "store/actions/ownerActions";
 import {
   GET_SHAPE_OWNERS_AND_WELLS,
   GET_SHAPE_OWNERS_AND_COUNT,
   GET_MAP_FILTER_SHAPE_OWNERS_AND_WELLS,
   GET_MAP_FILTER_SHAPE_OWNERS_AND_COUNT,
+  EXEC_ASYNC_EXPORT_JOB
 } from "store/type";
 import { showErrorMessage } from "actions";
 
@@ -54,60 +60,82 @@ function* getShapeOwnersAndCount(action) {
 
 function* getShapeOwnersAndWells(action) {
   try {
-    const { currentFeature, userId } = action.payload;
+    const { client, currentFeature, userId } = action.payload;
+    const polygon = getSelectedFeaturePolygonString(currentFeature);
 
-    const wellsCount = yield call(Api.fetch, GET_ES_PAGINATED_LIST, {
-      esIndex: "platformData:wells",
-      polygon: currentFeature?.geometry?.coordinates[0],
-      pagination: {
-        first: 0,
-        after: null,
-      },
+    const shapeWellCount = yield client.query({
+      query: GET_ES_PAGINATED_LIST, 
+      variables: {
+        esIndex: "platformData:wells",
+        polygon: currentFeature?.geometry?.coordinates[0],
+        pagination: {
+          first: 0,
+          after: null
+        }
+      }
     });
 
-    const wells = yield call(Api.fetch, GET_ES_PAGINATED_LIST, {
-      esIndex: "platformData:wells",
-      polygon: currentFeature?.geometry?.coordinates[0],
-      pagination: {
-        first: get(wellsCount,'data.data.getESPaginatedList.total', 0),
-        after: null,
-      },
-    });
+    const shapeOwnerCount = yield client.query({
+      query: SHAPEOWNERSCOUNT,
+      variables: {
+        polygon
+      }
+    })
 
-    const wellIds = get(wells, 'data.data.getESPaginatedList.hits',[]).map(
-      (well) => well.Id
-    );
+    const shapeOwnerInterestCount = yield client.query({
+      query: SHAPEOWNERSINTERESTCOUNT,
+      variables: {
+        polygon: currentFeature?.geometry?.coordinates[0],
+        pagination: {
+          first: get(shapeWellCount, 'data.getESPaginatedList.total', 0),
+          after: null,
+        },
+      }
+    })
 
-    let taxOwners = [];
-    let taxOwnersInterest = [];
+    // const wells = yield call(Api.fetch, GET_ES_PAGINATED_LIST, {
+    //   esIndex: "platformData:wells",
+    //   polygon: currentFeature?.geometry?.coordinates[0],
+    //   pagination: {
+    //     first: get(wellsCount, 'data.data.getESPaginatedList.total', 0),
+    //     after: null,
+    //   },
+    // });
 
-    if(wellIds?.length > 0){
-      taxOwnersInterest = yield call(Api.fetch, OWNERS_INTEREST_BY_WELL_IDS, {
-        wellIds: wellIds,
-        selectedYear: "2021",
-      });
-  
-      taxOwners = yield call(Api.fetch, OWNERS_BY_WELL_IDS, {
-        wellIds: wellIds,
-        selectedYear: "2021",
-      });
-    }
+    // const wellIds = get(wells, 'data.data.getESPaginatedList.hits', []).map(
+    //   (well) => well.Id
+    // );
 
-    if(get(taxOwnersInterest,'data.errors', []).length > 0){
-      yield put(showErrorMessage("Failed to fetch Tax Owners Interest"));
+    // let taxOwners = [];
+    // let taxOwnersInterest = [];
 
-    }
-    if(get(taxOwners,'data.errors', []).length > 0){
-      yield put(showErrorMessage("Failed to fetch Tax Owners"));
-    }
+    // if (wellIds?.length > 0) {
+    //   taxOwnersInterest = yield call(Api.fetch, OWNERS_INTEREST_BY_WELL_IDS, {
+    //     wellIds: wellIds,
+    //     selectedYear: "2021",
+    //   });
+
+    //   taxOwners = yield call(Api.fetch, OWNERS_BY_WELL_IDS, {
+    //     wellIds: wellIds,
+    //     selectedYear: "2021",
+    //   });
+    // }
+
+    // if (get(taxOwnersInterest, 'data.errors', []).length > 0) {
+    //   yield put(showErrorMessage("Failed to fetch Tax Owners Interest"));
+
+    // }
+    // if (get(taxOwners, 'data.errors', []).length > 0) {
+    //   yield put(showErrorMessage("Failed to fetch Tax Owners"));
+    // }
     yield put(
       getShapeOwnersAndWellsAction.FULLFILLED({
-        shapeOwners: get(taxOwners, 'data.data.ownersByWellIds',[]),
-        shapeCount: get(taxOwners, 'data.data.ownersByWellIds.length',0),
-        shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',[]),
-        shapeInterestCount: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds.length',0),
-        wells: get(wells, 'data.data.getESPaginatedList.hits', []),
-        wellsCount: get(wellsCount, 'data.data.getESPaginatedList.total', 0),
+        // shapeOwners: get(taxOwners, 'data.data.ownersByWellIds',[]),
+        shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount',0),
+        // shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',[]),
+        shapeInterestCount: get(shapeOwnerInterestCount, 'data.shapeOwnersInterestCount',0),
+        // wells: get(wells, 'data.data.getESPaginatedList.hits', []),
+        wellsCount: get(shapeWellCount, 'data.getESPaginatedList.total', 0),
       })
     );
   } catch (error) {
@@ -164,14 +192,22 @@ function* getMapFilterShapeOwnersAndCount(action) {
       })
     );
   } catch (error) {
-    yield put(getShapeOwnersAndCountAction.REJECTED());
+    yield put(getMapFilterShapeOwnersAndCountAction.REJECTED());
   }
 }
 
 function* getMapFilterShapeOwnersAndWells(action) {
   try {
-    const { currentFeature, filters, search, userId } =
+    const { client, currentFeature, filters, search, userId } =
       action.payload;
+
+    // const originalFile = await client.mutate({
+    //   mutation: ADDFILE,
+    //   variables: {
+    //     fileName: inputOriginalFile.fileName,
+    //     userId,
+    //   },
+    // })
 
     const wellsCount = yield call(Api.fetch, GET_ES_PAGINATED_LIST, {
       esIndex: "platformData:wells",
@@ -237,6 +273,55 @@ function* getMapFilterShapeOwnersAndWells(action) {
   }
 }
 
+function* execAsyncExportJob(action) {
+  try {
+    const { client, currentFeature, filters, search, userId, exportWells, exportOwners, exportOwnersInterest, setStateApp } = action.payload;
+    const ownerState = yield select((state) => state.owner);
+
+    const jobInitialization = yield client.mutate({
+      mutation: INITIALIZE_EXPORT_JOB,
+      variables: {
+        jobName: "Shape Export", 
+        jobType: "SHAPEEXPORT",
+        requestPayload: {
+          polygon: currentFeature?.geometry?.coordinates[0],
+          filters,
+          search,
+          datasets: {
+            exportWells, exportOwners, exportOwnersInterest
+          },
+          counts: {
+            exportWells: ownerState.wellsCount,
+            exportOwners: ownerState.shapeCount,
+            exportOwnersInterest: ownerState.shapeInterestCount
+          }
+        },
+        userId
+      },
+    })
+
+    const shapeExportJob = yield client.mutate({
+      mutation: CREATE_JOB,
+      variables: {
+        jobId: jobInitialization?.data?.initializeExportJob?.job?._id,
+        sendEmail: true
+      }
+    })
+
+    setStateApp((state) => ({
+      ...state,
+      bulkUpload: !state.bulkUpload,
+    }));
+
+    yield put(
+      execAsyncExportJobAction.FULLFILLED({
+      })
+    );
+  } catch (error) {
+    yield put(execAsyncExportJobAction.REJECTED());
+  }
+}
+
 /// /////////// Watchers ///////////////////////
 export function* watcherOwners() {
   yield takeLatest(GET_SHAPE_OWNERS_AND_COUNT.STARTED, getShapeOwnersAndCount);
@@ -249,4 +334,5 @@ export function* watcherOwners() {
     GET_MAP_FILTER_SHAPE_OWNERS_AND_WELLS.STARTED,
     getMapFilterShapeOwnersAndWells
   );
+  yield takeLatest(EXEC_ASYNC_EXPORT_JOB.STARTED, execAsyncExportJob);
 }
