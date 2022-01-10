@@ -56,6 +56,7 @@
     "javascript-time-ago": "^2.3.8",
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",
+    "lodash.slice": "^4.2.0",
     "mapbox-gl": "~1.13.1",
     "mapbox-gl-draw-circle": "^1.1.2",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",

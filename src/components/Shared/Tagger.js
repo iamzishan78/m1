@@ -480,9 +480,11 @@ export default function Tags(props) {
     <div id="taggerRoot" className={classes.rootDiv}>
       {!loadingTags ? (
         <Grid container>
-          <Grid item xs={12}>
-            <ToggleSharedButton />
-          </Grid>
+          {!props.onlyTags && (
+            <Grid item xs={12}>
+              <ToggleSharedButton />
+            </Grid>
+          )}
           <Grid item xs={12}>
             <Autocomplete
               className={classes.chip}

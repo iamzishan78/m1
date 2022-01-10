@@ -7,27 +7,23 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-export function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, esIndex, filters, custom }) {
+export function AutoCompleteField({ value, onChange, index, column, query, extendSearchQuery, esIndex, filters }) {
     const [open, setOpen] = useState(false);
     const [options, setOptions] = useState([]);
-    const [value, setValue] = useState({ key: filterList[index][0] });
-    const [search, setSearch] = useState(filterList[index][0]);
+    // const [value, setValue] = useState({ key: value });
+    const [search, setSearch] = useState(value);
     const { label, filterKey, type } = column
     const [getFilters, { data: filtersData, loading }] = useLazyQuery(query, { fetchPolicy: "no-cache" });
 
-    useEffect(() => {
-        setSearch(filterList[index][0])
-        if (!filterList[index][0]) {
-            setValue(null)
-        }
-    }, [filterList[index][0]]);
+    // useEffect(() => {
+    //     setSearch(filterList[index][0])
+    //     if (!filterList[index][0]) {
+    //         setValue(null)
+    //     }
+    // }, [filterList[index][0]]);
 
     useEffect(() => {
-        if(!custom?.filterOptions){
-            getFiltersAction("");
-        }else{
-            setOptions(custom?.filterOptions)
-        }
+        getFiltersAction("");
     }, []);
 
     useEffect(() => {
@@ -42,7 +38,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
 
     const handleChange = (search) => {
         setSearch(search);
-        getFiltersAction(search);
+        // getFiltersAction(search);
     }
 
     const getFiltersAction = (search) => {
@@ -57,7 +53,6 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
                 search,
                 extendSearchQuery,
                 size: 50,
-                key_as_string: custom?.key_as_string
             },
         });
     };
@@ -65,37 +60,38 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
         <Autocomplete
             id={`filter-autocomplete-${label}`}
             open={open}
-            onOpen={() => {
-                setOpen(true);
-            }}
-            onClose={() => {
-                setOpen(false);
-            }}
+            onOpen={() => { setOpen(true) }}
+            onClose={() => { setOpen(false) }}
             value={value}
             inputValue={search}
-            getOptionSelected={(option, value) => option.key === value.key}
+            getOptionSelected={(option, value) => option?.key === value.key}
             getOptionLabel={(option) => option?.key?.toString().replace(/^\,|\,$/gm, "")}
             onChange={(e, value, reason) => {
-                if (reason === 'clear' || !value?.key) {
-                    filterList[index].pop()
-                    setSearch('')
-                    setValue(null)
-                } else {
-                    filterList[index][0] = typeof value.key === 'string' ? value.key.replace(/^\,|\,$/gm, "") : value.key
+                if (reason === 'clear' || !value?.key) setSearch('')
+                else {
                     setSearch(value.key)
-                    setValue(value)
+                    onChange(value.key)
                 }
-                onChange(filterList[index], index, column);
             }}
+            fullWidth
+            autoHighlight
             options={options}
             loading={loading}
             renderInput={(params) => (
                 <TextField
                     {...params}
                     label={label}
-                    onChange={(e) => {
-                        handleChange(e.target.value);
+                    onChange={(e) => { handleChange(e.target.value) }}
+                    onKeyDown={(e) => {
+                        if (e.code === 'Tab') {
+                            // e.preventDefault();
+                            // e.stopPropagation();
+                            if (options[0] && options[0].key) {
+                                onChange(options[0].key)
+                            }
+                        }
                     }}
+                    fullWidth
                     InputProps={{
                         ...params.InputProps,
                         endAdornment: (

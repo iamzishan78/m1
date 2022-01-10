@@ -15,7 +15,11 @@ export const TabButtons = ({ tab, actiiveId, setActive }) => {
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        padding: 20
+        paddingTop: 0,
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingBottom: 20
+
     },
     textTransform: {
         fontWeight: "bold",
@@ -99,7 +103,7 @@ const SummarySection = ({ checkId }) => {
     let adjSummary = adjustmentSummary?.getESAggsList?.aggregations;
     let prodSummary = productSummary?.getESAggsList?.aggregations;
 
-    const summaryTabs = [{ id: 1, label: "Revenue" }, { id: 2, label: "Adjustment" }, { id: 3, label: "Products" }];
+    const summaryTabs = [{ id: 1, label: "Revenue" }, { id: 2, label: "Products" }, { id: 3, label: "Adjustment" }];
 
     useEffect(() => {
         getESAggsRevenue({
@@ -213,7 +217,7 @@ const SummarySection = ({ checkId }) => {
     return (
         <div className={`${classes.root} flex column justifyStart alignStart w-100`}>
             <Typography varient="h6" className={classes.textTransform}>
-                Summary
+                {/* Summary */}
             </Typography>
             <div className={`${classes.tabButtons} flex justifyBetween alignCenter w-100`}>
                 {summaryTabs.map((tab, index) => (
@@ -242,40 +246,6 @@ const SummarySection = ({ checkId }) => {
                                 <div className="flex alignStart justifyStart">
                                     <Typography varient="h6" className={classes.textTransform}>
                                         {`${item.value || 0}`}
-                                    </Typography>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Adjustment */}
-            {activeTabId === 2 && (
-                <div className="flex justifyBetween alignCenter w-100">
-                    <div className="flex column justifyBetween alignStart w-100">
-                        <div className={classes.graphCard}>
-                            <img src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
-                                alt="static donut chart image" height={300} width={300} />
-                        </div>
-                    </div>
-                    <div className="flex column justifyBetween alignCenter w-100">
-                        <div className={`${classes.totalLabelField} flex justifyEnd alignCenter w-100`}>
-                            <Typography varient="h6" className={`${classes.textTransform} ${classes.totalLabelTextColor}`}>
-                                Total
-                            </Typography>
-                        </div>
-                        {adjustmentSummaryDetails?.length > 0 && adjustmentSummaryDetails.map((item, index) => (
-                            <div key={index + 1} className={`${classes.dataCardWidth} flex justifyBetween alignCenter w-100`} style={{ marginTop: 16 }}>
-                                <div className="flex alignStart justifyStart">
-                                    <Typography varient="h6" className={classes.textTransform}>
-                                        {item.name || ""}
-                                    </Typography>
-                                </div>
-
-                                <div className="flex alignStart justifyStart">
-                                    <Typography varient="h6" className={classes.textTransform}>
-                                        {item.value}
                                     </Typography>
                                 </div>
                             </div>
@@ -347,6 +317,40 @@ const SummarySection = ({ checkId }) => {
                                             {item?.avgPrice?.value.toFixed(2)}
                                         </p>
                                     </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Adjustment */}
+            {activeTabId === 2 && (
+                <div className="flex justifyBetween alignCenter w-100">
+                    <div className="flex column justifyBetween alignStart w-100">
+                        <div className={classes.graphCard}>
+                            <img src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
+                                alt="static donut chart image" height={300} width={300} />
+                        </div>
+                    </div>
+                    <div className="flex column justifyBetween alignCenter w-100">
+                        <div className={`${classes.totalLabelField} flex justifyEnd alignCenter w-100`}>
+                            <Typography varient="h6" className={`${classes.textTransform} ${classes.totalLabelTextColor}`}>
+                                Total
+                            </Typography>
+                        </div>
+                        {adjustmentSummaryDetails?.length > 0 && adjustmentSummaryDetails.map((item, index) => (
+                            <div key={index + 1} className={`${classes.dataCardWidth} flex justifyBetween alignCenter w-100`} style={{ marginTop: 16 }}>
+                                <div className="flex alignStart justifyStart">
+                                    <Typography varient="h6" className={classes.textTransform}>
+                                        {item.name || ""}
+                                    </Typography>
+                                </div>
+
+                                <div className="flex alignStart justifyStart">
+                                    <Typography varient="h6" className={classes.textTransform}>
+                                        {item.value}
+                                    </Typography>
                                 </div>
                             </div>
                         ))}
