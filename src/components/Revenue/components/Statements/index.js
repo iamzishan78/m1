@@ -82,7 +82,7 @@ export default function RevenueStatements() {
       <div style={{ marginTop: 40 }}>
         <RevenueStatementTable
           header="Revenue Statements"
-          targetLabel="revenueStatements"
+          targetLabel="check"
           onGettingPotentialIssues={onGettingPotentialIssues}
           onGettingStatements={onGettingStatements}
           parent="RevenueStatementTable"

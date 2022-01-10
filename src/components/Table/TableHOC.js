@@ -237,13 +237,19 @@ export const TableHOC = (Component) => {
                             }
                         })()
                     },
-                    filters: tableState.esFilters ? [...tableState.esFilters] : []
+                    filters: tableState.esFilters ? [...tableState.esFilters] : [],
+                    customFilters: []
                     // ...(tableState.esFilters) && { filters: [...tableState.esFilters] || [] },
                 },
             };
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0) {
-                    pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
+                    if(columns[index].custom?.filterOptions?.length > 0){
+                        pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0] })
+                    }else{
+                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
+                    }
+                    
                 }
             })
             if (selectedGridView?.filters && selectedGridView.type === 'Default') {
