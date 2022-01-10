@@ -17,7 +17,6 @@ import { usetableStyles } from "../Styles";
 // actions
 import { setRevenuePropertyData } from "actions";
 
-
 function RevenuePropertiesTable(props) {
   const classes = usetableStyles();
   // redux
@@ -25,12 +24,9 @@ function RevenuePropertiesTable(props) {
   const { revenueProperties } = useSelector((state) => state.Revenue);
 
   // query for Properties Table
-  const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(
-    GET_ES_PAGINATED_LIST,
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
+  const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
+    fetchPolicy: "no-cache",
+  });
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
   // rearranging the data according to the requirements.
   const tableData = elasticData?.getESPaginatedList?.hits?.map((eachRow) => {
@@ -47,9 +43,7 @@ function RevenuePropertiesTable(props) {
       status: eachRow?.status,
       checkNumber: eachRow?.lastCheck?.checkNumber,
       lastChecked: new Date(eachRow?.lastCheck?.checkDate).toLocaleDateString(),
-      tags: eachRow.tags?.length > 0
-        ? [[eachRow.tags.map((tag) => tag.tag)], eachRow.tags.length]
-        : [[], 0]
+      tags: eachRow.tags?.length > 0 ? [[eachRow.tags.map((tag) => tag.tag)], eachRow.tags.length] : [[], 0],
     };
   });
 
@@ -68,9 +62,9 @@ function RevenuePropertiesTable(props) {
   };
 
   React.useEffect(() => {
-    const statusIndex = columns.findIndex(c => c.name === 'status');
+    const statusIndex = columns.findIndex((c) => c.name === "status");
     if (statusIndex !== -1) {
-      columns[statusIndex].options.customBodyRender = ((value, tableMeta) => (
+      columns[statusIndex].options.customBodyRender = (value, tableMeta) => (
         <>
           {!tableMeta.rowData[8] ? (
             <div
@@ -92,15 +86,19 @@ function RevenuePropertiesTable(props) {
                 <div className={classes.declinedBadge} />
               ) : (
                 <div className={classes.statusBtnDiv}>
-                  <div className={classes.approveBtn} onClick={() => handleStatusChange(tableMeta.rowData[0], 'approved')}>Approve</div>
-                  <div className={classes.declineBtn} onClick={() => handleStatusChange(tableMeta.rowData[0], 'declined')}>Decline</div>
+                  <div className={classes.approveBtn} onClick={() => handleStatusChange(tableMeta.rowData[0], "approved")}>
+                    Approve
+                  </div>
+                  <div className={classes.declineBtn} onClick={() => handleStatusChange(tableMeta.rowData[0], "declined")}>
+                    Decline
+                  </div>
                 </div>
               )}
               <div>{value}</div>
             </div>
           )}
         </>
-      ));
+      );
     }
   }, [columns]);
 
@@ -114,7 +112,6 @@ function RevenuePropertiesTable(props) {
           keep_alive: "1micros",
         },
         search: props.revenueSearchQuery,
-        sort: [],
         filter: "",
       },
     });
@@ -124,8 +121,8 @@ function RevenuePropertiesTable(props) {
     let property = {
       _id,
     };
-    if (status === 'declined') {
-      property = { ...property, status: '', well: {} };
+    if (status === "declined") {
+      property = { ...property, status: "", well: {} };
     }
     updateProperty({
       variables: {
@@ -137,20 +134,14 @@ function RevenuePropertiesTable(props) {
   };
 
   React.useEffect(() => {
-    dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }))
+    dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getESPaginatedList, elasticData,]);
+  }, [getESPaginatedList, elasticData]);
 
   const onTableChange = (action, tableState, rows, meta) => {
     tableState.esIndex = props.esIndex;
     // tableState.sort = [];
-    const tableActions = props.initializeTableActions(
-      tableState,
-      meta,
-      revenueProperties,
-      columns,
-      getESPaginatedList
-    );
+    const tableActions = props.initializeTableActions(tableState, meta, revenueProperties, columns, getESPaginatedList);
     switch (action) {
       case "search":
       case "sort":
@@ -184,7 +175,7 @@ function RevenuePropertiesTable(props) {
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={false}
-        startPaginationAt={null}
+        startPaginationAt={props.startPaginationAt}
         onTableChange={onTableChange}
         options={options}
         parent={props.parent}
