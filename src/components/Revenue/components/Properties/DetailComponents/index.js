@@ -7,7 +7,7 @@ import { DescriptionOutlined as DocumentIcon, NavigateNext as NavigateNextIcon, 
 import Link from "@material-ui/core/Link";
 
 import Tagger from "components/Shared/Tagger";
-
+import PropertyInterestDetailsSection from "./PropertyInterestDetailsSection";
 // Components
 import HeaderSection from "./HeaderSection";
 
@@ -39,15 +39,19 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsHeader: {
     padding: "20px 20px 0px 20px",
+    background: "#ffffff",
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
   },
   tabsSection: {
-    marginTop: "20px",
-    backgroundColor: "#fff",
+    marginTop: "24px",
   },
   headerSection: {
     padding: "20px 30px",
     backgroundColor: "#fff",
-    marginBottom: "10px",
+    marginBottom: "20px",
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
   },
   summarySection: {
     padding: "20px 30px",
@@ -61,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#fff",
   },
   tags: {
-    margin: "20px 10px",
+    margin: "20px 10px 0px 10px",
     "& .MuiOutlinedInput-root": {
       color: "white",
       "& fieldset": {
@@ -98,7 +102,7 @@ const StyledTab = withStyles((theme) => ({
   root: {
     textTransform: "uppercase",
     minWidth: 72,
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: theme.typography.fontWeightRegular,
     marginRight: theme.spacing(4),
     fontFamily: [
       "-apple-system",
@@ -198,14 +202,12 @@ export default function DetailComponents(props) {
               <StyledTab label="Details" />
             </StyledTabs>
           </div>
-          <div style={{ maxHeight: "calc(100vh - 495px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+          <div style={{ maxHeight: "calc(100vh - 440px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
             <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
               <HeaderSection />
             </div>
-            <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
-              <Typography varient="h6" style={{ textTransform: "uppercase" }}>
-                Details
-              </Typography>
+            <div ref={tab === 1 ? selectedTabRef : null}>
+              <PropertyInterestDetailsSection checkId={''} />
             </div>
           </div>
         </div>
