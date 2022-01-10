@@ -35,7 +35,7 @@ function* getShapeOwnersAndCount(action) {
     const { currentFeature, userId } = action.payload;
     const polygon = getSelectedFeaturePolygonString(currentFeature);
     const shapeOwnerCount = yield call(Api.fetch, SHAPEOWNERSCOUNT, {
-      polygon,
+      polygon: currentFeature?.geometry?.coordinates[0],
     });
 
     const shapeOwner = yield call(Api.fetch, SHAPE_OWNERS, {
@@ -78,7 +78,7 @@ function* getShapeOwnersAndWells(action) {
     const shapeOwnerCount = yield client.query({
       query: SHAPEOWNERSCOUNT,
       variables: {
-        polygon
+        polygon: currentFeature?.geometry?.coordinates[0]
       }
     })
 
@@ -93,43 +93,9 @@ function* getShapeOwnersAndWells(action) {
       }
     })
 
-    // const wells = yield call(Api.fetch, GET_ES_PAGINATED_LIST, {
-    //   esIndex: "platformData:wells",
-    //   polygon: currentFeature?.geometry?.coordinates[0],
-    //   pagination: {
-    //     first: get(wellsCount, 'data.data.getESPaginatedList.total', 0),
-    //     after: null,
-    //   },
-    // });
-
-    // const wellIds = get(wells, 'data.data.getESPaginatedList.hits', []).map(
-    //   (well) => well.Id
-    // );
-
-    // let taxOwners = [];
-    // let taxOwnersInterest = [];
-
-    // if (wellIds?.length > 0) {
-    //   taxOwnersInterest = yield call(Api.fetch, OWNERS_INTEREST_BY_WELL_IDS, {
-    //     wellIds: wellIds,
-    //     selectedYear: "2021",
-    //   });
-
-    //   taxOwners = yield call(Api.fetch, OWNERS_BY_WELL_IDS, {
-    //     wellIds: wellIds,
-    //     selectedYear: "2021",
-    //   });
-    // }
-
-    // if (get(taxOwnersInterest, 'data.errors', []).length > 0) {
-    //   yield put(showErrorMessage("Failed to fetch Tax Owners Interest"));
-
-    // }
-    // if (get(taxOwners, 'data.errors', []).length > 0) {
-    //   yield put(showErrorMessage("Failed to fetch Tax Owners"));
-    // }
     yield put(
       getShapeOwnersAndWellsAction.FULLFILLED({
+        filters: [],
         // shapeOwners: get(taxOwners, 'data.data.ownersByWellIds',[]),
         shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount',0),
         // shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',[]),
@@ -198,8 +164,8 @@ function* getMapFilterShapeOwnersAndCount(action) {
 
 function* getMapFilterShapeOwnersAndWells(action) {
   try {
-    const { client, currentFeature, filters, search, userId } =
-      action.payload;
+    const { client, currentFeature, filters, userId } = action.payload;
+    const polygon = getSelectedFeaturePolygonString(currentFeature);
 
     // const originalFile = await client.mutate({
     //   mutation: ADDFILE,
@@ -209,63 +175,48 @@ function* getMapFilterShapeOwnersAndWells(action) {
     //   },
     // })
 
-    const wellsCount = yield call(Api.fetch, GET_ES_PAGINATED_LIST, {
-      esIndex: "platformData:wells",
-      search,
-      filters,
-      polygon: currentFeature?.geometry?.coordinates[0],
-      pagination: {
-        first: 0,
-        after: null,
-      },
+    const shapeWellCount = yield client.query({
+      query: GET_ES_PAGINATED_LIST, 
+      variables: {
+        esIndex: "platformData:wells",
+        filters,
+        polygon: currentFeature?.geometry?.coordinates[0],
+        pagination: {
+          first: 0,
+          after: null
+        }
+      }
     });
 
-    const wells = yield call(Api.fetch, GET_ES_PAGINATED_LIST, {
-      esIndex: "platformData:wells",
-      search,
-      filters,
-      polygon: currentFeature?.geometry?.coordinates[0],
-      pagination: {
-        first: get(wellsCount, 'data.data.getESPaginatedList.total', 0),
-        after: null,
-      },
-    });
+    const shapeOwnerCount = yield client.query({
+      query: SHAPEOWNERSCOUNT,
+      variables: {
+        filters,
+        polygon: currentFeature?.geometry?.coordinates[0]
+      }
+    })
 
-    const wellIds = get(wells, 'data.data.getESPaginatedList.hits',[]).map(
-      (well) => well.Id
-    );
-
-    let taxOwners = [];
-    let taxOwnersInterest = [];
-
-    if(wellIds?.length > 0){
-      taxOwnersInterest = yield call(Api.fetch, OWNERS_INTEREST_BY_WELL_IDS, {
-        wellIds: wellIds,
-        selectedYear: "2021",
-      });
-
-      taxOwners = yield call(Api.fetch, OWNERS_BY_WELL_IDS, {
-        wellIds: wellIds,
-        selectedYear: "2021",
-      });
-    }
-
-    if(get(taxOwnersInterest,'data.errors', []).length > 0){
-      yield put(showErrorMessage("Failed to fetch Tax Owners Interest"));
-
-    }
-    if(get(taxOwners,'data.errors', []).length > 0){
-      yield put(showErrorMessage("Failed to fetch Tax Owners"));
-    }
+    const shapeOwnerInterestCount = yield client.query({
+      query: SHAPEOWNERSINTERESTCOUNT,
+      variables: {
+        filters,
+        polygon: currentFeature?.geometry?.coordinates[0],
+        pagination: {
+          first: get(shapeWellCount, 'data.getESPaginatedList.total', 0),
+          after: null,
+        },
+      }
+    })
 
     yield put(
       getMapFilterShapeOwnersAndWellsAction.FULLFILLED({
-        shapeOwners: get(taxOwners, 'data.data.ownersByWellIds',[]),
-        shapeCount: get(taxOwners, 'data.data.ownersByWellIds.length',0),
-        shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',[]),
-        shapeInterestCount: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds.length',0),
-        wells: get(wells, 'data.data.getESPaginatedList.hits',[]),
-        wellsCount: get(wellsCount, 'data.data.getESPaginatedList.total',0),
+        filters,
+        // shapeOwners: get(taxOwners, 'data.data.ownersByWellIds',[]),
+        shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount',0),
+        // shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',[]),
+        shapeInterestCount: get(shapeOwnerInterestCount, 'data.shapeOwnersInterestCount',0),
+        // wells: get(wells, 'data.data.getESPaginatedList.hits', []),
+        wellsCount: get(shapeWellCount, 'data.getESPaginatedList.total', 0),
       })
     );
   } catch (error) {
@@ -285,7 +236,7 @@ function* execAsyncExportJob(action) {
         jobType: "SHAPEEXPORT",
         requestPayload: {
           polygon: currentFeature?.geometry?.coordinates[0],
-          filters,
+          filters: ownerState.filters,
           search,
           datasets: {
             exportWells, exportOwners, exportOwnersInterest

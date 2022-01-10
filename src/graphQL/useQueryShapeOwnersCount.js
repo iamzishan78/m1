@@ -2,10 +2,12 @@ import gql from "graphql-tag";
 
 export const SHAPEOWNERSCOUNT = gql`
   query getShapeOwnersCount(
-    $polygon: String
+    $polygon: JSON,
+    $filters: [JSON]
   ) {
     shapeOwnersCount(
-      polygon: $polygon
+      polygon: $polygon,
+      filters: $filters
     )
   }
 `;
