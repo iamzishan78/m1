@@ -1,8 +1,6 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
 import CheckDetailsTable from "components/Table/Revenue/CheckDetailsTable";
-
 
 const useStyles = makeStyles(() => ({
     sectionCard: {
@@ -27,16 +25,9 @@ const CheckDetailsSection = ({ checkId }) => {
     const classes = useStyles();
     return (
         <div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
-            <div className={`${classes.titleField} flex justifyBetween alignCenter w-100`}>
-                <Typography varient="h5" className={classes.titleText}>
-                    {/* CHECK DETAILS */}
-                </Typography>
-            </div>
-
             <CheckDetailsTable parent="CheckDetailsTable" header="Check Details" checkId={checkId} />
         </div>
     )
 }
-
 
 export default CheckDetailsSection;
