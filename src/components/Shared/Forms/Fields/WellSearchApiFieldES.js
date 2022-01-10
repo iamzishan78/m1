@@ -5,6 +5,8 @@ import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { Typography } from "@material-ui/core";
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 import debounce from "lodash/debounce";
 
 // Queries 
@@ -15,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
         color: "grey",
         fontSize: "15px",
         margin: 0
+    },
+    alignCenter: {
+        textAlign: "center"
     }
 }));
 
@@ -26,7 +31,7 @@ function WellSearchApiField(props) {
     const [selectedWell, setSelectedWell] = useState(null);
 
     // Queries
-    const [getESWellsPaginatedList, { data: constDataWells }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
+    const [getESWellsPaginatedList, { data: constDataWells, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
 
     // searching wells
     const callWellESSearch = React.useMemo(
@@ -69,14 +74,16 @@ function WellSearchApiField(props) {
                 value={selectedWell}
                 getOptionLabel={(option, value) => option.wellName}
                 filterOptions={(x) => x}
+                loading
+                loadingText={<div className={classes.alignCenter}><CircularProgress /></div>}
                 renderOption={(option) => {
-                    return (
-                        <div >
-                            <Typography variant="subtitle1">{option?.wellName}</Typography>
-                            <p className={classes.secondaryText}>{option?.ApiNumber}</p>
-                        </div>
-                    );
-                }}
+                    return <div >
+                        <Typography variant="subtitle1">{option?.wellName}</Typography>
+                        <p className={classes.secondaryText}>{option?.ApiNumber}</p>
+                    </div>
+                }
+
+                }
                 renderInput={(params) => (
                     <TextField
                         margin="dense"

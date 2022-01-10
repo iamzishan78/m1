@@ -168,7 +168,6 @@ export default function Contacts(props) {
     setStateApp({
       ...stateApp,
       DocumentDrawer: false,
-      selectedDocument: {},
     });
 
   };

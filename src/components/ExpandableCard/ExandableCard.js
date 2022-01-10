@@ -27,7 +27,6 @@ import BugsIcon from "../Shared/svgIcons/bug.js";
 import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import ContactSearch from "./components/ContactSearch";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 // contexts 
 import { AppContext } from "../../AppContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
@@ -49,7 +48,7 @@ function ExpandableCard(props) {
     ExpandableCardContext
   );
   const [openBugModal, setOpenBugModal] = useState(false);
-  const [toggleExpand, setToggleExpand] = useState(true);
+  const [toggleExpand, setToggleExpand] = useState(false);
   const [isExpanded, setExpanded] = useState([]);
   const [title, setTitle] = useState(props.title);
   const [subTitle] = useState(props.subTitle);
@@ -236,7 +235,11 @@ function ExpandableCard(props) {
     prevlocation: {
       marginLeft: "10px",
       fontSize: "16px",
-      cursor: "pointer"
+      cursor: "pointer",
+      '&:hover': {
+        color: "#18AADD",
+        textDecoration: "underline"
+      }
     },
     currentLocation: {
       color: "#18AADD", fontSize: "16px"
@@ -512,10 +515,10 @@ function ExpandableCard(props) {
   const DisplayBreadCrums = () => {
     return <div className={classes.breadcrumContainer}>
       <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-        <Typography className={classes.prevlocation} color="inherit" onClick={() => history.push('/documents')}>
+        <Typography className={classes.prevlocation} color="inherit" onClick={() => { setStateApp({ ...stateApp, DocumentDrawer: false }); history.push('/documents'); }}>
           Documents
         </Typography>
-        <Typography className={classes.prevlocation} color="inherit">
+        <Typography className={classes.prevlocation} color="inherit" onClick={() => { setStateApp({ ...stateApp, DocumentDrawer: true }); history.push('/documents'); }}>
           Wells
         </Typography>
         <Typography className={classes.currentLocation}> {title.toUpperCase()}</Typography>

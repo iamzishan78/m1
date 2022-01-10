@@ -212,6 +212,7 @@ export default function DocumentDrawer() {
     setNameAutValueParty1({ name: "", _id: null });
     setNameAutValueParty2({ name: "", _id: null });
     setNewDocument(documentInitial);
+    setPanel("Home")
   };
 
   const handleDeleteAccept = () => {
