@@ -1,13 +1,32 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, TextField, Tabs, Tab, Grid, Avatar, FormControl, InputAdornment } from "@material-ui/core";
-import { LocalAtm as CurrencyIcon } from "@material-ui/icons";
+import {
+  Typography,
+  IconButton,
+  TextField,
+  Tabs,
+  Tab,
+  Grid,
+  Avatar,
+  FormControl,
+  InputAdornment,
+  Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@material-ui/core";
+import {
+  LocalAtm as CurrencyIcon,
+  InfoOutlined as InfoOutlinedIcon,
+  Delete as DeleteIcon,
+  MoreHoriz as MoreHorizIcon,
+} from "@material-ui/icons";
 import Tags from "components/Shared/Tagger";
 import MetaField from "components/Table/helpers/MetaField";
 import { useLocation } from "react-router";
-import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import AddIcon from "@material-ui/icons/Add";
 import CommentComponent from "components/Shared/CommentComponent";
 import AddDialogeUploadZone from "components/ContactDetailCard/components/AddDialogUploadZone";
@@ -83,8 +102,8 @@ const useStyles = makeStyles((theme) => ({
   },
   detailHeader: {
     backgroundColor: "#fff",
-    padding: "20px 20px 8px 24px",
-    borderRadius: 8,
+    padding: "20px 27px 0px 45px",
+    marginTop: "7px",
   },
   title: {
     display: "flex",
@@ -95,9 +114,11 @@ const useStyles = makeStyles((theme) => ({
   },
   highlighter: {
     background: "#263451",
-    padding: "6px 16px",
+    padding: "5px 16px",
     borderRadius: 16,
     width: "max-content",
+    transform: "translateX(5px) translateY(11px)",
+    height: "32px",
   },
   highlight: {
     color: "#ffffff",
@@ -107,17 +128,19 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     height: 80,
     width: 80,
-    backgroundColor: "lightgrey",
+    backgroundColor: "#d5f4ff",
+    borderRadius: 12,
+    "& svg": {
+      fontSize: "3.1875rem",
+      fill: "#263451",
+    },
   },
   tabsHeader: {
-    padding: "20px 20px 0px 20px",
     background: "#ffffff",
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
-  tabsSection: {
-    marginTop: 24,
-  },
+  tabsSection: {},
   headerSection: {
     padding: "20px 30px",
     background: "#ffffff",
@@ -130,12 +153,15 @@ const useStyles = makeStyles((theme) => ({
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
   },
+  tagsContainer: {
+    display: "flex",
+    flexDirection: "row",
+  },
   tags: {
     "& fieldset": {
       border: "none",
     },
   },
-
   viewAll: {
     textDecoration: "underline",
     margin: "0 0 8px 0",
@@ -172,15 +198,68 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   tabsSectionDetails: {
-    maxHeight: "calc(100vh - 450px)",
+    maxHeight: "calc(100vh - 280px)",
     overflow: "overlay",
     backgroundColor: "#f3f3f3",
+  },
+  actionsContainer: {
+    display: "flex",
+    direction: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+  },
+  metaActions: ({ collapse }) => ({
+    marginTop: "2px",
+    "& button": {
+      backgroundColor: !collapse ? "#eceded" : "#fff",
+      color: "grey",
+      fontWeight: "bold",
+      textTransform: "capitalize",
+      padding: "6px 12px",
+      "&:hover": {
+        backgroundColor: !collapse ? "#eceded" : "#fff",
+      },
+    },
+  }),
+  menu: {
+    "& .MuiListItem-root": {
+      "& .MuiListItemIcon-root": {
+        minWidth: "30px",
+        "& .MuiSvgIcon-root": {
+          fill: "red !important",
+        },
+      },
+    },
+  },
+  tabsDetailContainer: ({ collapse }) => ({
+    padding: 20,
+    maxWidth: !collapse ? "calc(100% - 380px)" : "100%",
+  }),
+  commentsContainer: {
+    position: "fixed",
+    bottom: "34px",
+    width: "336px",
+  },
+  menuIcon: {
+    background: "transparent",
+    paddingLeft: "10px",
+    align: "center",
+    "& svg": {
+      fill: "#808080 !important",
+    },
+  },
+  metaPanelCloseIcon: {
+    "& svg": {
+      fontSize: 18,
+      cursor: "pointer",
+      fill: "#808080 !important",
+    },
   },
 }));
 
 const StyledTabs = withStyles({
   root: {
-    borderBottom: "1px solid #e8e8e8",
     textTransform: "capitalize",
   },
   indicator: {
@@ -222,7 +301,6 @@ const StyledTab = withStyles((theme) => ({
 }))((props) => <Tab disableRipple {...props} />);
 
 export default function DetailComponents(props) {
-  const classes = useStyles(props);
   const dispatch = useDispatch();
   const { statements } = useSelector(({ Revenue }) => Revenue);
 
@@ -237,9 +315,12 @@ export default function DetailComponents(props) {
   const { search } = location;
   const [users, setUsers] = useState([]);
   const [ownerId, setOwnerId] = useState("");
+  const [anchorEl, setAnchorEl] = useState();
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
+
+  const classes = useStyles({ ...props, collapse });
   // queries
   const [getCheck, { data: getCheckResult }] = useLazyQuery(GETCHECK, {
     fetchPolicy: "no-cache",
@@ -286,7 +367,7 @@ export default function DetailComponents(props) {
 
   useEffect(() => {
     if (getCheckResult?.getCheck?.check)
-      dispatch(setRevenueKey('statements', { ...statements, activeStatement: getCheckResult?.getCheck?.check }));
+      dispatch(setRevenueKey("statements", { ...statements, activeStatement: getCheckResult?.getCheck?.check }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getCheckResult, dispatch]);
 
@@ -332,17 +413,19 @@ export default function DetailComponents(props) {
       });
       //* Getting most recent uploaded pdf file
       let recentFile = {};
-      files.getFileDescriptors.filter(d => d.fileName.split(".")?.[1]?.toLowerCase() === 'pdf').forEach((d, index) => {
-        let descriptor = d;
-        descriptor = { ...descriptor, dateTime: moment(descriptor.dateTime, "MM/DD/YYYY HH:mm Z") };
-        if (index === 0) recentFile = descriptor;
-        else {
-          if (recentFile.dateTime < descriptor.dateTime) {
-            recentFile = descriptor;
+      files.getFileDescriptors
+        .filter((d) => d.fileName.split(".")?.[1]?.toLowerCase() === "pdf")
+        .forEach((d, index) => {
+          let descriptor = d;
+          descriptor = { ...descriptor, dateTime: moment(descriptor.dateTime, "MM/DD/YYYY HH:mm Z") };
+          if (index === 0) recentFile = descriptor;
+          else {
+            if (recentFile.dateTime < descriptor.dateTime) {
+              recentFile = descriptor;
+            }
           }
-        }
-      });
-      dispatch(setRevenueKey('statements', { ...statements, recentFile }));
+        });
+      dispatch(setRevenueKey("statements", { ...statements, recentFile }));
     }
   }, [files, uploadedFiles, viewFiles]);
 
@@ -362,53 +445,41 @@ export default function DetailComponents(props) {
     setUploadedFiles([...uploadedFiles, uploadedfile]);
   };
 
+  const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
+
+  const handleMenuClose = () => setAnchorEl(null);
+
   return (
     <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor?.["name"]}`}>
-      <div className="flex justifyBetween alignStart w-100">
-        <div className="w-100" style={{ padding: 20, maxWidth: "calc(100% - 380px)" }}>
-          {/**
-           * Detail title section
-           */}
-          <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
-            <div className="flex column alignStart justifyStart w-100">
-              <div className={classes.title}>
-                <IconButton className={classes.icon}>
-                  <CurrencyIcon fontSize="large" />
-                </IconButton>
-                <div className={classes.titleText}>
-                  {checksFlatData && (
-                    <Typography
-                      style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
-                    >{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
-                  )}
-                  {checksFlatData && (
-                    <Typography variant="subtitle1" style={{ marginLeft: 8 }}>
-                      {moment.utc(checksFlatData.checkDate).format("MM/DD/YYYY")}
-                    </Typography>
-                  )}
-                  <div className={classes.highlighter}>
-                    <Typography className={classes.highlight} variant="highlight">
-                      Revenue Check
-                    </Typography>
-                  </div>
+      {/**
+       * Detail title section
+       */}
+      <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
+        <div className="flex column alignStart justifyStart w-100">
+          <div className={classes.title}>
+            <IconButton className={classes.icon}>
+              <CurrencyIcon />
+            </IconButton>
+            <div className={classes.titleText}>
+              {checksFlatData && (
+                <Typography
+                  style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
+                >{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
+              )}
+              <div className={classes.tagsContainer}>
+                <div className={classes.highlighter}>
+                  <Typography className={classes.highlight} variant="highlight">
+                    Revenue Check
+                  </Typography>
+                </div>
+                <div className={classes.tags}>
+                  <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom onlyTags />
                 </div>
               </div>
-
-              <Grid item xs={12} style={{ marginTop: 16 }}>
-                <div className={classes.tags}>
-                  <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
-                </div>
-              </Grid>
             </div>
-
-            {/* <div className="flex justifyEnd alignStart w-100" style={{ maxWidth: 290, marginLeft: 8 }}>
-              <img src="https://miro.medium.com/max/1400/1*ybR6fbfwo6XTmWvTjXSOAA.png" alt="map-view" height={200} width={290} style={{ borderRadius: 8 }} />
-            </div> */}
           </div>
-          {/**
-           * Detail tabs section
-           */}
-          <div className={classes.tabsSection}>
+
+          <div className={classes.actionsContainer}>
             <div className={classes.tabsHeader}>
               <StyledTabs value={tab} onChange={(event, tab) => setTab(tab)} aria-label="ant example">
                 <StyledTab label="Header" />
@@ -416,7 +487,24 @@ export default function DetailComponents(props) {
                 <StyledTab label="Check Details" />
               </StyledTabs>
             </div>
+            <div className={classes.metaActions}>
+              <Button startIcon={<InfoOutlinedIcon />} onClick={() => setCollapse(!collapse)}>
+                Metadata
+              </Button>
+              <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
+                <MoreHorizIcon size="medium" />
+              </IconButton>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <div className="flex justifyBetween alignStart w-100">
+        <div className={`w-100 ${classes.tabsDetailContainer}`}>
+          {/**
+           * Detail tabs section
+           */}
+          <div className={classes.tabsSection}>
             <div className={classes.tabsSectionDetails}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
                 <HeaderSection details={checksFlatData} />
@@ -433,42 +521,38 @@ export default function DetailComponents(props) {
           </div>
         </div>
 
-        <div
-          className="flex column justifyStart alignStart w-100"
-          style={{
-            marginTop: 20,
-            marginRight: 24,
-            padding: "16px 10px",
-            background: "#ffffff",
-            borderRadius: 8,
-            maxHeight: "calc(100vh + 135px)",
-            overflow: "auto",
-            height: "100%",
-            maxWidth: collapse ? 40 : 360,
-            width: "100%",
-          }}
-        >
-          <div className="flex justifyBetween alignCenter w-100">
-            {!collapse && (
-              <Typography varient="h5" className={classes.titleText} style={{ textTransform: "uppercase", fontWeight: "bold" }}>
+        {!collapse && (
+          <div
+            className="flex column justifyStart alignStart w-100"
+            style={{
+              marginTop: 20,
+              marginRight: 24,
+              padding: "16px 10px",
+              background: "#ffffff",
+              borderRadius: 8,
+              overflow: "auto",
+              height: "calc(100vh - 280px)",
+              maxHeight: "calc(100vh - 280px)",
+              maxWidth: 360,
+              width: "100%",
+            }}
+          >
+            <div className="flex justifyBetween alignCenter w-100">
+              <Typography
+                varient="h5"
+                className={classes.titleText}
+                style={{ textTransform: "uppercase", fontWeight: "bold", marginLeft: "5px" }}
+              >
                 Metadata
               </Typography>
-            )}
 
-            <div className="flex alignCenter">
-              {!collapse ? (
-                <span onClick={() => setCollapse(true)}>
-                  <ArrowForwardIcon style={{ fontSize: 18, cursor: "pointer" }} />
+              <div className="flex alignCenter">
+                <span onClick={() => setCollapse(true)} className={classes.metaPanelCloseIcon}>
+                  <ArrowForwardIcon />
                 </span>
-              ) : (
-                <span onClick={() => setCollapse(false)}>
-                  <ArrowBackIcon style={{ fontSize: 18, cursor: "pointer" }} />
-                </span>
-              )}
+              </div>
             </div>
-          </div>
 
-          {!collapse && (
             <div className="flex column justifyStart w-100">
               <div style={{ marginTop: 10, marginLeft: 4 }}>
                 <FormControl variant="outlined" fullWidth size="small">
@@ -617,10 +701,12 @@ export default function DetailComponents(props) {
               {/* <div className={classes.tags} style={{ marginTop: -32 }}>
                 <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
               </div> */}
-              <CommentComponent targetLabel={"check"} targetSourceId={checkId} />
+              <div className={classes.commentsContainer}>
+                <CommentComponent targetLabel={"check"} targetSourceId={checkId} />
+              </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
@@ -629,6 +715,28 @@ export default function DetailComponents(props) {
        * Component for viewing selected pdf file
        */}
       <DocViewer width="calc(80vw)" />
+
+      {/**
+       * Menu for meta data
+       */}
+      <Menu
+        id="dealMenu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        className={classes.menu}
+        getContentAnchorEl={null}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <MenuItem>
+          <ListItemIcon>
+            <DeleteIcon size="medium" />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
     </NavHeader>
   );
 }
