@@ -536,7 +536,7 @@ function ExpandableCard(props) {
           onClose={() => setOpenBugModal(false)}
         />
 
-        <DisplayBreadCrums />
+        {(history.pathHistory[1] === '/documents' && history.pathHistory[0] !== '/') && <DisplayBreadCrums />}
 
         {(history.location?.state?.showAgreementBreadcrumb || history.location?.state?.showTractsBreadcrumb) && (
           <Grid container spacing={2} alignItems="center" className={classes.breadcrumb}>
