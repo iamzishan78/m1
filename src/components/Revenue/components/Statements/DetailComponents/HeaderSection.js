@@ -135,10 +135,10 @@ export default function HeaderFunction(props) {
         {/* Check date */}
         <Grid item xs={4}>
           <Grid container className={classes.gridStyle}>
-            <Grid item xs={5}>
+            <Grid item xs={5} style={{ paddingLeft: "25px" }}>
               <div className={classes.boldLabel}>Check Date</div>
             </Grid>
-            <Grid item xs={7} className={classes.datePicker}>
+            <Grid item xs={6} className={classes.datePicker}>
               <KeyboardDatePicker
                 autoOk
                 variant="inline"
@@ -153,6 +153,7 @@ export default function HeaderFunction(props) {
                 }}
                 KeyboardButtonProps={{ "aria-label": "change date" }}
                 InputAdornmentProps={{ position: "start" }}
+                fullWidth
               />
             </Grid>
           </Grid>
@@ -210,10 +211,10 @@ export default function HeaderFunction(props) {
         {/* Deposit date */}
         <Grid item xs={4}>
           <Grid container className={classes.gridStyle}>
-            <Grid item xs={5}>
+            <Grid item xs={5} style={{ paddingLeft: "25px" }}>
               <div className={classes.boldLabel}>Deposit Date</div>
             </Grid>
-            <Grid item xs={7} className={classes.datePicker}>
+            <Grid item xs={6} className={classes.datePicker}>
               <KeyboardDatePicker
                 autoOk
                 variant="inline"
@@ -228,6 +229,7 @@ export default function HeaderFunction(props) {
                 }}
                 KeyboardButtonProps={{ "aria-label": "change date" }}
                 InputAdornmentProps={{ position: "start" }}
+                fullWidth
               />
             </Grid>
           </Grid>
@@ -281,15 +283,16 @@ export default function HeaderFunction(props) {
 
         <Grid item xs={4}>
           <Grid container className={classes.gridStyle}>
-            <Grid item xs={5}>
+            <Grid item xs={5} style={{ paddingLeft: "25px" }}>
               <div className={classes.boldLabel}>Source ID</div>
             </Grid>
-            <Grid item xs={7}>
+            <Grid item xs={6}>
               <TextField
                 margin="dense"
                 type="text"
                 variant="outlined"
                 value={check?.sourceId}
+                fullWidth
               />
             </Grid>
           </Grid>
