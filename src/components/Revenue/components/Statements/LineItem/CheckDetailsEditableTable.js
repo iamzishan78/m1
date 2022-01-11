@@ -4,7 +4,7 @@ import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 
 // QUERIES 
-import { useLazyQuery, useApolloClient } from "@apollo/client";
+import { useLazyQuery, useApolloClient, useMutation } from "@apollo/client";
 
 import { setStateIfDeepEqual, deepEqualObjects, copy } from "components/Shared/functions";
 
@@ -20,6 +20,7 @@ import get from 'lodash/get'
 import set from 'lodash/set'
 import { Grid as TableGrid, Input, Select } from 'components/Shared/SpreadsheetGrid'
 import { AutoCompleteField } from "./AutoCompleteField";
+import { UPDATE_CHECK_DETAIL } from "graphQL/useMutationUpdateCheckDetail";
 
 
 const Rows = [];
@@ -46,7 +47,7 @@ for (let i = 1; i < 6; i++) {
 
 const RevenueStatementHeadCells = [
     {
-        id: "property.number", title: "Property Code", filterKey: 'property.number.keyword'
+        id: "property.number", title: "Property Code", filterKey: 'property.number.keyword', type: 'autocomplete'
     },
     {
         id: "property.name", title: "Property Name", filterKey: 'property.name.keyword'
@@ -61,13 +62,13 @@ const RevenueStatementHeadCells = [
         id: "date", title: "Sales Date", filterKey: 'date'
     },
     {
-        id: "product", title: "Product", filterKey: 'product.keyword'
+        id: "product", title: "Product", filterKey: 'product.keyword', type: 'autocomplete'
     },
     {
         id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement.keyword'
     },
     {
-        id: "interestType", title: "Type", filterKey: 'interestType.keyword'
+        id: "interestType", title: "Type", filterKey: 'interestType.keyword', type: 'autocomplete'
     },
     {
         id: "price", title: "Avg Price", filterKey: 'price'
@@ -85,7 +86,7 @@ const RevenueStatementHeadCells = [
         id: "ownerDeducts", title: "Deduct Amt", filterKey: 'ownerDeducts'
     },
     {
-        id: "deductType", title: "Deduct Cd", filterKey: 'deductType.keyword'
+        id: "deductType", title: "Deduct Cd", filterKey: 'deductType.keyword', type: 'autocomplete'
     },
     {
         id: "netOwnerValue", title: "Owner Net Rev", filterKey: 'netOwnerValue'
@@ -98,15 +99,41 @@ function CheckDetailsEditableTable(props) {
     const [rows, setRows] = useState(props.rows);
     const client = useApolloClient();
 
-    const onFieldChange = (rowId, field) => (async (value) => {
-        const row = rows.find((r) => r._id === rowId);
 
+    const classes = usetableStyles();
+
+    // function states 
+    // const [columns, Columns] = useState([]);
+    const [selectedRows, setSelectedRows] = useState([]);
+    // const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
+
+    // queries 
+    const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
+        fetchPolicy: "no-cache", onCompleted: () => {
+            props.setLoading(false);
+        }
+    });
+
+    const [updateCheckDetail] = useMutation(UPDATE_CHECK_DETAIL);
+
+    const tableData = elasticData?.getESPaginatedList;
+
+    const startPaginationAt = 50;
+    const esIndex = 'checkdetails_flat';
+
+
+    const onFieldChange = (rowId, field) => (async (value) => {
+        let row = rows.find((r) => r._id === rowId);
+        console.log("onFieldChange", get(row, field), value)
+        if (get(row, field) == value) return;
+
+        set(row, field, value)
         if (field === 'property.number') {
             const { data: checkDetail } = await client.query({
                 query: GET_ES_PAGINATED_LIST,
                 variables: {
                     esIndex,
-                    search: `property.number:(${value})`,
+                    search: `property.number.keyword:${value}`,
                     pagination: {
                         first: 1,
                         keep_alive: "1micros"
@@ -114,12 +141,28 @@ function CheckDetailsEditableTable(props) {
                 },
             });
             if (checkDetail?.getESPaginatedList?.hits.length > 0) {
-                row.property = checkDetail?.getESPaginatedList?.hits[0].property
+                const newProperty = checkDetail.getESPaginatedList.hits[0].property
+
+                Object.keys(newProperty).forEach((key) => { set(row, `property.${key}`, newProperty[key]) })
             }
         }
 
-        set(row, field, value)
         setRows([].concat(rows))
+
+        updateCheckDetail({
+            variables: { checkDetail: row },
+            refetchQueries: [],
+            awaitRefetchQueries: true
+        }).then(
+            ({ data: { addMultiWellInterestToShape } }) => {
+
+                // props.setLoading(false);
+            },
+            err => {
+                console.log(err)
+                // props.setLoading(false);
+            }
+        );
     })
 
     const cols = () => RevenueStatementHeadCells.map((cell, index) => {
@@ -127,7 +170,7 @@ function CheckDetailsEditableTable(props) {
             return (
                 <>
                     {
-                        focus ? <AutoCompleteField label={cell.title} value={get(row, cell.id)} column={cell} index={index} onChange={onFieldChange(row._id, cell.id)}
+                        focus && cell.type === 'autocomplete' ? <AutoCompleteField label={cell.title} value={get(row, cell.id)} column={cell} index={index} onChange={onFieldChange(row._id, cell.id)}
                             query={GET_ES_FILTER_LIST} esIndex={esIndex} /> :
                             <Input
                                 value={get(row, cell.id)}
@@ -163,24 +206,6 @@ function CheckDetailsEditableTable(props) {
 
 
 
-    const classes = usetableStyles();
-
-    // function states 
-    // const [columns, Columns] = useState([]);
-    const [selectedRows, setSelectedRows] = useState([]);
-    // const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
-
-    // queries 
-    const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
-        fetchPolicy: "no-cache", onCompleted: () => {
-            props.setLoading(false);
-        }
-    });
-
-    const tableData = elasticData?.getESPaginatedList;
-
-    const startPaginationAt = 50;
-    const esIndex = 'checkdetails_flat';
 
     // get paginated data hits from checkdetails_flat table
     useEffect(() => {

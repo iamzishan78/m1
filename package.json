@@ -39,7 +39,7 @@
     "apollo-link-batch-http": "^1.2.14",
     "apollo-link-http": "^1.5.17",
     "array-move": "^4.0.0",
-    "autosuggest-highlight": "^3.1.1",
+    "autosuggest-highlight": "^3.2.0",
     "chroma-js": "^2.1.2",
     "connected-react-router": "^6.9.1",
     "date-fns": "^2.19.0",
