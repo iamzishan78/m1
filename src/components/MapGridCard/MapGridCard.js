@@ -129,27 +129,22 @@ const useStyles = makeStyles((theme) => {
               mapGridCardActiveTap === 0
                 ? mapGridCardActivated === "exp"
                   ? "calc(91vh - 233px)"
-                  : "calc(58.75vh - 233px)"
+                  : "calc(58.75vh - 221px)"
                 : mapGridCardActivated === "exp"
                   ? "calc(91vh - 183px)"
                   : "calc(58.75vh - 183px)",
-            // maxHeight: ({ dockMenu }) => {
-            //   if (dockMenu === "bottom" || dockMenu === "top") return "calc(100vh - 590px)"
-            //   else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 157px)"
-            //   else if (dockMenu === "full") return "calc(100vh - 158px)"
-            // },
             "@media (max-height:930px)": {
               maxHeight: ({ dockMenu }) => {
                 if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 590px)"
-                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 157px)"
-                else if (dockMenu === "full") return "calc(100vh - 158px)"
+                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 216px)"
+                else if (dockMenu === "full") return "calc(100vh - 153px)"
               }
             },
             "@media (max-height:1600px)": {
               maxHeight: ({ dockMenu }) => {
                 if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 640px)"
-                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 157px)"
-                else if (dockMenu === "full") return "calc(100vh - 158px)"
+                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 216px)"
+                else if (dockMenu === "full") return "calc(100vh - 183px)"
               }
             },
           },
@@ -480,7 +475,7 @@ function MapGridCard(props) {
                             showTracks={tab.showTracks}
                           />
                         )}
-                          {/* <M1nTable
+                        {/* <M1nTable
                             dense
                             options={options}
                             parent="search"

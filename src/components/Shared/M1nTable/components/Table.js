@@ -1789,7 +1789,7 @@ function SubTable(props) {
                               props.addAble.type === "parcelDocument" ||
                               props.addAble.type === "wellDocument" ||
                               props.addAble.type === "AgreementDocument" ||
-                              props.addAble.type === "document" ||
+                              props.addAble.type === "relatedDocument" ||
                               props.addAble.type === "UnitDocument"
                               ? row_line.fileId
                               : row_line?._id

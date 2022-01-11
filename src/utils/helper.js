@@ -1,5 +1,4 @@
 import moment from "moment";
-import uniq from 'lodash/uniq';
 
 import { getSession } from "utils/user";
 import { wellsKeys } from "utils/data";
@@ -9,7 +8,7 @@ const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
 const isDev = process.env.REACT_APP_NODE_ENV === "development";
 
 export const copy = (data) => {
-  return JSON.parse(JSON.stringify(data));
+  return data ? JSON.parse(JSON.stringify(data)) : null;
 };
 
 export const getURL = () => {
