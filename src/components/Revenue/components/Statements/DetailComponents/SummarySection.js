@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { get } from "lodash";
 import { Typography, Grid, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { useLazyQuery } from "@apollo/client";
@@ -76,6 +77,22 @@ const useStyles = makeStyles((theme) => ({
         "& .MuiDivider-root": {
             backgroundColor: "#c5c5c5",
             height: "1.5px"
+        }
+    },
+    productGridRow: {
+        margin: "15px 0px"
+    },
+    headerRow: {
+        "& .MuiGrid-item": {
+            fontSize: "11px",
+            fontWeight: "bold",
+            textAlign: "center"
+        }
+    },
+    contentRow: {
+        "& .MuiGrid-item": {
+            fontSize: "13px",
+            textAlign: "center"
         }
     }
 }));
@@ -216,7 +233,14 @@ const SummarySection = ({ checkId }) => {
     // products summary
     useEffect(() => {
         if (prodSummary) {
-            setProductSummaryDetails(prodSummary?.product?.buckets);
+            const buckets = prodSummary?.product?.buckets.map((b, index) => ({
+                ...b,
+                grossOwnerVolume: b.grossOwnerVolume ? get(b, 'grossOwnerVolume.value').toFixed(2) : '-',
+                grossPropertyVolume: b.grossPropertyVolume ? get(b, 'grossPropertyVolume.value').toFixed(2) : '-',
+                netRevenue: b.netRevenue ? get(b, 'netRevenue.value').toFixed(2) : '-',
+                avgPrice: b.avgPrice ? get(b, 'avgPrice.value').toFixed(2) : '-',
+            }));
+            setProductSummaryDetails(buckets);
         }
     }, [prodSummary]);
 
@@ -273,7 +297,51 @@ const SummarySection = ({ checkId }) => {
                 </Grid>
             )}
 
-            {/* Products */}
+            {/* Property */}
+            {activeTabId === 2 && (
+                <div className="flex alignCenter w-100" style={{ justifyContent: 'flex-start' }}>
+                    <Grid item xs={6}>
+                        <div className={classes.graphCard}>
+                            <img
+                                src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
+                                alt="static donut chart"
+                                height={300}
+                                width={300}
+                            />
+                        </div>
+                    </Grid>
+                    <Grid item xs={5}>
+                        <div>
+
+                            <Grid container display="flex" direction="row" alignItems="center">
+                                <Grid item xs={12}>
+                                    <Grid container display="flex" direction="row" alignItems="center" justify="space-between" className={`${classes.productGridRow} ${classes.headerRow}`}>
+                                        <Grid item xs={2}></Grid>
+                                        <Grid item xs={3}>GRS PROD</Grid>
+                                        <Grid item xs={2}>NET PROD</Grid>
+                                        <Grid item xs={2}>NET REV</Grid>
+                                        <Grid item xs={3}>AVG PRICE</Grid>
+                                    </Grid>
+                                </Grid>
+                                {productSummaryDetails.map((product, index) => (
+                                    <Grid item xs={12}>
+                                        <Grid container display="flex" direction="row" alignItems="center" justify="space-between" className={`${classes.productGridRow} ${classes.contentRow}`}>
+                                            <Grid item xs={2} style={{ fontWeight: "bold" }}>{product.key}</Grid>
+
+                                            <Grid item xs={3}>{product.grossOwnerVolume}</Grid>
+                                            <Grid item xs={2}>{product.grossPropertyVolume}</Grid>
+                                            <Grid item xs={2}>{product.netRevenue}</Grid>
+                                            <Grid item xs={3}>{product.avgPrice}</Grid>
+                                        </Grid>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </div>
+                    </Grid>
+                </div>
+            )}
+
+            {/* Adjustments */}
             {activeTabId === 3 && (
                 <div className="flex justifyBetween alignCenter w-100">
                     <div className="flex column justifyBetween alignStart">
@@ -336,40 +404,6 @@ const SummarySection = ({ checkId }) => {
                                             {item?.avgPrice?.value.toFixed(2)}
                                         </p>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Adjustment */}
-            {activeTabId === 2 && (
-                <div className="flex justifyBetween alignCenter w-100">
-                    <div className="flex column justifyBetween alignStart w-100">
-                        <div className={classes.graphCard}>
-                            <img src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
-                                alt="static donut chart image" height={300} width={300} />
-                        </div>
-                    </div>
-                    <div className="flex column justifyBetween alignCenter w-100">
-                        <div className={`${classes.totalLabelField} flex justifyEnd alignCenter w-100`}>
-                            <Typography varient="h6" className={`${classes.textTransform} ${classes.totalLabelTextColor}`}>
-                                Total
-                            </Typography>
-                        </div>
-                        {adjustmentSummaryDetails?.length > 0 && adjustmentSummaryDetails.map((item, index) => (
-                            <div key={index + 1} className={`${classes.dataCardWidth} flex justifyBetween alignCenter w-100`} style={{ marginTop: 16 }}>
-                                <div className="flex alignStart justifyStart">
-                                    <Typography varient="h6" className={classes.textTransform}>
-                                        {item.name || ""}
-                                    </Typography>
-                                </div>
-
-                                <div className="flex alignStart justifyStart">
-                                    <Typography varient="h6" className={classes.textTransform}>
-                                        {item.value}
-                                    </Typography>
                                 </div>
                             </div>
                         ))}
