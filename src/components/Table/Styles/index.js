@@ -3,6 +3,22 @@ import { makeStyles } from "@material-ui/core/styles";
 export const usetableStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": {
+          maxHeight: "48vh",
+          "@media (max-height:900px)": {
+            maxHeight: "55vh",
+          },
+          "@media (max-height:800px)": {
+            maxHeight: "41vh",
+          },
+          "@media (max-height:768px)": {
+            maxHeight: "37vh",
+          },
+        },
+      },
+    },
   },
   multiSelectionTopBarButtons: {
     margin: "0px 5px",

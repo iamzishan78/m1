@@ -22,7 +22,7 @@ const useStyles = makeStyles(() => ({
     fontWeight: "bold",
   },
   fieldsSection: {
-    margin: "10px 0px",
+    margin: "0px 0px",
     "& .MuiOutlinedInput-root": {
       height: `46px!important`,
     },
@@ -45,9 +45,9 @@ export default function HeaderFunction(props) {
 
   return (
     <div className={classes.root}>
-      <Typography varient="h5" className={classes.titleText}>
+      {/* <Typography varient="h5" className={classes.titleText}>
         Check Header
-      </Typography>
+      </Typography> */}
 
       <Grid
         container
