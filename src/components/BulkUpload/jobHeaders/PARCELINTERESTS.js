@@ -278,13 +278,13 @@ export default [
     {
         label: "Parcel Id",
         mapped_key: "",
-        required: false,
+        required: true,
         actual_key: "parcel._id",
     },
     {
         label: "Parcel Name",
         mapped_key: "",
-        required: false,
+        required: true,
         actual_key: "parcel.name",
     },
     {

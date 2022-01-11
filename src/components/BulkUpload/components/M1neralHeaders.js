@@ -164,6 +164,12 @@ export default function M1neralHeaders(props) {
         }
       }
 
+      if (['PARCELINTERESTS'].includes(stateApp.jobType)) {
+        if (!return_obj["parcel._id"] ||
+            !return_obj["parcel.name"]) {
+              return null
+        }
+      }
       if (['CONTACTS','PARCELINTERESTS'].includes(stateApp.jobType)) {
         if (
           return_obj === {} ||
