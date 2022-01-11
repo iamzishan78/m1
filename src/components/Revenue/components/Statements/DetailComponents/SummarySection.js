@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { get } from "lodash";
 import { Typography, Grid, Divider, Popover, List, ListItem, ListItemText, Button } from "@material-ui/core";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
@@ -111,14 +111,16 @@ const useStyles = makeStyles((theme) => ({
 
 const ProductDropdown = () => {
   const classes = useStyles();
+  const [selectedProductOption, setProductOption] = useState("Gross Production");
 
+  const options = useMemo(() => ["Gross Production", "Net Production", "Net Revenue", "Average Price"], []);
   return (
     <PopupState variant="popper" popupId="RevenueSummaryProduct">
       {(popupState) => (
         <>
           <div style={{ cursor: "pointer", textAlign: "center" }} {...bindTrigger(popupState)}>
             <Button className={classes.optionButton} endIcon={<KeyboardArrowDownIcon fontSize="small" />}>
-              Gross Production
+              {selectedProductOption}
             </Button>
           </div>
           <Popover
@@ -134,18 +136,20 @@ const ProductDropdown = () => {
             }}
           >
             <List className={classes.optionsList}>
-              <ListItem button onClick={() => popupState.close()}>
-                <ListItemText primary="Gross Production" />
-              </ListItem>
-              <ListItem button onClick={() => popupState.close()}>
-                <ListItemText primary="Net Production" />
-              </ListItem>
-              <ListItem button onClick={() => popupState.close()}>
-                <ListItemText primary="Net Revenue" />
-              </ListItem>
-              <ListItem button onClick={() => popupState.close()}>
-                <ListItemText primary="Average Price" />
-              </ListItem>
+              {options.map((option, index) => (
+                <ListItem
+                  button
+                  key={index}
+                  onClick={() => {
+                    popupState.close();
+                    setProductOption(option);
+                  }}
+                  style={{ textTransform: "uppercase" }}
+                  selected={option === selectedProductOption}
+                >
+                  <ListItemText primary={option} />
+                </ListItem>
+              ))}
             </List>
           </Popover>
         </>
