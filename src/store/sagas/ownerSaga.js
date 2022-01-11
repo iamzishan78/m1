@@ -42,15 +42,15 @@ function* getShapeOwnersAndCount(action) {
       polygon,
       userId,
       pagination: {
-        first: get(shapeOwnerCount, 'data.data.shapeOwnersCount', 0),
+        first: get(shapeOwnerCount, 'data.shapeOwnersCount', 0),
         after: null,
       },
     });
 
     yield put(
       getShapeOwnersAndCountAction.FULLFILLED({
-        shapeOwners: get(shapeOwner, 'data.data.paginatedShapeOwners.edges', []),
-        shapeCount: get(shapeOwnerCount, 'data.data.shapeOwnersCount', 0)
+        shapeOwners: get(shapeOwner, 'data.paginatedShapeOwners.edges', []),
+        shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount', 0)
       })
     );
   } catch (error) {
@@ -131,11 +131,11 @@ function* getMapFilterShapeOwnersAndCount(action) {
       filters,
       polygon: currentFeature?.geometry?.coordinates[0],
       pagination: {
-        first: get(wellsCount, 'data.data.getESPaginatedList.total', 0),
+        first: get(wellsCount, 'data.getESPaginatedList.total', 0),
         after: null,
       },
     });
-    const wellIds = get(wells, 'data.data.getESPaginatedList.hits',[]).map(
+    const wellIds = get(wells, 'data.getESPaginatedList.hits',[]).map(
       (well) => well.Id
     );
 
@@ -154,8 +154,8 @@ function* getMapFilterShapeOwnersAndCount(action) {
 
     yield put(
       getMapFilterShapeOwnersAndCountAction.FULLFILLED({
-        shapeOwners: get(taxOwners, 'data.data.ownersByWellIds.edges', []),
-        shapeCount: get(taxOwners, 'data.data.ownersByWellIds.edges.length', 0),
+        shapeOwners: get(taxOwners, 'data.ownersByWellIds.edges', []),
+        shapeCount: get(taxOwners, 'data.ownersByWellIds.edges.length', 0),
       })
     );
   } catch (error) {
