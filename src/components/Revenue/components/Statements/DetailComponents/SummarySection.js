@@ -205,31 +205,6 @@ const SummarySection = ({ checkId }) => {
         }
     }, [revSummary]);
 
-    // adjustment summary
-    useEffect(() => {
-        if (adjSummary) {
-            let { deductType, taxType } = adjSummary;
-
-            const deducts = deductType?.buckets?.length > 0 && deductType?.buckets?.map((item) => (
-                { name: item.key, value: (item.ownerDeducts?.value).toFixed(2) }
-            ));
-            const taxes = taxType?.buckets?.length > 0 && taxType?.buckets?.map((item) => (
-                { name: item.key, value: (item.ownerTax?.value).toFixed(2) }
-            ));
-
-            if (deducts && taxes) {
-                setAdjustmentSummaryDetails([...deducts, ...taxes]);
-            } else if (deducts) {
-                setAdjustmentSummaryDetails([...deducts]);
-            } else if (taxes) {
-                setAdjustmentSummaryDetails([...taxes]);
-            } else {
-                setAdjustmentSummaryDetails([]);
-            }
-
-        }
-    }, [adjSummary]);
-
     // products summary
     useEffect(() => {
         if (prodSummary) {
@@ -244,6 +219,22 @@ const SummarySection = ({ checkId }) => {
         }
     }, [prodSummary]);
 
+    // adjustment summary
+    useEffect(() => {
+        if (adjSummary) {
+            let { deductType, taxType } = adjSummary;
+
+            const deducts = deductType?.buckets?.length > 0 && deductType?.buckets?.map((item) => (
+                { name: item.key, value: (item.ownerDeducts?.value).toFixed(2) }
+            ));
+            const taxes = taxType?.buckets?.length > 0 && taxType?.buckets?.map((item) => (
+                { name: item.key, value: (item.ownerTax?.value).toFixed(2) }
+            ));
+
+            const adjustments = [...deducts, ...taxes, { name: "Total Adjustments", value: "" }];
+            setAdjustmentSummaryDetails(adjustments);
+        }
+    }, [adjSummary]);
 
     return (
         <div className={`${classes.root} flex column justifyStart alignStart w-100`}>
@@ -343,76 +334,46 @@ const SummarySection = ({ checkId }) => {
 
             {/* Adjustments */}
             {activeTabId === 3 && (
-                <div className="flex justifyBetween alignCenter w-100">
-                    <div className="flex column justifyBetween alignStart">
+                <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3}>
+                    <Grid item xs={6}>
                         <div className={classes.graphCard}>
-                            <img src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
-                                alt="static donut chart image" height={300} width={300} />
+                            <img
+                                src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
+                                alt="static donut chart"
+                                height={300}
+                                width={300}
+                            />
                         </div>
-                    </div>
+                    </Grid>
+                    <Grid item xs={5}>
+                        <div className={classes.analyticTable} style={{ width: "285px !important" }}>
+                            {adjustmentSummaryDetails?.length > 0 && adjustmentSummaryDetails.map((item, index) => (
+                                <>
+                                    {item.name === "Total Adjustments" && <Divider />}
+                                    <div
+                                        key={index + 1}
+                                        className={`${classes.dataCardWidth} ${classes.dataCardMargin} flex justifyBetween alignCenter w-100`}
+                                    >
+                                        <div className="flex alignCenter justifyStart">
+                                            <Typography varient="h6" className={classes.textTransform}>
+                                                {item.name}
+                                            </Typography>
+                                        </div>
 
-                    <div className="flex justifyBetween alignCenter w-100">
-                        {productSummaryDetails?.length > 0 && productSummaryDetails.map((item, index) => (
-                            <div key={index + 1} className="flex column justifyStart alignStart w-100" className={`${classes.dataCardMargin} flex justifyBetween alignCenter w-100`}>
-                                <div className="flex column justifyBetween alignCenter w-100">
-                                    <div className={classes.productNameBox} >
-                                        <p className={`${classes.productName} ${classes.textTransform}`}>
-                                            {item.key || ""}
-                                        </p>
+                                        <div className="flex" style={{ minWidth: "60px", alignItems: "center", justifyContent: "center" }}>
+                                            <Typography varient="h6" className={classes.textTransform}>
+                                                {`${item.value ? `(${(item.value)})` : "-"}`}
+                                            </Typography>
+                                        </div>
                                     </div>
-
-                                    {/* Production Property Volume */}
-                                    <div className={`${classes.field} flex column justifyBetween alignCenter w-100`}>
-                                        <p className={classes.fieldLabel}>
-                                            Production Gross Volume
-                                        </p>
-
-                                        <p className={classes.fieldValue}>
-                                            {item?.grossPropertyVolume?.value.toFixed(2)}
-                                        </p>
-                                    </div>
-
-                                    {/* Owner volume */}
-                                    <div className={`${classes.field} flex column justifyBetween alignCenter w-100`}>
-                                        <p className={classes.fieldLabel}>
-                                            Owner Volume
-                                        </p>
-
-                                        <p className={classes.fieldValue}>
-                                            {item?.grossOwnerVolume?.value.toFixed(2)}
-                                        </p>
-                                    </div>
-
-                                    {/* Owner Net Revenue */}
-                                    <div className={`${classes.field} flex column justifyBetween alignCenter w-100`}>
-                                        <p className={classes.fieldLabel}>
-                                            Owner Net Revenue
-                                        </p>
-
-                                        <p className={classes.fieldValue}>
-                                            {item?.netRevenue?.value.toFixed(2)}
-                                        </p>
-                                    </div>
-
-                                    {/* Average Price */}
-                                    <div className={`${classes.field} flex column justifyBetween alignCenter w-100`}>
-                                        <p className={classes.fieldLabel}>
-                                            Average Price
-                                        </p>
-
-                                        <p className={classes.fieldValue}>
-                                            {item?.avgPrice?.value.toFixed(2)}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                                </>
+                            ))}
+                        </div>
+                    </Grid>
+                </Grid>
             )}
         </div>
     )
 }
-
 
 export default SummarySection;
