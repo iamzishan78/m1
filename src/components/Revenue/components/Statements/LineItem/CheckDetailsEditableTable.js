@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Container } from "@material-ui/core";
+import { Grid, Paper, Button } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 
 // QUERIES 
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useApolloClient } from "@apollo/client";
 
 import { setStateIfDeepEqual, deepEqualObjects, copy } from "components/Shared/functions";
 
@@ -18,7 +18,7 @@ import { usetableStyles } from "components/Table/Styles";
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import get from 'lodash/get'
 import set from 'lodash/set'
-import { Grid, Input, Select } from 'components/Shared/SpreadsheetGrid'
+import { Grid as TableGrid, Input, Select } from 'components/Shared/SpreadsheetGrid'
 import { AutoCompleteField } from "./AutoCompleteField";
 
 
@@ -96,12 +96,31 @@ const RevenueStatementHeadCells = [
 function CheckDetailsEditableTable(props) {
 
     const [rows, setRows] = useState(props.rows);
+    const client = useApolloClient();
 
-    const onFieldChange = (rowId, field) => (value) => {
+    const onFieldChange = (rowId, field) => (async (value) => {
         const row = rows.find((r) => r._id === rowId);
+
+        if (field === 'property.number') {
+            const { data: checkDetail } = await client.query({
+                query: GET_ES_PAGINATED_LIST,
+                variables: {
+                    esIndex,
+                    search: `property.number:(${value})`,
+                    pagination: {
+                        first: 1,
+                        keep_alive: "1micros"
+                    },
+                },
+            });
+            if (checkDetail?.getESPaginatedList?.hits.length > 0) {
+                row.property = checkDetail?.getESPaginatedList?.hits[0].property
+            }
+        }
+
         set(row, field, value)
         setRows([].concat(rows))
-    }
+    })
 
     const cols = () => RevenueStatementHeadCells.map((cell, index) => {
         cell.value = (row, { focus }) => {
@@ -246,25 +265,49 @@ function CheckDetailsEditableTable(props) {
         filter: true,
     }
 
+    const addNewRow = (e) => {
+        e.preventDefault();
+        rows.push({})
+        setRows([].concat(rows))
+        gridRef.current.focusCell({ x: rows.length - 1, y: 0 })
+    }
+
+    const gridRef = React.createRef()
+
     return (
-        <div className="DataTable" style={{ marginTop: "100px", backgroundColor: "#fff", overflow: "scroll" }}>
-            <Grid
-                columns={columns}
-                rows={rows}
-                getRowKey={row => row.id}
-                rowHeight={74}
-                headerHeight={74}
-                cellWidth={100}
-                isColumnsResizable
-                focusOnSingleClick
-                onColumnResize={onColumnResize}
-            // focusOnSingleClick={props.focusOnSingleClick}
-            // disabledCellChecker={(row, columnId) => {
-            //     return columnId === 'age';
-            // }}
-            // isScrollable
-            />
-        </div>
+        <Paper elevation={3} >
+            <Grid container>
+                <Grid item>
+                    <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
+                        <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={addNewRow}  >
+                            + Input Details
+                        </Button>
+                    </div>
+                </Grid>
+                <Grid item style={{ marginTop: "10px", backgroundColor: "#fff", overflow: "scroll", maxHeight: "500px" }}>
+                    <div className="DataTable" >
+                        <TableGrid
+                            ref={gridRef}
+                            columns={columns}
+                            rows={rows}
+                            getRowKey={row => row.id}
+                            rowHeight={74}
+                            headerHeight={74}
+                            cellWidth={100}
+                            isColumnsResizable
+                            focusOnSingleClick
+                            onColumnResize={onColumnResize}
+                            // focusOnSingleClick={props.focusOnSingleClick}
+                            // disabledCellChecker={(row, columnId) => {
+                            //     return columnId === 'age';
+                            // }}
+                            isScrollable
+                        />
+                    </div>
+                </Grid>
+            </Grid>
+
+        </Paper>
     );
 }
 

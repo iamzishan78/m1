@@ -155,6 +155,9 @@
       "last 1 safari version"
     ]
   },
+  "resolutions": {
+    "react-error-overlay": "6.0.9"
+  },
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "main": "index.js",
   "author": "",

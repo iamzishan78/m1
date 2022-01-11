@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "none",
   },
   pdfViewerRoot: {
-    height: "500px",
+    // height: "500px",
     border: "1px solid #c1c1c1",
     marginTop: "22px",
     borderRadius: "4px",

@@ -53,6 +53,8 @@ class SpreadsheetGrid extends React.PureComponent {
             activeCell: nextFocusedCell,
             focusedCell: nextFocusedCell
         });
+        setTimeout(() => document.getElementById(`${nextFocusedCell.x}-${nextFocusedCell.y}`)?.scrollIntoView(), 0)
+
         this.skipGlobalClick = true;
     }
 

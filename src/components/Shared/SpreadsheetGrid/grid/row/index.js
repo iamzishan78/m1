@@ -22,7 +22,7 @@ class SpreadsheetRow extends React.Component {
             (currentFocusedCell && !nextFocusedCell)
             || (!currentFocusedCell && nextFocusedCell)
             || (currentFocusedCell && nextFocusedCell
-            && (currentFocusedCell.x !== nextFocusedCell.x || currentFocusedCell.y !== nextFocusedCell.y));
+                && (currentFocusedCell.x !== nextFocusedCell.x || currentFocusedCell.y !== nextFocusedCell.y));
 
         return this.props.row !== nextProps.row
             || this.props.x !== nextProps.x
@@ -68,6 +68,7 @@ class SpreadsheetRow extends React.Component {
                         return (
                             <SpreadsheetCell
                                 y={y}
+                                id={`${x}-${y}`}
                                 key={y}
                                 className={getCellClassName(column, row, x, y)}
                                 onClick={!disabled ? onCellClick.bind(this, x, y, row, column.id) : null}
