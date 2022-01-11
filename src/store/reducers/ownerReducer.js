@@ -9,6 +9,7 @@ import {
 
 const INIT_STATE = {
   currentFeature: [],
+  search: '',
   filters: [],
   shapeOwnersInterest: [],
   shapeInterestCount: 0,
@@ -40,7 +41,8 @@ const ownerReducer = (state = INIT_STATE, action) => {
     case GET_SHAPE_OWNERS_AND_WELLS.FULLFILLED: {
       return {
         ...state,
-        filters:  action.payload.filters,
+        search: action.payload.search,
+        filters: action.payload.filters,
         shapeOwnersInterest: action.payload.shapeOwnersInterest,
         shapeInterestCount: action.payload.shapeInterestCount,
         shapeOwners: action.payload.shapeOwners,
@@ -53,6 +55,7 @@ const ownerReducer = (state = INIT_STATE, action) => {
     case GET_MAP_FILTER_SHAPE_OWNERS_AND_WELLS.FULLFILLED: {
       return {
         ...state,
+        search: action.payload.search,
         filters:  action.payload.filters,
         shapeOwnersInterest: action.payload.shapeOwnersInterest,
         shapeInterestCount: action.payload.shapeInterestCount,

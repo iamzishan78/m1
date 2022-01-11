@@ -3,10 +3,12 @@ import gql from "graphql-tag";
 export const SHAPEOWNERSCOUNT = gql`
   query getShapeOwnersCount(
     $polygon: JSON,
+    $search: String,
     $filters: [JSON]
   ) {
     shapeOwnersCount(
       polygon: $polygon,
+      search: $search,
       filters: $filters
     )
   }
@@ -14,10 +16,10 @@ export const SHAPEOWNERSCOUNT = gql`
 
 export const SHAPEOWNERSINTERESTCOUNT = gql`
   query getShapeOwnersInterestCount(
-    $polygon: JSON, $pagination: JSON, $filters: [JSON]
+    $polygon: JSON, $pagination: JSON, $search: String, $filters: [JSON]
   ) {
     shapeOwnersInterestCount(
-      polygon: $polygon, pagination: $pagination, filters: $filters
+      polygon: $polygon, pagination: $pagination, search: $search, filters: $filters
     )
   }
 `;

@@ -95,6 +95,7 @@ function* getShapeOwnersAndWells(action) {
 
     yield put(
       getShapeOwnersAndWellsAction.FULLFILLED({
+        search: '',
         filters: [],
         // shapeOwners: get(taxOwners, 'data.data.ownersByWellIds',[]),
         shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount',0),
@@ -153,8 +154,8 @@ function* getMapFilterShapeOwnersAndCount(action) {
 
     yield put(
       getMapFilterShapeOwnersAndCountAction.FULLFILLED({
-        shapeOwners: get(taxOwners, 'data.data.ownersByWellIds', []),
-        shapeCount: get(taxOwners, 'data.data.ownersByWellIds.length', 0),
+        shapeOwners: get(taxOwners, 'data.data.ownersByWellIds.edges', []),
+        shapeCount: get(taxOwners, 'data.data.ownersByWellIds.edges.length', 0),
       })
     );
   } catch (error) {
@@ -164,7 +165,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
 
 function* getMapFilterShapeOwnersAndWells(action) {
   try {
-    const { client, currentFeature, filters, userId } = action.payload;
+    const { client, currentFeature, filters, search, userId } = action.payload;
     const polygon = getSelectedFeaturePolygonString(currentFeature);
 
     // const originalFile = await client.mutate({
@@ -179,6 +180,7 @@ function* getMapFilterShapeOwnersAndWells(action) {
       query: GET_ES_PAGINATED_LIST, 
       variables: {
         esIndex: "platformData:wells",
+        search,
         filters,
         polygon: currentFeature?.geometry?.coordinates[0],
         pagination: {
@@ -191,6 +193,7 @@ function* getMapFilterShapeOwnersAndWells(action) {
     const shapeOwnerCount = yield client.query({
       query: SHAPEOWNERSCOUNT,
       variables: {
+        search,
         filters,
         polygon: currentFeature?.geometry?.coordinates[0]
       }
@@ -199,6 +202,7 @@ function* getMapFilterShapeOwnersAndWells(action) {
     const shapeOwnerInterestCount = yield client.query({
       query: SHAPEOWNERSINTERESTCOUNT,
       variables: {
+        search,
         filters,
         polygon: currentFeature?.geometry?.coordinates[0],
         pagination: {
@@ -210,6 +214,7 @@ function* getMapFilterShapeOwnersAndWells(action) {
 
     yield put(
       getMapFilterShapeOwnersAndWellsAction.FULLFILLED({
+        search,
         filters,
         // shapeOwners: get(taxOwners, 'data.data.ownersByWellIds',[]),
         shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount',0),
@@ -237,7 +242,7 @@ function* execAsyncExportJob(action) {
         requestPayload: {
           polygon: currentFeature?.geometry?.coordinates[0],
           filters: ownerState.filters,
-          search,
+          search: ownerState.search,
           datasets: {
             exportWells, exportOwners, exportOwnersInterest
           },
