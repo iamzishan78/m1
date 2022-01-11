@@ -2,12 +2,24 @@ import React, { useState, useRef, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, Tabs, Tab, Grid, Breadcrumbs } from "@material-ui/core";
-import { DescriptionOutlined as DocumentIcon, NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
+import {
+  Typography,
+  IconButton,
+  Tabs,
+  Tab,
+  Grid,
+  Breadcrumbs,
+} from "@material-ui/core";
+import {
+  DescriptionOutlined as DocumentIcon,
+  NavigateNext as NavigateNextIcon,
+  Close as CloseIcon,
+} from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
 
 import Tagger from "components/Shared/Tagger";
 import PropertyInterestDetailsSection from "./PropertyInterestDetailsSection";
+import InterestDetailForm from './InterestDetailForm'
 // Components
 import HeaderSection from "./HeaderSection";
 
@@ -63,6 +75,20 @@ const useStyles = makeStyles((theme) => ({
     padding: "20px 30px",
     minHeight: "500px",
     backgroundColor: "#fff",
+  },
+  tabsDetailContainer: ({ showInterestDetails }) => ({
+    maxWidth: showInterestDetails ? "68%" : "100%",
+  }),
+  sideModal: {
+    marginTop: 24,
+    padding: "16px 10px",
+    background: "#ffffff",
+    borderRadius: 8,
+    overflow: "auto",
+    height: "calc(100vh - 280px)",
+    maxHeight: "calc(100vh - 280px)",
+    maxWidth: 360,
+    width: "100%",
   },
   tags: {
     margin: "20px 10px 0px 10px",
@@ -132,7 +158,8 @@ const StyledTab = withStyles((theme) => ({
 
 export default function DetailComponents(props) {
   const history = useHistory();
-  const classes = useStyles(props);
+  const [showInterestDetails, setShowInterestDetails] = useState(false);
+  const classes = useStyles({ ...props, showInterestDetails});
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
 
@@ -151,18 +178,40 @@ export default function DetailComponents(props) {
        * Detail Header
        */}
       <div className={classes.navSection}>
-        <Grid container alignItems="center" direction="row" display="flex" justify="space-between">
+        <Grid
+          container
+          alignItems="center"
+          direction="row"
+          display="flex"
+          justify="space-between"
+        >
           <Grid item>
-            <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+            <Breadcrumbs
+              separator={<NavigateNextIcon fontSize="small" />}
+              aria-label="breadcrumb"
+            >
               <Link
-                style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer", fontWeight: "bold" }}
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
                 color="inherit"
                 onClick={() => history.push("/revenue/statements")}
               >
                 Properties
               </Link>
 
-              <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>Sample Property</Typography>
+              <Typography
+                style={{
+                  color: "#18AADD",
+                  fontSize: "16px",
+                  marginLeft: "5px",
+                }}
+              >
+                Sample Property
+              </Typography>
             </Breadcrumbs>
           </Grid>
           <Grid item>
@@ -182,34 +231,67 @@ export default function DetailComponents(props) {
               <DocumentIcon fontSize="large" />
             </IconButton>
             <div className={classes.titleText}>
-              <Typography style={{ fontWeight: "bold", fontSize: "large", textTransform: "uppercase" }}>
+              <Typography
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "large",
+                  textTransform: "uppercase",
+                }}
+              >
                 W144300498 - Williams K 22H
               </Typography>
               <Typography variant="subtitle1">10/3/2021</Typography>
             </div>
           </div>
           <div className={classes.tags}>
-            <Tagger objectId={null} targetLabel="property" iconZiseSmall={false} shareable={false} type="clickable" />
+            <Tagger
+              objectId={null}
+              targetLabel="property"
+              iconZiseSmall={false}
+              shareable={false}
+              type="clickable"
+            />
           </div>
         </div>
-        {/**
-         * Detail tabs section
-         */}
-        <div className={classes.tabsSection}>
-          <div className={classes.tabsHeader}>
-            <StyledTabs value={tab} onChange={(event, tab) => setTab(tab)} aria-label="ant example">
-              <StyledTab label="Header" />
-              <StyledTab label="Details" />
-            </StyledTabs>
-          </div>
-          <div style={{ maxHeight: "calc(100vh - 440px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
-            <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-              <HeaderSection />
+        <div className="flex justifyBetween alignStart w-100">
+          <div className={`${classes.tabsDetailContainer}`}>
+            {/**
+             * Detail tabs section
+             */}
+            <div className={classes.tabsSection}>
+              <div className={classes.tabsHeader}>
+                <StyledTabs
+                  value={tab}
+                  onChange={(event, tab) => setTab(tab)}
+                  aria-label="ant example"
+                >
+                  <StyledTab label="Header" />
+                  <StyledTab label="Details" />
+                </StyledTabs>
+              </div>
+              <div
+                style={{
+                  maxHeight: "calc(100vh - 440px)",
+                  overflow: "overlay",
+                  backgroundColor: "#f3f3f3",
+                }}
+              >
+                <div
+                  className={classes.headerSection}
+                  ref={tab === 0 ? selectedTabRef : null}
+                >
+                  <HeaderSection />
+                </div>
+                <div ref={tab === 1 ? selectedTabRef : null}>
+                  <PropertyInterestDetailsSection checkId={""} onClickAdd={() => setShowInterestDetails(true)} />
+                </div>
+              </div>
             </div>
-            <div ref={tab === 1 ? selectedTabRef : null}>
-              <PropertyInterestDetailsSection checkId={''} />
-            </div>
           </div>
+
+          {showInterestDetails && (
+            <InterestDetailForm onClose={() => setShowInterestDetails(false)} />
+          )}
         </div>
       </div>
     </div>
