@@ -459,7 +459,8 @@ export default function ContactDetailCard(props) {
   }, [tData, tLoading]);
 
   const checkModuleHistory = () => {
-    return !!stateNav.contactFromMap;
+    const { pathHistory } = history;
+    return pathHistory.length > 0 ? pathHistory[1].includes("/map/agreements/") : false;
   };
 
   const getFlowlineReturnUrl = () => {
@@ -490,6 +491,7 @@ export default function ContactDetailCard(props) {
           }}
         >
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+
             {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
               <Link
                 style={{
@@ -597,13 +599,7 @@ export default function ContactDetailCard(props) {
                   cursor: "pointer",
                 }}
                 color="inherit"
-                onClick={() => {
-                  history.push("/");
-                  setStateNav((stateApp) => ({
-                    ...stateApp,
-                    contactFromMap: false,
-                  }));
-                }}
+                onClick={() => window.location.replace(history.pathHistory[1])}
               >
                 Map
               </Link>
@@ -1036,13 +1032,7 @@ export default function ContactDetailCard(props) {
                         cursor: "pointer",
                       }}
                       color="inherit"
-                      onClick={() => {
-                        history.push("/");
-                        setStateNav((stateApp) => ({
-                          ...stateApp,
-                          contactFromMap: false,
-                        }));
-                      }}
+                      onClick={() => window.location.replace(history.pathHistory[1])}
                     >
                       Map
                     </Link>
