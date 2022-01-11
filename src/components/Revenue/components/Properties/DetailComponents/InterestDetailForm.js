@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useHistory } from "react-router-dom";
 import loadashFilter from "lodash/filter";
 import get from "lodash/get";
 import { makeStyles } from "@material-ui/styles";
@@ -20,6 +21,7 @@ import { AppContext } from "AppContext";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "graphQL/useMutationAddContact";
+import { ADD_PROPERTY_INTEREST } from "graphQL/useMutationAddpropertyInterest";
 
 import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
@@ -94,11 +96,24 @@ const useStyles = makeStyles((theme) => ({
 
 const InterestDetailForm = (props) => {
   const classes = useStyles(props);
+  let history = useHistory();
   const { control, getValues, watch } = useForm();
 
+  const [addPropertyInterest] = useMutation(ADD_PROPERTY_INTEREST);
+
   const handleSave = () => {
+    const id = history.location.pathname.split('/')[history.location.pathname.split('/').length -1 ];
     const values = getValues();
-    debugger
+    addPropertyInterest({
+      variables: {
+        propertyInterest: {
+          ...values,
+          interestType: values.interestType.name,
+          owner: values.owner._id,
+          propertyId: id,
+        }
+      }
+    })
   }
 
   return (
@@ -128,7 +143,7 @@ const InterestDetailForm = (props) => {
           <label>Owner Name</label>
           <Controller
             control={control}
-            name="ownerName"
+            name="owner"
             defaultValue={{ name: "", _id: null }}
             render={(props) => (
               <ContactPaginatedDropdown

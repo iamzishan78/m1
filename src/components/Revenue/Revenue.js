@@ -20,7 +20,7 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
   REVENUE_PROPERTY_DETAILS: {
     isExcluded: true,
     title: "Properties",
-    link: "/revenue/property/details",
+    link: "/revenue/property/details/:id",
     component: "RevenuePropertyDetails",
   },
   REVENUE_STATEMENTS: {

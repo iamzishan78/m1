@@ -3366,7 +3366,7 @@ function SubTable(props) {
 
       if (props.targetLabel === "Revenue Properties") {
         // need stopPropagation
-        history.push("/revenue/property/details");
+        history.push(`/revenue/property/details/${rows[dataIndex]?._id}`);
       }
     },
     onChangePage: (pageState) => {
