@@ -149,9 +149,16 @@ export const getContactsAddress = (contact) => {
 };
 
 export const getMapFilters = (stateNav, searchInput, gridPolygonString) => {
-  const extendSearchQuery = searchInput
-    ? `((wellName:*${searchInput}*) OR (api:*${searchInput}*))`
-    : "";
+  const extendSearchQuery = (() => {
+    let searchString = ""
+    if (searchInput) {
+      searchString = searchInput.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
+    }
+
+    return searchString
+      ? `(wellName:(${searchString.join('* AND ')}*) OR api:(${searchString.join('* AND ')}*))^2 OR (wellName:(${searchString.join('* ')}*) OR api:(${searchString.join('* ')}*))`
+      : ""
+  })()
 
   const search = getSearchQuery(extendSearchQuery, {
     wellType: stateNav.typeName,
