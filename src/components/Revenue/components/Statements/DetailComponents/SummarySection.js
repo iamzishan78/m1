@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { get } from "lodash";
-import { Typography, Grid, Divider } from "@material-ui/core";
+import { Typography, Grid, Divider, Popover, List, ListItem, ListItemText, Button } from "@material-ui/core";
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { makeStyles } from "@material-ui/styles";
+import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
+
 import { useLazyQuery } from "@apollo/client";
 import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 
@@ -93,6 +97,16 @@ const useStyles = makeStyles((theme) => ({
         "& .MuiGrid-item": {
             fontSize: "13px",
             textAlign: "center"
+        }
+    },
+    optionsList: {
+        maxHeight: "450px"
+    },
+    optionButton: {
+        backgroundColor: "white",
+        fontWeight: "bold",
+        "&:hover": {
+            backgroundColor: "white",
         }
     }
 }));
@@ -236,11 +250,61 @@ const SummarySection = ({ checkId }) => {
         }
     }, [adjSummary]);
 
+    const ProductDropdown = () => (
+        <PopupState variant="popper" popupId="RevenueSummaryProduct">
+            {(popupState) => (
+                <>
+                    <div style={{ cursor: "pointer", textAlign: "center" }} {...bindTrigger(popupState)}>
+                        <Button className={classes.optionButton} endIcon={<KeyboardArrowDownIcon fontSize="small" />}>
+                            Gross Production
+                        </Button>
+                    </div>
+                    <Popover
+                        {...bindPopover(popupState)}
+                        getContentAnchorEl={null}
+                        anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "center",
+                        }}
+                        transformOrigin={{
+                            vertical: "top",
+                            horizontal: "center",
+                        }}
+                    >
+                        <List className={classes.optionsList}>
+                            <ListItem
+                                button
+                                onClick={() => popupState.close()}
+                            >
+                                <ListItemText primary="Gross Production" />
+                            </ListItem>
+                            <ListItem
+                                button
+                                onClick={() => popupState.close()}
+                            >
+                                <ListItemText primary="Net Production" />
+                            </ListItem>
+                            <ListItem
+                                button
+                                onClick={() => popupState.close()}
+                            >
+                                <ListItemText primary="Net Revenue" />
+                            </ListItem>
+                            <ListItem
+                                button
+                                onClick={() => popupState.close()}
+                            >
+                                <ListItemText primary="Average Price" />
+                            </ListItem>
+                        </List>
+                    </Popover>
+                </>
+            )}
+        </PopupState>
+    )
+
     return (
         <div className={`${classes.root} flex column justifyStart alignStart w-100`}>
-            <Typography varient="h6" className={classes.textTransform}>
-                {/* Summary */}
-            </Typography>
             <div className={`${classes.tabButtons} flex justifyBetween alignCenter w-100`}>
                 {summaryTabs.map((tab, index) => (
                     <TabButtons key={index + 1} tab={tab} actiiveId={activeTabId} setActive={(selectedId) => setActiveTabId(selectedId)} />
@@ -293,6 +357,7 @@ const SummarySection = ({ checkId }) => {
                 <div className="flex alignCenter w-100" style={{ justifyContent: 'flex-start' }}>
                     <Grid item xs={6}>
                         <div className={classes.graphCard}>
+                            <ProductDropdown />
                             <img
                                 src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
                                 alt="static donut chart"
