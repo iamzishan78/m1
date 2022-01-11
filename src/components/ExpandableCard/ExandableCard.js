@@ -1,52 +1,44 @@
 import React, { useEffect, useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from "@material-ui/core/CardContent";
-import IconButton from "@material-ui/core/IconButton";
+import { makeStyles } from "@material-ui/core/styles";
+import { Avatar, Box, Grid, Breadcrumbs, Typography, Card, CardHeader, CardContent, IconButton, Tooltip, Dialog, CircularProgress } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
-import ExpandIcon from "./components/svgIcons/ExpandIcon";
-import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import Tooltip from "@material-ui/core/Tooltip";
-import Dialog from "@material-ui/core/Dialog";
+import FolderIcon from '@material-ui/icons/Folder';
 import { useLazyQuery, useMutation } from "@apollo/client";
 import $ from "jquery";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { ExpandableCardContext } from "./ExpandableCardContext";
+// Components
+import ExpandIcon from "./components/svgIcons/ExpandIcon";
+import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
 import ReportBugModal from "./components/ReportBugModal";
-import { TRACKBYOBJECTID } from "../../graphQL/useQueryTrackByObjectId";
 import TaggerWithIcon from "../Shared/TaggerWithIcon";
 import CommentsWithIcon from "../Shared/CommentsWithIcon";
 import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
 import TrackToggleButton from "../Shared/TrackToggleButton";
 import LinkWithIcon from "../Shared/LinkWithIcon";
-import BugsIcon from "../Shared/svgIcons/bug.js";
 import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
-import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import ContactSearch from "./components/ContactSearch";
-// contexts 
-import { AppContext } from "../../AppContext";
-import { MapControlsContext } from "../MapControls/MapControlsContext";
-import { Avatar, Box, Grid, Breadcrumbs, Typography, } from "@material-ui/core";
-import FolderIcon from '@material-ui/icons/Folder';
 import { modifyExandableCardStyle } from "components/Shared/functions/shapeLayer";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
-
-
+// Mutations
+import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
+// Queries
+import { TRACKBYOBJECTID } from "../../graphQL/useQueryTrackByObjectId";
+// contexts 
+import { AppContext } from "../../AppContext";
+import { ExpandableCardContext } from "./ExpandableCardContext";
 
 function ExpandableCard(props) {
 
-  // contexts 
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
+  // initials
   const history = useHistory();
 
-  const [stateExpandableCard, setStateExpandableCard] = useContext(
-    ExpandableCardContext
-  );
+  // contexts 
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
+
+  // States
   const [openBugModal, setOpenBugModal] = useState(false);
   const [toggleExpand, setToggleExpand] = useState(false);
   const [isExpanded, setExpanded] = useState([]);
@@ -59,7 +51,7 @@ function ExpandableCard(props) {
   const [mouseY] = useState(props.mouseY);
   const [position] = useState(props.position);
   const [cardHeight] = useState(props.cardHeight);
-  const [zIdx, setZidx] = useState(props.zIndex);
+  // const [zIdx, setZidx] = useState(props.zIndex);
   const [cardLeft, setCardLeft] = useState(props.cardLeft);
   const [cardTop, setCardTop] = useState(props.cardTop);
   const [cardHeightExpanded] = useState(props.cardHeightExpanded);
@@ -68,9 +60,11 @@ function ExpandableCard(props) {
   const [target, setTarget] = useState({});
   const [targetSourceId] = useState(props.targetSourceId);
   const [targetLabel] = useState(props.targetLabel);
-  const theme = useTheme();
   const [openDialog, setOpenDialog] = useState(false);
-  const [updateCustomLayer, { loading: isDeletingCustomLayer }] = useMutation(
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Mutation
+  const [, { loading: isDeletingCustomLayer }] = useMutation(
     UPDATECUSTOMLAYER,
     {
       update(
@@ -97,11 +91,9 @@ function ExpandableCard(props) {
     }
   );
 
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  // Queries
+  const [trackByObjectId, { data: dataTrack }] = useLazyQuery(TRACKBYOBJECTID);
 
-  useEffect(() => {
-    setTitle(props.title);
-  }, [props.title, props.targetLabel]);
 
   const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(stateApp.selectedShape || stateApp.selectedParcel)
 
@@ -248,10 +240,8 @@ function ExpandableCard(props) {
 
   const classes = useStyles();
 
-  const [
-    trackByObjectId,
-    { loading: loadingTrack, data: dataTrack },
-  ] = useLazyQuery(TRACKBYOBJECTID);
+  //  UseEffects
+  useEffect(() => { setTitle(props.title); }, [props.title, props.targetLabel]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId && targetSourceId) {
@@ -262,20 +252,33 @@ function ExpandableCard(props) {
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.user.mongoId, targetSourceId]);
 
-  useEffect(() => {
-    if (dataTrack) {
-      setTarget({
-        isTracked: dataTrack.trackByObjectId ? true : false,
-      });
-    }
-  }, [dataTrack]);
+  useEffect(() => { if (dataTrack) setTarget({ isTracked: dataTrack.trackByObjectId ? true : false }); }, [dataTrack]);
+
+  // useEffect(() => { setZidx(props.zIndex); }, [props.zIndex]);
 
   useEffect(() => {
-    setZidx(props.zIndex);
-  }, [props.zIndex]);
+    setWidth(cardWidth);
+    setHeight(cardHeight);
+    if (props.expanded) handleExpand();
+    else handleShrink();
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.expanded]);
+
+  useEffect(() => {
+    ///Set body style overflow hidden when card is fully expanded
+    const disableBodyScrollBarIfExpanded = () => { if (width === '100%') document.body.style.overflow = 'hidden'; };
+
+    disableBodyScrollBarIfExpanded();
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [openDialog, props.targetLabel, isExpanded, width]);
+
+  // functions
   const handleExpand = () => {
 
     if (toggleExpand === false) {
@@ -309,16 +312,6 @@ function ExpandableCard(props) {
     setStateApp((state) => ({ ...state, expandedCard: true }));
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
   };
-
-  useEffect(() => {
-    setWidth(cardWidth);
-    setHeight(cardHeight);
-    if (props.expanded) {
-      handleExpand();
-    } else {
-      handleShrink();
-    }
-  }, [props.expanded]);
 
   const handleShrink = () => {
     if (parent === "map" && $("#popupContainer").length) {
@@ -443,10 +436,6 @@ function ExpandableCard(props) {
     setOpenDialog(true);
   };
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
-
   const deleteFunc = async () => {
     if (targetLabel === "parcel" || stateApp.selectedShape || targetLabel === "expandedParcel") {
       setDeleteLoading(true);
@@ -498,20 +487,7 @@ function ExpandableCard(props) {
     handleClose();
   };
 
-  useEffect(() => {
-    ///Set body style overflow hidden when card is fully expanded
-    const disableBodyScrollBarIfExpanded = () => {
-      if (width === '100%') {
-        document.body.style.overflow = 'hidden';
-      }
-    };
-
-    disableBodyScrollBarIfExpanded();
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [openDialog, props.targetLabel, isExpanded, width]);
-
+  // BreadCrum for Document's well
   const DisplayBreadCrums = () => {
     return <div className={classes.breadcrumContainer}>
       <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
@@ -535,13 +511,13 @@ function ExpandableCard(props) {
         <Dialog
           className={classes.dialog}
           open={openDialog ? true : false}
-          onClose={handleCloseDialog}
+          onClose={() => setOpenDialog(false)}
           fullWidth={false}
           maxWidth="sm"
         >
           <DeleteConfirmationDialogContent
             header={`Delete ${targetLabel === "expandedParcel" ? "parcel" : targetLabel}`}
-            onClose={handleCloseDialog}
+            onClose={() => setOpenDialog(false)}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => { }}
@@ -767,13 +743,7 @@ function ExpandableCard(props) {
 
 
               <Tooltip title={"Close"} placement="top">
-                <IconButton
-                  size={stateExpandableCard.expanded ? "medium" : "small"}
-                  onClick={handleClose}
-
-                  aria-label="close"
-                  className={classes.icons}
-                >
+                <IconButton size={stateExpandableCard.expanded ? "medium" : "small"} aria-label="close" className={classes.icons} onClick={handleClose}>
                   <CloseIcon color="secondary" />
                 </IconButton>
               </Tooltip>
@@ -784,13 +754,7 @@ function ExpandableCard(props) {
           title={getTitle()}
 
           // Expandable Card Secondary Header 
-          subheader={
-            subTitle
-              ? subTitle.length > 35
-                ? `${subTitle.substr(0, 35)}...`
-                : subTitle
-              : ""
-          }
+          subheader={subTitle ? subTitle.length > 35 ? `${subTitle.substr(0, 35)}...` : subTitle : ""}
         />
 
         <CardContent className={classes.content}>
