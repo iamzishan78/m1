@@ -85,7 +85,16 @@ function MapGridCardSearch(props) {
     () => ({
       "well": {
         esIndex: "platformData:wells",
-        search: (request) => request.input ? `((wellName:*${request.input}*) OR (api:*${request.input}*))` : '',
+        search: (request) => (() => {
+          let searchString = ""
+          if (request.input) {
+            searchString = request.input.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
+          }
+      
+          return searchString
+            ? `(wellName:(${searchString.join('* AND ')}*) OR api:(${searchString.join('* AND ')}*))^2 OR (wellName:(${searchString.join('* ')}*) OR api:(${searchString.join('* ')}*))`
+            : ""
+        })(),
         formatOptions: (data) => {
           return { ...data, Source: wellCogIndexName, Primary: data.WellName, Secondary: data.ApiNumber }
         }

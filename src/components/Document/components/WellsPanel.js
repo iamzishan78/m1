@@ -160,16 +160,10 @@ export default function Contacts(props) {
     })
   }
 
+  // sending to wells page
   const goToWell = (well) => {
-
-    // sending to wells page
     history.push(`/map/wells/${well?.id.toUpperCase()}`);
-
-    setStateApp({
-      ...stateApp,
-      DocumentDrawer: false,
-    });
-
+    setStateApp({ ...stateApp, DocumentDrawer: false });
   };
 
   // searching existing well
