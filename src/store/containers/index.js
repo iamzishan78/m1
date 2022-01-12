@@ -8,6 +8,7 @@ import {
   getShapeOwnersAndCountAction,
   getMapFilterShapeOwnersAndWellsAction,
   getMapFilterShapeOwnersAndCountAction,
+  execAsyncExportJobAction,
 } from "store/actions/ownerActions";
 import {
   getContactCampaignAction,
@@ -60,7 +61,8 @@ const exportWellsOwnersDispatch = (dispatch) => {
   return bindActionCreators(
     {
       getShapeOwnersAndWellsAction: getShapeOwnersAndWellsAction.STARTED,
-      getMapFilterShapeOwnersAndWellsAction: getMapFilterShapeOwnersAndWellsAction.STARTED
+      getMapFilterShapeOwnersAndWellsAction: getMapFilterShapeOwnersAndWellsAction.STARTED,
+      execAsyncExportJobAction: execAsyncExportJobAction.STARTED
     },
     dispatch
   );

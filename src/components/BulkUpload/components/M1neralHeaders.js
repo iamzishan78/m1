@@ -163,32 +163,41 @@ export default function M1neralHeaders(props) {
           return_obj[header.actual_key] = obj.data[header.mapped_key];
         }
       }
-      if (
-        return_obj === {} ||
-        !(
-          return_obj["firstName"] ||
-          return_obj["lastName"] ||
-          return_obj["name"]
-        )
-      ) {
-        return null;
+
+      if (['PARCELINTERESTS'].includes(stateApp.jobType)) {
+        if (!return_obj["parcel._id"] ||
+            !return_obj["parcel.name"]) {
+              return null
+        }
       }
-      //// mandatory fields
+      if (['CONTACTS','PARCELINTERESTS'].includes(stateApp.jobType)) {
+        if (
+          return_obj === {} ||
+          !(
+            return_obj["entityDetail.firstName"] ||
+            return_obj["entityDetail.lastName"] ||
+            return_obj["entityDetail.name"]
+          )
+        ) {
+          return null;
+        }
+        //// mandatory fields
 
-      if (!return_obj["leadSource"])
-        return_obj["leadSource"] = createLeadSource();
+        if (!return_obj["leadSource"])
+          return_obj["leadSource"] = createLeadSource();
 
-      if (!return_obj["name"]) {
-        return_obj["name"] = "";
-        if (return_obj["firstName"] && return_obj["lastName"]) {
-          return_obj["name"] =
-            return_obj["firstName"] + " " + return_obj["lastName"];
-        } else {
-          if (return_obj["firstName"]) {
-            return_obj["name"] = return_obj["firstName"];
-          }
-          if (return_obj["lastName"]) {
-            return_obj["name"] = return_obj["lastName"];
+        if (!return_obj["entityDetail.name"]) {
+          return_obj["entityDetail.name"] = "";
+          if (return_obj["entityDetail.firstName"] && return_obj["entityDetail.lastName"]) {
+            return_obj["entityDetail.name"] =
+              return_obj["entityDetail.firstName"] + " " + return_obj["entityDetail.lastName"];
+          } else {
+            if (return_obj["entityDetail.firstName"]) {
+              return_obj["entityDetail.name"] = return_obj["entityDetail.firstName"];
+            }
+            if (return_obj["entityDetail.lastName"]) {
+              return_obj["entityDetail.name"] = return_obj["entityDetail.lastName"];
+            }
           }
         }
       }
