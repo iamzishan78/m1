@@ -1,6 +1,5 @@
 
 export const getPolygonString = (feature) => {
-  console.log(feature)
   let polygonString = ''
   if (feature.geometry.type === "MultiPolygon") {
     polygonString = "MULTIPOLYGON(";
@@ -30,6 +29,5 @@ export const getPolygonString = (feature) => {
     polygonString += "))";
   }
 
-  console.log(feature, polygonString)
   return polygonString;
 };
