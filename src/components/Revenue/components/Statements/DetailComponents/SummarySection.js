@@ -10,6 +10,7 @@ import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 
 // Components
 import PieChartWithLegend from "./Charts/PieChartWithLegend";
+import BarChartWithController from "./Charts/BarChartWithController";
 
 export const TabButtons = ({ tab, actiiveId, setActive }) => {
   return (
@@ -90,14 +91,14 @@ const useStyles = makeStyles((theme) => ({
   },
   headerRow: {
     "& .MuiGrid-item": {
-      fontSize: "11px",
+      fontSize: "13px",
       fontWeight: "bold",
       textAlign: "center",
     },
   },
   contentRow: {
     "& .MuiGrid-item": {
-      fontSize: "13px",
+      fontSize: "15px",
       textAlign: "center",
     },
   },
@@ -362,15 +363,10 @@ const SummarySection = ({ checkId }) => {
       {/* Property */}
       {activeTabId === 2 && (
         <div className="flex alignCenter w-100" style={{ justifyContent: "flex-start" }}>
-          <Grid item xs={6}>
+          <Grid item xs={5}>
             <div className={classes.graphCard}>
               <ProductDropdown />
-              <img
-                src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
-                alt="static donut chart"
-                height={300}
-                width={300}
-              />
+              <BarChartWithController />
             </div>
           </Grid>
           <Grid item xs={5}>
@@ -386,7 +382,7 @@ const SummarySection = ({ checkId }) => {
                     className={`${classes.productGridRow} ${classes.headerRow}`}
                   >
                     <Grid item xs={2}></Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={2}>
                       GRS PROD
                     </Grid>
                     <Grid item xs={2}>
@@ -395,9 +391,10 @@ const SummarySection = ({ checkId }) => {
                     <Grid item xs={2}>
                       NET REV
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={2}>
                       AVG PRICE
                     </Grid>
+                    <Grid item xs={2}></Grid>
                   </Grid>
                 </Grid>
                 {productSummaryDetails.map((product, index) => (
@@ -414,7 +411,7 @@ const SummarySection = ({ checkId }) => {
                         {product.key}
                       </Grid>
 
-                      <Grid item xs={3}>
+                      <Grid item xs={2}>
                         {product.grsProd}
                       </Grid>
                       <Grid item xs={2}>
@@ -423,9 +420,10 @@ const SummarySection = ({ checkId }) => {
                       <Grid item xs={2}>
                         {product.netRevenue}
                       </Grid>
-                      <Grid item xs={3}>
+                      <Grid item xs={2}>
                         {product.avgPrice}
                       </Grid>
+                      <Grid item xs={2}></Grid>
                     </Grid>
                   </Grid>
                 ))}
