@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+// import { useLazyQuery } from "@apollo/client";
 
 import { makeStyles, withStyles } from "@material-ui/styles";
 import {
@@ -16,6 +17,7 @@ import {
   Close as CloseIcon,
 } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
+// import { GET_PROPERTY_DETAILS } from "graphQL/useQueryGetPropertyDetails";
 
 import Tagger from "components/Shared/Tagger";
 import PropertyInterestDetailsSection from "./PropertyInterestDetailsSection";
@@ -164,6 +166,10 @@ export default function DetailComponents(props) {
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
 
+  // const [getPropertyDetails, { data: propertyData }] = useLazyQuery(GET_PROPERTY_DETAILS, {
+  //   fetchPolicy: `network-only`,
+  // });
+  
   useEffect(() => {
     selectedTabRef.current &&
       selectedTabRef.current.scrollIntoView({
@@ -172,6 +178,21 @@ export default function DetailComponents(props) {
         inline: "start",
       });
   }, [tab]);
+
+  // useEffect(() => {
+  //   if(propertyData?.getPropertyDetails){
+  //     debugger
+  //   }
+
+  // },[propertyData])
+
+  // useEffect(() => {
+  //   getPropertyDetails({
+  //     variables: {
+  //       id: propertyId
+  //     }
+  //   })
+  // }, [propertyId])
 
   return (
     <div className={classes.root}>
