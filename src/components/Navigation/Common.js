@@ -80,7 +80,7 @@ export const useStyles = makeStyles((theme) => ({
     }),
   },
   drawerClose: {
-    zIndex: 1,
+    zIndex: "1 !important",
     background: "#0e111a",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
@@ -368,23 +368,6 @@ export const useStyles = makeStyles((theme) => ({
   },
   badge: {
     backgroundColor: "red",
-  },
-  userMenu: {
-    "& .MuiPaper-rounded": {
-      borderRadius: "0px",
-    },
-  },
-  userMenuItem: {
-    padding: 5,
-    paddingLeft: 35,
-    width: "260px",
-    color: "#1daee1",
-  },
-  userTenantTitle: {
-    padding: 10,
-    paddingBottom: 15,
-    width: "260px",
-    color: "#1daee1",
   },
   actionWrapper: {
     flexGrow: 1,

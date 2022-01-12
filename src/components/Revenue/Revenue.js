@@ -1,9 +1,10 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route, useLocation } from "react-router-dom";
 import RevenueActionsPanel from "./QuickActionsPanel";
 import * as Components from "components/Revenue/components";
 
-import { AppContext } from "AppContext";
+import { setActiveModule, toggleActionsPanel } from "actions";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
   PORTFOLIO: {
@@ -16,6 +17,12 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/revenue/properties",
     component: "Properties",
   },
+  REVENUE_PROPERTY_DETAILS: {
+    isExcluded: true,
+    title: "Properties",
+    link: "/revenue/property/details",
+    component: "RevenuePropertyDetails",
+  },
   REVENUE_STATEMENTS: {
     title: "Revenue Statements",
     link: "/revenue/statements",
@@ -23,41 +30,36 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
   },
   REVENUE_STATEMENT_DETAILS: {
     isExcluded: true,
-    title: "Revenue Statement",
+    title: "Revenue Statements",
     link: "/revenue/statement/details",
     component: "RevenueStatementDetails",
+  },
+  REVENUE_STATEMENT_LINE_ITEM: {
+    isExcluded: true,
+    title: "Revenue Statements",
+    link: "/revenue/statement/details/line-item",
+    component: "RevenueStatementLineItem",
   },
 };
 
 export default function Revenue() {
   const location = useLocation();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const dispatch = useDispatch();
+  const { actionsPanelState, activeModule } = useSelector((state) => state.Revenue);
 
   useEffect(() => {
-    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => item.link === location.pathname);
+    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => location.pathname.startsWith(item.link));
     if (option) {
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        revenueDetails: {
-          ...stateApp.revenueDetails,
-          title: option.title,
-        },
-      }));
+      dispatch(setActiveModule(option));
     }
-  }, [location.pathname, setStateApp]);
+  }, [location.pathname, dispatch]);
 
   const handlePanelStateChange = () => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      revenueDetails: {
-        ...stateApp.revenueDetails,
-        expandedPanel: !stateApp.revenueDetails.expandedPanel,
-      },
-    }));
+    dispatch(toggleActionsPanel(!actionsPanelState));
   };
 
   return (
-    <RevenueActionsPanel handlePanelStateChange={handlePanelStateChange} expandedPanel={stateApp.revenueDetails.expandedPanel}>
+    <RevenueActionsPanel handlePanelStateChange={handlePanelStateChange} expandedPanel={actionsPanelState} activeModule={activeModule}>
       {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
         <Switch>
           <Route

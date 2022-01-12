@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, Typography, TextField, IconButton } from "@material-ui/core";
+import { Grid, Typography, TextField, IconButton, InputAdornment } from "@material-ui/core";
 import AutoComplete from "components/Shared/components/Fields/AutoComplete";
 import moment from "moment";
 import { KeyboardDatePicker } from "@material-ui/pickers";
@@ -22,10 +22,10 @@ const useStyles = makeStyles(() => ({
     fontWeight: "bold",
   },
   fieldsSection: {
-    margin: "10px 0px",
+    margin: "0px 0px",
     "& .MuiOutlinedInput-root": {
-      height: `46px!important`
-    }
+      height: `46px!important`,
+    },
   },
 }));
 
@@ -42,13 +42,12 @@ export default function HeaderFunction(props) {
       updateCheck(props?.details);
     }
   }, [props]);
-  console.log("check", check)
 
   return (
     <div className={classes.root}>
-      <Typography varient="h5" className={classes.titleText}>
+      {/* <Typography varient="h5" className={classes.titleText}>
         Check Header
-      </Typography>
+      </Typography> */}
 
       <Grid
         container
@@ -61,35 +60,21 @@ export default function HeaderFunction(props) {
       >
         <Grid item xs={3}>
           {/* Check number */}
-          <TextField
-            margin="dense"
-            type="text"
-            variant="filled"
-            label="Check Number"
-            fullWidth
-            value={check?.checkNumber || ""}
-          />
+          <TextField margin="dense" type="text" variant="filled" label="Check Number" fullWidth value={check?.checkNumber || ""} />
         </Grid>
 
         {/* Purchaser name */}
         <Grid item xs={4}>
-          <AutoComplete
-            variant="filled"
-            onChange={(value) => console.log("value", value)}
-            label="Purchaser Name"
-            options={[check?.payor?.name]}
-            value={check?.payor?.name || null}
-          />
+          <AutoComplete variant="filled" label="Purchaser Name" options={[check?.payor?.name]} value={check?.payor?.name || null} />
         </Grid>
 
         <Grid item xs={1}>
           <IconButton
             size="small"
-            color='secondary'
+            color="secondary"
             style={{ marginBottom: -16 }}
             onClick={(e) => {
               e.stopPropagation();
-              console.log("e", e);
             }}
             aria-label="show purchaser name"
           >
@@ -119,34 +104,21 @@ export default function HeaderFunction(props) {
 
         {/* Owner number */}
         <Grid item xs={3}>
-          <TextField
-            margin="dense"
-            type="text"
-            variant="filled"
-            label="Owner Number"
-            fullWidth
-            value={check?.payee?.number || ""}
-          />
+          <TextField margin="dense" type="text" variant="filled" label="Owner Number" fullWidth value={check?.payee?.number || ""} />
         </Grid>
 
         {/* Owner name */}
         <Grid item xs={4}>
-          <AutoComplete
-            onChange={(value) => console.log("value", value)}
-            label="Owner Name"
-            options={[check?.payee?.name]}
-            value={check?.payee?.name || null}
-          />
+          <AutoComplete label="Owner Name" options={[check?.payee?.name]} value={check?.payee?.name || null} />
         </Grid>
 
-        <Grid item xs={1} >
+        <Grid item xs={1}>
           <IconButton
             size="small"
-            color='secondary'
+            color="secondary"
             style={{ marginBottom: -16 }}
             onClick={(e) => {
               e.stopPropagation();
-              console.log("e", e);
             }}
             aria-label="show purchaser name"
           >
@@ -183,10 +155,12 @@ export default function HeaderFunction(props) {
             label="Check Amount"
             fullWidth
             value={check?.checkAmount || 0}
+            InputProps={{
+              startAdornment: (< InputAdornment position="start" > $</InputAdornment>)
+            }}
           />
         </Grid>
-
       </Grid>
-    </div>
+    </div >
   );
 }

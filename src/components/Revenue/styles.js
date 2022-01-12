@@ -45,6 +45,9 @@ export const useStyles = makeStyles((theme) => ({
     "& .MuiDrawer-paperAnchorLeft": {
       left: "52px",
     },
+    "& .MuiDivider-root": {
+      backgroundColor: "#263451",
+    },
   },
   drawerPaper: {
     width: drawerWidth,
@@ -63,9 +66,10 @@ export const useStyles = makeStyles((theme) => ({
   revenueRootCollapsed: {
     marginLeft: "0px !important",
     width: "100%",
+    transition: "all 0.3s ease-in-out",
   },
   header: {
-    paddingLeft: "10px",
+    padding: "10px 5px 15px 10px",
     alignItems: "center",
   },
   pulloutBox: {

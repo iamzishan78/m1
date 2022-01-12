@@ -27,7 +27,6 @@ import { detailCardStyles } from "../style";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 
-
 export default function AgreementDetailCard(props) {
   const dispatch = useDispatch();
   const [selectedTab, setSelectedTab] = useState(props.selectTabIndex || 0);
@@ -117,6 +116,7 @@ export default function AgreementDetailCard(props) {
     }
 
     shape.properties.shapeLabel = shapeLabel;
+    shape.name = shapeLabel;
     shape.properties.name = shapeLabel;
     setStateApp((state) => ({
       ...state,

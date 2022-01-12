@@ -26,11 +26,11 @@ import BugsIcon from "../Shared/svgIcons/bug.js";
 import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import ContactSearch from "./components/ContactSearch";
-
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 // contexts 
 import { AppContext } from "../../AppContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
-import { Avatar, Box, Grid } from "@material-ui/core";
+import { Avatar, Box, Grid, Breadcrumbs, Typography } from "@material-ui/core";
 import FolderIcon from '@material-ui/icons/Folder';
 import { modifyExandableCardStyle } from "components/Shared/functions/shapeLayer";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
@@ -103,7 +103,7 @@ function ExpandableCard(props) {
     setTitle(props.title);
   }, [props.title, props.targetLabel]);
 
-  const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(stateApp.selectedShape)
+  const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(stateApp.selectedShape || stateApp.selectedParcel)
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -157,6 +157,23 @@ function ExpandableCard(props) {
       color: "#FFFFFF",
       fontSize: "11px",
 
+    },
+    breadcrumb:{
+      backgroundColor: "#F2F2F2",
+      padding: "15px 20px"
+
+    },
+    breadcrumbDiv:{
+      display: "flex",
+      color: "#18AADD",
+      fontSize: "16px",
+      cursor: "pointer",
+    },
+    agreementLink:{
+      cursor: "pointer",
+      "&:hover": {
+        textDecoration: "underline",
+      },
     },
     content: {
       transition: "height 0.1s",
@@ -331,6 +348,7 @@ function ExpandableCard(props) {
   };
 
   const getTitle = () => {
+
     if (!title) {
       return "--";
     }
@@ -360,10 +378,38 @@ function ExpandableCard(props) {
               {stateApp.selectedShape.type === 'agreement' && <Box className='type' >{agreementTypes.find((at) => at.value === stateApp.selectedShape?.agreementType)?.label || ''}</Box>}
             </Grid>
           </Grid> : <> {
-            (targetLabel !== "contact"
+            (targetLabel !== "contact" && targetLabel !== "parcel"
             ) &&
             <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
           }
+
+          {(targetLabel === "parcel") && (props.expanded === true) &&
+            <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+              <Grid item><Avatar color='#1a2341'>
+                <FolderIcon fontColor='#1a2341' />
+              </Avatar>
+              </Grid>
+              <Grid item>
+                <Box className='name'>
+                  {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
+                </Box>
+                {subTitle && (<Box className='description'>{subTitle}</Box>)}
+                <Box className='type' >Tract</Box>
+              </Grid>
+            </Grid>
+          }
+
+          {(targetLabel === "parcel") && (props.expanded === false) && (
+            <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+              <Box className='name'
+                style={{
+                  fontSize: 14,
+                  marginTop: -6
+                }}>
+                {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
+              </Box>
+            </Grid>
+          )}
 
             {
               (targetLabel === "contact"
@@ -382,7 +428,6 @@ function ExpandableCard(props) {
       </div >
     );
   };
-
 
   const openConfirmationDialog = () => {
     setOpenDialog(true);
@@ -457,7 +502,6 @@ function ExpandableCard(props) {
     };
   }, [openDialog, props.targetLabel, isExpanded, width]);
 
-
   return (
     <React.Fragment>
 
@@ -491,6 +535,40 @@ function ExpandableCard(props) {
           open={openBugModal}
           onClose={() => setOpenBugModal(false)}
         />
+        {(history.location?.state?.showAgreementBreadcrumb || history.location?.state?.showTractsBreadcrumb) && (
+          <Grid container spacing={2} alignItems="center" className={classes.breadcrumb}>
+            <Breadcrumbs
+              separator={<NavigateNextIcon fontSize="small" />}
+              aria-label="breadcrumb"
+            >
+              <Typography
+                style={{
+                  marginLeft: "10px",
+                  fontSize: "16px",
+                }}
+                color="inherit"
+              >
+                {history.location?.state?.showAgreementBreadcrumb && (
+                  <div className={classes.agreementLink} onClick={() => history.push('/land/agreements')}>Agreements</div>
+                )}
+                {history.location?.state?.showTractsBreadcrumb && (
+                  <div className={classes.agreementLink} onClick={() => history.push('/land/tracts')}>Tracts</div>
+                )}
+              </Typography>
+              <Typography
+                style={{
+                  marginLeft: "10px",
+                  fontSize: "16px",
+                }}
+                color="inherit"
+              >
+                <div className={classes.breadcrumbDiv}>
+                  {title}
+                </div>
+              </Typography>
+            </Breadcrumbs>
+          </Grid>
+        )}
         <CardHeader
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
@@ -513,6 +591,7 @@ function ExpandableCard(props) {
               }
               {targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
+                targetLabel !== "parcel" &&
                 !stateApp?.selectedShape &&
                 (
                   <CommentsWithIcon
@@ -524,6 +603,7 @@ function ExpandableCard(props) {
 
               {targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
+                targetLabel !== "parcel" &&
                 !stateApp?.selectedShape &&
                 targetLabel !== "recent_submitted_permits" && (
                   <TaggerWithIcon

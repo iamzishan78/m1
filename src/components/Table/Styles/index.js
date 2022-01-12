@@ -3,6 +3,22 @@ import { makeStyles } from "@material-ui/core/styles";
 export const usetableStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": {
+          maxHeight: "48vh",
+          "@media (max-height:900px)": {
+            maxHeight: "55vh",
+          },
+          "@media (max-height:800px)": {
+            maxHeight: "41vh",
+          },
+          "@media (max-height:768px)": {
+            maxHeight: "37vh",
+          },
+        },
+      },
+    },
   },
   multiSelectionTopBarButtons: {
     margin: "0px 5px",
@@ -24,5 +40,68 @@ export const usetableStyles = makeStyles((theme) => ({
     bottom: "0 !important",
     left: "10px",
     width: "3.875rem",
+  },
+  warningCol: {
+    display: "flex",
+    color: "#f1af29",
+    cursor: "pointer",
+    "& svg": {
+      fill: "#f1af29 !important",
+    },
+    "& div": {
+      marginTop: "3px",
+      fontSize: "initial",
+    },
+  },
+  flexAlign: {
+    display: "flex",
+    alignItems: "center",
+  },
+  activeBadge: {
+    background: "#17c10d",
+    height: 12,
+    width: 12,
+    marginRight: 8,
+    borderRadius: "50%",
+  },
+  pendingBadge: {
+    background: "#ffa800",
+    height: 12,
+    width: 12,
+    marginRight: 8,
+    borderRadius: "50%",
+  },
+  declinedBadge: {
+    background: "#cb0f29",
+    height: 12,
+    width: 12,
+    marginRight: 8,
+    borderRadius: "50%",
+  },
+  statusBtnDiv: {
+    display: "flex",
+    alignItems: "center",
+  },
+  approveBtn: {
+    border: "1px solid grey",
+    color: "#17c10d",
+    padding: "5px",
+    display: "flex",
+    alignItems: "center",
+    maxHeight: "30px",
+    cursor: "pointer",
+    fontSize: "smaller",
+    fontWeight: "bold",
+  },
+  declineBtn: {
+    border: "1px solid grey",
+    color: "#cb0f29",
+    padding: "5px",
+    display: "flex",
+    alignItems: "center",
+    maxHeight: "30px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: "smaller",
   },
 }));

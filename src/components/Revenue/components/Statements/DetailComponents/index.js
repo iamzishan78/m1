@@ -1,14 +1,32 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, TextField, Tabs, Tab, Grid, Avatar, Breadcrumbs, FormControl, InputAdornment } from "@material-ui/core";
-import { LocalAtm as CurrencyIcon, NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
-import Link from "@material-ui/core/Link";
+import {
+  Typography,
+  IconButton,
+  TextField,
+  Tabs,
+  Tab,
+  Grid,
+  Avatar,
+  FormControl,
+  InputAdornment,
+  Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@material-ui/core";
+import {
+  LocalAtm as CurrencyIcon,
+  InfoOutlined as InfoOutlinedIcon,
+  Delete as DeleteIcon,
+  MoreHoriz as MoreHorizIcon,
+} from "@material-ui/icons";
 import Tags from "components/Shared/Tagger";
 import MetaField from "components/Table/helpers/MetaField";
 import { useLocation } from "react-router";
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import AddIcon from "@material-ui/icons/Add";
 import CommentComponent from "components/Shared/CommentComponent";
 import AddDialogeUploadZone from "components/ContactDetailCard/components/AddDialogUploadZone";
@@ -16,6 +34,7 @@ import { useLazyQuery } from "@apollo/client";
 import { GETCHECK } from "graphQL/useQueryCheck";
 import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
+import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import moment from "moment";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { AppContext } from "AppContext";
@@ -25,13 +44,12 @@ import CustomAvatar from "components/Shared/ui/CustomAvatar";
 import HeaderSection from "./HeaderSection";
 import SummarySection from "./SummarySection";
 import CheckDetailsSection from "./CheckDetailsSection";
+import NavHeader from "components/Revenue/components/Common/NavHeader";
+import DocViewer from "components/Shared/DocViewer";
+
+import { setRevenueKey } from "actions";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    minHeight: "100vh",
-    backgroundColor: "#f3f3f3",
-    width: "100%",
-  },
   gridStyle: {
     display: "flex",
     flexDirection: "row",
@@ -82,15 +100,10 @@ const useStyles = makeStyles((theme) => ({
   dealOwnerLabel: {
     marginLeft: 4,
   },
-  navSection: {
-    minHeight: 56,
-    padding: "10px 20px",
-    backgroundColor: "#fff",
-  },
   detailHeader: {
     backgroundColor: "#fff",
-    padding: "20px 20px 8px 24px",
-    borderRadius: 8
+    padding: "20px 27px 0px 45px",
+    marginTop: "7px",
   },
   title: {
     display: "flex",
@@ -101,9 +114,11 @@ const useStyles = makeStyles((theme) => ({
   },
   highlighter: {
     background: "#263451",
-    padding: "6px 16px",
+    padding: "5px 16px",
     borderRadius: 16,
-    width: "max-content"
+    width: "max-content",
+    transform: "translateX(5px) translateY(11px)",
+    height: "32px",
   },
   highlight: {
     color: "#ffffff",
@@ -111,37 +126,42 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
   },
   icon: {
-    height: 64,
-    width: 64,
-    backgroundColor: "lightgrey",
+    height: 80,
+    width: 80,
+    backgroundColor: "#d5f4ff",
+    borderRadius: 12,
+    "& svg": {
+      fontSize: "3.1875rem",
+      fill: "#263451",
+    },
   },
   tabsHeader: {
-    padding: "20px 20px 0px 20px",
     background: "#ffffff",
     borderTopLeftRadius: 8,
-    borderTopRightRadius: 8
+    borderTopRightRadius: 8,
   },
-  tabsSection: {
-    marginTop: 24,
-  },
+  tabsSection: {},
   headerSection: {
     padding: "20px 30px",
     background: "#ffffff",
     borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8
+    borderBottomRightRadius: 8,
   },
   summarySection: {
     padding: 20,
     background: "#ffffff",
     borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8
+    borderBottomRightRadius: 8,
+  },
+  tagsContainer: {
+    display: "flex",
+    flexDirection: "row",
   },
   tags: {
     "& fieldset": {
       border: "none",
     },
   },
-
   viewAll: {
     textDecoration: "underline",
     margin: "0 0 8px 0",
@@ -153,15 +173,15 @@ const useStyles = makeStyles((theme) => ({
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
   descriptionInput: {
-    width: '100%',
+    width: "100%",
     margin: "20px 0 0",
-    '& .MuiTextField-root': {
-      backgroundColor: '#fffcdc',
+    "& .MuiTextField-root": {
+      backgroundColor: "#fffcdc",
       borderRadius: 4,
     },
-    '& .MuiOutlinedInput-notchedOutline': {
-      border: 'none'
-    }
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "none",
+    },
   },
   foodText: {
     position: "absolute",
@@ -177,12 +197,69 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: "bold",
     },
   },
-
+  tabsSectionDetails: {
+    maxHeight: "calc(100vh - 280px)",
+    overflow: "overlay",
+    backgroundColor: "#f3f3f3",
+  },
+  actionsContainer: {
+    display: "flex",
+    direction: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+  },
+  metaActions: ({ collapse }) => ({
+    marginTop: "2px",
+    "& button": {
+      backgroundColor: !collapse ? "#eceded" : "#fff",
+      color: "grey",
+      fontWeight: "bold",
+      textTransform: "capitalize",
+      padding: "6px 12px",
+      "&:hover": {
+        backgroundColor: !collapse ? "#eceded" : "#fff",
+      },
+    },
+  }),
+  menu: {
+    "& .MuiListItem-root": {
+      "& .MuiListItemIcon-root": {
+        minWidth: "30px",
+        "& .MuiSvgIcon-root": {
+          fill: "red !important",
+        },
+      },
+    },
+  },
+  tabsDetailContainer: ({ collapse }) => ({
+    padding: 20,
+    maxWidth: !collapse ? "calc(100% - 380px)" : "100%",
+  }),
+  commentsContainer: {
+    position: "fixed",
+    bottom: "34px",
+    width: "336px",
+  },
+  menuIcon: {
+    background: "transparent",
+    paddingLeft: "10px",
+    align: "center",
+    "& svg": {
+      fill: "#808080 !important",
+    },
+  },
+  metaPanelCloseIcon: {
+    "& svg": {
+      fontSize: 18,
+      cursor: "pointer",
+      fill: "#808080 !important",
+    },
+  },
 }));
 
 const StyledTabs = withStyles({
   root: {
-    borderBottom: "1px solid #e8e8e8",
     textTransform: "capitalize",
   },
   indicator: {
@@ -224,8 +301,9 @@ const StyledTab = withStyles((theme) => ({
 }))((props) => <Tab disableRipple {...props} />);
 
 export default function DetailComponents(props) {
-  const history = useHistory();
-  const classes = useStyles(props);
+  const dispatch = useDispatch();
+  const { statements } = useSelector(({ Revenue }) => Revenue);
+
   const [tab, setTab] = useState(0);
   const [checkId, setCheckId] = useState(null);
   const selectedTabRef = useRef(null);
@@ -237,11 +315,46 @@ export default function DetailComponents(props) {
   const { search } = location;
   const [users, setUsers] = useState([]);
   const [ownerId, setOwnerId] = useState("");
+  const [anchorEl, setAnchorEl] = useState();
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  // queries 
+  const [fileRequestCounter, setFileRequestCounter] = useState(1);
+
+  const classes = useStyles({ ...props, collapse });
+  // queries
   const [getCheck, { data: getCheckResult }] = useLazyQuery(GETCHECK, {
     fetchPolicy: "no-cache",
+  });
+  const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
+    fetchPolicy: "cache-and-network",
+    onCompleted: ({ getFileDescriptors }) => {
+      let allActive = true;
+
+      if (getFileDescriptors)
+        for (let i = 0; i < getFileDescriptors.length; i++) {
+          if (getFileDescriptors[i].fileState !== "active") {
+            allActive = false;
+            break;
+          }
+        }
+
+      if (!allActive) {
+        if (fileRequestCounter <= 40) {
+          let waitBeforeRequestAgain = setTimeout(() => {
+            setFileRequestCounter(fileRequestCounter + 1);
+            getRecentFiles({
+              variables: {
+                relatedObjectId: checkId,
+                relatedObjectType: "Check",
+              },
+            });
+            clearTimeout(waitBeforeRequestAgain);
+          }, 1000);
+        } else {
+          setFileRequestCounter(1);
+        }
+      } else setFileRequestCounter(1);
+    },
   });
   const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
     fetchPolicy: "no-cache",
@@ -250,8 +363,13 @@ export default function DetailComponents(props) {
     fetchPolicy: "no-cache",
   });
 
-
   const checksFlatData = getCheckResult?.getCheck?.check;
+
+  useEffect(() => {
+    if (getCheckResult?.getCheck?.check)
+      dispatch(setRevenueKey("statements", { ...statements, activeStatement: getCheckResult?.getCheck?.check }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getCheckResult, dispatch]);
 
   useEffect(() => {
     selectedTabRef.current &&
@@ -262,14 +380,16 @@ export default function DetailComponents(props) {
       });
   }, [tab]);
 
-
   useEffect(() => {
     if (search !== "") {
       const checkId = search.replace("?id=", "");
       if (checkId) {
         setCheckId(checkId);
-        viewFiles({
-          variables: { fileIds: checkId },
+        getRecentFiles({
+          variables: {
+            relatedObjectId: checkId,
+            relatedObjectType: "Check",
+          },
         });
         getCheck({
           variables: { id: checkId },
@@ -279,6 +399,35 @@ export default function DetailComponents(props) {
     }
   }, [search]);
 
+  useEffect(() => {
+    if (files?.getFileDescriptors) {
+      let ID = [];
+      for (let i = 0; i < files.getFileDescriptors.length; i++) {
+        ID.push(files.getFileDescriptors[i].fileId);
+      }
+      for (let i = 0; i < uploadedFiles.length; i++) {
+        ID.push(uploadedFiles[i].addFileDescriptor.file.id);
+      }
+      viewFiles({
+        variables: { fileIds: ID },
+      });
+      //* Getting most recent uploaded pdf file
+      let recentFile = {};
+      files.getFileDescriptors
+        .filter((d) => d.fileName.split(".")?.[1]?.toLowerCase() === "pdf")
+        .forEach((d, index) => {
+          let descriptor = d;
+          descriptor = { ...descriptor, dateTime: moment(descriptor.dateTime, "MM/DD/YYYY HH:mm Z") };
+          if (index === 0) recentFile = descriptor;
+          else {
+            if (recentFile.dateTime < descriptor.dateTime) {
+              recentFile = descriptor;
+            }
+          }
+        });
+      dispatch(setRevenueKey("statements", { ...statements, recentFile }));
+    }
+  }, [files, uploadedFiles, viewFiles]);
 
   useEffect(() => {
     if (userLists && userLists.allMongoUsers) {
@@ -292,84 +441,45 @@ export default function DetailComponents(props) {
     }
   }, [userLists]);
 
-
   const setUploadedFileData = (uploadedfile) => {
     setUploadedFiles([...uploadedFiles, uploadedfile]);
   };
 
+  const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
+
+  const handleMenuClose = () => setAnchorEl(null);
 
   return (
-    <div className={classes.root}>
+    <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor?.["name"]}`}>
       {/**
-       * Detail Header
+       * Detail title section
        */}
-      <div className={classes.navSection}>
-        <Grid container alignItems="center" direction="row" display="flex" justify="space-between">
-          <Grid item>
-            <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-              <Link
-                style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer", fontWeight: "bold" }}
-                color="inherit"
-                onClick={() => history.push("/revenue/statements")}
-              >
-                Revenue Statements
-              </Link>
-
-              {checksFlatData && (
-                <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
-              )}
-            </Breadcrumbs>
-          </Grid>
-          <Grid item>
-            <IconButton onClick={() => history.push("/revenue/statements")}>
-              <CloseIcon fontSize="small" />
+      <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
+        <div className="flex column alignStart justifyStart w-100">
+          <div className={classes.title}>
+            <IconButton className={classes.icon}>
+              <CurrencyIcon />
             </IconButton>
-          </Grid>
-        </Grid>
-      </div>
-      <div className="flex justifyBetween alignStart w-100">
-        <div className="w-100" style={{ padding: 20, maxWidth: "calc(100% - 380px)" }}>
-          {/**
-         * Detail title section
-         */}
-          <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
-            <div className="flex column alignStart justifyStart w-100">
-              <div className={classes.title}>
-                <IconButton className={classes.icon}>
-                  <CurrencyIcon fontSize="large" />
-                </IconButton>
-                <div className={classes.titleText}>
-                  {checksFlatData && (
-                    <Typography style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}>{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
-                  )}
-                  {checksFlatData && (
-                    <Typography variant="subtitle1" style={{ marginLeft: 8 }}>{moment.utc(checksFlatData.checkDate).format("MM/DD/YYYY")}</Typography>
-                  )}
-                  <div className={classes.highlighter}>
-                    <Typography className={classes.highlight} variant="highlight">Revenue Check</Typography>
-                  </div>
+            <div className={classes.titleText}>
+              {checksFlatData && (
+                <Typography
+                  style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
+                >{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
+              )}
+              <div className={classes.tagsContainer}>
+                <div className={classes.highlighter}>
+                  <Typography className={classes.highlight} variant="highlight">
+                    Revenue Check
+                  </Typography>
+                </div>
+                <div className={classes.tags}>
+                  <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom onlyTags />
                 </div>
               </div>
-
-              <Grid
-                item
-                xs={12}
-                style={{ marginTop: 16 }}
-              >
-                <div className={classes.tags}>
-                  <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
-                </div>
-              </Grid>
-            </div>
-
-            <div className="flex justifyEnd alignStart w-100" style={{ maxWidth: 290, marginLeft: 8 }}>
-              <img src="https://miro.medium.com/max/1400/1*ybR6fbfwo6XTmWvTjXSOAA.png" alt="map-view" height={200} width={290} style={{ borderRadius: 8 }} />
             </div>
           </div>
-          {/**
-         * Detail tabs section
-         */}
-          <div className={classes.tabsSection}>
+
+          <div className={classes.actionsContainer}>
             <div className={classes.tabsHeader}>
               <StyledTabs value={tab} onChange={(event, tab) => setTab(tab)} aria-label="ant example">
                 <StyledTab label="Header" />
@@ -377,9 +487,25 @@ export default function DetailComponents(props) {
                 <StyledTab label="Check Details" />
               </StyledTabs>
             </div>
+            <div className={classes.metaActions}>
+              <Button startIcon={<InfoOutlinedIcon />} onClick={() => setCollapse(!collapse)}>
+                Metadata
+              </Button>
+              <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
+                <MoreHorizIcon size="medium" />
+              </IconButton>
+            </div>
+          </div>
+        </div>
+      </div>
 
-
-            <div style={{ maxHeight: "calc(100vh - 184px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+      <div className="flex justifyBetween alignStart w-100">
+        <div className={`w-100 ${classes.tabsDetailContainer}`}>
+          {/**
+           * Detail tabs section
+           */}
+          <div className={classes.tabsSection}>
+            <div className={classes.tabsSectionDetails}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
                 <HeaderSection details={checksFlatData} />
               </div>
@@ -395,30 +521,39 @@ export default function DetailComponents(props) {
           </div>
         </div>
 
-        <div className="flex column justifyStart alignStart w-100" style={{ marginTop: 20, marginRight: 24, padding: "16px 10px", background: "#ffffff", borderRadius: 8, maxHeight: "calc(100vh + 135px)", overflow: "auto", height: "100%", maxWidth: collapse ? 40 : 360, width: "100%" }}>
-          <div className="flex justifyBetween alignCenter w-100">
-            {!collapse && (
-              <Typography varient="h5" className={classes.titleText} style={{ textTransform: "uppercase", fontWeight: "bold" }}>
+        {!collapse && (
+          <div
+            className="flex column justifyStart alignStart w-100"
+            style={{
+              marginTop: 20,
+              marginRight: 24,
+              padding: "16px 10px",
+              background: "#ffffff",
+              borderRadius: 8,
+              overflow: "auto",
+              height: "calc(100vh - 280px)",
+              maxHeight: "calc(100vh - 280px)",
+              maxWidth: 360,
+              width: "100%",
+            }}
+          >
+            <div className="flex justifyBetween alignCenter w-100">
+              <Typography
+                varient="h5"
+                className={classes.titleText}
+                style={{ textTransform: "uppercase", fontWeight: "bold", marginLeft: "5px" }}
+              >
                 Metadata
               </Typography>
-            )}
 
-            <div className="flex alignCenter">
-              {!collapse ?
-                <span onClick={() => setCollapse(true)}>
-                  <ArrowForwardIcon style={{ fontSize: 18, cursor: "pointer" }} />
+              <div className="flex alignCenter">
+                <span onClick={() => setCollapse(true)} className={classes.metaPanelCloseIcon}>
+                  <ArrowForwardIcon />
                 </span>
-                :
-                <span onClick={() => setCollapse(false)}>
-                  <ArrowBackIcon style={{ fontSize: 18, cursor: "pointer" }} />
-                </span>
-              }
+              </div>
             </div>
-          </div>
 
-          {!collapse && (
             <div className="flex column justifyStart w-100">
-
               <div style={{ marginTop: 10, marginLeft: 4 }}>
                 <FormControl variant="outlined" fullWidth size="small">
                   <Grid container className={classes.gridStyle}>
@@ -505,43 +640,50 @@ export default function DetailComponents(props) {
                   onKeyDown={(e) => {
                     if (e.keyCode === 13) {
                       setFocusSate(false);
-                      console.log("sample description will go for save: " + description);
                       setDescription("");
                     }
                   }}
                   onFocus={() => setFocusSate(true)}
                   InputProps={{
-                    endAdornment: (
-                      onFocusDescription === true &&
+                    endAdornment: onFocusDescription === true && (
                       <p className={classes.foodText}>
                         <span>Return</span> to save
                       </p>
-                    )
+                    ),
                   }}
                 />
               </Grid>
 
-
-              <div onClick={() => {
-                setStateApp((stateApp) => ({
-                  ...stateApp,
-                  showFieldModal: true,
-                }))
-              }}
-                className="flex alignCenter" style={{ background: "#f2f2f2", borderRadius: 8, padding: "6px 16px", marginLeft: 4, marginTop: 8, maxWidth: "max-content", cursor: "pointer" }}>
+              <div
+                onClick={() => {
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    showFieldModal: true,
+                  }));
+                }}
+                className="flex alignCenter"
+                style={{
+                  background: "#f2f2f2",
+                  borderRadius: 8,
+                  padding: "6px 16px",
+                  marginLeft: 4,
+                  marginTop: 8,
+                  maxWidth: "max-content",
+                  cursor: "pointer",
+                }}
+              >
                 <span>
                   <AddIcon style={{ marginTop: 4, marginRight: 4, fontSize: 16, alignItems: "center" }} htmlColor="#000000" />
                 </span>
                 {` Add`}
               </div>
 
-
               <div className="flex justifyBetween alignCenter" style={{ padding: "20px 16px", marginBottom: -56 }}>
                 <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents</h4>
                 <h4
                   className={classes.viewAll}
                   onClick={() => {
-                    console.log("navigate to view all page for documents")
+                    console.log("navigate to view all page for documents");
                   }}
                 >
                   View All
@@ -549,7 +691,6 @@ export default function DetailComponents(props) {
               </div>
 
               <AddDialogeUploadZone
-                isTransactPage={false}
                 filesData={viewFileResult}
                 id={checkId}
                 loading={viewFileLoading}
@@ -557,20 +698,45 @@ export default function DetailComponents(props) {
                 setUploadedFileData={setUploadedFileData}
               ></AddDialogeUploadZone>
 
-
-
-              <div className={classes.tags} style={{ marginTop: -32 }}>
+              {/* <div className={classes.tags} style={{ marginTop: -32 }}>
                 <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom />
+              </div> */}
+              <div className={classes.commentsContainer}>
+                <CommentComponent targetLabel={"check"} targetSourceId={checkId} />
               </div>
-              <CommentComponent targetLabel={'check'} targetSourceId={checkId} />
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
-      {stateApp.showFieldModal && (
-        <MetaField columns={[]} category="Check" />
-      )}
-    </div >
+      {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
+
+      {/**
+       * Component for viewing selected pdf file
+       */}
+      <DocViewer width="calc(80vw)" />
+
+      {/**
+       * Menu for meta data
+       */}
+      <Menu
+        id="dealMenu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        className={classes.menu}
+        getContentAnchorEl={null}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <MenuItem>
+          <ListItemIcon>
+            <DeleteIcon size="medium" />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
+    </NavHeader>
   );
 }

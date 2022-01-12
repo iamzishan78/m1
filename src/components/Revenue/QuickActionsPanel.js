@@ -12,7 +12,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import { useStyles, StyledMenu, StyledMenuItem } from "./styles";
 import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
 
-export default function QuickActionsPanel({ children, handlePanelStateChange, expandedPanel }) {
+export default function QuickActionsPanel({ children, handlePanelStateChange, expandedPanel, activeModule }) {
   const classes = useStyles();
   const history = useHistory();
 
@@ -32,7 +32,7 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
       >
         <Grid container direction="row" justify="space-between" display="flex" className={classes.header}>
           <Grid item style={{ alignItems: "center" }}>
-            <Typography variant="h6" style={{ fontWeight: "bold" }}>
+            <Typography variant="h5" style={{ fontWeight: "normal" }}>
               Revenue
             </Typography>
           </Grid>
@@ -53,7 +53,11 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
           {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST)
             .filter((key) => !SIDE_PANEL_MENU_ITEMS_LIST[key].isExcluded)
             .map((key, index) => (
-              <StyledMenuItem onClick={() => handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)} key={index} isSelected>
+              <StyledMenuItem
+                onClick={() => handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)}
+                key={index}
+                style={{ backgroundColor: activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST[key].title ? "#4B618F" : "" }}
+              >
                 <ListItemText>{SIDE_PANEL_MENU_ITEMS_LIST[key].title}</ListItemText>
               </StyledMenuItem>
             ))}
@@ -64,7 +68,7 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
           [classes.revenueRootExpanded]: expandedPanel,
           [classes.revenueRootCollapsed]: !expandedPanel,
         })}
-        // style={{ marginTop: "62px" }}
+      // style={{ marginTop: "62px" }}
       >
         {children}
       </div>

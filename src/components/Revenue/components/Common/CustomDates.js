@@ -46,20 +46,24 @@ const CUSTOM_DATES = {
   LAST_YEAR: "Last Year",
 };
 
-export default function Portfolio({ onChangeDates }) {
+// fromDate and toDate should be passed from the parent
+export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate }) {
   const classes = useStyles();
-  const [fromDate, setFromDate] = React.useState(null);
-  const [toDate, setToDate] = React.useState(null);
+
+  useEffect(() => {
+    handleDateTypeChange(CUSTOM_DATES.LAST_MONTH);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (onChangeDates) onChangeDates(fromDate, toDate);
-  }, [fromDate, toDate]);
+  }, [onChangeDates, fromDate, toDate]);
 
   const getFlaggedMoment = (moment) => {
     return moment >= 10 ? moment : `0${moment}`;
   };
 
-  const hadnleDateTypeChange = (date) => {
+  const handleDateTypeChange = (date) => {
     const currentYear = Math.round(new Date().getFullYear());
     const currentMonth = Math.ceil(new Date().getMonth());
     const currentQuarter = Math.ceil((new Date().getMonth() + 1) / 3);
@@ -110,12 +114,13 @@ export default function Portfolio({ onChangeDates }) {
           <Autocomplete
             size="small"
             onChange={(event, newValue) => {
-              hadnleDateTypeChange(newValue);
+              handleDateTypeChange(newValue);
             }}
             options={Object.values(CUSTOM_DATES)}
             renderInput={(params) => (
-              <TextField {...params} variant="outlined" label="Custom" placeholder="" style={{ backgroundColor: "white" }} />
+              <TextField {...params} variant="outlined" label="Date Range" placeholder="" style={{ backgroundColor: "white" }} />
             )}
+            defaultValue={CUSTOM_DATES.LAST_MONTH}
             disableListWrap
             id="custom-date-dropdown"
           />
@@ -130,6 +135,8 @@ export default function Portfolio({ onChangeDates }) {
             fullWidth
             value={fromDate}
             className={classes.inputFieldDate}
+            onChange={(e) => setFromDate(e.target.value)}
+
             InputLabelProps={{
               shrink: true,
             }}
@@ -158,6 +165,7 @@ export default function Portfolio({ onChangeDates }) {
             fullWidth
             value={toDate}
             className={classes.inputFieldDate}
+            onChange={(e) => setToDate(e.target.value)}
             InputLabelProps={{
               shrink: true,
             }}

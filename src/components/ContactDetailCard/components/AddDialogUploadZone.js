@@ -162,6 +162,10 @@ const Documents = memo((props) => {
     else return ["Contact", 2];
   }, [props.isTransactPage]);
 
+  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "no-cache",
+  });
+
   const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
     fetchPolicy: "cache-and-network",
     onCompleted: ({ getFileDescriptors }) => {
@@ -200,10 +204,6 @@ const Documents = memo((props) => {
     },
   });
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
-
-  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "no-cache",
-  });
 
   useEffect(() => {
     getRecentFiles({
@@ -297,12 +297,12 @@ const Documents = memo((props) => {
             }}
           />
 
-          <Grid container spacing={0}>
+          <Grid container display="flex" direction="row" spacing={1}>
             {recentFiles?.map((value, key) => {
               let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
               if (key <= 2) {
                 return (
-                  <Grid item xs={3} key={key} className="">
+                  <Grid item key={key} className="">
                     <LightTooltip
                       title={
                         <div className={classes.IconSection}>

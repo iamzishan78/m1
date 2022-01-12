@@ -444,7 +444,7 @@ export default function CellContentEdition({
       onClick={(e) => {
         if (!isLinked || !toLink)
           e.preventDefault();
-        e.stopPropagation();
+        // e.stopPropagation();
       }}
     >
       {edit && !dropDownOptions && fieldsCount <= 1 && inputsArrayWithFooter()}

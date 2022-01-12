@@ -12,7 +12,12 @@ import MenuIcon from "@material-ui/icons/Menu";
 import { useStyles, StyledMenu, StyledMenuItem } from "components/Land/style";
 import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Land";
 
-export default function QuickActionsPanel({ children, handlePanelStateChange, quickActionsPanelState }) {
+export default function QuickActionsPanel({
+  children,
+  handlePanelStateChange,
+  quickActionsPanelState,
+  activeModule,
+}) {
   const classes = useStyles();
   const history = useHistory();
 
@@ -30,14 +35,24 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, qu
           paper: classes.drawerPaper,
         }}
       >
-        <Grid container direction="row" justify="space-between" display="flex" className={classes.header}>
+        <Grid
+          container
+          direction="row"
+          justify="space-between"
+          display="flex"
+          className={classes.header}
+        >
           <Grid item style={{ alignItems: "center" }}>
-            <Typography variant="h5" style={{ fontWeight: "normal"}}>
+            <Typography variant="h5" style={{ fontWeight: "normal" }}>
               Land Management
             </Typography>
           </Grid>
           <Grid item>
-            <IconButton className={classes.iconArrow} color="secondary" onClick={() => handlePanelStateChange(false)}>
+            <IconButton
+              className={classes.iconArrow}
+              color="secondary"
+              onClick={() => handlePanelStateChange(false)}
+            >
               <>
                 <ChevronLeftIcon />
                 <MenuIcon className={classes.menuIcon} />
@@ -53,8 +68,22 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, qu
           {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST)
             .filter((key) => !SIDE_PANEL_MENU_ITEMS_LIST[key].isExcluded)
             .map((key, index) => (
-              <StyledMenuItem onClick={() => handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)} key={index} isSelected>
-                <ListItemText>{SIDE_PANEL_MENU_ITEMS_LIST[key].title}</ListItemText>
+              <StyledMenuItem
+                onClick={() =>
+                  handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)
+                }
+                key={index}
+                isSelected
+                style={{
+                  backgroundColor:
+                    activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST[key].title
+                      ? "#4B618F"
+                      : "",
+                }}
+              >
+                <ListItemText>
+                  {SIDE_PANEL_MENU_ITEMS_LIST[key].title}
+                </ListItemText>
               </StyledMenuItem>
             ))}
         </StyledMenu>
@@ -68,17 +97,22 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, qu
           position: "relative",
           top: "65px",
           display: "flex",
-          "flex-direction": "column",
+          flexDirection: "column",
           height: "calc(100vh - 65px)",
-          top: "65px",
-          position: "relative",
-          "align-items": "stretch"
+          alignItems: "stretch",
         }}
       >
         {children}
       </div>
-      <div className={classes.pulloutBox} onClick={() => handlePanelStateChange(!quickActionsPanelState)}>
-        {quickActionsPanelState ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
+      <div
+        className={classes.pulloutBox}
+        onClick={() => handlePanelStateChange(!quickActionsPanelState)}
+      >
+        {quickActionsPanelState ? (
+          <ArrowBackIosIcon />
+        ) : (
+          <ArrowForwardIosIcon />
+        )}
       </div>
     </>
   );

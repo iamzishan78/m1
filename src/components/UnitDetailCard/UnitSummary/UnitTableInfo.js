@@ -179,7 +179,7 @@ export default function UnitTableInfo({ properties, updateProperties, updateCust
     properties?.custom_data_arr?.forEach((data) => {
       tableTempProperties[data.key] = data.value
       tableTempProperties[`${data.key}key`] = data.key
-    })
+    });
     setTableTempProperties({ ...tableTempProperties })
     setTableDataState({})
 

@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
         borderBottomRightRadius: 8
     },
     titleField: {
-        padding: 20
+        padding: 10
     },
     titleText: {
         textTransform: "uppercase",
@@ -29,7 +29,7 @@ const CheckDetailsSection = ({ checkId }) => {
         <div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
             <div className={`${classes.titleField} flex justifyBetween alignCenter w-100`}>
                 <Typography varient="h5" className={classes.titleText}>
-                    Check Details
+                    {/* CHECK DETAILS */}
                 </Typography>
                 <Button onClick={() => console.log("/revenue/statement/details")}
                     color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}>

@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   textFieldLabel: {},
 }));
 
-function EditableTextField({ item, onChange, name }) {
+function EditableTextField({ item, onChange, name, isEditable = true }) {
   const [isEdit, setEdit] = useState({});
   const classes = useStyles({ isEdit, type: item.type });
   return (
@@ -74,7 +74,7 @@ function EditableTextField({ item, onChange, name }) {
         )}
       </Grid>
       <Grid item className={classes.editIcon}>
-        {isEdit.able && (
+        {isEdit.able && isEditable && (
           <EditIcon
             fontSize="small"
             onClick={(e) => {

@@ -152,7 +152,7 @@ function CheckDetailsTable(props) {
                 columns={columns}
                 rows={props.rows}
                 total={false}
-                addAble={{ type: "RevenueStatementDetails" }}
+                addAble={{ type: "revenueStatementDetails" }}
                 loading={props.loading}
                 targetLabel={props.targetLabel}
                 uploadIcon={null}

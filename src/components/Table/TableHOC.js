@@ -196,24 +196,60 @@ export const TableHOC = (Component) => {
                         after: null,
                     },
                     ...(!isEmpty(tableState.sortOrder)) && {
-                        sort:
-                            [{
-                                [columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
-                                    columns.find(el => el.name === tableState.sortOrder?.name)?.name]: {
-                                    order: tableState.sortOrder?.direction,
-                                    // unmapped_type: "null",
-                                    missing: "_last"
+                        sort: (() => {
+                            let field = columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
+                                columns.find(el => el.name === tableState.sortOrder?.name)?.name;
+                            // if (!Array.isArray(field)) field = [ field ]
+                            if (Array.isArray(field)) {
+                                return [
+                                    {
+                                        _script: {
+                                            type: "number",
+                                            script: {
+                                                lang: "painless",
+                                                source: `if (
+                                                    ${field.map(el => `doc['${el}'].isEmpty()`).join(' && ')}
+                                                ) {return 1} else {return 0}`
+                                            },
+                                            order: "asc"
+                                        }
+                                    },
+                                    {
+                                        _script: {
+                                            type: "string",
+                                            script: {
+                                                lang: "painless",
+                                                source: `${field.map(el => `if (!doc['${el}'].isEmpty()) {return doc['${el}'].value}`).join(' else ')}
+                                                    else {return ''}`
+                                            },
+                                            order: tableState.sortOrder?.direction
+                                        }
+                                    }
+                                ]
+                            } else {
+                                return {
+                                    [field]: {
+                                        order: tableState.sortOrder?.direction,
+                                        // unmapped_type: "null",
+                                        missing: "_last"
+                                    }
                                 }
-                            }]
+                            }
+                        })()
                     },
-
-                    ...(tableState.esFilters) && { filters: [...tableState.esFilters] || [] },
+                    filters: tableState.esFilters ? [...tableState.esFilters] : [],
+                    customFilters: []
+                    // ...(tableState.esFilters) && { filters: [...tableState.esFilters] || [] },
                 },
             };
-            console.log("tableState", tableState);
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0) {
-                    pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
+                    if(columns[index].custom?.filterOptions?.length > 0){
+                        pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0] })
+                    }else{
+                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
+                    }
+                    
                 }
             })
             if (selectedGridView?.filters && selectedGridView.type === 'Default') {

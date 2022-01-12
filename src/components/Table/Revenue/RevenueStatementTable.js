@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
+import moment from "moment";
 
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
 
-import { setStateIfDeepEqual, deepEqualObjects, copy } from "components/Shared/functions";
+import { setStateIfDeepEqual, deepEqualObjects } from "components/Shared/functions";
 
 // Header Schemas 
 import TableHeader from 'components/Table/constants/revenue-statement-header-schema';
@@ -15,8 +16,9 @@ import TableHeader from 'components/Table/constants/revenue-statement-header-sch
 import { usetableStyles } from "../Styles";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { GET_VALIDATION_CHECK } from "graphQL/useQueryValidationCheck";
 import { GET_ES_POTENTIAL_ISSUES_SUMMARY } from "graphQL/useQueryESSummary";
-import { AutoCompleteFilter } from "../AutoCompleteFilter";
+import { setColumnsData } from "components/Table/helpers";
 
 
 function RevenueStatementTable(props) {
@@ -24,6 +26,7 @@ function RevenueStatementTable(props) {
 
     // function states 
     const [columns, Columns] = useState([]);
+    const [filters, setFilters] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
     const [potentialIssuesList, setPotentialIssuesList] = useState([]);
     const [pIssuesArr, setIssuesArr] = useState([]);
@@ -33,6 +36,11 @@ function RevenueStatementTable(props) {
     // queries 
 
     const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
+        context: { batch: true },
+        fetchPolicy: "no-cache",
+    });
+
+    const [getRevenueValidationCheck, { data: validationData }] = useLazyQuery(GET_VALIDATION_CHECK, {
         context: { batch: true },
         fetchPolicy: "no-cache",
     });
@@ -57,9 +65,10 @@ function RevenueStatementTable(props) {
                     first: startPaginationAt,
                     keep_alive: "1micros"
                 },
+                search: props.revenueSearchQuery,
             }
         });
-    }, [props.parent]);
+    }, [getESPaginatedList, props.parent, props.revenueSearchQuery]);
 
     useEffect(() => {
         // Potential Issues
@@ -77,8 +86,8 @@ function RevenueStatementTable(props) {
     useEffect(() => {
         if (issues?.hits?.length > 0) {
             const allIssues = issues?.hits.filter((issue) => {
-                const checkAmt = issue?.checkAmt?.value.toFixed(2);
-                const checkDetailAmt = issue?.checkDetailAmt?.value.toFixed(2);
+                const checkAmt = issue?.checkAmt?.value?.toFixed(2);
+                const checkDetailAmt = issue?.checkDetailAmt?.value?.toFixed(2);
                 if (Number(checkAmt) !== Number(checkDetailAmt)) {
                     return issue;
                 }
@@ -91,32 +100,60 @@ function RevenueStatementTable(props) {
     }, [potentialIssues]);
 
     useEffect(() => {
+        if(validationData?.getRevenueValidationCheck?.hits){
+            const validation = JSON.parse(JSON.stringify(validationData.getRevenueValidationCheck.hits))
+            const rows = JSON.parse(JSON.stringify(props.rows))
+            for(let i = 0; i < rows.length; i++){
+                if(validation[rows[i]._id]){
+                    rows[i].validation = !(parseFloat(validation[rows[i]._id].checkDetailAmt.value.toFixed(2)) === rows[i].checkAmount)
+                }else{
+                    rows[i].validation = false
+                }
+            }
+            props.setRows(rows)
+        }
+    },[validationData])
+
+    useEffect(() => {
         if (tableData?.hits?.length > 0) {
-            let hits = tableData?.hits
+            const objectsIdsArray = tableData.hits.map((check) => check._id);
+            getRevenueValidationCheck({
+              variables: {
+                checkIds: objectsIdsArray,
+              },
+            });
+        }
+    },[tableData])
+
+    useEffect(() => {
+        if (tableData?.hits?.length > 0) {
+            
+            const hits = tableData?.hits.map((hit) => {
+                hit.checkDate = hit.checkDate
+                  ? moment(new Date(hit.checkDate)).format("MM/DD/YYYY")
+                  : null;
+                hit.depositDate = hit.depositDate
+                  ? moment(new Date(hit.depositDate)).format("MM/DD/YYYY")
+                  : null;
+                hit.tags = hit?.tags?.length > 0
+                  ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+                  : [[], 0];
+                hit.commentsCounter = hit.comments ? hit.comments.length : 0;
+                return hit;
+            });
             props.onGettingStatements(hits);
             props.setRows(hits);
-            let headers = copy(TableHeader)
 
-            headers.forEach((column) => {
-                if (column?.options?.filter) {
-                    column.options = {
-                        ...column.options,
-                        filter: true,
-                        filterType: 'custom',
-                        filterOptions: {
-                            display: (filterList, onChange, index, column) => {
-                                column.filterKey = headers.find(el => el.name === column.name)?.esKey;
-                                return (
-                                    <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-                                        query={GET_ES_FILTER_LIST} esIndex={esIndex} />
-                                );
-                            }
-                        }
-                    }
-                }
-            })
+            setColumnsData(
+                TableHeader,
+                filters,
+                JSON.parse(JSON.stringify(TableHeader)),
+                setColumns,
+                setFilters,
+                GET_ES_FILTER_LIST,
+                esIndex
+            );
 
-            setColumns(headers);
             props.setLoading(false);
         }
         else if (tableData?.hits?.length === 0) {
@@ -145,8 +182,8 @@ function RevenueStatementTable(props) {
     useEffect(() => {
         if (pIssuesArr.length > 0) {
             const allIssues = pIssuesArr?.filter((issue) => {
-                const checkAmt = issue?.checkAmt?.value.toFixed(2);
-                const checkDetailAmt = issue?.checkDetailAmt?.value.toFixed(2);
+                const checkAmt = issue?.checkAmt?.value?.toFixed(2);
+                const checkDetailAmt = issue?.checkDetailAmt?.value?.toFixed(2);
                 if (Number(checkAmt) !== Number(checkDetailAmt)) {
                     return issue;
                 }
@@ -203,7 +240,7 @@ function RevenueStatementTable(props) {
                 rows={props.rows}
                 total={false}
                 potentialIssues={potentialIssuesList}
-                addAble={{ type: "RevenueStatement" }}
+                addAble={{ type: "revenueStatement" }}
                 loading={props.loading}
                 targetLabel={props.targetLabel}
                 uploadIcon={null}

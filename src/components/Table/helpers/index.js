@@ -91,11 +91,15 @@ export const setColumnsData = (
   columns,
   setColumns,
   setFilters,
-  query
+  query,
+  esIndex
 ) => {
   columns.forEach((column, index) => {
+    const tableCol = TableHeader.find((el) => el.name === column.name)
     if (column?.options?.filter) {
+      const custom = column.custom;
       column.options = {
+        ...tableCol.options,
         ...column.options,
         filter: true,
         filterType: "custom",
@@ -107,11 +111,13 @@ export const setColumnsData = (
             )?.esKey;
             return (
               <AutoCompleteFilter
+                esIndex={esIndex}
                 filterList={filterList}
                 column={column}
                 index={index}
                 onChange={onChange}
                 query={query}
+                custom={custom}
               />
             );
           },
