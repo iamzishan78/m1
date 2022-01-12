@@ -64,7 +64,7 @@ function CheckDetailsTable(props) {
     const getCheckDetailRows = (rows) => {
         let dataSet = rows?.map((item) => ({
             ...item,
-            propertyNumber: `${item?.property.number}_${item?._id}`,
+            number: `${item?.property.number}_${item?._id}`,
             name: item?.property?.name || "",
             state: item?.property.state || "",
             county: item?.property.county,
