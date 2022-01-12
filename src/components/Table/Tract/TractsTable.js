@@ -172,6 +172,15 @@ function TractsTable(props) {
   // }, [issues]);
 
   useEffect(() => {
+    if (tableData?.hits?.length > 0) {
+      const objectsIdsArray = tableData?.hits?.map((hit) => hit.contact?._id);
+    //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
+      props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
+    //   props.ifAreContacts(globalOwnerIds);
+    }
+  }, [tableData]);
+
+  useEffect(() => {
     if (tableData) {
       if (tableData?.hits?.length > 0) {
         // const resolvePath = (obj, path) => {
@@ -208,6 +217,9 @@ function TractsTable(props) {
               ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
               : [[], 0];
           hit.commentsCounter = hit.comments ? hit.comments.length : 0;
+          hit = props.setGenricData(hit, hit.contact?._id, [
+            'comments', 'tags'
+          ]);
           return hit;
         });
 

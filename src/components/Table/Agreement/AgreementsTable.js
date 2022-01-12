@@ -162,14 +162,14 @@ function AgreementsTable(props) {
   //     }
   // }, [issues]);
 
-  // useEffect(() => {
-  //     if (tableData?.hits?.length > 0) {
-  //       const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
-  //     //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
-  //       props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
-  //     //   props.ifAreContacts(globalOwnerIds);
-  //     }
-  //   }, [tableData]);
+  useEffect(() => {
+      if (tableData?.hits?.length > 0) {
+        const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
+      //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
+        props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
+      //   props.ifAreContacts(globalOwnerIds);
+      }
+    }, [tableData]);
 
   useEffect(() => {
     if (tableData) {
@@ -187,15 +187,14 @@ function AgreementsTable(props) {
             : null;
           hit.State = hit?.originalProperties?.State;
           hit.County = hit?.originalProperties?.County;
-          hit = props.setGenricData(hit, hit._id, [
-            "tracks",
-            "ifAreContacts",
-          ]);
           hit.tags =
             hit?.tags?.length > 0
               ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
               : [[], 0];
           hit.commentsCounter = hit.comments ? hit.comments.length : 0;
+          hit = props.setGenricData(hit, hit._id, [
+            'comments', 'tags'
+          ]);
           return hit;
         });
 
