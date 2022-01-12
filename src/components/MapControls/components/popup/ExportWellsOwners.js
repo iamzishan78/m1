@@ -16,6 +16,8 @@ import { AppContext } from "AppContext";
 import { getMapFilters, jsonToCSV, wellsToCSV } from "utils/helper";
 import { NavigationContext } from "components/Navigation/NavigationContext";
 
+import { useApolloClient } from "@apollo/client";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "557px",
@@ -53,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
 const ExportWellsOwners = ({
   getMapFilterShapeOwnersAndWellsAction,
   getShapeOwnersAndWellsAction,
+  execAsyncExportJobAction,
   shapeOwnersInterest,
   shapeInterestCount,
   shapeOwners,
@@ -64,8 +67,9 @@ const ExportWellsOwners = ({
   open,
 }) => {
   const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav] = useContext(NavigationContext);
+  const client = useApolloClient();
 
   const { currentFeature, user } = stateApp;
   const { control, watch } = useForm();
@@ -78,6 +82,7 @@ const ExportWellsOwners = ({
   useEffect(() => {
     if (!includeFilter) {
       getShapeOwnersAndWellsAction({
+        client,
         currentFeature: currentFeature,
         userId: user.mongoId,
       });
@@ -89,6 +94,7 @@ const ExportWellsOwners = ({
     if (includeFilter) {
       const { filters, search } = getMapFilters(stateNav, "", "");
       getMapFilterShapeOwnersAndWellsAction({
+        client,
         currentFeature: currentFeature,
         userId: user.mongoId,
         filters,
@@ -115,30 +121,43 @@ const ExportWellsOwners = ({
   ]);
 
   const onExport = () => {
-    if (exportWells) {
-      const csvWells = wellsToCSV(wells);
-      const hiddenElement = document.createElement("a");
-      hiddenElement.href = "data:attachment/text," + encodeURIComponent(csvWells);
-      hiddenElement.target = "_blank";
-      hiddenElement.download = "wells.csv";
-      hiddenElement.click();
-    }
-    if (exportOwners) {
-      const owners = jsonToCSV(shapeOwners.map(owner => owner.node));
-      const hiddenElement = document.createElement("a");
-      hiddenElement.href = "data:attachment/text," + encodeURIComponent(owners);
-      hiddenElement.target = "_blank";
-      hiddenElement.download = "taxOwners.csv";
-      hiddenElement.click();
-    }
-    if (exportOwnersInterest) {
-      const owners = jsonToCSV(shapeOwnersInterest.map(owner => owner.node));
-      const hiddenElement = document.createElement("a");
-      hiddenElement.href = "data:attachment/text," + encodeURIComponent(owners);
-      hiddenElement.target = "_blank";
-      hiddenElement.download = "taxOwnersInterest.csv";
-      hiddenElement.click();
-    }
+    const { filters, search } = getMapFilters(stateNav, "", "");
+    execAsyncExportJobAction({
+      client,
+      currentFeature: currentFeature,
+      filters, 
+      search,
+      userId: user.mongoId,
+      exportWells: !!exportWells,
+      exportOwners: !!exportOwners,
+      exportOwnersInterest: !!exportOwnersInterest,
+      setStateApp
+    });
+
+    // if (exportWells) {
+    //   const csvWells = wellsToCSV(wells);
+    //   const hiddenElement = document.createElement("a");
+    //   hiddenElement.href = "data:attachment/text," + encodeURIComponent(csvWells);
+    //   hiddenElement.target = "_blank";
+    //   hiddenElement.download = "wells.csv";
+    //   hiddenElement.click();
+    // }
+    // if (exportOwners) {
+    //   const owners = jsonToCSV(shapeOwners.map(owner => owner.node));
+    //   const hiddenElement = document.createElement("a");
+    //   hiddenElement.href = "data:attachment/text," + encodeURIComponent(owners);
+    //   hiddenElement.target = "_blank";
+    //   hiddenElement.download = "taxOwners.csv";
+    //   hiddenElement.click();
+    // }
+    // if (exportOwnersInterest) {
+    //   const owners = jsonToCSV(shapeOwnersInterest.map(owner => owner.node));
+    //   const hiddenElement = document.createElement("a");
+    //   hiddenElement.href = "data:attachment/text," + encodeURIComponent(owners);
+    //   hiddenElement.target = "_blank";
+    //   hiddenElement.download = "taxOwnersInterest.csv";
+    //   hiddenElement.click();
+    // }
     onClose()
   };
 

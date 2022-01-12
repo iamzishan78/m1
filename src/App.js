@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { AppProvider, AppContext, setApolloHeaders } from "./AppContext";
+import GlobalApolloClientProvider from "./GlobalApolloClientProvider";
 import { Switch, Route } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 //components
@@ -200,6 +201,9 @@ const PrivateRoute = ({ component, ...options }) => {
 function App() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [apolloClient, setApolloClient] = useState(null);
+  useEffect(() => {
+    new GlobalApolloClientProvider(apolloClient)
+  }, [apolloClient]);
   const [apolloClientToken, setApolloClientToken] = useState(null);
   const [apolloClientIdToken, setApolloIdClientToken] = useState(null);
   const [apolloClientEndpoint, setApolloClientEndpoint] = useState(null);

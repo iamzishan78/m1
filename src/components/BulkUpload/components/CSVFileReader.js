@@ -2,7 +2,8 @@ import React, { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../../Navigation/NavigationContext";
 import { Button, Grid } from "@material-ui/core";
-import { CSVReader, CSVDownloader } from "react-papaparse";
+import { CSVReader, /* CSVDownloader */ } from "react-papaparse";
+import CSVDownloader from 'react-csv-downloader';
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -160,7 +161,6 @@ const mainContent = {
   padding: "14px 0px 0px  0px",
 };
 
-const csvColumns = `Contact Id,Full Name,First Name,Last Name,Middle Name,Suffix,Age,Relative Names,Primary Address 1,Primary Address 2,City,State,Zip,Country,Primary Email,Email 2,Email 3,Primary Home Phone,Home Phone 2,Home Phone 3,Primary Mobile Phone,Mobile Phone 2,Mobile Phone 3,Primary Work Phone,Work Phone 2,Work Phone 3,Company Name,Job Title,Industry Type,LinkedIn Profile,Facebook Profile,Twitter Profile,Lead Source,Territory,Campaign Name,Website,Contact Owner,Parcel Id,Parcel Name,Surface Interest,Mineral Interest,Royalty Interest,Overriding Royalty,Record Title,Operating Rights,Net Revenue Interest,Net Acres,Net Royalty Acres,Depth From,Depth To,QTR1,QTR2,QTR3,QTR4`
 const StyledTableCell = withStyles((theme) => ({
   head: {
     fontWeight: "bold",
@@ -181,6 +181,7 @@ export default function CSVFileReader(props) {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const classes = useStyles();
   let unmounted = useRef(false);
+  const csvColumns = [Object.fromEntries(stateApp.m1neralHeaders.map((col) => [col.label, ""]))]
 
   useEffect(() => {
     return () => {
@@ -191,11 +192,13 @@ export default function CSVFileReader(props) {
   let handleOnDrop = (data) => {
     if (!unmounted.current) {
       if (data && data.length <= 10001) {
-        mapped_headers_from_CSV(data);
-        stateNav.bulkUploadFromMap && data.forEach((data) => Object.assign(data.data, {
+        stateNav.bulkUploadFromMap && data.forEach((data) => {
+          Object.assign(data.data, {
           ...(stateApp.selectedParcel?.id) && { 'Parcel Id': stateApp.selectedParcel?.id },
           ...(stateApp.selectedParcel?.shapeLabel) && { 'Parcel Name': stateApp.selectedParcel?.shapeLabel }
-        }))
+          })
+        })
+        mapped_headers_from_CSV(data);
         setStateApp((state) => ({
           ...state,
           csvContactsList: data,
@@ -285,8 +288,8 @@ export default function CSVFileReader(props) {
             A CSV with these columns will yield good results
           </div>
           <CSVDownloader
-            data={csvColumns}
-            filename='Sample_Contacts_Upload'
+            datas={csvColumns}
+            filename={`Sample_${stateApp.jobType}_Upload`}
             type='link'
             className={classes.linkStyle}
           >
