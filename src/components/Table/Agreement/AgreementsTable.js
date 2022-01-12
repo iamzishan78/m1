@@ -175,7 +175,7 @@ function AgreementsTable(props) {
     if (tableData) {
       if (tableData?.hits?.length > 0) {
         const hits = tableData?.hits.map((hit) => {
-          hit.agreementType = agreementTypes.find(type => type.value === hit.agreementType)?.label
+          hit.agreementType = agreementTypes.find(type => type.value === hit.agreementType || type.label === hit.agreementType)?.label
           hit.agreementDate = hit.agreementDate
             ? moment(new Date(hit.agreementDate)).format("MM/DD/YYYY")
             : null;
