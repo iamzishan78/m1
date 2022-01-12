@@ -2095,12 +2095,13 @@ function SubTable(props) {
             column.options = {
               ...column.options,
               customBodyRender: (value) => {
-                const splitNumber = value.split("_");
+                const splitNumber = value?.split("_");
                 let styles = { ...column.style };
-                if (props.parent === "RevenuePropertiesTable") {
+                if (props.parent === "RevenuePropertiesTable" ||
+                    props.parent === "CheckDetailsTable") {
                   styles = { ...styles, fontWeight: 600, color: "#17aadd", cursor: "pointer" };
                 }
-                return <p style={styles}>{splitNumber[0]}</p>;
+                return <p style={styles}>{splitNumber?.[0]}</p>;
               },
             };
             break;
