@@ -8,6 +8,10 @@ import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import { useLazyQuery } from "@apollo/client";
 import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 
+// Components
+import RevenueChart from "./Charts/RevenueChart";
+import AdjustmentChart from "./Charts/AdjustmentChart";
+
 export const TabButtons = ({ tab, actiiveId, setActive }) => {
   return (
     <div className={tab?.id === actiiveId ? "tab_button active" : "tab_button inactive"} onClick={() => setActive(tab?.id)}>
@@ -42,7 +46,8 @@ const useStyles = makeStyles((theme) => ({
     border: "2px solid #959595",
     borderRadius: 8,
     maxWidth: "440px",
-    padding: "0px 45px",
+    padding: "0px 10px",
+    height: "300px",
   },
   dataCardWidth: {
     maxWidth: 400,
@@ -323,12 +328,7 @@ const SummarySection = ({ checkId }) => {
         <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3}>
           <Grid item xs={6}>
             <div className={classes.graphCard}>
-              <img
-                src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
-                alt="static donut chart"
-                height={300}
-                width={300}
-              />
+              <RevenueChart />
             </div>
           </Grid>
           <Grid item xs={5}>
@@ -441,12 +441,7 @@ const SummarySection = ({ checkId }) => {
         <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3}>
           <Grid item xs={6}>
             <div className={classes.graphCard}>
-              <img
-                src="https://landing.moqups.com/img/content/charts-graphs/pie-donut-charts/simple-donut-chart/simple-donut-chart-1600.png"
-                alt="static donut chart"
-                height={300}
-                width={300}
-              />
+              <AdjustmentChart adjustments={adjustmentSummaryDetails} />
             </div>
           </Grid>
           <Grid item xs={5}>
