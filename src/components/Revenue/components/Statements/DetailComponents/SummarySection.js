@@ -285,8 +285,8 @@ const SummarySection = ({ checkId }) => {
       }));
       buckets.push({
         key: "OTHER",
-        grossOwnerVolume: "-",
-        grossPropertyVolume: "-",
+        grsProd: "-",
+        netProd: "-",
         netRevenue: "-",
         avgPrice: "-",
       });
