@@ -152,7 +152,7 @@ export const getMapFilters = (stateNav, searchInput, gridPolygonString) => {
   const extendSearchQuery = (() => {
     let searchString = ""
     if (searchInput) {
-      searchString = searchInput.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
+      searchString = searchInput.replace(/([!*+&|()[\]{}^~?:"])/g, "\\$1").split(/\s+/)
     }
 
     return searchString

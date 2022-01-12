@@ -374,6 +374,7 @@ function LayerStyling(props) {
           settings: {
             _id: currentLayer._id,
             layerPaintProps: currentLayer.layerPaintProps,
+            layerSettings: currentLayer.layerSettings
           },
         },
       });
