@@ -4,22 +4,22 @@ const RevenueStatementHeadCells = [
         name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
     },
     {
-        name: "ownerName", label: "Owner Name", esKey: 'propert.number.keyword', options: { sort: true, filter: true }
+        name: "ownerName", label: "Owner Name", esKey: 'owner.entityDetail.name.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "interestType", label: "Interest Type", esKey: 'property.name.keyword', options: { sort: true, filter: true }
+        name: "interestType", label: "Interest Type", esKey: 'interestType.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "interestAmount", label: "Interest Amount", esKey: 'property.state.keyword', options: { sort: true, filter: true }
+        name: "interestAmount", label: "Interest Amount", esKey: 'interestAmount.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "effectiveDate", label: "Effective Date", esKey: 'property.county.keyword', options: { sort: true, filter: true }
+        name: "effectiveDate", label: "Effective Date", esKey: 'peffectiveDate.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "status", label: "Status", esKey: 'date', options: { sort: true, filter: true }
+        name: "interestStatus", label: "Status", esKey: 'status.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "costFree", label: "Cost Free?", esKey: 'product.keyword', options: { sort: true, filter: true }
+        name: "costFree", label: "Cost Free?", esKey: 'costFree.keyword', options: { sort: true, filter: true }
     },
     {
         name: "tags",

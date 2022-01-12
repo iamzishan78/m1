@@ -342,7 +342,9 @@ export const TableESHOC = (Component) => {
                         className={classes.multiSelectionTopBarButtons}
                         onClick={() => { setAddToTable(true); setClickedRow(null) }}
                     >
-                        + ADD {tableMeta.addableName} To {tableMeta.shapeType?.toUpperCase()}
+                        {tableMeta.addBtnText ? 
+                            `+ ADD ${tableMeta.addBtnText}` : 
+                            `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
                     </Button>
                 </div>
             },

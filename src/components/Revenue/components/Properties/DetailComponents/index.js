@@ -158,6 +158,7 @@ const StyledTab = withStyles((theme) => ({
 
 export default function DetailComponents(props) {
   const history = useHistory();
+  const propertyId = history.location.pathname.split('/')[history.location.pathname.split('/').length -1 ];
   const [showInterestDetails, setShowInterestDetails] = useState(false);
   const classes = useStyles({ ...props, showInterestDetails});
   const [tab, setTab] = useState(0);
@@ -283,7 +284,7 @@ export default function DetailComponents(props) {
                   <HeaderSection />
                 </div>
                 <div ref={tab === 1 ? selectedTabRef : null}>
-                  <PropertyInterestDetailsSection checkId={""} onClickAdd={() => setShowInterestDetails(true)} />
+                  <PropertyInterestDetailsSection propertyId={propertyId} onClickAdd={() => setShowInterestDetails(true)} />
                 </div>
               </div>
             </div>

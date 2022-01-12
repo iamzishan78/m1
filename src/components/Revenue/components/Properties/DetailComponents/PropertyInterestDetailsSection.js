@@ -21,11 +21,11 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const PropertyInterestDetailsSection = ({ checkId, onClickAdd }) => {
+const PropertyInterestDetailsSection = ({ propertyId, onClickAdd }) => {
     const classes = useStyles();
     return (
         <div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
-            <PropertyInterestDetailsTable onClickAdd={onClickAdd} parent="PropertyInterestTable" header="Interest Details" checkId={checkId} />
+            <PropertyInterestDetailsTable onClickAdd={onClickAdd} parent="PropertyInterestTable" header="Interest Details" propertyId={propertyId} />
         </div>
     )
 }
