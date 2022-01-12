@@ -460,7 +460,14 @@ export default function ContactDetailCard(props) {
 
   const checkModuleHistory = () => {
     const { pathHistory } = history;
-    return pathHistory.length > 0 ? pathHistory[1].includes("/map/agreements/") : false;
+    if (pathHistory.length > 0) {
+      if (pathHistory[1].includes("/map/agreements/")) {
+        return true;
+      } else if (pathHistory[1].includes("/map/wells/")) {
+        return true;
+      }
+    }
+    return false;
   };
 
   const getFlowlineReturnUrl = () => {
@@ -599,7 +606,8 @@ export default function ContactDetailCard(props) {
                   cursor: "pointer",
                 }}
                 color="inherit"
-                onClick={() => window.location.replace(history.pathHistory[1])}
+                onClick={() => history.goBack()}
+                // onClick={() => window.location.replace(history.pathHistory[1])}
               >
                 Map
               </Link>
@@ -1032,7 +1040,8 @@ export default function ContactDetailCard(props) {
                         cursor: "pointer",
                       }}
                       color="inherit"
-                      onClick={() => window.location.replace(history.pathHistory[1])}
+                      onClick={() => history.goBack()}
+                      // onClick={() => window.location.replace(history.pathHistory[1])}
                     >
                       Map
                     </Link>
