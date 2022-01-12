@@ -1,25 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 
-const data = [
-  {
-    category: "Owner Adjustments",
-    value: 23,
-    color: am4core.color("#ED1C24"),
-  },
-  {
-    category: "Gross Revenue",
-    value: 77,
-    color: am4core.color("#235789"),
-  },
-];
-
 // Revenue Chart
-export default function RevenuePieChart(props) {
+export default function PieChart({ chartData = [], type = "" }) {
+  const [data, setData] = useState([]);
+
   useEffect(() => {
-    var chart = am4core.create("revenue-pie-chart", am4charts.PieChart);
+    let data = [];
+    if (type === "revenue") {
+      data = chartData
+        .map((item) => {
+          item.value = item.value.replace("-", "").replace("(", "").replace(")", "");
+          return item;
+        })
+        .filter((item) => item.value)
+        .map((item) => ({ category: item.name, value: Number(item.value) }));
+    } else if (type === "adjustments") {
+      data = chartData.filter((a) => a.value).map((adjustment) => ({ category: adjustment.name, value: Number(adjustment.value) }));
+    }
+    setData(data);
+  }, [chartData, type]);
+
+  useEffect(() => {
+    if (data.length === 0) return;
+    var chart = am4core.create("pie-chart", am4charts.PieChart);
 
     // setting data
     chart.data = data;
@@ -53,6 +59,6 @@ export default function RevenuePieChart(props) {
     markerTemplate.stroke = am4core.color("#ccc");
     chart.legend.position = "right";
     chart.legend.maxWidth = 200;
-  }, []);
-  return <div id="revenue-pie-chart" style={{ height: "100%" }}></div>;
+  }, [data]);
+  return <div id="pie-chart" style={{ height: "100%" }}></div>;
 }

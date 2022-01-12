@@ -9,8 +9,7 @@ import { useLazyQuery } from "@apollo/client";
 import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 
 // Components
-import RevenueChart from "./Charts/RevenueChart";
-import AdjustmentChart from "./Charts/AdjustmentChart";
+import PieChartWithLegend from "./Charts/PieChartWithLegend";
 
 export const TabButtons = ({ tab, actiiveId, setActive }) => {
   return (
@@ -273,7 +272,7 @@ const SummarySection = ({ checkId }) => {
         { name: "Net Revenue", value: `${(revSummary?.netOwnerValue?.value).toFixed(2)}` },
         { name: "Lease Payments", value: "-" },
         { name: "Other", value: "-" },
-        { name: "Total Income", value: `${(revSummary?.netOwnerValue?.value).toFixed(2)}` },
+        { name: "Total Income", value: "-" },
       ]);
     }
   }, [revSummary]);
@@ -281,7 +280,7 @@ const SummarySection = ({ checkId }) => {
   // products summary
   useEffect(() => {
     if (prodSummary) {
-      const buckets = prodSummary?.product?.buckets.map((b, index) => ({
+      const buckets = prodSummary?.product?.buckets.map((b) => ({
         ...b,
         grsProd: b.grossPropertyVolume ? (Math.round(get(b, "grossPropertyVolume.value") * 100) / 100).toFixed(2) : "-",
         netProd: b.grossOwnerVolume ? (Math.round(get(b, "grossOwnerVolume.value") * 100) / 100).toFixed(2) : "-",
@@ -328,7 +327,7 @@ const SummarySection = ({ checkId }) => {
         <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3}>
           <Grid item xs={6}>
             <div className={classes.graphCard}>
-              <RevenueChart />
+              <PieChartWithLegend type="revenue" chartData={revenueSummaryDetails} />
             </div>
           </Grid>
           <Grid item xs={5}>
@@ -441,7 +440,7 @@ const SummarySection = ({ checkId }) => {
         <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3}>
           <Grid item xs={6}>
             <div className={classes.graphCard}>
-              <AdjustmentChart adjustments={adjustmentSummaryDetails} />
+              <PieChartWithLegend type="adjustments" chartData={adjustmentSummaryDetails} />
             </div>
           </Grid>
           <Grid item xs={5}>
