@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import find from 'lodash.find';
 import isEqual from 'lodash.isequal';
+import isEmpty from 'lodash/isEmpty';
 import keys from './../kit/keymap';
 import tablePropTypes from './../kit/tablePropTypes';
 import Row from './row';
@@ -88,6 +89,12 @@ class SpreadsheetGrid extends React.PureComponent {
 
         let newActiveCell = this.state.activeCell;
         let newFocusedCell = this.state.focusedCell;
+
+        if ((e.keyCode === keys.CAPITAL_N || e.keyCode === keys.SMALL_N) && e.ctrlKey) {
+            e.preventDefault();
+            this.addNewRow()
+            return
+        }
 
         if (this.state.activeCell) {
             const { x, y } = this.state.activeCell;
@@ -205,6 +212,8 @@ class SpreadsheetGrid extends React.PureComponent {
                 }
             }
 
+            this.deleteEmptyRow(newActiveCell?.x)
+
             this.setState({
                 activeCell: newActiveCell,
                 focusedCell: newFocusedCell
@@ -214,18 +223,42 @@ class SpreadsheetGrid extends React.PureComponent {
 
     onGlobalClick() {
         if (!this.skipGlobalClick) {
+            this.deleteEmptyRow()
             this.setState({
                 activeCell: null,
                 focusedCell: null
             });
+
         } else {
             this.skipGlobalClick = false;
+        }
+    }
+
+    addNewRow() {
+        const { allRows, setRows } = this.props
+        allRows.push({})
+        setRows([].concat(allRows))
+        this.focusCell({ x: allRows.length - 1, y: 0 })
+    }
+
+    deleteEmptyRow(newRowIndex) {
+        if (this.state?.activeCell?.x && this.state?.activeCell?.x !== newRowIndex) {
+            console.log('Row is changed', this.state?.activeCell?.x, newRowIndex)
+            const { allRows, setRows } = this.props
+            const index = this.state?.activeCell?.x
+            console.log('Row is changed Data', allRows[index])
+            if (isEmpty(allRows[index])) {
+                allRows.splice(index, 1);
+                setRows([].concat(allRows))
+
+            }
         }
     }
 
     onCellClick(x, y, row, columnId, e) {
         if (!find(this.props.disabledCells, { x, y })) {
             if (!e.skipCellClick && !isEqual(this.state.focusedCell, { x, y })) {
+                this.deleteEmptyRow(x)
                 this.setState({
                     focusedCell: this.props.focusOnSingleClick
                         ? { x, y }

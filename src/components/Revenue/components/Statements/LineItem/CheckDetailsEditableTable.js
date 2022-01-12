@@ -313,6 +313,7 @@ function CheckDetailsEditableTable(props) {
                     <div className="DataTable" >
                         <TableGrid
                             ref={gridRef}
+                            setRows={setRows}
                             columns={columns}
                             rows={rows}
                             getRowKey={row => row.id}
