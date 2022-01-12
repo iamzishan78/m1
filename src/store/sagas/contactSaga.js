@@ -12,7 +12,7 @@ import { CREATE_JOB } from "graphQL/useMutationCreateJob";
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { toggleBulkUploadAction} from 'store/actions/commonActions';
-import { GET_UPLOAD_CONTACT_URI } from "graphQL/useQueryGetUploadContactUri";
+import { GET_JOB_UPLOAD_URI } from "graphQL/useQueryGetJobUploadUri";
 import { GET_CONTACT_CAMPAIGN, CONVERT_TAX_OWNER_TO_CONTACT } from "store/type";
 
 function* getContactCampaign(action) {
@@ -39,12 +39,13 @@ function* convertTaxOwnerToContact(action) {
     const { userId } = action.payload;
     const owners = formatTaxOwners(copy(shapeOwners), action.payload);
 
-    const uploadUri = yield call(Api.fetch, GET_UPLOAD_CONTACT_URI, {
+    const uploadUri = yield call(Api.fetch, GET_JOB_UPLOAD_URI, {
       jobName: "Contacts",
+      jobType: "CONTACTS",
       userId,
     });
 
-    const { uri, id, internalKey } = uploadUri.data.data.getUploadContactUri.job;
+    const { uri, id, internalKey } = uploadUri.data.data.getJobUploadUri.job;
     
     yield put(toggleBulkUploadAction(!bulkUpload));
     const res = yield call(Api.fetchBlob, JSON.stringify(owners), id, internalKey, uri);

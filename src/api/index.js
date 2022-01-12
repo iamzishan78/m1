@@ -1,9 +1,11 @@
-import axios from "axios";
+import GlobalApolloClientProvider from "../GlobalApolloClientProvider";
+import { Provider as ReduxProvider } from "react-redux";
 import { print } from "graphql";
 import { BlockBlobClient } from "@azure/storage-blob";
 
 import { getURL, getHeaders } from 'utils/helper';
 class API {
+
   failedResponse = (error) => {
     const data =
       error.response && error.response.data ? error.response.data : {};
@@ -11,17 +13,11 @@ class API {
   };
 
   fetch = (query, variables) => {
-    return axios
-      .post(getURL(), {
-        query: print(query),
-        variables: variables,
-      },{
-        headers: getHeaders()
-      })
-      .catch((error) => {
-        return this.failedResponse(error);
-      });
-  };
+    return GlobalApolloClientProvider.client.query({
+      query,
+      variables
+    });
+  }
 
   fetchBlob = (owners, id, internalKey, uri) => {
     const blockBlobClient = new BlockBlobClient(uri);
