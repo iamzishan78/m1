@@ -23,23 +23,27 @@ const RevenueStatementHeadCells = [
     },
     {
         name: "tags",
-        label: "Tags",
-        esKey: "tags.keyword",
-        options: { sort: true, filter: true },
+        label: "Tags ",
+        esKey: 'tags.tag.keyword',
+        options: {
+          sort: true,
+          download: false,
+          print: false,
+          filter: true,
+        },
       },
-    {
+      {
         name: "commentsCounter",
         label: " ",
         options: {
-            dbName: "comments.comment",
-            filter: false,
-            searchable: false,
-            sort: true,
-            download: false,
-            print: false,
-            viewColumns: false,
+          filter: false,
+          searchable: false,
+          sort: true,
+          download: false,
+          print: false,
+          viewColumns: false,
         },
-    },
+      },
 ];
 
 export default RevenueStatementHeadCells;

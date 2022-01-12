@@ -20,6 +20,10 @@ function PropertyInterestDetailsTable(props) {
   const formatHits = (hits) => {
     return hits.map(hit => {
       hit.effectiveDate = moment(hit.effectiveDate).format('MM/DD/YYYY')
+      hit.tags = hit?.tags?.length > 0
+        ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+        : [[], 0];
+      hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       return hit
     })
   }
