@@ -185,6 +185,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                   </ListItemIcon>
                 </Tooltip>
                 <ListItemText className={`${classes.sideNavText} uppercase`} primary="Land" />
+                <ListItemSecondaryAction className={classes.sideNavAction}>
+                  <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
+                    beta
+                  </Button>
+                </ListItemSecondaryAction>
               </div>
             </ListItem>
           </FeatureFlag>
@@ -209,6 +214,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                   </ListItemIcon>
                 </Tooltip>
                 <ListItemText className={`${classes.sideNavText} uppercase`} primary="Revenue" />
+                <ListItemSecondaryAction className={classes.sideNavAction}>
+                  <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
+                    beta
+                  </Button>
+                </ListItemSecondaryAction>
               </div>
             </ListItem>
           </FeatureFlag>
