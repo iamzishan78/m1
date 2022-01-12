@@ -48,6 +48,13 @@ function PropertyInterestDetailsTable(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[props.addToTable])
 
+  useEffect(() => {
+    if(!props.showInterestDetails){
+      props.setAddToTable(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[props.showInterestDetails])
+
   return (
     <Container
       maxWidth={false}

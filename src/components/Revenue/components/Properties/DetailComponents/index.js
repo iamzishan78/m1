@@ -305,7 +305,7 @@ export default function DetailComponents(props) {
                   <HeaderSection />
                 </div>
                 <div ref={tab === 1 ? selectedTabRef : null}>
-                  <PropertyInterestDetailsSection propertyId={propertyId} onClickAdd={() => setShowInterestDetails(true)} />
+                  <PropertyInterestDetailsSection propertyId={propertyId} showInterestDetails={showInterestDetails} onClickAdd={() => setShowInterestDetails(true)} />
                 </div>
               </div>
             </div>

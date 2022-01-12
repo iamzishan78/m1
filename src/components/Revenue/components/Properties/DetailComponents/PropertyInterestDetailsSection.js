@@ -20,7 +20,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const PropertyInterestDetailsSection = ({ propertyId, onClickAdd }) => {
+const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDetails }) => {
   const classes = useStyles();
   return (
     <div
@@ -28,6 +28,7 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd }) => {
     >
       <PropertyInterestDetailsTable
         onClickAdd={onClickAdd}
+        showInterestDetails={showInterestDetails}
         targetLabel="propertyInterest"
         parent="PropertyInterestTable"
         header="Interest Details"
