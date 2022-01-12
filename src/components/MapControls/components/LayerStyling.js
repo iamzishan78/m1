@@ -126,7 +126,7 @@ function LayerStyling(props) {
   const handleApplyChanges = () => {
     if ((stateApp.layers && layer &&
       ((fillColor && fillColor.rgb && fillColor.alpha) || (strokeColor && strokeColor.rgb && strokeColor.alpha))) ||
-      width || layer.layerPaintProps[0].labelProps?.visibility !== layerLabelVisibility ||
+      width || layer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
       layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability
     ) {
       let currentLayer = { ...layer };
@@ -356,6 +356,11 @@ function LayerStyling(props) {
           layerPaintProps,
         };
       }
+
+      currentLayer = {
+        ...currentLayer,
+        layerSettings,
+      };
 
       //// saving to stateApp
       const currentLayers = [...stateApp.layers];

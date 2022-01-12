@@ -79,7 +79,8 @@ function ShapeGridTaxOwnersTable(props) {
         });
         getShapeOwnersCount({
             variables: {
-                polygon: stateApp.gridPolygonString,
+                // polygon: stateApp.gridPolygonString,
+                polygon: stateApp?.currentFeature?.geometry?.coordinates[0]
             },
         });
     }, [props.parent]);
@@ -218,7 +219,7 @@ function ShapeGridTaxOwnersTable(props) {
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
         count: stateApp.shapeGridOwnersCount || count || 0,
         serverSide: true, 
-        filter: false,
+        // filter: false,
     }
     ////////////-----Add your code section here-----///////////////////////
     const getWellOwnersByYear = (selectedYear) => {
@@ -245,7 +246,10 @@ function ShapeGridTaxOwnersTable(props) {
                 orderByTracks={orderByTracks}
                 startPaginationAt={null}
                 onTableChange={onTableChange}
-                options={options}
+                options={{
+                    ...options,
+                    ...props.customOptions,
+                }}
                 parent={props.parent}
                 setColumnsBase={[]}
                 getWellOwnersByYear={getWellOwnersByYear}

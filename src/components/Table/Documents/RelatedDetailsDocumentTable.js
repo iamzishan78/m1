@@ -335,7 +335,7 @@ function RelatedDetailsDocumentTable(props) {
 
 RelatedDetailsDocumentTable.defaultProps = {
   addAble: {
-    type: "document"
+    type: "relatedDocument"
   }
 }
 

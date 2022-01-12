@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { NavigationContext } from "./NavigationContext";
-
+import { useDispatch } from 'react-redux'
 // contexts
 import { AppContext } from "AppContext";
 import { MapGridContext } from "../../components/MapGridCard/MapGridContext.js";
@@ -372,45 +372,43 @@ export default function Navigation(props) {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      {!checkIfIgnoreHeader() && (
-        <AppBar
-          position="fixed"
-          className={clsx(classes.appBar, {
-            [classes.appBarShift]: openDrawer,
-          })}
-        >
-          {stateApp.user && (
-            <Toolbar>
-              {location.pathname === "/activities" && (
-                <>
-                  <ActivitySearch />
-                </>
-              )}
-              {location.pathname === "/documents" && (
-                <>
-                  <DocumentSearch />
-                </>
-              )}
-              {location.pathname === "/contacts" && <ContactSearch />}
-              {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
+      <AppBar
+        position="fixed"
+        className={clsx(classes.appBar, {
+          [classes.appBarShift]: openDrawer,
+        })}
+      >
+        {stateApp.user && (
+          <Toolbar>
+            {location.pathname === "/activities" && (
+              <>
+                <ActivitySearch />
+              </>
+            )}
+            {location.pathname === "/documents" && (
+              <>
+                <DocumentSearch />
+              </>
+            )}
+           {(location.pathname === "/contacts" ||location.pathname === "/contacts/") && <ContactSearch />}
+            {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
 
-              {location.pathname.startsWith("/flow") && <DealSearch />}
-              {location.pathname === "/dashboard" && (
-                <Typography variant="h4" style={{ color: "black", fontWeight: "bold", marginLeft: 15 }}>
-                  Dashboard
-                </Typography>
-              )}
+            {location.pathname.startsWith("/flow") && <DealSearch />}
+            {location.pathname === "/dashboard" && (
+              <Typography variant="h4" style={{ color: "black", fontWeight: "bold", marginLeft: 15 }}>
+                Dashboard
+              </Typography>
+            )}
 
-              {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
-              {location.pathname.startsWith("/revenue") && <RevenueAppBar classes={classes} />}
+            {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
-              {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
-
-              {(matchFind || matchDocument) && (
-                <div className={classes.search} id="searchBarDivParent">
-                  <SearchBarWithToggleButton />
-                </div>
-              )}
+            {(matchFind || matchDocument) && (
+              <div 
+              className={classes.search} id="searchBarDivParent"
+              >
+                <SearchBarWithToggleButton />
+              </div>
+            )}
 
               <div className={classes.grow1} />
 
@@ -437,7 +435,6 @@ export default function Navigation(props) {
             </Toolbar>
           )}
         </AppBar>
-      )}
       {stateApp.user && (
         <SideNavigation
           openDrawer={openDrawer}

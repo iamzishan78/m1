@@ -3,6 +3,22 @@ import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
 import moment from "moment";
 
+export const contactStatusOptions = [
+  {
+    label: "Unqualified Lead",
+    value: "UnqualLead",
+  },
+  {
+    label: "Qualified Lead",
+    value: "QualLead",
+  },
+  {
+    label: "Contact",
+    value: "Contact",
+  },
+];
+
+
 const getCreateByRow = (contactData) => {
     return contactData?.createBy && contactData?.createBy.name === null ? (
         <span>
@@ -128,7 +144,7 @@ export const getBasicInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     Status: {
-      data: { status: contactData?.status },
+      data: { status: contactData?.status ? contactStatusOptions.find(status => status.value === contactData.status)?.label: null },
       linkType: LinkTypes.None,
     },
     "Contact Owner": {
