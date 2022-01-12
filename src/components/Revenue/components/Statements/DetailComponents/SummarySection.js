@@ -278,8 +278,8 @@ const SummarySection = ({ checkId }) => {
     if (prodSummary) {
       const buckets = prodSummary?.product?.buckets.map((b, index) => ({
         ...b,
-        grossOwnerVolume: b.grossOwnerVolume ? (Math.round(get(b, "grossOwnerVolume.value") * 100) / 100).toFixed(2) : "-",
-        grossPropertyVolume: b.grossPropertyVolume ? (Math.round(get(b, "grossPropertyVolume.value") * 100) / 100).toFixed(2) : "-",
+        grsProd: b.grossPropertyVolume ? (Math.round(get(b, "grossPropertyVolume.value") * 100) / 100).toFixed(2) : "-",
+        netProd: b.grossOwnerVolume ? (Math.round(get(b, "grossOwnerVolume.value") * 100) / 100).toFixed(2) : "-",
         netRevenue: b.netRevenue ? (Math.round(get(b, "netRevenue.value") * 100) / 100).toFixed(2) : "-",
         avgPrice: b.avgPrice ? (Math.round(get(b, "avgPrice.value") * 100) / 100).toFixed(2) : "-",
       }));
@@ -416,10 +416,10 @@ const SummarySection = ({ checkId }) => {
                       </Grid>
 
                       <Grid item xs={3}>
-                        {product.grossPropertyVolume}
+                        {product.grsProd}
                       </Grid>
                       <Grid item xs={2}>
-                        {product.grossOwnerVolume}
+                        {product.netProd}
                       </Grid>
                       <Grid item xs={2}>
                         {product.netRevenue}
