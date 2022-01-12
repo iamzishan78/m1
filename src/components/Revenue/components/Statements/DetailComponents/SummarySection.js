@@ -278,11 +278,18 @@ const SummarySection = ({ checkId }) => {
     if (prodSummary) {
       const buckets = prodSummary?.product?.buckets.map((b, index) => ({
         ...b,
-        grossOwnerVolume: b.grossOwnerVolume ? get(b, "grossOwnerVolume.value").toFixed(2) : "-",
-        grossPropertyVolume: b.grossPropertyVolume ? get(b, "grossPropertyVolume.value").toFixed(2) : "-",
-        netRevenue: b.netRevenue ? get(b, "netRevenue.value").toFixed(2) : "-",
-        avgPrice: b.avgPrice ? get(b, "avgPrice.value").toFixed(2) : "-",
+        grossOwnerVolume: b.grossOwnerVolume ? (Math.round(get(b, "grossOwnerVolume.value") * 100) / 100).toFixed(2) : "-",
+        grossPropertyVolume: b.grossPropertyVolume ? (Math.round(get(b, "grossPropertyVolume.value") * 100) / 100).toFixed(2) : "-",
+        netRevenue: b.netRevenue ? (Math.round(get(b, "netRevenue.value") * 100) / 100).toFixed(2) : "-",
+        avgPrice: b.avgPrice ? (Math.round(get(b, "avgPrice.value") * 100) / 100).toFixed(2) : "-",
       }));
+      buckets.push({
+        key: "OTHER",
+        grossOwnerVolume: "-",
+        grossPropertyVolume: "-",
+        netRevenue: "-",
+        avgPrice: "-",
+      });
       setProductSummaryDetails(buckets);
     }
   }, [prodSummary]);
@@ -409,10 +416,10 @@ const SummarySection = ({ checkId }) => {
                       </Grid>
 
                       <Grid item xs={3}>
-                        {product.grossOwnerVolume}
+                        {product.grossPropertyVolume}
                       </Grid>
                       <Grid item xs={2}>
-                        {product.grossPropertyVolume}
+                        {product.grossOwnerVolume}
                       </Grid>
                       <Grid item xs={2}>
                         {product.netRevenue}
