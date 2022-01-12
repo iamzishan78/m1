@@ -29,11 +29,13 @@ import AlertsProvider from "./components/Alerts/AlertsProvider";
 import DashboardProvider from "./components/Dashboard/DashboardProvider";
 import StudioProvider from "./components/Studio/StudioProvider";
 import BulkUpload from "./components/BulkUpload/BulkUpload";
-import AgreementProvider from "./components/Agreement/AgreementProvider";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
 import ContactBulkProgress from "./components/BulkUpload/ContactBulkProgress";
-
+import RevenueProvider from "components/Revenue/RevenueProvider";
+import Land from "components/Land";
+import AgreementProvider from "./components/Land/components/Agreements/AgreementProvider";
+import AgreementDetailProvider from "./components/Land/components/AgreementDetail/AgreementDetailProvider";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 import { CircularProgress } from "@material-ui/core";
@@ -188,8 +190,8 @@ const PrivateRoute = ({ component, ...options }) => {
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now() && apolloClient
       ? component
       : (() => {
-        return Login;
-      })();
+          return Login;
+        })();
 
   return (
     <div>
@@ -301,6 +303,7 @@ function App() {
           setApolloClient={updateApolloClient}
           setApolloClientEndpoint={updateApolloClientEndpoint}
           setApolloClientToken={updateApolloClientToken}
+          
         />
         {apolloClient ? (
           <ApolloProvider client={apolloClient}>
@@ -308,43 +311,60 @@ function App() {
               <MuiPickersUtilsProvider utils={MomentUtils}>
                 <ContactBulkProgress />
                 <ConnectedRouter history={history}>
-                <DndProvider backend={HTML5Backend}>
-                  <Switch>
-                    <NavigationProvider>
-                      <PrivateRoute title="Map" exact path={["/", "/map/:type/:paramId", "/map/:type/:paramId/:lati/:longi"]} component={MapProvider} />
-                      <Route exact path="/signup" component={SignUpCard} />
-                      <Route exact path="/forgotpassword" component={ForgotPassword} />
-                      <PrivateRoute exact path="/track" component={TrackProvider} />
-                      <PrivateRoute exact path="/flow" component={TransactProvider} />
-                      <PrivateRoute exact path="/flow/:pipelineId" component={TransactProvider} />
-                      <PrivateRoute exact path="/flow/:pipelineId/lane/:laneId/card/:cardId/" component={TransactProvider} />
-                      <PrivateRoute exact path="/documents" component={DocumentProvider} />
-                      <PrivateRoute exact path="/documents/:documentId/view" component={DocumentProvider} />
-                      <PrivateRoute exact path="/activities" component={ActivitiesProvider} />
-                      <PrivateRoute exact path="/activities/:eventId" component={ActivitiesProvider} />
-                      <PrivateRoute exact path="/title" component={TitleOpinionProvider} />
-                      <PrivateRoute exact path="/alerts" component={AlertsProvider} />
-                      <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider} />
-                      <PrivateRoute title="Contacts" exact path="/contacts" component={ContactsProvider} />
-                      <PrivateRoute exact path="/contact/details/:contactId" component={ContactDetailsProvider} />
-                      <PrivateRoute exact path="/contact/details/:contactId/detailedInformation" component={ContactDetailedInfoProvider} />
-                      <PrivateRoute exact path="/contact/details/:contactId/recentActivites" component={ContactRecentActivitiesProvider} />
-                      <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
-                      <PrivateRoute exact path="/contact/details/:contactId/wells" component={ContactWellInterestProvider} />
-                      <PrivateRoute exact path="/contact/details/:contactId/parcels" component={ContactParcelsInterestProvider} />
-                      <PrivateRoute
-                        exact
-                        path="/contact/details/:contactId/parcels/:parcelId"
-                        component={ContactParcelsInterestDetailsProvider}
-                      />
-                      <PrivateRoute exact path="/contact/details/:contactId/deals" component={ContactDealsProvider} />
-                      <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
-                      <PrivateRoute exact path="/studio" component={StudioProvider} />
-                      <PrivateRoute title="Bulk Upload" exact path="/bulkupload" component={BulkUpload} />
-                      <PrivateRoute exact path="/agreement" component={AgreementProvider} />
-                      {/* <Route component={NotFoundRedirect} /> */}
-                    </NavigationProvider>
-                  </Switch>
+                  <DndProvider backend={HTML5Backend}>
+                    <Switch>
+                      <NavigationProvider>
+                        <PrivateRoute
+                          title="Map"
+                          exact
+                          path={["/", "/map/:type/:paramId", "/map/:type/:paramId/:lati/:longi"]}
+                          component={MapProvider}
+                        />
+                        <Route exact path="/signup" component={SignUpCard} />
+                        <Route exact path="/forgotpassword" component={ForgotPassword} />
+                        <PrivateRoute exact path="/track" component={TrackProvider} />
+                        <PrivateRoute exact path="/flow" component={TransactProvider} />
+                        <PrivateRoute exact path="/flow/:pipelineId" component={TransactProvider} />
+                        <PrivateRoute exact path="/flow/:pipelineId/lane/:laneId/card/:cardId/" component={TransactProvider} />
+                        <PrivateRoute exact path="/documents" component={DocumentProvider} />
+                        <PrivateRoute exact path="/documents/:documentId/view" component={DocumentProvider} />
+                        <PrivateRoute exact path="/activities" component={ActivitiesProvider} />
+                        <PrivateRoute exact path="/activities/:eventId" component={ActivitiesProvider} />
+                        <PrivateRoute exact path="/title" component={TitleOpinionProvider} />
+                        <PrivateRoute exact path="/alerts" component={AlertsProvider} />
+                        <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider} />
+                        <PrivateRoute title="Contacts" exact path="/contacts" component={ContactsProvider} />
+                        <PrivateRoute exact path="/contact/details/:contactId" component={ContactDetailsProvider} />
+                        <PrivateRoute
+                          exact
+                          path="/contact/details/:contactId/detailedInformation"
+                          component={ContactDetailedInfoProvider}
+                        />
+                        <PrivateRoute
+                          exact
+                          path="/contact/details/:contactId/recentActivites"
+                          component={ContactRecentActivitiesProvider}
+                        />
+                        <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
+                        <PrivateRoute exact path="/contact/details/:contactId/wells" component={ContactWellInterestProvider} />
+                        <PrivateRoute exact path="/contact/details/:contactId/parcels" component={ContactParcelsInterestProvider} />
+                        <PrivateRoute
+                          exact
+                          path="/contact/details/:contactId/parcels/:parcelId"
+                          component={ContactParcelsInterestDetailsProvider}
+                        />
+                        <PrivateRoute exact path="/contact/details/:contactId/deals" component={ContactDealsProvider} />
+                        <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
+                        <PrivateRoute exact path="/studio" component={StudioProvider} />
+                        <PrivateRoute title="Bulk Upload" exact path="/bulkupload" component={BulkUpload} />
+                        <PrivateRoute exact path="/agreement" component={AgreementProvider} />
+                        <PrivateRoute path="/revenue" component={RevenueProvider} />
+                        <PrivateRoute path="/land" component={Land} />
+                        <PrivateRoute exact path="/agreements" component={AgreementProvider} />
+                        <PrivateRoute exact path="/agreement/details/:agreementId?" component={AgreementDetailProvider} />
+                        {/* <Route component={NotFoundRedirect} /> */}
+                      </NavigationProvider>
+                    </Switch>
                   </DndProvider>
                 </ConnectedRouter>
               </MuiPickersUtilsProvider>

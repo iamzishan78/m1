@@ -502,7 +502,6 @@ function ExpandableCard(props) {
     </div>
   }
 
-
   return (
     <React.Fragment>
 

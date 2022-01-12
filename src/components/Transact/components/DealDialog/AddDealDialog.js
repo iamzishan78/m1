@@ -330,19 +330,19 @@ function AddDealDialog(props) {
     fetchPolicy: "no-cache",
   });
 
-  const [addContact, { data: addContactData, loading: addContactLoading }] = useMutation(ADDCONTACT);
+  const [addContact, { data: addContactData, called: addContactCalled, loading: addContactLoading }] = useMutation(ADDCONTACT);
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
   });
 
-  const [addDeal, { loading: addDealLoading }] = useMutation(ADDDEAL);
+  const [addDeal, { data: dealData, loading: addDealLoading }] = useMutation(ADDDEAL);
   const [createDealDefaultSettings] = useMutation(CREATE_DEAL_DEFAULT_SETTINGS);
   const [updateDeal, { loading: updateDealLoading }] = useMutation(UPDATEDEAL);
   const [upsertDealDescriptor, { loading: upsertDealDescriptorLoading }] = useMutation(UPSERTDEALDESCRIPTOR);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
   const [updateStageDealDescriptor, { data: updatedStageDealDescriptor }] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
-  const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
+  const [updateStageDealDescriptors, { data: updatedStageDealDescriptors }] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
 
   const [getContact, { data: cData }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
@@ -391,6 +391,59 @@ function AddDealDialog(props) {
       variables: { id: stateApp.activeDeal?.cardId },
     });
   }, [getDeal]);
+
+  // For creating a deal
+  useEffect(() => {
+    if (dealData?.addDeal?.deal) {
+      const {
+        addDeal: { deal },
+      } = dealData;
+      const defaultSettings = get(dealSettings, "dealSettings", []);
+      if (defaultSettings.length > 0) {
+        // deal default settings
+        const stageDealDescriptors = defaultSettings.map((setting) => ({
+          //? creating stage deal descriptors json
+          relatedObject: setting._id,
+          descriptorObject: deal._id,
+          pipeline: pipelineId,
+          approver: get(setting, "stageDealDescriptor.descriptorObject.assignee", null),
+          tasks: setting.tasks,
+          isCurrent: setting._id === stageId,
+        }));
+        // api call for default setting
+        createDealDefaultSettings({
+          variables: {
+            stageDealDescriptors,
+            dealId: deal._id,
+          },
+        }).then((result) => {
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            activeDeal: deal,
+          }));
+          setStateTransact((stateTransact) => ({
+            ...stateTransact,
+            dealToCreate: {},
+          }));
+          getDealSettings({
+            variables: {
+              dealId: deal._id,
+              pipelineId: pipelineId,
+            },
+          });
+        });
+      } else {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          activeDeal: deal,
+        }));
+        setStateTransact((stateTransact) => ({
+          ...stateTransact,
+          dealToCreate: {},
+        }));
+      }
+    }
+  }, [dealData]);
 
   useEffect(() => {
     if (stateApp.activeDeal && pipelineId) {
@@ -862,7 +915,21 @@ function AddDealDialog(props) {
         }
 
         ////////////////////////////////////////////
-        if (allPromises.length > 0) Promise.all(allPromises);
+        if (allPromises.length > 0)
+          Promise.all(allPromises)
+            .then((values) => {
+              // if (success === true)
+              // 	dispatch(
+              // 		showSuccessMessage("The Deal was successfully updated.")
+              // 	);
+              // else
+              // 	dispatch(
+              // 		showErrorMessage("An error occurred during the update.")
+              // 	);
+            })
+            .catch((reason) => {
+              console.log(reason);
+            });
       } else if (!addDealLoading) {
         //// add a new deal
         let variables = {
@@ -910,56 +977,6 @@ function AddDealDialog(props) {
             "openDeals",
           ],
           awaitRefetchQueries: true,
-        }).then(({ data }) => {
-          if (data?.addDeal?.deal) {
-            const {
-              addDeal: { deal },
-            } = data;
-            const defaultSettings = get(dealSettings, "dealSettings", []);
-            if (defaultSettings.length > 0) {
-              // deal default settings
-              const stageDealDescriptors = defaultSettings.map((setting) => ({
-                //? creating stage deal descriptors json
-                relatedObject: setting._id,
-                descriptorObject: deal._id,
-                pipeline: pipelineId,
-                approver: get(setting, "stageDealDescriptor.descriptorObject.assignee", null),
-                tasks: setting.tasks,
-                isCurrent: setting._id === stageId,
-              }));
-              // api call for default setting
-              createDealDefaultSettings({
-                variables: {
-                  stageDealDescriptors,
-                  dealId: deal._id,
-                },
-              }).then((result) => {
-                setStateApp((stateApp) => ({
-                  ...stateApp,
-                  activeDeal: deal,
-                }));
-                setStateTransact((stateTransact) => ({
-                  ...stateTransact,
-                  dealToCreate: {},
-                }));
-                getDealSettings({
-                  variables: {
-                    dealId: deal._id,
-                    pipelineId: pipelineId,
-                  },
-                });
-              });
-            } else {
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                activeDeal: deal,
-              }));
-              setStateTransact((stateTransact) => ({
-                ...stateTransact,
-                dealToCreate: {},
-              }));
-            }
-          }
         });
       }
     }
@@ -1137,6 +1154,14 @@ function AddDealDialog(props) {
     setShowExpandableCard(true);
   };
 
+  const handleCloseExpandableCard = () => {
+    setShowExpandableCard(false);
+    setStateApp((state) => ({
+      ...state,
+      contactUpdated: null,
+    }));
+  };
+
   const setUploadedFileData = (uploadedfile) => {
     setUploadedFiles([...uploadedFiles, uploadedfile]);
   };
@@ -1184,7 +1209,7 @@ function AddDealDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
@@ -1222,7 +1247,7 @@ function AddDealDialog(props) {
             <div className={classes.contentRoot}>
               <Drawer dealSettingsNumber={getSubtaskNumber()} />
               {stateApp.transactBarView !== "Deal" &&
-              (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
+                (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>
               ) : (
                 <div className={classes.inputFieldRoot}>

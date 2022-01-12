@@ -118,6 +118,10 @@ const categoryOptions = [
     value: "Flow",
   },
   {
+    label: "Check",
+    value: "Check",
+  },
+  {
     label: "All (contacts, docs, flow, etc.)",
     value: "All",
   },
@@ -161,8 +165,8 @@ const MetaField = ({ category, columns }) => {
     }
   }, [stateApp.selectedMeta]);
 
-  const [addMetaData, {}] = useMutation(ADD_META_DATA);
-  const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
+  const [addMetaData, { }] = useMutation(ADD_META_DATA);
+  const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
   const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(
     GET_ALL_LIBRARY_META_DATA
   );
@@ -222,8 +226,8 @@ const MetaField = ({ category, columns }) => {
               values.type === "dropdown"
                 ? `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}`
                 : `custom_data.${values.title
-                    .replace(/ /g, "_")
-                    .toLowerCase()}`,
+                  .replace(/ /g, "_")
+                  .toLowerCase()}`,
             options: {
               display: true,
               filter: true,
@@ -403,7 +407,7 @@ const MetaField = ({ category, columns }) => {
                             menu: (provided) => ({ ...provided, zIndex: 9999 }),
                           }}
                           value={categoryOptions.find(
-                            (op) => op.value === props.value
+                            (op) => op.value === props.category
                           )}
                           menuPlacement="auto"
                           options={categoryOptions}

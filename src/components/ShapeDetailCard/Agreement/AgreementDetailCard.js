@@ -27,7 +27,6 @@ import { detailCardStyles } from "../style";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 
-
 export default function AgreementDetailCard(props) {
   const dispatch = useDispatch();
   const [selectedTab, setSelectedTab] = useState(props.selectTabIndex || 0);
