@@ -461,9 +461,13 @@ export default function ContactDetailCard(props) {
   const checkModuleHistory = () => {
     const { pathHistory } = history;
     if (pathHistory.length > 0) {
-      if (pathHistory[1].includes("/map/agreements/")) {
+      if (pathHistory[1].startsWith("/map/agreements/")) {
         return true;
-      } else if (pathHistory[1].includes("/map/wells/")) {
+      } else if (pathHistory[1].startsWith("/map/wells/")) {
+        return true;
+      } else if (pathHistory[1].startsWith("/map/units/")) {
+        return true;
+      } else if (pathHistory[1].startsWith("/map/parcels/")) {
         return true;
       }
     }
@@ -607,7 +611,7 @@ export default function ContactDetailCard(props) {
                 }}
                 color="inherit"
                 onClick={() => history.goBack()}
-                // onClick={() => window.location.replace(history.pathHistory[1])}
+              // onClick={() => window.location.replace(history.pathHistory[1])}
               >
                 Map
               </Link>
@@ -1041,7 +1045,7 @@ export default function ContactDetailCard(props) {
                       }}
                       color="inherit"
                       onClick={() => history.goBack()}
-                      // onClick={() => window.location.replace(history.pathHistory[1])}
+                    // onClick={() => window.location.replace(history.pathHistory[1])}
                     >
                       Map
                     </Link>
