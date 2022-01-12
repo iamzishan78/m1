@@ -4,5 +4,7 @@ export const FEATURES = {
     IDICORE: 'idiCORE',
     MAPSHAPEEXPORT: 'mapShapeExport',
     LANDMODULE: 'landModule',
-    REVENUEMODULE: 'revenueModule'
+    REVENUEMODULE: 'revenueModule',
+    LANDPORTFOLIO: 'landPortfolio',
+    LANDREPORTINGGROUPS: 'landReportingGroups'
 }
