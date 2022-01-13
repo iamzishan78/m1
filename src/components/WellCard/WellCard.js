@@ -178,10 +178,10 @@ function WellCard() {
     { loading: loadingWellSummary, data: dataWellSummary },
   ] = useLazyQuery(WELLSUMMARYDETAILQUERY);
 
-  const [
-    getTenantWell,
-    { loading: loadingTenantWell, data: dataTenantWell },
-  ] = useLazyQuery(TENANTWELL);
+  // const [
+  //   getTenantWell,
+  //   { loading: loadingTenantWell, data: dataTenantWell },
+  // ] = useLazyQuery(TENANTWELL);
 
   const [getWellFilesCount, { data: dataWellFiles }] = useLazyQuery(GET_PARCELS_FILES_COUNT, { fetchPolicy: "cache-and-network" });
   const documentCount = dataWellFiles?.getParcelFilesCount || 0;
@@ -203,35 +203,37 @@ function WellCard() {
     getWellSummaryDetail({
       variables: { id: stateApp.selectedWell.id },
     });
-    getTenantWell({
-      variables: { globalWellId: stateApp.selectedWell.id },
-    })
+    // getTenantWell({
+    //   variables: { globalWellId: stateApp.selectedWell.id },
+    // })
   }, [stateApp.selectedWell]);
 
+  // console.log('selectedWell', stateApp.selectedWell);
+  
   useEffect(() => {
     if (dataWellSummary) {
       setWellData(dataWellSummary.wellSummaryDetail[0]);
       setStateWellCard((state) => ({
         ...state,
-        selectedWell: dataWellSummary.wellSummaryDetail[0],
+        selectedWell: {...dataWellSummary.wellSummaryDetail[0], tenantWellId : stateApp.selectedWell?.tenantWellId }
       }));
     } else {
       setWellData(null);
     }
   }, [dataWellSummary]);
 
-  useEffect(() => {
-    if (dataTenantWell?.tenantWell?.tenantWellId &&
-      stateApp?.selectedWell?.tenantWellId !== dataTenantWell?.tenantWell?.tenantWellId) {
-      setStateApp((state) => ({
-        ...state,
-        selectedWell: {
-          ...state.selectedWell,
-          tenantWellId: dataTenantWell?.tenantWell?.tenantWellId
-        }
-      }));
-    }
-  }, [dataTenantWell]);
+  // useEffect(() => {
+  //   if (dataTenantWell?.tenantWell?.tenantWellId &&
+  //     stateApp?.selectedWell?.tenantWellId !== dataTenantWell?.tenantWell?.tenantWellId) {
+  //     setStateApp((state) => ({
+  //       ...state,
+  //       selectedWell: {
+  //         ...state.selectedWell,
+  //         tenantWellId: dataTenantWell?.tenantWell?.tenantWellId
+  //       }
+  //     }));
+  //   }
+  // }, [dataTenantWell]);
 
   useEffect(() => {
     if (stateApp?.selectedWell?.tenantWellId)

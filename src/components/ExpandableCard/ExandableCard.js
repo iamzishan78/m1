@@ -296,7 +296,7 @@ function ExpandableCard(props) {
 
     if (props.targetLabel === "well" || props.targetLabel === "expandedWell") {
       const newPath = `/map/wells/${stateApp.selectedWell.id}`;
-      history.location.pathname !== newPath && history.replace(newPath)
+      history.location.pathname !== newPath && history.replace(newPath, {...history.location.state})
       setStateApp((state) => ({ ...state, wellDetailCardOpen: true, popupOpen: false }));
 
 
@@ -535,7 +535,7 @@ function ExpandableCard(props) {
           onClose={() => setOpenBugModal(false)}
         />
 
-        {(history.pathHistory[1] === '/documents' && history.pathHistory[0] !== '/') && <DisplayBreadCrums />}
+        {(history.location?.state?.showWellBreadcrumb) && <DisplayBreadCrums />}
 
         {(history.location?.state?.showAgreementBreadcrumb || history.location?.state?.showTractsBreadcrumb) && (
           <Grid container spacing={2} alignItems="center" className={classes.breadcrumb}>

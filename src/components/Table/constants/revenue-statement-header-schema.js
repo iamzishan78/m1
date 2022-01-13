@@ -132,28 +132,6 @@ const RevenueStatementHeadCells = [
       ],
     }
   },
-  {
-    name: "sourceId", label: "Check ID", esKey: 'sourceId.keyword', options: { sort: true, filter: true }
-},
-{
-    name: "status", label: "Status", esKey: 'status.keyword', options: { sort: true, filter: true }
-},
-// {
-//     name: "tags", label: "Tags", esKey: 'tags.tag.keyword', options: { sort: true, filter: true }
-// },
-{
-    name: "commentsCounter",
-    label: " ",
-    options: {
-        dbName: "comments.comment",
-        filter: false,
-        searchable: false,
-        sort: true,
-        download: false,
-        print: false,
-        viewColumns: false,
-    }
-    },
 ];
 
 export default RevenueStatementHeadCells;
