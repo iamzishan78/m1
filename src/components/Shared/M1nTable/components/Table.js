@@ -1992,19 +1992,20 @@ function SubTable(props) {
                               justifyContent: "left",
                             }}
                             onClick={(e) => {
+                              debugger
                               e.stopPropagation();
                               const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
                               if (type === "pdf") {
                                 if (props.addAble.type === "document") {
                                   window.history.pushState("", "", `/documents/${row_line._id}/view`);
                                 }
-                                const selectedRow = rows.find((row) => row._id === row_line._id);
+                                // const selectedRow = rows.find((row) => row._id === row_line._id);
                                 setStateApp((state) => ({
                                   ...state,
-                                  pdfView: selectedRow,
+                                  pdfView: row_line,
                                   viewDoc: {
-                                    uri: selectedRow.viewToken,
-                                    name: selectedRow.fileName,
+                                    uri: row_line.viewToken,
+                                    name: row_line.fileName,
                                   },
                                 }));
                               } else {
