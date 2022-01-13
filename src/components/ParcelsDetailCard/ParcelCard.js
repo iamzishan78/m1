@@ -128,7 +128,7 @@ export default function ParcelCard(props) {
 
   // queries 
   const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", skip: true });
-  const [getParcelFilesCount, { data: dataParcelFiles }] = useLazyQuery(GET_PARCELS_FILES_COUNT, { fetchPolicy: "cache-and-network"});
+  const [getParcelFilesCount, { data: dataParcelFiles }] = useLazyQuery(GET_PARCELS_FILES_COUNT, { fetchPolicy: "cache-and-network" });
   const documentCount = dataParcelFiles?.getParcelFilesCount || 0;
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER,);
 
@@ -179,7 +179,7 @@ export default function ParcelCard(props) {
 
   useEffect(() => {
     if (parcelObj)
-    getParcelFilesCount({
+      getParcelFilesCount({
         variables: {
           relatedObjectId: parcelObj?._id || stateApp.user.mongoId,
           relatedObjectType: "Parcel",
@@ -222,7 +222,7 @@ export default function ParcelCard(props) {
           <CardActions classes={{ root: classes.cardAction }}>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails(2) }}
+              onClick={() => handleOpenDetails(3)}
             >
               <div className={classes.iconContainer}>
                 <WellIcon
@@ -249,7 +249,7 @@ export default function ParcelCard(props) {
             </Button>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails(0) }}
+              onClick={() => handleOpenDetails(1)}
             >
               <div className={classes.iconContainer}>
                 <OwnershipIcon
@@ -275,7 +275,7 @@ export default function ParcelCard(props) {
             </Button>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails(3) }}
+              onClick={() => handleOpenDetails(4)}
             >
               <div className={classes.iconContainer}>
                 <DescriptionIcon
@@ -302,7 +302,7 @@ export default function ParcelCard(props) {
             </Button>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails() }}
+              onClick={() => handleOpenDetails(0)}
             >
               <div className={classes.iconContainer}>
                 <LayerIcon
