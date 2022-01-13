@@ -331,7 +331,7 @@ function ExpandableCard(props) {
 
   const handleClose = () => {
     if (parent === "map") {
-      if (stateApp.selectedShape.type === 'agreement' && !stateApp?.selectedShape?.feature?.properties?.agreementNumber) {
+      if (stateApp?.selectedShape?.type === 'agreement' && !stateApp?.selectedShape?.feature?.properties?.agreementNumber) {
         dispatch(showInfoMessage("Agreement Number is required"));
         return
       }
