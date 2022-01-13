@@ -31,9 +31,10 @@ import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { addCustomShapeProperties, drawBoundary } from "../../components/DrawShapes/drawShapesHelpers";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
-import { 
-  toggleMapGridCardAtived, 
-  setMapGridCardState } from "actions";
+import {
+  toggleMapGridCardAtived,
+  setMapGridCardState
+} from "actions";
 import { gql } from "@apollo/client";
 import { setFeatureProperty, drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
 import { shapeTypeLayers } from "components/Shared/functions/shapeLayer";
@@ -149,6 +150,17 @@ const ShapeActionsPopup = (props) => {
       expandedCard: true,
     }));
   };
+
+  useEffect(() => {
+    if (stateApp?.editParcelAndShape) {
+      actionEdit()
+      setStateApp((state) => ({
+        ...state,
+        editParcelAndShape: false,
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateApp?.editParcelAndShape]);
 
   useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.email) {
@@ -605,13 +617,13 @@ const ShapeActionsPopup = (props) => {
   const convertMenuAction = (action) => {
     setShowConvertMenu(false)
     const area = parseInt(calculateLandArea().replace(/,/g, ''));
-    if(area > 500000){
+    if (area > 500000) {
       setLimitExceed(true);
-    }else if(action === 'convert'){
+    } else if (action === 'convert') {
       setConvertTaxOwnerModal(true);
-    }else if(action === 'export'){
+    } else if (action === 'export') {
       setExportCSVModal(true);
-    } 
+    }
   }
 
   const enableEditOnly = stateApp.featureToEdit?.layer?.id === "parcel" || shapeTypeLayers.includes(stateApp.featureToEdit?.layer?.id)
@@ -659,42 +671,42 @@ const ShapeActionsPopup = (props) => {
           </Grid>
         </MenuItem>
         <MenuItem onClick={() => convertMenuAction('export')}>
-        <Grid container spacing={0}>
+          <Grid container spacing={0}>
             <Grid container item xs={2} alignItems="center">
-              <CloudDownloadOutlinedIcon className={classes.downloadIcon}/>
+              <CloudDownloadOutlinedIcon className={classes.downloadIcon} />
             </Grid>
             <Grid container item xs={10} alignItems="center">
-            <span className={classes.convertMenuColor} >Export selected data to CSV</span>
+              <span className={classes.convertMenuColor} >Export selected data to CSV</span>
             </Grid>
           </Grid>
         </MenuItem>
       </Menu>
-        <Menu
-          id="simple-menu"
-          elevation={0}
-          getContentAnchorEl={null}
-          anchorEl={agreementAnchorEl}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "right"
-          }}
-          PaperProps={{
-            style: {
-              left: '10%',
-              transform: 'translateX(105%) translateY(-10%)',
-            }
-          }}
-          open={Boolean(agreementAnchorEl)}
-          onClose={() => setAgreementAnchorEl(null)}
-          className={classes.parcelPopover}
-        >
-          <MenuItem disabled>Agreement Type</MenuItem>
-          <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'contract')}>Contract</MenuItem>
-          <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'deed')}>Deed</MenuItem>
-          <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'lease')}>Lease</MenuItem>
-          <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'surface')}>Surface/Row</MenuItem>
-        </Menu>
-      
+      <Menu
+        id="simple-menu"
+        elevation={0}
+        getContentAnchorEl={null}
+        anchorEl={agreementAnchorEl}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right"
+        }}
+        PaperProps={{
+          style: {
+            left: '10%',
+            transform: 'translateX(105%) translateY(-10%)',
+          }
+        }}
+        open={Boolean(agreementAnchorEl)}
+        onClose={() => setAgreementAnchorEl(null)}
+        className={classes.parcelPopover}
+      >
+        <MenuItem disabled>Agreement Type</MenuItem>
+        <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'contract')}>Contract</MenuItem>
+        <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'deed')}>Deed</MenuItem>
+        <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'lease')}>Lease</MenuItem>
+        <MenuItem onClick={() => saveAndOpenShapeDetail('agreement', 'surface')}>Surface/Row</MenuItem>
+      </Menu>
+
       <Fragment>
         <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span> {calculateLandArea()}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
@@ -841,13 +853,13 @@ const ShapeActionsPopup = (props) => {
         <ConvertTaxOwnerToContactContainer open={convertTaxOwnerModal} onClose={() => {
           setConvertTaxOwnerModal(false)
           dispatch(resetShapeOwnerAction())
-        }}/>
+        }} />
       )}
       {exportCSVModal && (
         <ExportWellsOwnersContainer open={exportCSVModal} onClose={() => {
           setExportCSVModal(false)
           dispatch(resetShapeOwnerAction())
-        }}/>
+        }} />
       )}
     </Fragment>
   );
