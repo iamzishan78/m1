@@ -96,6 +96,7 @@ const useStyles = makeStyles((theme) => ({
 
 const InterestDetailForm = (props) => {
   const classes = useStyles(props);
+  const { selectedInterest } = props;
   let history = useHistory();
   const { control, getValues, watch } = useForm();
 
@@ -130,7 +131,7 @@ const InterestDetailForm = (props) => {
             marginLeft: "5px",
           }}
         >
-          Add Interest Details
+          {selectedInterest ? 'Update' : 'Add'} Interest Details
         </Typography>
         <div className="flex alignCenter">
           <span onClick={props.onClose} className={classes.metaPanelCloseIcon}>

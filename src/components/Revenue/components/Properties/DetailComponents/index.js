@@ -21,7 +21,7 @@ import Link from "@material-ui/core/Link";
 
 import Tagger from "components/Shared/Tagger";
 import PropertyInterestDetailsSection from "./PropertyInterestDetailsSection";
-import InterestDetailForm from './InterestDetailForm'
+import InterestDetailForm from "./InterestDetailForm";
 // Components
 import HeaderSection from "./HeaderSection";
 
@@ -160,16 +160,20 @@ const StyledTab = withStyles((theme) => ({
 
 export default function DetailComponents(props) {
   const history = useHistory();
-  const propertyId = history.location.pathname.split('/')[history.location.pathname.split('/').length -1 ];
+  const propertyId =
+    history.location.pathname.split("/")[
+      history.location.pathname.split("/").length - 1
+    ];
   const [showInterestDetails, setShowInterestDetails] = useState(false);
-  const classes = useStyles({ ...props, showInterestDetails});
+  const [selectedInterest, setSelectedInterest] = useState(null);
+  const classes = useStyles({ ...props, showInterestDetails });
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
 
   // const [getPropertyDetails, { data: propertyData }] = useLazyQuery(GET_PROPERTY_DETAILS, {
   //   fetchPolicy: `network-only`,
   // });
-  
+
   useEffect(() => {
     selectedTabRef.current &&
       selectedTabRef.current.scrollIntoView({
@@ -305,14 +309,19 @@ export default function DetailComponents(props) {
                   <HeaderSection />
                 </div>
                 <div ref={tab === 1 ? selectedTabRef : null}>
-                  <PropertyInterestDetailsSection propertyId={propertyId} showInterestDetails={showInterestDetails} onClickAdd={() => setShowInterestDetails(true)} />
+                  <PropertyInterestDetailsSection
+                    propertyId={propertyId}
+                    setSelectedInterest={setSelectedInterest}
+                    showInterestDetails={showInterestDetails}
+                    onClickAdd={() => setShowInterestDetails(true)}
+                  />
                 </div>
               </div>
             </div>
           </div>
 
           {showInterestDetails && (
-            <InterestDetailForm onClose={() => setShowInterestDetails(false)} />
+            <InterestDetailForm selectedInterest={selectedInterest} onClose={() => setShowInterestDetails(false)} />
           )}
         </div>
       </div>
