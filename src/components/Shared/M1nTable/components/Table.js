@@ -1813,7 +1813,7 @@ function SubTable(props) {
                         ? tableMeta.rowData[1]
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
-                            : tableMeta.rowData[0];
+                          : tableMeta.rowData[0];
 
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
@@ -2065,6 +2065,20 @@ function SubTable(props) {
           case "water":
           case "allocatedWater":
           case "allocatedGas":
+          case "allocatedOil":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value, tableMeta, updateValue) => {
+                if (value) {
+                  return (
+                    <span style={{ paddingLeft: 10, paddingRight: 10 }}>{value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
+                  );
+                } else {
+                  return <span style={{ paddingLeft: 10, paddingRight: 10 }}>0</span>;
+                }
+              },
+            };
+            break;
           case "validation":
             column.options = {
               ...column.options,
@@ -2103,7 +2117,7 @@ function SubTable(props) {
                 const splitNumber = value?.split("_");
                 let styles = { ...column.style };
                 if (props.parent === "RevenuePropertiesTable" ||
-                    props.parent === "CheckDetailsTable") {
+                  props.parent === "CheckDetailsTable") {
                   styles = { ...styles, fontWeight: 600, color: "#17aadd", cursor: "pointer" };
                 }
                 return <p style={styles}>{splitNumber?.[0]}</p>;
@@ -2148,20 +2162,6 @@ function SubTable(props) {
                     )}
                   </>
                 );
-              },
-            };
-            break;
-          case "allocatedOil":
-            column.options = {
-              ...column.options,
-              customBodyRender: (value, tableMeta, updateValue) => {
-                if (value) {
-                  return (
-                    <span style={{ paddingLeft: 10, paddingRight: 10 }}>{value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
-                  );
-                } else {
-                  return <span style={{ paddingLeft: 10, paddingRight: 10 }}>0</span>;
-                }
               },
             };
             break;
