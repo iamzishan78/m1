@@ -240,7 +240,7 @@ function App() {
 
     if (!apolloClient) {
       const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions })
-      const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { batch: "true" }})
+      const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { ...fetchOptions.headers, batch: "true" }})
 
       let client = new ApolloClient({
         // uri: endpoint,
@@ -277,7 +277,7 @@ function App() {
     if (apolloClient && endpoint) {
       setApolloClient((state, props) => {
         const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions })
-        const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { batch: "true" }})
+        const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { ...fetchOptions.headers, batch: "true" }})
 
         return new ApolloClient({
           // ...state.link.options,
