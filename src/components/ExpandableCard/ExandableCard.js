@@ -489,6 +489,7 @@ function ExpandableCard(props) {
       currentFeature: state.selectedParcel?.feature || state.selectedShape?.feature,
       featureToEdit: state.selectedParcel?.feature || state.selectedShape?.feature,
       openDrawShapesControl: true,
+      editParcelAndShape: true,
       editDraw: true,
     }));
     handleClose();
