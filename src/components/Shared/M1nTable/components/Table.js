@@ -1992,7 +1992,6 @@ function SubTable(props) {
                               justifyContent: "left",
                             }}
                             onClick={(e) => {
-                              debugger
                               e.stopPropagation();
                               const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
                               if (type === "pdf") {
