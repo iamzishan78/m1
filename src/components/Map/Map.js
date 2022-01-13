@@ -438,8 +438,10 @@ function Map({ type, paramId, lati, longi }) {
       if (currentFeature?.Id) currentFeature.id = currentFeature.Id;
       setStateApp({ ...stateApp, selectedWell: currentFeature, selectedWellId: paramId.toLowerCase(), popupOpen: false, expandedCard: true });
       setShowExpandableCard(true);
+      if (map) {
         findBoundsMap([currentFeature.geoJSON], map);
         drawWellBoundary(map, [currentFeature.Longitude, currentFeature.Latitude]);
+      }
       return;
     }
     // if (!stateApp[keys[type]] || paramId !== stateApp[keys[type]]?.id) {
