@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
 import { heatLayers, baseMapLayers } from "./LayerConfig";
 
-const AppContext = createContext([{}, () => {}]);
+const AppContext = createContext([{}, () => { }]);
 
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
@@ -123,6 +123,7 @@ const AppProvider = (props) => {
     currentFeature: undefined,
     wellListFromSearch: [],
     wellListFromTagsFilter: [],
+    jobType: null,
     m1neralHeaders: [],
     mappedHeadersFromCSV: [],
     viewportWells: null,
@@ -143,12 +144,15 @@ const AppProvider = (props) => {
     contactSearchQuery: "",
     documentSearchQuery: "",
     isContactSearching: false,
+    landSearchQuery: "",
+    isLandSearching: false,
     viewDoc: null,
     pdfView: null,
     selectedAgreement: null,
     bulkUpload: false,
     selectedMeta: null,
     selectedView: null,
+    revenueSearchQuery: "",
 
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
@@ -191,7 +195,7 @@ const AppProvider = (props) => {
       if (tenantName) {
         let tenant = tenantsCredentials(tenantName);
         tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
-        tenant.apolloClientEndpoint = isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
+        tenant.apolloClientEndpoint = isDev && tenantName === "localhost" ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
         let myMSALObjInt = MSALObj(tenant);
         setStateApp((state, props) => {
           return {

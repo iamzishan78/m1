@@ -155,15 +155,15 @@ export default function MapControls(props) {
     }));
 
     // unselecting the grids
-    const featuresList = map.getSource("abstract_geo_source")?._data?.features || [];
+    const featuresList = map?.getSource("abstract_geo_source")?._data?.features || [];
     for (let i = 0; i < featuresList.length; i++) {
       const id = featuresList[i].properties.Id;
       map.setFeatureState({ source: "abstract_geo_source", id: id }, { click: false });
     }
 
     // Removing layer of AOI Label
-    if (stateApp.map.getLayer("aoi_label_layer")) {
-      stateApp.map.removeLayer("aoi_label_layer");
+    if (stateApp.map?.getLayer("aoi_label_layer")) {
+      stateApp.map?.removeLayer("aoi_label_layer");
     }
     setStateApp((state) => ({
       ...state,
@@ -255,7 +255,7 @@ export default function MapControls(props) {
       toggleZoomOut: action === "zoomout" ? !stateApp.toggleZoomOut : stateApp.toggleZoomOut,
     }));
 
-    if (stateApp.draw.getMode() !== "simple_select") {
+    if (stateApp.draw && stateApp.draw.getMode() !== "simple_select") {
       setStateApp({ ...stateApp, editDraw: false });
       stateApp.draw.changeMode("simple_select");
     }

@@ -102,6 +102,7 @@ export const useStyles = makeStyles((theme) => ({
     width: props.user ? "calc(100% - 52px)" : "calc(100% - 0px)",
     position: "absolute",
     left: props.user ? "52px" : "0px",
+    height: "100%",
   }),
   grow1: {
     flexGrow: 1,
@@ -368,23 +369,6 @@ export const useStyles = makeStyles((theme) => ({
   badge: {
     backgroundColor: "red",
   },
-  userMenu: {
-    "& .MuiPaper-rounded": {
-      borderRadius: "0px",
-    },
-  },
-  userMenuItem: {
-    padding: 5,
-    paddingLeft: 35,
-    width: "260px",
-    color: "#1daee1",
-  },
-  userTenantTitle: {
-    padding: 10,
-    paddingBottom: 15,
-    width: "260px",
-    color: "#1daee1",
-  },
   actionWrapper: {
     flexGrow: 1,
     display: "flex",
@@ -462,6 +446,9 @@ export const useStyles = makeStyles((theme) => ({
     marginRight: 12,
     border: "1px solid #263451",
     borderRadius: "5px",
+    "& svg": {
+      fontSize: "1.5rem",
+    },
   },
   sideNavText: {
     flex: 2,
