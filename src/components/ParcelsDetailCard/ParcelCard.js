@@ -222,7 +222,7 @@ export default function ParcelCard(props) {
           <CardActions classes={{ root: classes.cardAction }}>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails(2) }}
+              onClick={() => { handleOpenDetails(3) }}
             >
               <div className={classes.iconContainer}>
                 <WellIcon
@@ -249,7 +249,7 @@ export default function ParcelCard(props) {
             </Button>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails(0) }}
+              onClick={() => { handleOpenDetails(1) }}
             >
               <div className={classes.iconContainer}>
                 <OwnershipIcon
@@ -275,7 +275,7 @@ export default function ParcelCard(props) {
             </Button>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails(3) }}
+              onClick={() => { handleOpenDetails(4) }}
             >
               <div className={classes.iconContainer}>
                 <DescriptionIcon
