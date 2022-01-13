@@ -315,7 +315,7 @@ const TractsHeadCells = [
     //     }
     // },
     {
-        name: "tags", label: "Tags", esKey: 'tags.keyword', options: { sort: true, filter: true }
+        name: "tags", label: "Tags", esKey: 'tags.tag.keyword', options: { sort: true, filter: true }
     },
     {
         name: "commentsCounter",
