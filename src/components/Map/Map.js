@@ -68,6 +68,7 @@ import { OWNERSQUERY } from "../../graphQL/useQueryOwners";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
 import { ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoContains";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { TENANTWELL } from "graphQL/useQueryTenantWell";
 
 // mutations
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
@@ -415,7 +416,13 @@ function Map({ type, paramId, lati, longi }) {
         sort: [],
       },
     });
-    return well.getESPaginatedList.hits[0]
+    const { data: tenantWell } = await client.query({
+      query: TENANTWELL,
+      variables: {
+         globalWellId: well.getESPaginatedList.hits[0]?.id ,
+      },
+    });
+    return { ...well.getESPaginatedList.hits[0], tenantWellId : tenantWell?.tenantWell?.tenantWellId }
   }
 
 
@@ -4628,8 +4635,8 @@ function Map({ type, paramId, lati, longi }) {
       const geoJson = makeGeoJSON(data);
       const labelGeoJson = makeLabelGeoJson(data);
 
-      map.getSource("abstract_geo_source").setData(geoJson);
-      map.getSource("abstract_label_geo_source").setData(labelGeoJson);
+      map?.getSource("abstract_geo_source").setData(geoJson);
+      map?.getSource("abstract_label_geo_source").setData(labelGeoJson);
     }
   }, [abstractData]);
 

@@ -1943,7 +1943,7 @@ function SubTable(props) {
                   const uri = row_line?.fileUrl;
 
                   return (
-                    <div className={classes.fileName}>
+                    <div style={{ minWidth: 400 }}>
                       <Grid container spacing={2} direction="row">
                         <Grid
                           item
@@ -2014,13 +2014,31 @@ function SubTable(props) {
                           >
                             <Grid container direction="column" alignItems="flex-start">
                               <Grid item>
-                                <p className={classes.clickableCell}>{value}</p>
+                                <p 
+                                  style={{
+                                    cursor: "pointer",
+                                    padding: "10px 10px 10px 10px",
+                                    position: "relative",
+                                    minWidth: "120px",
+                                    borderRadius: "7px",
+                                    color: "#17aadd",
+                                    wordBreak: "break-word",
+                                    "&:hover": {
+                                      textDecoration: "underline",
+                                    },
+                                    fontWeight: "bold",
+                                  }}>{value}</p>
                               </Grid>
                               <Grid item>
                                 {/* <p className={classes.docDateText}>{dateTime = moment.utc(row_line.dateTime).format("MM/DD/YYYY")}</p> */}
                                 {/* <p className={classes.docDateText}>{convert_date(dateTime)}</p> */}
                                 {/* <p className={classes.docDateText}>{dateTime.substring(0,8)}}</p> */}
-                                <p className={classes.docDateText}>{convert_date(dateTime)}</p>
+                                <p style={{
+                                      padding: "0px 30px 10px 10px",
+                                      marginTop: "-20px",
+                                      position: "relative",
+                                      justifyContent: "flex-end",
+                                }}>{convert_date(dateTime)}</p>
                               </Grid>
                             </Grid>
                           </div>
