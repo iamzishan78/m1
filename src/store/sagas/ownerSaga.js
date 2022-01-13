@@ -1,16 +1,11 @@
-import { call, takeLatest, put, getContext, select } from "redux-saga/effects";
+import { call, takeLatest, put, select } from "redux-saga/effects";
 import get from 'lodash/get';
 
 import Api from "api";
 import { getSelectedFeaturePolygonString } from "utils/helper";
 import { SHAPE_OWNERS } from "graphQL/useQueryPaginatedShapeOwners";
 import { SHAPEOWNERSCOUNT, SHAPEOWNERSINTERESTCOUNT } from "graphQL/useQueryShapeOwnersCount";
-import {
-  OWNERS_BY_WELL_IDS_COUNTS,
-  OWNERS_BY_WELL_IDS,
-  OWNERS_INTEREST_BY_WELL_IDS_COUNTS,
-  OWNERS_INTEREST_BY_WELL_IDS,
-} from "graphQL/useQueryOwnersByWellIds";
+import { OWNERS_BY_WELL_IDS } from "graphQL/useQueryOwnersByWellIds";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
 import { CREATE_JOB } from "graphQL/useMutationCreateJob";
@@ -60,11 +55,11 @@ function* getShapeOwnersAndCount(action) {
 
 function* getShapeOwnersAndWells(action) {
   try {
-    const { client, currentFeature, userId } = action.payload;
-    const polygon = getSelectedFeaturePolygonString(currentFeature);
+    const { client, currentFeature } = action.payload;
+    // const polygon = getSelectedFeaturePolygonString(currentFeature);
 
     const shapeWellCount = yield client.query({
-      query: GET_ES_PAGINATED_LIST, 
+      query: GET_ES_PAGINATED_LIST,
       variables: {
         esIndex: "platformData:wells",
         polygon: currentFeature?.geometry?.coordinates[0],
@@ -98,9 +93,9 @@ function* getShapeOwnersAndWells(action) {
         search: '',
         filters: [],
         // shapeOwners: get(taxOwners, 'data.data.ownersByWellIds',[]),
-        shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount',0),
+        shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount', 0),
         // shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',[]),
-        shapeInterestCount: get(shapeOwnerInterestCount, 'data.shapeOwnersInterestCount',0),
+        shapeInterestCount: get(shapeOwnerInterestCount, 'data.shapeOwnersInterestCount', 0),
         // wells: get(wells, 'data.data.getESPaginatedList.hits', []),
         wellsCount: get(shapeWellCount, 'data.getESPaginatedList.total', 0),
       })
@@ -112,7 +107,7 @@ function* getShapeOwnersAndWells(action) {
 
 function* getMapFilterShapeOwnersAndCount(action) {
   try {
-    const { currentFeature, filters, search, userId } = action.payload;
+    const { currentFeature, filters, search } = action.payload;
 
     const wellsCount = yield call(Api.fetch, GET_ES_PAGINATED_LIST, {
       esIndex: "platformData:wells",
@@ -135,20 +130,20 @@ function* getMapFilterShapeOwnersAndCount(action) {
         after: null,
       },
     });
-    const wellIds = get(wells, 'data.getESPaginatedList.hits',[]).map(
+    const wellIds = get(wells, 'data.getESPaginatedList.hits', []).map(
       (well) => well.Id
     );
 
     let taxOwners = [];
 
-    if(wellIds?.length > 0){
+    if (wellIds?.length > 0) {
       taxOwners = yield call(Api.fetch, OWNERS_BY_WELL_IDS, {
         wellIds: wellIds,
         selectedYear: "2021",
       });
     }
 
-    if(get(taxOwners,'data.errors', []).length > 0){
+    if (get(taxOwners, 'data.errors', []).length > 0) {
       yield put(showErrorMessage("Failed to fetch Tax Owners"));
     }
 
@@ -165,8 +160,8 @@ function* getMapFilterShapeOwnersAndCount(action) {
 
 function* getMapFilterShapeOwnersAndWells(action) {
   try {
-    const { client, currentFeature, filters, search, userId } = action.payload;
-    const polygon = getSelectedFeaturePolygonString(currentFeature);
+    const { client, currentFeature, filters, search } = action.payload;
+    // const polygon = getSelectedFeaturePolygonString(currentFeature);
 
     // const originalFile = await client.mutate({
     //   mutation: ADDFILE,
@@ -177,7 +172,7 @@ function* getMapFilterShapeOwnersAndWells(action) {
     // })
 
     const shapeWellCount = yield client.query({
-      query: GET_ES_PAGINATED_LIST, 
+      query: GET_ES_PAGINATED_LIST,
       variables: {
         esIndex: "platformData:wells",
         search,
@@ -217,9 +212,9 @@ function* getMapFilterShapeOwnersAndWells(action) {
         search,
         filters,
         // shapeOwners: get(taxOwners, 'data.data.ownersByWellIds',[]),
-        shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount',0),
+        shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount', 0),
         // shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',[]),
-        shapeInterestCount: get(shapeOwnerInterestCount, 'data.shapeOwnersInterestCount',0),
+        shapeInterestCount: get(shapeOwnerInterestCount, 'data.shapeOwnersInterestCount', 0),
         // wells: get(wells, 'data.data.getESPaginatedList.hits', []),
         wellsCount: get(shapeWellCount, 'data.getESPaginatedList.total', 0),
       })
@@ -231,13 +226,13 @@ function* getMapFilterShapeOwnersAndWells(action) {
 
 function* execAsyncExportJob(action) {
   try {
-    const { client, currentFeature, filters, search, userId, exportWells, exportOwners, exportOwnersInterest, setStateApp } = action.payload;
+    const { client, currentFeature, userId, exportWells, exportOwners, exportOwnersInterest, setStateApp } = action.payload;
     const ownerState = yield select((state) => state.owner);
 
     const jobInitialization = yield client.mutate({
       mutation: INITIALIZE_EXPORT_JOB,
       variables: {
-        jobName: "Shape Export", 
+        jobName: "Shape Export",
         jobType: "SHAPEEXPORT",
         requestPayload: {
           polygon: currentFeature?.geometry?.coordinates[0],
@@ -256,7 +251,7 @@ function* execAsyncExportJob(action) {
       },
     })
 
-    const shapeExportJob = yield client.mutate({
+    yield client.mutate({
       mutation: CREATE_JOB,
       variables: {
         jobId: jobInitialization?.data?.initializeExportJob?.job?._id,
