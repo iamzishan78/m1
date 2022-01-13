@@ -46,10 +46,16 @@ export default function ContactDocumentsCard(props) {
   };
 
   return contactData ? (
-    <div variant="outlined" 
-    
-    // style={{overflowY: 'scroll'}}
-    
+    <div
+      variant="outlined"
+      style={{
+        position: "absolute",
+        top: "64px",
+        height: "100%",
+        width: "100%",
+        zIndex: "50",
+      }}
+      // style={{overflowY: 'scroll'}}
     >
       <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
         <Breadcrumbs

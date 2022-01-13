@@ -64,7 +64,7 @@ const UserManagementHeadCells = [
       print: false,
       viewColumns: false,
 
-      customBodyRender: (value, tableMeta, updateValue) => {
+      customRender: (value, tableMeta, updateValue) => {
         return (
           <span style={{ padding: 10 }}>{value ? moment(value).format("MM/DD/YYYY") : ""}</span>
         );

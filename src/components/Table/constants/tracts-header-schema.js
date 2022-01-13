@@ -28,7 +28,7 @@ const TractsHeadCells = [
             sort: true, 
             filter: true,
             setCellProps: () => ({ style: { minWidth: "250px" } }),
-            customBodyRender: (value, tableMeta, updateValue) => {
+            customRender: (value, tableMeta, updateValue) => {
                 return (
                   <p
                     onClick={(e) => {
@@ -315,7 +315,7 @@ const TractsHeadCells = [
     //     }
     // },
     {
-        name: "tags", label: "Tags", esKey: 'tags.keyword', options: { sort: true, filter: true }
+        name: "tags", label: "Tags", esKey: 'tags.tag.keyword', options: { sort: true, filter: true }
     },
     {
         name: "commentsCounter",
