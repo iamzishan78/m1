@@ -36,11 +36,11 @@ const OwnersPerUnitHeadCells = [
   { name: "orri", esKey: 'orri', label: "ORRI", type: "number", options: { filter: true } },
   { name: "nri", esKey: 'nri', label: "NRI", type: "number", options: { filter: true } },
   { name: "nra", esKey: 'nra', label: "NRA", type: "number", editable: true, options: { filter: true } },
-  { name: "seller_asking_price", esKey: 'seller_asking_price', type: "number", label: "Seller Asking Price", options: { filter: true, customBodyRender: (value) => vf_currency(value) } },
-  { name: "competitor_offer_price", esKey: 'competitor_offer_price', type: "number", label: "Competitor Offer Price", options: { filter: true, customBodyRender: (value) => vf_currency(value) } },
+  { name: "seller_asking_price", esKey: 'seller_asking_price', type: "number", label: "Seller Asking Price", options: { filter: true, customRender: (value) => vf_currency(value) } },
+  { name: "competitor_offer_price", esKey: 'competitor_offer_price', type: "number", label: "Competitor Offer Price", options: { filter: true, customRender: (value) => vf_currency(value) } },
   {
     name: "offer_price", esKey: 'offer_price', label: "Offer Price", type: "number", options: {
-      filter: true, customBodyRender: (value) => vf_currency(value),
+      filter: true, customRender: (value) => vf_currency(value),
     }
   },
   {

@@ -683,7 +683,7 @@ function SubTable(props) {
   const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
 
   const [viewFile, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "no-cache",
+     fetchPolicy: "no-cache",
   });
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
@@ -1139,10 +1139,13 @@ function SubTable(props) {
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
-        if (column?.options?.customBodyRender) {
+        // WARNING! this can break components that depend on updated component state in callbacks
+        // without using refs we HAVE to re-create customBodyRender callback functions every render
+        // or component state is stale
+        if (column?.options?.customRender) {
           column.options = {
             ...column.options,
-            customBodyRender: column.options.customBodyRender,
+            customBodyRender: column.options.customRender,
           };
           return;
         }

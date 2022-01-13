@@ -16,7 +16,7 @@ const AgreementsHeadCells = [
       dbName: "shapeJson.properties.agreementNumber",
       sort: true,
       filter: true,
-      customBodyRender: (value, tableMeta, updateValue) => {
+      customRender: (value, tableMeta, updateValue) => {
         return (
           <p
             onClick={(e) => {
@@ -233,7 +233,7 @@ const AgreementsHeadCells = [
       dbName: "shapeJson.properties.approvalStatus",
       sort: true,
       filter: true,
-      customBodyRender: (value, tableMeta, updateValue) => {
+      customRender: (value, tableMeta, updateValue) => {
         return (
           <div style={{ display: "flex", alignItems: "center" }}>
             {value?.toLowerCase() === "approved" ? (

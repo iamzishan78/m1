@@ -28,7 +28,7 @@ const TractsHeadCells = [
             sort: true, 
             filter: true,
             setCellProps: () => ({ style: { minWidth: "250px" } }),
-            customBodyRender: (value, tableMeta, updateValue) => {
+            customRender: (value, tableMeta, updateValue) => {
                 return (
                   <p
                     onClick={(e) => {
