@@ -13,7 +13,7 @@ const RevenueStatementHeadCells = [
     options: { 
       sort: true, 
       filter: true,
-      customBodyRender: (value, tableMeta, updateValue) => {
+      customRender: (value, tableMeta, updateValue) => {
         return (
           value ? 
           <p
@@ -44,7 +44,7 @@ const RevenueStatementHeadCells = [
     options: { 
       sort: true, 
       filter: true,               
-      customBodyRender: (value) => {
+      customRender: (value) => {
         return value ? <p style={{ fontWeight: 600 }}>{ value ? `$${value}` : '' }</p> : <p style={{ color: '#898989b0' }}>N/A</p>;
       }, 
     },
