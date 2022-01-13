@@ -42,6 +42,7 @@ function Agreements(props) {
   return (
     <>
       <AnalyticsCards
+        parent={"Agreements"}
         esIndex={esIndex}
         esFilters={esFilters}
         cardsDefault={cardsDefault}

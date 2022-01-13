@@ -3,7 +3,6 @@ import { Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
-import moment from "moment";
 
 // QUERIES
 import { useLazyQuery } from "@apollo/client";
@@ -14,43 +13,44 @@ import {
 } from "components/Shared/functions";
 
 // Header Schemas
-import TableHeader from "components/Table/constants/tracts-header-schema";
+import TableHeader from "components/Table/constants/tract-interests-header-schema";
 
 // Utilities
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-// import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
-
+// import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
+// import { GET_ES_POTENTIAL_ISSUES } from "graphQL/useQueryPotentialIssue";
+// import { AutoCompleteFilter } from "../AutoCompleteFilter";
 import { setColumnsData } from "components/Table/helpers";
 
 const useStyles = makeStyles((theme) => ({
-  tractTable: {
+  tractInterestTable: {
     "& ::-webkit-scrollbar": {
       height: "0.7em !important",
     },
   },
   container: {
-    padding: 0,
-    "& div": {
-      "&>.MuiPaper-root": {
-        "&>:nth-child(3)": {
-          maxHeight: "55vh",
-          "@media (max-height:900px)": {
-            maxHeight: "52vh",
-          },
-          "@media (max-height:800px)": {
-            maxHeight: "48vh",
-          },
-          "@media (max-height:768px)": {
-            maxHeight: "45vh",
+      padding: 0,
+      "& div": {
+        "&>.MuiPaper-root": {
+          "&>:nth-child(3)": {
+            maxHeight: "55vh",
+            "@media (max-height:900px)": {
+              maxHeight: "52vh",
+            },
+            "@media (max-height:800px)": {
+              maxHeight: "48vh",
+            },
+            "@media (max-height:768px)": {
+              maxHeight: "45vh",
+            },
           },
         },
       },
-    },
-  },
+  }
 }));
 
-function TractsTable(props) {
+function TractInterestsTable(props) {
   const { esIndex, setESFilters } = props;
   const classes = useStyles();
   const [filters, setFilters] = useState([]);
@@ -62,6 +62,7 @@ function TractsTable(props) {
   // const [pIssuesArr, setIssuesArr] = useState([]);
 
   const [esSearch, setESSearch] = useState("");
+
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
@@ -78,18 +79,26 @@ function TractsTable(props) {
     }
   );
 
-  // const [getESAggsActiveCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
+  // const [getESAggsGrossAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
   //     onCompleted: (aggsData) => {
-  //         if(aggsData?.getESAggsList?.aggregations?.activeCount) {
-  //             props.onActiveCount(aggsData?.getESAggsList?.aggregations?.activeCount?.value)
+  //         if(aggsData?.getESAggsList?.aggregations?.grossAcresSum) {
+  //             props.onGrossAcresSum(aggsData?.getESAggsList?.aggregations?.grossAcresSum?.value)
   //         }
   //     }
   // });
 
-  // const [getESAggsApprovedCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
+  // const [getESAggsNetAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
   //     onCompleted: (aggsData) => {
-  //         if(aggsData?.getESAggsList?.aggregations?.approvedCount) {
-  //             props.onApprovedCount(aggsData?.getESAggsList?.aggregations?.approvedCount?.value)
+  //         if(aggsData?.getESAggsList?.aggregations?.netAcresSum) {
+  //             props.onNetAcresSum(aggsData?.getESAggsList?.aggregations?.netAcresSum?.value)
+  //         }
+  //     }
+  // });
+
+  // const [getESAggsNetRoyaltyAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
+  //     onCompleted: (aggsData) => {
+  //         if(aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum) {
+  //             props.onNetRoyaltyAcresSum(aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum?.value)
   //         }
   //     }
   // });
@@ -100,10 +109,10 @@ function TractsTable(props) {
   // const issues = potentialIssues?.getPotentialIssuesSummary;
 
   const startPaginationAt = 10;
-  // const esIndex = 'shapes_flat';
+  // const esIndex = 'shapeowners_flat';
   const esStaticFilters = [
     {
-      field: "layer",
+      field: "shape.layer",
       value: "parcel",
     },
   ];
@@ -163,36 +172,52 @@ function TractsTable(props) {
   // }, [issues]);
 
   useEffect(() => {
-      if (tableData?.hits?.length > 0) {
-        const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
-      //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
-        props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
-      //   props.ifAreContacts(globalOwnerIds);
-      }
-    }, [tableData]);
+    if (tableData?.hits?.length > 0) {
+      const objectsIdsArray = tableData?.hits?.map((hit) => hit.contact?._id);
+    //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
+      props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
+    //   props.ifAreContacts(globalOwnerIds);
+    }
+  }, [tableData]);
 
   useEffect(() => {
     if (tableData) {
       if (tableData?.hits?.length > 0) {
+        // const resolvePath = (obj, path) => {
+        //     if (!obj) return null
+        //     // if (Array.isArray(obj)) obj = obj[0]
+
+        //     const parts = path.split(".");
+        //     const optionalPath = parts[0].endsWith('?')
+        //     if (optionalPath) parts[0] = parts[0].slice(0,-1)
+        //     if (parts.length == 1) {
+        //         return obj[parts[0]] ||
+        //         (optionalPath && typeof obj !== 'object' ? obj : null);
+        //     }
+        //     return resolvePath(obj[parts[0]], parts.slice(1).join(".")) ||
+        //     (optionalPath ? resolvePath(obj, parts.slice(1).join(".")) : resolvePath(null, parts.slice(1).join(".")));
+        // }
+
         const hits = tableData?.hits.map((hit) => {
-          // hit.agreementType = agreementTypes.find(type => type.value === hit.agreementType || type.label === hit.agreementType)?.label
-          // hit.agreementDate = hit.agreementDate
-          //   ? moment(new Date(hit.agreementDate)).format("MM/DD/YYYY")
-          //   : null;
-          // hit.effectiveDate = hit.effectiveDate
-          //   ? moment(new Date(hit.effectiveDate)).format("MM/DD/YYYY")
-          //   : null;
-          // hit.expirationDate = hit.expirationDate
-          //   ? moment(new Date(hit.expirationDate)).format("MM/DD/YYYY")
-          //   : null;
-          // hit.State = hit?.originalProperties?.State;
-          // hit.County = hit?.originalProperties?.County;
+          // let tempHit = { ...hit}
+          // TableHeader.forEach((col) => {
+          //     if (col?.options?.dbName) {
+          //         tempHit[col.name] = resolvePath(tempHit, col.options.dbName)
+          //         if (col.name === 'QtrCalls') tempHit[col.name] = tempHit[col.name]?.filter(el => el)?.map((qtr, i) => `${qtr}/${i + 1}`)?.join()
+          //     }
+          // })
+          // tempHit = props.setGenricData(tempHit, tempHit.contact._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
+
+          hit.QtrCalls = hit.qtr
+            ?.filter((el) => el)
+            ?.map((qtr, i) => `${qtr}/${i + 1}`)
+            ?.join();
           hit.tags =
             hit?.tags?.length > 0
               ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
               : [[], 0];
           hit.commentsCounter = hit.comments ? hit.comments.length : 0;
-          hit = props.setGenricData(hit, hit._id, [
+          hit = props.setGenricData(hit, hit.contact?._id, [
             'comments', 'tags'
           ]);
           return hit;
@@ -200,17 +225,6 @@ function TractsTable(props) {
 
         // props.onGettingStatements(hits);
         props.setRows(hits);
-
-        setColumnsData(
-          TableHeader,
-          filters,
-          JSON.parse(JSON.stringify(TableHeader)),
-          setColumns,
-          setFilters,
-          GET_ES_FILTER_LIST,
-          esIndex
-        );
-
         // let headers = copy(TableHeader)
 
         // headers.forEach((column) => {
@@ -223,8 +237,8 @@ function TractsTable(props) {
         //                 display: (filterList, onChange, index, column) => {
         //                     column.filterKey = headers.find(el => el.name === column.name)?.esKey;
         //                     return (
-        //                         <AutoCompleteFilter filterList={[...esFilters, filterList]} column={column} index={index} onChange={onChange}
-        //                             query={GET_ES_FILTER_LIST} esIndex={esIndex} />
+        //                         <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
+        //                             query={GET_ES_FILTER_LIST} esIndex={esIndex} filters={esFilters} />
         //                     );
         //                 }
         //             }
@@ -233,6 +247,17 @@ function TractsTable(props) {
         // })
 
         // setColumns(headers);
+
+        setColumnsData(
+          TableHeader,
+          filters,
+          JSON.parse(JSON.stringify(TableHeader)),
+          setColumns,
+          setFilters,
+          GET_ES_FILTER_LIST,
+          esIndex
+        );
+
         props.setLoading(false);
       } else if (tableData?.hits?.length === 0) {
         props.setRows([]);
@@ -243,32 +268,44 @@ function TractsTable(props) {
       }
 
       props.onTractCount(count);
-      // getESAggsActiveCount({
+      // getESAggsGrossAcresSum({
       //     variables: {
       //         esIndex,
       //         search: esSearch,
-      //         filters: [ ...esFilters, {
-      //             field: "shapeJson.properties.agreementStatus",
-      //             value: "ACTIVE"
-      //         }],
+      //         filters: esFilters,
       //         aggs: {
-      //             activeCount: {
-      //                 cardinality: { field: "shapeJson.id.keyword" }
+      //             grossAcresSum: {
+      //                 sum: {
+      //                     field: "grossAcres"
+      //                 }
       //             }
       //         }
       //     }
       // });
-      // getESAggsApprovedCount({
+      // getESAggsNetAcresSum({
       //     variables: {
       //         esIndex,
       //         search: esSearch,
-      //         filters: [ ...esFilters, {
-      //             field: "shapeJson.properties.approvalStatus",
-      //             value: "APPROVED"
-      //         }],
+      //         filters: esFilters,
       //         aggs: {
-      //             approvedCount: {
-      //                 cardinality: { field: "shapeJson.id.keyword" }
+      //             netAcresSum: {
+      //                 sum: {
+      //                     field: "net_acres"
+      //                 }
+      //             }
+      //         }
+      //     }
+      // })
+      // getESAggsNetRoyaltyAcresSum({
+      //     variables: {
+      //         esIndex,
+      //         search: esSearch,
+      //         filters: esFilters,
+      //         aggs: {
+      //             netRoyaltyAcresSum: {
+      //                 sum: {
+      //                     field: "nra"
+      //                 }
       //             }
       //         }
       //     }
@@ -337,7 +374,7 @@ function TractsTable(props) {
   };
 
   return (
-    <div className={classes.tractTable}>
+    <div className={classes.tractInterestTable}>
       <Container
         maxWidth={false}
         className={classes.container}
@@ -350,7 +387,7 @@ function TractsTable(props) {
           rows={props.rows}
           total={false}
           // potentialIssues={potentialIssuesList}
-          addAble={{ type: "Tracts" }}
+          addAble={{ type: "TractInterests" }}
           loading={props.loading}
           targetLabel={props.targetLabel}
           uploadIcon={null}
@@ -367,4 +404,4 @@ function TractsTable(props) {
   );
 }
 
-export default React.memo(TableHOC(TractsTable), deepEqualObjects);
+export default React.memo(TableHOC(TractInterestsTable), deepEqualObjects);
