@@ -10,8 +10,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  NODE_OPTIONS: --max_old_space_size=32768
-  NODE_OPTIONS: --production=false
+  NODE_OPTIONS: --max_old_space_size=32768 --production=false
 
 steps:
 - task: NodeTool@0
