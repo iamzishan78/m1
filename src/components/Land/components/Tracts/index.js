@@ -133,7 +133,7 @@ function Tracts(props) {
                 header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
                 esFilters={esFilters}
                 parent="TractInterestsTable"
-                targetLabel="contact"
+                targetLabel="parcel"
                 setESFilters={setESFilters}
                 onTractCount={onTractCount}
                 landSearchQuery={stateApp.landSearchQuery}
