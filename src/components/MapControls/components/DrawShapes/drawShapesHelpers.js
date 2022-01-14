@@ -173,10 +173,10 @@ export const drawBoundary = (map, selectedUserDefinedLayer) => {
     }
 
   } else {
-    if (map.getLayer('boundary-line')) {
+    if (map?.getLayer('boundary-line')) {
       map.removeLayer('boundary-line')
     }
-    if (map.getLayer('boundary-point')) {
+    if (map?.getLayer('boundary-point')) {
       map.removeLayer('boundary-point')
     }
   }
