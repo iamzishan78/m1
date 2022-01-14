@@ -350,6 +350,15 @@ function ExpandableCard(props) {
     //if EC is inside map popup you need to close it
   };
 
+  const setDefaulTab = () => {
+    if (props.targetLabel === "parcel") {
+      setStateApp((state) => ({
+        ...state,
+        parcelDetailCardTabIndex: 0,
+      }));
+    }
+  }
+
   const getTitle = () => {
 
     if (!title) {
@@ -635,26 +644,6 @@ function ExpandableCard(props) {
                   />
                 )}
 
-              {/* 
-              {stateExpandableCard.expanded &&
-                targetLabel !== "activity" &&
-                targetLabel !== "contact" &&
-                targetLabel !== "parcel" &&
-                targetLabel !== "expandedParcel" && (
-
-                  <Tooltip title={"Report Bug"} placement="top">
-                    <IconButton
-                      size="medium"
-                      onClick={() => setOpenBugModal(true)}
-                      className={classes.icons}
-                    >
-                      <BugsIcon viewBox="0 0 64 64" color="white" />
-                    </IconButton>
-                  </Tooltip>
-
-                )} */}
-
-
               {stateExpandableCard.expanded &&
                 (["activity", "parcel", "expandedParcel"].includes(targetLabel) || stateApp.selectedShape) &&
 
@@ -730,7 +719,7 @@ function ExpandableCard(props) {
                     <Tooltip title={"Expand"} placement="top">
                       <IconButton
                         size="small"
-                        onClick={handleExpand}
+                        onClick={() => { handleExpand(); setDefaulTab(); }}
                         aria-label="expand"
                         className={classes.icons}
                       >

@@ -14,7 +14,6 @@ import Button from '@material-ui/core/Button';
 
 
 import WellIcon from "../WellCard/components/svgIcons/WellIcon";
-import ProductionIcon from "../WellCard/components/svgIcons/ProductionIcon";
 import OwnershipIcon from "../WellCard/components/svgIcons/OwnershipIcon";
 import DescriptionIcon from "../WellCard/components/svgIcons/DescriptionIcon";
 // import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
@@ -25,15 +24,12 @@ import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
-import { SHAPEWELLS } from "graphQL/useQueryPaginatedShapeWells";
 import { GET_PARCELS_FILES_COUNT } from "graphQL/useQueryGetParcelFiles";
 import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 
 // contexts 
-import { WellCardContext } from "../WellCard/WellCardContext";
 import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "../ExpandableCard/ExpandableCardContext";
-import { ParcelCardContext } from "./ParcelCardContext";
 import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
 
 
@@ -117,9 +113,7 @@ export default function ParcelCard(props) {
 
   // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [parcelContext, setParcelContext] = useContext(ParcelCardContext);
   const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
-  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
   const [wellNumber, setWellNumber] = useState()
 
   const [parcelObj, setParcelObj] = useState();
