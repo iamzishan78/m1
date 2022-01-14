@@ -133,12 +133,12 @@
     "viewport-mercator-project": "^7.0.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "esbuild-start": "craco start",
-    "build": "react-scripts build",
-    "esbuild-build": "craco build",
-    "test": "react-scripts test",
-    "esbuild-test": "craco test",
+    "legacy-start": "react-scripts start",
+    "start": "craco start",
+    "legacy-build": "react-scripts build",
+    "build": "craco build",
+    "legacy-test": "react-scripts test",
+    "test": "craco test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

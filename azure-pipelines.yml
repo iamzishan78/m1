@@ -25,7 +25,7 @@ steps:
   
 - script: |
     echo $NODE_OPTIONS
-    npm run esbuild-build
+    npm run build
   failOnStderr: true
   displayName: 'Prepare binaries'
 
