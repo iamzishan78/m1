@@ -163,6 +163,14 @@ const TractInterestsHeadCells = [
         }
     },
     {
+        name: "name", label: "Owner Name", esKey: 'contact.entityDetail.name.keyword', 
+        options: { 
+            dbName: "contact.entityDetail.name",
+            sort: true, 
+            filter: true 
+        }
+    },
+    {
         name: "mineral_interest", label: "Mineral Interest", esKey: 'mineral_interest', 
         options: { 
             dbName: "mineral_interest",
