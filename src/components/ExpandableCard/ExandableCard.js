@@ -1,4 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { Avatar, Box, Grid, Breadcrumbs, Typography, Card, CardHeader, CardContent, IconButton, Tooltip, Dialog, CircularProgress } from "@material-ui/core";
@@ -28,11 +29,13 @@ import { TRACKBYOBJECTID } from "../../graphQL/useQueryTrackByObjectId";
 // contexts 
 import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "./ExpandableCardContext";
+import { showInfoMessage } from "actions";
 
 function ExpandableCard(props) {
 
   // initials
   const history = useHistory();
+  const dispatch = useDispatch();
 
   // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -296,7 +299,7 @@ function ExpandableCard(props) {
 
     if (props.targetLabel === "well" || props.targetLabel === "expandedWell") {
       const newPath = `/map/wells/${stateApp.selectedWell.id}`;
-      history.location.pathname !== newPath && history.replace(newPath)
+      history.location.pathname !== newPath && history.replace(newPath, {...history.location.state})
       setStateApp((state) => ({ ...state, wellDetailCardOpen: true, popupOpen: false }));
 
 
@@ -328,6 +331,10 @@ function ExpandableCard(props) {
 
   const handleClose = () => {
     if (parent === "map") {
+      if (stateApp?.selectedShape?.type === 'agreement' && !stateApp?.selectedShape?.feature?.properties?.agreementNumber) {
+        dispatch(showInfoMessage("Agreement Number is required"));
+        return
+      }
       if ($("#tempPopupHolder").length) {
         let popUps = document.getElementsByClassName("mapboxgl-popup");
         if (popUps[0]) popUps[0].remove();
@@ -491,6 +498,7 @@ function ExpandableCard(props) {
       currentFeature: state.selectedParcel?.feature || state.selectedShape?.feature,
       featureToEdit: state.selectedParcel?.feature || state.selectedShape?.feature,
       openDrawShapesControl: true,
+      editParcelAndShape: true,
       editDraw: true,
     }));
     handleClose();
@@ -544,7 +552,7 @@ function ExpandableCard(props) {
           onClose={() => setOpenBugModal(false)}
         />
 
-        {(history.pathHistory[1] === '/documents' && history.pathHistory[0] !== '/') && <DisplayBreadCrums />}
+        {(history.location?.state?.showWellBreadcrumb) && <DisplayBreadCrums />}
 
         {(history.location?.state?.showAgreementBreadcrumb || history.location?.state?.showTractsBreadcrumb) && (
           <Grid container spacing={2} alignItems="center" className={classes.breadcrumb}>

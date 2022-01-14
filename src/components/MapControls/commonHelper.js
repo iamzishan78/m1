@@ -105,8 +105,8 @@ export const drawShapeStyles = [
             ['any', ['==', 'user_shapeEdit', true], ['!has', 'user_shapeEdit']]
         ],
         'paint': {
-            'fill-color': '#fbb03b',
-            'fill-outline-color': '#fbb03b',
+            'fill-color': 'yellow',
+            'fill-outline-color': 'yellow',
             'fill-opacity': 0.1
         }
     },
@@ -118,7 +118,7 @@ export const drawShapeStyles = [
         ],
         'paint': {
             'circle-radius': 3,
-            'circle-color': '#fbb03b'
+            'circle-color': 'yellow'
         }
     },
     {
@@ -149,9 +149,9 @@ export const drawShapeStyles = [
             'line-join': 'round'
         },
         'paint': {
-            'line-color': '#fbb03b',
+            'line-color': 'yellow',
             'line-dasharray': [0.2, 2],
-            'line-width': 2
+            'line-width': 6
         }
     },
     {
@@ -183,7 +183,7 @@ export const drawShapeStyles = [
             'line-join': 'round'
         },
         'paint': {
-            'line-color': '#fbb03b',
+            'line-color': 'yellow',
             'line-dasharray': [0.2, 2],
             'line-width': 2
         }
@@ -209,7 +209,7 @@ export const drawShapeStyles = [
         ],
         'paint': {
             'circle-radius': 3,
-            'circle-color': '#fbb03b'
+            'circle-color': 'yellow'
         }
     },
     {
@@ -262,7 +262,7 @@ export const drawShapeStyles = [
         ],
         'paint': {
             'circle-radius': 5,
-            'circle-color': '#fbb03b'
+            'circle-color': 'yellow'
         }
     },
     {
