@@ -33,11 +33,16 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DocumentComponent() {
   const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   let history = useHistory();
 
   const onCloseHandler = () => {
     history.push('/documents');
+    setStateApp((state) => ({
+      ...state,
+      pdfView: null,
+      viewDoc: null,
+    }));
   }
 
   return (
