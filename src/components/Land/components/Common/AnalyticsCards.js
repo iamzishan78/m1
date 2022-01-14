@@ -163,7 +163,7 @@ export default function AnalyticsCards({
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : '',
-        filters: [...esFilters, {field: "shape.layer", value: "parcel"}],
+        filters: [{field: "shape.layer", value: "parcel"}, ...esFilters.slice(1)],
         aggs: {
           grossAcresSum: {
             scripted_metric: {
@@ -198,7 +198,7 @@ export default function AnalyticsCards({
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : '',
-        filters: [...esFilters, {field: "shape.layer", value: "parcel"}],
+        filters: [{field: "shape.layer", value: "parcel"}, ...esFilters.slice(1)],
         aggs: {
           netAcresSum: {
             sum: {
@@ -212,7 +212,7 @@ export default function AnalyticsCards({
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : '',
-        filters: [...esFilters, {field: "shape.layer", value: "parcel"}],
+        filters: [{field: "shape.layer", value: "parcel"}, ...esFilters.slice(1)],
         aggs: {
           netRoyaltyAcresSum: {
             sum: {

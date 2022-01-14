@@ -121,7 +121,7 @@ function Tracts(props) {
                 header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
                 esFilters={esFilters}
                 parent="TractTable"
-                targetLabel="Tract"
+                targetLabel="parcel"
                 setESFilters={setESFilters}
                 onTractCount={onTractCount}
                 landSearchQuery={stateApp.landSearchQuery}
@@ -133,7 +133,7 @@ function Tracts(props) {
                 header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
                 esFilters={esFilters}
                 parent="TractInterestsTable"
-                targetLabel="tractInterest"
+                targetLabel="contact"
                 setESFilters={setESFilters}
                 onTractCount={onTractCount}
                 landSearchQuery={stateApp.landSearchQuery}
