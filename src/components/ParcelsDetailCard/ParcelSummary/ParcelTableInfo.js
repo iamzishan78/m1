@@ -205,7 +205,7 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
   const [tableTempProperties, setTableTempProperties] = useState(properties);
 
   const filterStateData = (data) => {
-    if (tableTempProperties.state === 'TX') {
+    if (tableTempProperties.state === 'TX' || tableTempProperties.originalProperties.State === 'TX') {
       setFilteredTableData(data.filter((data) => data.showStateTX !== false))
     } else {
       setFilteredTableData(data.filter((data) => data.showStateTX !== true))

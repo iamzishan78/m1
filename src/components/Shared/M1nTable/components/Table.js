@@ -1506,7 +1506,7 @@ function SubTable(props) {
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
-                  if (props.parent === "TractsTable" && props.targetLabel === "tract") {
+                  if (props.parent === "TractInterestsTable" && props.targetLabel === "tractInterest") {
                     targetSourceId = tableMeta.rowData[1];
                   }
 
@@ -1821,7 +1821,7 @@ function SubTable(props) {
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
-                  if (props.parent === "TractsTable" && props.targetLabel === "tract") {
+                  if (props.parent === "TractInterestsTable" && props.targetLabel === "tractInterest") {
                     targetSourceId = tableMeta.rowData[1];
                   }
                   return (
@@ -2216,7 +2216,7 @@ function SubTable(props) {
               customBodyRender: (value, tableMeta, updateValue) => {
                 return (
                   <>
-                    {props.parent === "TractsTable" && (
+                    {/* {props.parent === "TractsTable" && (
                       <p
                         onClick={(e) => {
                           e.stopPropagation();
@@ -2228,7 +2228,7 @@ function SubTable(props) {
                       >
                         {value}
                       </p>
-                    )}
+                    )} */}
                     {(props.parent === "RevenueStatementTable" || props.parent === "RevenuePropertiesTable") && (
                       <div className={classes.flexAlign}>
                         {value?.toLowerCase() === "approved" ? (
