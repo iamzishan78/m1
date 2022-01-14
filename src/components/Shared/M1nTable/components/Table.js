@@ -2425,7 +2425,7 @@ function SubTable(props) {
                         : []
                         }`}
                     >
-                      {/* {props.targetLabel === "contact" && column.name === "name" && (
+                      {props.targetLabel === "contact" && column.name === "name" && (
                         <Avatar
                           color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                           fgColor="#000"
@@ -2444,7 +2444,7 @@ function SubTable(props) {
                           size="35"
                           round
                         />
-                      )} */}
+                      )}
                       {props.targetLabel === "documents" && (
                         <>
                           {value ? (
@@ -2471,7 +2471,7 @@ function SubTable(props) {
                           nonEditable={!column.editable}
                         />
                       )}
-                      {/* {props.targetLabel === "contact" && column.name !== "name" && ( */}
+                      {props.targetLabel === "contact" && column.name !== "name" && (
                         <CellContentEdition
                           id={tableMeta.rowData[0]}
                           content={{ [column.name]: valueFormatter(value) }}
@@ -2486,8 +2486,8 @@ function SubTable(props) {
                           }
                           nonEditable={!column.editable}
                         />
-                      {/* )} */}
-                      {/* {props.targetLabel === "contact" && column.name === "name" && (
+                      )}
+                      {props.targetLabel === "contact" && column.name === "name" && (
                         <p
                           className={classes.clickableCell}
                           onClick={() => {
@@ -2511,7 +2511,7 @@ function SubTable(props) {
                             : `${tableMeta.rowData[10] ? tableMeta.rowData[10] : ""} ${tableMeta.rowData[12] ? tableMeta.rowData[12] : ""}`}
                           <div className={classes.companyName}>{tableMeta.rowData[14]}</div>
                         </p>
-                      )} */}
+                      )}
                       {props.targetLabel === "contact" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
                           <span>{tableMeta.rowData[49] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
