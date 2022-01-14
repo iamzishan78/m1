@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -44,6 +44,18 @@ export default function DocumentComponent() {
       viewDoc: null,
     }));
   }
+
+  useEffect(() => {
+    return () => {
+        setStateApp((state) => ({
+          ...state,
+          pdfView: null,
+          viewDoc: null,
+          selectedDocument: {},
+          DocumentDrawer: false
+        }));
+    }
+  },[])
 
   return (
     <div className={classes.root}>
