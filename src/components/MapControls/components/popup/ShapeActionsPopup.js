@@ -712,7 +712,7 @@ const ShapeActionsPopup = (props) => {
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
 
           <FeatureFlag feature={FEATURES.MAPSHAPEEXPORT}>
-            <Tooltip title="Area of Interest" className={enableEditOnly && classes.disableAction}>
+            <Tooltip title="Bulk Actions" className={enableEditOnly && classes.disableAction}>
               <IconButton
                 size="small"
                 disabled={enableEditOnly}
