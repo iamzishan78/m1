@@ -193,7 +193,7 @@ const SummarySection = ({ checkId }) => {
   const summaryTabs = [
     { id: 1, label: "Revenue" },
     { id: 2, label: "Products" },
-    { id: 3, label: "Adjustment" },
+    { id: 3, label: "Adjustments" },
   ];
 
   useEffect(() => {
@@ -269,7 +269,7 @@ const SummarySection = ({ checkId }) => {
     if (revSummary) {
       setRevenueSummaryDetails([
         { name: "Gross Revenue", value: `${revSummary?.grossRevenue?.value.toFixed(2)}` },
-        { name: "Adjustment", value: `(${(revSummary?.ownerDeducts?.value + revSummary?.ownerTax?.value).toFixed(2)})` },
+        { name: "Adjustments", value: `(${(revSummary?.ownerDeducts?.value + revSummary?.ownerTax?.value).toFixed(2)})` },
         { name: "Net Revenue", value: `${(revSummary?.netOwnerValue?.value).toFixed(2)}` },
         { name: "Lease Payments", value: "-" },
         { name: "Other", value: "-" },
