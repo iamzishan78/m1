@@ -4,6 +4,7 @@ import { Typography, Grid, Divider, Popover, List, ListItem, ListItemText, Butto
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import { makeStyles } from "@material-ui/styles";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
+import vf_number from "components/Shared/valueformatters/vf_number";
 
 import { useLazyQuery } from "@apollo/client";
 import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
@@ -281,12 +282,19 @@ const SummarySection = ({ checkId }) => {
   // products summary
   useEffect(() => {
     if (prodSummary) {
-      const buckets = prodSummary?.product?.buckets.map((b) => ({
+      const products = ["OIL", "GAS", "NGL", "OTHER"];
+      let buckets = [];
+      products.forEach(p => {
+        const index = prodSummary?.product?.buckets.findIndex(b => b.key === p);
+        if (index !== -1) buckets.push(prodSummary?.product?.buckets[index]);
+      });
+
+      buckets = buckets.map((b) => ({
         ...b,
-        grsProd: b.grossPropertyVolume ? (Math.round(get(b, "grossPropertyVolume.value") * 100) / 100).toFixed(2) : "-",
-        netProd: b.grossOwnerVolume ? (Math.round(get(b, "grossOwnerVolume.value") * 100) / 100).toFixed(2) : "-",
-        netRevenue: b.netRevenue ? (Math.round(get(b, "netRevenue.value") * 100) / 100).toFixed(2) : "-",
-        avgPrice: b.avgPrice ? (Math.round(get(b, "avgPrice.value") * 100) / 100).toFixed(2) : "-",
+        grsProd: b.grossPropertyVolume ? vf_number((Math.round(get(b, "grossPropertyVolume.value") * 100) / 100).toFixed(2)) : "-",
+        netProd: b.grossOwnerVolume ? vf_number((Math.round(get(b, "grossOwnerVolume.value") * 100) / 100).toFixed(2)) : "-",
+        netRevenue: b.netRevenue ? vf_number((Math.round(get(b, "netRevenue.value") * 100) / 100).toFixed(2)) : "-",
+        avgPrice: b.avgPrice ? vf_number((Math.round(get(b, "avgPrice.value") * 100) / 100).toFixed(2)) : "-",
       }));
       buckets.push({
         key: "OTHER",

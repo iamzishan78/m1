@@ -23,7 +23,7 @@ export default function BarChart(props) {
         value: 80.1,
       },
       {
-        name: "OTH",
+        name: "OTHER",
         value: 30.8,
       },
     ];
