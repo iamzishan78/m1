@@ -459,19 +459,12 @@ export default function ContactDetailCard(props) {
   }, [tData, tLoading]);
 
   const checkModuleHistory = () => {
-    const { pathHistory } = history;
-    if (pathHistory.length > 0) {
-      if (pathHistory[1].startsWith("/map/agreements/")) {
-        return true;
-      } else if (pathHistory[1].startsWith("/map/wells/")) {
-        return true;
-      } else if (pathHistory[1].startsWith("/map/units/")) {
-        return true;
-      } else if (pathHistory[1].startsWith("/map/parcels/")) {
-        return true;
-      }
+    console.log("path history", history.pathHistory);
+    console.log("stateNav.contactFromMap", stateNav.contactFromMap);
+    if(history.pathHistory[1].startsWith("/map/")){
+      return true;
     }
-    return false;
+    return !!stateNav.contactFromMap;
   };
 
   const getFlowlineReturnUrl = () => {
@@ -610,8 +603,13 @@ export default function ContactDetailCard(props) {
                   cursor: "pointer",
                 }}
                 color="inherit"
-                onClick={() => history.goBack()}
-              // onClick={() => window.location.replace(history.pathHistory[1])}
+                onClick={() => {
+                  history.push(history.pathHistory[1]);
+                  setStateNav((stateApp) => ({
+                    ...stateApp,
+                    contactFromMap: false,
+                  }));
+                }}
               >
                 Map
               </Link>
@@ -1044,8 +1042,13 @@ export default function ContactDetailCard(props) {
                         cursor: "pointer",
                       }}
                       color="inherit"
-                      onClick={() => history.goBack()}
-                    // onClick={() => window.location.replace(history.pathHistory[1])}
+                      onClick={() => {
+                        history.push(history.pathHistory[1]);
+                        setStateNav((stateApp) => ({
+                          ...stateApp,
+                          contactFromMap: false,
+                        }));
+                      }}
                     >
                       Map
                     </Link>
