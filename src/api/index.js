@@ -12,9 +12,16 @@ class API {
     return Promise.reject(data);
   };
 
-  fetch = (query, variables) => {
+  query = (query, variables) => {
     return GlobalApolloClientProvider.client.query({
       query,
+      variables
+    });
+  }
+
+  mutate = (mutation, variables) => {
+    return GlobalApolloClientProvider.client.mutate({
+      mutation,
       variables
     });
   }
