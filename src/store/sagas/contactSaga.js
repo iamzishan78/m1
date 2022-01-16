@@ -18,7 +18,7 @@ import { GET_CONTACT_CAMPAIGN, CONVERT_TAX_OWNER_TO_CONTACT } from "store/type";
 function* getContactCampaign(action) {
   try {
     const { search } = action.payload;
-    const contactCampaign = yield call(Api.fetch, GET_ES_FILTER_LIST, {
+    const contactCampaign = yield call(Api.query, GET_ES_FILTER_LIST, {
       ...campaignVariables,
       search,
     });
@@ -39,22 +39,22 @@ function* convertTaxOwnerToContact(action) {
     const { userId } = action.payload;
     const owners = formatTaxOwners(copy(shapeOwners), action.payload);
 
-    const uploadUri = yield call(Api.fetch, GET_JOB_UPLOAD_URI, {
+    const uploadUri = yield call(Api.query, GET_JOB_UPLOAD_URI, {
       jobName: "Contacts",
       jobType: "CONTACTS",
       userId,
     });
 
-    const { uri, id, internalKey } = uploadUri.data.data.getJobUploadUri.job;
+    const { uri, id, internalKey } = uploadUri.data.getJobUploadUri.job;
     
     yield put(toggleBulkUploadAction(!bulkUpload));
     const res = yield call(Api.fetchBlob, JSON.stringify(owners), id, internalKey, uri);
     if (res?._response?.status === 201) {
-      const jobResponse = yield call(Api.fetch, CREATE_JOB, { jobId: id, sendEmail: false });
-      yield call(Api.fetch, UPDATE_JOB, {
+      const jobResponse = yield call(Api.mutate, CREATE_JOB, { jobId: id, sendEmail: false });
+      yield call(Api.mutate, UPDATE_JOB, {
         job: {
           _id: id,
-          createJobResponse: get(jobResponse,'data.data.createJob.body',null),
+          createJobResponse: get(jobResponse,'data.createJob',null),
         }
       });
     }
