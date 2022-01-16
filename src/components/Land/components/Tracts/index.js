@@ -3,7 +3,10 @@ import React, { useState, useContext } from "react";
 import { AppContext } from "AppContext";
 import AnalyticsCards from "components/Land/components/Common/AnalyticsCards";
 import TractsTable from "../../../Table/Tract/TractsTable";
+import TractInterestsTable from "../../../Table/Tract/TractInterestsTable";
 import { setStateIfDeepEqual } from "components/Shared/functions";
+import TabPanels from "components/Shared/TabPanels";
+import TabButtons from "components/Shared/TabPanels/TabButtons";
 
 function Tracts(props) {
   const [stateApp] = useContext(AppContext);
@@ -14,6 +17,7 @@ function Tracts(props) {
     setStateIfDeepEqual(ESFilters, newState);
   };
 
+  const [selectedTractTab, setTractSelectedTab] = useState(0);
   const [tractCount, setTractCount] = useState(0);
   // const [grossAcresSum, setGrossAcresSum] = useState(0);
   // const [netAcresSum, setNetAcresSum] = useState(0);
@@ -64,9 +68,12 @@ function Tracts(props) {
   //   },
   // ];
 
-  const cardsDefault = [
+  const esIndex = ["shapes_flat", "shapeowners_flat"];
+  const tabLabels = ["Tracts", "Tract Interests"]
+
+  let cardsDefault = [
     {
-      heading: "Total Tracts",
+      heading: `Total ${tabLabels[selectedTractTab]}`,
       points: 0,
     },
     {
@@ -83,12 +90,21 @@ function Tracts(props) {
     },
   ];
 
-  const esIndex = "shapeowners_flat";
+  const TractHeader = ({ selectedTractTab, setTractSelectedTab }) => (
+    <TabButtons
+      labels={tabLabels}
+      value={selectedTractTab}
+      setValue={(n) => {
+        setTractSelectedTab(n);
+      }}
+    />
+  );
 
   return (
     <>
       <AnalyticsCards
-        esIndex={esIndex}
+        parent={"Tracts"}
+        esIndex={esIndex[selectedTractTab]}
         esFilters={esFilters}
         totalCount={tractCount}
         setESFilters={setESFilters}
@@ -96,15 +112,34 @@ function Tracts(props) {
         landSearchQuery={stateApp.landSearchQuery}
       />
       <div style={{ padding: 30, paddingTop: 0, overflow: "auto" }}>
-        <TractsTable
-          esIndex={esIndex}
-          header="Tracts"
-          esFilters={esFilters}
-          parent="TractsTable"
-          targetLabel="tract"
-          setESFilters={setESFilters}
-          onTractCount={onTractCount}
-          landSearchQuery={stateApp.landSearchQuery}
+        <TabPanels
+          value={selectedTractTab}
+          panels={[
+            <div>
+              <TractsTable
+                esIndex={esIndex[selectedTractTab]}
+                header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                esFilters={esFilters}
+                parent="TractTable"
+                targetLabel="parcel"
+                setESFilters={setESFilters}
+                onTractCount={onTractCount}
+                landSearchQuery={stateApp.landSearchQuery}
+              />
+            </div>,
+            <div>
+              <TractInterestsTable
+                esIndex={esIndex[selectedTractTab]}
+                header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                esFilters={esFilters}
+                parent="TractInterestsTable"
+                targetLabel="parcel"
+                setESFilters={setESFilters}
+                onTractCount={onTractCount}
+                landSearchQuery={stateApp.landSearchQuery}
+              />
+            </div>
+          ]}
         />
       </div>
     </>

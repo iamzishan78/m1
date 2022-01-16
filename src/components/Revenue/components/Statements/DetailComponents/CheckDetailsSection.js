@@ -1,5 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { Typography, Button } from "@material-ui/core";
+import { Add, ArrowDropDown } from "@material-ui/icons";
 import CheckDetailsTable from "components/Table/Revenue/CheckDetailsTable";
 
 const useStyles = makeStyles(() => ({

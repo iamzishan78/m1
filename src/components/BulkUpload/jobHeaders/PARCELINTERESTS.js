@@ -9,31 +9,31 @@ export default [
         label: "Full Name",
         mapped_key: "",
         required: false,
-        actual_key: "name",
+        actual_key: "entityDetail.name",
     },
     {
         label: "First Name",
         mapped_key: "",
         required: false,
-        actual_key: "firstName",
+        actual_key: "entityDetail.firstName",
     },
     {
         label: "Last Name",
         mapped_key: "",
         required: false,
-        actual_key: "lastName",
+        actual_key: "entityDetail.lastName",
     },
     {
         label: "Middle Name",
         mapped_key: "",
         required: false,
-        actual_key: "middleName",
+        actual_key: "entityDetail.middleName",
     },
     {
         label: "Suffix",
         mapped_key: "",
         required: false,
-        actual_key: "suffix",
+        actual_key: "entityDetail.suffix",
     },
     {
         label: "Age",
@@ -51,37 +51,37 @@ export default [
         label: "Primary Address 1",
         mapped_key: "",
         required: false,
-        actual_key: "address1",
+        actual_key: "entityDetail.address1",
     },
     {
         label: "Primary Address 2",
         mapped_key: "",
         required: false,
-        actual_key: "address2",
+        actual_key: "entityDetail.address2",
     },
     {
         label: "City",
         mapped_key: "",
         required: false,
-        actual_key: "city",
+        actual_key: "entityDetail.city",
     },
     {
         label: "State",
         mapped_key: "",
         required: false,
-        actual_key: "state",
+        actual_key: "entityDetail.state",
     },
     {
         label: "Zip",
         mapped_key: "",
         required: false,
-        actual_key: "zip",
+        actual_key: "entityDetail.zip",
     },
     {
         label: "Country",
         mapped_key: "",
         required: false,
-        actual_key: "country",
+        actual_key: "entityDetail.country",
     },
     {
         label: "Primary Email",
@@ -249,13 +249,13 @@ export default [
     //   label: "Title",
     //   mapped_key: "",
     //   required: false,
-    //   actual_key: "title",
+    //   actual_key: "entityDetail.title",
     // },
     // {
     //   label: "Global Owner",
     //   mapped_key: "",
     //   required: false,
-    //   actual_key: "globalOwner",
+    //   actual_key: "entityDetail.globalOwner",
     // },
     // {
     //   label: "Created By",
@@ -278,103 +278,103 @@ export default [
     {
         label: "Parcel Id",
         mapped_key: "",
-        required: false,
-        actual_key: "parcelId",
+        required: true,
+        actual_key: "parcel._id",
     },
     {
         label: "Parcel Name",
         mapped_key: "",
-        required: false,
-        actual_key: "parcelName",
+        required: true,
+        actual_key: "parcel.name",
     },
     {
         label: "Surface Interest",
         mapped_key: "",
         required: false,
-        actual_key: "surface_interest"
+        actual_key: "parcel.surface_interest"
     },
     {
         label: "Mineral Interest",
         mapped_key: "",
         required: false,
-        actual_key: "mineral_interest"
+        actual_key: "parcel.mineral_interest"
     },
     {
         label: "Royalty Interest",
         mapped_key: "",
         required: false,
-        actual_key: "royalty_interest"
+        actual_key: "parcel.royalty_interest"
     },
     {
         label: "Overriding Royalty",
         mapped_key: "",
         required: false,
-        actual_key: "orri"
+        actual_key: "parcel.orri"
     },
     {
         label: "Record Title",
         mapped_key: "",
         required: false,
-        actual_key: "record_title"
+        actual_key: "parcel.record_title"
     },
     {
         label: "Operating Rights",
         mapped_key: "",
         required: false,
-        actual_key: "operating_rights"
+        actual_key: "parcel.operating_rights"
     },
     {
         label: "Net Revenue Interest",
         mapped_key: "",
         required: false,
-        actual_key: "nri"
+        actual_key: "parcel.nri"
     },
     {
         label: "Net Acres",
         mapped_key: "",
         required: false,
-        actual_key: "net_acres"
+        actual_key: "parcel.net_acres"
     },
     {
         label: "Net Royalty Acres",
         mapped_key: "",
         required: false,
-        actual_key: "nra"
+        actual_key: "parcel.nra"
     },
     {
         label: "Depth From",
         mapped_key: "",
         required: false,
-        actual_key: "depthFrom"
+        actual_key: "parcel.depthFrom"
     },
     {
         label: "Depth To",
         mapped_key: "",
         required: false,
-        actual_key: "depthTo"
+        actual_key: "parcel.depthTo"
     },
     {
         label: "QTR1",
         mapped_key: "",
         required: false,
-        actual_key: "qtr[0]"
+        actual_key: "parcel.qtr.0"
     },
     {
         label: "QTR2",
         mapped_key: "",
         required: false,
-        actual_key: "qtr[1]"
+        actual_key: "parcel.qtr.1"
     },
     {
         label: "QTR3",
         mapped_key: "",
         required: false,
-        actual_key: "qtr[2]"
+        actual_key: "parcel.qtr.2"
     },
     {
         label: "QTR4",
         mapped_key: "",
         required: false,
-        actual_key: "qtr[3]"
+        actual_key: "parcel.qtr.3"
     },
 ];

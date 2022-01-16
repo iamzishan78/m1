@@ -14,7 +14,6 @@ import Button from '@material-ui/core/Button';
 
 
 import WellIcon from "../WellCard/components/svgIcons/WellIcon";
-import ProductionIcon from "../WellCard/components/svgIcons/ProductionIcon";
 import OwnershipIcon from "../WellCard/components/svgIcons/OwnershipIcon";
 import DescriptionIcon from "../WellCard/components/svgIcons/DescriptionIcon";
 // import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
@@ -25,15 +24,12 @@ import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
-import { SHAPEWELLS } from "graphQL/useQueryPaginatedShapeWells";
 import { GET_PARCELS_FILES_COUNT } from "graphQL/useQueryGetParcelFiles";
 import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 
 // contexts 
-import { WellCardContext } from "../WellCard/WellCardContext";
 import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "../ExpandableCard/ExpandableCardContext";
-import { ParcelCardContext } from "./ParcelCardContext";
 import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
 
 
@@ -117,9 +113,7 @@ export default function ParcelCard(props) {
 
   // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [parcelContext, setParcelContext] = useContext(ParcelCardContext);
   const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
-  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
   const [wellNumber, setWellNumber] = useState()
 
   const [parcelObj, setParcelObj] = useState();
@@ -128,7 +122,7 @@ export default function ParcelCard(props) {
 
   // queries 
   const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", skip: true });
-  const [getParcelFilesCount, { data: dataParcelFiles }] = useLazyQuery(GET_PARCELS_FILES_COUNT, { fetchPolicy: "cache-and-network"});
+  const [getParcelFilesCount, { data: dataParcelFiles }] = useLazyQuery(GET_PARCELS_FILES_COUNT, { fetchPolicy: "cache-and-network" });
   const documentCount = dataParcelFiles?.getParcelFilesCount || 0;
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER,);
 
@@ -179,7 +173,7 @@ export default function ParcelCard(props) {
 
   useEffect(() => {
     if (parcelObj)
-    getParcelFilesCount({
+      getParcelFilesCount({
         variables: {
           relatedObjectId: parcelObj?._id || stateApp.user.mongoId,
           relatedObjectType: "Parcel",
@@ -222,7 +216,7 @@ export default function ParcelCard(props) {
           <CardActions classes={{ root: classes.cardAction }}>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails(2) }}
+              onClick={() => handleOpenDetails(3)}
             >
               <div className={classes.iconContainer}>
                 <WellIcon
@@ -249,7 +243,7 @@ export default function ParcelCard(props) {
             </Button>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails(0) }}
+              onClick={() => handleOpenDetails(1)}
             >
               <div className={classes.iconContainer}>
                 <OwnershipIcon
@@ -275,7 +269,7 @@ export default function ParcelCard(props) {
             </Button>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails(3) }}
+              onClick={() => handleOpenDetails(4)}
             >
               <div className={classes.iconContainer}>
                 <DescriptionIcon
@@ -302,7 +296,7 @@ export default function ParcelCard(props) {
             </Button>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails() }}
+              onClick={() => handleOpenDetails(0)}
             >
               <div className={classes.iconContainer}>
                 <LayerIcon

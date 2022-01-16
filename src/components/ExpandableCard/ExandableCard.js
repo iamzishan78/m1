@@ -1,52 +1,47 @@
 import React, { useEffect, useContext, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from "@material-ui/core/CardContent";
-import IconButton from "@material-ui/core/IconButton";
+import { makeStyles } from "@material-ui/core/styles";
+import { Avatar, Box, Grid, Breadcrumbs, Typography, Card, CardHeader, CardContent, IconButton, Tooltip, Dialog, CircularProgress } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
-import ExpandIcon from "./components/svgIcons/ExpandIcon";
-import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
-import Tooltip from "@material-ui/core/Tooltip";
-import Dialog from "@material-ui/core/Dialog";
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
+import FolderIcon from '@material-ui/icons/Folder';
 import { useLazyQuery, useMutation } from "@apollo/client";
 import $ from "jquery";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { ExpandableCardContext } from "./ExpandableCardContext";
+// Components
+import ExpandIcon from "./components/svgIcons/ExpandIcon";
+import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
 import ReportBugModal from "./components/ReportBugModal";
-import { TRACKBYOBJECTID } from "../../graphQL/useQueryTrackByObjectId";
 import TaggerWithIcon from "../Shared/TaggerWithIcon";
 import CommentsWithIcon from "../Shared/CommentsWithIcon";
 import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
 import TrackToggleButton from "../Shared/TrackToggleButton";
 import LinkWithIcon from "../Shared/LinkWithIcon";
-import BugsIcon from "../Shared/svgIcons/bug.js";
 import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
-import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import ContactSearch from "./components/ContactSearch";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-// contexts 
-import { AppContext } from "../../AppContext";
-import { MapControlsContext } from "../MapControls/MapControlsContext";
-import { Avatar, Box, Grid, Breadcrumbs, Typography } from "@material-ui/core";
-import FolderIcon from '@material-ui/icons/Folder';
 import { modifyExandableCardStyle } from "components/Shared/functions/shapeLayer";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
-
-
+// Mutations
+import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
+// Queries
+import { TRACKBYOBJECTID } from "../../graphQL/useQueryTrackByObjectId";
+// contexts 
+import { AppContext } from "../../AppContext";
+import { ExpandableCardContext } from "./ExpandableCardContext";
+import { showInfoMessage } from "actions";
 
 function ExpandableCard(props) {
 
+  // initials
+  const history = useHistory();
+  const dispatch = useDispatch();
+
   // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
-  const history = useHistory();
+  const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
 
-  const [stateExpandableCard, setStateExpandableCard] = useContext(
-    ExpandableCardContext
-  );
+  // States
   const [openBugModal, setOpenBugModal] = useState(false);
   const [toggleExpand, setToggleExpand] = useState(false);
   const [isExpanded, setExpanded] = useState([]);
@@ -59,7 +54,7 @@ function ExpandableCard(props) {
   const [mouseY] = useState(props.mouseY);
   const [position] = useState(props.position);
   const [cardHeight] = useState(props.cardHeight);
-  const [zIdx, setZidx] = useState(props.zIndex);
+  // const [zIdx, setZidx] = useState(props.zIndex);
   const [cardLeft, setCardLeft] = useState(props.cardLeft);
   const [cardTop, setCardTop] = useState(props.cardTop);
   const [cardHeightExpanded] = useState(props.cardHeightExpanded);
@@ -68,9 +63,11 @@ function ExpandableCard(props) {
   const [target, setTarget] = useState({});
   const [targetSourceId] = useState(props.targetSourceId);
   const [targetLabel] = useState(props.targetLabel);
-  const theme = useTheme();
   const [openDialog, setOpenDialog] = useState(false);
-  const [updateCustomLayer, { loading: isDeletingCustomLayer }] = useMutation(
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Mutation
+  const [, { loading: isDeletingCustomLayer }] = useMutation(
     UPDATECUSTOMLAYER,
     {
       update(
@@ -97,11 +94,9 @@ function ExpandableCard(props) {
     }
   );
 
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  // Queries
+  const [trackByObjectId, { data: dataTrack }] = useLazyQuery(TRACKBYOBJECTID);
 
-  useEffect(() => {
-    setTitle(props.title);
-  }, [props.title, props.targetLabel]);
 
   const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(stateApp.selectedShape || stateApp.selectedParcel)
 
@@ -158,18 +153,18 @@ function ExpandableCard(props) {
       fontSize: "11px",
 
     },
-    breadcrumb:{
+    breadcrumb: {
       backgroundColor: "#F2F2F2",
       padding: "15px 20px"
 
     },
-    breadcrumbDiv:{
+    breadcrumbDiv: {
       display: "flex",
       color: "#18AADD",
       fontSize: "16px",
       cursor: "pointer",
     },
-    agreementLink:{
+    agreementLink: {
       cursor: "pointer",
       "&:hover": {
         textDecoration: "underline",
@@ -226,15 +221,30 @@ function ExpandableCard(props) {
         color: '#1a2341',
         fontSize: '2.3rem'
       }
+    },
+    breadcrumContainer: {
+      padding: "15px",
+      background: "white",
+      color: "lightgrey",
+    },
+    prevlocation: {
+      marginLeft: "10px",
+      fontSize: "16px",
+      cursor: "pointer",
+      '&:hover': {
+        color: "#18AADD",
+        textDecoration: "underline"
+      }
+    },
+    currentLocation: {
+      color: "#18AADD", fontSize: "16px"
     }
   }));
 
   const classes = useStyles();
 
-  const [
-    trackByObjectId,
-    { loading: loadingTrack, data: dataTrack },
-  ] = useLazyQuery(TRACKBYOBJECTID);
+  //  UseEffects
+  useEffect(() => { setTitle(props.title); }, [props.title, props.targetLabel]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId && targetSourceId) {
@@ -245,24 +255,34 @@ function ExpandableCard(props) {
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.user.mongoId, targetSourceId]);
 
-  useEffect(() => {
-    if (dataTrack) {
-      setTarget({
-        isTracked: dataTrack.trackByObjectId ? true : false,
-      });
-    }
-  }, [dataTrack]);
+  useEffect(() => { if (dataTrack) setTarget({ isTracked: dataTrack.trackByObjectId ? true : false }); }, [dataTrack]);
+
+  // useEffect(() => { setZidx(props.zIndex); }, [props.zIndex]);
 
   useEffect(() => {
-    setZidx(props.zIndex);
-  }, [props.zIndex]);
+    setWidth(cardWidth);
+    setHeight(cardHeight);
+    if (props.expanded) handleExpand();
+    else handleShrink();
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.expanded]);
+
+  useEffect(() => {
+    ///Set body style overflow hidden when card is fully expanded
+    const disableBodyScrollBarIfExpanded = () => { if (width === '100%') document.body.style.overflow = 'hidden'; };
+
+    disableBodyScrollBarIfExpanded();
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [openDialog, props.targetLabel, isExpanded, width]);
+
+  // functions
   const handleExpand = () => {
-
-    // if (parent === "map" && $("#popupContainer").length) {
-    // }
 
     if (toggleExpand === false) {
       setToggleExpand(true);
@@ -278,13 +298,9 @@ function ExpandableCard(props) {
 
 
     if (props.targetLabel === "well" || props.targetLabel === "expandedWell") {
-      const newPath = `/map/wells/${stateApp.selectedWell.id}/${stateApp.wellSelectedCoordinates[1]}/${stateApp.wellSelectedCoordinates[0]}`;
-      history.location.pathname !== newPath && history.replace(newPath)
-      setStateApp((state) => ({
-        ...state,
-        wellDetailCardOpen: true,
-        popupOpen: false,
-      }));
+      const newPath = `/map/wells/${stateApp.selectedWell.id}`;
+      history.location.pathname !== newPath && history.replace(newPath, {...history.location.state})
+      setStateApp((state) => ({ ...state, wellDetailCardOpen: true, popupOpen: false }));
 
 
     } else if (props.targetLabel === "parcel" || props.targetLabel === "expandedParcel") {
@@ -299,16 +315,6 @@ function ExpandableCard(props) {
     setStateApp((state) => ({ ...state, expandedCard: true }));
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
   };
-
-  useEffect(() => {
-    setWidth(cardWidth);
-    setHeight(cardHeight);
-    if (props.expanded) {
-      handleExpand();
-    } else {
-      handleShrink();
-    }
-  }, [props.expanded]);
 
   const handleShrink = () => {
     if (parent === "map" && $("#popupContainer").length) {
@@ -325,6 +331,10 @@ function ExpandableCard(props) {
 
   const handleClose = () => {
     if (parent === "map") {
+      if (stateApp?.selectedShape?.type === 'agreement' && !stateApp?.selectedShape?.feature?.properties?.agreementNumber) {
+        dispatch(showInfoMessage("Agreement Number is required"));
+        return
+      }
       if ($("#tempPopupHolder").length) {
         let popUps = document.getElementsByClassName("mapboxgl-popup");
         if (popUps[0]) popUps[0].remove();
@@ -346,6 +356,15 @@ function ExpandableCard(props) {
     props.handleCloseExpandableCard();
     //if EC is inside map popup you need to close it
   };
+
+  const setDefaulTab = () => {
+    if (props.targetLabel === "parcel") {
+      setStateApp((state) => ({
+        ...state,
+        parcelDetailCardTabIndex: 0,
+      }));
+    }
+  }
 
   const getTitle = () => {
 
@@ -383,33 +402,33 @@ function ExpandableCard(props) {
             <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
           }
 
-          {(targetLabel === "parcel") && (props.expanded === true) &&
-            <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
-              <Grid item><Avatar color='#1a2341'>
-                <FolderIcon fontColor='#1a2341' />
-              </Avatar>
+            {(targetLabel === "parcel") && (props.expanded === true) &&
+              <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+                <Grid item><Avatar color='#1a2341'>
+                  <FolderIcon fontColor='#1a2341' />
+                </Avatar>
+                </Grid>
+                <Grid item>
+                  <Box className='name'>
+                    {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
+                  </Box>
+                  {subTitle && (<Box className='description'>{subTitle}</Box>)}
+                  <Box className='type' >Tract</Box>
+                </Grid>
               </Grid>
-              <Grid item>
-                <Box className='name'>
+            }
+
+            {(targetLabel === "parcel") && (props.expanded === false) && (
+              <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+                <Box className='name'
+                  style={{
+                    fontSize: 14,
+                    marginTop: -6
+                  }}>
                   {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
                 </Box>
-                {subTitle && (<Box className='description'>{subTitle}</Box>)}
-                <Box className='type' >Tract</Box>
               </Grid>
-            </Grid>
-          }
-
-          {(targetLabel === "parcel") && (props.expanded === false) && (
-            <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
-              <Box className='name'
-                style={{
-                  fontSize: 14,
-                  marginTop: -6
-                }}>
-                {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
-              </Box>
-            </Grid>
-          )}
+            )}
 
             {
               (targetLabel === "contact"
@@ -431,10 +450,6 @@ function ExpandableCard(props) {
 
   const openConfirmationDialog = () => {
     setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
   };
 
   const deleteFunc = async () => {
@@ -483,24 +498,26 @@ function ExpandableCard(props) {
       currentFeature: state.selectedParcel?.feature || state.selectedShape?.feature,
       featureToEdit: state.selectedParcel?.feature || state.selectedShape?.feature,
       openDrawShapesControl: true,
+      editParcelAndShape: true,
       editDraw: true,
     }));
     handleClose();
   };
 
-  useEffect(() => {
-    ///Set body style overflow hidden when card is fully expanded
-    const disableBodyScrollBarIfExpanded = () => {
-      if (width === '100%') {
-        document.body.style.overflow = 'hidden';
-      }
-    };
-
-    disableBodyScrollBarIfExpanded();
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [openDialog, props.targetLabel, isExpanded, width]);
+  // BreadCrum for Document's well
+  const DisplayBreadCrums = () => {
+    return <div className={classes.breadcrumContainer}>
+      <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+        <Typography className={classes.prevlocation} color="inherit" onClick={() => { setStateApp({ ...stateApp, DocumentDrawer: false }); history.push('/documents'); }}>
+          Documents
+        </Typography>
+        <Typography className={classes.prevlocation} color="inherit" onClick={() => { setStateApp({ ...stateApp, DocumentDrawer: true }); history.push('/documents'); }}>
+          Wells
+        </Typography>
+        <Typography className={classes.currentLocation}> {title.toUpperCase()}</Typography>
+      </Breadcrumbs>
+    </div>
+  }
 
   return (
     <React.Fragment>
@@ -510,13 +527,13 @@ function ExpandableCard(props) {
         <Dialog
           className={classes.dialog}
           open={openDialog ? true : false}
-          onClose={handleCloseDialog}
+          onClose={() => setOpenDialog(false)}
           fullWidth={false}
           maxWidth="sm"
         >
           <DeleteConfirmationDialogContent
             header={`Delete ${targetLabel === "expandedParcel" ? "parcel" : targetLabel}`}
-            onClose={handleCloseDialog}
+            onClose={() => setOpenDialog(false)}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => { }}
@@ -527,7 +544,6 @@ function ExpandableCard(props) {
       )}
 
 
-
       <Card className={classes.card}>
 
         {/* Modal popup for reporting bugs on expandable card  */}
@@ -535,6 +551,9 @@ function ExpandableCard(props) {
           open={openBugModal}
           onClose={() => setOpenBugModal(false)}
         />
+
+        {(history.location?.state?.showWellBreadcrumb) && <DisplayBreadCrums />}
+
         {(history.location?.state?.showAgreementBreadcrumb || history.location?.state?.showTractsBreadcrumb) && (
           <Grid container spacing={2} alignItems="center" className={classes.breadcrumb}>
             <Breadcrumbs
@@ -633,26 +652,6 @@ function ExpandableCard(props) {
                   />
                 )}
 
-              {/* 
-              {stateExpandableCard.expanded &&
-                targetLabel !== "activity" &&
-                targetLabel !== "contact" &&
-                targetLabel !== "parcel" &&
-                targetLabel !== "expandedParcel" && (
-
-                  <Tooltip title={"Report Bug"} placement="top">
-                    <IconButton
-                      size="medium"
-                      onClick={() => setOpenBugModal(true)}
-                      className={classes.icons}
-                    >
-                      <BugsIcon viewBox="0 0 64 64" color="white" />
-                    </IconButton>
-                  </Tooltip>
-
-                )} */}
-
-
               {stateExpandableCard.expanded &&
                 (["activity", "parcel", "expandedParcel"].includes(targetLabel) || stateApp.selectedShape) &&
 
@@ -728,7 +727,7 @@ function ExpandableCard(props) {
                     <Tooltip title={"Expand"} placement="top">
                       <IconButton
                         size="small"
-                        onClick={handleExpand}
+                        onClick={() => { handleExpand(); setDefaulTab(); }}
                         aria-label="expand"
                         className={classes.icons}
                       >
@@ -740,13 +739,7 @@ function ExpandableCard(props) {
 
 
               <Tooltip title={"Close"} placement="top">
-                <IconButton
-                  size={stateExpandableCard.expanded ? "medium" : "small"}
-                  onClick={handleClose}
-
-                  aria-label="close"
-                  className={classes.icons}
-                >
+                <IconButton size={stateExpandableCard.expanded ? "medium" : "small"} aria-label="close" className={classes.icons} onClick={handleClose}>
                   <CloseIcon color="secondary" />
                 </IconButton>
               </Tooltip>
@@ -757,13 +750,7 @@ function ExpandableCard(props) {
           title={getTitle()}
 
           // Expandable Card Secondary Header 
-          subheader={
-            subTitle
-              ? subTitle.length > 35
-                ? `${subTitle.substr(0, 35)}...`
-                : subTitle
-              : ""
-          }
+          subheader={subTitle ? subTitle.length > 35 ? `${subTitle.substr(0, 35)}...` : subTitle : ""}
         />
 
         <CardContent className={classes.content}>

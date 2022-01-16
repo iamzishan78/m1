@@ -12,7 +12,7 @@ const RevenueStatementHeadCells = [
     options: {
       sort: true,
       filter: true,
-      customBodyRender: (value, tableMeta, updateValue) => {
+      customRender: (value, tableMeta, updateValue) => {
         return (
           value ?
             <p
@@ -43,7 +43,7 @@ const RevenueStatementHeadCells = [
     options: {
       sort: true,
       filter: true,
-      customBodyRender: (value) => {
+      customRender: (value) => {
         return value ? <p style={{ fontWeight: 600 }}>{value ? `$${value}` : ''}</p> : <p style={{ color: '#898989b0' }}>N/A</p>;
       },
     },
@@ -129,25 +129,6 @@ const RevenueStatementHeadCells = [
           key: "Potential Issues",
         },
       ],
-    }
-  },
-  {
-    name: "sourceId", label: "Check ID", esKey: 'sourceId.keyword', options: { sort: true, filter: true }
-  },
-  {
-    name: "status", label: "Status", esKey: 'status.keyword', options: { sort: true, filter: true }
-  },
-  {
-    name: "commentsCounter",
-    label: " ",
-    options: {
-      dbName: "comments.comment",
-      filter: false,
-      searchable: false,
-      sort: true,
-      download: false,
-      print: false,
-      viewColumns: false,
     }
   },
 ];

@@ -37,7 +37,7 @@ const AssociateContactWellHeadCells = [
   { name: "interest", label: "Interest" },
   {
     name: "value", label: "Tax Value", options: {
-      customBodyRender: (value) => {
+      customRender: (value) => {
         if (value) {
           return vf_currency(value)
         }
@@ -47,7 +47,7 @@ const AssociateContactWellHeadCells = [
   },
   {
     name: "nra", label: "NRA", options: {
-      customBodyRender: (value) => {
+      customRender: (value) => {
         let nra = value;
         if (nra && nra.toString().split('.').length > 0 && nra.toString().split('.')[1].length > 6) {
           return nra.toFixed(6)

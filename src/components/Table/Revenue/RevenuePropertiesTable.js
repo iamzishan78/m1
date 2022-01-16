@@ -64,7 +64,7 @@ function RevenuePropertiesTable(props) {
   React.useEffect(() => {
     const statusIndex = columns.findIndex((c) => c.name === "status");
     if (statusIndex !== -1) {
-      columns[statusIndex].options.customBodyRender = (value, tableMeta) => (
+      columns[statusIndex].options.customRender = (value, tableMeta) => (
         <>
           {!tableMeta.rowData[8] ? (
             <div

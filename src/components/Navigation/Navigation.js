@@ -1,6 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
 import { NavigationContext } from "./NavigationContext";
-
 // contexts
 import { AppContext } from "AppContext";
 import { MapGridContext } from "../../components/MapGridCard/MapGridContext.js";
@@ -391,7 +390,7 @@ export default function Navigation(props) {
                   <DocumentSearch />
                 </>
               )}
-              {location.pathname === "/contacts" && <ContactSearch />}
+              {(location.pathname === "/contacts" || location.pathname === "/contacts/") && <ContactSearch />}
               {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
 
               {location.pathname.startsWith("/flow") && <DealSearch />}
@@ -407,7 +406,9 @@ export default function Navigation(props) {
               {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
               {(matchFind || matchDocument) && (
-                <div className={classes.search} id="searchBarDivParent">
+                <div
+                  className={classes.search} id="searchBarDivParent"
+                >
                   <SearchBarWithToggleButton />
                 </div>
               )}

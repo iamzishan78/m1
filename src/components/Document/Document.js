@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -33,12 +33,29 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DocumentComponent() {
   const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   let history = useHistory();
 
   const onCloseHandler = () => {
     history.push('/documents');
+    setStateApp((state) => ({
+      ...state,
+      pdfView: null,
+      viewDoc: null,
+    }));
   }
+
+  useEffect(() => {
+    return () => {
+        setStateApp((state) => ({
+          ...state,
+          pdfView: null,
+          viewDoc: null,
+          selectedDocument: {},
+          DocumentDrawer: false
+        }));
+    }
+  },[])
 
   return (
     <div className={classes.root}>
