@@ -83,6 +83,7 @@ body {
 
 #TaskTemplateDatePopover,
 #SubtaskAssigneePopover,
+#RevenueSummaryProduct,
 .MuiPopover-root {
   z-index: 1301 !important;
 }
