@@ -349,7 +349,7 @@ const SummarySection = ({ checkId }) => {
 
                       <div className="flex" style={{ minWidth: "60px", alignItems: "center", justifyContent: "center" }}>
                         <Typography varient="h6" className={classes.textTransform}>
-                          {`${item.value || 0}`}
+                          {item.value}
                         </Typography>
                       </div>
                     </div>

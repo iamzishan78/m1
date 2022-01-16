@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
+import { copy } from 'utils/helper';
 
 // Revenue Chart
 export default function PieChart({ chartData = [], type = "" }) {
@@ -9,8 +10,9 @@ export default function PieChart({ chartData = [], type = "" }) {
 
   useEffect(() => {
     let data = [];
+    data = copy(chartData);
     if (type === "revenue") {
-      data = chartData
+      data = data
         .map((item) => {
           item.value = item.value.replace("-", "").replace("(", "").replace(")", "");
           return item;
@@ -18,7 +20,7 @@ export default function PieChart({ chartData = [], type = "" }) {
         .filter((item) => item.value)
         .map((item) => ({ category: item.name, value: Number(item.value) }));
     } else if (type === "adjustments") {
-      data = chartData.filter((a) => a.value).map((adjustment) => ({ category: adjustment.name, value: Number(adjustment.value) }));
+      data = data.filter((a) => a.value).map((adjustment) => ({ category: adjustment.name, value: Number(adjustment.value) }));
     }
     setData(data);
   }, [chartData, type]);
