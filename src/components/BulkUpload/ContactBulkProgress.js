@@ -53,7 +53,22 @@ const ContactBulkProgress = () => {
           }
         }
       })
-    }  
+    }
+
+    const downloadResults = async (job, onCloseToast) => {
+      if (job?.resultsPayload?.datasets) {
+        for (const dataset of job?.resultsPayload?.datasets) {
+        // job?.resultsPayload?.datasets.map(async (dataset) => {
+          let a = document.createElement("a");
+          a.href = dataset.uri;
+          a.download = dataset.fileName;
+          a.click();
+
+          await new Promise(resolve => setTimeout(resolve, 1 * 300));
+        }
+        onCloseToast(job._id)
+      }
+    }
   
     const createOrUpdateToast = (state) => {
       for(let i = 0; i < dataJobs.getJobsStatus.jobs.length; i++){
@@ -76,6 +91,7 @@ const ContactBulkProgress = () => {
         }else{
           if(dataJobs.getJobsStatus.jobs[i].status === 'Completed'){
             Loader.successToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast)
+            downloadResults(dataJobs.getJobsStatus.jobs[i], onCloseToast);
           }
           else if(dataJobs.getJobsStatus.jobs[i].status === 'Failed'){
             Loader.errorToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast)

@@ -65,22 +65,22 @@ export const formatTaxOwners = (owners, formData) => {
         .join(" ");
     }
     updateOwners.push({
-      lastName,
-      firstName,
-      middleName,
+      "entityDetail.lastName": lastName,
+      "entityDetail.firstName": firstName,
+      "entityDetail.middleName": middleName,
       createBy: formData.userId,
       tags: formData.tags,
-      name: newFullName,
+      "entityDetail.name": newFullName,
       lastUpdateBy: formData.userId,
       campaignName: formData.campaign?.name,
-      zip: owners[i].Zip,
-      city: owners[i].City,
-      state: owners[i].State,
+      "entityDetail.zip": owners[i].Zip,
+      "entityDetail.city": owners[i].City,
+      "entityDetail.state": owners[i].State,
       status: formData.contactStatus,
       contactOwner: formData.contactOwner,
       ownerType: owners[i].OwnerType,
-      address1: owners[i].StreetAddress,
-      globalOwner: owners[i].globalOwnerId,
+      "entityDetail.address1": owners[i].StreetAddress,
+      "entityDetail.globalOwner": owners[i].globalOwnerId,
     });
   }
   return updateOwners;

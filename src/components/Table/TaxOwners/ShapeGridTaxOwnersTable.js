@@ -79,7 +79,8 @@ function ShapeGridTaxOwnersTable(props) {
         });
         getShapeOwnersCount({
             variables: {
-                polygon: stateApp.gridPolygonString,
+                // polygon: stateApp.gridPolygonString,
+                polygon: stateApp?.currentFeature?.geometry?.coordinates[0]
             },
         });
     }, [props.parent]);
