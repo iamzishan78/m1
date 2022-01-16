@@ -272,9 +272,16 @@ const SummarySection = ({ checkId }) => {
         { name: "Gross Revenue", value: `${revSummary?.grossRevenue?.value.toFixed(2)}` },
         { name: "Adjustments", value: `(${(revSummary?.ownerDeducts?.value + revSummary?.ownerTax?.value).toFixed(2)})` },
         { name: "Net Revenue", value: `${(revSummary?.netOwnerValue?.value).toFixed(2)}` },
-        { name: "Lease Payments", value: "-" },
-        { name: "Other", value: "-" },
-        { name: "Total Income", value: "-" },
+        { name: "Lease Payments", value: revSummary?.leasePayments?.value ? `${revSummary.leasePayments.value.toFixed(2)}` : "-" },
+        { name: "Other", value: revSummary?.other?.value ? `${revSummary.other.value.toFixed(2)}` : "-" },
+        {
+          name: "Total Income",
+          value: `${(
+            get(revSummary, "netOwnerValue.value", 0) +
+            get(revSummary, "leasePayments.value", 0) +
+            get(revSummary, "other.value", 0)
+          ).toFixed(2)}`,
+        },
       ]);
     }
   }, [revSummary]);
@@ -284,8 +291,8 @@ const SummarySection = ({ checkId }) => {
     if (prodSummary) {
       const products = ["OIL", "GAS", "NGL", "OTHER"];
       let buckets = [];
-      products.forEach(p => {
-        const index = prodSummary?.product?.buckets.findIndex(b => b.key === p);
+      products.forEach((p) => {
+        const index = prodSummary?.product?.buckets.findIndex((b) => b.key === p);
         if (index !== -1) buckets.push(prodSummary?.product?.buckets[index]);
       });
 
@@ -374,7 +381,7 @@ const SummarySection = ({ checkId }) => {
           <Grid item xs={5}>
             <div className={classes.graphCard}>
               <ProductDropdown />
-              <BarChartWithController />
+              <BarChartWithController productSummaryDetails={productSummaryDetails} />
             </div>
           </Grid>
           <Grid item xs={5}>

@@ -13,11 +13,11 @@ export default function PieChart({ chartData = [], type = "" }) {
     data = copy(chartData);
     if (type === "revenue") {
       data = data
+        .filter(item => item.value)
         .map((item) => {
           item.value = item.value.replace("-", "").replace("(", "").replace(")", "");
           return item;
         })
-        .filter((item) => item.value)
         .map((item) => ({ category: item.name, value: Number(item.value) }));
     } else if (type === "adjustments") {
       data = data.filter((a) => a.value).map((adjustment) => ({ category: adjustment.name, value: Number(adjustment.value) }));
