@@ -325,10 +325,19 @@ const SummarySection = ({ checkId }) => {
       const taxes =
         taxType?.buckets?.length > 0 && taxType?.buckets?.map((item) => ({ name: item.key, value: (item.ownerTax?.value).toFixed(2) }));
 
-      const adjustments = [...deducts, ...taxes, { name: "Total Adjustments", value: "" }];
+      const adjustments = [...deducts, ...taxes];
+      let totalAdjustment = 0;
+      adjustments.forEach((a) => {
+        totalAdjustment += parseFloat(a.value);
+      });
+      adjustments.push({ name: "Total Adjustments", value: `${totalAdjustment}` });
       setAdjustmentSummaryDetails(adjustments);
     }
   }, [adjSummary]);
+
+  const wrapWithBrackets = (string) => {
+    return `${string ? `(${string})` : "-"}`;
+  };
 
   return (
     <div className={`${classes.root} flex column justifyStart alignStart w-100`}>
@@ -474,7 +483,7 @@ const SummarySection = ({ checkId }) => {
 
                       <div className="flex" style={{ minWidth: "60px", alignItems: "center", justifyContent: "center" }}>
                         <Typography varient="h6" className={classes.textTransform}>
-                          {`${item.value ? `(${item.value})` : "-"}`}
+                          {item.name === "Total Adjustments" ? item.value : wrapWithBrackets(item.value)}
                         </Typography>
                       </div>
                     </div>
