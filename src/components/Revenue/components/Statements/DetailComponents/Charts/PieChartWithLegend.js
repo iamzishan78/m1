@@ -76,6 +76,7 @@ export default function PieChart({ chartData = [], type = "" }) {
       label.horizontalCenter = "middle";
       label.verticalCenter = "middle";
       label.fontSize = 30;
+      label.fontWeight = "bold";
     }
 
     chart.legend.valueLabels.template.text = "";
