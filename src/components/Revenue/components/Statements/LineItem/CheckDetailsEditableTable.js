@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Paper, Button } from "@material-ui/core";
-import Table from "components/Shared/M1nTable/components/Table";
+
 import TableHOC from "components/Table/TableHOC";
 
 // QUERIES 
@@ -18,7 +18,8 @@ import { usetableStyles } from "components/Table/Styles";
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import get from 'lodash/get'
 import set from 'lodash/set'
-import { Grid as TableGrid, Input, Select } from 'components/Shared/SpreadsheetGrid'
+import { Grid as TableGrid, Input } from 'components/Shared/SpreadsheetGrid'
+import Typography from '@material-ui/core/Typography';
 import { AutoCompleteField } from "./AutoCompleteField";
 import { UPDATE_CHECK_DETAIL } from "graphQL/useMutationUpdateCheckDetail";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -301,16 +302,26 @@ function CheckDetailsEditableTable(props) {
 
     return (
         <Paper elevation={3} >
-            <Grid container>
-                <Grid item>
-                    <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-                        <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={addNewRow}  >
-                            + Input Details
-                        </Button>
-                    </div>
+            <Grid container style={{ backgroundColor: "#F2F2F2" }} >
+
+                <Grid item md={12} style={{ border: '1px solid #c1c1c1', paddingBottom: '10px' }}>
+                    <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: 'space-between' }}>
+                        <Grid item>
+                            <Typography variant="h6" component="h2" style={{ marginLeft: "15px", marginTop: "5px" }}>
+                                Check Details
+                            </Typography>
+                        </Grid>
+                        <Grid item>
+                            <div style={{ marginRight: "15px", marginTop: "5px" }}>
+                                <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={addNewRow}  >
+                                    Add new line item
+                                </Button>
+                            </div>
+                        </Grid>
+                    </Grid>
                 </Grid>
                 <Grid item style={{
-                    marginTop: "10px", backgroundColor: "#fff", overflow: "scroll", maxHeight: "500px",
+                    backgroundColor: "#fff", overflow: "scroll", maxHeight: "500px",
                     display: "flex",
                     flexDirection: "column-reverse"
                 }} id='scrollableDiv'>
@@ -370,7 +381,7 @@ function CheckDetailsEditableTable(props) {
                 </Grid>
             </Grid>
 
-        </Paper>
+        </Paper >
     );
 }
 
