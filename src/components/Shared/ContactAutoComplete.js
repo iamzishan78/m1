@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function ContactAutoComplete({ value, onChange, onKeyDown, onBlur }) {
+export default function ContactAutoComplete({ value, onChange, onKeyDown, onBlur, contactValue }) {
     let classes = useStyles();
     const [users, setUsers] = useState([]);
 
@@ -33,7 +33,7 @@ export default function ContactAutoComplete({ value, onChange, onKeyDown, onBlur
         if (userLists && userLists.allMongoUsers) {
             setUsers(
                 userLists.allMongoUsers.map((user) => ({
-                    value: user._id,
+                    value: contactValue === 'email' ? user.email : user._id,
                     text: user.displayName || user.name
                 }))
             );
