@@ -64,7 +64,7 @@ function RevenuePropertiesTable(props) {
   React.useEffect(() => {
     const statusIndex = columns.findIndex((c) => c.name === "status");
     if (statusIndex !== -1) {
-      columns[statusIndex].options.customBodyRender = (value, tableMeta) => (
+      columns[statusIndex].options.customRender = (value, tableMeta) => (
         <>
           {!tableMeta.rowData[8] ? (
             <div
@@ -159,6 +159,20 @@ function RevenuePropertiesTable(props) {
       default:
     }
   };
+
+  React.useEffect(() => {
+    if (revenueProperties?.data) {
+      const activeCount = revenueProperties?.data.filter((item) => {
+        if (Date.parse(item.lastChecked) > Date.parse(new Date((new Date).setMonth((new Date).getMonth() - 3)).toISOString())) {
+          return item;
+        }
+      });
+      const ummappedCount = revenueProperties?.data.filter((item) => item.status != "approved");
+      props.cardSummary(revenueProperties?.data.length, activeCount.length, revenueProperties?.data.length - activeCount.length, ummappedCount.length);
+    } else {
+      props.cardSummary(0, 0, 0, 0);
+    }
+  }, [revenueProperties]);
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>

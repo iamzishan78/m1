@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { InputAdornment, TextField, IconButton, Tooltip } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
@@ -61,6 +61,16 @@ const LandSearch = () => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    return () =>{
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        landSearchQuery: "",
+        // isLandSearching: true,
+      }));
+    }
+  }, []);
 
   return (
     <div className={classes.search}>

@@ -34,11 +34,11 @@ function* getShapeOwnersAndCount(action) {
   try {
     const { currentFeature, userId } = action.payload;
     const polygon = getSelectedFeaturePolygonString(currentFeature);
-    const shapeOwnerCount = yield call(Api.fetch, SHAPEOWNERSCOUNT, {
+    const shapeOwnerCount = yield call(Api.query, SHAPEOWNERSCOUNT, {
       polygon: currentFeature?.geometry?.coordinates[0],
     });
 
-    const shapeOwner = yield call(Api.fetch, SHAPE_OWNERS, {
+    const shapeOwner = yield call(Api.query, SHAPE_OWNERS, {
       polygon,
       userId,
       pagination: {
@@ -114,7 +114,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
   try {
     const { currentFeature, filters, search, userId } = action.payload;
 
-    const wellsCount = yield call(Api.fetch, GET_ES_PAGINATED_LIST, {
+    const wellsCount = yield call(Api.query, GET_ES_PAGINATED_LIST, {
       esIndex: "platformData:wells",
       search,
       filters,
@@ -125,7 +125,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
       },
     });
 
-    const wells = yield call(Api.fetch, GET_ES_PAGINATED_LIST, {
+    const wells = yield call(Api.query, GET_ES_PAGINATED_LIST, {
       esIndex: "platformData:wells",
       search,
       filters,
@@ -142,7 +142,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
     let taxOwners = [];
 
     if(wellIds?.length > 0){
-      taxOwners = yield call(Api.fetch, OWNERS_BY_WELL_IDS, {
+      taxOwners = yield call(Api.query, OWNERS_BY_WELL_IDS, {
         wellIds: wellIds,
         selectedYear: "2021",
       });

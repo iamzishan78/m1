@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+
 import { useLazyQuery } from "@apollo/client";
 
 import { makeStyles, withStyles } from "@material-ui/styles";
@@ -17,14 +18,19 @@ import {
   Close as CloseIcon,
 } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
+
 import { GET_PROPERTY_DETAILS } from "graphQL/useQueryGetPropertyDetails";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
+
+import { GET_PROPERTY } from "graphQL/useQueryGetProperty";
+
 
 import Tagger from "components/Shared/Tagger";
 import PropertyInterestDetailsSection from "./PropertyInterestDetailsSection";
 import InterestDetailForm from "./InterestDetailForm";
 // Components
 import HeaderSection from "./HeaderSection";
+import moment from "moment";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -172,10 +178,15 @@ export default function DetailComponents(props) {
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
 
-  const [getPropertyDetails, { data: propertyData }] = useLazyQuery(GET_PROPERTY_DETAILS, {
-    fetchPolicy: `network-only`,
+  const [getProperty, { data: getPropertyResult }] = useLazyQuery(GET_PROPERTY, {
+    fetchPolicy: "no-cache",
   });
+
   const [checkIfOwnersAreContacts, { data: checkIfOwnersAreContactsData }] = useLazyQuery(IFARECONTACTS, { fetchPolicy: "cache-and-network", });
+
+  const propertyDetails = getPropertyResult?.getProperty.property;
+
+  console.log('propertyDetails', propertyDetails)
 
   useEffect(() => {
     selectedTabRef.current &&
@@ -185,6 +196,7 @@ export default function DetailComponents(props) {
         inline: "start",
       });
   }, [tab]);
+
 
   useEffect(() => {
     if(checkIfOwnersAreContactsData?.ifAreContacts?.length > 0){
@@ -196,26 +208,22 @@ export default function DetailComponents(props) {
   },[checkIfOwnersAreContactsData])
 
   useEffect(() => {
-    if(propertyData?.getPropertyDetails){
-      if(propertyData.getPropertyDetails.owner){
+      if(propertyDetails?.owner){
         checkIfOwnersAreContacts({
           variables: {
-            idsArray: [propertyData.getPropertyDetails.owner]
+            idsArray: [propertyDetails.owner]
           }
         })
       }
 
-    }
-
-  },[propertyData])
+  },[propertyDetails])
 
   useEffect(() => {
-    getPropertyDetails({
-      variables: {
-        id: propertyId
-      }
-    })
+    getProperty({
+      variables: { id: propertyId },
+    });
   }, [propertyId])
+
 
   return (
     <div className={classes.root}>
@@ -243,20 +251,12 @@ export default function DetailComponents(props) {
                   fontWeight: "bold",
                 }}
                 color="inherit"
-                onClick={() => history.push("/revenue/statements")}
+                onClick={() => history.push("/revenue/properties")}
               >
                 Properties
               </Link>
 
-              <Typography
-                style={{
-                  color: "#18AADD",
-                  fontSize: "16px",
-                  marginLeft: "5px",
-                }}
-              >
-                Sample Property
-              </Typography>
+              {propertyDetails && (<Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}> {propertyDetails.name} </Typography>)}
             </Breadcrumbs>
           </Grid>
           <Grid item>
@@ -276,16 +276,11 @@ export default function DetailComponents(props) {
               <DocumentIcon fontSize="large" />
             </IconButton>
             <div className={classes.titleText}>
-              <Typography
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "large",
-                  textTransform: "uppercase",
-                }}
-              >
-                W144300498 - Williams K 22H
+              {propertyDetails && (<Typography style={{ fontWeight: "bold", fontSize: "large", textTransform: "uppercase" }}>
+                {propertyDetails.name}
               </Typography>
-              <Typography variant="subtitle1">10/3/2021</Typography>
+              )}
+              {propertyDetails && (<Typography variant="subtitle1">{moment(propertyDetails.flatSyncAt).format("DD/MM/yyyy")}</Typography>)}
             </div>
           </div>
           <div className={classes.tags}>

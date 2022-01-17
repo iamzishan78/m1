@@ -70,7 +70,7 @@ const RevenuePropertiesHeadCells = [
   {
     name: "amount",
     label: "Decimal",
-    esKey: "amount.keyword",
+    esKey: "amount",
     options: { sort: true, filter: true },
   },
   {
@@ -83,13 +83,13 @@ const RevenuePropertiesHeadCells = [
   {
     name: "lastChecked",
     label: "Last Check",
-    esKey: "lastCheck.checkDate.keyword",
+    esKey: "lastCheck.checkDate",
     options: { sort: true, filter: true },
   },
   {
     name: "tags",
     label: "Tags",
-    esKey: "tags.keyword",
+    esKey: "tags.tag.keyword",
     options: { sort: true, filter: true },
   },
   {

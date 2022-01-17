@@ -240,15 +240,20 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           ))}
         </div>
 
-        <div style={{
-          paddingLeft: '20px', paddingRight: '20px',
-        }}>
-
-          <hr style={{
-            border: '1px solid #263451',
-            borderRadius: '5px', marginTop: '30px', marginBottom: '10px'
-          }} />
-
+        <div
+          style={{
+            paddingLeft: "20px",
+            paddingRight: "20px",
+          }}
+        >
+          <hr
+            style={{
+              border: "1px solid #263451",
+              borderRadius: "5px",
+              marginTop: "30px",
+              marginBottom: "10px",
+            }}
+          />
         </div>
 
         <StyledListItem2>
@@ -319,7 +324,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           zIndex: "2",
         }}
       >
-
         <StyledMenu
           id="layer-side-panel"
           style={!stateMapControls.expandedPanel ? { display: "none" } : { minWidth: "425px" }}
@@ -394,13 +398,12 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
               (layerMap && layerMap[0]?.type ? (
                 <SortableLayer layerMap={layerMap} panelItems={panelItems} />
               ) : (
-                <Box height="calc(100vh - 50px - 64px)" bgcolor="#0e111a" display="flex" justifyContent="center">
+                <Box height="calc(100vh - 50px - 122px)" bgcolor="#0e111a" display="flex" justifyContent="center">
                   <CircularProgress style={{ top: "50%", position: "absolute" }} size={40} color="secondary" />
                 </Box>
               ))}
             {type === "base" && (
               <>
-
                 <Collapse in={true} timeout="auto" unmountOnExit>
                   {displayList}
                 </Collapse>
