@@ -1,0 +1,149 @@
+import React, { useState, useContext } from "react";
+// import { useHistory } from "react-router-dom";
+import { AppContext } from "AppContext";
+import AnalyticsCards from "components/Land/components/Common/AnalyticsCards";
+import TractsTable from "../../../Table/Tract/TractsTable";
+import TractInterestsTable from "../../../Table/Tract/TractInterestsTable";
+import { setStateIfDeepEqual } from "components/Shared/functions";
+import TabPanels from "components/Shared/TabPanels";
+import TabButtons from "components/Shared/TabPanels/TabButtons";
+
+function Tracts(props) {
+  const [stateApp] = useContext(AppContext);
+  // const history = useHistory();
+
+  const [esFilters, ESFilters] = useState([]);
+  const setESFilters = (newState) => {
+    setStateIfDeepEqual(ESFilters, newState);
+  };
+
+  const [selectedTractTab, setTractSelectedTab] = useState(0);
+  const [tractCount, setTractCount] = useState(0);
+  // const [grossAcresSum, setGrossAcresSum] = useState(0);
+  // const [netAcresSum, setNetAcresSum] = useState(0);
+  // const [netRoyaltyAcresSum, setNetRoyaltyAcresSum] = useState(0);
+  // const [openDrawer, setOpenDrawer] = useState(false);
+
+  const onTractCount = (count) => {
+    setTractCount(count);
+  }
+
+  // const onGrossAcresSum = (sum) => {
+  //   setGrossAcresSum(sum);
+  // }
+
+  // const onNetAcresSum = (sum) => {
+  //   setNetAcresSum(sum);
+  // }
+
+  // const onNetRoyaltyAcresSum = (sum) => {
+  //   setNetRoyaltyAcresSum(sum);
+  // }
+
+  // const handleListItemClick = (path) => {
+  //   history.push(path);
+  //   handleDrawerClose();
+  // };
+
+  // const handleDrawerClose = () => {
+  //   setOpenDrawer(false);
+  // };
+
+  // const cards = [
+  //   {
+  //     heading: "Total Tracts",
+  //     points: tractCount,
+  //   },
+  //   {
+  //     heading: "Gross Acres",
+  //     points: (Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, {maximumFractionDigits: 1}) + 'K',
+  //   },
+  //   {
+  //     heading: "Net Acres",
+  //     points: (Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, {maximumFractionDigits: 1}) + 'K',
+  //   },
+  //   {
+  //     heading: "Net Royalty Acres",
+  //     points: (Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, {maximumFractionDigits: 1}) + 'K',
+  //   },
+  // ];
+
+  const esIndex = ["shapes_flat", "shapeowners_flat"];
+  const tabLabels = ["Tracts", "Tract Interests"]
+
+  let cardsDefault = [
+    {
+      heading: `Total ${tabLabels[selectedTractTab]}`,
+      points: 0,
+    },
+    {
+      heading: "Gross Acres",
+      points: 0,
+    },
+    {
+      heading: "Net Acres",
+      points: 0,
+    },
+    {
+      heading: "Net Royalty Acres",
+      points: 0,
+    },
+  ];
+
+  const TractHeader = ({ selectedTractTab, setTractSelectedTab }) => (
+    <TabButtons
+      labels={tabLabels}
+      value={selectedTractTab}
+      setValue={(n) => {
+        setTractSelectedTab(n);
+      }}
+    />
+  );
+
+  return (
+    <>
+      <AnalyticsCards
+        parent={"Tracts"}
+        esIndex={esIndex[selectedTractTab]}
+        esFilters={esFilters}
+        totalCount={tractCount}
+        setESFilters={setESFilters}
+        cardsDefault={cardsDefault}
+        landSearchQuery={stateApp.landSearchQuery}
+      />
+      <div style={{ padding: 30, paddingTop: 0, overflow: "auto" }}>
+        <TabPanels
+          value={selectedTractTab}
+          panels={[
+            <div>
+              <TractsTable
+                esIndex={esIndex[selectedTractTab]}
+                header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                esFilters={esFilters}
+                parent="TractTable"
+                targetLabel="parcel"
+                setESFilters={setESFilters}
+                onTractCount={onTractCount}
+                landSearchQuery={stateApp.landSearchQuery}
+              />
+            </div>,
+            <div>
+              <TractInterestsTable
+                esIndex={esIndex[selectedTractTab]}
+                header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                esFilters={esFilters}
+                parent="TractInterestsTable"
+                targetLabel="parcel"
+                setESFilters={setESFilters}
+                onTractCount={onTractCount}
+                landSearchQuery={stateApp.landSearchQuery}
+              />
+            </div>
+          ]}
+        />
+      </div>
+    </>
+  )
+}
+
+export default Tracts

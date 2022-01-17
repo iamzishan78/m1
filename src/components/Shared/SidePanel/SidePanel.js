@@ -2,11 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import { useMutation } from "@apollo/client";
 import AddLayerIcon from "@material-ui/icons/Queue";
 import { MapControlsContext } from "../../MapControls/MapControlsContext";
-import { AppContext } from "../../../AppContext";
+import { AppContext } from "AppContext";
 import Panel from "./compoennts/Panel";
-import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
-import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyLayerSettings";
-import { makeStyles } from "@material-ui/core/styles";
+import { UPDATELAYERSETTINGS } from "graphQL/useMutationUpdateLayerSettings";
+import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);

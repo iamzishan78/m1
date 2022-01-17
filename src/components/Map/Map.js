@@ -68,6 +68,7 @@ import { OWNERSQUERY } from "../../graphQL/useQueryOwners";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
 import { ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoContains";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { TENANTWELL } from "graphQL/useQueryTenantWell";
 
 // mutations
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
@@ -387,6 +388,21 @@ function Map({ type, paramId, lati, longi }) {
     };
   };
 
+  useEffect(() => {
+    return () => {
+      setStateApp((state) => ({
+        ...state,
+        popupOpen: false,
+        selectedWell: null,
+        selectedParcel: null,
+        selectedShape: null,
+        selectedPermit: null,
+        expandedCard: false,
+        viewDoc: null,
+      }));
+    }
+  }, []);
+  
   const getElasticWell = async (paramId) => {
     const { data: well } = await client.query({
       query: GET_ES_PAGINATED_LIST,
@@ -400,58 +416,77 @@ function Map({ type, paramId, lati, longi }) {
         sort: [],
       },
     });
-    return well.getESPaginatedList.hits[0]
+    const { data: tenantWell } = await client.query({
+      query: TENANTWELL,
+      variables: {
+         globalWellId: well.getESPaginatedList.hits[0]?.id ,
+      },
+    });
+    return { ...well.getESPaginatedList.hits[0], tenantWellId : tenantWell?.tenantWell?.tenantWellId }
   }
 
 
   async function getCustomLayer() {
     const keys = { parcels: "selectedParcel", ...layersWithSelectedShapeKey(), wells: "selectedWell" };
 
+    if (type === 'parcels') {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        selectedShape: null
+      }));
+    } else {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        selectedParcel: null
+      }));
+    }
     if (type === "wells") {
-      setShowExpandableCard(true);
-      setStateApp({ ...stateApp, selectedWellId: paramId.toLowerCase(), popupOpen: false, expandedCard: true });
       const currentFeature = { ...(await getElasticWell(paramId)) };
       if (currentFeature?.Id) currentFeature.id = currentFeature.Id;
-      setStateApp({ ...stateApp, selectedWell: currentFeature });
-      findBoundsMap([currentFeature.geoJSON], map);
-      drawWellBoundary(map, [currentFeature.Longitude, currentFeature.Latitude]);
+      setStateApp({ ...stateApp, selectedWell: currentFeature, selectedWellId: paramId.toLowerCase(), popupOpen: false, expandedCard: true });
+      setShowExpandableCard(true);
+      if (map) {
+        findBoundsMap([currentFeature.geoJSON], map);
+        drawWellBoundary(map, [currentFeature.Longitude, currentFeature.Latitude]);
+      }
       return;
     }
-    if (!stateApp[keys[type]] || paramId !== stateApp[keys[type]]?.id) {
-      const { data: layer } = await client.query({
-        query: CUSTOMLAYER,
-        variables: {
-          id: paramId,
-        },
-      });
-      if (layer?.customLayer) {
-        let jsonLayer = JSON.parse(layer.customLayer.shape);
-        if (layer.customLayer.shapeJson) jsonLayer = copy(layer.customLayer.shapeJson);
+    // if (!stateApp[keys[type]] || paramId !== stateApp[keys[type]]?.id) {
+    const { data: layer } = await client.query({
+      query: CUSTOMLAYER,
+      variables: {
+        id: paramId,
+      },
+    });
+    if (layer?.customLayer) {
+      let jsonLayer = JSON.parse(layer.customLayer.shape);
+      if (layer.customLayer.shapeJson) jsonLayer = copy(layer.customLayer.shapeJson);
 
-        jsonLayer.layer = { id: layer.customLayer.layer };
-        jsonLayer.id = layer.customLayer._id;
+      jsonLayer.layer = { id: layer.customLayer.layer };
+      jsonLayer.id = layer.customLayer._id;
 
+      if (!loading) {
         findBoundsMap([jsonLayer], map);
 
         drawBoundary(map, jsonLayer);
-
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          [keys[type]]: {
-            ...jsonLayer.properties,
-            feature: jsonLayer,
-            id: layer.customLayer._id,
-          },
-          popupOpen: false,
-          expandedCard: true,
-        }));
       }
+
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        [keys[type]]: {
+          ...jsonLayer.properties,
+          feature: jsonLayer,
+          id: layer.customLayer._id,
+        },
+        popupOpen: false,
+        expandedCard: true,
+      }));
     }
+    // }
   }
 
   useEffect(() => {
     if (
-      !loading &&
       paramId
       // parcelId !== stateApp.selectedParcel?.id
     ) {
@@ -1454,9 +1489,7 @@ function Map({ type, paramId, lati, longi }) {
           selectionLayers: features, layerSelectionPopup: true, popupOpen: true
         }));
 
-      }, 0)
-
-      // console.log(e, features);
+      }, 0);
     }
     if (map) {
       if (mapClick && mapClick.mapClickHandler) {
@@ -4602,8 +4635,8 @@ function Map({ type, paramId, lati, longi }) {
       const geoJson = makeGeoJSON(data);
       const labelGeoJson = makeLabelGeoJson(data);
 
-      map.getSource("abstract_geo_source").setData(geoJson);
-      map.getSource("abstract_label_geo_source").setData(labelGeoJson);
+      map?.getSource("abstract_geo_source").setData(geoJson);
+      map?.getSource("abstract_label_geo_source").setData(labelGeoJson);
     }
   }, [abstractData]);
 

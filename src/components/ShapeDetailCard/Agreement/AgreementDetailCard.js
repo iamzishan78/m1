@@ -19,7 +19,7 @@ import AssociatedWellsShapeTable from "components/Table/Wells/AssociatedWellsSha
 import AgreementOwnersTractsTable from "components/Table/Agreement/AgreementOwnersTractsTable";
 import AssociatedTractsShapeTable from "components/Table/Wells/AssociatedTractsShapeTable";
 import Tags from "components/Shared/Tagger";
-import { showSuccessMessage, showErrorMessage } from "actions";
+import { showSuccessMessage, showErrorMessage, showInfoMessage } from "actions";
 import { AppContext } from "AppContext";
 
 import { copy } from "components/Shared/functions";
@@ -27,13 +27,13 @@ import { detailCardStyles } from "../style";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 
-
 export default function AgreementDetailCard(props) {
   const dispatch = useDispatch();
   const [selectedTab, setSelectedTab] = useState(props.selectTabIndex || 0);
   const [selectedWellTab, setWellSelectedTab] = useState(0);
   const [selectedTractTab, setTractSelectedTab] = useState(0);
   const [uniObj, setUniObj] = useState();
+  const [infoMessage, setInfoMessage] = useState(false);
   const [properties, setProperties] = useState();
   const [_, setStateApp] = useContext(AppContext);
   const [updateCustomLayer, { data: updatedUnit }] = useMutation(UPDATECUSTOMLAYER);
@@ -45,6 +45,19 @@ export default function AgreementDetailCard(props) {
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
   const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
   const [getStandardProvisions, { data: dataStandardProvisions = [] }] = useLazyQuery(GET_STANDARD_PROVISIONS);
+
+  useEffect(() => {
+    return history.listen((location) => {
+      console.log(`You changed the page to: ${location.pathname}`)
+      if (!properties?.agreementNumber && !location.pathname.includes(uniObj._id)) {
+        setStateApp((state) => ({
+          ...state,
+          selectedShape: null,
+        }));
+        history.goBack()
+      }
+    })
+  }, [history, uniObj])
 
   useEffect(() => {
     if (props.id) {
@@ -68,9 +81,14 @@ export default function AgreementDetailCard(props) {
         ...dataCustomLayer.customLayer,
         shape,
       });
+
+      if (!shape.properties.agreementNumber && !infoMessage) {
+        dispatch(showInfoMessage("Agreement Number is required"));
+        setInfoMessage(true)
+      }
       setProperties(shape.properties);
     }
-  }, [dataCustomLayer]);
+  }, [dataCustomLayer?.customLayer]);
 
   useEffect(() => {
     if (updatedUnit) {
@@ -192,7 +210,7 @@ export default function AgreementDetailCard(props) {
     <Grid item sm={12} container className={classes.gridWidthScroll}>
       <Grid item xs={12} style={{ padding: "10px 15px 0px 15px" }} className={classes.border}>
         <div className={classes.tags}>
-          <Tags width="100%" targetSourceId={props.id} targetLabel="unit" publicLeftBottom />
+          <Tags width="100%" targetSourceId={props.id} targetLabel="agreement" publicLeftBottom />
         </div>
       </Grid>
       <Grid item sm={12}>

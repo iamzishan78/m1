@@ -29,6 +29,7 @@ import SectionCard from "./components/SectionCard";
 import AbstractCard from "./components/AbstractCard";
 import AltSurveyCard from "./components/AltSurveyCard";
 import ParcelDetailsMap from "./components/ParcelDetailsMap";
+import Tags from "components/Shared/Tagger";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import SuggestedTaxOwnersTable from "components/Table/TaxOwners/SuggestedTaxOwnersTable";
 import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsParcelTable";
@@ -39,6 +40,7 @@ import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 import { AppContext } from "../../AppContext";
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import ParcelSummary from "./ParcelSummary";
 
 const ENTER_KEY = 13;
 
@@ -214,13 +216,18 @@ const useStyles = makeStyles((theme) => ({
         }
       }
     }
-  }
+  },
+  tags: {
+    '& .MuiOutlinedInput-notchedOutline': {
+      border: 'none'
+    }
+  },
 }));
 
 export default function ParcelsDetailCard(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [selectedTab, setSelectedTab] = useState(props.selectTabIndex || 0);
+  const [selectedTab, setSelectedTab] = useState(0);
   const [parcelObj, setParcelObj] = useState();
   const [parcelProperties, setProperties] = useState();
   const [originalProperties, setOriginalProperties] = useState(null);
@@ -352,6 +359,30 @@ export default function ParcelsDetailCard(props) {
     }
   };
 
+
+
+  const updateCustomProperties = (type, value, id) => {
+    const shape = parcelObj.shape;
+    const customRow = parcelProperties.custom_data_arr.find((p) => p.id === id)
+    if (type === 'key') {
+      customRow.key = value
+    } else {
+      customRow.value = value
+    }
+    parcelProperties.custom_data = {}
+    parcelProperties.custom_data_arr.forEach((data) => { parcelProperties.custom_data[data.key] = data.value })
+    const customLayer = {}
+    shape.properties = parcelProperties
+    customLayer.shape = JSON.stringify(shape)
+    customLayer.shapeJson = shape
+    updateCustomLayer({
+      variables: {
+        customLayerId: parcelObj._id,
+        customLayer,
+      },
+    });
+  };
+
   const Header = () => (
     <TabButtons
       labels={[
@@ -386,9 +417,15 @@ export default function ParcelsDetailCard(props) {
     </div>
   );
 
+
   return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
-      <Grid item sm={12} container>
+      <Grid item xs={12} style={{ padding: "10px 15px 0px 15px" }} className={classes.border}>
+        <div className={classes.tags}>
+          <Tags width="100%" targetSourceId={props.id} targetLabel="parcel" publicLeftBottom />
+        </div>
+      </Grid>
+      {/* <Grid item sm={12} container>
         {originalProperties && (
           <Grid item sm={12} className={classes.gridItemGrey}>
             <StateCard state={originalProperties.state} />
@@ -527,12 +564,20 @@ export default function ParcelsDetailCard(props) {
           </Grid>
         )}
 
-      </Grid>
+      </Grid> */}
       <Grid item sm={12}>
         <Taps
-          tabLabels={["Interest Owners", "Runsheet", "Wells", "Documents"]}
-          openTabIdex={selectedTab}
+          tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "Documents"]}
+          openTabIdex={props.selectTabIndex}
           tabPanels={[
+            <ParcelSummary
+              customLayer={parcelObj}
+              properties={parcelProperties}
+              setProperties={setProperties}
+              updateProperties={updateParcel}
+              updateCustomProperties={updateCustomProperties}
+              id={props.id}
+            />,
             <TabPanels
               value={selectedTab}
               panels={[

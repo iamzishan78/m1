@@ -374,6 +374,7 @@ function LayerStyling(props) {
           settings: {
             _id: currentLayer._id,
             layerPaintProps: currentLayer.layerPaintProps,
+            layerSettings: currentLayer.layerSettings
           },
         },
       });
@@ -410,8 +411,6 @@ function LayerStyling(props) {
       </FormControl>
     );
   };
-
-  // console.log("LayerStyling", layer)
 
   return (
     <div style={{ width: '100%' }}>
