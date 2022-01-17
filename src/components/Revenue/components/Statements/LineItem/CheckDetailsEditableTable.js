@@ -21,6 +21,7 @@ import set from 'lodash/set'
 import { Grid as TableGrid, Input, Select } from 'components/Shared/SpreadsheetGrid'
 import { AutoCompleteField } from "./AutoCompleteField";
 import { UPDATE_CHECK_DETAIL } from "graphQL/useMutationUpdateCheckDetail";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 
 const Rows = [];
@@ -113,12 +114,24 @@ function CheckDetailsEditableTable(props) {
             props.setLoading(false);
         }
     });
+    const [loadMoreList, { data: loadMoreData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
+    });
+
+    useEffect(() => {
+        if (loadMoreData?.getESPaginatedList?.hits) {
+            let hits = copy(loadMoreData.getESPaginatedList.hits)
+            hits = hits.reverse()
+            props.setRows(hits.concat(rows));
+            setTimeout(() => document.getElementById(`${hits.length}-0`)?.scrollIntoView(), 0)
+        }
+
+    }, [loadMoreData])
 
     const [updateCheckDetail] = useMutation(UPDATE_CHECK_DETAIL);
 
     const tableData = elasticData?.getESPaginatedList;
 
-    const startPaginationAt = 50;
+    const startPaginationAt = 10;
     const esIndex = 'checkdetails_flat';
 
 
@@ -203,10 +216,6 @@ function CheckDetailsEditableTable(props) {
     }
 
 
-
-
-
-
     // get paginated data hits from checkdetails_flat table
     useEffect(() => {
         getESPaginatedList({
@@ -216,6 +225,7 @@ function CheckDetailsEditableTable(props) {
                     field: "check._id.keyword",
                     value: props.checkId
                 }],
+                sort: { 'createdAt': { order: "desc" } },
                 pagination: {
                     first: startPaginationAt,
                     keep_alive: "1micros"
@@ -227,8 +237,8 @@ function CheckDetailsEditableTable(props) {
 
     useEffect(() => {
         if (tableData?.hits?.length > 0) {
-            let hits = tableData?.hits
-            props.setRows(hits);
+            let hits = copy(tableData?.hits)
+            props.setRows(hits.reverse());
             let headers = copy(TableHeader)
 
             headers.forEach((column) => {
@@ -280,16 +290,6 @@ function CheckDetailsEditableTable(props) {
         }
     }
 
-    const count = tableData?.total || 0
-    const options = {
-        rowsPerPageOptions: [10, 25, 50, 100],
-        count: count,
-        serverSide: true,
-        searchable: true,
-        rowsSelected: selectedRows.map((sR => sR.dataIndex)),
-        filter: true,
-    }
-
     const addNewRow = (e) => {
         e.preventDefault();
         rows.push({})
@@ -309,27 +309,64 @@ function CheckDetailsEditableTable(props) {
                         </Button>
                     </div>
                 </Grid>
-                <Grid item style={{ marginTop: "10px", backgroundColor: "#fff", overflow: "scroll", maxHeight: "500px" }}>
-                    <div className="DataTable" >
-                        <TableGrid
-                            ref={gridRef}
-                            setRows={setRows}
-                            columns={columns}
-                            rows={rows}
-                            getRowKey={row => row.id}
-                            rowHeight={74}
-                            headerHeight={74}
-                            cellWidth={100}
-                            isColumnsResizable
-                            focusOnSingleClick
-                            onColumnResize={onColumnResize}
-                            // focusOnSingleClick={props.focusOnSingleClick}
-                            // disabledCellChecker={(row, columnId) => {
-                            //     return columnId === 'age';
-                            // }}
-                            isScrollable
-                        />
-                    </div>
+                <Grid item style={{
+                    marginTop: "10px", backgroundColor: "#fff", overflow: "scroll", maxHeight: "500px",
+                    display: "flex",
+                    flexDirection: "column-reverse"
+                }} id='scrollableDiv'>
+                    <InfiniteScroll
+                        dataLength={rows.length}
+                        next={() => {
+                            setTimeout(() => {
+                                // setRows([{}, {}, {}].concat(rows))
+                                setTimeout(() => {
+                                    loadMoreList({
+                                        variables: {
+                                            esIndex,
+                                            filters: [{
+                                                field: "check._id.keyword",
+                                                value: props.checkId
+                                            }],
+                                            sort: { 'createdAt': { order: "desc" } },
+                                            pagination: {
+                                                pit: tableData.pit,
+                                                after: rows[0].sort,
+                                            },
+                                        }
+                                    })
+                                    // setTimeout(() => document.getElementById(`4-0`)?.scrollIntoView(), 0)
+                                }, 0)
+                            }, 0)
+                            console.log('next');
+
+                        }}
+                        style={{ display: "flex", flexDirection: "column-reverse" }} //To put endMessage and loader to the top.
+                        inverse={true}
+                        hasMore={rows.length < tableData?.total}
+                        // loader={<h4>Loading...</h4>}
+                        scrollableTarget="scrollableDiv"
+                    >
+                        <div className="DataTable" >
+                            <TableGrid
+                                ref={gridRef}
+                                setRows={setRows}
+                                columns={columns}
+                                rows={rows}
+                                getRowKey={row => row.id}
+                                rowHeight={74}
+                                headerHeight={74}
+                                cellWidth={100}
+                                isColumnsResizable
+                                focusOnSingleClick
+                                onColumnResize={onColumnResize}
+                                // focusOnSingleClick={props.focusOnSingleClick}
+                                // disabledCellChecker={(row, columnId) => {
+                                //     return columnId === 'age';
+                                // }}
+                                isScrollable
+                            />
+                        </div>
+                    </InfiniteScroll>
                 </Grid>
             </Grid>
 

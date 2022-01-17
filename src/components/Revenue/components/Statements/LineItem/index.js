@@ -45,7 +45,8 @@ export default function LineItem(props) {
   const classes = useStyles();
   const history = useHistory();
   const [showPdfSection, setSectionState] = useState(true);
-  const { activeStatement } = useSelector(({ Revenue }) => Revenue.statements);
+  const Revenue = useSelector(({ Revenue }) => Revenue.statements);
+  const activeStatement = Revenue?.activeStatement
 
   const togglePdfViewState = () => {
     setSectionState(!showPdfSection);

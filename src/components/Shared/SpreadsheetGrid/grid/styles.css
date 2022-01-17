@@ -10,6 +10,7 @@
 .SpreadsheetGrid__header {
     /* display: flex; */
     white-space: nowrap;
+
 }
 
 .SpreadsheetGrid__headCell {
@@ -38,7 +39,7 @@
 
 .SpreadsheetGrid__row {
     background-color: white;
-    border-bottom: 1px solid #E6E1E8;
+    /* border-bottom: 1px solid #E6E1E8; */
     user-select: none;
     white-space: nowrap;
 }

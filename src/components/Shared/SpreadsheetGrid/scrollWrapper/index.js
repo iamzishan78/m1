@@ -402,9 +402,7 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
                     onScroll={this.onScroll}
                     ref={this.scrollWrapperEl}
                     style={{
-                        height: this.props.isScrollable
-                            ? `calc(100% - ${this.props.headerHeight}px)`
-                            : 'auto',
+                        height: this.props.isScrollable ? `calc(100% - ${this.props.headerHeight}px)` : 'auto',
                         // overflow: 'scroll',
                         backgroundColor: 'white',
                     }}
