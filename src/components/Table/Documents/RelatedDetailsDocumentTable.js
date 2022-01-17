@@ -268,6 +268,7 @@ function RelatedDetailsDocumentTable(props) {
           setStateApp((state) => ({
             ...state,
             pdfView: null,
+            viewDoc: null,
           }));
         }}
       >
@@ -294,6 +295,7 @@ function RelatedDetailsDocumentTable(props) {
                   setStateApp((state) => ({
                     ...state,
                     pdfView: null,
+                    viewDoc: null,
                   }));
                 }}
                 aria-label="close"
@@ -335,7 +337,7 @@ function RelatedDetailsDocumentTable(props) {
 
 RelatedDetailsDocumentTable.defaultProps = {
   addAble: {
-    type: "document"
+    type: "relatedDocument"
   }
 }
 

@@ -64,11 +64,37 @@ function MapGridCardSearch(props) {
 
   const startPaginationAt = 50;
 
+  const setSearchInputValue = React.useMemo(
+    () =>
+      debounce((request, top, callback) => {
+        dispatch(
+          setMapGridCardState({
+            searchloading: true,
+            searchInputValue: request,
+          })
+        );
+        setStateGrid((state) => ({
+          ...state,
+          gridSearchTarget: request,
+        }));
+      }, 500),
+    []
+  );
+
   const esCallData = React.useMemo(
     () => ({
       "well": {
         esIndex: "platformData:wells",
-        search: (request) => request.input ? `((wellName:*${request.input}*) OR (api:*${request.input}*))` : '',
+        search: (request) => (() => {
+          let searchString = ""
+          if (request.input) {
+            searchString = request.input.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
+          }
+      
+          return searchString
+            ? `(wellName:(${searchString.join('* AND ')}*) OR api:(${searchString.join('* AND ')}*))^2 OR (wellName:(${searchString.join('* ')}*) OR api:(${searchString.join('* ')}*))`
+            : ""
+        })(),
         formatOptions: (data) => {
           return { ...data, Source: wellCogIndexName, Primary: data.WellName, Secondary: data.ApiNumber }
         }
@@ -120,25 +146,6 @@ function MapGridCardSearch(props) {
         }
       }
     }), [props.searchOption]);
-
-  const callESSearch = React.useMemo(
-    () =>
-      debounce((request, top, callback) => {
-        const { esIndex, search } = esCallData[props.searchOption]
-        getESPaginatedList({
-          variables: {
-            esIndex,
-            pagination: {
-              first: startPaginationAt,
-              keep_alive: "1micros"
-            },
-            search: search(request),
-            sort: [],
-          }
-        })
-      }, 500),
-    [props.searchOption]
-  );
 
   const callMapboxSearch = React.useMemo(
     () =>
@@ -217,16 +224,10 @@ function MapGridCardSearch(props) {
           })
         );
       })
-    } else {
-      callESSearch({
-        input: searchInputValue,
-        searchTop,
-      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     searchInputValue,
-    callESSearch,
     callMapboxSearch,
     props.searchOption,
   ]);
@@ -259,19 +260,8 @@ function MapGridCardSearch(props) {
           ),
         }}
         onClick={props.ativateSearchPanel}
-        value={searchInputValue}
-        onChange={(event) => {
-          dispatch(
-            setMapGridCardState({
-              searchloading: true,
-              searchInputValue: event.target.value,
-            })
-          );
-          setStateGrid((state) => ({
-            ...state,
-            gridSearchTarget: event.target.value,
-          }));
-        }}
+        // value={searchInputValue}
+        onChange={(event) => setSearchInputValue(event.target.value)}
       />
     </form>
   );

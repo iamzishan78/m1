@@ -10,21 +10,25 @@ import { toggleLandActionsPanel, setActiveModuleLand } from "actions";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
   PORTFOLIO: {
+    featureFlag: "LANDPORTFOLIO",
     title: "Portfolio",
     link: "/land/portfolio",
     component: "Portfolio",
   },
   AGREEMENTS: {
+    featureFlag: "LANDMODULE",
     title: "Agreements",
     link: "/land/agreements",
     component: "Agreements",
   },
   TRACTS: {
+    featureFlag: "LANDMODULE",
     title: "Tracts",
     link: "/land/tracts",
     component: "Tracts",
   },
   REPORTING_GROUPS: {
+    featureFlag: "LANDREPORTINGGROUPS",
     title: "Reporting Groups",
     link: "/land/reporting-groups",
     component: "ReportingGroups",

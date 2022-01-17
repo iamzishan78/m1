@@ -1,8 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { NavigationContext } from "./NavigationContext";
-
 // contexts
-import { AppContext } from "../../AppContext";
+import { AppContext } from "AppContext";
 import { MapGridContext } from "../../components/MapGridCard/MapGridContext.js";
 
 import { useHistory, useLocation } from "react-router-dom";
@@ -14,7 +13,6 @@ import PropTypes from "prop-types";
 //@material-ui components
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Typography from "@material-ui/core/Typography";
@@ -25,38 +23,28 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import Divider from "@material-ui/core/Divider";
 
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
 import SupportCenterModal from "./components/SupportCenter";
 import { useStyles } from "./Common";
 
 //icons
 import HeadsetIcon from "@material-ui/icons/Headset";
 import DesktopWindowsIcon from "@material-ui/icons/DesktopWindows";
-import ProfileProvider from "../Profile/ProfileProvider";
-import UserManagementProvider from "../UserManagement/UserManagementProvider";
 
 import DealSearch from "./components/DealSearch";
 import SearchBarWithToggleButton from "./components/SearchBarWithToggleButton";
 
-import Avatar from "react-avatar";
 import ContactFormModal from "./components/ContactFormModal";
-import { GET_PROFILE_IMAGE } from "../../graphQL/useQueryGetProfile";
 import { useSelector } from "react-redux";
-import { useLazyQuery } from "@apollo/client";
 
-import CheckIcon from "@material-ui/icons/Check";
-import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import Add from "@material-ui/icons/Add";
-import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
 
 import ActivitySearch from "./components/ActivitySearch";
 import DocumentSearch from "./components/DocumentSearch";
 import ContactSearch from "./components/ContactSearch";
 import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
 import SideNavigation from "./SideNavigation";
+import ProfileMenu from "components/Profile/ProfileMenu";
 
 // App Bars
 import LandAppBar from "./AppBar/Land";
@@ -97,41 +85,13 @@ export default function Navigation(props) {
   const [openContactForm, setOpenContactForm] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [supportDrawer, setSupportDrawer] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const isMenuOpen = Boolean(anchorEl);
   const [matchLocation, setMatchLocation] = useState(false);
   const [matchTrack, setMatchTrack] = useState(false);
   const [matchActivities, setMatchActivities] = useState(false);
   const [matchFind, setMatchFind] = useState(false);
   const [matchDocument] = useState(false);
 
-  const [profileImage, setProfileImage] = useState(null);
   const classes = useStyles({ mapGridCardActivated, user: stateApp.user });
-  const [getProfileImage, profiledata] = useLazyQuery(GET_PROFILE_IMAGE);
-  const [openProfileModal, setOpenProfileModal] = useState(false);
-  const [openUserManagementModal, setOpenUserManagementModal] = useState(false);
-
-  useEffect(() => {
-    if (stateApp?.user?.email) {
-      getProfileImage({
-        variables: { email: stateApp.user.email },
-        fetchPolicy: "network-only",
-      });
-    }
-  }, [stateApp.user]);
-
-  useEffect(() => {
-    if (profiledata && profiledata.data && profiledata.data.profileByEmail && profiledata.data.profileByEmail.profile) {
-      const {
-        data: {
-          profileByEmail: {
-            profile: { profileImage },
-          },
-        },
-      } = profiledata;
-      setProfileImage(profileImage);
-    }
-  }, [profiledata]);
 
   let history = useHistory();
   let location = useLocation();
@@ -363,95 +323,6 @@ export default function Navigation(props) {
     }
   }, [location.pathname]);
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-  const handleLogout = async () => {
-    const currentAccounts = stateApp.myMSALObj.getAllAccounts();
-    const currentAccount =
-      currentAccounts && currentAccounts.length === 1
-        ? currentAccounts[0]
-        : (() => {
-          // Add choose account code here
-          return;
-        })();
-
-    const logoutRequest = {
-      account: currentAccount,
-    };
-
-    setAnchorEl(null);
-    sessionStorage.clear();
-    localStorage.clear();
-
-    if (currentAccount) {
-      stateApp.myMSALObj.logout(logoutRequest);
-    }
-
-    window.location.replace(window.location.origin);
-  };
-
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const openProfile = (event) => {
-    event.preventDefault();
-    handleMenuClose();
-    setStateNav({ ...stateNav, isProfileOpen: true });
-    setOpenProfileModal(true);
-  };
-
-  const openUserManagement = (event) => {
-    event.preventDefault();
-    handleMenuClose();
-    setStateNav({ ...stateNav, isUserManagementOpen: true });
-    setOpenUserManagementModal(true);
-  };
-
-  const menuId = "primary-search-account-menu";
-
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      getContentAnchorEl={null}
-      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      transformOrigin={{ vertical: "top", horizontal: "center" }}
-      id={menuId}
-      keepMounted
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-      className={classes.userMenu}
-    >
-      <MenuItem disabled className={classes.userTenantTitle}>
-        <CheckIcon />
-        <Typography variant="inherit" color="textPrimary">
-          {" "}
-          {sessionStorage.getItem("tenantName")}{" "}
-        </Typography>
-        <FiberManualRecordIcon style={{ color: "#34F125" }} fontSize="small" />
-      </MenuItem>
-      <Divider />
-      <MenuItem className={classes.userMenuItem} onClick={(e) => openProfile(e)} style={{ marginTop: 10 }}>
-        <Typography style={{ textDecoration: "none", color: "#1daee1" }} variant="inherit">
-          My Account
-        </Typography>
-      </MenuItem>
-      {/* <FeatureFlag feature={FEATURES.USER_MANAGEMENT}>
-      </FeatureFlag> */}
-      {(stateApp?.user?.roles?.includes("Owner") || stateApp?.user?.roles?.includes("Admin")) && (
-        <MenuItem className={classes.userMenuItem} onClick={(e) => openUserManagement(e)}>
-          <Typography style={{ textDecoration: "none", color: "#1daee1" }} variant="inherit">
-            User Management
-          </Typography>
-        </MenuItem>
-      )}
-      <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
-        <Typography variant="inherit">Logout</Typography>
-      </MenuItem>
-    </Menu>
-  );
-
   const handleListItemClick = (path) => {
     history.push(path);
     handleDrawerClose();
@@ -494,12 +365,12 @@ export default function Navigation(props) {
     return false;
   };
 
-  const checkIfShowBackgroundOnHeader = () => {
-    if (location.pathname.startsWith("/revenue/statements") || location.pathname.startsWith("/revenue/properties")) {
-      return true;
-    }
-    return false;
-  };
+  // const checkIfShowBackgroundOnHeader = () => {
+  //   if (location.pathname.startsWith("/revenue/statements") || location.pathname.startsWith("/revenue/properties")) {
+  //     return true;
+  //   }
+  //   return false;
+  // };
 
   const matchAgreements = () => {
     return location.pathname === "/landmanagement/agreements";
@@ -514,10 +385,10 @@ export default function Navigation(props) {
           className={clsx(classes.appBar, {
             [classes.appBarShift]: openDrawer,
           })}
-          style={{
-            background: checkIfShowBackgroundOnHeader() && "#ffffff",
-            boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
-          }}
+          // style={{
+          //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
+          //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
+          // }}
         >
           {stateApp.user && (
             <Toolbar>
@@ -531,7 +402,7 @@ export default function Navigation(props) {
                   <DocumentSearch />
                 </>
               )}
-              {location.pathname === "/contacts" && <ContactSearch />}
+              {(location.pathname === "/contacts" || location.pathname === "/contacts/") && <ContactSearch />}
               {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
 
               {location.pathname.startsWith("/flow") && <DealSearch />}
@@ -547,7 +418,9 @@ export default function Navigation(props) {
               {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
               {(matchFind || matchDocument) && (
-                <div className={classes.search} id="searchBarDivParent">
+                <div
+                  className={classes.search} id="searchBarDivParent"
+                >
                   <SearchBarWithToggleButton />
                 </div>
               )}
@@ -556,7 +429,7 @@ export default function Navigation(props) {
 
               {matchActivities ? (
                 <div>
-                  <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+                  <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
                     <Button onClick={handleClickAddActivity} color="secondary" variant="contained" startIcon={<Add />}>
                       Add Activity
                     </Button>
@@ -573,9 +446,7 @@ export default function Navigation(props) {
               </div>
             )} */}
 
-              <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
-                {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
-              </IconButton>
+              <ProfileMenu />
             </Toolbar>
           )}
         </AppBar>
@@ -623,9 +494,6 @@ export default function Navigation(props) {
         <div className={classes.toolbar} />
         {props.children}
       </main>
-      {renderMenu}
-      {openProfileModal && <ProfileProvider />}
-      {openUserManagementModal && <UserManagementProvider />}
     </div>
   );
 }

@@ -301,7 +301,7 @@ const useStyles = makeStyles((theme) => ({
       opacity: "1",
       transition: "opacity 1s ease-out",
       webkitTransition: "opacity 1s ease-out",
-      // zIndex: 999,
+      zIndex: 999,
       position: "sticky",
     },
     "& tbody": {
@@ -683,7 +683,7 @@ function SubTable(props) {
   const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
 
   const [viewFile, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "no-cache",
+     fetchPolicy: "no-cache",
   });
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
@@ -1139,10 +1139,13 @@ function SubTable(props) {
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
-        if (column?.options?.customBodyRender) {
+        // WARNING! this can break components that depend on updated component state in callbacks
+        // without using refs we HAVE to re-create customBodyRender callback functions every render
+        // or component state is stale
+        if (column?.options?.customRender) {
           column.options = {
             ...column.options,
-            customBodyRender: column.options.customBodyRender,
+            customBodyRender: column.options.customRender,
           };
           return;
         }
@@ -1152,6 +1155,7 @@ function SubTable(props) {
               ...column.options,
               customBodyRender: (value, tableMeta, updateValue) => {
                 let id = props.targetLabel + tableMeta.columnIndex;
+                console.log('table detail card', props.parent, props.targetLabel)
                 if (props.parent !== "search" && props.targetLabel !== "well") {
                   return (
                     <Tooltip title={"Detail Card"} placement="top">
@@ -1502,7 +1506,7 @@ function SubTable(props) {
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
-                  if (props.parent === "TractsTable" && props.targetLabel === "tract") {
+                  if (props.parent === "TractInterestsTable" && props.targetLabel === "tractInterest") {
                     targetSourceId = tableMeta.rowData[1];
                   }
 
@@ -1653,8 +1657,9 @@ function SubTable(props) {
                           if (m1nSelectedRowsIndexes?.length > 0) {
                             let selectedRows = m1nSelectedRowsIndexes.map((index) => rows[index]);
                             selectedRows = selectedRows.filter((row) => !row.isContact);
-                            if (selectedRows.length > 0)
+                            if (selectedRows.length > 0) {
                               return handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, selectedRows, "multipleOwnerToContact");
+                            }
                           }
 
                           if (value && value !== "false") {
@@ -1718,7 +1723,9 @@ function SubTable(props) {
                                 },
                                 "makeOwnerAContact"
                               );
-                            } else handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, tableMeta.rowData[0], "makeOwnerAContact");
+                            } else {
+                              handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, tableMeta.rowData[0], "makeOwnerAContact");
+                            }
                             // Code is not used as we are opening different model from above
                           }
                         }}
@@ -1802,7 +1809,6 @@ function SubTable(props) {
 
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
-
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
@@ -1810,14 +1816,12 @@ function SubTable(props) {
                         ? tableMeta.rowData[1]
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
-                          : props.parent === "RevenueStatementTable"
-                            ? tableMeta.rowData[1]?.split("_")[1]
-                            : tableMeta.rowData[0];
+                          : tableMeta.rowData[0];
 
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
-                  if (props.parent === "TractsTable" && props.targetLabel === "tract") {
+                  if (props.parent === "TractInterestsTable" && props.targetLabel === "tractInterest") {
                     targetSourceId = tableMeta.rowData[1];
                   }
                   return (
@@ -1865,8 +1869,8 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
-                  const docInfo = rows.find((row) => row._id === row_line._id);
-                  let docExtention = docInfo?.fileName?.split(".")?.[1]?.toLowerCase();
+                  const docInfo = row_line;
+                  let docExtention = row_line?.fileName?.split(".")?.[1]?.toLowerCase();
                   return (
                     <div
                       style={{
@@ -1884,6 +1888,7 @@ function SubTable(props) {
                               props.addAble.type === "parcelDocument" ||
                               props.addAble.type === "wellDocument" ||
                               props.addAble.type === "AgreementDocument" ||
+                              props.addAble.type === "relatedDocument" ||
                               props.addAble.type === "UnitDocument"
                               ? row_line.fileId
                               : row_line?._id
@@ -1941,7 +1946,7 @@ function SubTable(props) {
                   const uri = row_line?.fileUrl;
 
                   return (
-                    <div className={classes.fileName}>
+                    <div style={{ minWidth: 400 }}>
                       <Grid container spacing={2} direction="row">
                         <Grid
                           item
@@ -1996,13 +2001,13 @@ function SubTable(props) {
                                 if (props.addAble.type === "document") {
                                   window.history.pushState("", "", `/documents/${row_line._id}/view`);
                                 }
-                                const selectedRow = rows.find((row) => row._id === row_line._id);
+                                // const selectedRow = rows.find((row) => row._id === row_line._id);
                                 setStateApp((state) => ({
                                   ...state,
-                                  pdfView: selectedRow,
+                                  pdfView: row_line,
                                   viewDoc: {
-                                    uri: selectedRow.viewToken,
-                                    name: selectedRow.fileName,
+                                    uri: row_line.viewToken,
+                                    name: row_line.fileName,
                                   },
                                 }));
                               } else {
@@ -2012,13 +2017,31 @@ function SubTable(props) {
                           >
                             <Grid container direction="column" alignItems="flex-start">
                               <Grid item>
-                                <p className={classes.clickableCell}>{value}</p>
+                                <p 
+                                  style={{
+                                    cursor: "pointer",
+                                    padding: "10px 10px 10px 10px",
+                                    position: "relative",
+                                    minWidth: "120px",
+                                    borderRadius: "7px",
+                                    color: "#17aadd",
+                                    wordBreak: "break-word",
+                                    "&:hover": {
+                                      textDecoration: "underline",
+                                    },
+                                    fontWeight: "bold",
+                                  }}>{value}</p>
                               </Grid>
                               <Grid item>
                                 {/* <p className={classes.docDateText}>{dateTime = moment.utc(row_line.dateTime).format("MM/DD/YYYY")}</p> */}
                                 {/* <p className={classes.docDateText}>{convert_date(dateTime)}</p> */}
                                 {/* <p className={classes.docDateText}>{dateTime.substring(0,8)}}</p> */}
-                                <p className={classes.docDateText}>{convert_date(dateTime)}</p>
+                                <p style={{
+                                      padding: "0px 30px 10px 10px",
+                                      marginTop: "-20px",
+                                      position: "relative",
+                                      justifyContent: "flex-end",
+                                }}>{convert_date(dateTime)}</p>
                               </Grid>
                             </Grid>
                           </div>
@@ -2063,6 +2086,20 @@ function SubTable(props) {
           case "water":
           case "allocatedWater":
           case "allocatedGas":
+          case "allocatedOil":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value, tableMeta, updateValue) => {
+                if (value) {
+                  return (
+                    <span style={{ paddingLeft: 10, paddingRight: 10 }}>{value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
+                  );
+                } else {
+                  return <span style={{ paddingLeft: 10, paddingRight: 10 }}>0</span>;
+                }
+              },
+            };
+            break;
           case "validation":
             column.options = {
               ...column.options,
@@ -2098,25 +2135,26 @@ function SubTable(props) {
             column.options = {
               ...column.options,
               customBodyRender: (value) => {
-                const splitNumber = value.split("_");
+                const splitNumber = value?.split("_");
                 let styles = { ...column.style };
-                if (props.parent === "RevenuePropertiesTable") {
+                if (props.parent === "RevenuePropertiesTable" ||
+                  props.parent === "CheckDetailsTable") {
                   styles = { ...styles, fontWeight: 600, color: "#17aadd", cursor: "pointer" };
                 }
-                return <p style={styles}>{splitNumber[0]}</p>;
+                return <p style={styles}>{splitNumber?.[0]}</p>;
               },
             };
             break;
-          case "checkNumber":
-            column.options = {
-              ...column.options,
-              customBodyRender: (value) => {
-                let styles = { ...column.style };
-                styles = { ...styles, fontWeight: 600, color: "#17aadd", cursor: "pointer" };
-                return value ? <p style={styles}>{value}</p> : <span style={{ color: "#959595" }}>N/A</span>;
-              },
-            };
-            break;
+          // case "checkNumber":
+          //   column.options = {
+          //     ...column.options,
+          //     customBodyRender: (value) => {
+          //       let styles = { ...column.style };
+          //       styles = { ...styles, fontWeight: 600, color: "#17aadd", cursor: "pointer" };
+          //       return value ? <p style={styles}>{value}</p> : <span style={{ color: "#959595" }}>N/A</span>;
+          //     },
+          //   };
+          //   break;
           case "checkAmount":
             column.options = {
               ...column.options,
@@ -2158,20 +2196,6 @@ function SubTable(props) {
               },
             };
             break;
-          case "allocatedOil":
-            column.options = {
-              ...column.options,
-              customBodyRender: (value, tableMeta, updateValue) => {
-                if (value) {
-                  return (
-                    <span style={{ paddingLeft: 10, paddingRight: 10 }}>{value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
-                  );
-                } else {
-                  return <span style={{ paddingLeft: 10, paddingRight: 10 }}>0</span>;
-                }
-              },
-            };
-            break;
           case "agreementNumber":
             column.options = {
               ...column.options,
@@ -2202,7 +2226,7 @@ function SubTable(props) {
               customBodyRender: (value, tableMeta, updateValue) => {
                 return (
                   <>
-                    {props.parent === "TractsTable" && (
+                    {/* {props.parent === "TractsTable" && (
                       <p
                         onClick={(e) => {
                           e.stopPropagation();
@@ -2214,7 +2238,7 @@ function SubTable(props) {
                       >
                         {value}
                       </p>
-                    )}
+                    )} */}
                     {(props.parent === "RevenueStatementTable" || props.parent === "RevenuePropertiesTable") && (
                       <div className={classes.flexAlign}>
                         {value?.toLowerCase() === "approved" ? (
@@ -3109,7 +3133,7 @@ function SubTable(props) {
         // menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
       }
       if (props.addAble.type === "revenueStatementDetails") {
-        buttonLabel = "+ ADD LINE ITEM";
+        buttonLabel = "INPUT MODE";
       }
 
       const addAction = (e) => {
@@ -3142,8 +3166,10 @@ function SubTable(props) {
           handleExpandClick(null, null, null, "addParcelInterestsToEntity");
         if (props.addAble.type && props.addAble.type === "inviteUser")
           handleExpandClick(null, null, null, "inviteUser");
-        if (props.addAble.type === "revenueStatementDetails")
-          routeChange('/revenue/statement/details/line-item');
+        if (props.addAble.type === "revenueStatementDetails") {
+          routeChange('/revenue/statement/details/line-item' + window.location.search);
+        }
+
       };
 
       const options = [
@@ -3194,7 +3220,8 @@ function SubTable(props) {
             {(props.addAble.type === "wellInterest" ||
               props.addAble.type === "deals" ||
               props.addAble.type === "suggestedOwnerToParcel" ||
-              (props.addAble && props.parent === "UserManagement")) && (
+              (props.addAble && props.parent === "UserManagement") ||
+              props.addAble.type === "revenueStatementDetails") && (
                 <Button
                   color="secondary"
                   className={classes.multiSelectionTopBarButtons}
@@ -3204,16 +3231,14 @@ function SubTable(props) {
                   {buttonLabel}
                 </Button>
               )}
-            {(props.addAble.type === "contact" || props.addAble.type === "ownerToParcel" || props.addAble.type === "ownerToUnit") && (
-              <ButtonDropDown options={options} />
-            )}
+            {(
+              props.addAble.type === "contact" ||
+              props.addAble.type === "ownerToParcel" ||
+              props.addAble.type === "ownerToUnit") && (
+                <ButtonDropDown options={options} />
+              )}
 
             {props.header === "Documents" && (
-              // <ButtonDropDown options={options} onClick={() => {
-              //   setStateApp({ ...stateApp, DocumentDrawer: true, selectedDocument: {} })
-              // }}>
-              //   <PostAddIcon></PostAddIcon>
-              // </ButtonDropDown>
               <ButtonGroup variant="contained" style={{ height: "40px" }} color="primary" aria-label="split button">
                 <Button
                   color="primary"
@@ -3364,11 +3389,12 @@ function SubTable(props) {
       // }
 
       if (props.targetLabel === "Revenue Properties") {
-        if (rows[dataIndex]?._id) {
-          history.push(`/revenue/property/details?id=${rows[dataIndex]?._id}`);
-        }
+        // need stopPropagation
+        // if (rows[dataIndex]?._id) {
+        //   history.push(`/revenue/property/details?id=${rows[dataIndex]?._id}`);
+        // }
       }
-      if (props.targetLabel === "revenueStatements") {
+      if (props.parent === "RevenueStatementTable") {
         if (rows[dataIndex]?._id) {
           history.push(`/revenue/statement/details?id=${rows[dataIndex]?._id}`);
         }
@@ -3847,38 +3873,40 @@ function SubTable(props) {
             // resizableColumns: true,
 
             filter:
-              //  props.parent === 'ownersPerParcel'               /// will need to build a backend for this search
-              props.parent === "potentialOwnersPerParcel" || /// will need to build a backend for this search
-                props.parent === "associatedWellsPerParcel" || /// will need to build a backend for this search
-                props.parent === "boundary_grid_wells" || /// will need to build a backend for this search
-                props.parent === "boundary_grid_owners" /// will need to build a backend for this search
-                ? false
-                : null,
+              //  props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
+              props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
+                // || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+
+                ? false : null,
 
             viewColumns:
-              // props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search
-              props.parent === "potentialOwnersPerParcel" || /// will need to build a backend for this search
-                props.parent === "associatedWellsPerParcel" || /// will need to build a backend for this search
-                props.parent === "boundary_grid_wells" || /// will need to build a backend for this search
-                props.parent === "boundary_grid_owners" /// will need to build a backend for this search
-                ? false
-                : null,
+              // props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search 
+              props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
+                // || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+
+                ? false : null,
 
             search:
-              // props.header === 'Contacts'
-              // ||
-              props.header === "Deals" ||
-                props.header === "Activities" ||
-                props.header === "Monthly Production" ||
-                // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search
-                props.parent === "potentialOwnersPerParcel" || /// will need to build a backend for this search
-                props.parent === "associatedWellsPerParcel" || /// will need to build a backend for this search
-                props.parent === "boundary_grid_wells" || /// will need to build a backend for this search
-                props.parent === "boundary_grid_owners" || /// will need to build a backend for this search
-                props.parent === "RevenueStatementTable" || /// will need to build a backend for this search
-                props.parent === "RevenuePropertiesTable" /// will need to build a backend for this search
-                ? false
-                : props.parent !== "search",
+              (
+                // props.header === 'Contacts'
+                // || 
+                props.header === 'Deals'
+                || props.header === 'Activities'
+                || props.header === 'Monthly Production'
+                // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
+                || props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+                || props.parent === 'search'       /// will need to build a backend for this search 
+
+              )
+
+                ? false : props.parent !== "search",
             // have to use props.parent here for initial value
             searchOpen: props.parent === "Contacts" ? true : null,
             //download: false,

@@ -11,7 +11,6 @@ import { useLazyQuery } from "@apollo/client";
 // actions
 import { setRevenuePropertyData } from "actions";
 
-
 const useStyles = makeStyles((theme) => ({
   actionBar: {
     backgroundColor: "#f7f7f7",
@@ -28,10 +27,33 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   propertyTableContainer: {
-    padding: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+    paddingLeft: "38px",
+    paddingRight: "38px",
     marginTop: theme.spacing(2),
   },
 }));
+
+const cards = [
+  {
+    heading: "Total Properties",
+    points: "1,463",
+  },
+  {
+    heading: "Active",
+    points: "992",
+  },
+  {
+    heading: "Inactive",
+    points: "471",
+  },
+  {
+    heading: "Unmapped",
+    points: "17",
+    type: "warning",
+  },
+];
 
 export default function Properties() {
   const classes = useStyles();
@@ -46,21 +68,18 @@ export default function Properties() {
   const startPaginationAt = 25;
 
   // query for Properties Table
-  const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(
-    GET_ES_PAGINATED_LIST,
-    {
-      fetchPolicy: "no-cache",
-      onCompleted: () => {
-        console.log("compeleted");
-      },
-    }
-  );
+  const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
+    fetchPolicy: "no-cache",
+    onCompleted: () => {
+      console.log("compeleted");
+    },
+  });
 
-  // dipatching to redux 
+  // dipatching to redux
   React.useEffect(() => {
-    dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }))
+    dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getESPaginatedList, elasticData,]);
+  }, [getESPaginatedList, elasticData]);
 
   // on filter click
   const filterProperties = () => {
@@ -80,16 +99,15 @@ export default function Properties() {
               range: {
                 "lastCheck.checkDate": {
                   gte: `${fromDate}-01T00:00:00.000Z`,
-                  lte: `${toDate}-01T00:00:00.000Z`
-                }
-              }
-            }
-          }
+                  lte: `${toDate}-01T00:00:00.000Z`,
+                },
+              },
+            },
+          },
         ],
       },
     });
   }
-
 
   const handleSummary = (totalCount, activeCount, inactiveCount, unmapped) => {
     setCardSummary([
@@ -112,17 +130,11 @@ export default function Properties() {
       },
     ])
   }
-
+  
   return (
     <>
       <div className={classes.actionBar}>
-        <Grid
-          container
-          direction="row"
-          display="flex"
-          justify="space-between"
-          style={{ padding: "0px 32px" }}
-        >
+        <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 78px" }}>
           <CustomDates fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} />
           <Grid item xs={4} md={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
@@ -132,7 +144,9 @@ export default function Properties() {
                 </Button>
               </Grid>
               <Grid item>
-                <Button variant="contained" onClick={() => filterProperties()}>Filter</Button>
+                <Button variant="contained" onClick={() => filterProperties()}>
+                  Filter
+                </Button>
               </Grid>
             </Grid>
           </Grid>

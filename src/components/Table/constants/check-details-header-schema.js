@@ -4,16 +4,16 @@ const RevenueStatementHeadCells = [
         name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
     },
     {
-        name: "property", label: "Property Code", esKey: 'propert.number.keyword', options: { sort: true, filter: true }
+        name: "number", label: "Property Code", esKey: 'property.number.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "property", label: "Property Name", esKey: 'property.name.keyword', options: { sort: true, filter: true }
+        name: "name", label: "Property Name", esKey: 'property.name.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "property", label: "State", esKey: 'property.state.keyword', options: { sort: true, filter: true }
+        name: "state", label: "State", esKey: 'property.state.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "property", label: "County", esKey: 'property.county.keyword', options: { sort: true, filter: true }
+        name: "county", label: "County", esKey: 'property.county.keyword', options: { sort: true, filter: true }
     },
     {
         name: "date", label: "Sales Date", esKey: 'date', options: { sort: true, filter: true }

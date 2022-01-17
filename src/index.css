@@ -83,6 +83,7 @@ body {
 
 #TaskTemplateDatePopover,
 #SubtaskAssigneePopover,
+#RevenueSummaryProduct,
 .MuiPopover-root {
   z-index: 1301 !important;
 }
@@ -184,7 +185,7 @@ body {
 /* Tab button in revenue statement detail screen */
 .tab_button {
   border-radius: 4px;
-  padding: 6px 16px;
+  padding: 4px 16px;
   font-size: 0.8125rem;
   width: 100%;
   font-weight: 600;
@@ -197,7 +198,7 @@ body {
 }
 
 .inactive {
-  background: #cccccc;
+  background: #e7e7e7;
   color: #000000;
 }
 

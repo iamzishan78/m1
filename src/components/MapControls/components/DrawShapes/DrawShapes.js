@@ -168,6 +168,31 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  convertPopover: {
+    "& .MuiPopover-paper": {
+      left: "47% !important",
+      top: "auto !important",
+      bottom: "98px !important",
+    },
+    "& .Mui-disabled": {
+      paddingBottom: "10px",
+      borderBottom: "1px solid lightgrey",
+    },
+    "& .MuiMenuItem-root": {
+      "&:hover": {
+        color: "rgba(23, 170, 221, 1)",
+      },
+    },
+  },
+  convertMenuColor: {
+    color: '#A6A6A6',
+  },
+  downloadIcon:{
+    color:"#A6A6A6", width: "30px", height: "28px"
+  },
+  areaExceed:{
+    fontSize: 16, marginTop: 10
+  }
 }));
 
 export default function DrawShapes() {
