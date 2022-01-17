@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-// import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 
 import { makeStyles, withStyles } from "@material-ui/styles";
 import {
@@ -17,7 +17,8 @@ import {
   Close as CloseIcon,
 } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
-// import { GET_PROPERTY_DETAILS } from "graphQL/useQueryGetPropertyDetails";
+import { GET_PROPERTY_DETAILS } from "graphQL/useQueryGetPropertyDetails";
+import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 
 import Tagger from "components/Shared/Tagger";
 import PropertyInterestDetailsSection from "./PropertyInterestDetailsSection";
@@ -164,15 +165,17 @@ export default function DetailComponents(props) {
     history.location.pathname.split("/")[
       history.location.pathname.split("/").length - 1
     ];
+  const [propertyOwnerContact, setPropertyOwnerContacts] = useState(null)
   const [showInterestDetails, setShowInterestDetails] = useState(false);
   const [selectedInterest, setSelectedInterest] = useState(null);
   const classes = useStyles({ ...props, showInterestDetails });
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
 
-  // const [getPropertyDetails, { data: propertyData }] = useLazyQuery(GET_PROPERTY_DETAILS, {
-  //   fetchPolicy: `network-only`,
-  // });
+  const [getPropertyDetails, { data: propertyData }] = useLazyQuery(GET_PROPERTY_DETAILS, {
+    fetchPolicy: `network-only`,
+  });
+  const [checkIfOwnersAreContacts, { data: checkIfOwnersAreContactsData }] = useLazyQuery(IFARECONTACTS, { fetchPolicy: "cache-and-network", });
 
   useEffect(() => {
     selectedTabRef.current &&
@@ -183,20 +186,36 @@ export default function DetailComponents(props) {
       });
   }, [tab]);
 
-  // useEffect(() => {
-  //   if(propertyData?.getPropertyDetails){
-  //     debugger
-  //   }
+  useEffect(() => {
+    if(checkIfOwnersAreContactsData?.ifAreContacts?.length > 0){
+      setPropertyOwnerContacts({
+        _id:checkIfOwnersAreContactsData.ifAreContacts[0].isContact,
+        name:checkIfOwnersAreContactsData.ifAreContacts[0].name
+      })
+    }
+  },[checkIfOwnersAreContactsData])
 
-  // },[propertyData])
+  useEffect(() => {
+    if(propertyData?.getPropertyDetails){
+      if(propertyData.getPropertyDetails.owner){
+        checkIfOwnersAreContacts({
+          variables: {
+            idsArray: [propertyData.getPropertyDetails.owner]
+          }
+        })
+      }
 
-  // useEffect(() => {
-  //   getPropertyDetails({
-  //     variables: {
-  //       id: propertyId
-  //     }
-  //   })
-  // }, [propertyId])
+    }
+
+  },[propertyData])
+
+  useEffect(() => {
+    getPropertyDetails({
+      variables: {
+        id: propertyId
+      }
+    })
+  }, [propertyId])
 
   return (
     <div className={classes.root}>
@@ -321,7 +340,7 @@ export default function DetailComponents(props) {
           </div>
 
           {showInterestDetails && (
-            <InterestDetailForm selectedInterest={selectedInterest} onClose={() => setShowInterestDetails(false)} />
+            <InterestDetailForm propertyOwnerContact={propertyOwnerContact} selectedInterest={selectedInterest} onClose={() => setShowInterestDetails(false)} />
           )}
         </div>
       </div>

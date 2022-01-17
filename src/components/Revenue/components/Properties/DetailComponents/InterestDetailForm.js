@@ -3,6 +3,8 @@ import { Controller, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import loadashFilter from "lodash/filter";
 import get from "lodash/get";
+import moment from "moment";
+
 import { makeStyles } from "@material-ui/styles";
 import {
   Typography,
@@ -22,6 +24,7 @@ import { setStateIfDeepEqual } from "components/Shared/functions";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "graphQL/useMutationAddContact";
 import { ADD_PROPERTY_INTEREST } from "graphQL/useMutationAddpropertyInterest";
+import { UPDATE_PROPERTY_INTEREST } from "graphQL/useMutationUpdatepropertyInterest";
 
 import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
@@ -98,24 +101,78 @@ const InterestDetailForm = (props) => {
   const classes = useStyles(props);
   const { selectedInterest } = props;
   let history = useHistory();
-  const { control, getValues, watch } = useForm();
+  const { control, getValues, watch, reset, setValue } = useForm();
 
-  const [addPropertyInterest] = useMutation(ADD_PROPERTY_INTEREST);
+  const [addPropertyInterest] = useMutation(ADD_PROPERTY_INTEREST, {
+    onCompleted: () => {
+      props.onClose();
+    },
+    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+  });
+  const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
+    onCompleted: () => {
+      props.onClose();
+    },
+    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+  });
 
   const handleSave = () => {
-    const id = history.location.pathname.split('/')[history.location.pathname.split('/').length -1 ];
+    const id =
+      history.location.pathname.split("/")[
+        history.location.pathname.split("/").length - 1
+      ];
     const values = getValues();
-    addPropertyInterest({
-      variables: {
-        propertyInterest: {
-          ...values,
-          interestType: values.interestType.name,
-          owner: values.owner._id,
-          propertyId: id,
-        }
-      }
-    })
-  }
+
+    if (selectedInterest) {
+      updatePropertyInterest({
+        variables: {
+          propertyInterest: {
+            ...values,
+            _id: selectedInterest._id,
+            interestType: values.interestType?.name
+              ? values.interestType.name
+              : values.interestType,
+            owner: values.owner._id ? values.owner._id : null,
+          },
+        },
+      });
+    } else {
+      addPropertyInterest({
+        variables: {
+          propertyInterest: {
+            ...values,
+            interestType: values.interestType.name,
+            owner: values.owner._id ? values.owner._id : null,
+            propertyId: id,
+          },
+        },
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (selectedInterest) {
+      const { interestAmount, effectiveDate, owner } = selectedInterest;
+      reset({
+        ...selectedInterest,
+        interestAmount:
+          typeof interestAmount === "number"
+            ? interestAmount.toString()
+            : interestAmount,
+        effectiveDate: effectiveDate
+          ? moment(effectiveDate).format("YYYY-MM-DD")
+          : null,
+        owner: owner
+          ? {
+              ...owner,
+              name: owner.entityDetail.name,
+            }
+          : { name: "", _id: null },
+      });
+    }else if(props.propertyOwnerContact){
+      setValue('owner', props.propertyOwnerContact)
+    }
+  }, [selectedInterest]);
 
   return (
     <div
@@ -131,7 +188,7 @@ const InterestDetailForm = (props) => {
             marginLeft: "5px",
           }}
         >
-          {selectedInterest ? 'Update' : 'Add'} Interest Details
+          {selectedInterest ? "Update" : "Add"} Interest Details
         </Typography>
         <div className="flex alignCenter">
           <span onClick={props.onClose} className={classes.metaPanelCloseIcon}>
@@ -207,7 +264,6 @@ const InterestDetailForm = (props) => {
                 vaient=""
                 placeholder=""
                 fullWidth
-                format="MM/DD/YY"
                 onChange={(e) => {
                   props.onChange(e.target.value);
                 }}
@@ -282,11 +338,10 @@ const InterestDetailForm = (props) => {
               </Button>
               <Button
                 className={classes.btnColor}
-                style={{ margin: "25px 25px 25px 5px" }}
                 variant="outlined"
                 onClick={handleSave}
               >
-                Add
+                {props.selectedInterest ? "Update" : "Add"}
               </Button>
             </div>
           </div>
@@ -316,12 +371,15 @@ const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
-  
+
   const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 
   useEffect(() => {
     if (get(addContactData, "addContact.contact")) {
-      setNameAutValue({ name: addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id });
+      setNameAutValue({
+        name: addContactData.addContact.contact.name,
+        _id: addContactData.addContact.contact._id,
+      });
     }
   }, [addContactData]);
 

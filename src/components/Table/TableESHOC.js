@@ -138,6 +138,7 @@ export const TableESHOC = (Component) => {
 
                 TableHeader.forEach((column) => {
                     if (column?.options?.filter) {
+                        const custom = column.custom;
                         column.options = {
                             ...column.options,
                             filter: true,
@@ -147,7 +148,7 @@ export const TableESHOC = (Component) => {
                                     column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
                                     return (
                                         <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-                                            extendSearchQuery={extendSearchQuery} query={GET_ES_FILTER_LIST} esIndex={esIndex} />
+                                            extendSearchQuery={extendSearchQuery} query={GET_ES_FILTER_LIST} esIndex={esIndex} custom={custom}/>
                                     );
                                 }
                             }
