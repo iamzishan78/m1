@@ -256,6 +256,7 @@ export default function ParcelSummary(props) {
     useEffect(() => {
         getShapeSummaryDetails({ variables: { shapeId: props.id, shapeType: 'Parcel' } });
         props.setProperties({ ...props.properties, ...getParcelOriginalProperties(props.properties) });
+        setProperties({ ...props.properties, ...getParcelOriginalProperties(props.properties) })
     }, [props.id]);
 
     useEffect(() => {
@@ -266,7 +267,7 @@ export default function ParcelSummary(props) {
                 },
             });
         }
-        
+
     }, [props.customLayer]);
 
     const addCustomData = () => {
@@ -329,7 +330,7 @@ export default function ParcelSummary(props) {
                     </Grid>
                 </Grid>
                 <Grid item>
-                    <ParcelTableInfo properties={props.properties} updateProperties={props.updateProperties}
+                    <ParcelTableInfo properties={parcelProperties} updateProperties={props.updateProperties}
                         updateCustomProperties={props.updateCustomProperties} search={search} />
                 </Grid>
                 <Grid item>

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "AppContext";
 import { useQuery } from "@apollo/client";
 import { useMutation } from "@apollo/client";
+import { useSelector } from 'react-redux';
 
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_JOBS_STATUS } from "graphQL/useQueryGetJobStatus";
@@ -9,6 +10,8 @@ import Loader from "components/Loaders/serverLoader";
 
 const ContactBulkProgress = () => {
     const [stateApp] = useContext(AppContext);
+    const bulkUpload = useSelector((state) => state.common.bulkUpload);
+
     const [pollingStarted,  setPollingStarted] = useState(false);
   
     const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB);
@@ -21,7 +24,7 @@ const ContactBulkProgress = () => {
         stopPolling()
         refetch()
       }
-    },[stateApp.bulkUpload])
+    },[stateApp.bulkUpload, bulkUpload])
 
     useEffect(() => {
       if(dataJobs?.getJobsStatus?.jobs?.length > 0){
@@ -50,7 +53,22 @@ const ContactBulkProgress = () => {
           }
         }
       })
-    }  
+    }
+
+    const downloadResults = async (job, onCloseToast) => {
+      if (job?.resultsPayload?.datasets) {
+        for (const dataset of job?.resultsPayload?.datasets) {
+        // job?.resultsPayload?.datasets.map(async (dataset) => {
+          let a = document.createElement("a");
+          a.href = dataset.uri;
+          a.download = dataset.fileName;
+          a.click();
+
+          await new Promise(resolve => setTimeout(resolve, 1 * 300));
+        }
+        onCloseToast(job._id)
+      }
+    }
   
     const createOrUpdateToast = (state) => {
       for(let i = 0; i < dataJobs.getJobsStatus.jobs.length; i++){
@@ -73,6 +91,7 @@ const ContactBulkProgress = () => {
         }else{
           if(dataJobs.getJobsStatus.jobs[i].status === 'Completed'){
             Loader.successToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast)
+            downloadResults(dataJobs.getJobsStatus.jobs[i], onCloseToast);
           }
           else if(dataJobs.getJobsStatus.jobs[i].status === 'Failed'){
             Loader.errorToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast)
@@ -89,4 +108,4 @@ const ContactBulkProgress = () => {
     );
   };
 
-export default ContactBulkProgress
+export default ContactBulkProgress;

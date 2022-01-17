@@ -1,6 +1,7 @@
 const presetReact = require('@babel/preset-react').default;
 const presetCRA = require('babel-preset-react-app');
 const CracoEsbuildPlugin = require('craco-esbuild');
+const { ProvidePlugin } = require('webpack');
 
 module.exports = {
   babel: {
@@ -27,10 +28,17 @@ module.exports = {
       babelLoaderOptions.presets[origBabelPresetReactAppIndex] = overridenBabelPresetReactApp;
 
       return babelLoaderOptions;
-    }
+    },
   },
   eslint: {
     enable: false
   },
-  plugins: [{ plugin: CracoEsbuildPlugin }],
+  webpack: {
+    plugins: [
+      new ProvidePlugin({
+        React: 'react',
+      }),
+    ],
+  },
+  plugins: [{ plugin: CracoEsbuildPlugin }]
 };

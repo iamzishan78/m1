@@ -45,7 +45,7 @@ export default function LandAppBar(props) {
       </Grid>
       <Grid item>
         <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-          <Button color="primary" variant="contained" startIcon={<Add />}>
+          {/* <Button color="primary" variant="contained" startIcon={<Add />}>
             Add{" "}
             {(() => {
               switch (location.pathname) {
@@ -57,7 +57,7 @@ export default function LandAppBar(props) {
                   return "";
               }
             })()}
-          </Button>
+          </Button> */}
         </div>
       </Grid>
     </Grid>

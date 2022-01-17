@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { AppProvider, AppContext, setApolloHeaders } from "./AppContext";
+import GlobalApolloClientProvider from "./GlobalApolloClientProvider";
 import { Switch, Route } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 //components
@@ -202,6 +203,9 @@ const PrivateRoute = ({ component, ...options }) => {
 function App() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [apolloClient, setApolloClient] = useState(null);
+  useEffect(() => {
+    new GlobalApolloClientProvider(apolloClient)
+  }, [apolloClient]);
   const [apolloClientToken, setApolloClientToken] = useState(null);
   const [apolloClientIdToken, setApolloIdClientToken] = useState(null);
   const [apolloClientEndpoint, setApolloClientEndpoint] = useState(null);
@@ -236,7 +240,7 @@ function App() {
 
     if (!apolloClient) {
       const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions })
-      const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { batch: "true" }})
+      const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { ...fetchOptions.headers, batch: "true" }})
 
       let client = new ApolloClient({
         // uri: endpoint,
@@ -273,7 +277,7 @@ function App() {
     if (apolloClient && endpoint) {
       setApolloClient((state, props) => {
         const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions })
-        const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { batch: "true" }})
+        const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { ...fetchOptions.headers, batch: "true" }})
 
         return new ApolloClient({
           // ...state.link.options,

@@ -126,7 +126,7 @@ function LayerStyling(props) {
   const handleApplyChanges = () => {
     if ((stateApp.layers && layer &&
       ((fillColor && fillColor.rgb && fillColor.alpha) || (strokeColor && strokeColor.rgb && strokeColor.alpha))) ||
-      width || layer.layerPaintProps[0].labelProps?.visibility !== layerLabelVisibility ||
+      width || layer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
       layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability
     ) {
       let currentLayer = { ...layer };
@@ -357,6 +357,11 @@ function LayerStyling(props) {
         };
       }
 
+      currentLayer = {
+        ...currentLayer,
+        layerSettings,
+      };
+
       //// saving to stateApp
       const currentLayers = [...stateApp.layers];
       const index = currentLayers.findIndex((l) => l.layerName === currentLayer.layerName);
@@ -369,6 +374,7 @@ function LayerStyling(props) {
           settings: {
             _id: currentLayer._id,
             layerPaintProps: currentLayer.layerPaintProps,
+            layerSettings: currentLayer.layerSettings
           },
         },
       });

@@ -1,15 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-
+import { useLocation } from "react-router";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, IconButton, Tabs, Tab, Grid, Breadcrumbs } from "@material-ui/core";
 import { DescriptionOutlined as DocumentIcon, NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
+import { useLazyQuery } from "@apollo/client";
+import { GET_PROPERTY } from "graphQL/useQueryGetProperty";
 
 import Tagger from "components/Shared/Tagger";
 
 // Components
 import HeaderSection from "./HeaderSection";
+import moment from "moment";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -131,7 +134,17 @@ export default function DetailComponents(props) {
   const classes = useStyles(props);
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
+  const [propertyId, setPropertyId] = useState(null);
+  const location = useLocation();
 
+  const { search } = location;
+
+
+  const [getProperty, { data: getPropertyResult }] = useLazyQuery(GET_PROPERTY, {
+    fetchPolicy: "no-cache",
+  });
+
+  const propertyDetails = getPropertyResult?.getProperty.property;
   useEffect(() => {
     selectedTabRef.current &&
       selectedTabRef.current.scrollIntoView({
@@ -140,6 +153,19 @@ export default function DetailComponents(props) {
         inline: "start",
       });
   }, [tab]);
+
+
+  useEffect(() => {
+    if (search !== "") {
+      const propertyId = search.replace("?id=", "");
+      if (propertyId) {
+        setPropertyId(propertyId);
+        getProperty({
+          variables: { id: propertyId },
+        });
+      }
+    }
+  }, [search]);
 
   return (
     <div className={classes.root}>
@@ -153,12 +179,12 @@ export default function DetailComponents(props) {
               <Link
                 style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer", fontWeight: "bold" }}
                 color="inherit"
-                onClick={() => history.push("/revenue/statements")}
+                onClick={() => history.push("/revenue/properties")}
               >
                 Properties
               </Link>
 
-              <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>Sample Property</Typography>
+              {propertyDetails && (<Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}> {propertyDetails.name} </Typography>)}
             </Breadcrumbs>
           </Grid>
           <Grid item>
@@ -178,10 +204,11 @@ export default function DetailComponents(props) {
               <DocumentIcon fontSize="large" />
             </IconButton>
             <div className={classes.titleText}>
-              <Typography style={{ fontWeight: "bold", fontSize: "large", textTransform: "uppercase" }}>
-                W144300498 - Williams K 22H
+              {propertyDetails && (<Typography style={{ fontWeight: "bold", fontSize: "large", textTransform: "uppercase" }}>
+                {propertyDetails.name}
               </Typography>
-              <Typography variant="subtitle1">10/3/2021</Typography>
+              )}
+              {propertyDetails && (<Typography variant="subtitle1">{moment(propertyDetails.flatSyncAt).format("DD/MM/yyyy")}</Typography>)}
             </div>
           </div>
           <div className={classes.tags}>

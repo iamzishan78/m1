@@ -310,7 +310,16 @@ function Search() {
     () => ({
       "wells": {
         esIndex: "platformData:wells",
-        search: (request) => request.input ? `((wellName:*${request.input}*) OR (api:*${request.input}*))` : '',
+        search: (request) => (() => {
+          let searchString = ""
+          if (request.input) {
+            searchString = request.input.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
+          }
+      
+          return searchString
+            ? `(wellName:(${searchString.join('* AND ')}*) OR api:(${searchString.join('* AND ')}*))^2 OR (wellName:(${searchString.join('* ')}*) OR api:(${searchString.join('* ')}*))`
+            : ""
+        })(),
         formatOptions: (data) => {
           return { ...data, Source: wellCogIndexName, Primary: data.WellName, Secondary: data.ApiNumber }
         }
@@ -321,13 +330,23 @@ function Search() {
         formatOptions: (data) => {
           return {
             ...data, ...data.node, Primary: data.name || "--",
+            Source: contactIndexName,
             Secondary: data.address1 || data.city || data.state ? data.address1 + ' ' + data.city + ', ' + data.state + ' ' + data.zip : "--"
           }
         }
       },
       "tax owners": {
         esIndex: "platformData:globalowner",
-        search: (request) => request.input ? `ownerName:*${request.input}*` : '',
+        search: (request) => (() => {
+          let searchString = ""
+          if (request.input) {
+            searchString = request.input.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
+          }
+      
+          return searchString
+            ? `(ownerName:(${searchString.join('* AND ')}*))^4 OR (ownerName:(${searchString.join('* ')}*))^2 OR (_all:(${searchString.join('* ')}*))`
+            : ""
+        })(),
         formatOptions: (data) => {
           return {
             ...data, Source: 'globalowner-index', Primary: data.OwnerName, Secondary: `${data.StreetAddress}\n${data.City}\n${data.State}\n${data.Zip}`,
@@ -406,7 +425,7 @@ function Search() {
 
   useEffect(() => {
     let newOptions = []
-    if (esSearchData) {
+    if (esSearchData?.getESPaginatedList?.hits) {
       const { formatOptions } = esCallData[searchOption]
       newOptions = [
         ...esSearchData.getESPaginatedList.hits.map((result) => {
@@ -414,8 +433,8 @@ function Search() {
         }),
       ];
       setOptions(newOptions);
-      setLoading(false)
     }
+    setLoading(false)
   }, [esSearchData])
 
 
@@ -737,6 +756,10 @@ function Search() {
             contactId: newValue._id,
           },
         });
+
+      //when uncommented this takes you from map search bar directly to contact detail card for selected contact 
+        //const newPath = `/contact/details/${newValue._id}`;
+       // history.location.pathname !== newPath && history.replace(newPath);
       }
 
       //// if mapboxSearch

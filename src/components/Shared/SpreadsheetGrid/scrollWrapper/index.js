@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Grid from '../grid';
 import ScrollDummy from './../scrollDummy';
-import slice from 'lodash.slice';
+import slice from 'lodash/slice';
 import throttleWithRAF from './../kit/throttleWithRAF';
 import tablePropTypes from './../kit/tablePropTypes';
 import styles from './styles.css';

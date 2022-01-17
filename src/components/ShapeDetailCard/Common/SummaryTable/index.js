@@ -72,7 +72,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
         if (search) {
             const td = tableData.concat(properties?.custom_data_arr || [])
             const newTableData = td.filter((row) =>
-                row.key?.toLowerCase()?.startsWith(search.toLowerCase()) || row.label?.toLowerCase()?.startsWith(search.toLowerCase()) || tableTempProperties[row.key]?.toLowerCase()?.startsWith(search.toLowerCase()))
+                row.key?.toLowerCase()?.includes(search.toLowerCase()) || row.label?.toLowerCase()?.includes(search.toLowerCase()) || tableTempProperties[row.key]?.toLowerCase()?.includes(search.toLowerCase()))
 
             setFilteredTableData(newTableData)
         } else {

@@ -12,6 +12,8 @@ import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import { Typography } from "@material-ui/core";
 import { platformDataInitialData, userDefinedInitialData } from "./data";
 
+import { useSelector } from "react-redux";
+
 const StyledMenu = withStyles({
   paper: {
     minWidth: "420px",
@@ -86,19 +88,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color }) => {
+const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, isShapeGridOnly }) => {
 
   const classes = useStyles({ backgroundColor, color });
   const [search, setSearch] = useState('');
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
 
   const platformData = useMemo(() => {
-    return platformDataInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase()))
+    return platformDataInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())).filter(data => isShapeGridOnly ? data.shapeGrid ? true : false : true)
 
   }, [search])
 
   const userDefinedData = useMemo(() => {
-    return userDefinedInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase()))
+    return userDefinedInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())).filter(data => isShapeGridOnly ? data.shapeGrid ? true : false : true)
 
   }, [search])
 
@@ -158,24 +161,26 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color }
             </StyledMenuItem>
           })}
 
-          <Grid container className={classes.underlinedHeader} direction="row" justifyContent="space-between" alignItems="center" >
-            <Grid item>
-              <Typography variant="h6">
-                User Defined Data
-              </Typography>
+          {!mapGridCardActivated && <>
+            <Grid container className={classes.underlinedHeader} direction="row" justifyContent="space-between" alignItems="center" >
+              <Grid item>
+                <Typography variant="h6">
+                  User Defined Data
+                </Typography>
+              </Grid>
             </Grid>
-          </Grid>
 
-          {userDefinedData.map((icon) => {
-            const Icon = icon.Icon
-            return <StyledMenuItem key={icon.index} selected={icon.value === value.value} onClick={() => { handleChange(icon); handleClose() }}>
-              <ListItemIcon>
-                <Icon className={classes.icon} fontSize="small" color="#bdc7d1" opacity="1" />
-              </ListItemIcon>
+            {userDefinedData.map((icon) => {
+              const Icon = icon.Icon
+              return <StyledMenuItem key={icon.index} selected={icon.value === value.value} onClick={() => { handleChange(icon); handleClose() }}>
+                <ListItemIcon>
+                  <Icon className={classes.icon} fontSize="small" color="#bdc7d1" opacity="1" />
+                </ListItemIcon>
 
-              <ListItemText primary={icon.label} />
-            </StyledMenuItem>
-          })}
+                <ListItemText primary={icon.label} />
+              </StyledMenuItem>
+            })}
+          </>}
         </Grid>
       </StyledMenu>
     </>

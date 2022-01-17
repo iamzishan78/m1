@@ -234,6 +234,7 @@ export default function CustomizedSteppers(props) {
             createJob({
               variables: {
                 jobId: id,
+                sendEmail: true
               },
             })
           } else {

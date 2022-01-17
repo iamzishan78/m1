@@ -22,6 +22,9 @@ import LandScapeIcon from "components/Shared/svgIcons/LandscapeBlackIcon";
 
 import { M1neralLogoNavNoAuth, useStyles } from "./Common";
 
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
+
 const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   width: 200px;
   padding-left: 10px;
@@ -162,49 +165,64 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             </div>
           </ListItem>
 
-          <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexLand === 1}
-            onClick={(event) => {
-              handleListItemClick("/land/agreements");
-            }}
-            key="land"
-          >
-            <div className={classes.tabContent}>
-              <Tooltip title="Land" placement="right" classes={{ tooltip: classes.iconTooltip }}>
-                <ListItemIcon className={classes.sideNavIcon}>
-                  <LandScapeIcon />
-                </ListItemIcon>
-              </Tooltip>
-              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Land" />
-            </div>
-          </ListItem>
+          <FeatureFlag feature={FEATURES.LANDMODULE}>
+            <ListItem
+              classes={{
+                root: classes.menuListItem,
+                selected: classes.menuListItemSelected,
+              }}
+              button
+              selected={stateNav.selectedMenuIndexLand === 1}
+              onClick={(event) => {
+                handleListItemClick("/land/agreements");
+              }}
+              key="land"
+            >
+              <div className={classes.tabContent}>
+                <Tooltip title="Land" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                  <ListItemIcon className={classes.sideNavIcon}>
+                    <LandScapeIcon />
+                  </ListItemIcon>
+                </Tooltip>
+                <ListItemText className={`${classes.sideNavText} uppercase`} primary="Land" />
+                <ListItemSecondaryAction className={classes.sideNavAction}>
+                  <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
+                    beta
+                  </Button>
+                </ListItemSecondaryAction>
+              </div>
+            </ListItem>
+          </FeatureFlag>
 
-          <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexRevenue === 1}
-            onClick={(event) => {
-              handleListItemClick("/revenue/statements");
-            }}
-            key="Revenue"
-          >
-            <div className={classes.tabContent}>
-              <Tooltip title="Revenue" placement="right" classes={{ tooltip: classes.iconTooltip }}>
-                <ListItemIcon className={classes.sideNavIcon}>
-                  <BarChartIcon />
-                </ListItemIcon>
-              </Tooltip>
-              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Revenue" />
-            </div>
-          </ListItem>
+          <FeatureFlag feature={FEATURES.REVENUEMODULE}>
+            <ListItem
+              classes={{
+                root: classes.menuListItem,
+                selected: classes.menuListItemSelected,
+              }}
+              button
+              selected={stateNav.selectedMenuIndexRevenue === 1}
+              onClick={(event) => {
+                handleListItemClick("/revenue/statements");
+              }}
+              key="Revenue"
+            >
+              <div className={classes.tabContent}>
+                <Tooltip title="Revenue" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                  <ListItemIcon className={classes.sideNavIcon}>
+                    <BarChartIcon />
+                  </ListItemIcon>
+                </Tooltip>
+                <ListItemText className={`${classes.sideNavText} uppercase`} primary="Revenue" />
+                <ListItemSecondaryAction className={classes.sideNavAction}>
+                  <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
+                    beta
+                  </Button>
+                </ListItemSecondaryAction>
+              </div>
+            </ListItem>
+          </FeatureFlag>
+
           <ListItem
             classes={{
               root: classes.menuListItem,

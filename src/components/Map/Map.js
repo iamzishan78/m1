@@ -26,7 +26,7 @@ import SpatialDataCard from "../MapControls/components/spatialDataCard";
 import "./popup.css";
 import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
-import { addCustomShapeProperties, drawBoundary } from "../MapControls/components/DrawShapes/drawShapesHelpers";
+import { addCustomShapeProperties, drawBoundary, drawWellBoundary } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 import MapGridCardProvider from "../MapGridCard/MapGridProvider";
 import MarkerIcon from "./sprites/marker-icon.png";
 import DefaultFiltersTest from "./filtersDefaultTest";
@@ -67,6 +67,8 @@ import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 import { OWNERSQUERY } from "../../graphQL/useQueryOwners";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
 import { ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoContains";
+import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { TENANTWELL } from "graphQL/useQueryTenantWell";
 
 // mutations
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
@@ -400,6 +402,29 @@ function Map({ type, paramId, lati, longi }) {
       }));
     }
   }, []);
+  
+  const getElasticWell = async (paramId) => {
+    const { data: well } = await client.query({
+      query: GET_ES_PAGINATED_LIST,
+      variables: {
+        esIndex: "platformData:wells",
+        pagination: {
+          first: 1,
+          keep_alive: "1micros"
+        },
+        search: `_id:${paramId.toLowerCase()}`,
+        sort: [],
+      },
+    });
+    const { data: tenantWell } = await client.query({
+      query: TENANTWELL,
+      variables: {
+         globalWellId: well.getESPaginatedList.hits[0]?.id ,
+      },
+    });
+    return { ...well.getESPaginatedList.hits[0], tenantWellId : tenantWell?.tenantWell?.tenantWellId }
+  }
+
 
   async function getCustomLayer() {
     const keys = { parcels: "selectedParcel", ...layersWithSelectedShapeKey(), wells: "selectedWell" };
@@ -416,16 +441,14 @@ function Map({ type, paramId, lati, longi }) {
       }));
     }
     if (type === "wells") {
-      const intervalObj = setInterval(function () {
-        if (map.getSource("wellsVT") && paramId?.toLowerCase() !== stateApp.selectedWellId) {
-          clearInterval(intervalObj);
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            selectedWellId: paramId.toLowerCase(),
-            wellSelectedCoordinates: [Number(longi), Number(lati)],
-          }));
-        }
-      }, 3000);
+      const currentFeature = { ...(await getElasticWell(paramId)) };
+      if (currentFeature?.Id) currentFeature.id = currentFeature.Id;
+      setStateApp({ ...stateApp, selectedWell: currentFeature, selectedWellId: paramId.toLowerCase(), popupOpen: false, expandedCard: true });
+      setShowExpandableCard(true);
+      if (map) {
+        findBoundsMap([currentFeature.geoJSON], map);
+        drawWellBoundary(map, [currentFeature.Longitude, currentFeature.Latitude]);
+      }
       return;
     }
     // if (!stateApp[keys[type]] || paramId !== stateApp[keys[type]]?.id) {
@@ -469,7 +492,7 @@ function Map({ type, paramId, lati, longi }) {
     ) {
       getCustomLayer();
     }
-  }, [loading, paramId]);
+  }, [loading, paramId, map]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
@@ -4332,36 +4355,7 @@ function Map({ type, paramId, lati, longi }) {
 
   useEffect(() => {
     if (map && stateApp.wellSelectedCoordinates) {
-      if (map.getLayer("well-point")) map.removeLayer("well-point");
-      if (map.getSource("well-select-point")) map.removeSource("well-select-point");
-
-      if (stateApp.wellSelectedCoordinates.length > 0) {
-        map.addSource("well-select-point", {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: [
-              {
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: stateApp.wellSelectedCoordinates,
-                },
-              },
-            ],
-          },
-        });
-
-        map.addLayer({
-          id: "well-point",
-          type: "circle",
-          source: "well-select-point",
-          paint: {
-            "circle-radius": 5,
-            "circle-color": "yellow",
-          },
-        });
-      }
+      drawWellBoundary(map, stateApp.wellSelectedCoordinates)
     }
   }, [loading, stateApp.wellSelectedCoordinates]);
 
@@ -4431,27 +4425,9 @@ function Map({ type, paramId, lati, longi }) {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
-            }`;
-
-          const headers = new Headers();
-          headers.append("Content-Type", "application/json");
-          headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
-
-          const options = {
-            method: "GET",
-            headers: headers,
-          };
-
-          await fetch(endpoint, options)
-            .then((response) => response.json())
-            .then((response) => {
-              features = response.features;
-              currentFeature = features.find((element) => element.properties.id.toLowerCase() === stateApp.selectedWellId);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+          currentFeature = { properties: { ...(await getElasticWell(stateApp.selectedWellId)) } }
+          if (currentFeature?.properties?.Id)
+            currentFeature.properties.id = currentFeature.properties.Id
         }
 
         if (currentFeature) {
@@ -4505,25 +4481,9 @@ function Map({ type, paramId, lati, longi }) {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
-            }`;
-          const headers = new Headers();
-          headers.append("Content-Type", "application/json");
-          headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
-
-          const options = {
-            method: "GET",
-            headers: headers,
-          };
-          await fetch(endpoint, options)
-            .then((response) => response.json())
-            .then((response) => {
-              features = response.features;
-              currentFeature = features.find((element) => element.properties.Id.toLowerCase() == stateApp.selectedPermitId);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+          currentFeature = { properties: { ...(await getElasticWell(stateApp.selectedPermitId)) } }
+          if (currentFeature?.properties?.Id)
+            currentFeature.properties.id = currentFeature.properties.Id
         }
         if (currentFeature) {
           let popUps = document.getElementsByClassName("mapboxgl-popup");
@@ -4675,8 +4635,8 @@ function Map({ type, paramId, lati, longi }) {
       const geoJson = makeGeoJSON(data);
       const labelGeoJson = makeLabelGeoJson(data);
 
-      map.getSource("abstract_geo_source").setData(geoJson);
-      map.getSource("abstract_label_geo_source").setData(labelGeoJson);
+      map?.getSource("abstract_geo_source").setData(geoJson);
+      map?.getSource("abstract_label_geo_source").setData(labelGeoJson);
     }
   }, [abstractData]);
 
@@ -6049,8 +6009,8 @@ function Map({ type, paramId, lati, longi }) {
       // mathematical formula for screen fit
       const alpha = 0.01;
       const bbox = [
-        [stateApp.selectedWell.longitude - 1.5 * alpha, stateApp.selectedWell.latitude],
-        [stateApp.selectedWell.longitude + 0.5 * alpha, stateApp.selectedWell.latitude],
+        [stateApp?.selectedWell?.longitude - 1.5 * alpha, stateApp?.selectedWell?.latitude],
+        [stateApp?.selectedWell?.longitude + 0.5 * alpha, stateApp?.selectedWell?.latitude],
       ];
 
       // map may be null when wellDetailCard is launched from somewhere else

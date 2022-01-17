@@ -19,6 +19,10 @@ import { leasesColumnHeaders, locationsColumnHeaders, operatorsColumnHeaders, ow
 import DockMenu from "./DockMenu";
 import ShapeGridWellsTable from "components/Table/Wells/ShapeGridWellsTable";
 import ShapeGridTaxOwnersTable from "components/Table/TaxOwners/ShapeGridTaxOwnersTable";
+import MapGridWellsTable from "components/Table/Wells/MapGridWellsTable";
+import MapGridTaxOwnersTable from "components/Table/TaxOwners/MapGridTaxOwnersTable";
+import MapGridOperatorTable from "components/Table/Operator/MapGridOperatorTable";
+import MapGridContactTable from "components/Table/Contact/MapGridContactTable";
 
 import SearchPanel from "./components/SearchPanel";
 import { platformDataInitialData } from "./components/data";
@@ -125,15 +129,24 @@ const useStyles = makeStyles((theme) => {
               mapGridCardActiveTap === 0
                 ? mapGridCardActivated === "exp"
                   ? "calc(91vh - 233px)"
-                  : "calc(60vh - 233px)"
+                  : "calc(58.75vh - 221px)"
                 : mapGridCardActivated === "exp"
                   ? "calc(91vh - 183px)"
-                  : "calc(60vh - 183px)",
-            maxHeight: ({ dockMenu }) => {
-              if (dockMenu === "bottom" || dockMenu === "top") return "calc(100vh - 460px)"
-              else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 157px)"
-              else if (dockMenu === "full") return "calc(100vh - 158px)"
-            }
+                  : "calc(58.75vh - 183px)",
+            "@media (max-height:930px)": {
+              maxHeight: ({ dockMenu }) => {
+                if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 590px)"
+                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 216px)"
+                else if (dockMenu === "full") return "calc(100vh - 153px)"
+              }
+            },
+            "@media (max-height:1600px)": {
+              maxHeight: ({ dockMenu }) => {
+                if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 640px)"
+                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 216px)"
+                else if (dockMenu === "full") return "calc(100vh - 183px)"
+              }
+            },
           },
         }
       },
@@ -367,27 +380,121 @@ function MapGridCard(props) {
               <div style={{ position: "relative" }} classes={classes.gridTables}>
                 <TabPanels
                   value={searchTapValue.index}
-                  panels={getTaps.map((tab, index) => (
-                    <Fragment key={index}>
-                      <M1nTable
-                        dense
-                        options={options}
-                        parent="search"
-                        privateColumns={tab.privateColumns}
-                        targetLabel={tab.label}
-                        header={
-                          <SearchPanel
-                            handleChange={handleSearchPanelChange}
-                            value={searchTapValue}
-                            ativateSearchPanel={ativateSearchPanel}
+                  panels={getTaps.map((tab, index) => {
+                    return (
+                      <Fragment key={index}>
+                        {tab.label === 'well' && (
+                          <MapGridWellsTable
+                            dense
+                            parent="search"
+                            customOptions={options}
+                            targetLabel={tab.label}
+                            header={
+                              <SearchPanel
+                                isShapeGridOnly={stateApp.gridPolygonString}
+                                handleChange={handleSearchPanelChange}
+                                value={searchTapValue}
+                                ativateSearchPanel={ativateSearchPanel}
+                              />
+                            }
+                            showTags={tab.showTags}
+                            showComments={tab.showComments}
+                            showTracks={tab.showTracks}
                           />
-                        }
-                        showTags={tab.showTags}
-                        showComments={tab.showComments}
-                        showTracks={tab.showTracks}
-                      />
-                    </Fragment>
-                  ))}
+                        )}
+                        {tab.label === 'owner' && stateApp.gridPolygonString && (
+                          <ShapeGridTaxOwnersTable
+                            parent="boundary_grid_owners"
+                            header={
+                              <SearchPanel
+                                isShapeGridOnly={stateApp.gridPolygonString}
+                                handleChange={handleSearchPanelChange}
+                                value={searchTapValue}
+                                ativateSearchPanel={ativateSearchPanel}
+                              />
+                            }
+                            customOptions={options}
+                            targetLabel="owner"
+                            showTracks
+                          />
+                        )}
+                        {tab.label === 'owner' && !stateApp.gridPolygonString && (
+                          <MapGridTaxOwnersTable
+                            dense
+                            parent="search"
+                            customOptions={options}
+                            targetLabel={tab.label}
+                            header={
+                              <SearchPanel
+                                isShapeGridOnly={stateApp.gridPolygonString}
+                                handleChange={handleSearchPanelChange}
+                                value={searchTapValue}
+                                ativateSearchPanel={ativateSearchPanel}
+                              />
+                            }
+                            showTags={tab.showTags}
+                            showComments={tab.showComments}
+                            showTracks={tab.showTracks}
+                          />
+                        )}
+                        {tab.label === 'operator' && (
+                          <MapGridOperatorTable
+                            dense
+                            parent="search"
+                            customOptions={options}
+                            targetLabel={tab.label}
+                            header={
+                              <SearchPanel
+                                isShapeGridOnly={stateApp.gridPolygonString}
+                                handleChange={handleSearchPanelChange}
+                                value={searchTapValue}
+                                ativateSearchPanel={ativateSearchPanel}
+                              />
+                            }
+                            showTags={tab.showTags}
+                            showComments={tab.showComments}
+                            showTracks={tab.showTracks}
+                          />
+                        )}
+                        {tab.label === 'contacts' && (
+                          <MapGridContactTable
+                            dense
+                            parent="search"
+                            customOptions={options}
+                            targetLabel={tab.label}
+                            header={
+                              <SearchPanel
+                                isShapeGridOnly={stateApp.gridPolygonString}
+                                handleChange={handleSearchPanelChange}
+                                value={searchTapValue}
+                                ativateSearchPanel={ativateSearchPanel}
+                              />
+                            }
+                            showTags={tab.showTags}
+                            showComments={tab.showComments}
+                            showTracks={tab.showTracks}
+                          />
+                        )}
+                        {/* <M1nTable
+                            dense
+                            options={options}
+                            parent="search"
+                            privateColumns={tab.privateColumns}
+                            targetLabel={tab.label}
+                            header={
+                              <SearchPanel
+                                handleChange={handleSearchPanelChange}
+                                value={searchTapValue}
+                                ativateSearchPanel={ativateSearchPanel}
+                              />
+                            }
+                            showTags={tab.showTags}
+                            showComments={tab.showComments}
+                            showTracks={tab.showTracks}
+                          /> */}
+                      </Fragment>
+                    )
+                  })}
                 />
               </div>
             </TabPanel>

@@ -12,6 +12,9 @@ import MenuIcon from "@material-ui/icons/Menu";
 import { useStyles, StyledMenu, StyledMenuItem } from "components/Land/style";
 import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Land";
 
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
+
 export default function QuickActionsPanel({
   children,
   handlePanelStateChange,
@@ -68,6 +71,7 @@ export default function QuickActionsPanel({
           {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST)
             .filter((key) => !SIDE_PANEL_MENU_ITEMS_LIST[key].isExcluded)
             .map((key, index) => (
+              SIDE_PANEL_MENU_ITEMS_LIST[key].featureFlag && <FeatureFlag feature={FEATURES[SIDE_PANEL_MENU_ITEMS_LIST[key].featureFlag]}>
               <StyledMenuItem
                 onClick={() =>
                   handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)
@@ -85,6 +89,7 @@ export default function QuickActionsPanel({
                   {SIDE_PANEL_MENU_ITEMS_LIST[key].title}
                 </ListItemText>
               </StyledMenuItem>
+              </FeatureFlag>
             ))}
         </StyledMenu>
       </Drawer>
