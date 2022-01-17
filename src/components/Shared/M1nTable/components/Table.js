@@ -1506,7 +1506,7 @@ function SubTable(props) {
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
-                  if (props.parent === "TractsTable" && props.targetLabel === "tract") {
+                  if (props.parent === "TractInterestsTable" && props.targetLabel === "tractInterest") {
                     targetSourceId = tableMeta.rowData[1];
                   }
 
@@ -1821,7 +1821,7 @@ function SubTable(props) {
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
-                  if (props.parent === "TractsTable" && props.targetLabel === "tract") {
+                  if (props.parent === "TractInterestsTable" && props.targetLabel === "tractInterest") {
                     targetSourceId = tableMeta.rowData[1];
                   }
                   return (
@@ -1946,7 +1946,7 @@ function SubTable(props) {
                   const uri = row_line?.fileUrl;
 
                   return (
-                    <div className={classes.fileName}>
+                    <div style={{ minWidth: 400 }}>
                       <Grid container spacing={2} direction="row">
                         <Grid
                           item
@@ -2001,13 +2001,13 @@ function SubTable(props) {
                                 if (props.addAble.type === "document") {
                                   window.history.pushState("", "", `/documents/${row_line._id}/view`);
                                 }
-                                const selectedRow = rows.find((row) => row._id === row_line._id);
+                                // const selectedRow = rows.find((row) => row._id === row_line._id);
                                 setStateApp((state) => ({
                                   ...state,
-                                  pdfView: selectedRow,
+                                  pdfView: row_line,
                                   viewDoc: {
-                                    uri: selectedRow.viewToken,
-                                    name: selectedRow.fileName,
+                                    uri: row_line.viewToken,
+                                    name: row_line.fileName,
                                   },
                                 }));
                               } else {
@@ -2017,13 +2017,31 @@ function SubTable(props) {
                           >
                             <Grid container direction="column" alignItems="flex-start">
                               <Grid item>
-                                <p className={classes.clickableCell}>{value}</p>
+                                <p 
+                                  style={{
+                                    cursor: "pointer",
+                                    padding: "10px 10px 10px 10px",
+                                    position: "relative",
+                                    minWidth: "120px",
+                                    borderRadius: "7px",
+                                    color: "#17aadd",
+                                    wordBreak: "break-word",
+                                    "&:hover": {
+                                      textDecoration: "underline",
+                                    },
+                                    fontWeight: "bold",
+                                  }}>{value}</p>
                               </Grid>
                               <Grid item>
                                 {/* <p className={classes.docDateText}>{dateTime = moment.utc(row_line.dateTime).format("MM/DD/YYYY")}</p> */}
                                 {/* <p className={classes.docDateText}>{convert_date(dateTime)}</p> */}
                                 {/* <p className={classes.docDateText}>{dateTime.substring(0,8)}}</p> */}
-                                <p className={classes.docDateText}>{convert_date(dateTime)}</p>
+                                <p style={{
+                                      padding: "0px 30px 10px 10px",
+                                      marginTop: "-20px",
+                                      position: "relative",
+                                      justifyContent: "flex-end",
+                                }}>{convert_date(dateTime)}</p>
                               </Grid>
                             </Grid>
                           </div>
@@ -2127,11 +2145,21 @@ function SubTable(props) {
               },
             };
             break;
+          // case "checkNumber":
+          //   column.options = {
+          //     ...column.options,
+          //     customBodyRender: (value) => {
+          //       let styles = { ...column.style };
+          //       styles = { ...styles, fontWeight: 600, color: "#17aadd", cursor: "pointer" };
+          //       return value ? <p style={styles}>{value}</p> : <span style={{ color: "#959595" }}>N/A</span>;
+          //     },
+          //   };
+          //   break;
           case "checkAmount":
             column.options = {
               ...column.options,
               customBodyRender: (value) => {
-                return <p style={{ fontWeight: 600 }}>{`$${value}`}</p>;
+                return value ? <p style={{ fontWeight: 600 }}>{value}</p> : <span style={{ color: "#959595" }}>N/A</span>;
               },
             };
             break;
@@ -2198,7 +2226,7 @@ function SubTable(props) {
               customBodyRender: (value, tableMeta, updateValue) => {
                 return (
                   <>
-                    {props.parent === "TractsTable" && (
+                    {/* {props.parent === "TractsTable" && (
                       <p
                         onClick={(e) => {
                           e.stopPropagation();
@@ -2210,7 +2238,7 @@ function SubTable(props) {
                       >
                         {value}
                       </p>
-                    )}
+                    )} */}
                     {(props.parent === "RevenueStatementTable" || props.parent === "RevenuePropertiesTable") && (
                       <div className={classes.flexAlign}>
                         {value?.toLowerCase() === "approved" ? (
@@ -3362,7 +3390,14 @@ function SubTable(props) {
 
       if (props.targetLabel === "Revenue Properties") {
         // need stopPropagation
-        // history.push("/revenue/property/details");
+        // if (rows[dataIndex]?._id) {
+        //   history.push(`/revenue/property/details?id=${rows[dataIndex]?._id}`);
+        // }
+      }
+      if (props.parent === "RevenueStatementTable") {
+        if (rows[dataIndex]?._id) {
+          history.push(`/revenue/statement/details?id=${rows[dataIndex]?._id}`);
+        }
       }
     },
     onChangePage: (pageState) => {

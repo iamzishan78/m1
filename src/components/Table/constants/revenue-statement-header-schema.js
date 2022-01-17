@@ -5,7 +5,6 @@ const RevenueStatementHeadCells = [
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
-
   {
     name: "checkNumber",
     label: "Check Number",

@@ -41,7 +41,7 @@ export default function AnalyticsCards(props) {
 
   return (
     <Grid container direction="row" display="flex" align="center" spacing={4} textAlign="left" className={classes.root}>
-      {cards.map((card, index) => (
+      {cards && cards.map((card, index) => (
         <Grid item md={3}>
           <Card variant="outlined" className={classes.card}>
             <CardContent className={classes.cardContent}>

@@ -92,10 +92,23 @@ const useStyles = makeStyles((theme) => ({
   },
   wellLink: {
     cursor: "pointer",
+    fontSize: "16px",
+    margin: 0,
+    variant: "subtitle1",
+    color: "primary",
     "&:hover": {
       fontWeight: "700",
     },
   },
+    secondaryText: {
+    color: "grey",
+    fontSize: "14px",
+    margin: 0,
+    paddingLeft: 16,
+    paddingBottom: 4,
+    marginTop: -8
+
+  }
 }));
 
 export default function Contacts(props) {
@@ -162,8 +175,8 @@ export default function Contacts(props) {
 
   // sending to wells page
   const goToWell = (well) => {
-    history.push(`/map/wells/${well?.id.toUpperCase()}`);
-    setStateApp({ ...stateApp, DocumentDrawer: false });
+    history.push(`/map/wells/${well?.id.toUpperCase()}`, { showWellBreadcrumb: true });
+    setStateApp({ ...stateApp, DocumentDrawer: false, selectedDocument: {} });
   };
 
   // searching existing well
@@ -255,12 +268,12 @@ export default function Contacts(props) {
         <List aria-label="wells list">
           {wells && wells.length > 0 ? (
             wells.map((well, index) => (
-              <div style={{ padding: "10px 0px 0px" }}>
+              <div style={{ padding: "0px 0px 0px" }}>
                 <ListItem key={index}>
                   <Link className={classes.wellLink} color="primary" onClick={() => goToWell(well)}>
                     {well.wellName}
                   </Link>
-
+                  
                   {deleteWellLoading && deletedRow === well.id ? (
                     <ListItemSecondaryAction>
                       <IconButton edge="end" aria-label="delete">
@@ -275,6 +288,7 @@ export default function Contacts(props) {
                     </ListItemSecondaryAction>
                   )}
                 </ListItem>
+                <p className={classes.secondaryText}>{well?.apiNumber}</p>
                 <Divider />
               </div>
             ))

@@ -364,6 +364,14 @@ export default function Navigation(props) {
     }
     return false;
   };
+
+  // const checkIfShowBackgroundOnHeader = () => {
+  //   if (location.pathname.startsWith("/revenue/statements") || location.pathname.startsWith("/revenue/properties")) {
+  //     return true;
+  //   }
+  //   return false;
+  // };
+
   const matchAgreements = () => {
     return location.pathname === "/landmanagement/agreements";
   };
@@ -377,6 +385,10 @@ export default function Navigation(props) {
           className={clsx(classes.appBar, {
             [classes.appBarShift]: openDrawer,
           })}
+          // style={{
+          //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
+          //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
+          // }}
         >
           {stateApp.user && (
             <Toolbar>
