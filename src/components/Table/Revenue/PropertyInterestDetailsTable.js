@@ -18,7 +18,9 @@ import { UPDATE_PROPERTY_INTEREST } from "graphQL/useMutationUpdatepropertyInter
 
 function PropertyInterestDetailsTable(props) {
   const classes = usetableStyles();
-  const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST);
+  const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
+    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+  });
 
   const formatHits = (hits) => {
     return hits.map((hit) => {
