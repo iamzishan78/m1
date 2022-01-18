@@ -69,7 +69,7 @@ const ConvertTaxOwnerToContact = ({
   const { currentFeature, user } = stateApp;
   const [newTagsIds, setNewTagsIds] = useState([]);
   const [searchCampaign, setSearchCampaign] = useState("");
-  const [includeFilter, setIncludeFilter] = useState(true);
+  const [includeFilter, setIncludeFilter] = useState(false);
   const { control, getValues, watch } = useForm();
 
   const contactStatus = watch("contactStatus", contactStatusOptions[0].value);
