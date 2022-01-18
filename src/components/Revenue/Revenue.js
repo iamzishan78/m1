@@ -37,7 +37,7 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
   REVENUE_STATEMENT_LINE_ITEM: {
     isExcluded: true,
     title: "Revenue Statements",
-    link: "/revenue/statement/details/line-item",
+    link: "/revenue/statement/:id/line-item",
     component: "RevenueStatementLineItem",
   },
 };

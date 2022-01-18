@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Paper, Button } from "@material-ui/core";
+import { Grid, Paper, Button, TableContainer, CircularProgress } from "@material-ui/core";
 
 import TableHOC from "components/Table/TableHOC";
 
 // QUERIES 
 import { useLazyQuery, useApolloClient, useMutation } from "@apollo/client";
 
-import { setStateIfDeepEqual, deepEqualObjects, copy } from "components/Shared/functions";
+import { deepEqualObjects, copy } from "components/Shared/functions";
 
 // Header Schemas 
 import TableHeader from 'components/Table/constants/check-details-header-schema';
@@ -23,77 +23,79 @@ import Typography from '@material-ui/core/Typography';
 import { AutoCompleteField } from "./AutoCompleteField";
 import { UPDATE_CHECK_DETAIL } from "graphQL/useMutationUpdateCheckDetail";
 import InfiniteScroll from "react-infinite-scroll-component";
-
-
-const Rows = [];
-const positions = [];
-
-for (let i = 0; i < 1000; i++) {
-    Rows.push({
-        id: i,
-        secondName: 'Second name ' + i,
-        firstName: 'First name ' + i,
-
-        positionId: 3,
-        age: i
-    });
-}
-
-for (let i = 1; i < 6; i++) {
-    positions.push({
-        id: i,
-        name: 'Long Position Name ' + i
-    });
-}
+import { makeStyles } from "@material-ui/styles";
 
 
 const RevenueStatementHeadCells = [
     {
-        id: "property.number", title: "Property Code", filterKey: 'property.number.keyword', type: 'autocomplete'
+        id: "property.number", title: "Property Code", filterKey: 'property.number.keyword', type: 'autocomplete', width: '210px'
     },
     {
-        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword'
+        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', width: '190px'
     },
     {
-        id: "property.state", title: "State", filterKey: 'property.state.keyword'
+        id: "property.state", title: "State", filterKey: 'property.state.keyword', width: '100px'
     },
     {
-        id: "property.county", title: "County", filterKey: 'property.county.keyword'
+        id: "property.county", title: "County", filterKey: 'property.county.keyword', width: '130px'
     },
     {
-        id: "date", title: "Sales Date", filterKey: 'date'
+        id: "date", title: "Sales Date", filterKey: 'date', width: '150px'
     },
     {
-        id: "product", title: "Product", filterKey: 'product.keyword', type: 'autocomplete'
+        id: "product", title: "Product", filterKey: 'product.keyword', type: 'autocomplete', width: '150px'
     },
     {
-        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement.keyword'
+        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement.keyword', width: '150px'
     },
     {
-        id: "interestType", title: "Type", filterKey: 'interestType.keyword', type: 'autocomplete'
+        id: "interestType", title: "Type", filterKey: 'interestType.keyword', type: 'autocomplete', width: '150px'
     },
     {
-        id: "price", title: "Avg Price", filterKey: 'price'
+        id: "price", title: "Avg Price", filterKey: 'price', width: '150px'
     },
     {
-        id: "grossOwnerVolume", title: "Sales Vol", filterKey: 'grossOwnerVolume'
+        id: "grossOwnerVolume", title: "Sales Vol", filterKey: 'grossOwnerVolume', width: '150px'
     },
     {
-        id: "grossOwnerValue", title: "Gross Rev", filterKey: 'grossOwnerValue'
+        id: "grossOwnerValue", title: "Gross Rev", filterKey: 'grossOwnerValue', width: '150px'
     },
     {
-        id: "ownerTax", title: "Severence", filterKey: 'ownerTax'
+        id: "ownerTax", title: "Severence", filterKey: 'ownerTax', width: '150px'
     },
     {
-        id: "ownerDeducts", title: "Deduct Amt", filterKey: 'ownerDeducts'
+        id: "ownerDeducts", title: "Deduct Amt", filterKey: 'ownerDeducts', width: '150px'
     },
     {
-        id: "deductType", title: "Deduct Cd", filterKey: 'deductType.keyword', type: 'autocomplete'
+        id: "deductType", title: "Deduct Cd", filterKey: 'deductType.keyword', type: 'autocomplete', width: '150px'
     },
     {
-        id: "netOwnerValue", title: "Owner Net Rev", filterKey: 'netOwnerValue'
+        id: "netOwnerValue", title: "Owner Net Rev", filterKey: 'netOwnerValue', width: '150px'
     }
 ];
+
+
+const useStyles = makeStyles({
+    root: {
+        width: '100%',
+    },
+    container: {
+        maxHeight: 440,
+        backgroundColor: "#fff", display: "flex",
+        flexDirection: "column-reverse",
+        "& .MuiTableCell-head": {
+            background: "#f2f2f2"
+        }
+    },
+    infiniteScroll: {
+        display: "flex", flexDirection: "column-reverse"
+    },
+    tableGrid: {
+        backgroundColor: "#fff", overflow: "scroll", maxHeight: "500px",
+    },
+    tableHeaderLabel: { marginLeft: "15px", paddingRight: '10px', marginTop: "5px" },
+    loader: { color: '#12abe0', top: '10px', display: 'flex', marginTop: '3px' }
+});
 
 
 function CheckDetailsEditableTable(props) {
@@ -104,9 +106,6 @@ function CheckDetailsEditableTable(props) {
 
     const classes = usetableStyles();
 
-    // function states 
-    // const [columns, Columns] = useState([]);
-    const [selectedRows, setSelectedRows] = useState([]);
     // const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
     // queries 
@@ -115,7 +114,7 @@ function CheckDetailsEditableTable(props) {
             props.setLoading(false);
         }
     });
-    const [loadMoreList, { data: loadMoreData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
+    const [loadMoreList, { data: loadMoreData, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
     });
 
     useEffect(() => {
@@ -167,16 +166,7 @@ function CheckDetailsEditableTable(props) {
             variables: { checkDetail: row },
             refetchQueries: [],
             awaitRefetchQueries: true
-        }).then(
-            ({ data: { addMultiWellInterestToShape } }) => {
-
-                // props.setLoading(false);
-            },
-            err => {
-                console.log(err)
-                // props.setLoading(false);
-            }
-        );
+        })
     })
 
     const cols = () => RevenueStatementHeadCells.map((cell, index) => {
@@ -195,7 +185,7 @@ function CheckDetailsEditableTable(props) {
                 </>
             );
         }
-        cell.width = 200
+        // cell.width = 200
         return cell;
     })
 
@@ -270,27 +260,6 @@ function CheckDetailsEditableTable(props) {
         }
     }, [tableData, props.dependencyUpdate]);
 
-    const onTableChange = (action, tableState, rows, meta) => {
-        tableState.esIndex = esIndex;
-        const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
-        switch (action) {
-            case "search":
-            case "sort":
-            case "filterChange":
-            case "resetFilters":
-            case "changeRowsPerPage":
-                tableActions.genericESAction();
-                break;
-            case "rowSelectionChange":
-                setSelectedRows(tableState.selectedRows.data)
-                break;
-            case "changePage":
-                tableActions.changeESPage();
-                break;
-            default:
-        }
-    }
-
     const addNewRow = (e) => {
         e.preventDefault();
         rows.push({})
@@ -298,18 +267,43 @@ function CheckDetailsEditableTable(props) {
         gridRef.current.focusCell({ x: rows.length - 1, y: 0 })
     }
 
+    const loadMore = () => {
+        setTimeout(() => {
+            // setRows([{}, {}, {}].concat(rows))
+            setTimeout(() => {
+                loadMoreList({
+                    variables: {
+                        esIndex,
+                        filters: [{
+                            field: "check._id.keyword",
+                            value: props.checkId
+                        }],
+                        sort: { 'createdAt': { order: "desc" } },
+                        pagination: {
+                            pit: tableData.pit,
+                            after: rows[0].sort,
+                        },
+                    }
+                })
+                // setTimeout(() => document.getElementById(`4-0`)?.scrollIntoView(), 0)
+            }, 0)
+        }, 0)
+    }
+
     const gridRef = React.createRef()
+    const tclasses = useStyles();
 
     return (
         <Paper elevation={3} >
             <Grid container style={{ backgroundColor: "#F2F2F2" }} >
 
                 <Grid item md={12} style={{ border: '1px solid #c1c1c1', paddingBottom: '10px' }}>
-                    <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: 'space-between' }}>
-                        <Grid item>
-                            <Typography variant="h6" component="h2" style={{ marginLeft: "15px", marginTop: "5px" }}>
+                    <Grid container direction="row" justifyContent="space-between" alignItems="center" className={{ justifyContent: 'space-between' }}>
+                        <Grid item style={{ display: 'flex' }}>
+                            <Typography variant="h6" component="h2" className={tclasses.tableHeaderLabel}>
                                 Check Details
                             </Typography>
+                            {loading ? <CircularProgress size='32px' className={tclasses.loader}></CircularProgress> : ''}
                         </Grid>
                         <Grid item>
                             <div style={{ marginRight: "15px", marginTop: "5px" }}>
@@ -320,44 +314,19 @@ function CheckDetailsEditableTable(props) {
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item style={{
-                    backgroundColor: "#fff", overflow: "scroll", maxHeight: "500px",
-                    display: "flex",
-                    flexDirection: "column-reverse"
-                }} id='scrollableDiv'>
+                <Grid item className={tclasses.tableGrid} >
                     <InfiniteScroll
                         dataLength={rows.length}
-                        next={() => {
-                            setTimeout(() => {
-                                // setRows([{}, {}, {}].concat(rows))
-                                setTimeout(() => {
-                                    loadMoreList({
-                                        variables: {
-                                            esIndex,
-                                            filters: [{
-                                                field: "check._id.keyword",
-                                                value: props.checkId
-                                            }],
-                                            sort: { 'createdAt': { order: "desc" } },
-                                            pagination: {
-                                                pit: tableData.pit,
-                                                after: rows[0].sort,
-                                            },
-                                        }
-                                    })
-                                    // setTimeout(() => document.getElementById(`4-0`)?.scrollIntoView(), 0)
-                                }, 0)
-                            }, 0)
-                            console.log('next');
-
-                        }}
-                        style={{ display: "flex", flexDirection: "column-reverse" }} //To put endMessage and loader to the top.
+                        next={loadMore}
+                        className={tclasses.infiniteScroll}
                         inverse={true}
                         hasMore={rows.length < tableData?.total}
                         // loader={<h4>Loading...</h4>}
                         scrollableTarget="scrollableDiv"
                     >
-                        <div className="DataTable" >
+
+                        <TableContainer className={tclasses.container} id='scrollableDiv'>
+
                             <TableGrid
                                 ref={gridRef}
                                 setRows={setRows}
@@ -376,7 +345,7 @@ function CheckDetailsEditableTable(props) {
                                 // }}
                                 isScrollable
                             />
-                        </div>
+                        </TableContainer>
                     </InfiniteScroll>
                 </Grid>
             </Grid>

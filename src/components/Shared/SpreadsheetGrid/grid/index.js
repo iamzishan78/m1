@@ -6,7 +6,7 @@ import isEmpty from 'lodash/isEmpty';
 import keys from './../kit/keymap';
 import tablePropTypes from './../kit/tablePropTypes';
 import Row from './row';
-
+import { TableRow } from "@material-ui/core";
 import './styles.css';
 
 class SpreadsheetGrid extends React.PureComponent {
@@ -316,23 +316,25 @@ class SpreadsheetGrid extends React.PureComponent {
         if (rows.length) {
             body = rows.map((row, i) => {
                 return (
-                    <Row
-                        x={startIndex + i}
-                        key={this.props.getRowKey(row)}
-                        columns={columns}
-                        row={row}
-                        getCellClassName={this.getCellClassName}
-                        onCellClick={this.onCellClick}
-                        onCellDoubleClick={this.onCellDoubleClick}
-                        activeCell={this.state.activeCell}
-                        focusedCell={this.state.focusedCell}
-                        // Pass disabled cells for this row only.
-                        disabledCells={this.props.disabledCells.filter(({ x }) => {
-                            return x === startIndex + i;
-                        })}
-                        height={this.props.rowHeight}
-                        columnWidthValues={this.props.columnWidthValues}
-                    />
+                    <TableRow hover role="checkbox" tabIndex={-1} key={row._id}>
+                        <Row
+                            x={startIndex + i}
+                            key={this.props.getRowKey(row)}
+                            columns={columns}
+                            row={row}
+                            getCellClassName={this.getCellClassName}
+                            onCellClick={this.onCellClick}
+                            onCellDoubleClick={this.onCellDoubleClick}
+                            activeCell={this.state.activeCell}
+                            focusedCell={this.state.focusedCell}
+                            // Pass disabled cells for this row only.
+                            disabledCells={this.props.disabledCells.filter(({ x }) => {
+                                return x === startIndex + i;
+                            })}
+                            height={this.props.rowHeight}
+                            columnWidthValues={this.props.columnWidthValues}
+                        />
+                    </TableRow>
                 );
             });
         } else {
@@ -348,16 +350,7 @@ class SpreadsheetGrid extends React.PureComponent {
 
     render() {
         return (
-            <div
-                className="SpreadsheetGrid"
-                style={{
-                    transform: `translate3d(0, ${this.calculatePosition()}, 0)`
-                }}
-            >
-                {/* {this.props.renderHeader()} */}
-
-                {this.renderBody()}
-            </div>
+            <>{this.renderBody()}</>
         );
     }
 }
