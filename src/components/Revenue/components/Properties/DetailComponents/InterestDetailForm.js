@@ -101,19 +101,22 @@ const InterestDetailForm = (props) => {
   const classes = useStyles(props);
   const { selectedInterest } = props;
   let history = useHistory();
-  const { control, getValues, watch, reset, setValue } = useForm();
+
+  const { control, getValues, reset, setValue } = useForm();
 
   const [addPropertyInterest] = useMutation(ADD_PROPERTY_INTEREST, {
     onCompleted: () => {
       props.onClose();
     },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESFilterList"],
+    awaitRefetchQueries: true,
   });
   const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
     onCompleted: () => {
       props.onClose();
     },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESFilterList"],
+    awaitRefetchQueries: true,
   });
 
   const handleSave = () => {
@@ -169,10 +172,12 @@ const InterestDetailForm = (props) => {
             }
           : { name: "", _id: null },
       });
-    }else if(props.propertyOwnerContact){
-      setValue('owner', props.propertyOwnerContact)
+    } else if (props.propertyOwnerContact) {
+      setValue("owner", props.propertyOwnerContact);
+    } else if (props.propertyDetails?.owner) {
+      props.setShowOwnerDialog(true);
     }
-  }, [selectedInterest]);
+  }, [selectedInterest, props.propertyOwnerContact]);
 
   return (
     <div

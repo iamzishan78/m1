@@ -19,15 +19,14 @@ import {
 } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
 
-import { GET_PROPERTY_DETAILS } from "graphQL/useQueryGetPropertyDetails";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 
 import { GET_PROPERTY } from "graphQL/useQueryGetProperty";
 
-
 import Tagger from "components/Shared/Tagger";
 import PropertyInterestDetailsSection from "./PropertyInterestDetailsSection";
 import InterestDetailForm from "./InterestDetailForm";
+import { ConvertOwnerToContactContainer } from "store/containers/entity";
 // Components
 import HeaderSection from "./HeaderSection";
 import moment from "moment";
@@ -171,22 +170,26 @@ export default function DetailComponents(props) {
     history.location.pathname.split("/")[
       history.location.pathname.split("/").length - 1
     ];
-  const [propertyOwnerContact, setPropertyOwnerContacts] = useState(null)
+  const [propertyOwnerContact, setPropertyOwnerContacts] = useState(null);
   const [showInterestDetails, setShowInterestDetails] = useState(false);
+  const [showOwnerDialog, setShowOwnerDialog] = useState(false);
   const [selectedInterest, setSelectedInterest] = useState(null);
   const classes = useStyles({ ...props, showInterestDetails });
   const [tab, setTab] = useState(0);
+  const [refetchContacts, setRefetchContacts] = useState(false);
   const selectedTabRef = useRef(null);
 
-  const [getProperty, { data: getPropertyResult }] = useLazyQuery(GET_PROPERTY, {
-    fetchPolicy: "no-cache",
-  });
+  const [getProperty, { data: getPropertyResult }] = useLazyQuery(
+    GET_PROPERTY,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
 
-  const [checkIfOwnersAreContacts, { data: checkIfOwnersAreContactsData }] = useLazyQuery(IFARECONTACTS, { fetchPolicy: "cache-and-network", });
+  const [checkIfOwnersAreContacts, { data: checkIfOwnersAreContactsData }] =
+    useLazyQuery(IFARECONTACTS, { fetchPolicy: "cache-and-network" });
 
   const propertyDetails = getPropertyResult?.getProperty.property;
-
-  console.log('propertyDetails', propertyDetails)
 
   useEffect(() => {
     selectedTabRef.current &&
@@ -197,33 +200,30 @@ export default function DetailComponents(props) {
       });
   }, [tab]);
 
-
   useEffect(() => {
-    if(checkIfOwnersAreContactsData?.ifAreContacts?.length > 0){
+    if (checkIfOwnersAreContactsData?.ifAreContacts?.length > 0) {
       setPropertyOwnerContacts({
-        _id:checkIfOwnersAreContactsData.ifAreContacts[0].isContact,
-        name:checkIfOwnersAreContactsData.ifAreContacts[0].name
-      })
+        _id: checkIfOwnersAreContactsData.ifAreContacts[0].isContact,
+        name: checkIfOwnersAreContactsData.ifAreContacts[0].name,
+      });
     }
-  },[checkIfOwnersAreContactsData])
+  }, [checkIfOwnersAreContactsData]);
 
   useEffect(() => {
-      if(propertyDetails?.owner){
-        checkIfOwnersAreContacts({
-          variables: {
-            idsArray: [propertyDetails.owner]
-          }
-        })
-      }
-
-  },[propertyDetails])
+    if (propertyDetails?.owner) {
+      checkIfOwnersAreContacts({
+        variables: {
+          idsArray: [propertyDetails.owner],
+        },
+      });
+    }
+  }, [propertyDetails, refetchContacts]);
 
   useEffect(() => {
     getProperty({
       variables: { id: propertyId },
     });
-  }, [propertyId])
-
+  }, [propertyId]);
 
   return (
     <div className={classes.root}>
@@ -256,7 +256,18 @@ export default function DetailComponents(props) {
                 Properties
               </Link>
 
-              {propertyDetails && (<Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}> {propertyDetails.name} </Typography>)}
+              {propertyDetails && (
+                <Typography
+                  style={{
+                    color: "#18AADD",
+                    fontSize: "16px",
+                    marginLeft: "5px",
+                  }}
+                >
+                  {" "}
+                  {propertyDetails.name}{" "}
+                </Typography>
+              )}
             </Breadcrumbs>
           </Grid>
           <Grid item>
@@ -276,11 +287,22 @@ export default function DetailComponents(props) {
               <DocumentIcon fontSize="large" />
             </IconButton>
             <div className={classes.titleText}>
-              {propertyDetails && (<Typography style={{ fontWeight: "bold", fontSize: "large", textTransform: "uppercase" }}>
-                {propertyDetails.name}
-              </Typography>
+              {propertyDetails && (
+                <Typography
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "large",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {propertyDetails.name}
+                </Typography>
               )}
-              {propertyDetails && (<Typography variant="subtitle1">{moment(propertyDetails.flatSyncAt).format("DD/MM/yyyy")}</Typography>)}
+              {propertyDetails && (
+                <Typography variant="subtitle1">
+                  {moment(propertyDetails.flatSyncAt).format("DD/MM/yyyy")}
+                </Typography>
+              )}
             </div>
           </div>
           <div className={classes.tags}>
@@ -333,9 +355,21 @@ export default function DetailComponents(props) {
               </div>
             </div>
           </div>
-
+          {showOwnerDialog && (
+            <ConvertOwnerToContactContainer
+              propertyDetails={propertyDetails}
+              onClose={() => setShowOwnerDialog(false)}
+              onSuccess={() => setRefetchContacts(!refetchContacts)}
+            />
+          )}
           {showInterestDetails && (
-            <InterestDetailForm propertyOwnerContact={propertyOwnerContact} selectedInterest={selectedInterest} onClose={() => setShowInterestDetails(false)} />
+            <InterestDetailForm
+              propertyDetails={propertyDetails}
+              selectedInterest={selectedInterest}
+              setShowOwnerDialog={setShowOwnerDialog}
+              propertyOwnerContact={propertyOwnerContact}
+              onClose={() => setShowInterestDetails(false)}
+            />
           )}
         </div>
       </div>
