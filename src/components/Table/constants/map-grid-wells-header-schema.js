@@ -1,33 +1,76 @@
 const wellsColumnHeaders = [
   {
+    name: "Id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
     name: "ApiNumber",
     label: "API",
+    esKey: "api.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
   },
   {
     name: "WellName",
     label: "Well Name",
+    esKey: "wellName.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
   },
   {
     name: "State",
     label: "State",
+    esKey: "state.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
   },
   {
     name: "County",
     label: "County",
+    esKey: "county.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
   },
   {
     name: "WellType",
     label: "Well Type",
+    esKey: "wellType.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
   },
   {
     name: "WellStatus",
     label: "Well Status",
+    esKey: "wellStatus.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
   },
   {
     name: "operator",
     label: "Operator Name",
     options:{
       display: false,
+      filter: false,
     }
   },
   {
@@ -35,12 +78,14 @@ const wellsColumnHeaders = [
     label: "Well Profile",
     options:{
       display: false,
+      filter: false,
     }
   },
   {
     name: "tags",
     label: "Tags ",
     options: {
+      filter: false,
       sort: false,
       download: false,
       print: false,
@@ -74,6 +119,7 @@ const wellsColumnHeaders = [
     name: "isTracked",
     label: " ",
     options: {
+      filter: false,
       searchable: false,
       download: false,
       print: false,

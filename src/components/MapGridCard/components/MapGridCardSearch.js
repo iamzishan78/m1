@@ -261,6 +261,7 @@ function MapGridCardSearch(props) {
         }}
         onClick={props.ativateSearchPanel}
         // value={searchInputValue}
+        defaultValue={searchInputValue}
         onChange={(event) => setSearchInputValue(event.target.value)}
       />
     </form>
