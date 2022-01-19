@@ -285,9 +285,11 @@ function RelatedDetailsDocumentTable(props) {
             </Grid>
 
             <Grid item>
-              <IconButton onClick={() => downloadFile(stateApp.pdfView)}>
-                <GetAppIcon />
-              </IconButton>
+              {stateApp.pdfView && (
+                <IconButton onClick={() => downloadFile(stateApp.pdfView)}>
+                  <GetAppIcon />
+                </IconButton>
+              )}
               <IconButton
                 className="float-right"
                 color="inherit"

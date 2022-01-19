@@ -9,6 +9,9 @@ import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
+import ZoomInIcon from "@material-ui/icons/ZoomIn";
+import ZoomOutIcon from "@material-ui/icons/ZoomOut";
+import GetAppIcon from "@material-ui/icons/GetApp";
 import { Document, Page } from "react-pdf";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
@@ -32,6 +35,16 @@ const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important"
   },
+  ZoomIcons: {
+    zIndex: "1",
+    display: "flex",
+    flexDirection: "column",
+    position: "sticky !important",
+    top: "85% !important",
+    bottom: "0 !important",
+    left: "0",
+    width: "3.875rem",
+  },
 }));
 
 function WellDetailsDocumentTable(props) {
@@ -46,6 +59,7 @@ function WellDetailsDocumentTable(props) {
   const [showDocumentSlider, setShowDocumentSlider] = useState(false)
   const [selectedYear, setSelectedYear] = useState(2021)  // production selected year state 
   const [numPages, setNumPages] = useState(null);
+  const [zoom, setzoom] = useState(2.0);
 
   // queries 
   const [getAllFiles, { data: dataParcelFiles, loading }] = useLazyQuery(GET_PARCELS_FILES);
@@ -83,9 +97,6 @@ function WellDetailsDocumentTable(props) {
       setColumns(columns);
       props.setLoading(false);
     }
-    // else if (dataParcelFiles?.getParcelFiles?.length === 0) {
-    //   props.setLoading(false);
-    // }
   }, [tableData, props.dependencyUpdate]);
 
   const count = dataParcelFiles?.paginatedContactWellInterests?.totalCount || 0
@@ -111,16 +122,18 @@ function WellDetailsDocumentTable(props) {
         },
         refetchQueries: ["getParcelFiles"],
         awaitRefetchQueries: true,
-      })/*.then(() =>{
-        getAllFiles({
-          variables: {
-            relatedObjectId: props.selectedWell.tenantWellId,
-            relatedObjectType: "Well",
-          },
-        });
-      });*/
+      });
     }
   }
+
+  const downloadFile = (viewFile) => {
+    if (viewFile?.viewToken) {
+      let a = document.createElement("a");
+      a.href = viewFile.viewToken;
+      a.download = viewFile.documentName;
+      a.click();
+    }
+  };
 
   const searchData = (tableState) => {
     let rows = []
@@ -228,7 +241,7 @@ function WellDetailsDocumentTable(props) {
       >
         <Toolbar>
           <Grid
-            justify="space-between" // Add it here :)
+            justify="space-between"
             container
             spacing={24}
           >
@@ -239,6 +252,9 @@ function WellDetailsDocumentTable(props) {
             </Grid>
 
             <Grid item>
+              <IconButton size="small" onClick={() => downloadFile(stateApp.pdfView)}>
+                <GetAppIcon />
+              </IconButton>
               <IconButton
                 className="float-right"
                 color="inherit"
@@ -255,6 +271,23 @@ function WellDetailsDocumentTable(props) {
             </Grid>
           </Grid>
         </Toolbar>
+        <div className={classes.ZoomIcons}>
+          {" "}
+          <IconButton
+            onClick={() => {
+              setzoom(zoom + 0.25);
+            }}
+          >
+            <ZoomInIcon fontSize={"large"} />
+          </IconButton>
+          <IconButton
+            onClick={() => {
+              setzoom(zoom - 0.25);
+            }}
+          >
+            <ZoomOutIcon fontSize={"large"} />
+          </IconButton>
+        </div>
 
         <Document
           file={stateApp.pdfView?.viewToken}
@@ -262,7 +295,7 @@ function WellDetailsDocumentTable(props) {
           onLoadSuccess={onDocumentLoadSuccess}
         >
           {Array.from(new Array(numPages), (el, index) => (
-            <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+            <Page key={`page_${index + 1}`} pageNumber={index + 1} scale={zoom} />
           ))}
         </Document>
       </Dialog>
