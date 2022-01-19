@@ -787,6 +787,8 @@ function SubTable(props) {
   };
 
   const handleClickFlyToIcon = (entityType, searchTarget) => {
+    if (!searchTarget) return;
+
     if (entityType === "well") {
       handleWellFlyTo(searchTarget);
     }
@@ -3114,6 +3116,7 @@ function SubTable(props) {
             setStateNav((stateNav) => ({
               ...stateNav,
               bulkUploadFromMap: true,
+              bulkUploadParcel: stateApp.selectedParcel
             }));
             routeChange("/bulkupload");
           },

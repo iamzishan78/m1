@@ -17,6 +17,7 @@ import { AutoCompleteFilter } from "./AutoCompleteFilter";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { get } from "lodash";
 
+import { setColumnsData } from "components/Table/helpers";
 
 import { usetableStyles } from "./Styles";
 
@@ -59,8 +60,8 @@ export const TableESHOC = (Component) => {
 
         // have to use refs because callbacks aren't guaranteed to get current state
         const [tracksByObjectType, { data: constDataTracks }] = useLazyQuery(TRACKSBYOBJECTTYPE, { fetchPolicy: "cache-and-network", });
-        const constDataTracksRef = useRef();
-        constDataTracksRef.current = constDataTracks;
+        const dataTracksRef = useRef();
+        dataTracksRef.current = dataTracks;
         const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(COMMENTSCOUNTER, { fetchPolicy: "cache-and-network", });
         const dataCommentsCounterRef = useRef();
         dataCommentsCounterRef.current = dataCommentsCounter;
@@ -223,7 +224,7 @@ export const TableESHOC = (Component) => {
         const setGenricData = (data, id, actions, genericDataActions) => {
             if (actions.includes('tracks')) {
                 data.isTracked = false;
-                const tracks = dataTracks?.tracksByObjectTypeRef?.current || [];
+                const tracks = dataTracksRef?.current?.tracksByObjectType || [];
                 for (let i = 0; i < tracks?.length; i++) {
                     if (id === tracks[i].trackOn) {
                         data.isTracked = true;
@@ -299,7 +300,7 @@ export const TableESHOC = (Component) => {
                             }]
                     },
 
-                    filters: tableState.filters,
+                    filters: [],
                 },
             };
             tableState.filterList.forEach((val, index) => {

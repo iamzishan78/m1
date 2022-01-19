@@ -16,7 +16,7 @@ import TableHeader from "components/Table/constants/map-grid-tax-owners-header-s
 // Utilities
 import { usetableStyles } from "../Styles";
 
-const genericDataActions = ['comments', 'tags', 'ifAreContacts']
+const genericDataActions = ['tags', 'ifAreContacts', 'comments', 'tracks']
 
 function MapGridTaxOwnersTable(props) {
   const classes = usetableStyles();
@@ -30,6 +30,12 @@ function MapGridTaxOwnersTable(props) {
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
+      hit.coordinates = {
+        objToPopulateSearchLayer: {
+          objectType: "owner",
+          objectId: hit.id,
+        },
+      };
       hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
       return hit;
     });
@@ -54,7 +60,7 @@ function MapGridTaxOwnersTable(props) {
       startPaginationAt: 25,
       formatColumns,
       formatHits,
-      initializeGenericData: { key: 'id', actions: ['comments', 'tracks', 'tags', 'ifAreContacts'] }
+      initializeGenericData: { key: 'id', actions: genericDataActions }
     });
     // eslint-disable-next-line
   }, [
