@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
     bottom: "0 !important",
     left: "0",
     width: "3.875rem",
+    marginLeft: 10
   },
 }));
 
@@ -60,6 +61,7 @@ function WellDetailsDocumentTable(props) {
   const [selectedYear, setSelectedYear] = useState(2021)  // production selected year state 
   const [numPages, setNumPages] = useState(null);
   const [zoom, setzoom] = useState(2.0);
+  const [isDocumentLoaded, setDocumentLoaded] = useState(false);
 
   // queries 
   const [getAllFiles, { data: dataParcelFiles, loading }] = useLazyQuery(GET_PARCELS_FILES);
@@ -112,6 +114,7 @@ function WellDetailsDocumentTable(props) {
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
+    setDocumentLoaded(true);
   }
 
   const deleteFunc = (ids) => {
@@ -246,13 +249,15 @@ function WellDetailsDocumentTable(props) {
             spacing={24}
           >
             <Grid item>
-              <Typography className={classes.fileTitle} type="title" color="inherit">
-                {stateApp.pdfView?.fileName}
-              </Typography>
+              {isDocumentLoaded && (
+                <Typography className={classes.fileTitle} type="title" color="inherit">
+                  {stateApp.pdfView?.fileName}
+                </Typography>
+              )}
             </Grid>
 
             <Grid item>
-              <IconButton size="small" onClick={() => downloadFile(stateApp.pdfView)}>
+              <IconButton onClick={() => downloadFile(stateApp.pdfView)}>
                 <GetAppIcon />
               </IconButton>
               <IconButton
@@ -271,23 +276,25 @@ function WellDetailsDocumentTable(props) {
             </Grid>
           </Grid>
         </Toolbar>
-        <div className={classes.ZoomIcons}>
-          {" "}
-          <IconButton
-            onClick={() => {
-              setzoom(zoom + 0.25);
-            }}
-          >
-            <ZoomInIcon fontSize={"large"} />
-          </IconButton>
-          <IconButton
-            onClick={() => {
-              setzoom(zoom - 0.25);
-            }}
-          >
-            <ZoomOutIcon fontSize={"large"} />
-          </IconButton>
-        </div>
+        {isDocumentLoaded && (
+          <div className={classes.ZoomIcons}>
+            {" "}
+            <IconButton
+              onClick={() => {
+                setzoom(zoom + 0.25);
+              }}
+            >
+              <ZoomInIcon fontSize={"large"} />
+            </IconButton>
+            <IconButton
+              onClick={() => {
+                setzoom(zoom - 0.25);
+              }}
+            >
+              <ZoomOutIcon fontSize={"large"} />
+            </IconButton>
+          </div>
+        )}
 
         <Document
           file={stateApp.pdfView?.viewToken}
