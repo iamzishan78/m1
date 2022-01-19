@@ -39,15 +39,6 @@ const useStyles = makeStyles((theme) => ({
     height: "950px",
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
-    overflow: "scroll",
-    "&::-webkit-scrollbar": {
-      width: "0.75em",
-      height: "0.75em",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#929292",
-      borderRadius: 10,
-    },
     border: "0px",
     inset: "unset",
   },
@@ -61,6 +52,11 @@ const useStyles = makeStyles((theme) => ({
     left: "0",
     width: "3.875rem",
   },
+  docViewSection: {
+    overflow: "scroll",
+    height: "98%",
+    width: "100%"
+  }
 }));
 
 const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondition = false, width, onCloseHandler = null }) => {
@@ -69,7 +65,7 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
   let [, setPageNumber] = useState(1);
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [pdfState, setpdfState] = useState([]);
-  let [zoom, setzoom] = useState(2.0);
+  let [zoom, setzoom] = useState(1.5);
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
@@ -168,7 +164,7 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
               </div>
             </Grid>
 
-            <div>
+            <div className={classes.docViewSection}>
               <Document
                 style={{ display: "grid", justifyContent: "center" }}
                 file={stateApp?.viewDoc?.uri}
@@ -224,7 +220,7 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
             </div>
           </Grid>
 
-          <div>
+          <div className={classes.docViewSection}>
             <Document
               style={{ display: "grid", justifyContent: "center", width: "100%" }}
               file={stateApp?.viewDoc?.uri}
@@ -237,10 +233,27 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
             >
               {pdfState?.map((value, key) => {
                 return (
-                  <Page key={key} pageNumber={value} scale={1.5} style={{ display: "grid", justifyContent: "center", width: "100%" }} />
+                  <Page key={key} pageNumber={value} scale={zoom} style={{ display: "grid", justifyContent: "center", width: "100%" }} />
                 );
               })}
             </Document>
+            <div className={classes.ZoomIcons}>
+              {" "}
+              <IconButton
+                onClick={() => {
+                  setzoom(zoom + 0.25);
+                }}
+              >
+                <ZoomInIcon fontSize={"large"} />
+              </IconButton>
+              <IconButton
+                onClick={() => {
+                  setzoom(zoom - 0.25);
+                }}
+              >
+                <ZoomOutIcon fontSize={"large"} />
+              </IconButton>
+            </div>
           </div>
         </div>
       )}

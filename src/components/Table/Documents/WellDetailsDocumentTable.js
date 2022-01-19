@@ -46,6 +46,11 @@ const useStyles = makeStyles((theme) => ({
     width: "3.875rem",
     marginLeft: 10
   },
+  docViewSection: {
+    overflow: "scroll",
+    height: "98%",
+    width: "100%"
+  }
 }));
 
 function WellDetailsDocumentTable(props) {
@@ -276,35 +281,37 @@ function WellDetailsDocumentTable(props) {
             </Grid>
           </Grid>
         </Toolbar>
-        {isDocumentLoaded && (
-          <div className={classes.ZoomIcons}>
-            {" "}
-            <IconButton
-              onClick={() => {
-                setzoom(zoom + 0.25);
-              }}
-            >
-              <ZoomInIcon fontSize={"large"} />
-            </IconButton>
-            <IconButton
-              onClick={() => {
-                setzoom(zoom - 0.25);
-              }}
-            >
-              <ZoomOutIcon fontSize={"large"} />
-            </IconButton>
-          </div>
-        )}
+        <div className={classes.docViewSection}>
+          <Document
+            file={stateApp.pdfView?.viewToken}
+            options={{ workerSrc: "/pdf.worker.js" }}
+            onLoadSuccess={onDocumentLoadSuccess}
+          >
+            {Array.from(new Array(numPages), (el, index) => (
+              <Page key={`page_${index + 1}`} pageNumber={index + 1} scale={zoom} />
+            ))}
+          </Document>
 
-        <Document
-          file={stateApp.pdfView?.viewToken}
-          options={{ workerSrc: "/pdf.worker.js" }}
-          onLoadSuccess={onDocumentLoadSuccess}
-        >
-          {Array.from(new Array(numPages), (el, index) => (
-            <Page key={`page_${index + 1}`} pageNumber={index + 1} scale={zoom} />
-          ))}
-        </Document>
+          {isDocumentLoaded && (
+            <div className={classes.ZoomIcons}>
+              {" "}
+              <IconButton
+                onClick={() => {
+                  setzoom(zoom + 0.25);
+                }}
+              >
+                <ZoomInIcon fontSize={"large"} />
+              </IconButton>
+              <IconButton
+                onClick={() => {
+                  setzoom(zoom - 0.25);
+                }}
+              >
+                <ZoomOutIcon fontSize={"large"} />
+              </IconButton>
+            </div>
+          )}
+        </div>
       </Dialog>
     </Container>
   );
