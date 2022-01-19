@@ -39,12 +39,11 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "1",
     display: "flex",
     flexDirection: "column",
-    position: "sticky !important",
+    position: "absolute !important",
     top: "85% !important",
     bottom: "0 !important",
-    left: "0",
+    left: "15px",
     width: "3.875rem",
-    marginLeft: 10
   },
   docViewSection: {
     overflow: "scroll",

@@ -35,10 +35,10 @@ export const usetableStyles = makeStyles((theme) => ({
     zIndex: "1",
     display: "flex",
     flexDirection: "column",
-    position: "sticky !important",
+    position: "absolute !important",
     top: "85% !important",
     bottom: "0 !important",
-    left: "10px",
+    left: "15px",
     width: "3.875rem",
   },
   warningCol: {
@@ -104,4 +104,9 @@ export const usetableStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     fontSize: "smaller",
   },
+  docViewSection: {
+    overflow: "scroll",
+    height: "96%",
+    width: "100%"
+  }
 }));
