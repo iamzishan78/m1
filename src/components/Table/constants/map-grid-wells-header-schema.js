@@ -68,17 +68,19 @@ const wellsColumnHeaders = [
   {
     name: "operator",
     label: "Operator Name",
+    esKey: "operator.keyword",
     options:{
-      display: false,
-      filter: false,
+      display: true,
+      filter: true,
     }
   },
   {
     name: "wellBoreProfile",
     label: "Well Profile",
+    esKey: "wellBoreProfile.keyword",
     options:{
-      display: false,
-      filter: false,
+      display: true,
+      filter: true,
     }
   },
   {
