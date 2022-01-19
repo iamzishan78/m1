@@ -3116,6 +3116,7 @@ function SubTable(props) {
             setStateNav((stateNav) => ({
               ...stateNav,
               bulkUploadFromMap: true,
+              bulkUploadParcel: stateApp.selectedParcel
             }));
             routeChange("/bulkupload");
           },
