@@ -17,6 +17,7 @@ import TableHOC from "components/Table/TableHOC";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { GET_PARCELS_FILES } from "graphQL/useQueryGetParcelFiles";
 import { DELETEDESCRIPTORFILE } from "graphQL/useMutationDeleteDescriptorFile";
+import { TENANTWELL } from "graphQL/useQueryTenantWell";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 import WellFile from "components/Document/components/WellFile";
@@ -49,6 +50,7 @@ function WellDetailsDocumentTable(props) {
 
   // queries 
   const [getAllFiles, { data: dataParcelFiles, loading }] = useLazyQuery(GET_PARCELS_FILES);
+  const [getTenantWellId, { data: tenantData }] = useLazyQuery(TENANTWELL);
 
   const [updateParcelDocument] = useMutation(DELETEDESCRIPTORFILE, { refetchQueries: ["getAllFiles"], awaitRefetchQueries: true });
   const tableData = dataParcelFiles?.getParcelFiles
@@ -56,19 +58,28 @@ function WellDetailsDocumentTable(props) {
   const addAble = { type: "wellDocument" }
   const total = false
   const orderByTracks = false
-  
+
   useEffect(() => {
     setSearchedRows(props.rows)
   }, [props.rows])
 
   useEffect(() => {
+    if (props.selectedWell.tenantWellId === undefined) getTenantWellId({ variables: { globalWellId: props.selectedWell?.id } })
+  }, [getTenantWellId, props.selectedWell?.id, props.selectedWell.tenantWellId])
+
+  useEffect(() => {
+    let wellId;
+
+    if (props.selectedWell.tenantWellId) wellId = props.selectedWell.tenantWellId;
+    else wellId = tenantData?.tenantWell.tenantWellId;
+
     getAllFiles({
       variables: {
-        relatedObjectId: props.selectedWell.tenantWellId,
+        relatedObjectId: wellId,
         relatedObjectType: "Well",
       },
     });
-  }, [getAllFiles, props.selectedWell.tenantWellId, showDocumentSlider]);
+  }, [props.selectedWell.tenantWellId, showDocumentSlider]);
 
 
   useEffect(() => {
