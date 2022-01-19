@@ -93,8 +93,7 @@ export const getSearchQuery = (extendSearchQuery, filters) => {
       if (query && i === 0) {
         query = query + " AND ";
       }
-      query = `${query} ${i === 0 ? "(" : "OR"} ${filter[0]}.keyword:(${filter[1][i]
-        }) ${i === filter[1].length - 1 ? ")" : ""}`;
+      query = `${query} ${i === 0 ? "(" : "OR"} ${filter[0]}.keyword:"${filter[1][i]}"${i === filter[1].length - 1 ? ")" : ""}`;
     }
     return true;
   });

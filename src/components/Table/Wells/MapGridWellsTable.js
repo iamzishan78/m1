@@ -19,6 +19,8 @@ import TableHeader from "components/Table/constants/map-grid-wells-header-schema
 import { usetableStyles } from "../Styles";
 import { getMapFilters } from "utils/helper";
 
+const genericDataActions = ['tags', 'comments', 'tracks']
+
 function MapGridWellsTable(props) {
   const classes = usetableStyles();
   const searchInput = useSelector(
@@ -38,6 +40,19 @@ function MapGridWellsTable(props) {
     }
     return headers;
   };
+
+  const formatHits = (hits) => {
+    hits = hits.map((hit) => {
+      hit.coordinates = {};
+      if (hit.Longitude && hit.Latitude) {
+        hit.coordinates.center = [hit.Longitude, hit.Latitude];
+        hit.coordinates.wellId = hit.Id;
+      }
+      hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
+      return hit;
+    });
+    return hits
+  }
 
   const setTableMeta = React.useMemo(
     () =>
@@ -59,6 +74,8 @@ function MapGridWellsTable(props) {
       esIndex: "platformData:wells",
       startPaginationAt: 25,
       formatColumns,
+      formatHits,
+      initializeGenericData: { key: 'id', actions: genericDataActions }
     });
     // eslint-disable-next-line
   }, [
