@@ -63,7 +63,8 @@ export default function BulkUpload(props) {
       setStateNav((state) => ({
         ...state,
         bulkUploadFromMap: false,
-        bulkUploadFromContacts: false
+        bulkUploadFromContacts: false,
+        bulkUploadParcel: null
       }));
     };
   }, []);
@@ -118,7 +119,7 @@ export default function BulkUpload(props) {
             {previousRoute[0]?.route?.title}
           </Link>
           }
-          {stateApp.selectedParcel?.shapeLabel && <Link
+          {stateNav.bulkUploadParcel?.shapeLabel && <Link
             style={{
               marginLeft: "5px",
               fontSize: "16px",
@@ -134,7 +135,7 @@ export default function BulkUpload(props) {
               history.push(previousRoute[0]?.match?.url);
             }}
           >
-            {stateApp.selectedParcel?.shapeLabel}
+            {stateNav.bulkUploadParcel?.shapeLabel}
           </Link>
           }
           <div>
