@@ -239,3 +239,38 @@ export const wellsToCSV = (wells) => {
   }
   return dataToCsv(wells, wellsKeys, csv)
 };
+
+export const sortColumns = (columns, gridView) => {
+  if (gridView?.columns) {
+    let updatedColumns = [];
+    for (let i = 0; i < gridView.columns.length; i++) {
+      const col = columns.find((c) => c.name === gridView.columns[i].name);
+      columns = columns.filter((c) => c.name !== gridView.columns[i].name);
+      if (col) {
+        updatedColumns.push(col);
+      }
+    }
+    updatedColumns = [...updatedColumns, ...columns];
+    columns = updatedColumns;
+  }
+
+  const lastColumn = columns.filter((col) => col.name === " ");
+  columns = columns.filter((col) => col.name !== " ");
+  columns = [
+    ...columns,
+    ...lastColumn,
+  ];
+
+  return columns;
+};
+
+export const formattingGridView = (view) => {
+  if(view?.columns?.length > 0) {
+    for(let i = 0; i < view.columns.length; i++){
+      if(typeof view.columns[i] === 'string'){
+        view.columns[i] = { name: view.columns[i], display: true }
+      }
+    }
+  }
+  return view;
+}

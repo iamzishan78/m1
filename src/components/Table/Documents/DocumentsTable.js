@@ -32,6 +32,7 @@ import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 import { AppContext } from "AppContext";
+import { sortColumns, formattingGridView } from 'utils/helper';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -99,13 +100,16 @@ function DocumentsTable(props) {
   useEffect(() => {
     if (gridViews?.getGridViews?.gridViews) {
       const data = JSON.parse(JSON.stringify(gridViews.getGridViews.gridViews));
+      const selectedData = data.find((d) =>
+        d.type === (selectedGridView?.type || "Default") &&
+        d.name === (selectedGridView?.name || "All Documents")
+      );
+      setRefetchList(false);
+      setSelectedGridView(selectedData);
       setStateApp((state, props) => {
         return {
           ...state,
-          selectedView: data.find((d) =>
-            d.type === (selectedGridView?.type || "Default") &&
-            d.name === (selectedGridView?.name || "All Documents")
-          )
+          selectedView: selectedData
         };
       });
     }
@@ -214,40 +218,6 @@ function DocumentsTable(props) {
     }
   }, [tableData, props.dependencyUpdate]);
 
-  const sortColumns = (columns, gridView) => {
-    if (gridView?.columns) {
-      let updatedColumns = [];
-      for (let i = 0; i < gridView.columns.length; i++) {
-        const col = columns.find((c) => c.name === gridView.columns[i].name);
-        columns = columns.filter((c) => c.name !== gridView.columns[i].name);
-        if (col) {
-          updatedColumns.push(col);
-        }
-      }
-      updatedColumns = [...updatedColumns, ...columns];
-      columns = updatedColumns;
-    }
-
-    const lastColumn = columns.filter((col) => col.name === " ");
-    columns = columns.filter((col) => col.name !== " ");
-    columns = [
-      ...columns,
-      ...lastColumn,
-    ];
-
-    return columns;
-  };
-
-  const formattingGridView = (view) => {
-    if(view?.columns?.length > 0) {
-      for(let i = 0; i < view.columns.length; i++){
-        if(typeof view.columns[i] === 'string'){
-          view.columns[i] = { name: view.columns[i], display: true }
-        }
-      }
-    }
-    return view;
-  }
 
   useEffect(() => {
     if(!isEmpty(selectedGridView)) {
