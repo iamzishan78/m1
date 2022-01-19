@@ -145,6 +145,7 @@ const initialValue = {
   isUserManagementOpen: true,
   contactFromMap: false,
   bulkUploadFromMap: false,
+  bulkUploadParcel: null,
   filterIntersectingWellLines: [],
 };
 

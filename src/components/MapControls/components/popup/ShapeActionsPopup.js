@@ -251,6 +251,13 @@ const ShapeActionsPopup = (props) => {
     return polygonString;
   };
 
+  const closeDrawTool = () => {
+    stateApp.draw.changeMode("direct_select", { featureId: props.selectedFeature.id, });
+    setFeatureProperty(stateApp.draw, props.selectedFeature.id, "shapeEdit", false);
+    drawShapeLayerToggle(stateApp, "none");
+    setStateApp((state) => ({ ...state, currentFeature: props.selectedFeature, shapeEdit: false }));
+  }
+
   const actionShowWellsAndOwners = () => {
     if (isLine()) return;
     setStateApp((state) => ({
@@ -264,6 +271,7 @@ const ShapeActionsPopup = (props) => {
     //     mapGridCardActiveTap: 2,
     //   })
     // );
+    closeDrawTool()
   };
 
   const clearFilter = () => {
@@ -303,6 +311,8 @@ const ShapeActionsPopup = (props) => {
       ...state,
       shapeActionsFilterSelected: true,
     }));
+
+    closeDrawTool()
   };
 
   const actionFilter = () => {

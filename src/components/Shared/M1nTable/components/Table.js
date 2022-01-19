@@ -787,6 +787,8 @@ function SubTable(props) {
   };
 
   const handleClickFlyToIcon = (entityType, searchTarget) => {
+    if (!searchTarget) return;
+
     if (entityType === "well") {
       handleWellFlyTo(searchTarget);
     }
@@ -2145,11 +2147,21 @@ function SubTable(props) {
               },
             };
             break;
+          // case "checkNumber":
+          //   column.options = {
+          //     ...column.options,
+          //     customBodyRender: (value) => {
+          //       let styles = { ...column.style };
+          //       styles = { ...styles, fontWeight: 600, color: "#17aadd", cursor: "pointer" };
+          //       return value ? <p style={styles}>{value}</p> : <span style={{ color: "#959595" }}>N/A</span>;
+          //     },
+          //   };
+          //   break;
           case "checkAmount":
             column.options = {
               ...column.options,
               customBodyRender: (value) => {
-                return <p style={{ fontWeight: 600 }}>{`$${value}`}</p>;
+                return value ? <p style={{ fontWeight: 600 }}>{value}</p> : <span style={{ color: "#959595" }}>N/A</span>;
               },
             };
             break;
@@ -3104,6 +3116,7 @@ function SubTable(props) {
             setStateNav((stateNav) => ({
               ...stateNav,
               bulkUploadFromMap: true,
+              bulkUploadParcel: stateApp.selectedParcel
             }));
             routeChange("/bulkupload");
           },
@@ -3380,7 +3393,15 @@ function SubTable(props) {
 
       if (props.targetLabel === "Revenue Properties") {
         // need stopPropagation
-        // history.push("/revenue/property/details");
+        history.push(`/revenue/property/details/${rows[dataIndex]?._id}`);
+        // if (rows[dataIndex]?._id) {
+        //   history.push(`/revenue/property/details?id=${rows[dataIndex]?._id}`);
+        // }
+      }
+      if (props.parent === "RevenueStatementTable") {
+        if (rows[dataIndex]?._id) {
+          history.push(`/revenue/statement/details?id=${rows[dataIndex]?._id}`);
+        }
       }
     },
     onChangePage: (pageState) => {

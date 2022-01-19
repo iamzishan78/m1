@@ -2,7 +2,8 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 import { Grid, Typography, Button } from "@material-ui/core";
-import Add from "@material-ui/icons/Add";
+import { Add, ArrowDropDown } from "@material-ui/icons";
+
 
 import RevenueSearch from "components/Navigation/components/RevenueSearch";
 import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
@@ -43,7 +44,7 @@ export default function RevenueAppBar(props) {
       ) && (
           <Grid item>
             <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-              <Button color="primary" variant="contained" startIcon={<Add />}>
+              <Button color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}>
                 Add {activeModule.title}
               </Button>
             </div>

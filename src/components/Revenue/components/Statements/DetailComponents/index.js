@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { debounce } from "lodash";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import {
   Typography,
@@ -310,6 +311,7 @@ export default function DetailComponents(props) {
   const location = useLocation();
   const [description, setDescription] = useState("");
   const [onFocusDescription, setFocusSate] = useState(false);
+  const [isButtonScroll, setButtonScroll] = useState(false);
   const [collapse, setCollapse] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
   const { search } = location;
@@ -372,12 +374,16 @@ export default function DetailComponents(props) {
   }, [getCheckResult, dispatch]);
 
   useEffect(() => {
-    selectedTabRef.current &&
+    if (selectedTabRef) {
       selectedTabRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
         inline: "start",
       });
+
+      // Setting button scroll to false so scroll events could trigger
+      // setTimeout(() => setButtonScroll(false), 1000);
+    }
   }, [tab]);
 
   useEffect(() => {
@@ -445,6 +451,18 @@ export default function DetailComponents(props) {
     setUploadedFiles([...uploadedFiles, uploadedfile]);
   };
 
+  const handleScroll = (e) => {
+    if (!isButtonScroll) {
+      const { scrollTop } = e.target;
+      if (scrollTop <= 270 && tab !== 0) setTab(0);
+      else if (scrollTop > 270 && scrollTop <= 470 && tab !== 1) setTab(1);
+      else if (scrollTop > 470 && tab !== 2) setTab(2);
+    }
+    handleEndScroll();
+  };
+
+  const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
+
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
 
   const handleMenuClose = () => setAnchorEl(null);
@@ -481,7 +499,14 @@ export default function DetailComponents(props) {
 
           <div className={classes.actionsContainer}>
             <div className={classes.tabsHeader}>
-              <StyledTabs value={tab} onChange={(event, tab) => setTab(tab)} aria-label="ant example">
+              <StyledTabs
+                value={tab}
+                onChange={(event, tab) => {
+                  setButtonScroll(true);
+                  setTab(tab);
+                }}
+                aria-label="ant example"
+              >
                 <StyledTab label="Header" />
                 <StyledTab label="Summary" />
                 <StyledTab label="Check Details" />
@@ -505,7 +530,7 @@ export default function DetailComponents(props) {
            * Detail tabs section
            */}
           <div className={classes.tabsSection}>
-            <div className={classes.tabsSectionDetails}>
+            <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
                 <HeaderSection details={checksFlatData} />
               </div>

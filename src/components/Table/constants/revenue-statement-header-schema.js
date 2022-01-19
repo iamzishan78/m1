@@ -5,29 +5,28 @@ const RevenueStatementHeadCells = [
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
-
   {
     name: "checkNumber",
     label: "Check Number",
     esKey: "checkNumber.keyword",
-    options: { 
-      sort: true, 
+    options: {
+      sort: true,
       filter: true,
       customRender: (value, tableMeta, updateValue) => {
         return (
-          value ? 
-          <p
-            onClick={(e) => {
-              e.stopPropagation();
-              history.push(`/revenue/statement/details?id=${tableMeta.rowData[0]}`);
-            }}
-            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-          >
-            {value}
-          </p> :
-          <p style={{ color: '#898989b0' }}>N/A</p>
+          value ?
+            <p
+              onClick={(e) => {
+                e.stopPropagation();
+                history.push(`/revenue/statement/details?id=${tableMeta.rowData[0]}`);
+              }}
+              style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+            >
+              {value}
+            </p> :
+            <p style={{ color: '#898989b0' }}>N/A</p>
         );
-      }, 
+      },
     },
   },
   {
@@ -41,12 +40,12 @@ const RevenueStatementHeadCells = [
     name: "checkAmount",
     label: "Check Amount",
     esKey: "checkAmount",
-    options: { 
-      sort: true, 
-      filter: true,               
+    options: {
+      sort: true,
+      filter: true,
       customRender: (value) => {
-        return value ? <p style={{ fontWeight: 600 }}>{ value ? `$${value}` : '' }</p> : <p style={{ color: '#898989b0' }}>N/A</p>;
-      }, 
+        return value ? <p style={{ fontWeight: 600 }}>{value ? `$${value}` : ''}</p> : <p style={{ color: '#898989b0' }}>N/A</p>;
+      },
     },
   },
   {
@@ -54,7 +53,7 @@ const RevenueStatementHeadCells = [
     label: "Check Date",
     esKey: "checkDate",
     options: { sort: true, filter: true },
-    custom:{
+    custom: {
       key_as_string: true,
     }
   },
@@ -63,7 +62,7 @@ const RevenueStatementHeadCells = [
     label: "Deposit Date",
     esKey: "depositDate",
     options: { sort: true, filter: true },
-    custom:{
+    custom: {
       key_as_string: true,
     }
   },
@@ -121,7 +120,7 @@ const RevenueStatementHeadCells = [
     label: "Validation",
     esKey: "validation.keyword",
     options: { display: false, sort: false, filter: true, viewColumns: false },
-    custom:{
+    custom: {
       filterOptions: [
         {
           key: "Validated",

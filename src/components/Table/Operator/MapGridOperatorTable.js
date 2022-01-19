@@ -30,6 +30,21 @@ function MapGridOperatorTable(props) {
     []
   );
 
+  const formatHits = (hits) => {
+    hits = hits.map((hit) => {
+      hit.coordinates = {
+        objToPopulateSearchLayer: {
+          objectType: props.targetLabel,
+          objectId: hit.Id,
+          objectName: hit.Operator,
+        },
+      };
+      hit = props.setGenricData(hit, hit.id, [], []);
+      return hit;
+    });
+    return hits
+  }
+
   useEffect(() => {
     setTableMeta({
       addableName: "Operator",
@@ -37,6 +52,7 @@ function MapGridOperatorTable(props) {
       TableHeader: copy(TableHeader),
       esIndex: "platformData:operator",
       startPaginationAt: 25,
+      formatHits,
     });
     // eslint-disable-next-line
   }, [

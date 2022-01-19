@@ -117,7 +117,7 @@ export default function HeaderFunction(props) {
           label="Document Date"
           placeholder=""
           fullWidth
-          format="MM/DD/YY"
+          format="MM/DD/YYYY"
           InputLabelProps={{
             shrink: true,
           }}
