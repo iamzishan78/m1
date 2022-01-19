@@ -402,7 +402,7 @@ function Map({ type, paramId, lati, longi }) {
       }));
     }
   }, []);
-  
+
   const getElasticWell = async (paramId) => {
     const { data: well } = await client.query({
       query: GET_ES_PAGINATED_LIST,
@@ -419,10 +419,10 @@ function Map({ type, paramId, lati, longi }) {
     const { data: tenantWell } = await client.query({
       query: TENANTWELL,
       variables: {
-         globalWellId: well.getESPaginatedList.hits[0]?.id ,
+        globalWellId: well.getESPaginatedList.hits[0]?.id,
       },
     });
-    return { ...well.getESPaginatedList.hits[0], tenantWellId : tenantWell?.tenantWell?.tenantWellId }
+    return { ...well.getESPaginatedList.hits[0], tenantWellId: tenantWell?.tenantWell?.tenantWellId }
   }
 
 
@@ -441,7 +441,8 @@ function Map({ type, paramId, lati, longi }) {
       }));
     }
     if (type === "wells") {
-      const currentFeature = { ...(await getElasticWell(paramId)) };
+      const elasticWellRes = await getElasticWell(paramId);
+      const currentFeature = { ...elasticWellRes };
       if (currentFeature?.Id) currentFeature.id = currentFeature.Id;
       setStateApp({ ...stateApp, selectedWell: currentFeature, selectedWellId: paramId.toLowerCase(), popupOpen: false, expandedCard: true });
       setShowExpandableCard(true);
@@ -485,14 +486,7 @@ function Map({ type, paramId, lati, longi }) {
     // }
   }
 
-  useEffect(() => {
-    if (
-      paramId
-      // parcelId !== stateApp.selectedParcel?.id
-    ) {
-      getCustomLayer();
-    }
-  }, [loading, paramId, map]);
+  useEffect(() => { if (paramId) getCustomLayer(); }, [loading, paramId, map]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {

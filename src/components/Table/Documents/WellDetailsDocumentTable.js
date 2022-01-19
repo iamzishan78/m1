@@ -56,7 +56,7 @@ function WellDetailsDocumentTable(props) {
   const addAble = { type: "wellDocument" }
   const total = false
   const orderByTracks = false
-
+  
   useEffect(() => {
     setSearchedRows(props.rows)
   }, [props.rows])
@@ -68,7 +68,7 @@ function WellDetailsDocumentTable(props) {
         relatedObjectType: "Well",
       },
     });
-  }, [getAllFiles, props.selectedWell.tenantWellId]);
+  }, [getAllFiles, props.selectedWell.tenantWellId, showDocumentSlider]);
 
 
   useEffect(() => {
