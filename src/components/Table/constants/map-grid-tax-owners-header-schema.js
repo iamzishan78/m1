@@ -14,31 +14,62 @@ const ownersColumnHeaders = [
   {
     name: "OwnerName",
     label: "Name",
+    esKey: "ownerName.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
   },
   {
     name: "OwnerType",
     label: "Owner Type",
+    esKey: "ownerType.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
   },
   {
     name: "StreetAddress",
     label: "Street Address",
+    esKey: "streetAddress.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
   },
   {
     name: "City",
     label: "City",
+    esKey: "city.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
   },
   {
     name: "State",
     label: "State",
+    esKey: "state.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
   },
   {
     name: "Zip",
     label: "Zip Code",
+    esKey: "zip.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
   },
   {
     name: "tags",
     label: "Tags ",
     options: {
+      filter: false,
       sort: false,
       download: false,
       print: false,
@@ -84,6 +115,7 @@ const ownersColumnHeaders = [
     name: "isTracked",
     label: " ",
     options: {
+      filter: false,
       searchable: false,
       download: false,
       print: false,

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
-import { copy } from 'utils/helper';
+import { copy } from "utils/helper";
 
 // Revenue Chart
 export default function PieChart({ chartData = [], type = "" }) {
@@ -13,14 +13,19 @@ export default function PieChart({ chartData = [], type = "" }) {
     data = copy(chartData);
     if (type === "revenue") {
       data = data
-        .filter(item => item.value)
+        .filter((item) => item.name === "Gross Revenue" || item.name === "Adjustments")
+        .filter((item) => item.value)
         .map((item) => {
           item.value = item.value.replace("-", "").replace("(", "").replace(")", "");
           return item;
         })
+        .filter((item) => item.value)
         .map((item) => ({ category: item.name, value: Number(item.value) }));
     } else if (type === "adjustments") {
-      data = data.filter((a) => a.value).map((adjustment) => ({ category: adjustment.name, value: Number(adjustment.value) }));
+      data = data
+        .filter((item) => item.name !== "Total Adjustments")
+        .filter((a) => a.value)
+        .map((adjustment) => ({ category: adjustment.name, value: Number(adjustment.value) }));
     }
     setData(data);
   }, [chartData, type]);
@@ -61,6 +66,20 @@ export default function PieChart({ chartData = [], type = "" }) {
     markerTemplate.stroke = am4core.color("#ccc");
     chart.legend.position = "right";
     chart.legend.maxWidth = 200;
+    chart.legend.scrollable = true;
+
+    // Setting "NET REVENUE" label
+    const netRevenue = chartData.find((d) => d.name === "Net Revenue" || d.name === "Total Adjustments");
+    if (netRevenue) {
+      let label = pieSeries.createChild(am4core.Label);
+      label.text = `${netRevenue.value}`;
+      label.horizontalCenter = "middle";
+      label.verticalCenter = "middle";
+      label.fontSize = 30;
+      label.fontWeight = "bold";
+    }
+
+    chart.legend.valueLabels.template.text = "";
   }, [data]);
   return <div id="pie-chart" style={{ height: "100%" }}></div>;
 }
