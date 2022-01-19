@@ -299,7 +299,7 @@ export const TableESHOC = (Component) => {
                             }]
                     },
 
-                    filters: tableState.filters,
+                    filters: [],
                 },
             };
             tableState.filterList.forEach((val, index) => {
