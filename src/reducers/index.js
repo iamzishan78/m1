@@ -12,6 +12,7 @@ import owner from 'store/reducers/ownerReducer';
 import contact from 'store/reducers/contactReducer';
 import common from 'store/reducers/commonReducer';
 import app from 'store/reducers/appReducer';
+import entity from 'store/reducers/entityReducer';
 
 const createRootReducer = (history) =>
   combineReducers({
@@ -27,6 +28,7 @@ const createRootReducer = (history) =>
     owner,
     contact,
     common,
+    entity,
     app
   });
 
