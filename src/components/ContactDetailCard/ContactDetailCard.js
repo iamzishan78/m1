@@ -459,9 +459,9 @@ export default function ContactDetailCard(props) {
   }, [tData, tLoading]);
 
   const checkModuleHistory = () => {
-    console.log("path history", history.pathHistory);
-    console.log("stateNav.contactFromMap", stateNav.contactFromMap);
-    if(history.pathHistory[1].startsWith("/map/")){
+    if (stateNav.contactFromMap) {
+      return !!stateNav.contactFromMap;
+    } else if (history.pathHistory[1].includes("/map/")) {
       return true;
     }
     return !!stateNav.contactFromMap;
