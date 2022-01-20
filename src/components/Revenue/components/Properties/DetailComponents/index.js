@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import { useLazyQuery } from "@apollo/client";
-
+import moment from "moment";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import {
   Typography,
@@ -29,7 +29,7 @@ import InterestDetailForm from "./InterestDetailForm";
 import { ConvertOwnerToContactContainer } from "store/containers/entity";
 // Components
 import HeaderSection from "./HeaderSection";
-import moment from "moment";
+import NavHeader from "components/Revenue/components/Common/NavHeader";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -168,7 +168,7 @@ export default function DetailComponents(props) {
   const history = useHistory();
   const propertyId =
     history.location.pathname.split("/")[
-      history.location.pathname.split("/").length - 1
+    history.location.pathname.split("/").length - 1
     ];
   const [propertyOwnerContact, setPropertyOwnerContacts] = useState(null);
   const [showInterestDetails, setShowInterestDetails] = useState(false);
@@ -226,57 +226,7 @@ export default function DetailComponents(props) {
   }, [propertyId]);
 
   return (
-    <div className={classes.root}>
-      {/**
-       * Detail Header
-       */}
-      <div className={classes.navSection}>
-        <Grid
-          container
-          alignItems="center"
-          direction="row"
-          display="flex"
-          justify="space-between"
-        >
-          <Grid item>
-            <Breadcrumbs
-              separator={<NavigateNextIcon fontSize="small" />}
-              aria-label="breadcrumb"
-            >
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-                color="inherit"
-                onClick={() => history.push("/revenue/properties")}
-              >
-                Properties
-              </Link>
-
-              {propertyDetails && (
-                <Typography
-                  style={{
-                    color: "#18AADD",
-                    fontSize: "16px",
-                    marginLeft: "5px",
-                  }}
-                >
-                  {" "}
-                  {propertyDetails.name}{" "}
-                </Typography>
-              )}
-            </Breadcrumbs>
-          </Grid>
-          <Grid item>
-            <IconButton onClick={() => history.push("/revenue/properties")}>
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </Grid>
-        </Grid>
-      </div>
+    <NavHeader title={propertyDetails?.name}>
       <div style={{ padding: "20px" }}>
         {/**
          * Detail title section
@@ -373,6 +323,6 @@ export default function DetailComponents(props) {
           )}
         </div>
       </div>
-    </div>
+    </NavHeader>
   );
 }
