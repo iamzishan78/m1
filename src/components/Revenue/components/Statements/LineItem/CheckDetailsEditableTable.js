@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Paper, Button, TableContainer, CircularProgress } from "@material-ui/core";
-
+import { Grid, Paper, Button, TableContainer, CircularProgress, IconButton, TextField, InputAdornment } from "@material-ui/core";
+import SearchIcon from '@material-ui/icons/Search';
+import CloseIcon from '@material-ui/icons/Close';
 import TableHOC from "components/Table/TableHOC";
 
 // QUERIES 
@@ -94,13 +95,23 @@ const useStyles = makeStyles({
         backgroundColor: "#fff", overflow: "scroll", maxHeight: "500px",
     },
     tableHeaderLabel: { marginLeft: "15px", paddingRight: '10px', marginTop: "5px" },
-    loader: { color: '#12abe0', top: '10px', display: 'flex', marginTop: '3px' }
+    loader: { color: '#12abe0', top: '10px', display: 'flex', marginTop: '3px' },
+    tableActions: {
+        margin: '0 2px',
+        backgroundColor: ' #D4E8F1'
+    },
+    disableHover: {
+        '& .MuiIconButton-root:hover': {
+            backgroundColor: 'inherit'
+        }
+    }
 });
 
 
 function CheckDetailsEditableTable(props) {
 
     const [rows, setRows] = useState(props.rows);
+    const [search, setSearch] = useState({ open: false, text: '' })
     const client = useApolloClient();
 
 
@@ -221,9 +232,10 @@ function CheckDetailsEditableTable(props) {
                     first: startPaginationAt,
                     keep_alive: "1micros"
                 },
+                search: search.text ? `${search.text}*` : ''
             }
         });
-    }, [props.parent, props.checkId]);
+    }, [props.parent, props.checkId, search.text]);
 
 
     useEffect(() => {
@@ -293,24 +305,50 @@ function CheckDetailsEditableTable(props) {
     const gridRef = React.createRef()
     const tclasses = useStyles();
 
+
+
     return (
         <Paper elevation={3} >
             <Grid container style={{ backgroundColor: "#F2F2F2" }} >
-
                 <Grid item md={12} style={{ border: '1px solid #c1c1c1', paddingBottom: '10px' }}>
                     <Grid container direction="row" justifyContent="space-between" alignItems="center" className={{ justifyContent: 'space-between' }}>
                         <Grid item style={{ display: 'flex' }}>
-                            <Typography variant="h6" component="h2" className={tclasses.tableHeaderLabel}>
-                                Check Details
-                            </Typography>
+                            {
+                                search.open ?
+                                    <Grid container spacing={1} alignItems="center">
+                                        <Grid item style={{ marginTop: '15px' }}>
+                                            <IconButton disableRipple={true} disableFocusRipple={true} className={tclasses.disableHover}>
+                                                <SearchIcon />
+                                            </IconButton>
+                                        </Grid>
+                                        <Grid item>
+                                            <TextField id="search-field" label="" value={search.text} onChange={(e) => setSearch({ ...search, text: e.target.value })} />
+                                        </Grid>
+                                        <Grid item style={{ marginTop: '15px' }}>
+                                            <IconButton aria-label="delete" onClick={() => setSearch({ open: false, text: '' })}>
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </Grid>
+                                    </Grid> :
+                                    <Typography variant="h6" component="h2" className={tclasses.tableHeaderLabel}>
+                                        Check Details
+                                    </Typography>
+                            }
                             {loading ? <CircularProgress size='32px' className={tclasses.loader}></CircularProgress> : ''}
                         </Grid>
                         <Grid item>
-                            <div style={{ marginRight: "15px", marginTop: "5px" }}>
-                                <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={addNewRow}  >
-                                    Add new line item
-                                </Button>
-                            </div>
+                            <Grid container direction="row" style={{ marginTop: "5px", marginRight: "15px" }}>
+                                <Grid item style={{ marginTop: "5px" }}>
+                                    <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={addNewRow}  >
+                                        Add new line item
+                                    </Button>
+                                </Grid>
+                                <Grid item>
+                                    <IconButton aria-label="delete" className={tclasses.tableActions} onClick={() => setSearch({ ...search, open: !search.open })}>
+                                        <SearchIcon />
+                                    </IconButton>
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
