@@ -244,7 +244,6 @@ const useStyles = makeStyles((theme) => ({
   },
   menuIcon: {
     background: "transparent",
-    paddingLeft: "10px",
     align: "center",
     "& svg": {
       fill: "#808080 !important",
