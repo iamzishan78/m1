@@ -116,7 +116,7 @@ export const TableESHOC = (Component) => {
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
         useEffect(() => {
-            if(tableMeta?.esIndex){
+            if (tableMeta?.esIndex) {
                 getESPaginatedList({
                     variables: {
                         esIndex: tableMeta.esIndex,
@@ -126,7 +126,7 @@ export const TableESHOC = (Component) => {
                         },
                         search: tableMeta.extendSearchQuery,
                         filters: tableMeta.filters ? tableMeta.filters : [],
-                        polygon: tableMeta.polygon? tableMeta.polygon : undefined
+                        polygon: tableMeta.polygon ? tableMeta.polygon : undefined
                     }
                 });
             }
@@ -152,6 +152,7 @@ export const TableESHOC = (Component) => {
 
                 TableHeader.forEach((column) => {
                     if (column?.options?.filter) {
+                        const custom = column.custom;
                         column.options = {
                             ...column.options,
                             filter: true,
@@ -161,7 +162,7 @@ export const TableESHOC = (Component) => {
                                     column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
                                     return (
                                         <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-                                            extendSearchQuery={extendSearchQuery} query={GET_ES_FILTER_LIST} esIndex={esIndex} />
+                                            extendSearchQuery={extendSearchQuery} query={GET_ES_FILTER_LIST} esIndex={esIndex} custom={custom}/>
                                     );
                                 }
                             }
@@ -177,7 +178,7 @@ export const TableESHOC = (Component) => {
                 setLoading(false);
             }
         }, [
-            tableData, 
+            tableData,
             dependencyUpdate
         ]);
 
@@ -233,7 +234,7 @@ export const TableESHOC = (Component) => {
             }
             if (actions.includes('comments')) {
                 data.commentsCounter = !genericDataActions?.includes('comments')
-                    ? data.comments?.length 
+                    ? data.comments?.length
                     : (() => {
                         const comments = dataCommentsCounterRef?.current?.commentsCounter || []
                         let commentsCounter = 0
@@ -249,7 +250,7 @@ export const TableESHOC = (Component) => {
             if (actions.includes('tags')) {
                 data.tags = !genericDataActions?.includes('tags')
                     ? data?.tags && data?.tags?.[0] && data?.tags?.[0].tag &&
-                        [data.tags.map(t => (t.tag)), data.tags.length]
+                    [data.tags.map(t => (t.tag)), data.tags.length]
                     : (() => {
                         const tags = dataTagSamplesRef?.current?.tagSamples || []
                         let newTags = [[], 0];
@@ -260,7 +261,7 @@ export const TableESHOC = (Component) => {
                             }
                         }
                         return newTags
-                })();
+                    })();
             }
 
             if (actions.includes('ifAreContacts')) {
@@ -279,7 +280,7 @@ export const TableESHOC = (Component) => {
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
             let pageESVariables = {
                 variables: {
-                    polygon: tableState.polygon ? tableState.polygon: undefined,
+                    polygon: tableState.polygon ? tableState.polygon : undefined,
                     esIndex: tableState.esIndex,
                     search: tableState.searchText ? `${tableState.searchText}*` : '',
                     pagination: {
@@ -386,13 +387,15 @@ export const TableESHOC = (Component) => {
                         className={classes.multiSelectionTopBarButtons}
                         onClick={() => { setAddToTable(true); setClickedRow(null) }}
                     >
-                        + ADD {tableMeta.addableName} To {tableMeta.shapeType?.toUpperCase()}
+                        {tableMeta.addBtnText ? 
+                            `+ ADD ${tableMeta.addBtnText}` : 
+                            `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
                     </Button>
                 </div>
             },
             customToolbarSelect: ({ data }) => {
 
-                return <div style={{ height: "48px", display: "flex" }}>
+                return props.targetLabel !== "well" && (<div style={{ height: "48px", display: "flex" }}>
                     <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
                         <Tooltip title={"Delete"}>
                             <IconButton size="medium" style={{ margin: "0 5px" }} aria-label="delete" onClick={(e) => { setOpenDialog("delete"); }}>
@@ -400,7 +403,7 @@ export const TableESHOC = (Component) => {
                             </IconButton>
                         </Tooltip>
                     </div>
-                </div>
+                </div>)
             },
             onRowClick: (rowData, { dataIndex, rowIndex }) => {
                 setAddToTable(true)
