@@ -229,7 +229,7 @@ const MetaField = ({ category, columns }) => {
                   .replace(/ /g, "_")
                   .toLowerCase()}`,
             options: {
-              display: true,
+              display: false,
               filter: true,
               searchable: false,
               sort: true,
