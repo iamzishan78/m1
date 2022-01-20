@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
+import set from 'lodash/set';
 import { withStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
@@ -153,8 +154,10 @@ function LayerStyling(props) {
         if (layerPaintProps[0]?.labelProps?.symbolProps?.visibility)
           delete layerPaintProps[0].labelProps.symbolProps.visibility;
 
-        layerPaintProps[0].labelProps.visibility = layerLabelVisibility;
-
+        if (currentLayer.layerSettings?.colorable) {
+          set(layerPaintProps, '[0]labelProps.visibility', layerLabelVisibility)
+        }
+          
         const layerType = layerPaintProps[0].paintType;
 
         if (layerType === "circle" && layerPaintProps[0].paintProps) {
