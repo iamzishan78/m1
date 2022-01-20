@@ -459,6 +459,11 @@ export default function ContactDetailCard(props) {
   }, [tData, tLoading]);
 
   const checkModuleHistory = () => {
+    if (stateNav.contactFromMap) {
+      return !!stateNav.contactFromMap;
+    } else if (history.pathHistory[1].includes("/map/")) {
+      return true;
+    }
     return !!stateNav.contactFromMap;
   };
 
@@ -490,6 +495,7 @@ export default function ContactDetailCard(props) {
           }}
         >
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+
             {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
               <Link
                 style={{
@@ -598,7 +604,7 @@ export default function ContactDetailCard(props) {
                 }}
                 color="inherit"
                 onClick={() => {
-                  history.push("/");
+                  history.push(history.pathHistory[1]);
                   setStateNav((stateApp) => ({
                     ...stateApp,
                     contactFromMap: false,
@@ -1037,7 +1043,7 @@ export default function ContactDetailCard(props) {
                       }}
                       color="inherit"
                       onClick={() => {
-                        history.push("/");
+                        history.push(history.pathHistory[1]);
                         setStateNav((stateApp) => ({
                           ...stateApp,
                           contactFromMap: false,
