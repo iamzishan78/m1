@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { useHistory } from "react-router-dom";
+import { NavigationContext } from "components/Navigation/NavigationContext";
+import { AppContext } from "../../../AppContext";
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -90,6 +92,8 @@ const styles = makeStyles(() => ({
 export default function ProvisionsTab({ provisions, standardProvisions, id }) {
     const classes = styles();
     let history = useHistory();
+    const [stateApp, setStateApp] = useContext(AppContext);
+    const [stateNav, setStateNav] = useContext(NavigationContext);
     const [selectionProvision, setSelectedProvision] = useState('')
     const { control, register, reset, getValues, setValue } = useForm();
 
@@ -354,6 +358,15 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                             if (currentParty?._id) {
                                                 e.stopPropagation();
                                                 history.push(`/contact/details/${currentParty._id}`);
+                                                setStateNav((stateApp) => ({
+                                                    ...stateApp,
+                                                    contactFromMap: true,
+                                                }));
+                                                setStateApp((stateApp) => ({
+                                                    ...stateApp,
+                                                    selectedContact: true,
+                                                    selectedContact: `${currentParty._id}`,
+                                                }));
                                             }
                                         }}
                                         aria-label="show contact"

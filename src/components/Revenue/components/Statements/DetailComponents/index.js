@@ -453,7 +453,6 @@ export default function DetailComponents(props) {
 
   const handleScroll = (e) => {
     if (!isButtonScroll) {
-      debugger;
       const { scrollTop } = e.target;
       if (scrollTop <= 270 && tab !== 0) setTab(0);
       else if (scrollTop > 270 && scrollTop <= 470 && tab !== 1) setTab(1);
