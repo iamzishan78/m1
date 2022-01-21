@@ -261,7 +261,7 @@ export default function DetailComponents(props) {
                   </Typography>
                 </div>
                 <div className={classes.tags}>
-                  <Tags width="100%" targetLabel="check" publicLeftBottom onlyTags />
+                  <Tags targetSourceId={propertyId} width="100%" targetLabel="check" publicLeftBottom onlyTags />
                 </div>
               </div>
             </div>

@@ -6,18 +6,9 @@ import get from "lodash/get";
 import moment from "moment";
 
 import { makeStyles } from "@material-ui/styles";
-import {
-  Typography,
-  Grid,
-  TextField,
-  MenuItem,
-  Select,
-  Button,
-} from "@material-ui/core";
+import { Typography, Grid, TextField, MenuItem, Select, Button } from "@material-ui/core";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import Autocomplete, {
-  createFilterOptions,
-} from "@material-ui/lab/Autocomplete";
+import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 
 import { AppContext } from "AppContext";
 import { setStateIfDeepEqual } from "components/Shared/functions";
@@ -29,11 +20,7 @@ import { UPDATE_PROPERTY_INTEREST } from "graphQL/useMutationUpdatepropertyInter
 import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 
-const interestTypeOptions = [
-  "Royalty Interest",
-  "Overriding Royalty",
-  "Working Interest",
-];
+const interestTypeOptions = ["Royalty Interest", "Overriding Royalty", "Working Interest"];
 
 const statusOptions = ["Active", "InActive"];
 
@@ -41,15 +28,13 @@ const costFreeOptions = ["Yes", "No"];
 
 const useStyles = makeStyles((theme) => ({
   sideModal: {
-    marginTop: 24,
+    margin: "24px 20px",
     padding: "16px 10px",
     background: "#ffffff",
     borderRadius: 8,
     overflow: "auto",
-    height: "calc(100vh - 370px)",
-    maxHeight: "calc(100vh - 370px)",
-    // maxWidth: 360,
-    width: "30%",
+    height: "calc(100vh - 290px)",
+    width: 360,
     "&[type=number]": {
       "-moz-appearance": "textfield",
     },
@@ -95,6 +80,9 @@ const useStyles = makeStyles((theme) => ({
     color: "white",
     backgroundColor: "#60ABD6",
   },
+  fieldset: {
+    marginTop: 40,
+  },
 }));
 
 const InterestDetailForm = (props) => {
@@ -120,10 +108,7 @@ const InterestDetailForm = (props) => {
   });
 
   const handleSave = () => {
-    const id =
-      history.location.pathname.split("/")[
-        history.location.pathname.split("/").length - 1
-      ];
+    const id = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
     const values = getValues();
 
     if (selectedInterest) {
@@ -132,9 +117,7 @@ const InterestDetailForm = (props) => {
           propertyInterest: {
             ...values,
             _id: selectedInterest._id,
-            interestType: values.interestType?.name
-              ? values.interestType.name
-              : values.interestType,
+            interestType: values.interestType?.name ? values.interestType.name : values.interestType,
             owner: values.owner._id ? values.owner._id : null,
           },
         },
@@ -158,13 +141,8 @@ const InterestDetailForm = (props) => {
       const { interestAmount, effectiveDate, owner } = selectedInterest;
       reset({
         ...selectedInterest,
-        interestAmount:
-          typeof interestAmount === "number"
-            ? interestAmount.toString()
-            : interestAmount,
-        effectiveDate: effectiveDate
-          ? moment(effectiveDate).format("YYYY-MM-DD")
-          : null,
+        interestAmount: typeof interestAmount === "number" ? interestAmount.toString() : interestAmount,
+        effectiveDate: effectiveDate ? moment(effectiveDate).format("YYYY-MM-DD") : null,
         owner: owner
           ? {
               ...owner,
@@ -180,9 +158,7 @@ const InterestDetailForm = (props) => {
   }, [selectedInterest, props.propertyOwnerContact]);
 
   return (
-    <div
-      className={`flex column justifyStart alignStart w-100 ${classes.sideModal}`}
-    >
+    <div className={`flex column justifyStart alignStart w-100 ${classes.sideModal}`}>
       <div className="flex justifyBetween alignCenter w-100">
         <Typography
           varient="h5"
@@ -202,7 +178,7 @@ const InterestDetailForm = (props) => {
         </div>
       </div>
       <Grid container style={{ padding: "0px 10px" }}>
-        <Grid item xs={12} style={{ marginTop: 15 }}>
+        <Grid item xs={12} className={classes.fieldset}>
           <label>Owner Name</label>
           <Controller
             control={control}
@@ -218,7 +194,7 @@ const InterestDetailForm = (props) => {
             )}
           />
         </Grid>
-        <Grid item xs={12} style={{ marginTop: 15 }}>
+        <Grid item xs={12} className={classes.fieldset}>
           <label>Interest Type</label>
           <Controller
             control={control}
@@ -238,7 +214,7 @@ const InterestDetailForm = (props) => {
             )}
           />
         </Grid>
-        <Grid item xs={12} style={{ marginTop: 15 }}>
+        <Grid item xs={12} className={classes.fieldset}>
           <label>Interest Amount</label>
           <Controller
             control={control}
@@ -255,7 +231,7 @@ const InterestDetailForm = (props) => {
             )}
           />
         </Grid>
-        <Grid item xs={12} style={{ marginTop: 15 }}>
+        <Grid item xs={12} className={classes.fieldset}>
           <label>Effective Date</label>
           <Controller
             control={control}
@@ -286,7 +262,7 @@ const InterestDetailForm = (props) => {
             )}
           />
         </Grid>
-        <Grid item xs={12} style={{ marginTop: 15 }}>
+        <Grid item xs={12} className={classes.fieldset}>
           <label>Status</label>
           <Controller
             control={control}
@@ -307,7 +283,7 @@ const InterestDetailForm = (props) => {
             )}
           />
         </Grid>
-        <Grid item xs={12} style={{ marginTop: 15 }}>
+        <Grid item xs={12} className={classes.fieldset}>
           <label>Cost Free?</label>
           <Controller
             control={control}
@@ -328,24 +304,17 @@ const InterestDetailForm = (props) => {
             )}
           />
         </Grid>
-        <Grid item xs={12} style={{ marginTop: 15 }}>
+        <Grid item xs={12} className={classes.fieldset}>
           <div
             style={{
               borderTop: "1px solid #EEF1F4",
             }}
           >
             <div style={{ float: "right" }}>
-              <Button
-                style={{ margin: "25px 5px 25px 0px" }}
-                variant="outlined"
-              >
+              <Button style={{ margin: "25px 5px 25px 0px" }} variant="outlined">
                 Cancel
               </Button>
-              <Button
-                className={classes.btnColor}
-                variant="outlined"
-                onClick={handleSave}
-              >
+              <Button className={classes.btnColor} variant="outlined" onClick={handleSave}>
                 {props.selectedInterest ? "Update" : "Add"}
               </Button>
             </div>
@@ -369,10 +338,7 @@ const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
     setStateIfDeepEqual(NameAutInputValue, newState);
   };
 
-  const [
-    getPaginatedContacts,
-    { data: allContacts, fetchMore: fetchMorePaginatedContacts },
-  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+  const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
@@ -390,9 +356,7 @@ const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray([
-        ...allContacts?.paginatedContacts?.edges?.map((el) => el.node),
-      ]);
+      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
       setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
     }
     setIsNextPageLoading(false);
@@ -416,7 +380,6 @@ const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
 
   return (
     <AutocompEntityNamesVirtualizeList
-      className={classes.maxWidth}
       mongoEntitiesArray={mongoEntitiesArray}
       setMongoEntitiesArray={setMongoEntitiesArray}
       nameAutValue={nameAutValue}
@@ -465,6 +428,7 @@ const InterestType = ({ onChange, value, options, ...other }) => {
   const onInputChange = (event, value) => {
     onChange(value);
   };
+
   return (
     <Autocomplete
       defaultValue={value}
@@ -487,12 +451,7 @@ const InterestType = ({ onChange, value, options, ...other }) => {
         return option?._id === value?._id;
       }}
       renderOption={(option) => {
-        if (option._id === "newEntity")
-          return (
-            <Typography style={{ color: "midnightblue" }}>
-              Add '{option.name}'
-            </Typography>
-          );
+        if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
 
         return (
           <Grid container spacing={0}>
