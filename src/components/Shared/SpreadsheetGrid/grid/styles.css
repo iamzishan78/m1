@@ -10,6 +10,7 @@
 .SpreadsheetGrid__header {
     /* display: flex; */
     white-space: nowrap;
+
 }
 
 .SpreadsheetGrid__headCell {
@@ -38,7 +39,7 @@
 
 .SpreadsheetGrid__row {
     background-color: white;
-    border-bottom: 1px solid #E6E1E8;
+    /* border-bottom: 1px solid #E6E1E8; */
     user-select: none;
     white-space: nowrap;
 }
@@ -55,7 +56,7 @@
     font-size: 0.875rem;
     line-height: 15px;
     text-overflow: ellipsis;
-    padding: 10px;
+    /* padding: 10px; */
     height: 100%;
 }
 
@@ -64,11 +65,14 @@
 }
 
 .SpreadsheetGrid__cell:first-child {
-    border-left: 1px solid #E6E1E8;
+    /* border-left: 1px solid #E6E1E8; */
 }
 
 .SpreadsheetGrid__cell {
-    border-right: 1px solid #E6E1E8;
+    padding: 16px;
+    width: 100%;
+    height: 74px;
+    /* border-right: 1px solid #E6E1E8; */
 }
 
 .SpreadsheetGrid__cell:last-child {
