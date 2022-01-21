@@ -43,7 +43,7 @@ const TAB = Object.freeze({
   EXISTING: 1
 });
 
-export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes }) {
+export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes, isEntities, onSuccess }) {
   const [stateApp] = React.useContext(AppContext);
   const classes = useStyles();
 
@@ -102,10 +102,21 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   }
 
   const onConvert = () => {
-    let ownerIds = rows.filter((row) => row.id !== primaryOwner.id);
-    ownerIds.unshift(primaryOwner)
-    ownerIds = ownerIds.reduce((ids, row) => { ids.push({id: row.globalOwnerId || row.id, ownershipType: row.ownershipType}); return ids; }, []);
+    let ownerIds = [];
+    let entitiesIds = [];
+    let entities = rows.filter((row) => row.isEntity);
+    let owners = rows.filter((row) => !row.isEntity);
 
+    if(entities.length > 0){
+      let Ids = entities.filter((row) => row.id !== primaryOwner.id);
+      Ids.unshift(primaryOwner);
+      entitiesIds = Ids.map(id => id._id)
+    }else if(owners.length > 0){
+      let Ids = owners.filter((row) => row.id !== primaryOwner.id);
+      Ids.unshift(primaryOwner);
+      ownerIds = Ids.reduce((ids, row) => { ids.push({id: row.globalOwnerId || row.id, ownershipType: row.ownershipType}); return ids; }, []);
+    }
+    
     let existingContactId = null;
     let action = actionType
     if (tab === TAB.EXISTING) {
@@ -114,7 +125,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     }
     Loader.createToast('contact-creation', 'Contact Creation in Progress')
     convertMultitpleOwnerToContact({
-      variables: { ownerIds, existingContactId, contactOwner, action, userId: stateApp.user.mongoId, tagsIds: newTagsIds },
+      variables: { ownerIds, entitiesIds, existingContactId, contactOwner, action, userId: stateApp.user.mongoId, tagsIds: newTagsIds },
       refetchQueries: ["checkIfOwnersAreContacts"],
       awaitRefetchQueries: true
     }).then(
@@ -122,6 +133,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
         if (res.data && res.data.convertMultitpleOwnerToContact) {
           const { success, message } = res.data.convertMultitpleOwnerToContact
           if (success) {
+            if(onSuccess) onSuccess()
             Loader.successToast('contact-creation', message)
           } else {
             Loader.errorToast('contact-creation', message)
@@ -232,7 +244,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                   <Typography style={{ backgroundColor: "#edfbff" }}>
                     <Grid container alignItems='center' style={{ paddingLeft: 10 }}>
                       <div style={{ width: '100%' }}>{row.name || row.OwnerName}</div>
-                      <div>{row.StreetAddress} {row.City}, {row.State} {row.Zip}</div>
+                      <div>{row.StreetAddress || row.address1} {row.City || row.city}, {row.State || row.state}, {row.Zip || row.zip}</div>
                       
                     </Grid>
                   </Typography>

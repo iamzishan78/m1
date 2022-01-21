@@ -1270,8 +1270,10 @@ function Map({ type, paramId, lati, longi }) {
           (featureLayer.layerGeometry === "Point" && feature.geometry.coordinates.length === 2)
         ) {
           shapeCenter = feature.geometry.coordinates;
-        } else {
+        } else if (featureLayer.layerGeometry === "Polygon" && feature.geometry.type === "Polygon") {
           shapeCenter = polylabel(feature.geometry.coordinates);
+        } else {
+          shapeCenter = turf.centroid(feature.geometry)?.geometry?.coordinates
         }
         selectedUserDefinedLayer = {
           ...feature,

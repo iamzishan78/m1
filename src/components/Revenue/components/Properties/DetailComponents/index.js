@@ -1,15 +1,32 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useLocation } from "react-router";
-import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, Tabs, Tab, Grid, Breadcrumbs } from "@material-ui/core";
-import { DescriptionOutlined as DocumentIcon, NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
-import Link from "@material-ui/core/Link";
+
 import { useLazyQuery } from "@apollo/client";
+
+import { makeStyles, withStyles } from "@material-ui/styles";
+import {
+  Typography,
+  IconButton,
+  Tabs,
+  Tab,
+  Grid,
+  Breadcrumbs,
+} from "@material-ui/core";
+import {
+  DescriptionOutlined as DocumentIcon,
+  NavigateNext as NavigateNextIcon,
+  Close as CloseIcon,
+} from "@material-ui/icons";
+import Link from "@material-ui/core/Link";
+
+import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
+
 import { GET_PROPERTY } from "graphQL/useQueryGetProperty";
 
 import Tagger from "components/Shared/Tagger";
-
+import PropertyInterestDetailsSection from "./PropertyInterestDetailsSection";
+import InterestDetailForm from "./InterestDetailForm";
+import { ConvertOwnerToContactContainer } from "store/containers/entity";
 // Components
 import HeaderSection from "./HeaderSection";
 import moment from "moment";
@@ -42,15 +59,19 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsHeader: {
     padding: "20px 20px 0px 20px",
+    background: "#ffffff",
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
   },
   tabsSection: {
-    marginTop: "20px",
-    backgroundColor: "#fff",
+    marginTop: "24px",
   },
   headerSection: {
     padding: "20px 30px",
     backgroundColor: "#fff",
-    marginBottom: "10px",
+    marginBottom: "20px",
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
   },
   summarySection: {
     padding: "20px 30px",
@@ -63,8 +84,22 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "500px",
     backgroundColor: "#fff",
   },
+  tabsDetailContainer: ({ showInterestDetails }) => ({
+    maxWidth: showInterestDetails ? "68%" : "100%",
+  }),
+  sideModal: {
+    marginTop: 24,
+    padding: "16px 10px",
+    background: "#ffffff",
+    borderRadius: 8,
+    overflow: "auto",
+    height: "calc(100vh - 280px)",
+    maxHeight: "calc(100vh - 280px)",
+    maxWidth: 360,
+    width: "100%",
+  },
   tags: {
-    margin: "20px 10px",
+    margin: "20px 10px 0px 10px",
     "& .MuiOutlinedInput-root": {
       color: "white",
       "& fieldset": {
@@ -101,7 +136,7 @@ const StyledTab = withStyles((theme) => ({
   root: {
     textTransform: "uppercase",
     minWidth: 72,
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: theme.typography.fontWeightRegular,
     marginRight: theme.spacing(4),
     fontFamily: [
       "-apple-system",
@@ -131,20 +166,31 @@ const StyledTab = withStyles((theme) => ({
 
 export default function DetailComponents(props) {
   const history = useHistory();
-  const classes = useStyles(props);
+  const propertyId =
+    history.location.pathname.split("/")[
+      history.location.pathname.split("/").length - 1
+    ];
+  const [propertyOwnerContact, setPropertyOwnerContacts] = useState(null);
+  const [showInterestDetails, setShowInterestDetails] = useState(false);
+  const [showOwnerDialog, setShowOwnerDialog] = useState(false);
+  const [selectedInterest, setSelectedInterest] = useState(null);
+  const classes = useStyles({ ...props, showInterestDetails });
   const [tab, setTab] = useState(0);
+  const [refetchContacts, setRefetchContacts] = useState(false);
   const selectedTabRef = useRef(null);
-  const [propertyId, setPropertyId] = useState(null);
-  const location = useLocation();
 
-  const { search } = location;
+  const [getProperty, { data: getPropertyResult }] = useLazyQuery(
+    GET_PROPERTY,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
 
-
-  const [getProperty, { data: getPropertyResult }] = useLazyQuery(GET_PROPERTY, {
-    fetchPolicy: "no-cache",
-  });
+  const [checkIfOwnersAreContacts, { data: checkIfOwnersAreContactsData }] =
+    useLazyQuery(IFARECONTACTS, { fetchPolicy: "cache-and-network" });
 
   const propertyDetails = getPropertyResult?.getProperty.property;
+
   useEffect(() => {
     selectedTabRef.current &&
       selectedTabRef.current.scrollIntoView({
@@ -154,18 +200,30 @@ export default function DetailComponents(props) {
       });
   }, [tab]);
 
+  useEffect(() => {
+    if (checkIfOwnersAreContactsData?.ifAreContacts?.length > 0) {
+      setPropertyOwnerContacts({
+        _id: checkIfOwnersAreContactsData.ifAreContacts[0].isContact,
+        name: checkIfOwnersAreContactsData.ifAreContacts[0].name,
+      });
+    }
+  }, [checkIfOwnersAreContactsData]);
 
   useEffect(() => {
-    if (search !== "") {
-      const propertyId = search.replace("?id=", "");
-      if (propertyId) {
-        setPropertyId(propertyId);
-        getProperty({
-          variables: { id: propertyId },
-        });
-      }
+    if (propertyDetails?.owner) {
+      checkIfOwnersAreContacts({
+        variables: {
+          idsArray: [propertyDetails.owner],
+        },
+      });
     }
-  }, [search]);
+  }, [propertyDetails, refetchContacts]);
+
+  useEffect(() => {
+    getProperty({
+      variables: { id: propertyId },
+    });
+  }, [propertyId]);
 
   return (
     <div className={classes.root}>
@@ -173,18 +231,43 @@ export default function DetailComponents(props) {
        * Detail Header
        */}
       <div className={classes.navSection}>
-        <Grid container alignItems="center" direction="row" display="flex" justify="space-between">
+        <Grid
+          container
+          alignItems="center"
+          direction="row"
+          display="flex"
+          justify="space-between"
+        >
           <Grid item>
-            <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+            <Breadcrumbs
+              separator={<NavigateNextIcon fontSize="small" />}
+              aria-label="breadcrumb"
+            >
               <Link
-                style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer", fontWeight: "bold" }}
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
                 color="inherit"
                 onClick={() => history.push("/revenue/properties")}
               >
                 Properties
               </Link>
 
-              {propertyDetails && (<Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}> {propertyDetails.name} </Typography>)}
+              {propertyDetails && (
+                <Typography
+                  style={{
+                    color: "#18AADD",
+                    fontSize: "16px",
+                    marginLeft: "5px",
+                  }}
+                >
+                  {" "}
+                  {propertyDetails.name}{" "}
+                </Typography>
+              )}
             </Breadcrumbs>
           </Grid>
           <Grid item>
@@ -204,37 +287,90 @@ export default function DetailComponents(props) {
               <DocumentIcon fontSize="large" />
             </IconButton>
             <div className={classes.titleText}>
-              {propertyDetails && (<Typography style={{ fontWeight: "bold", fontSize: "large", textTransform: "uppercase" }}>
-                {propertyDetails.name}
-              </Typography>
+              {propertyDetails && (
+                <Typography
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "large",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {propertyDetails.name}
+                </Typography>
               )}
-              {propertyDetails && (<Typography variant="subtitle1">{moment(propertyDetails.flatSyncAt).format("DD/MM/yyyy")}</Typography>)}
+              {propertyDetails && (
+                <Typography variant="subtitle1">
+                  {moment(propertyDetails.flatSyncAt).format("DD/MM/yyyy")}
+                </Typography>
+              )}
             </div>
           </div>
           <div className={classes.tags}>
-            <Tagger objectId={null} targetLabel="property" iconZiseSmall={false} shareable={false} type="clickable" />
+            <Tagger
+              objectId={null}
+              targetLabel="property"
+              iconZiseSmall={false}
+              shareable={false}
+              type="clickable"
+            />
           </div>
         </div>
-        {/**
-         * Detail tabs section
-         */}
-        <div className={classes.tabsSection}>
-          <div className={classes.tabsHeader}>
-            <StyledTabs value={tab} onChange={(event, tab) => setTab(tab)} aria-label="ant example">
-              <StyledTab label="Header" />
-              <StyledTab label="Details" />
-            </StyledTabs>
-          </div>
-          <div style={{ maxHeight: "calc(100vh - 495px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
-            <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-              <HeaderSection />
+        <div className="flex justifyBetween alignStart w-100">
+          <div className={`${classes.tabsDetailContainer}`}>
+            {/**
+             * Detail tabs section
+             */}
+            <div className={classes.tabsSection}>
+              <div className={classes.tabsHeader}>
+                <StyledTabs
+                  value={tab}
+                  onChange={(event, tab) => setTab(tab)}
+                  aria-label="ant example"
+                >
+                  <StyledTab label="Header" />
+                  <StyledTab label="Details" />
+                </StyledTabs>
+              </div>
+              <div
+                style={{
+                  maxHeight: "calc(100vh - 440px)",
+                  overflow: "overlay",
+                  backgroundColor: "#f3f3f3",
+                }}
+              >
+                <div
+                  className={classes.headerSection}
+                  ref={tab === 0 ? selectedTabRef : null}
+                >
+                  <HeaderSection />
+                </div>
+                <div ref={tab === 1 ? selectedTabRef : null}>
+                  <PropertyInterestDetailsSection
+                    propertyId={propertyId}
+                    setSelectedInterest={setSelectedInterest}
+                    showInterestDetails={showInterestDetails}
+                    onClickAdd={() => setShowInterestDetails(true)}
+                  />
+                </div>
+              </div>
             </div>
-            <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
-              <Typography varient="h6" style={{ textTransform: "uppercase" }}>
-                Details
-              </Typography>
-            </div>
           </div>
+          {showOwnerDialog && (
+            <ConvertOwnerToContactContainer
+              propertyDetails={propertyDetails}
+              onClose={() => setShowOwnerDialog(false)}
+              onSuccess={() => setRefetchContacts(!refetchContacts)}
+            />
+          )}
+          {showInterestDetails && (
+            <InterestDetailForm
+              propertyDetails={propertyDetails}
+              selectedInterest={selectedInterest}
+              setShowOwnerDialog={setShowOwnerDialog}
+              propertyOwnerContact={propertyOwnerContact}
+              onClose={() => setShowInterestDetails(false)}
+            />
+          )}
         </div>
       </div>
     </div>
