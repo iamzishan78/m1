@@ -28,24 +28,16 @@ const costFreeOptions = ["Yes", "No"];
 
 const useStyles = makeStyles((theme) => ({
   sideModal: {
-    margin: "24px 20px",
+    marginTop: 20,
+    marginRight: 24,
     padding: "16px 10px",
     background: "#ffffff",
     borderRadius: 8,
     overflow: "auto",
-    height: "calc(100vh - 290px)",
-    width: 360,
-    "&[type=number]": {
-      "-moz-appearance": "textfield",
-    },
-    "&::-webkit-outer-spin-button": {
-      "-webkit-appearance": "none",
-      margin: 0,
-    },
-    "&::-webkit-inner-spin-button": {
-      "-webkit-appearance": "none",
-      margin: 0,
-    },
+    height: "calc(100vh - 280px)",
+    maxHeight: "calc(100vh - 280px)",
+    maxWidth: 360,
+    width: "100%",
   },
   metaPanelCloseIcon: {
     "& svg": {

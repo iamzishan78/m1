@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
 import { useLazyQuery } from "@apollo/client";
@@ -8,6 +8,8 @@ import { DescriptionOutlined as DocumentIcon, InfoOutlined as InfoOutlinedIcon, 
 
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { GET_PROPERTY } from "graphQL/useQueryGetProperty";
+import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
+import { AppContext } from "AppContext";
 
 // Components
 import Tags from "components/Shared/Tagger";
@@ -16,6 +18,7 @@ import InterestDetailForm from "./InterestDetailForm";
 import { ConvertOwnerToContactContainer } from "store/containers/entity";
 import HeaderSection from "./HeaderSection";
 import NavHeader from "components/Revenue/components/Common/NavHeader";
+import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,9 +74,7 @@ const useStyles = makeStyles((theme) => ({
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
-  tabsSection: {
-    marginTop: "24px",
-  },
+  tabsSection: {},
   headerSection: {
     padding: "20px 30px",
     backgroundColor: "#fff",
@@ -92,8 +93,9 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "500px",
     backgroundColor: "#fff",
   },
-  tabsDetailContainer: ({ showInterestDetails }) => ({
-    maxWidth: showInterestDetails ? "68%" : "100%",
+  tabsDetailContainer: ({ showInterestDetails, collapse }) => ({
+    padding: 20,
+    maxWidth: showInterestDetails || !collapse ? "calc(100% - 380px)" : "100%",
   }),
   menuIcon: {
     background: "transparent",
@@ -138,6 +140,11 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   }),
+  tabsSectionDetails: {
+    maxHeight: "calc(100vh - 280px)",
+    overflow: "overlay",
+    backgroundColor: "#f3f3f3",
+  },
 }));
 
 const StyledTabs = withStyles({
@@ -184,16 +191,24 @@ const StyledTab = withStyles((theme) => ({
 
 export default function DetailComponents(props) {
   const history = useHistory();
+  const [, setStateApp] = useContext(AppContext);
+
   const propertyId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
   const [propertyOwnerContact, setPropertyOwnerContacts] = useState(null);
   const [showInterestDetails, setShowInterestDetails] = useState(false);
   const [showOwnerDialog, setShowOwnerDialog] = useState(false);
   const [selectedInterest, setSelectedInterest] = useState(null);
-  const classes = useStyles({ ...props, showInterestDetails });
   const [tab, setTab] = useState(0);
   const [refetchContacts, setRefetchContacts] = useState(false);
   const selectedTabRef = useRef(null);
   const [collapse, setCollapse] = useState(false);
+  const [users, setUsers] = useState([]);
+
+  const classes = useStyles({ ...props, showInterestDetails, collapse });
+
+  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
+    fetchPolicy: "no-cache",
+  });
 
   const [getProperty, { data: getPropertyResult }] = useLazyQuery(GET_PROPERTY, {
     fetchPolicy: "no-cache",
@@ -204,6 +219,25 @@ export default function DetailComponents(props) {
   });
 
   const propertyDetails = getPropertyResult?.getProperty.property;
+
+  useEffect(() => {
+    getProperty({
+      variables: { id: propertyId },
+    });
+    getAllMongoUsers();
+  }, [getAllMongoUsers, getProperty, propertyId]);
+
+  useEffect(() => {
+    if (userLists && userLists.allMongoUsers) {
+      setUsers(
+        userLists.allMongoUsers.map((user) => ({
+          value: user._id,
+          text: user.name,
+          email: user.email,
+        }))
+      );
+    }
+  }, [userLists]);
 
   useEffect(() => {
     selectedTabRef.current &&
@@ -232,12 +266,6 @@ export default function DetailComponents(props) {
       });
     }
   }, [propertyDetails, refetchContacts]);
-
-  useEffect(() => {
-    getProperty({
-      variables: { id: propertyId },
-    });
-  }, [propertyId]);
 
   return (
     <NavHeader title={propertyDetails?.name}>
@@ -299,13 +327,7 @@ export default function DetailComponents(props) {
            * Detail tabs section
            */}
           <div className={classes.tabsSection}>
-            <div
-              style={{
-                maxHeight: "calc(100vh - 315px)",
-                overflow: "overlay",
-                backgroundColor: "#f3f3f3",
-              }}
-            >
+            <div className={classes.tabsSectionDetails}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
                 <HeaderSection />
               </div>
@@ -335,6 +357,10 @@ export default function DetailComponents(props) {
             propertyOwnerContact={propertyOwnerContact}
             onClose={() => setShowInterestDetails(false)}
           />
+        )}
+
+        {!collapse && !showInterestDetails && !showOwnerDialog && (
+          <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={propertyId} setStateApp={setStateApp} />
         )}
       </div>
     </NavHeader>
