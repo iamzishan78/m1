@@ -6,6 +6,8 @@ import { useLazyQuery } from "@apollo/client";
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import parse from 'autosuggest-highlight/parse';
+import match from 'autosuggest-highlight/match';
 
 export function AutoCompleteField({ value, onChange, index, column, query, extendSearchQuery, esIndex, filters }) {
     const [open, setOpen] = useState(false);
@@ -77,6 +79,27 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
             autoHighlight
             options={options}
             loading={loading}
+            renderOption={(props, value) => {
+                const matches = match(props.key, value?.inputValue);
+                const parts = parse(props.key, matches);
+
+                return (
+                    <li {...props}>
+                        <div>
+                            {parts.map((part, index) => (
+                                <span
+                                    key={index}
+                                    style={{
+                                        fontWeight: part.highlight ? 700 : 400,
+                                    }}
+                                >
+                                    {part.text}
+                                </span>
+                            ))}
+                        </div>
+                    </li>
+                );
+            }}
             renderInput={(params) => (
                 <TextField
                     {...params}
@@ -86,8 +109,9 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
                         if (e.code === 'Tab') {
                             // e.preventDefault();
                             // e.stopPropagation();
-                            if (options[0] && options[0].key) {
-                                onChange(options[0].key)
+                            const ops = options.filter((op) => op.key.startsWith(search))
+                            if (ops[0] && ops[0].key) {
+                                onChange(ops[0].key)
                             }
                         }
                     }}

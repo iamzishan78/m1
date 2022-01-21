@@ -359,7 +359,7 @@ export default function Navigation(props) {
   };
 
   const checkIfIgnoreHeader = () => {
-    if (location.pathname.startsWith("/revenue/statement/details") || location.pathname.startsWith("/revenue/property/details")) {
+    if (location.pathname.startsWith("/revenue/statement/details") || location.pathname.includes("/line-item") || location.pathname.startsWith("/revenue/property/details")) {
       return true;
     }
     return false;
@@ -385,10 +385,10 @@ export default function Navigation(props) {
           className={clsx(classes.appBar, {
             [classes.appBarShift]: openDrawer,
           })}
-          // style={{
-          //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
-          //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
-          // }}
+        // style={{
+        //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
+        //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
+        // }}
         >
           {stateApp.user && (
             <Toolbar>
