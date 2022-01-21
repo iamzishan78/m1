@@ -64,10 +64,10 @@ function* getShapeOwnersAndWells(action) {
     const polygon = getSelectedFeaturePolygonString(currentFeature);
 
     const shapeWellCount = yield client.query({
-      query: GET_ES_PAGINATED_LIST, 
+      query: GET_ES_PAGINATED_LIST,
       variables: {
         esIndex: "platformData:wells",
-        polygon: currentFeature?.geometry?.coordinates[0],
+        polygon: currentFeature?.geometry,
         pagination: {
           first: 0,
           after: null
@@ -98,9 +98,9 @@ function* getShapeOwnersAndWells(action) {
         search: '',
         filters: [],
         // shapeOwners: get(taxOwners, 'data.data.ownersByWellIds',[]),
-        shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount',0),
+        shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount', 0),
         // shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',[]),
-        shapeInterestCount: get(shapeOwnerInterestCount, 'data.shapeOwnersInterestCount',0),
+        shapeInterestCount: get(shapeOwnerInterestCount, 'data.shapeOwnersInterestCount', 0),
         // wells: get(wells, 'data.data.getESPaginatedList.hits', []),
         wellsCount: get(shapeWellCount, 'data.getESPaginatedList.total', 0),
       })
@@ -118,7 +118,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
       esIndex: "platformData:wells",
       search,
       filters,
-      polygon: currentFeature?.geometry?.coordinates[0],
+      polygon: currentFeature?.geometry,
       pagination: {
         first: 0,
         after: null,
@@ -129,26 +129,26 @@ function* getMapFilterShapeOwnersAndCount(action) {
       esIndex: "platformData:wells",
       search,
       filters,
-      polygon: currentFeature?.geometry?.coordinates[0],
+      polygon: currentFeature?.geometry,
       pagination: {
         first: get(wellsCount, 'data.getESPaginatedList.total', 0),
         after: null,
       },
     });
-    const wellIds = get(wells, 'data.getESPaginatedList.hits',[]).map(
+    const wellIds = get(wells, 'data.getESPaginatedList.hits', []).map(
       (well) => well.Id
     );
 
     let taxOwners = [];
 
-    if(wellIds?.length > 0){
+    if (wellIds?.length > 0) {
       taxOwners = yield call(Api.query, OWNERS_BY_WELL_IDS, {
         wellIds: wellIds,
         selectedYear: "2021",
       });
     }
 
-    if(get(taxOwners,'data.errors', []).length > 0){
+    if (get(taxOwners, 'data.errors', []).length > 0) {
       yield put(showErrorMessage("Failed to fetch Tax Owners"));
     }
 
@@ -177,12 +177,12 @@ function* getMapFilterShapeOwnersAndWells(action) {
     // })
 
     const shapeWellCount = yield client.query({
-      query: GET_ES_PAGINATED_LIST, 
+      query: GET_ES_PAGINATED_LIST,
       variables: {
         esIndex: "platformData:wells",
         search,
         filters,
-        polygon: currentFeature?.geometry?.coordinates[0],
+        polygon: currentFeature?.geometry,
         pagination: {
           first: 0,
           after: null
@@ -217,9 +217,9 @@ function* getMapFilterShapeOwnersAndWells(action) {
         search,
         filters,
         // shapeOwners: get(taxOwners, 'data.data.ownersByWellIds',[]),
-        shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount',0),
+        shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount', 0),
         // shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',[]),
-        shapeInterestCount: get(shapeOwnerInterestCount, 'data.shapeOwnersInterestCount',0),
+        shapeInterestCount: get(shapeOwnerInterestCount, 'data.shapeOwnersInterestCount', 0),
         // wells: get(wells, 'data.data.getESPaginatedList.hits', []),
         wellsCount: get(shapeWellCount, 'data.getESPaginatedList.total', 0),
       })
@@ -237,10 +237,10 @@ function* execAsyncExportJob(action) {
     const jobInitialization = yield client.mutate({
       mutation: INITIALIZE_EXPORT_JOB,
       variables: {
-        jobName: "Shape Export", 
+        jobName: "Shape Export",
         jobType: "SHAPEEXPORT",
         requestPayload: {
-          polygon: currentFeature?.geometry?.coordinates[0],
+          polygon: currentFeature?.geometry,
           filters: ownerState.filters,
           search: ownerState.search,
           datasets: {
