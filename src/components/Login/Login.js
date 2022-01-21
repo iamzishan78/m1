@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
 import { AppContext, setApolloHeaders } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
-import { useDispatch } from 'react-redux'
+import { useDispatch } from "react-redux";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import SignInCard from "./SignInCard";
 import { Button, Typography } from "@material-ui/core";
@@ -15,8 +15,8 @@ import { tenantsCredentials, b2cPolicies, msalConfig, loginRequest, authGraphQLR
 import * as msal from "@azure/msal-browser";
 import { GET_LOGGED_IN_USER } from "graphQL/useMutationLoggedInUser";
 import { USER_MAP_SETTINGS } from "graphQL/useQueryUserMapSettings";
-import { setUserAction } from 'store/actions/appActions';
-import { saveUserSession } from 'utils/user'
+import { setUserAction } from "store/actions/appActions";
+import { saveUserSession } from "utils/user";
 
 // import rock from '../../DFJ.PNG'
 import rock from "../../rock.png";
@@ -150,14 +150,14 @@ const Login = (props) => {
           const accountObj = tokenResponse
             ? tokenResponse.account
             : (() => {
-              const currentAccounts = stateApp.myMSALObj.getAllAccounts();
-              return currentAccounts && currentAccounts.length === 1
-                ? currentAccounts[0]
-                : (() => {
-                  // hoose account code here
-                  return;
-                })();
-            })();
+                const currentAccounts = stateApp.myMSALObj.getAllAccounts();
+                return currentAccounts && currentAccounts.length === 1
+                  ? currentAccounts[0]
+                  : (() => {
+                      // hoose account code here
+                      return;
+                    })();
+              })();
 
           if (accountObj) {
             // We need to reject id tokens that were not issued with the default sign-in policy.
@@ -424,7 +424,7 @@ const Login = (props) => {
           endpoint: "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
         },
       },
-    }
+    };
 
     setStateApp((state) => ({
       ...state,
@@ -666,7 +666,7 @@ const Login = (props) => {
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
         }}
-      // style={{ overflowY: "scroll !important"}}
+        // style={{ overflowY: "scroll !important"}}
       >
         {renderBody}
       </div>
