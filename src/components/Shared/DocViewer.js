@@ -20,8 +20,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     height: "100vh !important",
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-    overflow: "scroll",
     "&::-webkit-scrollbar": {
       width: "0.75em",
       height: "0.75em",
@@ -34,20 +32,14 @@ const useStyles = makeStyles((theme) => ({
     inset: "unset",
     width: (props) => props.width ?? "calc(100vw - 650px)",
   },
+  modalHeader: {
+    minHeight: "35px", width: "100%", display: "block",
+    padding: theme.spacing(2, 4, 3),
+  },
   paperTwo: {
     backgroundColor: theme.palette.background.paper,
     height: "950px",
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-    overflow: "scroll",
-    "&::-webkit-scrollbar": {
-      width: "0.75em",
-      height: "0.75em",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#929292",
-      borderRadius: 10,
-    },
     border: "0px",
     inset: "unset",
   },
@@ -55,12 +47,23 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "1",
     display: "flex",
     flexDirection: "column",
-    position: "sticky !important",
+    position: "absolute !important",
     top: "85% !important",
     bottom: "0 !important",
-    left: "0",
+    left: "15px",
     width: "3.875rem",
   },
+  docViewSection: {
+    overflow: "scroll",
+    height: "95%",
+    width: "100%",
+    padding: theme.spacing(2, 4, 3),
+  },
+  viewerHeader: {
+    minHeight: "35px",
+    width: "100%",
+    padding: theme.spacing(2, 4, 3),
+  }
 }));
 
 const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondition = false, width, onCloseHandler = null }) => {
@@ -69,7 +72,7 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
   let [, setPageNumber] = useState(1);
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [pdfState, setpdfState] = useState([]);
-  let [zoom, setzoom] = useState(2.0);
+  let [zoom, setzoom] = useState(1.5);
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
@@ -113,24 +116,7 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
           disableBackdropClick={true}
         >
           <div style={DocStyle} className={classes.paper}>
-            <div className={classes.ZoomIcons}>
-              {" "}
-              <IconButton
-                onClick={() => {
-                  setzoom(zoom + 0.25);
-                }}
-              >
-                <ZoomInIcon fontSize={"large"} />
-              </IconButton>
-              <IconButton
-                onClick={() => {
-                  setzoom(zoom - 0.25);
-                }}
-              >
-                <ZoomOutIcon fontSize={"large"} />
-              </IconButton>
-            </div>
-            <Grid item xs={12} style={{ minHeight: "35px", width: "100%", display: "block", marginTop: "-123px" }}>
+            <Grid item xs={12} className={classes.modalHeader}>
               <h4
                 style={{
                   margin: "0 0 15px 0",
@@ -142,17 +128,13 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
               </h4>
 
               <div style={{ float: "right" }}>
-                <>
-                  <IconButton size="small" style={{ margin: "0 8px" }}>
-                    {stateApp?.viewDoc?.uri ? (
-                      <IconButton size="small" onClick={() => downloadFile(stateApp?.viewDoc)}>
-                        <GetAppIcon />
-                      </IconButton>
-                    ) : (
-                      <CircularProgress size={20} color="secondary" />
-                    )}
+                {stateApp?.viewDoc?.uri ? (
+                  <IconButton onClick={() => downloadFile(stateApp?.viewDoc)}>
+                    <GetAppIcon />
                   </IconButton>
-                </>
+                ) : (
+                  <CircularProgress size={20} color="secondary" />
+                )}
 
                 <IconButton
                   onClick={() => {
@@ -161,14 +143,13 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
                       onCloseHandler();
                     }
                   }}
-                  size="small"
                 >
                   <CloseIcon className={classes.closeIcon} fontSize="small" />
                 </IconButton>
               </div>
             </Grid>
 
-            <div>
+            <div className={classes.docViewSection}>
               <Document
                 style={{ display: "grid", justifyContent: "center" }}
                 file={stateApp?.viewDoc?.uri}
@@ -186,12 +167,30 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
                   );
                 })}
               </Document>
+
+              <div className={classes.ZoomIcons}>
+                {" "}
+                <IconButton
+                  onClick={() => {
+                    setzoom(zoom + 0.25);
+                  }}
+                >
+                  <ZoomInIcon fontSize="large" />
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    setzoom(zoom - 0.25);
+                  }}
+                >
+                  <ZoomOutIcon fontSize="large" />
+                </IconButton>
+              </div>
             </div>
           </div>
         </Modal>
       ) : (
         <div style={DocStyle} className={classes.paperTwo}>
-          <Grid item xs={12} style={{ minHeight: "35px", width: "100%" }}>
+          <Grid item xs={12} className={classes.viewerHeader}>
             <h4
               style={{
                 margin: "0 0 15px 0",
@@ -224,7 +223,7 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
             </div>
           </Grid>
 
-          <div>
+          <div className={classes.docViewSection}>
             <Document
               style={{ display: "grid", justifyContent: "center", width: "100%" }}
               file={stateApp?.viewDoc?.uri}
@@ -237,10 +236,27 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
             >
               {pdfState?.map((value, key) => {
                 return (
-                  <Page key={key} pageNumber={value} scale={1.5} style={{ display: "grid", justifyContent: "center", width: "100%" }} />
+                  <Page key={key} pageNumber={value} scale={zoom} style={{ display: "grid", justifyContent: "center", width: "100%" }} />
                 );
               })}
             </Document>
+            <div className={classes.ZoomIcons}>
+              {" "}
+              <IconButton
+                onClick={() => {
+                  setzoom(zoom + 0.25);
+                }}
+              >
+                <ZoomInIcon fontSize={"large"} />
+              </IconButton>
+              <IconButton
+                onClick={() => {
+                  setzoom(zoom - 0.25);
+                }}
+              >
+                <ZoomOutIcon fontSize={"large"} />
+              </IconButton>
+            </div>
           </div>
         </div>
       )}
