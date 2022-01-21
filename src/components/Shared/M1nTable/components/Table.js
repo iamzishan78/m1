@@ -683,7 +683,7 @@ function SubTable(props) {
   const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
 
   const [viewFile, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILEQUERY, {
-     fetchPolicy: "no-cache",
+    fetchPolicy: "no-cache",
   });
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
@@ -2019,7 +2019,7 @@ function SubTable(props) {
                           >
                             <Grid container direction="column" alignItems="flex-start">
                               <Grid item>
-                                <p 
+                                <p
                                   style={{
                                     cursor: "pointer",
                                     padding: "10px 10px 10px 10px",
@@ -2039,10 +2039,10 @@ function SubTable(props) {
                                 {/* <p className={classes.docDateText}>{convert_date(dateTime)}</p> */}
                                 {/* <p className={classes.docDateText}>{dateTime.substring(0,8)}}</p> */}
                                 <p style={{
-                                      padding: "0px 30px 10px 10px",
-                                      marginTop: "-20px",
-                                      position: "relative",
-                                      justifyContent: "flex-end",
+                                  padding: "0px 30px 10px 10px",
+                                  marginTop: "-20px",
+                                  position: "relative",
+                                  justifyContent: "flex-end",
                                 }}>{convert_date(dateTime)}</p>
                               </Grid>
                             </Grid>
@@ -3116,6 +3116,7 @@ function SubTable(props) {
             setStateNav((stateNav) => ({
               ...stateNav,
               bulkUploadFromMap: true,
+              bulkUploadParcel: stateApp.selectedParcel
             }));
             routeChange("/bulkupload");
           },
@@ -3169,7 +3170,7 @@ function SubTable(props) {
         if (props.addAble.type && props.addAble.type === "inviteUser")
           handleExpandClick(null, null, null, "inviteUser");
         if (props.addAble.type === "revenueStatementDetails") {
-          routeChange('/revenue/statement/details/line-item' + window.location.search);
+          routeChange(`/revenue/statement/${window.location.search.replace('?id=', '')}/line-item`);
         }
 
       };
@@ -3392,6 +3393,7 @@ function SubTable(props) {
 
       if (props.targetLabel === "Revenue Properties") {
         // need stopPropagation
+        history.push(`/revenue/property/details/${rows[dataIndex]?._id}`);
         // if (rows[dataIndex]?._id) {
         //   history.push(`/revenue/property/details?id=${rows[dataIndex]?._id}`);
         // }

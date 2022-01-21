@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import { Grid, Button } from "@material-ui/core";
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "none",
   },
   pdfViewerRoot: {
-    height: "500px",
+    // height: "500px",
     border: "1px solid #c1c1c1",
     marginTop: "22px",
     borderRadius: "4px",
@@ -44,14 +44,20 @@ const useStyles = makeStyles((theme) => ({
 export default function LineItem(props) {
   const classes = useStyles();
   const history = useHistory();
+  const location = useLocation();
+  const [checkId, setCheckId] = useState();
   const [showPdfSection, setSectionState] = useState(true);
-  const { activeStatement } = useSelector(({ Revenue }) => Revenue.statements);
+  const Revenue = useSelector(({ Revenue }) => Revenue.statements);
+  const activeStatement = Revenue?.activeStatement
 
   const togglePdfViewState = () => {
     setSectionState(!showPdfSection);
   };
 
-  const checkId = window.location.search.replace("?id=", '')
+  useEffect(() => {
+    setCheckId(props.match.params.id)
+  }, [props.match])
+  // const checkId = window.location.search.replace("?id=", '')
   const redirectHandler = () => {
     history.push(`/revenue/statement/details?id=${activeStatement?._id}`);
   }

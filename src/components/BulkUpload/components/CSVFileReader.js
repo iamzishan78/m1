@@ -194,8 +194,8 @@ export default function CSVFileReader(props) {
       if (data && data.length <= 10001) {
         stateNav.bulkUploadFromMap && data.forEach((data) => {
           Object.assign(data.data, {
-          ...(stateApp.selectedParcel?.id) && { 'Parcel Id': stateApp.selectedParcel?.id },
-          ...(stateApp.selectedParcel?.shapeLabel) && { 'Parcel Name': stateApp.selectedParcel?.shapeLabel }
+          ...(stateNav.bulkUploadParcel?.id) && { 'Parcel Id': stateNav.bulkUploadParcel?.id },
+          ...(stateNav.bulkUploadParcel?.shapeLabel) && { 'Parcel Name': stateNav.bulkUploadParcel?.shapeLabel }
           })
         })
         mapped_headers_from_CSV(data);

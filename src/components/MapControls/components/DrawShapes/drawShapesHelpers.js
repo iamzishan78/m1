@@ -1,6 +1,7 @@
 import { spatialDataAttributes } from "./constants";
 import { area, convertArea, length } from "@turf/turf";
 import polylabel from "polylabel";
+import { drawShapeLayerToggle, setFeatureProperty } from "components/MapControls/commonHelper";
 
 export const addCustomShapeProperties = (feature, Draw) => {
   try {
@@ -106,6 +107,7 @@ export const drawWellBoundary = (map, coordinates) => {
     });
   }
 }
+
 
 export const drawBoundary = (map, selectedUserDefinedLayer) => {
   // let mapSourceData = map.getSource(source)._data;
