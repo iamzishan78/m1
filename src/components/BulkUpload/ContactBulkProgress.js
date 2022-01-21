@@ -74,7 +74,7 @@ const ContactBulkProgress = () => {
         a.download = dataset.fileName;
         a.click();
 
-        await new Promise((resolve) => setTimeout(resolve, 1 * 300));
+        await new Promise((resolve) => setTimeout(resolve, 1 * 1000));
       }
       onCloseToast(job._id);
     }
