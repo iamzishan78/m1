@@ -114,7 +114,7 @@ export default function FilterDatePickerCompletetion(props) {
                 }
                 return { value: date };
               }}
-              disableToolbar
+              // disableToolbar
               KeyboardButtonProps={{ "aria-label": "change date" }}
               autoOk="true"
               format={format}
@@ -160,7 +160,7 @@ export default function FilterDatePickerCompletetion(props) {
                 return { value: date };
               }}
               maxDate={moment()}
-              disableToolbar
+              // disableToolbar
               KeyboardButtonProps={{ "aria-label": "change date" }}
               autoOk="true"
               format="MM/DD/YYYY"

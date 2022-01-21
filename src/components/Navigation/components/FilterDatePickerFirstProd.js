@@ -113,7 +113,7 @@ export default function FilterDatePickerFirstProd(props) {
                 }
                 return { value: date };
               }}
-              disableToolbar
+              // disableToolbar
               KeyboardButtonProps={{ "aria-label": "change date" }}
               autoOk="true"
               format="MM/DD/YYYY"
@@ -158,7 +158,7 @@ export default function FilterDatePickerFirstProd(props) {
                 }
                 return { value: date };
               }}
-              disableToolbar
+              // disableToolbar
               KeyboardButtonProps={{ "aria-label": "change date" }}
               autoOk="true"
               format="MM/DD/YYYY"
