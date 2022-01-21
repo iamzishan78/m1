@@ -11,7 +11,7 @@
 .SpreadsheetGridScrollWrapper {
     position: relative;
     transition: height 0.3s;
-    border-bottom: 1px solid #E6E1E8;
+    /* border-bottom: 1px solid #E6E1E8; */
 }
 
 .SpreadsheetGridScrollWrapper_scrollable {
