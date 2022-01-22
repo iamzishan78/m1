@@ -164,7 +164,7 @@ export default function HeaderFunction(props) {
                   name="ownerName"
                   render={(params) => (
                     <AutoComplete
-                      options={["Hell", "Paradise"]}
+                      options={["ABC MINERALS", "PARADISE RESOURCES"]}
                       fullWidth
                       className={classes.adornmentAutocomplete}
                       renderInput={(params) => (
@@ -233,7 +233,7 @@ export default function HeaderFunction(props) {
                   name="operatorName"
                   render={(params) => (
                     <AutoComplete
-                      options={["Hell", "Paradise"]}
+                      options={["PIONEER NATURAL RESOURCES", "XTO ENERGY INC"]}
                       fullWidth
                       className={classes.adornmentAutocomplete}
                       renderInput={(params) => (
