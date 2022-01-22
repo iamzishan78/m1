@@ -101,7 +101,7 @@ function SuggestedOwnerTable(props) {
     getShapeOwnersCount({
       variables: {
         // polygon: queryPoly,
-        polygon: props?.customLayer?.shape?.geometry.coordinates[0]
+        polygon: props?.customLayer?.shape?.geometry
       },
     });
   }, [props.parent]);

@@ -32,7 +32,7 @@ import MarkerIcon from "./sprites/marker-icon.png";
 import DefaultFiltersTest from "./filtersDefaultTest";
 import FilterControl from "./components/FilterControl";
 import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
-import { copy, deepEqual, deepEqualObjects } from "../Shared/functions";
+import { copy, deepEqual, deepEqualObjects, getPolygonString } from "../Shared/functions";
 import gjv from "geojson-validation";
 import { setMainMapState, showErrorMessage } from "../../actions";
 
@@ -402,7 +402,7 @@ function Map({ type, paramId, lati, longi }) {
       }));
     }
   }, []);
-  
+
   const getElasticWell = async (paramId) => {
     const { data: well } = await client.query({
       query: GET_ES_PAGINATED_LIST,
@@ -419,10 +419,10 @@ function Map({ type, paramId, lati, longi }) {
     const { data: tenantWell } = await client.query({
       query: TENANTWELL,
       variables: {
-         globalWellId: well.getESPaginatedList.hits[0]?.id ,
+        globalWellId: well.getESPaginatedList.hits[0]?.id,
       },
     });
-    return { ...well.getESPaginatedList.hits[0], tenantWellId : tenantWell?.tenantWell?.tenantWellId }
+    return { ...well.getESPaginatedList.hits[0], tenantWellId: tenantWell?.tenantWell?.tenantWellId }
   }
 
 
@@ -951,7 +951,9 @@ function Map({ type, paramId, lati, longi }) {
 
         if (prop.paintProps) layerConfig.paint = prop.paintProps;
         if (prop.filter) layerConfig.filter = prop.filter;
-        if (config.layerGeometry && data.featureTypes) layerConfig.filter = ["==", "layerGeometry", config.layerGeometry];
+
+        // Incase of group we have one datasource but we filter by layerGeometryType ( Polygon, MultiPolygon , Point etc)
+        if (config.layerGeometry && config.groupId) layerConfig.filter = ["==", "layerGeometry", config.layerGeometry];
 
         if (prop.minZoom) {
           layerConfig.minzoom = prop.minZoom;
@@ -5014,14 +5016,7 @@ function Map({ type, paramId, lati, longi }) {
             const bounds = map.getBounds();
             const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
             const bboxPolygon = turf.bboxPolygon(bbox);
-            let polygonString = "POLYGON((";
-            bboxPolygon.geometry.coordinates[0].forEach((coordinate, index) => {
-              polygonString += coordinate[0] + " " + coordinate[1];
-              if (index < bboxPolygon.geometry.coordinates[0].length - 1) {
-                polygonString += ", ";
-              }
-            });
-            polygonString += "))";
+            let polygonString = getPolygonString(bboxPolygon)
 
             getAbstractGeo({
               variables: {
@@ -5039,14 +5034,7 @@ function Map({ type, paramId, lati, longi }) {
             const bounds = map.getBounds();
             const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
             const bboxPolygon = turf.bboxPolygon(bbox);
-            let polygonString = "POLYGON((";
-            bboxPolygon.geometry.coordinates[0].forEach((coordinate, index) => {
-              polygonString += coordinate[0] + " " + coordinate[1];
-              if (index < bboxPolygon.geometry.coordinates[0].length - 1) {
-                polygonString += ", ";
-              }
-            });
-            polygonString += "))";
+            let polygonString = getPolygonString(bboxPolygon)
 
             getPLSSSecondDivisionGeo({
               variables: {
@@ -5358,14 +5346,7 @@ function Map({ type, paramId, lati, longi }) {
       if (stateNav.drawingMode !== null) {
         let feature = e.features[0];
 
-        let polygonString = "POLYGON((";
-        feature.geometry.coordinates[0].forEach((coordinate, index) => {
-          polygonString += coordinate[0] + " " + coordinate[1];
-          if (index < feature.geometry.coordinates[0].length - 1) {
-            polygonString += ", ";
-          }
-        });
-        polygonString += "))";
+        let polygonString = getPolygonString(feature)
 
         getAbstractGeoContains({
           variables: {
@@ -5399,14 +5380,7 @@ function Map({ type, paramId, lati, longi }) {
       ) {
         let feature = e.features[0];
 
-        let polygonString = "POLYGON((";
-        feature.geometry.coordinates[0].forEach((coordinate, index) => {
-          polygonString += coordinate[0] + " " + coordinate[1];
-          if (index < feature.geometry.coordinates[0].length - 1) {
-            polygonString += ", ";
-          }
-        });
-        polygonString += "))";
+        let polygonString = getPolygonString(feature)
 
         getAbstractGeoContains({
           variables: {
