@@ -16,9 +16,8 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 
 import DetailsPanel from "./Details";
-import WellPanel from "./WellsPanel";
+import AssociatedWells from "components/Shared/Wells/AssociatedWells";
 import { DocumentContext } from "../DocumentContext";
-
 
 const useStyles = makeStyles({
   list: {
@@ -151,20 +150,17 @@ export default function DocumentDrawer() {
   const [anchorEl, setAnchorEl] = useState();
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
-  const { getWellsFromDocument, wells } = React.useContext(DocumentContext)
-
-
+  const { getWellsFromDocument, wells } = React.useContext(DocumentContext);
 
   // Fetching wells from descriptor
   useEffect(() => {
     getWellsFromDocument({
       variables: {
-        descriptorObject: stateApp.selectedDocument._id
-      }
-    })
+        descriptorObject: stateApp.selectedDocument._id,
+      },
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateApp.selectedDocument._id])
-
+  }, [stateApp.selectedDocument._id]);
 
   const documentInitial = {
     documentName: "",
@@ -212,7 +208,7 @@ export default function DocumentDrawer() {
     setNameAutValueParty1({ name: "", _id: null });
     setNameAutValueParty2({ name: "", _id: null });
     setNewDocument(documentInitial);
-    setPanel("Home")
+    setPanel("Home");
   };
 
   const handleDeleteAccept = () => {
@@ -389,7 +385,7 @@ export default function DocumentDrawer() {
                 viewFileSResult={viewFileSResult}
               />
             )}
-            {activePanel === "Wells" && <WellPanel />}
+            {activePanel === "Wells" && <AssociatedWells />}
           </div>
         </div>
       </div>
@@ -405,7 +401,7 @@ export default function DocumentDrawer() {
             onClose={handleDeleteCancel}
             deleteFunc={handleDeleteAccept}
             m1nSelectedRowsIds={[document._id]}
-            setM1nSelectedRowsIndexes={() => { }}
+            setM1nSelectedRowsIndexes={() => {}}
           >
             Do you want to delete the selected documents?
           </DeleteConfirmationDialogContent>
