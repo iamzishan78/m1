@@ -2,7 +2,6 @@ import { call, takeLatest, put, getContext, select } from "redux-saga/effects";
 import get from 'lodash/get';
 
 import Api from "api";
-import { getSelectedFeaturePolygonString } from "utils/helper";
 import { SHAPE_OWNERS } from "graphQL/useQueryPaginatedShapeOwners";
 import { SHAPEOWNERSCOUNT, SHAPEOWNERSINTERESTCOUNT } from "graphQL/useQueryShapeOwnersCount";
 import {
@@ -29,11 +28,12 @@ import {
   EXEC_ASYNC_EXPORT_JOB
 } from "store/type";
 import { showErrorMessage } from "actions";
+import { getPolygonString } from "components/Shared/functions";
 
 function* getShapeOwnersAndCount(action) {
   try {
     const { currentFeature, userId } = action.payload;
-    const polygon = getSelectedFeaturePolygonString(currentFeature);
+    const polygon = getPolygonString(currentFeature);
     const shapeOwnerCount = yield call(Api.query, SHAPEOWNERSCOUNT, {
       polygon: currentFeature?.geometry?.coordinates[0],
     });
@@ -61,7 +61,6 @@ function* getShapeOwnersAndCount(action) {
 function* getShapeOwnersAndWells(action) {
   try {
     const { client, currentFeature, userId } = action.payload;
-    const polygon = getSelectedFeaturePolygonString(currentFeature);
 
     const shapeWellCount = yield client.query({
       query: GET_ES_PAGINATED_LIST,
@@ -78,14 +77,14 @@ function* getShapeOwnersAndWells(action) {
     const shapeOwnerCount = yield client.query({
       query: SHAPEOWNERSCOUNT,
       variables: {
-        polygon: currentFeature?.geometry?.coordinates[0]
+        polygon: currentFeature?.geometry
       }
     })
 
     const shapeOwnerInterestCount = yield client.query({
       query: SHAPEOWNERSINTERESTCOUNT,
       variables: {
-        polygon: currentFeature?.geometry?.coordinates[0],
+        polygon: currentFeature?.geometry,
         pagination: {
           first: get(shapeWellCount, 'data.getESPaginatedList.total', 0),
           after: null,
@@ -166,7 +165,6 @@ function* getMapFilterShapeOwnersAndCount(action) {
 function* getMapFilterShapeOwnersAndWells(action) {
   try {
     const { client, currentFeature, filters, search, userId } = action.payload;
-    const polygon = getSelectedFeaturePolygonString(currentFeature);
 
     // const originalFile = await client.mutate({
     //   mutation: ADDFILE,
