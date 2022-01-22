@@ -63,7 +63,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
     };
     return (
         <Autocomplete
-            id={`filter-autocomplete-${label}`}
+            id={`filter-autocomplete-${custom?.filterLabel || label}`}
             open={open}
             onOpen={() => {
                 setOpen(true);
@@ -92,7 +92,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
             renderInput={(params) => (
                 <TextField
                     {...params}
-                    label={label}
+                    label={custom?.filterLabel || label}
                     onChange={(e) => {
                         handleChange(e.target.value);
                     }}
