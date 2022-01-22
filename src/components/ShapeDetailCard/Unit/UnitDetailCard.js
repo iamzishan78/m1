@@ -30,7 +30,7 @@ import { detailCardStyles } from "../style";
 export default function UnitDetailCard(props) {
 
   const dispatch = useDispatch();
-  const [selectedTab, setSelectedTab] = useState(props.selectTabIndex || 0);
+  const [selectedTab, setSelectedTab] = useState(0);
   const [selectedWellTab, setWellSelectedTab] = useState(0);
   const [selectedTractTab, setTractSelectedTab] = useState(0);
   const [uniObj, setUniObj] = useState();
