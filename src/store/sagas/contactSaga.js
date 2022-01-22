@@ -1,17 +1,14 @@
 import { call, takeLatest, put, select } from "redux-saga/effects";
-import get from 'lodash/get';
+import get from "lodash/get";
 
 import Api from "api";
-import {
-  getContactCampaignAction,
-  convertTaxOwnerToContactAction,
-} from "store/actions/contactActions";
+import { getContactCampaignAction, convertTaxOwnerToContactAction } from "store/actions/contactActions";
 import { campaignVariables } from "utils/data";
 import { formatTaxOwners, copy } from "utils/helper";
 import { CREATE_JOB } from "graphQL/useMutationCreateJob";
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-import { toggleBulkUploadAction} from 'store/actions/commonActions';
+import { toggleBulkUploadAction } from "store/actions/commonActions";
 import { GET_JOB_UPLOAD_URI } from "graphQL/useQueryGetJobUploadUri";
 import { GET_CONTACT_CAMPAIGN, CONVERT_TAX_OWNER_TO_CONTACT } from "store/type";
 
@@ -23,9 +20,7 @@ function* getContactCampaign(action) {
       search,
     });
     yield put(
-      getContactCampaignAction.FULLFILLED(
-        contactCampaign.data.data.getESFilterList.hits.map((hit) => hit.key)
-      )
+      getContactCampaignAction.FULLFILLED(contactCampaign.data.getESFilterList.hits.filter((hit) => hit.key).map((hit) => hit.key))
     );
   } catch (error) {
     yield put(getContactCampaignAction.REJECTED());
@@ -46,7 +41,7 @@ function* convertTaxOwnerToContact(action) {
     });
 
     const { uri, id, internalKey } = uploadUri.data.getJobUploadUri.job;
-    
+
     yield put(toggleBulkUploadAction(!bulkUpload));
     const res = yield call(Api.fetchBlob, JSON.stringify(owners), id, internalKey, uri);
     if (res?._response?.status === 201) {
@@ -54,11 +49,10 @@ function* convertTaxOwnerToContact(action) {
       yield call(Api.mutate, UPDATE_JOB, {
         job: {
           _id: id,
-          createJobResponse: get(jobResponse,'data.createJob',null),
-        }
+          createJobResponse: get(jobResponse, "data.createJob", null),
+        },
       });
     }
-    
   } catch (error) {
     yield put(convertTaxOwnerToContactAction.REJECTED());
   }
@@ -67,8 +61,5 @@ function* convertTaxOwnerToContact(action) {
 /// /////////// Watchers ///////////////////////
 export function* watcherContacts() {
   yield takeLatest(GET_CONTACT_CAMPAIGN.STARTED, getContactCampaign);
-  yield takeLatest(
-    CONVERT_TAX_OWNER_TO_CONTACT.STARTED,
-    convertTaxOwnerToContact
-  );
+  yield takeLatest(CONVERT_TAX_OWNER_TO_CONTACT.STARTED, convertTaxOwnerToContact);
 }
