@@ -349,13 +349,6 @@ export default function ParcelsDetailCard(props) {
           customLayer,
         },
       });
-
-      if (field === 'shapeLabel') {
-        setStateApp((state) => ({
-          ...state,
-          selectedParcel: { ...state.selectedParcel, shapeLabel: value },
-        }));
-      }
     }
   };
 

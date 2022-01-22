@@ -19,6 +19,7 @@ import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
 import { getSelectedFeaturePolygonString } from "../../Shared/functions";
 import { getParcelOriginalProperties } from '../utils/GetParcelOriginalProps'
+import QtrQtrSelector from "components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/QtrQtrSelector";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -285,6 +286,10 @@ export default function ParcelSummary(props) {
         props.setProperties({ ...props.properties, custom_data_arr: [...props.properties.custom_data_arr] })
     }
 
+    const setQtrQtr = (qtrQtr) => {
+        // setParcelObj({ ...parcelObj, qtrQtr });
+    };
+
     return <Grid container direction="row" className={classes.summaryCard}>
         <Grid item md={7} sm={12} className={classes.paddingLeft}>
             <Grid container spacing={1} direction="column" >
@@ -342,6 +347,11 @@ export default function ParcelSummary(props) {
         </Grid>
         <Grid item md={5} sm={12}>
             <Grid container spacing={2} direction="row">
+                <Grid item className={classes.descriptionInput}>
+                    {parcelProperties.state !== 'TX' && (
+                        <QtrQtrSelector parcelData={props.customLayer} setQtrQtr={setQtrQtr} />
+                    )}
+                </Grid>
                 <Grid item className={classes.descriptionInput}>
                     <TextField
                         id="outlined-multiline-static"
