@@ -83,28 +83,28 @@ const wellsColumnHeaders = [
       filter: true,
     }
   },
-  {
-    name: "tags",
-    label: "Tags ",
-    options: {
-      filter: false,
-      sort: false,
-      download: false,
-      print: false,
-      filterOptions: {
-        names: [],
-        logic(rowVal, pickedTags) {
-          let containIts = true;
-          pickedTags.map((pickedTag) => {
-            if (rowVal[0].indexOf(pickedTag) === -1) {
-              containIts = false;
-            }
-          });
-          return !containIts;
-        },
-      },
-    },
-  },
+  // {
+  //   name: "tags",
+  //   label: "Tags ",
+  //   options: {
+  //     filter: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     filterOptions: {
+  //       names: [],
+  //       logic(rowVal, pickedTags) {
+  //         let containIts = true;
+  //         pickedTags.map((pickedTag) => {
+  //           if (rowVal[0].indexOf(pickedTag) === -1) {
+  //             containIts = false;
+  //           }
+  //         });
+  //         return !containIts;
+  //       },
+  //     },
+  //   },
+  // },
   {
     name: "commentsCounter",
     label: " ",
