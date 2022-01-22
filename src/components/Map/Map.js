@@ -441,7 +441,8 @@ function Map({ type, paramId, lati, longi }) {
       }));
     }
     if (type === "wells") {
-      const currentFeature = { ...(await getElasticWell(paramId)) };
+      const elasticWellRes = await getElasticWell(paramId);
+      const currentFeature = { ...elasticWellRes };
       if (currentFeature?.Id) currentFeature.id = currentFeature.Id;
       setStateApp({ ...stateApp, selectedWell: currentFeature, selectedWellId: paramId.toLowerCase(), popupOpen: false, expandedCard: true });
       setShowExpandableCard(true);
@@ -485,14 +486,7 @@ function Map({ type, paramId, lati, longi }) {
     // }
   }
 
-  useEffect(() => {
-    if (
-      paramId
-      // parcelId !== stateApp.selectedParcel?.id
-    ) {
-      getCustomLayer();
-    }
-  }, [loading, paramId, map]);
+  useEffect(() => { if (paramId) getCustomLayer(); }, [loading, paramId, map]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
