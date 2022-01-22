@@ -36,6 +36,18 @@ export default function DocumentComponent() {
   const [stateApp, setStateApp] = useContext(AppContext);
   let history = useHistory();
 
+  useEffect(() => {
+    return () => {
+      setStateApp((state) => ({
+        ...state,
+        pdfView: null,
+        viewDoc: null,
+        selectedDocument: {},
+        DocumentDrawer: false
+      }));
+    }
+  }, [setStateApp]);
+
   const onCloseHandler = () => {
     history.push('/documents');
     setStateApp((state) => ({
@@ -44,18 +56,6 @@ export default function DocumentComponent() {
       viewDoc: null,
     }));
   }
-
-  useEffect(() => {
-    return () => {
-        setStateApp((state) => ({
-          ...state,
-          pdfView: null,
-          viewDoc: null,
-          selectedDocument: {},
-          DocumentDrawer: false
-        }));
-    }
-  },[])
 
   return (
     <div className={classes.root}>

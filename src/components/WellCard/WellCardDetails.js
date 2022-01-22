@@ -193,7 +193,7 @@ const useStyles = makeStyles((theme) => ({
   wellDocument: {
     "& .MuiTableRow-root": {
       "&>:nth-child(2) ": {
-        "& .fileName":{
+        "& .fileName": {
           width: "375px !important"
         }
       }
@@ -277,9 +277,10 @@ export default function WellCardDetails(props) {
       setProduction(temp);
       setStateWellCard((state) => {
         return {
-        ...state,
-        wellProdHistory: temp,
-      }});
+          ...state,
+          wellProdHistory: temp,
+        }
+      });
       if (props.target) {
         setTarget(props.target);
       }
@@ -371,18 +372,18 @@ export default function WellCardDetails(props) {
   return stateApp.selectedWell ? (
     <React.Fragment >
       <Grid item sm={12} className={classes.gridItemGrey}>
-            
-        <WellTypeCard summary={props.summary}/>
 
-        <WellStatusCard summary={props.summary}/>
+        <WellTypeCard summary={props.summary} />
+
+        <WellStatusCard summary={props.summary} />
         {/* <Last12StatusCard summary={props.summary}/> */}
-        <OwnerNumCard summary={props.summary}/>
-        <ProfileCard summary={props.summary}/>
-        <PermitDateCard summary={props.summary}/>
-        <SpudDateCard summary={props.summary}/>
-        <CompletionDateCard summary={props.summary}/>
-        <FirstProdDateCard summary={props.summary}/>
-        <PlugDateCard summary={props.summary}/>
+        <OwnerNumCard summary={props.summary} />
+        <ProfileCard summary={props.summary} />
+        <PermitDateCard summary={props.summary} />
+        <SpudDateCard summary={props.summary} />
+        <CompletionDateCard summary={props.summary} />
+        <FirstProdDateCard summary={props.summary} />
+        <PlugDateCard summary={props.summary} />
         <Box>
           <IconButton
             onClick={() => setShowSummary(!showSummary)}
@@ -501,15 +502,15 @@ export default function WellCardDetails(props) {
               <FormationContainer showSummary={showSummary} />,
               <PermitsContainer showSummary={showSummary} />,
               <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.wellDocument}`}>
-              <WellDetailsDocumentTable
-                selectedWell={stateApp.selectedWell}
-                parent="associatedDocumentsPerWell"
-                targetLabel="wellDocument"
-                header={<DocumentHeader />}
-                dense
-              />
-            </div>
-              
+                <WellDetailsDocumentTable
+                  selectedWell={stateApp.selectedWell}
+                  parent="associatedDocumentsPerWell"
+                  targetLabel="wellDocument"
+                  header={<DocumentHeader />}
+                  dense
+                />
+              </div>
+
             ]}
             openTabIdex={stateApp.wellDetailCardTabIndex}
           />

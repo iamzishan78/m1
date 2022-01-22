@@ -37,11 +37,11 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "1",
     display: "flex",
     flexDirection: "column",
-    position: "sticky !important",
-    bottom: "0px !important",
-    left: "0",
+    position: "absolute !important",
+    top: "85% !important",
+    bottom: "0 !important",
+    left: "15px",
     width: "3.875rem",
-    backgroundColor: "#fff",
   },
 }));
 

@@ -11,18 +11,17 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 
 //Contexts
 import { AppContext } from "AppContext";
-import { DocumentContext } from "../DocumentContext";
+import { DocumentContextProvider, DocumentContext } from "components/Document/DocumentContext";
 
 //Components
-import WellSearchApiFieldES from 'components/Shared/Forms/Fields/WellSearchApiFieldES'
+import WellSearchApiFieldES from "components/Shared/Forms/Fields/WellSearchApiFieldES";
 
 // Hooks
 import { useMutation } from "@apollo/client";
 
 // Mutations
-import { DELETEWELLFROMFILEDESCRIPTOR } from 'graphQL/useMutationDeleteWellFromFileDescriptor'
-import { ADD_WELL_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddWellToFileDescriptor'
-
+import { DELETEWELLFROMFILEDESCRIPTOR } from "graphQL/useMutationDeleteWellFromFileDescriptor";
+import { ADD_WELL_TO_FILE_DESCRIPTOR } from "graphQL/useMutationAddWellToFileDescriptor";
 
 const useStyles = makeStyles((theme) => ({
   rootPadding: {
@@ -100,18 +99,17 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: "700",
     },
   },
-    secondaryText: {
+  secondaryText: {
     color: "grey",
     fontSize: "14px",
     margin: 0,
     paddingLeft: 16,
     paddingBottom: 4,
-    marginTop: -8
-
-  }
+    marginTop: -8,
+  },
 }));
 
-export default function Contacts(props) {
+const AssociatedWellsList = ({ title }) => {
   // Initials
   let history = useHistory();
   const classes = useStyles();
@@ -120,58 +118,58 @@ export default function Contacts(props) {
   const [search, setSearch] = useState("");
   const [isSearchActive, setSearchState] = useState(false);
   const [addWell, setAddWell] = useState(false);
-  const [deletedRow, setDeletedRow] = useState('')
+  const [deletedRow, setDeletedRow] = useState("");
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  const { getWellsFromDocument, wells, wellsFromDocument, getWellsLoading, setWells } = React.useContext(DocumentContext)
-
+  const { getWellsFromDocument, wells, wellsFromDocument, getWellsLoading, setWells } = React.useContext(DocumentContext);
 
   // Mutattions
   const [deleteWellFromDescriptor, { loading: deleteWellLoading }] = useMutation(DELETEWELLFROMFILEDESCRIPTOR, {
-    onCompleted: () => getWellsFromDocument({
-      variables: {
-        descriptorObject: stateApp.selectedDocument._id
-      }
-    })
+    onCompleted: () =>
+      getWellsFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument._id,
+        },
+      }),
   });
 
   const [addWellToFileDescriptor, { loading: addWellLoading }] = useMutation(ADD_WELL_TO_FILE_DESCRIPTOR, {
-    onCompleted: () => getWellsFromDocument({
-      variables: {
-        descriptorObject: stateApp.selectedDocument._id
-      }
-    })
+    onCompleted: () =>
+      getWellsFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument._id,
+        },
+      }),
   });
 
   // Fetching wells from descriptor
   useEffect(() => {
     getWellsFromDocument({
       variables: {
-        descriptorObject: stateApp.selectedDocument._id
-      }
-    })
+        descriptorObject: stateApp.selectedDocument._id,
+      },
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   // delete well from File Descriptor
   const deleteWell = async (wellId) => {
     await deleteWellFromDescriptor({
       variables: { descriptorId: stateApp?.selectedDocument?._id, wellGlobalId: wellId },
-    })
+    });
   };
 
   // fetching well from autocomplete
   const getSelectedWell = async (well) => {
     let wellData = {
       ...well,
-      createdBy: stateApp?.user?._id
-
-    }
-    setAddWell(false)
+      createdBy: stateApp?.user?._id,
+    };
+    setAddWell(false);
     await addWellToFileDescriptor({
       variables: { descriptorId: stateApp?.selectedDocument?._id, wellData: wellData },
-    })
-  }
+    });
+  };
 
   // sending to wells page
   const goToWell = (well) => {
@@ -181,17 +179,16 @@ export default function Contacts(props) {
 
   // searching existing well
   const searchExistingWell = (value) => {
-    setSearch(value)
-    let existingWells = wells
-    if (value !== '') {
-      const searchedWells = existingWells.filter(well => well.wellName.toLowerCase().includes(value))
-      setWells(searchedWells)
-
+    setSearch(value);
+    let existingWells = wells;
+    if (value !== "") {
+      const searchedWells = existingWells.filter((well) => well.wellName.toLowerCase().includes(value));
+      setWells(searchedWells);
     } else {
-      const wellDescriptor = wellsFromDocument?.getWellDescriptors[0]
-      setWells(wellDescriptor?.wells)
+      const wellDescriptor = wellsFromDocument?.getWellDescriptors[0];
+      setWells(wellDescriptor?.wells);
     }
-  }
+  };
   return (
     <div style={{ marginRight: "14px" }}>
       <Grid container direction="row" justify="space-between" alignItems="center" className={classes.rootPadding}>
@@ -199,7 +196,9 @@ export default function Contacts(props) {
           <React.Fragment>
             {!isSearchActive && (
               <Grid item xs={10}>
-                <Typography variant="h6">Wells</Typography>
+                <Typography variant="h6" style={{ fontWeight: "bold" }}>
+                  {title}
+                </Typography>
               </Grid>
             )}
             <Grid item xs={1}>
@@ -273,15 +272,20 @@ export default function Contacts(props) {
                   <Link className={classes.wellLink} color="primary" onClick={() => goToWell(well)}>
                     {well.wellName}
                   </Link>
-                  
+
                   {deleteWellLoading && deletedRow === well.id ? (
                     <ListItemSecondaryAction>
                       <IconButton edge="end" aria-label="delete">
-                        <CircularProgress size='20px' />
+                        <CircularProgress size="20px" />
                       </IconButton>
                     </ListItemSecondaryAction>
                   ) : (
-                    <ListItemSecondaryAction onClick={() => { setDeletedRow(well.id); deleteWell(well.id) }}>
+                    <ListItemSecondaryAction
+                      onClick={() => {
+                        setDeletedRow(well.id);
+                        deleteWell(well.id);
+                      }}
+                    >
                       <IconButton edge="end" aria-label="delete" className={classes.deleteIcon}>
                         <DeleteIcon />
                       </IconButton>
@@ -306,4 +310,16 @@ export default function Contacts(props) {
       </div>
     </div>
   );
+};
+
+export default function AssociatedWellsProvider({ title }) {
+  return (
+    <DocumentContextProvider>
+      <AssociatedWellsList title={title} />
+    </DocumentContextProvider>
+  );
 }
+
+AssociatedWellsProvider.defaultProps = {
+  title: "Wells",
+};

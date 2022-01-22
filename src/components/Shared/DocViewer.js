@@ -100,7 +100,7 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
   const [pdfState, setpdfState] = useState([]);
   let [zoom, setzoom] = useState(2.0);
 
-  function onDocumentLoadSuccess({ numPages }) { setNumPages(numPages); }
+  function onDocumentLoadSuccess({ numPages }) {setNumPages(numPages);}
 
   useEffect(() => {
     setPageNumber(1);

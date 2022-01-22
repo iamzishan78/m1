@@ -73,7 +73,7 @@ const ExportWellsOwners = ({
 
   const { currentFeature, user } = stateApp;
   const { control, watch } = useForm();
-  const [includeFilter, setIncludeFilter] = useState(false);
+  const [includeFilter, setIncludeFilter] = useState(true);
 
   const exportWells = watch("exportWells", false);
   const exportOwners = watch("exportOwners", false);
@@ -125,13 +125,13 @@ const ExportWellsOwners = ({
     execAsyncExportJobAction({
       client,
       currentFeature: currentFeature,
-      filters, 
+      filters,
       search,
       userId: user.mongoId,
       exportWells: !!exportWells,
       exportOwners: !!exportOwners,
       exportOwnersInterest: !!exportOwnersInterest,
-      setStateApp
+      setStateApp,
     });
 
     // if (exportWells) {
@@ -158,7 +158,7 @@ const ExportWellsOwners = ({
     //   hiddenElement.download = "taxOwnersInterest.csv";
     //   hiddenElement.click();
     // }
-    onClose()
+    onClose();
   };
 
   return (
@@ -244,31 +244,17 @@ const ExportWellsOwners = ({
         <div className={classes.title}>
           <h4>Include map filters</h4>
           <div>
-            <Switch
-              checked={includeFilter}
-              onChange={() => setIncludeFilter(!includeFilter)}
-              name="includeFilter"
-            />
+            <Switch checked={includeFilter} onChange={() => setIncludeFilter(!includeFilter)} name="includeFilter" />
           </div>
         </div>
         <Box pt={6} mt={6} mb={6} mr={2}>
-          <Grid
-            container
-            direction="row"
-            justify="flex-end"
-            alignItems="flex-end"
-          >
+          <Grid container direction="row" justify="flex-end" alignItems="flex-end">
             <Grid item>
               <Button onClick={onClose}>Cancel</Button>
             </Grid>
             <Grid item>
-              <Button
-                variant="contained"
-                component="span"
-                style={{ backgroundColor: "#00abed", color: "white" }}
-                onClick={onExport}
-              >
-                {fetching? <CircularProgress size={14} /> :'Export'}
+              <Button variant="contained" component="span" style={{ backgroundColor: "#00abed", color: "white" }} onClick={onExport}>
+                {fetching ? <CircularProgress size={14} /> : "Export"}
               </Button>
             </Grid>
           </Grid>

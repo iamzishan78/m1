@@ -2,8 +2,8 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
-import { Typography, IconButton, Grid, Breadcrumbs } from "@material-ui/core";
-import { NavigateNext as NavigateNextIcon, Close as CloseIcon } from "@material-ui/icons";
+import { Typography, Grid, Breadcrumbs } from "@material-ui/core";
+import { NavigateNext as NavigateNextIcon } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
 
 // Components
@@ -47,7 +47,7 @@ export default function DetailComponents(props) {
               <Link
                 style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer", fontWeight: "bold" }}
                 color="inherit"
-                onClick={() => history.push("/revenue/statements")}
+                onClick={() => history.push(activeModule.link)}
               >
                 {activeModule.title}
               </Link>
