@@ -79,7 +79,7 @@ export default function FilterCountyName({ state, onCountyChange }) {
               <TextField
                 {...params}
                 fullWidth
-                label="County"
+                variant="outlined"
                 startAdornment={
                   <InputAdornment>{loading && <CircularProgress color="secondary" className={classes.loader} size={10} />}</InputAdornment>
                 }

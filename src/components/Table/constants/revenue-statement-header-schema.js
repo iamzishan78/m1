@@ -13,18 +13,18 @@ const RevenueStatementHeadCells = [
       sort: true,
       filter: true,
       customRender: (value, tableMeta, updateValue) => {
-        return (
-          value ?
-            <p
-              onClick={(e) => {
-                e.stopPropagation();
-                history.push(`/revenue/statement/details?id=${tableMeta.rowData[0]}`);
-              }}
-              style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-            >
-              {value}
-            </p> :
-            <p style={{ color: '#898989b0' }}>N/A</p>
+        return value ? (
+          <p
+            onClick={(e) => {
+              e.stopPropagation();
+              history.push(`/revenue/statement/details?id=${tableMeta.rowData[0]}`);
+            }}
+            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+          >
+            {value}
+          </p>
+        ) : (
+          <p style={{ color: "#898989b0" }}>N/A</p>
         );
       },
     },
@@ -44,7 +44,7 @@ const RevenueStatementHeadCells = [
       sort: true,
       filter: true,
       customRender: (value) => {
-        return value ? <p style={{ fontWeight: 600 }}>{value ? `$${value}` : ''}</p> : <p style={{ color: '#898989b0' }}>N/A</p>;
+        return value ? <p style={{ fontWeight: 600 }}>{value ? `$${value}` : ""}</p> : <p style={{ color: "#898989b0" }}>N/A</p>;
       },
     },
   },
@@ -55,7 +55,7 @@ const RevenueStatementHeadCells = [
     options: { sort: true, filter: true },
     custom: {
       key_as_string: true,
-    }
+    },
   },
   {
     name: "depositDate",
@@ -64,7 +64,7 @@ const RevenueStatementHeadCells = [
     options: { sort: true, filter: true },
     custom: {
       key_as_string: true,
-    }
+    },
   },
   {
     name: "lines",
@@ -93,7 +93,7 @@ const RevenueStatementHeadCells = [
   {
     name: "tags",
     label: "Tags",
-    esKey: 'tags.tag.keyword',
+    esKey: "tags.tag.keyword",
     options: { sort: true, filter: true },
   },
   {
@@ -129,7 +129,7 @@ const RevenueStatementHeadCells = [
           key: "Potential Issues",
         },
       ],
-    }
+    },
   },
 ];
 

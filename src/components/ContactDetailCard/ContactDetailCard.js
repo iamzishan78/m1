@@ -324,16 +324,13 @@ export default function ContactDetailCard(props) {
 
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
 
-  const [getContact, { loading, data }] = useLazyQuery(CONTACT);
+  const [getContact, { data }] = useLazyQuery(CONTACT);
   const [getSecondContact, { data: secondContact }] = useLazyQuery(CONTACT);
   const [getContactPurchaseData, { data: contactPurchaseData }] = useLazyQuery(CONTACT_PURCHASE_DATA);
-  // const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
-  //   TRANSACTIONDATA
-  // );
 
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(TRANSACTIONDATA);
 
-  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(LASTMELISSARECORD, {
+  const [getLastMelissaRecord] = useLazyQuery(LASTMELISSARECORD, {
     fetchPolicy: "network-only",
   });
   const [updateContact] = useMutation(UPDATECONTACT);

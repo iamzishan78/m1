@@ -30,11 +30,11 @@ function MapGridWellsTable(props) {
   const [stateApp] = useContext(AppContext);
 
   const formatColumns = (headers, hits) => {
-    if(stateNav.operatorName?.length > 0) {
+    if (stateNav.operatorName?.length > 0) {
       const index = headers.findIndex(header => header.name === 'operator')
       headers[index].options.display = true
     }
-    if(stateNav.profileName?.length > 0) {
+    if (stateNav.profileName?.length > 0) {
       const index = headers.findIndex(header => header.name === 'wellBoreProfile')
       headers[index].options.display = true
     }
@@ -59,17 +59,17 @@ function MapGridWellsTable(props) {
       debounce((request, top, callback) => {
         props.setTableMeta(request);
       }, 500),
-      // eslint-disable-next-line
+    // eslint-disable-next-line
     []
   );
 
   useEffect(() => {
-    const { filters, search, polygon } = getMapFilters(stateNav, searchInput, stateApp.gridPolygonString);
+    const { filters, search } = getMapFilters(stateNav, searchInput, stateApp.gridPolygonString);
     setTableMeta({
       addableName: "Wells",
       extendSearchQuery: search,
       filters: filters,
-      polygon: polygon,
+      polygon: stateApp.currentFeature.geometry,
       TableHeader: copy(TableHeader),
       esIndex: "platformData:wells",
       startPaginationAt: 25,

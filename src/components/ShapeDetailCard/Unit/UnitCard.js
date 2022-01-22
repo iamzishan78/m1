@@ -37,7 +37,7 @@ export default function UnitCard(props) {
           <div style={{ height: "100%" }}>
             <Card className={classes.card}>
               <CardContent className={classes.content}>
-                <UnitDetailCard id={stateApp.selectedShape.id} selectTabIndex={stateApp.parcelDetailCardTabIndex} />
+                <UnitDetailCard id={stateApp.selectedShape.id} />
               </CardContent>
             </Card>
           </div>
