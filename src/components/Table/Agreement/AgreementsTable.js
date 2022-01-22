@@ -185,6 +185,9 @@ function AgreementsTable(props) {
           hit.expirationDate = hit.expirationDate
             ? moment(new Date(hit.expirationDate)).format("MM/DD/YYYY")
             : null;
+          hit.extensionDate = hit.extensionDate
+            ? moment(new Date(hit.extensionDate)).format("MM/DD/YYYY")
+            : null;
           hit.State = hit?.originalProperties?.State;
           hit.County = hit?.originalProperties?.County;
           hit.tags =
