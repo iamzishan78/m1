@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-
+import React, { useState, useEffect, useContext } from "react";
+import moment from "moment";
 // QUERIES 
+import { AppContext } from "AppContext";
 import { useLazyQuery } from "@apollo/client";
 
 import TextField from '@material-ui/core/TextField';
@@ -9,6 +10,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 export function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, esIndex, filters, custom }) {
     const [open, setOpen] = useState(false);
+    const [stateApp, setStateApp] = useContext(AppContext);
     const [options, setOptions] = useState([]);
     const [value, setValue] = useState({ key: filterList[index][0] });
     const [search, setSearch] = useState(filterList[index][0]);
@@ -33,8 +35,18 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
     useEffect(() => {
         if (filtersData) {
             const keys = Object.keys(filtersData)
-            if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits)
-                setOptions(filtersData[keys[0]].hits)
+            if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits){
+                if(custom?.isDate){
+                    const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key:moment(new Date(hit.key)).format("MM/DD/YYYY") }))
+                    setOptions(hits)
+                    setStateApp((state, props) => {
+                        return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
+                      });
+                }else{
+                    setOptions(filtersData[keys[0]].hits)
+                }
+            }
+                
         }
 
     }, [filtersData]);
