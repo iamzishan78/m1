@@ -32,7 +32,6 @@ export default function FilterStateName({ onStateChange }) {
   return (
     <FormControl className={classes.formControl}>
       <Autocomplete
-        variant="inlined"
         className={classes.autoC}
         options={statesNames}
         getOptionLabel={(option) => option}
@@ -43,12 +42,7 @@ export default function FilterStateName({ onStateChange }) {
           handleStateNameChange(event, newValue);
         }}
         onKeyDown={(event) => onEnterKey(event)}
-        renderInput={(params) => (
-          <form autoComplete="off">
-            <TextField {...params} fullWidth label="State" />
-          </form>
-        )}
-        renderOption={(option) => <Typography>{option}</Typography>}
+        renderInput={(params) => <TextField {...params} variant="outlined" fullWidth />}
       />
     </FormControl>
   );

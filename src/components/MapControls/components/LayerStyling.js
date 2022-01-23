@@ -154,10 +154,9 @@ function LayerStyling(props) {
         if (layerPaintProps[0]?.labelProps?.symbolProps?.visibility)
           delete layerPaintProps[0].labelProps.symbolProps.visibility;
 
-        if (currentLayer.layerSettings?.colorable) {
-          set(layerPaintProps, '[0]labelProps.visibility', layerLabelVisibility)
-        }
-          
+          if (currentLayer.layerSettings?.colorable) {
+            set(layerPaintProps, '[0]labelProps.visibility', layerLabelVisibility)
+          }
         const layerType = layerPaintProps[0].paintType;
 
         if (layerType === "circle" && layerPaintProps[0].paintProps) {

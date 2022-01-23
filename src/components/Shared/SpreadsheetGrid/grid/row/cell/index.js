@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 const SpreadsheetCell = (props) => {
     const {
         y,
+        id,
         className,
         onClick,
         onDoubleClick,
@@ -14,6 +15,7 @@ const SpreadsheetCell = (props) => {
     return (
         <div
             key={y}
+            id={id}
             className={className}
             onClick={onClick}
             onDoubleClick={onDoubleClick}

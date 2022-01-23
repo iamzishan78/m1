@@ -20,7 +20,7 @@ import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { NavigationContext } from "components/Navigation/NavigationContext";
 import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 
-import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,11 +43,9 @@ const useStyles = makeStyles((theme) => ({
   field: {
     marginTop: 30,
     fontSize: "16px",
-
   },
   tags: {
     marginTop: 20,
-
   },
   bold: {
     fontWeight: "bold",
@@ -71,7 +69,7 @@ const ConvertTaxOwnerToContact = ({
   const { currentFeature, user } = stateApp;
   const [newTagsIds, setNewTagsIds] = useState([]);
   const [searchCampaign, setSearchCampaign] = useState("");
-  const [includeFilter, setIncludeFilter] = useState(false);
+  const [includeFilter, setIncludeFilter] = useState(true);
   const { control, getValues, watch } = useForm();
 
   const contactStatus = watch("contactStatus", contactStatusOptions[0].value);
@@ -97,7 +95,7 @@ const ConvertTaxOwnerToContact = ({
 
   useEffect(() => {
     if (includeFilter) {
-      const { filters, search } = getMapFilters(stateNav, "", '');
+      const { filters, search } = getMapFilters(stateNav, "", "");
       getMapFilterShapeOwnersAndCountAction({
         currentFeature: currentFeature,
         userId: user.mongoId,
@@ -132,8 +130,8 @@ const ConvertTaxOwnerToContact = ({
 
   const removeTagId = (id) => {
     const ids = JSON.parse(JSON.stringify(newTagsIds));
-    const index = ids.findIndex(e => e === id);
-    if( index > -1) {
+    const index = ids.findIndex((e) => e === id);
+    if (index > -1) {
       ids.splice(index, 1);
     }
     setNewTagsIds(ids);
@@ -163,11 +161,7 @@ const ConvertTaxOwnerToContact = ({
         <div className={classes.title}>
           <h3>Include map filters</h3>
           <div>
-            <Switch
-              checked={includeFilter}
-              onChange={() => setIncludeFilter(!includeFilter)}
-              name="includeFilter"
-            />
+            <Switch checked={!!includeFilter} onChange={() => setIncludeFilter(!includeFilter)} name="includeFilter" />
           </div>
         </div>
 
@@ -235,34 +229,17 @@ const ConvertTaxOwnerToContact = ({
             )}
           />
         </div>
-        <div  className={classes.tags} >
-          <Tags
-            variant="standard"
-            setTagId={setTagId}
-            removeTagId={removeTagId}
-            targetLabel="contact"
-            targetSourceId="new"
-            hidePlusIcon
-          />
+        <div className={classes.tags}>
+          <Tags variant="standard" setTagId={setTagId} removeTagId={removeTagId} targetLabel="contact" targetSourceId="new" hidePlusIcon />
         </div>
         <Box pt={6} mt={6} mb={6} mr={2}>
-          <Grid
-            container
-            direction="row"
-            justify="flex-end"
-            alignItems="flex-end"
-          >
+          <Grid container direction="row" justify="flex-end" alignItems="flex-end">
             <Grid item>
               <Button onClick={onClose}>Cancel</Button>
             </Grid>
             <Grid item>
-              <Button
-                variant="contained"
-                component="span"
-                style={{ backgroundColor: "#00abed", color: "white" }}
-                onClick={onConvert}
-              >
-                {fetching? <CircularProgress size={14} /> :'Convert'}
+              <Button variant="contained" component="span" style={{ backgroundColor: "#00abed", color: "white" }} onClick={onConvert}>
+                {fetching ? <CircularProgress size={14} /> : "Convert"}
               </Button>
             </Grid>
           </Grid>

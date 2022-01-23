@@ -42,7 +42,8 @@ function ShapeGridTaxOwnersTable(props) {
     const [count, setCount] = useState()  // local state for async count query
 
     // queries 
-    const [getPaginatedShapeOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(SHAPE_OWNERS, { fetchPolicy: "cache-and-network", skip: true,
+    const [getPaginatedShapeOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(SHAPE_OWNERS, {
+        fetchPolicy: "cache-and-network", skip: true,
         onCompleted: (dataShapeOwners) => {
             setCount((state, props) => {
                 let newState = state || dataShapeOwners?.paginatedShapeOwners?.edges?.length;
@@ -56,7 +57,8 @@ function ShapeGridTaxOwnersTable(props) {
         },
     });
     const tableData = dataShapeOwners?.paginatedShapeOwners
-    const [getShapeOwnersCount, { data: dataShapeOwnersCount }] = useLazyQuery(SHAPEOWNERSCOUNT, { fetchPolicy: "cache-and-network", skip: true,
+    const [getShapeOwnersCount, { data: dataShapeOwnersCount }] = useLazyQuery(SHAPEOWNERSCOUNT, {
+        fetchPolicy: "cache-and-network", skip: true,
         onCompleted: (dataShapeOwnersCount) => {
             setStateApp((state) => ({
                 ...state,
@@ -80,7 +82,7 @@ function ShapeGridTaxOwnersTable(props) {
         getShapeOwnersCount({
             variables: {
                 // polygon: stateApp.gridPolygonString,
-                polygon: stateApp?.currentFeature?.geometry?.coordinates[0]
+                polygon: stateApp?.currentFeature?.geometry
             },
         });
     }, [props.parent]);
@@ -218,7 +220,7 @@ function ShapeGridTaxOwnersTable(props) {
         ...props.options,
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
         count: stateApp.shapeGridOwnersCount || count || 0,
-        serverSide: true, 
+        serverSide: true,
         // filter: false,
     }
     ////////////-----Add your code section here-----///////////////////////

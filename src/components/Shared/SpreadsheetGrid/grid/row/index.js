@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import isEqual from 'lodash.isequal';
 
 import SpreadsheetCell from './cell';
+import { Paper, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@material-ui/core";
 
 class SpreadsheetRow extends React.Component {
 
@@ -22,7 +23,7 @@ class SpreadsheetRow extends React.Component {
             (currentFocusedCell && !nextFocusedCell)
             || (!currentFocusedCell && nextFocusedCell)
             || (currentFocusedCell && nextFocusedCell
-            && (currentFocusedCell.x !== nextFocusedCell.x || currentFocusedCell.y !== nextFocusedCell.y));
+                && (currentFocusedCell.x !== nextFocusedCell.x || currentFocusedCell.y !== nextFocusedCell.y));
 
         return this.props.row !== nextProps.row
             || this.props.x !== nextProps.x
@@ -52,12 +53,7 @@ class SpreadsheetRow extends React.Component {
         } = this.props;
 
         return (
-            <div
-                className="SpreadsheetGrid__row"
-                style={{
-                    height: height + 'px'
-                }}
-            >
+            <>
                 {
                     columns.map((column, y) => {
                         const coords = { x, y };
@@ -66,26 +62,29 @@ class SpreadsheetRow extends React.Component {
                         });
 
                         return (
-                            <SpreadsheetCell
-                                y={y}
-                                key={y}
-                                className={getCellClassName(column, row, x, y)}
-                                onClick={!disabled ? onCellClick.bind(this, x, y, row, column.id) : null}
-                                onDoubleClick={!disabled ? onCellDoubleClick.bind(this, x, y) : null}
-                                width={columnWidthValues[column.id]}
-                            >
-                                {
-                                    column.value(row, {
-                                        active: isEqual(activeCell, coords),
-                                        focus: isEqual(focusedCell, coords),
-                                        disabled
-                                    })
-                                }
-                            </SpreadsheetCell>
+                            <TableCell style={{ padding: 'inherit' }}>
+                                <SpreadsheetCell
+                                    y={y}
+                                    id={`${x}-${y}`}
+                                    key={y}
+                                    className={getCellClassName(column, row, x, y)}
+                                    onClick={!disabled ? onCellClick.bind(this, x, y, row, column.id) : null}
+                                    onDoubleClick={!disabled ? onCellDoubleClick.bind(this, x, y) : null}
+                                    width={columnWidthValues[column.id]}
+                                >
+                                    {
+                                        column.value(row, {
+                                            active: isEqual(activeCell, coords),
+                                            focus: isEqual(focusedCell, coords),
+                                            disabled
+                                        })
+                                    }
+                                </SpreadsheetCell>
+                            </TableCell>
                         );
                     })
                 }
-            </div>
+            </ >
         );
     }
 }
