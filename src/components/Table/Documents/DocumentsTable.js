@@ -442,7 +442,7 @@ function DocumentsTable(props) {
           />
         )}
         {stateApp.showFieldModal && (
-          <MetaField columns={columns} category="Docs" />
+          <MetaField columns={columns} category="Docs" updateColumnSorting={updateColumnSorting}/>
         )}
         <Table
           style={{ backgroundColor: "#fff" }}
