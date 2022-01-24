@@ -82,17 +82,6 @@ const useStyles = makeStyles((theme) => ({
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
   },
-  summarySection: {
-    padding: "20px 30px",
-    minHeight: "500px",
-    backgroundColor: "#fff",
-    marginBottom: "10px",
-  },
-  checkDetailsSection: {
-    padding: "20px 30px",
-    minHeight: "500px",
-    backgroundColor: "#fff",
-  },
   tabsDetailContainer: ({ showInterestDetails, collapse }) => ({
     padding: 20,
     maxWidth: showInterestDetails || !collapse ? "calc(100% - 380px)" : "100%",
