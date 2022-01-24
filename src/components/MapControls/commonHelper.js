@@ -47,6 +47,17 @@ export const setFeatureProperty = (draw, drawFeatureID, field, value) => {
 }
 
 export const drawShapeLayerToggle = (stateApp, value) => {
+    stateApp.map.moveLayer('gl-draw-polygon-midpoint.cold');
+    stateApp.map.moveLayer('gl-draw-polygon-midpoint.hot');
+    stateApp.map.moveLayer('gl-draw-polygon-stroke-active.hot');
+    stateApp.map.moveLayer('gl-draw-polygon-stroke-active.cold');
+
+
+    stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-inactive.cold');
+    stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-inactive.hot');
+    stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-stroke-inactive.cold');
+    stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-stroke-inactive.hot');
+
     stateApp.map.setLayoutProperty('gl-draw-polygon-midpoint.cold', "visibility", value);
     stateApp.map.setLayoutProperty('gl-draw-polygon-midpoint.hot', "visibility", value);
     stateApp.map.setLayoutProperty('gl-draw-polygon-and-line-vertex-inactive.cold', "visibility", value);
@@ -197,7 +208,7 @@ export const drawShapeStyles = [
         ],
         'paint': {
             'circle-radius': 5,
-            'circle-color': '#fff'
+            'circle-color': 'yellow'
         }
     },
     {
