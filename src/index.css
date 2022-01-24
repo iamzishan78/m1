@@ -206,9 +206,14 @@ body {
   background: #17aadd;
   color: #ffffff;
 }
+
 .colorText {
   padding: 5px 10px !important;
   border-radius: 26px !important;
   align-items: center !important;
   text-align: center !important;
+}
+
+::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }

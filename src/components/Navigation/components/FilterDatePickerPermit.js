@@ -3,8 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
-import ClearIcon from "@material-ui/icons/Clear";
-import { IconButton } from "@material-ui/core";
+import { TextField } from "@material-ui/core";
 import { useForm, Controller } from "react-hook-form";
 
 const useStyles = makeStyles((theme) => ({
@@ -23,6 +22,13 @@ const useStyles = makeStyles((theme) => ({
   },
   blue: {
     "& .MuiInputBase-input": { color: "#17AADD" },
+  },
+  dateRoot: {
+    color: "#ffffff",
+    "& input": {
+      marginLeft: 20,
+      marginTop: 13
+    },
   },
 }));
 
@@ -77,14 +83,14 @@ export default function FilterDatePickerPermit(props) {
   const handleStartDate = (date) => {
     setStateNav((stateNav) => ({
       ...stateNav,
-      permitDateFrom: !date ? null : moment(date),
+      permitDateFrom: moment(date),
     }));
   };
 
   const handleEndDate = (date) => {
     setStateNav((stateNav) => ({
       ...stateNav,
-      permitDateTo: !date ? null : moment(date),
+      permitDateTo: moment(date),
     }));
   };
 
@@ -96,42 +102,24 @@ export default function FilterDatePickerPermit(props) {
           name="permitDateFrom"
           defaultValue={stateNav.permitDateFrom}
           render={({ onChange, onClick, value }) => (
-            <KeyboardDatePicker
+            <TextField
+              type="date"
               label={props.labelDates + " " + "From"}
               className={`${classes.datePicker} ${stateNav.permitDateFrom ? classes.blue : ""}`}
-              maxDate={moment().subtract(1, "day")}
-              variant="inline"
-              value={watch("permitDateFrom")}
+              margin="dense"
+              fullWidth
               onChange={(date) => {
                 setValue("permitDateFrom", date);
-                if (date && date.isValid()) {
-                  handleStartDate(date);
-                }
-                if (!date || !date.isValid()) {
-                  handleStartDate(null);
-                }
+                handleStartDate(date);
                 return { value: date };
               }}
-              // disableToolbar
-              KeyboardButtonProps={{ "aria-label": "change date" }}
-              autoOk="true"
-              format="MM/DD/YYYY"
-              PopoverProps={{ disablePortal: false }}
-              fullWidth={true}
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    onClick={() => {
-                      setValue("permitDateFrom", null);
-                      handleStartDate(null);
-                    }}
-                  >
-                    <ClearIcon style={{ height: "22px", width: "22px" }} />
-                  </IconButton>
-                ),
+              InputLabelProps={{
+                shrink: true,
               }}
-              InputAdornmentProps={{
-                position: "start",
+              InputProps={{
+                classes: {
+                  root: classes.dateRoot,
+                },
               }}
             />
           )}
@@ -142,42 +130,25 @@ export default function FilterDatePickerPermit(props) {
           name="permitDateTo"
           defaultValue={stateNav.permitDateTo}
           render={({ onChange, onClick, value }) => (
-            <KeyboardDatePicker
+            <TextField
+              type="date"
               label={props.labelDates + " " + "To"}
               className={`${classes.datePicker} ${stateNav.permitDateTo ? classes.blue : ""}`}
-              variant="inline"
-              maxDate={moment()}
-              value={watch("permitDateTo")}
+              margin="dense"
+              fullWidth
               onChange={(date) => {
                 setValue("permitDateTo", date);
-                if (date && date.isValid()) {
-                  handleEndDate(date);
-                }
-                if (!date || !date.isValid()) {
-                  handleEndDate(null);
-                }
+                handleEndDate(date);
                 return { value: date };
               }}
-              // disableToolbar
-              KeyboardButtonProps={{ "aria-label": "change date" }}
-              autoOk="true"
-              format="MM/DD/YYYY"
-              PopoverProps={{ disablePortal: false }}
-              fullWidth={true}
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    onClick={() => {
-                      setValue("permitDateTo", null);
-                      handleEndDate(null);
-                    }}
-                  >
-                    <ClearIcon style={{ height: "22px", width: "22px" }} />
-                  </IconButton>
-                ),
+              InputLabelProps={{
+                shrink: true,
               }}
-              InputAdornmentProps={{
-                position: "start",
+              inputProps={{ max: moment() }}
+              InputProps={{
+                classes: {
+                  root: classes.dateRoot,
+                },
               }}
             />
           )}

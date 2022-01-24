@@ -4,7 +4,7 @@ import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
 import ClearIcon from "@material-ui/icons/Clear";
-import { IconButton } from "@material-ui/core";
+import { IconButton, TextField } from "@material-ui/core";
 import { useForm, Controller } from "react-hook-form";
 
 const useStyles = makeStyles(() => ({
@@ -24,6 +24,13 @@ const useStyles = makeStyles(() => ({
   },
   blue: {
     "& .MuiInputBase-input": { color: "#17AADD" },
+  },
+  dateRoot: {
+    color: "#ffffff",
+    "& input": {
+      marginLeft: 20,
+      marginTop: 13
+    },
   },
 }));
 
@@ -99,41 +106,24 @@ export default function FilterDatePickerCompletetion(props) {
           name="completetionDateFrom"
           defaultValue={stateNav.completetionDateFrom}
           render={({ onChange, onClick, value }) => (
-            <KeyboardDatePicker
+            <TextField
+              type="date"
               label={props.labelDates + " " + "From"}
               className={`${classes.datePicker} ${stateNav.completetionDateFrom ? classes.blue : ""}`}
-              variant="inline"
-              value={watch("completetionDateFrom")}
+              margin="dense"
+              fullWidth
               onChange={(date) => {
                 setValue("completetionDateFrom", date);
-                if (!date || !date.isValid()) {
-                  handleStartDate(null);
-                }
-                if (date && date.isValid()) {
-                  handleStartDate(date);
-                }
+                handleStartDate(date);
                 return { value: date };
               }}
-              // disableToolbar
-              KeyboardButtonProps={{ "aria-label": "change date" }}
-              autoOk="true"
-              format={format}
-              PopoverProps={{ disablePortal: false }}
-              fullWidth={true}
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    onClick={() => {
-                      setValue("completetionDateFrom", null);
-                      handleStartDate(null);
-                    }}
-                  >
-                    <ClearIcon style={{ height: "22px", width: "22px" }} />
-                  </IconButton>
-                ),
+              InputLabelProps={{
+                shrink: true,
               }}
-              InputAdornmentProps={{
-                position: "start",
+              InputProps={{
+                classes: {
+                  root: classes.dateRoot,
+                },
               }}
             />
           )}
@@ -144,42 +134,24 @@ export default function FilterDatePickerCompletetion(props) {
           name="completetionDateTo"
           defaultValue={stateNav.completetionDateTo}
           render={({ onChange, onClick, value }) => (
-            <KeyboardDatePicker
+            <TextField
+              type="date"
               label={props.labelDates + " " + "To"}
               className={`${classes.datePicker} ${stateNav.completetionDateTo ? classes.blue : ""}`}
-              variant="inline"
-              value={watch("completetionDateTo")}
+              margin="dense"
+              fullWidth
               onChange={(date) => {
                 setValue("completetionDateTo", date);
-                if (date && date.isValid()) {
-                  handleEndDate(date);
-                }
-                if (!date || !date.isValid()) {
-                  handleEndDate(null);
-                }
+                handleEndDate(date);
                 return { value: date };
               }}
-              maxDate={moment()}
-              // disableToolbar
-              KeyboardButtonProps={{ "aria-label": "change date" }}
-              autoOk="true"
-              format="MM/DD/YYYY"
-              PopoverProps={{ disablePortal: false }}
-              fullWidth={true}
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    onClick={() => {
-                      setValue("completetionDateTo", null);
-                      handleEndDate(null);
-                    }}
-                  >
-                    <ClearIcon style={{ height: "22px", width: "22px" }} />
-                  </IconButton>
-                ),
+              InputLabelProps={{
+                shrink: true,
               }}
-              InputAdornmentProps={{
-                position: "start",
+              InputProps={{
+                classes: {
+                  root: classes.dateRoot,
+                },
               }}
             />
           )}

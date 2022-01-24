@@ -4,7 +4,7 @@ import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
 import ClearIcon from "@material-ui/icons/Clear";
-import { IconButton } from "@material-ui/core";
+import { IconButton, TextField } from "@material-ui/core";
 import { useForm, Controller } from "react-hook-form";
 
 const useStyles = makeStyles((theme) => ({
@@ -25,6 +25,13 @@ const useStyles = makeStyles((theme) => ({
 
   blue: {
     "& .MuiInputBase-input": { color: "#17AADD" },
+  },
+  dateRoot: {
+    color: "#ffffff",
+    "& input": {
+      marginLeft: 20,
+      marginTop: 13
+    },
   },
 }));
 
@@ -98,41 +105,24 @@ export default function FilterDatePickerFirstProd(props) {
           name="prodDateFrom"
           defaultValue={stateNav.firstProdDateFrom}
           render={({ onChange, onClick, value }) => (
-            <KeyboardDatePicker
+            <TextField
+              type="date"
               label={props.labelDates + " " + "From"}
               className={`${classes.datePicker} ${stateNav.firstProdDateFrom ? classes.blue : ""}`}
-              variant="inline"
-              value={watch("prodDateFrom")}
+              margin="dense"
+              fullWidth
               onChange={(date) => {
-                setValue("prodDateFrom", date);
-                if (date && date.isValid()) {
-                  handleStartDate(date);
-                }
-                if (!date || !date.isValid()) {
-                  handleStartDate(null);
-                }
+                setValue("firstProdDateFrom", date);
+                handleStartDate(date);
                 return { value: date };
               }}
-              // disableToolbar
-              KeyboardButtonProps={{ "aria-label": "change date" }}
-              autoOk="true"
-              format="MM/DD/YYYY"
-              PopoverProps={{ disablePortal: false }}
-              fullWidth={true}
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    onClick={() => {
-                      setValue("prodDateFrom", null);
-                      handleStartDate(null);
-                    }}
-                  >
-                    <ClearIcon style={{ height: "22px", width: "22px" }} />
-                  </IconButton>
-                ),
+              InputLabelProps={{
+                shrink: true,
               }}
-              InputAdornmentProps={{
-                position: "start",
+              InputProps={{
+                classes: {
+                  root: classes.dateRoot,
+                },
               }}
             />
           )}
@@ -143,41 +133,24 @@ export default function FilterDatePickerFirstProd(props) {
           name="prodDateTo"
           defaultValue={stateNav.firstProdDateTo}
           render={({ onChange, onClick, value }) => (
-            <KeyboardDatePicker
+            <TextField
+              type="date"
               label={props.labelDates + " " + "To"}
               className={`${classes.datePicker} ${stateNav.firstProdDateTo ? classes.blue : ""}`}
-              variant="inline"
-              value={watch("prodDateTo")}
+              margin="dense"
+              fullWidth
               onChange={(date) => {
-                setValue("prodDateTo", date);
-                if (date && date.isValid()) {
-                  handleEndDate(date);
-                }
-                if (!date || !date.isValid()) {
-                  handleEndDate(null);
-                }
+                setValue("firstProdDateTo", date);
+                handleEndDate(date);
                 return { value: date };
               }}
-              // disableToolbar
-              KeyboardButtonProps={{ "aria-label": "change date" }}
-              autoOk="true"
-              format="MM/DD/YYYY"
-              PopoverProps={{ disablePortal: false }}
-              fullWidth={true}
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    onClick={() => {
-                      setValue("prodDateTo", null);
-                      handleEndDate(null);
-                    }}
-                  >
-                    <ClearIcon style={{ height: "22px", width: "22px" }} />
-                  </IconButton>
-                ),
+              InputLabelProps={{
+                shrink: true,
               }}
-              InputAdornmentProps={{
-                position: "start",
+              InputProps={{
+                classes: {
+                  root: classes.dateRoot,
+                },
               }}
             />
           )}
