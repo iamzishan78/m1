@@ -367,6 +367,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange }) => {
                 backgroundColor: pallete?.color,
                 color: pallete?.textColor,
                 display: "flex",
+                margin: '0px 2px'
               }}
             >
               <span>{v}</span>
