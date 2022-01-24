@@ -1098,7 +1098,7 @@ function SubTable(props) {
     event.stopPropagation();
     setSelectedUser(user);
     setSelectedUserIndex(rowIndex);
-    setM1nSelectedRowsIds([user._id]);
+    setM1nSelectedRowsIds([user.id]);
     setUsermanagementSettings(
       <Menu
         anchorEl={event.currentTarget}
