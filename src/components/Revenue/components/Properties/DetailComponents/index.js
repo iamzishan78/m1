@@ -3,8 +3,13 @@ import { useHistory } from "react-router-dom";
 
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, Tabs, Tab, Button } from "@material-ui/core";
-import { DescriptionOutlined as DocumentIcon, InfoOutlined as InfoOutlinedIcon, MoreHoriz as MoreHorizIcon } from "@material-ui/icons";
+import { Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import {
+  DescriptionOutlined as DocumentIcon,
+  InfoOutlined as InfoOutlinedIcon,
+  MoreHoriz as MoreHorizIcon,
+  Delete as DeleteIcon,
+} from "@material-ui/icons";
 
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { GET_PROPERTY } from "graphQL/useQueryGetProperty";
@@ -116,6 +121,20 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     width: "100%",
   },
+  menu: {
+    "& .MuiListItem-gutters": {
+      paddingLeft: "10px !important",
+      paddingRight: "10px !important",
+    },
+    "& .MuiListItem-root": {
+      "& .MuiListItemIcon-root": {
+        minWidth: "25px",
+        "& .MuiSvgIcon-root": {
+          fill: "red !important",
+        },
+      },
+    },
+  },
   metaActions: ({ collapse }) => ({
     marginTop: "2px",
     "& button": {
@@ -192,6 +211,7 @@ export default function DetailComponents(props) {
   const selectedTabRef = useRef(null);
   const [collapse, setCollapse] = useState(false);
   const [users, setUsers] = useState([]);
+  const [anchorEl, setAnchorEl] = useState();
 
   const classes = useStyles({ ...props, showInterestDetails, collapse });
 
@@ -302,7 +322,7 @@ export default function DetailComponents(props) {
               <Button startIcon={<InfoOutlinedIcon />} onClick={() => setCollapse(!collapse)}>
                 Metadata
               </Button>
-              <IconButton size="small" component="span" className={classes.menuIcon} onClick={() => {}}>
+              <IconButton size="small" component="span" className={classes.menuIcon} onClick={(event) => setAnchorEl(event.currentTarget)}>
                 <MoreHorizIcon size="medium" />
               </IconButton>
             </div>
@@ -352,6 +372,27 @@ export default function DetailComponents(props) {
           <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={propertyId} setStateApp={setStateApp} />
         )}
       </div>
+      {/**
+       * Menu for meta data
+       */}
+      <Menu
+        id="revPropertyMenu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        className={classes.menu}
+        getContentAnchorEl={null}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <MenuItem>
+          <ListItemIcon>
+            <DeleteIcon size="medium" />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
     </NavHeader>
   );
 }
