@@ -135,16 +135,18 @@ export default function Properties() {
     <>
       <div className={classes.actionBar}>
         <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 78px" }}>
+          
           <CustomDates fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} />
           <Grid item xs={4} md={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
               <Grid item>
-                <Button variant="contained" color="secondary">
+                {/* hiding until we have views for properties - kc */}
+                {/* <Button variant="contained" color="secondary">
                   Save View
-                </Button>
+                </Button> */}
               </Grid>
               <Grid item>
-                <Button variant="contained" onClick={() => filterProperties()}>
+                <Button variant="contained" color="secondary" onClick={() => filterProperties()}>
                   Filter
                 </Button>
               </Grid>

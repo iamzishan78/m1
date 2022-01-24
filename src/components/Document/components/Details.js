@@ -4,7 +4,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import RightActionsPanel from "./RightActionsPanel";
-import WellsPanel from "./WellsPanel";
 import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";

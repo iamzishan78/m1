@@ -285,9 +285,11 @@ function RelatedDetailsDocumentTable(props) {
             </Grid>
 
             <Grid item>
-              <IconButton onClick={() => downloadFile(stateApp.pdfView)}>
-                <GetAppIcon />
-              </IconButton>
+              {stateApp.pdfView && (
+                <IconButton onClick={() => downloadFile(stateApp.pdfView)}>
+                  <GetAppIcon />
+                </IconButton>
+              )}
               <IconButton
                 className="float-right"
                 color="inherit"
@@ -305,31 +307,34 @@ function RelatedDetailsDocumentTable(props) {
             </Grid>
           </Grid>
         </Toolbar>
-        {numPages && (
-          <div className={classes.ZoomIcons}>
-            {" "}
-            <IconButton
-              onClick={() => {
-                setzoom(zoom + 0.25);
-              }}
-            >
-              <ZoomInIcon fontSize={"large"} />
-            </IconButton>
-            <IconButton
-              onClick={() => {
-                setzoom(zoom - 0.25);
-              }}
-            >
-              <ZoomOutIcon fontSize={"large"} />
-            </IconButton>
-          </div>
-        )}
 
-        <Document file={stateApp.pdfView?.viewToken} options={{ workerSrc: "/pdf.worker.js" }} onLoadSuccess={onDocumentLoadSuccess}>
-          {Array.from(new Array(numPages), (el, index) => (
-            <Page key={`page_${index + 1}`} scale={zoom} pageNumber={index + 1} />
-          ))}
-        </Document>
+        <div className={classes.docViewSection}>
+          <Document file={stateApp.pdfView?.viewToken} options={{ workerSrc: "/pdf.worker.js" }} onLoadSuccess={onDocumentLoadSuccess}>
+            {Array.from(new Array(numPages), (el, index) => (
+              <Page key={`page_${index + 1}`} scale={zoom} pageNumber={index + 1} />
+            ))}
+          </Document>
+
+          {numPages && (
+            <div className={classes.ZoomIcons}>
+              {" "}
+              <IconButton
+                onClick={() => {
+                  setzoom(zoom + 0.25);
+                }}
+              >
+                <ZoomInIcon fontSize={"large"} />
+              </IconButton>
+              <IconButton
+                onClick={() => {
+                  setzoom(zoom - 0.25);
+                }}
+              >
+                <ZoomOutIcon fontSize={"large"} />
+              </IconButton>
+            </div>
+          )}
+        </div>
       </Dialog>
     </Container>
   );

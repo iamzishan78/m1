@@ -233,6 +233,7 @@ const AgreementsHeadCells = [
       dbName: "shapeJson.properties.approvalStatus",
       sort: true,
       filter: true,
+      viewColumns: false,
       customRender: (value, tableMeta, updateValue) => {
         return (
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -245,6 +246,9 @@ const AgreementsHeadCells = [
         );
       },
     },
+    custom: {
+      filterLabel: 'Approval Status'
+    }
   },
 ];
 

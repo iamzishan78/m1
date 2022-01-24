@@ -37,7 +37,7 @@ export default function AgreementCard(props) {
           <div style={{ height: "100%" }}>
             <Card className={classes.card}>
               <CardContent className={classes.content}>
-                <AgreementDetailCard id={stateApp.selectedShape.id} selectTabIndex={stateApp.parcelDetailCardTabIndex} />
+                <AgreementDetailCard id={stateApp.selectedShape.id} />
               </CardContent>
             </Card>
           </div>
