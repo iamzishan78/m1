@@ -187,10 +187,10 @@ const useStyles = makeStyles((theme) => ({
   convertMenuColor: {
     color: '#A6A6A6',
   },
-  downloadIcon:{
-    color:"#A6A6A6", width: "30px", height: "28px"
+  downloadIcon: {
+    color: "#A6A6A6", width: "30px", height: "28px"
   },
-  areaExceed:{
+  areaExceed: {
     fontSize: 16, marginTop: 10
   }
 }));
@@ -308,7 +308,7 @@ export default function DrawShapes() {
             draw.add(currentFeature)
             addCustomShapeProperties(currentFeature, draw);
             setFeatureProperty(draw, currentFeature.id, "shapeEdit", false);
-            draw.changeMode(state.lastSelectedDrawMode);
+            draw.changeMode("simple_select");
             // isDrawing: false
             return { ...state, currentFeature }
 
