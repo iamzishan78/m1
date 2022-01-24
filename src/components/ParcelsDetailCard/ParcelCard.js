@@ -31,6 +31,7 @@ import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "../ExpandableCard/ExpandableCardContext";
 import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
+import { getPolygonString } from "components/Shared/functions";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -126,26 +127,6 @@ export default function ParcelCard(props) {
   const documentCount = dataParcelFiles?.getParcelFilesCount || 0;
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER,);
 
-
-  const getSelectedFeaturePolygonString = () => {
-    if (parcelObj.shape.geometry.coordinates) {
-
-      let feature = parcelObj.shape;
-
-      let polygonString = "POLYGON((";
-      feature.geometry.coordinates[0].forEach((coordinate, index) => {
-        polygonString += coordinate[0] + " " + coordinate[1];
-        if (index < feature.geometry.coordinates[0].length - 1) {
-          polygonString += ", ";
-        }
-      });
-      polygonString += "))";
-
-      return polygonString;
-
-    }
-  };
-
   useEffect(() => {
     if (dataShapeWellsCount) {
       setWellNumber(dataShapeWellsCount?.shapeWellsCount)
@@ -165,7 +146,7 @@ export default function ParcelCard(props) {
     if (parcelObj) {
       getShapeWellsCount({
         variables: {
-          polygon: getSelectedFeaturePolygonString()
+          polygon: getPolygonString(parcelObj.shape)
         },
       });
     }

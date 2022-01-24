@@ -17,7 +17,7 @@ import { Button } from "@material-ui/core";
 import { useLazyQuery } from "@apollo/client";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
-import { getSelectedFeaturePolygonString } from "../../Shared/functions";
+import { getPolygonString } from "../../Shared/functions";
 import { getParcelOriginalProperties } from '../utils/GetParcelOriginalProps'
 import QtrQtrSelectorNew from "./QtrQtrSelectorNew";
 
@@ -264,7 +264,7 @@ export default function ParcelSummary(props) {
         if (props.customLayer) {
             getShapeWellsCount({
                 variables: {
-                    polygon: getSelectedFeaturePolygonString(props.customLayer)
+                    polygon: getPolygonString(props?.customLayer?.shape)
                 },
             });
         }

@@ -44,6 +44,7 @@ import { resetShapeOwnerAction } from "store/actions/ownerActions";
 
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
+import { getPolygonString } from "components/Shared/functions";
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
@@ -236,21 +237,6 @@ const ShapeActionsPopup = (props) => {
     }
   };
 
-  const getSelectedFeaturePolygonString = () => {
-    let feature = props.selectedFeature;
-
-    let polygonString = "POLYGON((";
-    feature.geometry.coordinates[0].forEach((coordinate, index) => {
-      polygonString += coordinate[0] + " " + coordinate[1];
-      if (index < feature.geometry.coordinates[0].length - 1) {
-        polygonString += ", ";
-      }
-    });
-    polygonString += "))";
-
-    return polygonString;
-  };
-
   const closeDrawTool = () => {
     stateApp.draw.changeMode("direct_select", { featureId: props.selectedFeature.id, });
     setFeatureProperty(stateApp.draw, props.selectedFeature.id, "shapeEdit", false);
@@ -262,7 +248,7 @@ const ShapeActionsPopup = (props) => {
     if (isLine()) return;
     setStateApp((state) => ({
       ...state,
-      gridPolygonString: getSelectedFeaturePolygonString(),
+      gridPolygonString: getPolygonString(props.selectedFeature),
     }));
     dispatch(toggleMapGridCardAtived());
     // dispatch(
@@ -290,7 +276,7 @@ const ShapeActionsPopup = (props) => {
 
   const applyFilter = () => {
     let { selectedFeature } = props;
-    let polygonString = getSelectedFeaturePolygonString();
+    let polygonString = getPolygonString(props.selectedFeature);
 
     //Changing shape to Blue
     stateApp.draw.changeMode("simple_select");
