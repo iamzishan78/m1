@@ -348,9 +348,7 @@ export default function ParcelSummary(props) {
         <Grid item md={5} sm={12}>
             <Grid container spacing={2} direction="row">
                 <Grid item >
-                    {parcelProperties.state !== 'TX' && (
-                        <QtrQtrSelectorNew parcelData={props.customLayer} updateParcelQtr={props.updateParcelQtr} setQtrQtr={setQtrQtr} />
-                    )}
+                    <QtrQtrSelectorNew parcelData={props.customLayer} updateParcelQtr={props.updateParcelQtr} setQtrQtr={setQtrQtr} />
                 </Grid>
                 <Grid item className={classes.descriptionInput}>
                     <TextField
@@ -360,7 +358,7 @@ export default function ParcelSummary(props) {
                         value={parcelProperties.legalDescription}
                         multiline
                         fullWidth
-                        rows={17}
+                        rows={6}
                         variant="outlined"
                         onChange={(e) => {
                             setProperties({ ...parcelProperties, legalDescription: e.target.value });
