@@ -1,7 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import SmallTXQtr from "./SmallTXQtr";
+
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import { Box } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   mainDiv: {
@@ -86,16 +91,47 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const qtrOptions = ["E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
+
 export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
   const classes = useStyles({ parcelData });
+
+  const [qtr, setQtr] = useState(["", "", "", ""])
 
   console.log(parcelData)
 
   return (
     <div>
       <p className="formLabel" style={{ marginTop: "0" }}>
-        Use the grid to select portions of parcel to be included
+        Adjust the shape boundary by entering quarter calls or selecting values in the grid below
       </p>
+      <Grid container spacing={1} direction="row">
+        <Grid item md={9}>
+          <Grid container spacing={1} direction="row">
+            {
+              [1, 2, 3, 4].map((val) =>
+                <Grid item xs={3} key={val}>
+                  <Box>QTR {val}</Box>
+                  <Autocomplete
+                    options={qtrOptions}
+                    getOptionLabel={(option) => option}
+                    value={qtr[val - 1]}
+                    disableClearable
+                    onChange={(e, newInputValue) => {
+                      qtr[val - 1] = newInputValue ? newInputValue : "";
+                      setQtr([...qtr])
+                    }}
+                    renderInput={(params) => <TextField {...params} variant="outlined" size="small" className={classes.maxWidth} />}
+                  />
+                </Grid>)
+            }
+          </Grid>
+        </Grid>
+        <Grid item md={3} style={{ paddingTop: '1.8em' }}>
+          <Button variant="contained" color="primary">Update</Button>
+        </Grid>
+
+      </Grid>
       <div className={classes.mainDiv}>
         {/* //// all //// */}
         <div

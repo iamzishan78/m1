@@ -323,7 +323,7 @@ export default function ParcelsDetailCard(props) {
     }
   }, [parcelObj]);
 
-  const updateParcel = (e, field, value) => {
+  const updateProperties = (e, field, value) => {
     if (e.keyCode === ENTER_KEY) {
       e.preventDefault();
       e.stopPropagation();
@@ -352,6 +352,20 @@ export default function ParcelsDetailCard(props) {
     }
   };
 
+  const updateParcelQtr = (qtrQtr) => {
+    const shape = parcelObj.shape;
+    const customLayer = {
+      shapeJson: shape,
+      qtrQtr,
+      shape: JSON.stringify(shape),
+    }
+    updateCustomLayer({
+      variables: {
+        customLayerId: parcelObj._id,
+        customLayer,
+      },
+    });
+  };
 
 
   const updateCustomProperties = (type, value, id) => {
@@ -567,7 +581,8 @@ export default function ParcelsDetailCard(props) {
               customLayer={parcelObj}
               properties={parcelProperties}
               setProperties={setProperties}
-              updateProperties={updateParcel}
+              updateParcelQtr={updateParcelQtr}
+              updateProperties={updateProperties}
               updateCustomProperties={updateCustomProperties}
               id={props.id}
             />,

@@ -19,7 +19,7 @@ import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
 import { getSelectedFeaturePolygonString } from "../../Shared/functions";
 import { getParcelOriginalProperties } from '../utils/GetParcelOriginalProps'
-import QtrQtrSelector from "components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/QtrQtrSelector";
+import QtrQtrSelectorNew from "./QtrQtrSelectorNew";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -347,9 +347,9 @@ export default function ParcelSummary(props) {
         </Grid>
         <Grid item md={5} sm={12}>
             <Grid container spacing={2} direction="row">
-                <Grid item className={classes.descriptionInput}>
+                <Grid item >
                     {parcelProperties.state !== 'TX' && (
-                        <QtrQtrSelector parcelData={props.customLayer} setQtrQtr={setQtrQtr} />
+                        <QtrQtrSelectorNew parcelData={props.customLayer} updateParcelQtr={props.updateParcelQtr} setQtrQtr={setQtrQtr} />
                     )}
                 </Grid>
                 <Grid item className={classes.descriptionInput}>
