@@ -12,6 +12,7 @@ import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from "@material-ui/core";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
@@ -508,6 +509,32 @@ export default function DocumentDetails(props) {
                     >
                       <h4>{meta.label}</h4>
                       <CustomFieldSelect
+                        fullWidth
+                        index={"documentTable"}
+                        dropdownOptions={meta.dropdownOptions}
+                        column={meta}
+                        value={value}
+                        onCustomKeyChange={(value) => {
+                          const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
+                          custom_data[meta.name] = value ? value : null; // empty string is falsey so null
+                          setNewDocument({
+                            ...newDocument,
+                            custom_data,
+                          });
+                        }}
+                      />
+                    </ListItem>
+                  )}
+                  {meta.type === "multiselect" && (
+                    <ListItem
+                      style={{
+                        flexDirection: "column",
+                        justifyContent: "start",
+                        alignItems: "start",
+                      }}
+                    >
+                      <h4>{meta.label}</h4>
+                      <CustomFieldMultiSelect
                         fullWidth
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}
