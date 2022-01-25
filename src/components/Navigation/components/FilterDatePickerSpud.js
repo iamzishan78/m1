@@ -1,9 +1,8 @@
 import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
-import ClearIcon from "@material-ui/icons/Clear";
+import { Clear } from "@material-ui/icons";
 import { IconButton, TextField } from "@material-ui/core";
 import { useForm, Controller } from "react-hook-form";
 
@@ -19,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
       pointerEvents: "none",
     },
     "& .MuiIconButton-root": {
-      padding: "10px",
+      padding: "10px 0px",
     },
   },
   blue: {
@@ -28,8 +27,7 @@ const useStyles = makeStyles((theme) => ({
   dateRoot: {
     color: "#ffffff",
     "& input": {
-      marginLeft: 20,
-      marginTop: 13
+      marginLeft: 12,
     },
   },
 }));
@@ -37,7 +35,8 @@ const useStyles = makeStyles((theme) => ({
 export default function FilterDatePickerSpud(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const { control, watch, setValue, reset } = useForm();
+  const { labelDates } = props;
+  const { control, reset } = useForm();
 
   useEffect(() => {
     let filter = null;
@@ -83,14 +82,14 @@ export default function FilterDatePickerSpud(props) {
   const handleStartDate = (date) => {
     setStateNav((stateNav) => ({
       ...stateNav,
-      spudDateFrom: moment(date),
+      spudDateFrom: !date ? null : moment(date),
     }));
   };
 
   const handleEndDate = (date) => {
     setStateNav((stateNav) => ({
       ...stateNav,
-      spudDateTo: moment(date),
+      spudDateTo: !date ? null : moment(date),
     }));
   };
 
@@ -100,16 +99,17 @@ export default function FilterDatePickerSpud(props) {
         <Controller
           control={control}
           name="spudDateFrom"
-          defaultValue={stateNav.spudDateFrom}
-          render={({ onChange, onClick, value }) => (
+          defaultValue={""}
+          render={(props) => (
             <TextField
               type="date"
-              label={props.labelDates + " " + "From"}
+              label={labelDates + " " + "From"}
               className={`${classes.datePicker} ${stateNav.spudDateFrom ? classes.blue : ""}`}
               margin="dense"
               fullWidth
+              value={props.value}
               onChange={(date) => {
-                setValue("spudDateFrom", date);
+                props.onChange(date.target.value);
                 handleStartDate(date);
                 return { value: date };
               }}
@@ -117,12 +117,21 @@ export default function FilterDatePickerSpud(props) {
                 shrink: true,
               }}
               InputProps={{
+                endAdornment: (
+                  <IconButton
+                    onClick={(event) => {
+                      props.onChange(event);
+                      handleStartDate(null);
+                    }}
+                  >
+                    <Clear style={{ height: 22, width: 22 }} />
+                  </IconButton>
+                ),
                 classes: {
                   root: classes.dateRoot,
                 },
               }}
             />
-
           )}
         />
 
@@ -130,15 +139,17 @@ export default function FilterDatePickerSpud(props) {
           control={control}
           name="spudDateTo"
           defaultValue={stateNav.spudDateTo}
-          render={({ onChange, onClick, value }) => (
+          defaultValue={""}
+          render={(props) => (
             <TextField
               type="date"
-              label={props.labelDates + " " + "To"}
+              label={labelDates + " " + "To"}
               className={`${classes.datePicker} ${stateNav.spudDateTo ? classes.blue : ""}`}
               margin="dense"
               fullWidth
+              value={props.value}
               onChange={(date) => {
-                setValue("spudDateTo", date);
+                props.onChange(date.target.value);
                 handleEndDate(date);
                 return { value: date };
               }}
@@ -146,6 +157,16 @@ export default function FilterDatePickerSpud(props) {
                 shrink: true,
               }}
               InputProps={{
+                endAdornment: (
+                  <IconButton
+                    onClick={(event) => {
+                      props.onChange(event);
+                      handleStartDate(null);
+                    }}
+                  >
+                    <Clear style={{ height: 22, width: 22 }} />
+                  </IconButton>
+                ),
                 classes: {
                   root: classes.dateRoot,
                 },

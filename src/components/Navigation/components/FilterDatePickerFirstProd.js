@@ -1,9 +1,8 @@
 import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
-import ClearIcon from "@material-ui/icons/Clear";
+import { Clear } from "@material-ui/icons";
 import { IconButton, TextField } from "@material-ui/core";
 import { useForm, Controller } from "react-hook-form";
 
@@ -19,26 +18,26 @@ const useStyles = makeStyles((theme) => ({
       pointerEvents: "none",
     },
     "& .MuiIconButton-root": {
-      padding: "10px",
+      padding: "10px 0px",
     },
   },
-
   blue: {
     "& .MuiInputBase-input": { color: "#17AADD" },
   },
   dateRoot: {
     color: "#ffffff",
     "& input": {
-      marginLeft: 20,
-      marginTop: 13
+      marginLeft: 12,
     },
   },
 }));
 
+
 export default function FilterDatePickerFirstProd(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const { control, watch, setValue, reset } = useForm();
+  const { labelDates } = props;
+  const { control, reset } = useForm();
 
   useEffect(() => {
     let filter = null;
@@ -103,16 +102,17 @@ export default function FilterDatePickerFirstProd(props) {
         <Controller
           control={control}
           name="prodDateFrom"
-          defaultValue={stateNav.firstProdDateFrom}
-          render={({ onChange, onClick, value }) => (
+          defaultValue={""}
+          render={(props) => (
             <TextField
               type="date"
-              label={props.labelDates + " " + "From"}
-              className={`${classes.datePicker} ${stateNav.firstProdDateFrom ? classes.blue : ""}`}
+              label={labelDates + " " + "From"}
+              className={`${classes.datePicker} ${stateNav.prodDateFrom ? classes.blue : ""}`}
               margin="dense"
               fullWidth
+              value={props.value}
               onChange={(date) => {
-                setValue("firstProdDateFrom", date);
+                props.onChange(date.target.value);
                 handleStartDate(date);
                 return { value: date };
               }}
@@ -120,6 +120,16 @@ export default function FilterDatePickerFirstProd(props) {
                 shrink: true,
               }}
               InputProps={{
+                endAdornment: (
+                  <IconButton
+                    onClick={(event) => {
+                      props.onChange(event);
+                      handleStartDate(null);
+                    }}
+                  >
+                    <Clear style={{ height: 22, width: 22 }} />
+                  </IconButton>
+                ),
                 classes: {
                   root: classes.dateRoot,
                 },
@@ -131,23 +141,34 @@ export default function FilterDatePickerFirstProd(props) {
         <Controller
           control={control}
           name="prodDateTo"
-          defaultValue={stateNav.firstProdDateTo}
-          render={({ onChange, onClick, value }) => (
+          defaultValue={""}
+          render={(props) => (
             <TextField
               type="date"
-              label={props.labelDates + " " + "To"}
-              className={`${classes.datePicker} ${stateNav.firstProdDateTo ? classes.blue : ""}`}
+              label={labelDates + " " + "To"}
+              className={`${classes.datePicker} ${stateNav.prodDateTo ? classes.blue : ""}`}
               margin="dense"
               fullWidth
+              value={props.value}
               onChange={(date) => {
-                setValue("firstProdDateTo", date);
-                handleEndDate(date);
+                props.onChange(date.target.value);
+                handleStartDate(date);
                 return { value: date };
               }}
               InputLabelProps={{
                 shrink: true,
               }}
               InputProps={{
+                endAdornment: (
+                  <IconButton
+                    onClick={(event) => {
+                      props.onChange(event);
+                      handleStartDate(null);
+                    }}
+                  >
+                    <Clear style={{ height: 22, width: 22 }} />
+                  </IconButton>
+                ),
                 classes: {
                   root: classes.dateRoot,
                 },
