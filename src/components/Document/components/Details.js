@@ -12,6 +12,7 @@ import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from "@material-ui/core";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
@@ -231,7 +232,7 @@ export default function DocumentDetails(props) {
 
   useEffect(() => {
     if (metaDataRes?.getMetaData?.gridViews) {
-      setMetaData(metaDataRes.getMetaData.gridViews);
+      sortFields(metaDataRes.getMetaData.gridViews)
     }
   }, [metaDataRes]);
 
@@ -258,6 +259,24 @@ export default function DocumentDetails(props) {
       a.click();
     }
   }, [viewFileResult]);
+
+  const sortFields = (gridViews) => {
+    const metaData = []
+    console.log(stateApp.selectedView)
+    if(stateApp.selectedView.columns?.length > 0){
+      for(let i = 0; i < stateApp.selectedView.columns?.length; i++) {
+        const data = gridViews.find(view => view.name === stateApp.selectedView.columns[i].name)
+        if(data){
+          metaData.push(data);
+        }
+      }
+      setMetaData(metaData);
+    }else{
+      setMetaData(gridViews);
+    }
+
+    
+  };
 
   const UpDatefileFN = () => {
     let documentType = "";
@@ -490,6 +509,32 @@ export default function DocumentDetails(props) {
                     >
                       <h4>{meta.label}</h4>
                       <CustomFieldSelect
+                        fullWidth
+                        index={"documentTable"}
+                        dropdownOptions={meta.dropdownOptions}
+                        column={meta}
+                        value={value}
+                        onCustomKeyChange={(value) => {
+                          const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
+                          custom_data[meta.name] = value ? value : null; // empty string is falsey so null
+                          setNewDocument({
+                            ...newDocument,
+                            custom_data,
+                          });
+                        }}
+                      />
+                    </ListItem>
+                  )}
+                  {meta.type === "multiselect" && (
+                    <ListItem
+                      style={{
+                        flexDirection: "column",
+                        justifyContent: "start",
+                        alignItems: "start",
+                      }}
+                    >
+                      <h4>{meta.label}</h4>
+                      <CustomFieldMultiSelect
                         fullWidth
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}

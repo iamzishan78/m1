@@ -112,6 +112,7 @@ export const setColumnsData = (
             return (
               <AutoCompleteFilter
                 esIndex={esIndex}
+                setFilters={setFilters}
                 filterList={filterList}
                 column={column}
                 index={index}
@@ -122,9 +123,9 @@ export const setColumnsData = (
             );
           },
         },
-        onFilterChange: (columnChanged, filterList) => {
-          setFilters(filterList);
-        },
+        // onFilterChange: (columnChanged, filterList) => {
+        //   setFilters(filterList);
+        // },
       };
     }
   });
