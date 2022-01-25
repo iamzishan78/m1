@@ -223,9 +223,6 @@ export default function DetailComponents(props) {
         block: "start",
         inline: "start",
       });
-
-      // Setting button scroll to false so scroll events could trigger
-      // setTimeout(() => setButtonScroll(false), 1000);
     }
   }, [tab]);
 
