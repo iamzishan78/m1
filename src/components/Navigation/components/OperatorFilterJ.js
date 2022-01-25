@@ -2,45 +2,30 @@ import React, { useState, useContext, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
-// import { TOPOPERATORS } from "../../../graphQL/useQueryTopOperators";
 import { useLazyQuery } from "@apollo/client";
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 export default function OperatorFilterJ() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [operatorName, setOperatorName] = React.useState(stateNav.operatorName);
   const [operatorList, setOperatorsList] = useState([]);
-  // const [getOperators, { data: topOperatorData }] = useLazyQuery(TOPOPERATORS);
-
-  const [getESPaginatedList, { data: esOperatorsData }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
-
+  let [getFilters, { data: esOperatorsData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  const esIndex = "platformData:operator";
   useEffect(() => {
-    // use effect is querying the top operator data
-    // top operator data is used for the autocomplete filter
-    getESPaginatedList({
+    getFilters({
       variables: {
-        esIndex: "platformData:operator",
-        sort: [],
-        pagination: {
-          first: 1,
-          keep_alive: "1micros"
-        },
-      }
+        esIndex,
+        filterKey: "operator.keyword",
+        search: "",
+        size: 50,
+      },
     });
-    // getOperators();
   }, []);
 
   useEffect(() => {
-    // this use effect is taking the top operator data response
-    // reformatting into an array
-    // and setting the operator list for the filter
-
     if (esOperatorsData) {
-      const operatorList = esOperatorsData.getESPaginatedList?.hits?.map((item) => item.operator);
-
+      const operatorList = esOperatorsData.getESFilterList?.hits?.map((item) => item.key);
       setOperatorsList(operatorList);
-    } else {
-      setOperatorsList([]);
     }
   }, [esOperatorsData]);
 
@@ -57,6 +42,17 @@ export default function OperatorFilterJ() {
     setStateNav((stateNav) => ({ ...stateNav, filterOperator: filter }));
   };
 
+  const handleOperatorChangeByInput = (value) => {
+    getFilters({
+      variables: {
+        esIndex,
+        filterKey: "operator.keyword",
+        search: value,
+        size: 50,
+      },
+    });
+  }
+
 
   return (
     <Autocomplete
@@ -67,6 +63,9 @@ export default function OperatorFilterJ() {
         handleOperatorChange(newValue);
       }}
       multiple
+      onInputChange={(event, newInputValue) => {
+        handleOperatorChangeByInput(newInputValue);
+      }}
       options={operatorList}
       renderInput={(params) => <TextField {...params} variant="outlined" label="Operator" placeholder="" fullWidth />}
       disableListWrap
