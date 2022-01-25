@@ -90,6 +90,7 @@ import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 import CustomFieldText from "components/Shared/M1nTable/components/SubComponents/CustomFieldText";
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 // queries
 import { OWNERSLATSLONS } from "graphQL/useQueryOwnerLatsLonsArray";
@@ -1098,7 +1099,7 @@ function SubTable(props) {
     event.stopPropagation();
     setSelectedUser(user);
     setSelectedUserIndex(rowIndex);
-    setM1nSelectedRowsIds([user._id]);
+    setM1nSelectedRowsIds([user.id]);
     setUsermanagementSettings(
       <Menu
         anchorEl={event.currentTarget}
@@ -2315,9 +2316,30 @@ function SubTable(props) {
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
                     }
+                    console.log('column', column.name)
+                    if(column.name === 'status'){
+                      debugger
+                    }
                     return (
                       <div style={{ minWidth: "100px" }}>
                         <CustomFieldSelect
+                          dropdownOptions={column.dropdownOptions}
+                          index={tableMeta.rowIndex}
+                          column={column}
+                          value={value}
+                          onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)}
+                        />
+                      </div>
+                    );
+                  }
+                  if (column.isCustom && column.type === "multiselect") {
+                    let value = null;
+                    if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
+                      value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
+                    }
+                    return (
+                      <div style={{ minWidth: "100px", maxWidth: "400px" }}>
+                        <CustomFieldMultiSelect
                           dropdownOptions={column.dropdownOptions}
                           index={tableMeta.rowIndex}
                           column={column}
