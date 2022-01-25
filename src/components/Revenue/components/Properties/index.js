@@ -33,6 +33,10 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: "38px",
     marginTop: theme.spacing(2),
   },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 }));
 
 const cards = [
@@ -134,10 +138,14 @@ export default function Properties() {
   return (
     <>
       <div className={classes.actionBar}>
-        <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 78px" }}>
-          
-          <CustomDates fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} />
-          <Grid item xs={4} md={4}>
+        <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 36px" }}>
+          {/* <Grid style={{ marginTop: "2px", padding: 0 }}>
+            <label className={classes.label}>Last Check Date</label>
+          </Grid> */}
+          <Grid item xs={8} md={8} lg={9} xl={8} style={{ marginTop: "4px" }}>
+            <CustomDates fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} label="Last Check Date" />
+          </Grid>
+          <Grid item xs={3} md={3} lg={3} xl={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
               <Grid item>
                 {/* hiding until we have views for properties - kc */}

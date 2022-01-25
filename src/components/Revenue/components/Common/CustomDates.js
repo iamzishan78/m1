@@ -34,6 +34,15 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#fff",
     },
   },
+  inputFieldDate: {
+    "& .MuiOutlinedInput-input": {
+      paddingLeft: '0px'
+    }
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 }));
 
 const CUSTOM_DATES = {
@@ -48,7 +57,7 @@ const CUSTOM_DATES = {
 };
 
 // fromDate and toDate should be passed from the parent
-export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate }) {
+export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate, label }) {
   const classes = useStyles();
 
   useEffect(() => {
@@ -115,9 +124,13 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
   };
 
   return (
-    <Grid item xs={8} md={8} style={{ marginTop: "4px" }}>
       <Grid container direction="row" display="flex" alignItems="center" spacing={3}>
-        <Grid item xs={3} style={{ marginTop: "2px" }}>
+        {label && (
+          <Grid style={{ marginTop: "2px", padding: 0 }}>
+            <label className={classes.label}>{label}</label>
+          </Grid>
+        )}
+        <Grid item xs={3} sm={3} md={3} lg={3} xl={3} style={{ marginTop: "2px" }}>
           <Autocomplete
             size="small"
             onChange={(event, newValue) => {
@@ -136,7 +149,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
             id="custom-date-dropdown"
           />
         </Grid>
-        <Grid item xs={4} >
+        <Grid item xs={3} sm={3} md={3} lg={3} xl={3} >
           <TextField
             size="small"
             margin="dense"
@@ -168,7 +181,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
         <Grid>
           <label>to</label>
         </Grid>
-        <Grid item xs={4} >
+        <Grid item xs={3} sm={3} md={3} lg={3} xl={3} >
           <TextField
             size="small"
             margin="dense"
@@ -198,6 +211,5 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
           />
         </Grid>
       </Grid>
-    </Grid>
   );
 }
