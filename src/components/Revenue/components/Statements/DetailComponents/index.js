@@ -116,9 +116,13 @@ const useStyles = makeStyles((theme) => ({
     },
   }),
   menu: {
+    "& .MuiListItem-gutters": {
+      paddingLeft: "10px !important",
+      paddingRight: "10px !important",
+    },
     "& .MuiListItem-root": {
       "& .MuiListItemIcon-root": {
-        minWidth: "30px",
+        minWidth: "25px",
         "& .MuiSvgIcon-root": {
           fill: "red !important",
         },
@@ -264,8 +268,6 @@ export default function DetailComponents(props) {
 
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
 
-  const handleMenuClose = () => setAnchorEl(null);
-
   return (
     <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor?.["name"]}`}>
       {/**
@@ -359,11 +361,11 @@ export default function DetailComponents(props) {
        * Menu for meta data
        */}
       <Menu
-        id="dealMenu"
+        id="revStatementMenu"
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
+        onClose={() => setAnchorEl(null)}
         className={classes.menu}
         getContentAnchorEl={null}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
