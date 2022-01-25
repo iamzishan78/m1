@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import { Clear } from "@material-ui/icons";
 import { NavigationContext } from "../NavigationContext";
@@ -40,7 +39,6 @@ export default function FilterDatePickerPermit(props) {
 
   useEffect(() => {
     let filter = null;
-
     if (stateNav.permitDateFrom || stateNav.permitDateTo) {
       filter = ["all"];
 
@@ -84,14 +82,14 @@ export default function FilterDatePickerPermit(props) {
   const handleStartDate = (date) => {
     setStateNav((stateNav) => ({
       ...stateNav,
-      permitDateFrom: !date ? null : moment(date),
+      permitDateFrom: date,
     }));
   };
 
   const handleEndDate = (date) => {
     setStateNav((stateNav) => ({
       ...stateNav,
-      permitDateTo: !date ? null : moment(date),
+      permitDateTo: date,
     }));
   };
 
@@ -111,8 +109,8 @@ export default function FilterDatePickerPermit(props) {
               fullWidth
               value={props.value}
               onChange={(date) => {
+                handleStartDate(date.target.value);
                 props.onChange(date.target.value);
-                handleStartDate(date);
                 return { value: date };
               }}
               InputLabelProps={{
@@ -123,8 +121,8 @@ export default function FilterDatePickerPermit(props) {
                 endAdornment: (
                   <IconButton
                     onClick={(event) => {
-                      props.onChange(event);
                       handleStartDate(null);
+                      props.onChange(event);
                     }}
                   >
                     <Clear style={{ height: 22, width: 22 }} />
@@ -150,8 +148,8 @@ export default function FilterDatePickerPermit(props) {
               fullWidth
               value={props.value}
               onChange={(date) => {
+                handleEndDate(date.target.value);
                 props.onChange(date.target.value);
-                handleEndDate(date);
               }}
               InputLabelProps={{
                 shrink: true,
@@ -161,8 +159,8 @@ export default function FilterDatePickerPermit(props) {
                 endAdornment: (
                   <IconButton
                     onClick={(event) => {
-                      props.onChange(event);
                       handleEndDate(null);
+                      props.onChange(event);
                     }}
                   >
                     <Clear style={{ height: 22, width: 22 }} />

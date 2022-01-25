@@ -11,6 +11,7 @@ const useStyles = makeStyles((theme) => ({
   datesRow: {
     display: "flex",
     flexDirection: "row",
+    margin: "12px 0"
   },
   datePicker: {
     margin: "5px",
@@ -82,14 +83,14 @@ export default function FilterDatePickerSpud(props) {
   const handleStartDate = (date) => {
     setStateNav((stateNav) => ({
       ...stateNav,
-      spudDateFrom: !date ? null : moment(date),
+      spudDateFrom: date,
     }));
   };
 
   const handleEndDate = (date) => {
     setStateNav((stateNav) => ({
       ...stateNav,
-      spudDateTo: !date ? null : moment(date),
+      spudDateTo: date,
     }));
   };
 
@@ -109,8 +110,8 @@ export default function FilterDatePickerSpud(props) {
               fullWidth
               value={props.value}
               onChange={(date) => {
+                handleStartDate(date.target.value);
                 props.onChange(date.target.value);
-                handleStartDate(date);
                 return { value: date };
               }}
               InputLabelProps={{
@@ -120,8 +121,8 @@ export default function FilterDatePickerSpud(props) {
                 endAdornment: (
                   <IconButton
                     onClick={(event) => {
-                      props.onChange(event);
                       handleStartDate(null);
+                      props.onChange(event);
                     }}
                   >
                     <Clear style={{ height: 22, width: 22 }} />
@@ -149,8 +150,8 @@ export default function FilterDatePickerSpud(props) {
               fullWidth
               value={props.value}
               onChange={(date) => {
+                handleEndDate(date.target.value);
                 props.onChange(date.target.value);
-                handleEndDate(date);
                 return { value: date };
               }}
               InputLabelProps={{
@@ -160,8 +161,8 @@ export default function FilterDatePickerSpud(props) {
                 endAdornment: (
                   <IconButton
                     onClick={(event) => {
+                      handleEndDate(null);
                       props.onChange(event);
-                      handleStartDate(null);
                     }}
                   >
                     <Clear style={{ height: 22, width: 22 }} />
