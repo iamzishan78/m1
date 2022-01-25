@@ -232,7 +232,7 @@ export default function DocumentDetails(props) {
 
   useEffect(() => {
     if (metaDataRes?.getMetaData?.gridViews) {
-      setMetaData(metaDataRes.getMetaData.gridViews);
+      sortFields(metaDataRes.getMetaData.gridViews)
     }
   }, [metaDataRes]);
 
@@ -259,6 +259,24 @@ export default function DocumentDetails(props) {
       a.click();
     }
   }, [viewFileResult]);
+
+  const sortFields = (gridViews) => {
+    const metaData = []
+    console.log(stateApp.selectedView)
+    if(stateApp.selectedView.columns?.length > 0){
+      for(let i = 0; i < stateApp.selectedView.columns?.length; i++) {
+        const data = gridViews.find(view => view.name === stateApp.selectedView.columns[i].name)
+        if(data){
+          metaData.push(data);
+        }
+      }
+      setMetaData(metaData);
+    }else{
+      setMetaData(gridViews);
+    }
+
+    
+  };
 
   const UpDatefileFN = () => {
     let documentType = "";
