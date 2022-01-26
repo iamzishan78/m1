@@ -416,34 +416,39 @@ function DocumentsTable(props) {
           columns: sortedColumns,
         },
       },
+      refetchQueries: ["getGridViews"],
+      awaitRefetchQueries: true,
     });
+    // setStateApp((state, props) => {
+    //   return {
+    //     ...state,
+    //     selectedView: { ...state.selectedView, columns: sortedColumns },
+    //   };
+    // });
+    // const newColumns = JSON.parse(JSON.stringify(columns));
+    // if(newMetaData){
+    //   newColumns.push(newMetaData)
+    //   TableHeader.push(newMetaData)
+    // }
+    // const columnsData = sortColumns(newColumns, {
+    //   ...selectedGridView,
+    //   columns: sortedColumns,
+    // });
 
-    setStateApp((state, props) => {
-      return {
-        ...state,
-        selectedView: { ...state.selectedView, columns: sortedColumns },
-      };
-    });
+    // setColumnsData(
+    //   TableHeader,
+    //   filters,
+    //   JSON.parse(JSON.stringify(columnsData)),
+    //   setColumns,
+    //   setFilters,
+    //   GET_ES_DOCUMENTS_FILTER,
+    //   "documents_flat"
+    // );
 
-    const columnsData = sortColumns(columns, {
-      ...selectedGridView,
-      columns: sortedColumns,
-    });
-
-    setColumnsData(
-      TableHeader,
-      filters,
-      JSON.parse(JSON.stringify(columnsData)),
-      setColumns,
-      setFilters,
-      GET_ES_DOCUMENTS_FILTER,
-      "documents_flat"
-    );
-
-    setRefetchList(false);
-    setTimeout(() => {
-      setSelectedGridView({ ...selectedGridView, columns: sortedColumns });
-    }, 10);
+    // setRefetchList(false);
+    // setTimeout(() => {
+    //   setSelectedGridView({ ...selectedGridView, columns: sortedColumns });
+    // }, 10);
   };
 
   const headerProps = {
