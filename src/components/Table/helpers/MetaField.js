@@ -90,6 +90,7 @@ const useStyles = makeStyles((theme) => ({
 
 const options = [
   { value: "dropdown", label: "Drop-down" },
+  { value: "multiselect", label: "Multi-select" },
   { value: "text", label: "Text" },
 ];
 
@@ -425,7 +426,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
                   </Grid>
                 </Grid>
               </div>
-              {type === "dropdown" && (
+              {(type === "dropdown" || type === "multiselect" ) && (
                 <div style={{ padding: "0px 35px" }}>
                   <SortableComponent setItems={setItems} items={items} />
                 </div>
