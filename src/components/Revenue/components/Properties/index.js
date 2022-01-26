@@ -143,7 +143,7 @@ export default function Properties() {
             <label className={classes.label}>Last Check Date</label>
           </Grid> */}
           <Grid item xs={8} md={8} lg={9} xl={8} style={{ marginTop: "4px" }}>
-            <CustomDates fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} label="Last Check Date" />
+            <CustomDates fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} label="Last Check Date" isProperties />
           </Grid>
           <Grid item xs={3} md={3} lg={3} xl={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>

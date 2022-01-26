@@ -57,11 +57,18 @@ const CUSTOM_DATES = {
 };
 
 // fromDate and toDate should be passed from the parent
-export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate, label }) {
+export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate, label, isProperties }) {
   const classes = useStyles();
-
+  if(isProperties){
+    CUSTOM_DATES.ALL_DATES="All Dates";
+  }
   useEffect(() => {
-    handleDateTypeChange(CUSTOM_DATES.LAST_MONTH);
+    if(isProperties){
+      handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+    }else{
+      handleDateTypeChange(CUSTOM_DATES.LAST_MONTH);
+    }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -144,7 +151,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
             renderInput={(params) => (
               <TextField {...params} variant="outlined" label="Date Range" placeholder="" style={{ backgroundColor: "white" }} />
             )}
-            defaultValue={CUSTOM_DATES.LAST_MONTH}
+            defaultValue={isProperties ?  CUSTOM_DATES.ALL_DATES : CUSTOM_DATES.LAST_MONTH}
             disableListWrap
             id="custom-date-dropdown"
           />
