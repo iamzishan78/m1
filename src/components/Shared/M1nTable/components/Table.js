@@ -1512,6 +1512,9 @@ function SubTable(props) {
                   if (props.parent === "TractInterestsTable" && props.targetLabel === "tractInterest") {
                     targetSourceId = tableMeta.rowData[1];
                   }
+                  if (props.parent === "ownersPerUnit" && props.targetLabel === "Unit Ownership") {
+                    targetSourceId = tableMeta.rowData[1];
+                  }
 
                   return (
                     //add download and search icons here
@@ -1825,6 +1828,9 @@ function SubTable(props) {
                     targetSourceId = tableMeta.rowData[15];
                   }
                   if (props.parent === "TractInterestsTable" && props.targetLabel === "tractInterest") {
+                    targetSourceId = tableMeta.rowData[1];
+                  }
+                  if (props.parent === "ownersPerUnit" && props.targetLabel === "Unit Ownership") {
                     targetSourceId = tableMeta.rowData[1];
                   }
                   return (
