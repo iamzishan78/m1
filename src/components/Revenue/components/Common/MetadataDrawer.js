@@ -347,7 +347,8 @@ export default function MetadataDrawer(props) {
           />
         </Grid>
 
-        <div
+      {/* hiding for now until we get custom metadata added to statements and properties - kc 20220123 */}
+        {/* <div
           onClick={() => {
             setStateApp((stateApp) => ({
               ...stateApp,
@@ -369,7 +370,7 @@ export default function MetadataDrawer(props) {
             <AddIcon style={{ marginTop: 4, marginRight: 4, fontSize: 16, alignItems: "center" }} htmlColor="#000000" />
           </span>
           {` Add`}
-        </div>
+        </div> */}
 
         <div className="flex justifyBetween alignCenter" style={{ padding: "20px 16px", marginBottom: -56 }}>
           <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents</h4>

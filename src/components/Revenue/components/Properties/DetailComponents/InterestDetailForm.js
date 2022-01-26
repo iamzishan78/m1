@@ -22,7 +22,7 @@ import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/compon
 
 const interestTypeOptions = ["Royalty Interest", "Overriding Royalty", "Working Interest"];
 
-const statusOptions = ["Active", "InActive"];
+const statusOptions = ["Active", "Inactive"];
 
 const costFreeOptions = ["Yes", "No"];
 

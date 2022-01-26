@@ -90,6 +90,7 @@ const useStyles = makeStyles((theme) => ({
 
 const options = [
   { value: "dropdown", label: "Drop-down" },
+  { value: "multiselect", label: "Multi-select" },
   { value: "text", label: "Text" },
 ];
 
@@ -127,7 +128,7 @@ const categoryOptions = [
   },
 ];
 
-const MetaField = ({ category, columns }) => {
+const MetaField = ({ category, columns, updateColumnSorting }) => {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState("new");
   const [metaData, setMetaData] = useState(null);
@@ -217,19 +218,20 @@ const MetaField = ({ category, columns }) => {
         awaitRefetchQueries: true,
       });
     } else {
+      const name = values.title.replace(/ /g, "_").toLowerCase()
       addMetaData({
         variables: {
           metaData: {
-            name: values.title.replace(/ /g, "_").toLowerCase(),
+            name: name,
             label: values.title,
             esKey:
               values.type === "dropdown"
-                ? `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}`
+                ? `custom_data.${name}`
                 : `custom_data.${values.title
                   .replace(/ /g, "_")
                   .toLowerCase()}`,
             options: {
-              display: true,
+              display: false,
               filter: true,
               searchable: false,
               sort: true,
@@ -248,6 +250,11 @@ const MetaField = ({ category, columns }) => {
         refetchQueries: ["getMetaData"],
         awaitRefetchQueries: true,
       });
+      if(updateColumnSorting){
+        const columnData = JSON.parse(JSON.stringify(columns));
+        columnData.push({ name, options: { display: true }})
+        updateColumnSorting(columnData.map(col => ({ name: col.name, display: col.options.display ? "true" : "false" })));
+      }
     }
     handleClose();
   };
@@ -419,7 +426,7 @@ const MetaField = ({ category, columns }) => {
                   </Grid>
                 </Grid>
               </div>
-              {type === "dropdown" && (
+              {(type === "dropdown" || type === "multiselect" ) && (
                 <div style={{ padding: "0px 35px" }}>
                   <SortableComponent setItems={setItems} items={items} />
                 </div>

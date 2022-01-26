@@ -4,6 +4,7 @@ import PropertyInterestDetailsTable from "components/Table/Revenue/PropertyInter
 
 const useStyles = makeStyles(() => ({
   sectionCard: {
+    padding: "20px 15px",
     maxWidth: "100%",
     margin: "0 auto",
     background: "#ffffff",
@@ -23,9 +24,7 @@ const useStyles = makeStyles(() => ({
 const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDetails, setSelectedInterest }) => {
   const classes = useStyles();
   return (
-    <div
-      className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}
-    >
+    <div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
       <PropertyInterestDetailsTable
         onClickAdd={onClickAdd}
         setSelectedInterest={setSelectedInterest}
