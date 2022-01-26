@@ -8,7 +8,6 @@ import StateField from "./State";
 import CountyField from "./County";
 import AssociatedWellsList from "components/Shared/Wells/AssociatedWells";
 import AutoComplete from "components/Shared/components/Fields/AutoComplete";
-
 import ContactCardIcon from "components/Shared/svgIcons/contact_card";
 
 const useStyles = makeStyles((theme) => ({
@@ -86,7 +85,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function HeaderFunction(props) {
   const classes = useStyles();
-
   const { control, setValue, watch, register } = useForm();
 
   useEffect(() => {
@@ -300,7 +298,7 @@ export default function HeaderFunction(props) {
         </Grid>
       </Grid>
       <Grid item className={classes.associatedWell}>
-        <AssociatedWellsList title="Associated Wells" />
+        <AssociatedWellsList title="Associated Wells" relatedObject={props.propertyId} relatedObjectType="Property" />
       </Grid>
     </Grid>
   );

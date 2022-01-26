@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
+import { debounce } from "lodash";
 
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
@@ -212,6 +213,7 @@ export default function DetailComponents(props) {
   const [collapse, setCollapse] = useState(false);
   const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
+  const [isButtonScroll, setButtonScroll] = useState(false);
 
   const classes = useStyles({ ...props, showInterestDetails, collapse });
 
@@ -276,6 +278,17 @@ export default function DetailComponents(props) {
     }
   }, [propertyDetails, refetchContacts]);
 
+  const handleScroll = (e) => {
+    if (!isButtonScroll) {
+      const { scrollTop } = e.target;
+      if (scrollTop <= 150 && tab !== 0) setTab(0);
+      else if (scrollTop > 150 && tab !== 1) setTab(1);
+    }
+    handleEndScroll();
+  };
+
+  const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
+
   return (
     <NavHeader title={propertyDetails?.name}>
       {/**
@@ -309,7 +322,7 @@ export default function DetailComponents(props) {
               <StyledTabs
                 value={tab}
                 onChange={(event, tab) => {
-                  // setButtonScroll(true);
+                  setButtonScroll(true);
                   setTab(tab);
                 }}
                 aria-label="ant example"
@@ -336,9 +349,9 @@ export default function DetailComponents(props) {
            * Detail tabs section
            */}
           <div className={classes.tabsSection}>
-            <div className={classes.tabsSectionDetails}>
+            <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-                <HeaderSection />
+                <HeaderSection propertyId={propertyId} />
               </div>
               <div ref={tab === 1 ? selectedTabRef : null}>
                 <PropertyInterestDetailsSection
