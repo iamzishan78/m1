@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState, Fragment, useRef } from "react"
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { get } from "lodash";
 import union from "@turf/union";
+import * as turf from "@turf/turf";
 // STATE MANAGEMENT
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import { AppContext } from "AppContext";
@@ -187,10 +188,10 @@ const useStyles = makeStyles((theme) => ({
   convertMenuColor: {
     color: '#A6A6A6',
   },
-  downloadIcon:{
-    color:"#A6A6A6", width: "30px", height: "28px"
+  downloadIcon: {
+    color: "#A6A6A6", width: "30px", height: "28px"
   },
-  areaExceed:{
+  areaExceed: {
     fontSize: 16, marginTop: 10
   }
 }));
@@ -290,6 +291,7 @@ export default function DrawShapes() {
         setFeatureProperty(draw, feature.id, "shapeEdit", false);
 
         let currentFeature = feature;
+
         setStateApp((state) => {
 
           drawShapeLayerToggle(state, state.lastSelectedDrawMode === "draw_polygon" ? "visible" : "none");
@@ -306,9 +308,42 @@ export default function DrawShapes() {
           setStateApp((state) => {
             draw.deleteAll();
             draw.add(currentFeature)
+
+            // const quarters = ["SWSW", "NWSW", "SWNW", "NWNW", "SESW", "NESW", "SENW", "NENW", "SWSE", "NWSE", "SWNE", "NWNE", "SESE", "NESE", "SENE", "NENE"]
+            // const quarterPolygons = {}
+            // let quaterIndex = 0
+            // var bbox = turf.bbox(currentFeature);
+            // let minX = bbox[0];
+            // let maxX = bbox[2];
+
+            // let minY = bbox[1];
+            // let maxY = bbox[3];
+
+            // const incrementX = ((maxX - minX) / 4);
+
+            // const incrementY = ((maxY - minY) / 4);
+            // for (let i = 0; i < 4; i++) {
+            //   bbox[2] = bbox[0] + incrementX
+            //   for (let j = 0; j < 4; j++) {
+            //     bbox[3] = bbox[1] + incrementY
+
+            //     let m = turf.bboxClip(currentFeature, bbox);
+            //     quarterPolygons[quarters[quaterIndex++]] = m
+            //     draw.add(m)
+
+            //     bbox[1] = bbox[3]
+            //   }
+            //   bbox[0] = bbox[2]
+
+            //   bbox[1] = minY
+            //   bbox[3] = maxY
+            // }
+
+            // console.log(quarterPolygons)
+
             addCustomShapeProperties(currentFeature, draw);
             setFeatureProperty(draw, currentFeature.id, "shapeEdit", false);
-            draw.changeMode(state.lastSelectedDrawMode);
+            draw.changeMode("simple_select");
             // isDrawing: false
             return { ...state, currentFeature }
 

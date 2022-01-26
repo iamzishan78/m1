@@ -7,7 +7,9 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { Box } from "@material-ui/core";
 import { getQtrFilterData } from "./helper";
+import { copy } from 'utils/helper';
 import SmallTXQtr from "components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/SmallTXQtr";
+import { getNewShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 
 const useStyles = makeStyles((theme) => ({
   mainDiv: {
@@ -94,12 +96,22 @@ const useStyles = makeStyles((theme) => ({
 
 const qtrOptions = ["", "E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
 
-export default function QtrQtrSelectorNew({ parcelData }) {
+export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
   const classes = useStyles({ parcelData });
+  const [qtr, setQtr] = useState(parcelData?.qtrQtrSelection?.selectedQtr ? copy(parcelData.qtrQtrSelection.selectedQtr) : ["", "", "", ""])
 
-  const [qtr, setQtr] = useState(["", "", "", ""])
+  const [qtrQtr, setQtrQtr] = useState(parcelData?.qtrQtrSelection?.qtrQtr ? copy(parcelData.qtrQtrSelection.qtrQtr) : {})
+  const [disableUpdate, setDisableUpdate] = useState(false)
 
-  const [qtrQtr, setQtrQtr] = useState(parcelData.qtrQtr)
+  useEffect(() => {
+    if (parcelData?.qtrQtrSelection) {
+      setQtr(copy(parcelData.qtrQtrSelection.selectedQtr))
+      setQtrQtr(copy(parcelData.qtrQtrSelection.qtrQtr))
+    }
+
+  }, [parcelData?.qtrQtrSelection])
+
+
   useEffect(() => {
     const values = getQtrFilterData(qtr)
     if (values) {
@@ -112,6 +124,29 @@ export default function QtrQtrSelectorNew({ parcelData }) {
       setQtrQtr(qtrQtr)
     }
   }, [])
+
+  useEffect(() => {
+    checkForDisabled()
+  }, [qtr])
+
+  const checkForDisabled = () => {
+    let isDisabled = true
+
+    if (!parcelData?.qtrQtrSelection?.selectedQtr && !qtr.find((q) => q !== '')) {
+      setDisableUpdate(true)
+      return
+    }
+    if (!parcelData?.qtrQtrSelection?.selectedQtr && qtr.find((q) => q !== '')) {
+      setDisableUpdate(false)
+      return
+    }
+    qtr.forEach((q, index) => {
+      if (parcelData?.qtrQtrSelection?.selectedQtr[index] !== q) {
+        isDisabled = false
+      }
+    })
+    setDisableUpdate(isDisabled)
+  }
 
   return (
     <div>
@@ -152,7 +187,23 @@ export default function QtrQtrSelectorNew({ parcelData }) {
           </Grid>
         </Grid>
         <Grid item md={3} style={{ paddingTop: '1.8em' }}>
-          <Button variant="contained" color="primary">Update</Button>
+          <Button variant="contained" color="primary" disabled={disableUpdate} onClick={() => {
+            const values = getQtrFilterData(qtr)
+            const feature = copy(parcelData.shape)
+            let parcelDataCopy = copy(parcelData)
+            if (parcelDataCopy?.qtrQtrSelection?.originalGeometry) {
+              feature.geometry = parcelDataCopy.qtrQtrSelection.originalGeometry
+            }
+            const newShape = getNewShapeFromSelectedQuarters(feature, values)
+            if (!parcelDataCopy.qtrQtrSelection) parcelDataCopy.qtrQtrSelection = {}
+            if (!parcelDataCopy?.qtrQtrSelection?.originalGeometry) {
+              parcelDataCopy.qtrQtrSelection.originalGeometry = parcelDataCopy.shape.geometry
+            }
+            parcelDataCopy.qtrQtrSelection.qtrQtr = qtrQtr
+            parcelDataCopy.qtrQtrSelection.selectedQtr = qtr
+            parcelDataCopy.shape.geometry = newShape.geometry
+            updateParcelQtr(parcelDataCopy)
+          }}>Update</Button>
         </Grid>
 
       </Grid>

@@ -1,6 +1,7 @@
 import { spatialDataAttributes } from "./constants";
 import { area, convertArea, length } from "@turf/turf";
 import polylabel from "polylabel";
+import * as turf from "@turf/turf";
 import { drawShapeLayerToggle, setFeatureProperty } from "components/MapControls/commonHelper";
 
 export const addCustomShapeProperties = (feature, Draw) => {
@@ -182,4 +183,50 @@ export const drawBoundary = (map, selectedUserDefinedLayer) => {
       map.removeLayer('boundary-point')
     }
   }
+}
+
+
+export const getNewShapeFromSelectedQuarters = (currentFeature, selectedQuarters) => {
+  const quarters = ["SWSW", "NWSW", "SWNW", "NWNW", "SESW", "NESW", "SENW", "NENW", "SWSE", "NWSE", "SWNE", "NWNE", "SESE", "NESE", "SENE", "NENE"]
+  const quarterPolygons = {}
+  let quaterIndex = 0
+  var bbox = turf.bbox(currentFeature);
+  let minX = bbox[0];
+  let maxX = bbox[2];
+
+  let minY = bbox[1];
+  let maxY = bbox[3];
+
+  const incrementX = ((maxX - minX) / 4);
+
+  const incrementY = ((maxY - minY) / 4);
+  for (let i = 0; i < 4; i++) {
+    bbox[2] = bbox[0] + incrementX
+    for (let j = 0; j < 4; j++) {
+      bbox[3] = bbox[1] + incrementY
+
+      let m = turf.bboxClip(currentFeature, bbox);
+      quarterPolygons[quarters[quaterIndex++]] = m
+
+      bbox[1] = bbox[3]
+    }
+    bbox[0] = bbox[2]
+
+    bbox[1] = minY
+    bbox[3] = maxY
+  }
+
+  let newShape = {}
+  selectedQuarters.forEach((selectedQuarter, index) => {
+    if (index === 0) {
+      newShape = quarterPolygons[selectedQuarter]
+    } else {
+      newShape = turf.union(quarterPolygons[selectedQuarter], newShape);
+    }
+  });
+
+  newShape.id = currentFeature.id
+  newShape.properties.id = currentFeature.id;
+
+  return newShape
 }
