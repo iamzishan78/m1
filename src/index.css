@@ -65,7 +65,9 @@ body {
 }
 
 #laneProgressMenu,
-#dealMenu {
+#dealMenu,
+#revPropertyMenu,
+#revStatementMenu {
   z-index: 9999999999 !important;
 }
 

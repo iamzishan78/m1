@@ -55,6 +55,7 @@ const RevenueStatementHeadCells = [
     options: { sort: true, filter: true },
     custom: {
       key_as_string: true,
+      isDate: true,
     },
   },
   {
@@ -64,6 +65,7 @@ const RevenueStatementHeadCells = [
     options: { sort: true, filter: true },
     custom: {
       key_as_string: true,
+      isDate: true,
     },
   },
   {
