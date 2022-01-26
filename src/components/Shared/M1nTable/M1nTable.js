@@ -1819,6 +1819,8 @@ function M1nTable(props) {
 
       const parcelOwners = dataParcelOwners.parcelOwners.map((o) => {
         let parcelOwner = { ...o };
+        parcelOwner.cost_bearing_high_value = parcelOwner?.cost_bearing_high_value ? `$${parcelOwner.cost_bearing_high_value}`: undefined
+        parcelOwner.cost_free_high_value = parcelOwner?.cost_free_high_value ? `$${parcelOwner.cost_free_high_value}`: undefined
         if (parcelOwner.qtr) {
           parcelOwner.qtr_calls = `${parcelOwner.qtr[0] ? parcelOwner.qtr[0] : ""} ${parcelOwner.qtr[1] ? parcelOwner.qtr[1] : ""} ${parcelOwner.qtr[2] ? parcelOwner.qtr[2] : ""
             } ${parcelOwner.qtr[3] ? parcelOwner.qtr[3] : ""}`;
@@ -1875,9 +1877,20 @@ function M1nTable(props) {
       });
       const cleanAvailableTags = [...new Set(availableTags)];
 
-      const index = findIndex(OwnersPerParcelHeadCells, (column) => column.name === "qtr_calls");
+      const OwnersPerParcelColumns = JSON.parse(JSON.stringify(OwnersPerParcelHeadCells))
+      let tenantName = window.sessionStorage.getItem("tenantName");
+
+      if(tenantName === 'providence'){
+        const index = findIndex(OwnersPerParcelColumns, (column) => column.name === "depthFrom");
+        OwnersPerParcelColumns.splice(index, 0, { name: "cost_bearing_high_value", label: "Cost Bearing High Value", editabe: true })
+        OwnersPerParcelColumns.splice(index, 0, { name: "cost_free_high_value", label: "Cost Free High Value", editabe: true })
+        OwnersPerParcelColumns.splice(index, 0, { name: "cost_bearing", label: "Cost Bearing", editabe: true })
+      }
+
+      const index = findIndex(OwnersPerParcelColumns, (column) => column.name === "qtr_calls");
+      
       if (props.customLayer.state === "TX") {
-        OwnersPerParcelHeadCells[index].options = {
+        OwnersPerParcelColumns[index].options = {
           display: false,
           filter: false,
           searchable: false,
@@ -1887,7 +1900,7 @@ function M1nTable(props) {
           viewColumns: false,
         };
       } else {
-        OwnersPerParcelHeadCells[index].options = {
+        OwnersPerParcelColumns[index].options = {
           display: true,
           filter: true,
           searchable: true,
@@ -1900,7 +1913,7 @@ function M1nTable(props) {
 
       setColumns(
         cleanAvailableTags.length > 0
-          ? OwnersPerParcelHeadCells.map((column) => {
+          ? OwnersPerParcelColumns.map((column) => {
             if (column.name === "tags") {
               return {
                 ...column,
@@ -1922,7 +1935,7 @@ function M1nTable(props) {
             }
             return column;
           })
-          : OwnersPerParcelHeadCells.map((column) => {
+          : OwnersPerParcelColumns.map((column) => {
             if (column.name === "tags") {
               return {
                 ...column,
