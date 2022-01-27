@@ -13,6 +13,7 @@ import { getNewShapeFromSelectedQuarters } from "components/MapControls/componen
 
 const useStyles = makeStyles((theme) => ({
   mainDiv: {
+    paddingTop: '10px',
     position: "relative",
     cursor: ({ parcelData }) =>
       parcelData.state !== "TXtemporaryRemoved" ? "pointer" : "context-menu",
