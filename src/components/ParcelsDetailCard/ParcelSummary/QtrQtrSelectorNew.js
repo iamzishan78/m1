@@ -137,17 +137,17 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
   const checkForDisabled = () => {
     let isDisabled = true
 
-    if (!parcelData?.qtrQtrSelection?.selectedQtr && !Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
+    if (!parcelData?.qtrQtrSelection?.qtrQtr && !Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
       setDisableUpdate(true)
       return
     }
 
-    if (!parcelData?.qtrQtrSelection?.selectedQtr && Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
+    if (!parcelData?.qtrQtrSelection?.qtrQtr && Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
       setDisableUpdate(false)
       return
     }
-    Object.keys(qtrQtr).forEach((key, index) => {
-      if (parcelData?.qtrQtrSelection?.selectedQtr[key] !== qtrQtr[key]) {
+    Object.keys(qtrQtr).forEach((key) => {
+      if (parcelData?.qtrQtrSelection?.qtrQtr[key] !== qtrQtr[key]) {
         isDisabled = false
       }
     })
