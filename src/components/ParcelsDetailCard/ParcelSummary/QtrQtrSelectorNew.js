@@ -97,6 +97,9 @@ const useStyles = makeStyles((theme) => ({
 const qtrOptions = ["", "E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
 
 export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
+  // removing state so that taxas also have same style as non taxas
+  parcelData.state = ''
+
   const classes = useStyles({ parcelData });
   const [qtr, setQtr] = useState(parcelData?.qtrQtrSelection?.selectedQtr ? copy(parcelData.qtrQtrSelection.selectedQtr) : ["", "", "", ""])
 
