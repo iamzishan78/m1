@@ -324,6 +324,9 @@ export default function DetailComponents(props) {
 
       <div className="flex justifyBetween alignStart w-100">
         <div className={`w-100 ${classes.tabsDetailContainer}`}>
+          {/*** Component for viewing selected pdf file*/}
+          <DocViewer divCondition={true} inContainer={true} />
+          
           {/**
            * Detail tabs section
            */}
@@ -342,17 +345,13 @@ export default function DetailComponents(props) {
               </div>
             </div>
           </div>
+
         </div>
 
         {!collapse && <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={checkId} setStateApp={setStateApp} />}
       </div>
 
       {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
-
-      {/**
-       * Component for viewing selected pdf file
-       */}
-      <DocViewer width="calc(80vw)" />
 
       {/**
        * Menu for meta data
