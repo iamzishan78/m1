@@ -359,7 +359,12 @@ export default function Navigation(props) {
   };
 
   const checkIfIgnoreHeader = () => {
-    if (location.pathname.startsWith("/revenue/statement/details") || location.pathname.includes("/line-item") || location.pathname.startsWith("/revenue/property/details")) {
+    if (
+      location.pathname.startsWith("/revenue/statement/details") ||
+      location.pathname.includes("/line-item") ||
+      location.pathname.startsWith("/revenue/property/details") ||
+      location.pathname.startsWith("/land/agreement/details")
+    ) {
       return true;
     }
     return false;
@@ -418,9 +423,7 @@ export default function Navigation(props) {
               {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
               {(matchFind || matchDocument) && (
-                <div
-                  className={classes.search} id="searchBarDivParent"
-                >
+                <div className={classes.search} id="searchBarDivParent">
                   <SearchBarWithToggleButton />
                 </div>
               )}

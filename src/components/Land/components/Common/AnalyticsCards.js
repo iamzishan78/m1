@@ -8,9 +8,7 @@ import { useLazyQuery } from "@apollo/client";
 import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 
 const useStyles = makeStyles(() => ({
-  root: {
-    padding: "30px",
-  },
+  root: {},
   card: { borderRadius: "8px" },
   cardHeaderTypography: {
     fontWeight: "bolder",
@@ -77,13 +75,13 @@ export default function AnalyticsCards({
     },
   });
 
-  const [getESAggsGrossAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsGrossAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.grossAcresSum) {
         const grossAcresSum = aggsData.getESAggsList.aggregations.grossAcresSum.value.sum
-        setCardPoint((Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, {maximumFractionDigits: 1}) + 'K', 1)
+        setCardPoint((Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + 'K', 1)
         // props.onGrossAcresSum(
         //   aggsData?.getESAggsList?.aggregations?.grossAcresSum?.value
         // );
@@ -91,13 +89,13 @@ export default function AnalyticsCards({
     },
   });
 
-  const [getESAggsNetAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsNetAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.netAcresSum) {
         const netAcresSum = aggsData.getESAggsList.aggregations.netAcresSum.value
-        setCardPoint((Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, {maximumFractionDigits: 1}) + 'K', 2)
+        setCardPoint((Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + 'K', 2)
         // props.onNetAcresSum(
         //   aggsData?.getESAggsList?.aggregations?.netAcresSum?.value
         // );
@@ -105,13 +103,13 @@ export default function AnalyticsCards({
     },
   });
 
-  const [getESAggsNetRoyaltyAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsNetRoyaltyAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum) {
         const netRoyaltyAcresSum = aggsData.getESAggsList.aggregations.netRoyaltyAcresSum.value
-        setCardPoint((Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, {maximumFractionDigits: 1}) + 'K', 3)
+        setCardPoint((Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + 'K', 3)
         // props.onNetRoyaltyAcresSum(
         //   aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum?.value
         // );
@@ -163,7 +161,7 @@ export default function AnalyticsCards({
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : '',
-        filters: [{field: "shape.layer", value: "parcel"}, ...esFilters.slice(1)],
+        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters.slice(1)],
         aggs: {
           grossAcresSum: {
             scripted_metric: {
@@ -198,7 +196,7 @@ export default function AnalyticsCards({
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : '',
-        filters: [{field: "shape.layer", value: "parcel"}, ...esFilters.slice(1)],
+        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters.slice(1)],
         aggs: {
           netAcresSum: {
             sum: {
@@ -212,7 +210,7 @@ export default function AnalyticsCards({
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : '',
-        filters: [{field: "shape.layer", value: "parcel"}, ...esFilters.slice(1)],
+        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters.slice(1)],
         aggs: {
           netRoyaltyAcresSum: {
             sum: {

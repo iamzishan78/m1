@@ -21,6 +21,12 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/land/agreements",
     component: "Agreements",
   },
+  AGREEMENT_DETAIL: {
+    isExcluded: true,
+    title: "Agreements",
+    link: "/land/agreement/details/:id",
+    component: "AgreementDetails",
+  },
   TRACTS: {
     featureFlag: "LANDMODULE",
     title: "Tracts",
@@ -40,25 +46,12 @@ export default function Revenue() {
   const dispatch = useDispatch();
   const { quickActionsPanelState, activeModule } = useSelector(({ Land }) => Land);
 
-  //   useEffect(() => {
-  //     const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => item.link === location.pathname);
-  //     if (option) {
-  //       setStateApp((stateApp) => ({
-  //         ...stateApp,
-  //         revenueDetails: {
-  //           ...stateApp.revenueDetails,
-  //           title: option.title,
-  //         },
-  //       }));
-  //     }
-  //   }, [location.pathname]);
-
   useEffect(() => {
-    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => item.link === location.pathname);
+    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => location.pathname.startsWith(item.link));
     if (option) {
       dispatch(setActiveModuleLand(option));
     }
-  }, [location.pathname]);
+  }, [location.pathname, dispatch]);
 
   const handlePanelStateChange = (state) => {
     dispatch(toggleLandActionsPanel(state));
@@ -69,7 +62,6 @@ export default function Revenue() {
       {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
         <Switch>
           <Route
-            exact
             path={SIDE_PANEL_MENU_ITEMS_LIST[option].link}
             component={Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component]}
           />

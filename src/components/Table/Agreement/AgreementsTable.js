@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "components/Shared/M1nTable/components/Table";
@@ -22,6 +23,7 @@ import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
 import { setColumnsData } from "components/Table/helpers";
+import { setLandReduxKey } from "actions";
 
 const useStyles = makeStyles((theme) => ({
   agreementTable: {
@@ -51,8 +53,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function AgreementsTable(props) {
-  const { esIndex, setESFilters } = props;
+  const dispatch = useDispatch();
   const classes = useStyles();
+  const { esIndex, setESFilters } = props;
   const [filters, setFilters] = useState([]);
 
   // function states
@@ -163,13 +166,13 @@ function AgreementsTable(props) {
   // }, [issues]);
 
   useEffect(() => {
-      if (tableData?.hits?.length > 0) {
-        const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
+    if (tableData?.hits?.length > 0) {
+      const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
       //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
-        props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
+      props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
       //   props.ifAreContacts(globalOwnerIds);
-      }
-    }, [tableData]);
+    }
+  }, [tableData]);
 
   useEffect(() => {
     if (tableData) {
@@ -339,6 +342,13 @@ function AgreementsTable(props) {
     }
   };
 
+  const onRowClick = (agreementData) => {
+    dispatch(setLandReduxKey("agreement", {
+      activeAgreement: agreementData
+    }
+    ));
+  }
+
   return (
     <div className={classes.agreementTable}>
       <Container
@@ -364,6 +374,7 @@ function AgreementsTable(props) {
           options={options}
           parent={props.parent}
           setColumnsBase={[]}
+          onRowClick={onRowClick}
         />
       </Container>
     </div>

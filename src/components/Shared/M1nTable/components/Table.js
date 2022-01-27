@@ -2323,7 +2323,7 @@ function SubTable(props) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
                     }
                     console.log('column', column.name)
-                    if(column.name === 'status'){
+                    if (column.name === 'status') {
                       debugger
                     }
                     return (
@@ -3413,23 +3413,19 @@ function SubTable(props) {
           handleExpandClick(null, null, null, "inviteUser");
         }
       }
-      // if (props.targetLabel === "agreement") {
-      //   if (rows[dataIndex]?._id) {
-      //     history.push(`/agreement/details/${rows[dataIndex]?._id}`)
-      //   }
-      // }
 
       if (props.targetLabel === "Revenue Properties") {
         // need stopPropagation
         history.push(`/revenue/property/details/${rows[dataIndex]?._id}`);
-        // if (rows[dataIndex]?._id) {
-        //   history.push(`/revenue/property/details?id=${rows[dataIndex]?._id}`);
-        // }
       }
       if (props.parent === "RevenueStatementTable") {
         if (rows[dataIndex]?._id) {
           history.push(`/revenue/statement/details?id=${rows[dataIndex]?._id}`);
         }
+      }
+      if (props.parent === "AgreementsTable" && rows[dataIndex]?._id) {
+        props.onRowClick(rows[dataIndex]);
+        history.push(`/land/agreement/details/${rows[dataIndex]?._id}`);
       }
     },
     onChangePage: (pageState) => {

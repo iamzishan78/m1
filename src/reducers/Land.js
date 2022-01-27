@@ -1,4 +1,4 @@
-import { TOGGLE_QUICK_ACTIONS_PANEL, SET_ACTIVE_MODULE_LAND } from "constants/ActionTypes";
+import { TOGGLE_QUICK_ACTIONS_PANEL, SET_ACTIVE_MODULE_LAND, SET_LAND_REDUX_KEY } from "constants/ActionTypes";
 
 const INIT_STATE = {
   quickActionsPanelState: true,
@@ -11,6 +11,11 @@ export default function LandReducer(state = INIT_STATE, action) {
       return { ...state, quickActionsPanelState: action.payload };
     case SET_ACTIVE_MODULE_LAND:
       return { ...state, activeModule: action.payload };
+    case SET_LAND_REDUX_KEY:
+      return {
+        ...state,
+        [action.payload.key]: action.payload.value,
+      }
     default:
       return state;
   }

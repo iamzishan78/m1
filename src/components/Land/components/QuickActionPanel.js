@@ -72,23 +72,23 @@ export default function QuickActionsPanel({
             .filter((key) => !SIDE_PANEL_MENU_ITEMS_LIST[key].isExcluded)
             .map((key, index) => (
               SIDE_PANEL_MENU_ITEMS_LIST[key].featureFlag && <FeatureFlag feature={FEATURES[SIDE_PANEL_MENU_ITEMS_LIST[key].featureFlag]}>
-              <StyledMenuItem
-                onClick={() =>
-                  handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)
-                }
-                key={index}
-                isSelected
-                style={{
-                  backgroundColor:
-                    activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST[key].title
-                      ? "#4B618F"
-                      : "",
-                }}
-              >
-                <ListItemText>
-                  {SIDE_PANEL_MENU_ITEMS_LIST[key].title}
-                </ListItemText>
-              </StyledMenuItem>
+                <StyledMenuItem
+                  onClick={() =>
+                    handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)
+                  }
+                  key={index}
+                  isSelected
+                  style={{
+                    backgroundColor:
+                      activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST[key].title
+                        ? "#4B618F"
+                        : "",
+                  }}
+                >
+                  <ListItemText>
+                    {SIDE_PANEL_MENU_ITEMS_LIST[key].title}
+                  </ListItemText>
+                </StyledMenuItem>
               </FeatureFlag>
             ))}
         </StyledMenu>
@@ -98,14 +98,6 @@ export default function QuickActionsPanel({
           [classes.landRootExpanded]: quickActionsPanelState,
           [classes.landRootCollapsed]: !quickActionsPanelState,
         })}
-        style={{
-          position: "relative",
-          top: "65px",
-          display: "flex",
-          flexDirection: "column",
-          height: "calc(100vh - 65px)",
-          alignItems: "stretch",
-        }}
       >
         {children}
       </div>

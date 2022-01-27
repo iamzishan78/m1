@@ -1,7 +1,3 @@
-import { default as Agreements } from "./Agreements";
-import { default as Tracts } from "./Tracts";
-
-export {
-    Agreements,
-    Tracts
-}
+export { default as Agreements } from "components/Land/components/Agreements";
+export { default as Tracts } from "components/Land/components/Tracts";
+export { default as AgreementDetails } from "components/Land/components/Agreements/detailComponents";
