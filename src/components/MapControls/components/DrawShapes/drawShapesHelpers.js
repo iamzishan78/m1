@@ -125,6 +125,10 @@ export const drawBoundary = (map, selectedUserDefinedLayer) => {
       },
     };
 
+    if (map.getLayer("parcelBoundary")) {
+      map.removeLayer("parcelBoundary");
+    }
+
     if (map.getSource('boundary-line-source')) {
       map.getSource('boundary-line-source').setData(geoJson);
       if (map.getLayer('boundary-line')) {
