@@ -174,7 +174,7 @@ const useStyles = makeStyles((theme) => ({
   },
   hoverGrid: {
     "&:hover": {
-      color: 'red'
+      color: 'gray'
     }
   },
   convertPopover: {
@@ -189,7 +189,7 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiMenuItem-root": {
       "&:hover": {
-        color: "red",
+        color: "gray",
       },
     },
   },
