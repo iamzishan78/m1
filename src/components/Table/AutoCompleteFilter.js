@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from "react";
-
+import React, { useState, useEffect, useContext } from "react";
+import moment from "moment";
 // QUERIES 
+import { AppContext } from "AppContext";
 import { useLazyQuery } from "@apollo/client";
 
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-export function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, esIndex, filters, custom }) {
+export function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, esIndex, filters, custom, setFilters }) {
     const [open, setOpen] = useState(false);
+    const [stateApp, setStateApp] = useContext(AppContext);
     const [options, setOptions] = useState([]);
     const [value, setValue] = useState({ key: filterList[index][0] });
     const [search, setSearch] = useState(filterList[index][0]);
@@ -33,8 +35,18 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
     useEffect(() => {
         if (filtersData) {
             const keys = Object.keys(filtersData)
-            if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits)
-                setOptions(filtersData[keys[0]].hits)
+            if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits){
+                if(custom?.isDate){
+                    const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key:moment(new Date(hit.key)).format("MM/DD/YYYY") }))
+                    setOptions(hits)
+                    setStateApp((state, props) => {
+                        return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
+                      });
+                }else{
+                    setOptions(filtersData[keys[0]].hits)
+                }
+            }
+                
         }
 
     }, [filtersData]);
@@ -63,7 +75,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
     };
     return (
         <Autocomplete
-            id={`filter-autocomplete-${label}`}
+            id={`filter-autocomplete-${custom?.filterLabel || label}`}
             open={open}
             onOpen={() => {
                 setOpen(true);
@@ -85,6 +97,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
                     setSearch(value.key)
                     setValue(value)
                 }
+                if(setFilters) setFilters(filterList)
                 onChange(filterList[index], index, column);
             }}
             options={options}
@@ -92,7 +105,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
             renderInput={(params) => (
                 <TextField
                     {...params}
-                    label={label}
+                    label={custom?.filterLabel || label}
                     onChange={(e) => {
                         handleChange(e.target.value);
                     }}

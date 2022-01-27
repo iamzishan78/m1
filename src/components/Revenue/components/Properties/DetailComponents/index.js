@@ -1,10 +1,16 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
+import { debounce } from "lodash";
 
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, Tabs, Tab, Button } from "@material-ui/core";
-import { DescriptionOutlined as DocumentIcon, InfoOutlined as InfoOutlinedIcon, MoreHoriz as MoreHorizIcon } from "@material-ui/icons";
+import { Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import {
+  DescriptionOutlined as DocumentIcon,
+  InfoOutlined as InfoOutlinedIcon,
+  MoreHoriz as MoreHorizIcon,
+  Delete as DeleteIcon,
+} from "@material-ui/icons";
 
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { GET_PROPERTY } from "graphQL/useQueryGetProperty";
@@ -82,17 +88,6 @@ const useStyles = makeStyles((theme) => ({
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
   },
-  summarySection: {
-    padding: "20px 30px",
-    minHeight: "500px",
-    backgroundColor: "#fff",
-    marginBottom: "10px",
-  },
-  checkDetailsSection: {
-    padding: "20px 30px",
-    minHeight: "500px",
-    backgroundColor: "#fff",
-  },
   tabsDetailContainer: ({ showInterestDetails, collapse }) => ({
     padding: 20,
     maxWidth: showInterestDetails || !collapse ? "calc(100% - 380px)" : "100%",
@@ -126,6 +121,20 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
+  },
+  menu: {
+    "& .MuiListItem-gutters": {
+      paddingLeft: "10px !important",
+      paddingRight: "10px !important",
+    },
+    "& .MuiListItem-root": {
+      "& .MuiListItemIcon-root": {
+        minWidth: "25px",
+        "& .MuiSvgIcon-root": {
+          fill: "red !important",
+        },
+      },
+    },
   },
   metaActions: ({ collapse }) => ({
     marginTop: "2px",
@@ -203,6 +212,8 @@ export default function DetailComponents(props) {
   const selectedTabRef = useRef(null);
   const [collapse, setCollapse] = useState(false);
   const [users, setUsers] = useState([]);
+  const [anchorEl, setAnchorEl] = useState();
+  const [isButtonScroll, setButtonScroll] = useState(false);
 
   const classes = useStyles({ ...props, showInterestDetails, collapse });
 
@@ -267,6 +278,17 @@ export default function DetailComponents(props) {
     }
   }, [propertyDetails, refetchContacts]);
 
+  const handleScroll = (e) => {
+    if (!isButtonScroll) {
+      const { scrollTop } = e.target;
+      if (scrollTop <= 150 && tab !== 0) setTab(0);
+      else if (scrollTop > 150 && tab !== 1) setTab(1);
+    }
+    handleEndScroll();
+  };
+
+  const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
+
   return (
     <NavHeader title={propertyDetails?.name}>
       {/**
@@ -300,7 +322,7 @@ export default function DetailComponents(props) {
               <StyledTabs
                 value={tab}
                 onChange={(event, tab) => {
-                  // setButtonScroll(true);
+                  setButtonScroll(true);
                   setTab(tab);
                 }}
                 aria-label="ant example"
@@ -313,7 +335,7 @@ export default function DetailComponents(props) {
               <Button startIcon={<InfoOutlinedIcon />} onClick={() => setCollapse(!collapse)}>
                 Metadata
               </Button>
-              <IconButton size="small" component="span" className={classes.menuIcon} onClick={() => {}}>
+              <IconButton size="small" component="span" className={classes.menuIcon} onClick={(event) => setAnchorEl(event.currentTarget)}>
                 <MoreHorizIcon size="medium" />
               </IconButton>
             </div>
@@ -327,9 +349,9 @@ export default function DetailComponents(props) {
            * Detail tabs section
            */}
           <div className={classes.tabsSection}>
-            <div className={classes.tabsSectionDetails}>
+            <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-                <HeaderSection />
+                <HeaderSection propertyId={propertyId} />
               </div>
               <div ref={tab === 1 ? selectedTabRef : null}>
                 <PropertyInterestDetailsSection
@@ -363,6 +385,27 @@ export default function DetailComponents(props) {
           <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={propertyId} setStateApp={setStateApp} />
         )}
       </div>
+      {/**
+       * Menu for meta data
+       */}
+      <Menu
+        id="revPropertyMenu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        className={classes.menu}
+        getContentAnchorEl={null}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <MenuItem>
+          <ListItemIcon>
+            <DeleteIcon size="medium" />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
     </NavHeader>
   );
 }

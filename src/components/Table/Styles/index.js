@@ -7,14 +7,18 @@ export const usetableStyles = makeStyles((theme) => ({
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
           maxHeight: "48vh",
+          minHeight: "48vh",
           "@media (max-height:900px)": {
             maxHeight: "55vh",
+            minHeight: "55vh",
           },
           "@media (max-height:800px)": {
             maxHeight: "41vh",
+            minHeight: "41vh",
           },
           "@media (max-height:768px)": {
             maxHeight: "37vh",
+            minHeight: "37vh",
           },
         },
       },
@@ -107,6 +111,6 @@ export const usetableStyles = makeStyles((theme) => ({
   docViewSection: {
     overflow: "scroll",
     height: "96%",
-    width: "100%"
-  }
+    width: "100%",
+  },
 }));

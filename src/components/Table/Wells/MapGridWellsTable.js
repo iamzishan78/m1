@@ -69,7 +69,7 @@ function MapGridWellsTable(props) {
       addableName: "Wells",
       extendSearchQuery: search,
       filters: filters,
-      polygon: stateApp.currentFeature.geometry,
+      polygon: stateApp?.currentFeature?.geometry,
       TableHeader: copy(TableHeader),
       esIndex: "platformData:wells",
       startPaginationAt: 25,
