@@ -113,38 +113,55 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
 
 
   useEffect(() => {
-    const values = getQtrFilterData(qtr)
-    if (values) {
-      Object.keys(qtrQtr).forEach((key) => {
-        qtrQtr[key] = false
-      })
-      values.forEach((value) => {
-        qtrQtr[value.toLowerCase()] = true
-      })
-      setQtrQtr(qtrQtr)
+    if (!parcelData?.qtrQtrSelection?.qtrQtr) {
+      const values = getQtrFilterData(qtr)
+      if (values) {
+        Object.keys(qtrQtr).forEach((key) => {
+          qtrQtr[key] = false
+        })
+        values.forEach((value) => {
+          qtrQtr[value.toLowerCase()] = true
+        })
+        setQtrQtr(qtrQtr)
+      }
     }
   }, [])
 
   useEffect(() => {
     checkForDisabled()
-  }, [qtr])
+  }, [qtr, qtrQtr])
 
   const checkForDisabled = () => {
     let isDisabled = true
 
-    if (!parcelData?.qtrQtrSelection?.selectedQtr && !qtr.find((q) => q !== '')) {
+    if (!parcelData?.qtrQtrSelection?.selectedQtr && !Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
       setDisableUpdate(true)
       return
     }
-    if (!parcelData?.qtrQtrSelection?.selectedQtr && qtr.find((q) => q !== '')) {
+
+    if (!parcelData?.qtrQtrSelection?.selectedQtr && Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
       setDisableUpdate(false)
       return
     }
-    qtr.forEach((q, index) => {
-      if (parcelData?.qtrQtrSelection?.selectedQtr[index] !== q) {
+    Object.keys(qtrQtr).forEach((key, index) => {
+      if (parcelData?.qtrQtrSelection?.selectedQtr[key] !== qtrQtr[key]) {
         isDisabled = false
       }
     })
+
+    // if (!parcelData?.qtrQtrSelection?.selectedQtr && !qtr.find((q) => q !== '')) {
+    //   setDisableUpdate(true)
+    //   return
+    // }
+    // if (!parcelData?.qtrQtrSelection?.selectedQtr && qtr.find((q) => q !== '')) {
+    //   setDisableUpdate(false)
+    //   return
+    // }
+    // qtr.forEach((q, index) => {
+    //   if (parcelData?.qtrQtrSelection?.selectedQtr[index] !== q) {
+    //     isDisabled = false
+    //   }
+    // })
     setDisableUpdate(isDisabled)
   }
 
@@ -188,7 +205,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
         </Grid>
         <Grid item md={3} style={{ paddingTop: '1.8em' }}>
           <Button variant="contained" color="primary" disabled={disableUpdate} onClick={() => {
-            const values = getQtrFilterData(qtr)
+            const values = Object.keys(qtrQtr).filter((key) => qtrQtr[key]).map((key) => key.toUpperCase())
             const feature = copy(parcelData.shape)
             let parcelDataCopy = copy(parcelData)
             if (parcelDataCopy?.qtrQtrSelection?.originalGeometry) {
