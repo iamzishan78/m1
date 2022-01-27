@@ -148,6 +148,7 @@ const StyledTabs = withStyles({
   },
   indicator: {
     backgroundColor: "#12abe0",
+    height: "5px",
   },
 })(Tabs);
 
@@ -326,7 +327,7 @@ export default function DetailComponents(props) {
         <div className={`w-100 ${classes.tabsDetailContainer}`}>
           {/*** Component for viewing selected pdf file*/}
           <DocViewer divCondition={true} inContainer={true} />
-          
+
           {/**
            * Detail tabs section
            */}
@@ -345,7 +346,6 @@ export default function DetailComponents(props) {
               </div>
             </div>
           </div>
-
         </div>
 
         {!collapse && <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={checkId} setStateApp={setStateApp} />}

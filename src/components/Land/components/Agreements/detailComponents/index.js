@@ -9,18 +9,15 @@ import {
   InfoOutlined as InfoOutlinedIcon,
   Delete as DeleteIcon,
   MoreHoriz as MoreHorizIcon,
+  Repeat as FlowIcon,
 } from "@material-ui/icons";
+import RuleIcon from "components/Shared/components/svgIcons/RuleIcon";
 import Tags from "components/Shared/Tagger";
-import { useLocation } from "react-router";
 import { useLazyQuery } from "@apollo/client";
-import { GETCHECK } from "graphQL/useQueryCheck";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
-import { AppContext } from "AppContext";
 
 // Components
 import NavHeader from "components/Land/components/Common/NavHeader";
-
-import { setRevenueKey } from "actions";
 
 const useStyles = makeStyles((theme) => ({
   detailHeader: {
@@ -100,6 +97,7 @@ const useStyles = makeStyles((theme) => ({
   metaActions: ({ collapse }) => ({
     marginTop: "2px",
     "& button": {
+      margin: "0px 5px",
       backgroundColor: !collapse ? "#eceded" : "#fff",
       color: "grey",
       fontWeight: "bold",
@@ -129,6 +127,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: !collapse ? "calc(100% - 380px)" : "100%",
   }),
   menuIcon: {
+    marginLeft: 10,
     background: "transparent",
     align: "center",
     "& svg": {
@@ -143,6 +142,7 @@ const StyledTabs = withStyles({
   },
   indicator: {
     backgroundColor: "#12abe0",
+    height: "5px",
   },
 })(Tabs);
 
@@ -184,10 +184,9 @@ export default function DetailComponents(props) {
   const { activeAgreement: agreementDetails } = useSelector(({ Land }) => Land.agreement);
 
   const [tab, setTab] = useState(0);
-  const [checkId, setCheckId] = useState(null);
   const selectedTabRef = useRef(null);
   const [isButtonScroll, setButtonScroll] = useState(false);
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useState(true);
   const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
 
@@ -290,12 +289,22 @@ export default function DetailComponents(props) {
                 }}
                 aria-label="ant example"
               >
-                <StyledTab label="Header" />
                 <StyledTab label="Summary" />
-                <StyledTab label="Check Details" />
+                <StyledTab label="Parties" />
+                <StyledTab label="Provisions" />
+                <StyledTab label="Legal Description" />
+                <StyledTab label="Wells" />
+                <StyledTab label="Documents" />
+                <StyledTab label="Related Info" />
               </StyledTabs>
             </div>
             <div className={classes.metaActions}>
+              <Button startIcon={<RuleIcon />} onClick={() => setCollapse(!collapse)}>
+                Validations
+              </Button>
+              <Button startIcon={<FlowIcon />} onClick={() => setCollapse(!collapse)}>
+                Flowlines
+              </Button>
               <Button startIcon={<InfoOutlinedIcon />} onClick={() => setCollapse(!collapse)}>
                 Metadata
               </Button>
