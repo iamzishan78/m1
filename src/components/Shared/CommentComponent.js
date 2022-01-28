@@ -261,6 +261,7 @@ export default function CommentComponent(props) {
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           _id: editCommentId,
+          objectType: props.targetLabel,
           isEdited: true,
         },
       },
