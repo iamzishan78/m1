@@ -43,6 +43,7 @@ import { SHAPEWELLS } from "../../../graphQL/useQueryPaginatedShapeWells";
 import { SHAPEWELLSCOUNT } from "../../../graphQL/useQueryShapeWellsCount";
 import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
+import vf_currency from "components/Shared/valueformatters/vf_currency";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -1819,8 +1820,8 @@ function M1nTable(props) {
 
       const parcelOwners = dataParcelOwners.parcelOwners.map((o) => {
         let parcelOwner = { ...o };
-        parcelOwner.cost_bearing_high_value = parcelOwner?.cost_bearing_high_value ? `$${parcelOwner.cost_bearing_high_value}`: undefined
-        parcelOwner.cost_free_high_value = parcelOwner?.cost_free_high_value ? `$${parcelOwner.cost_free_high_value}`: undefined
+        parcelOwner.cost_bearing_high_value = parcelOwner?.cost_bearing_high_value ? vf_currency(parcelOwner.cost_bearing_high_value): undefined
+        parcelOwner.cost_free_high_value = parcelOwner?.cost_free_high_value ? vf_currency(parcelOwner.cost_free_high_value): undefined
         if (parcelOwner.qtr) {
           parcelOwner.qtr_calls = `${parcelOwner.qtr[0] ? parcelOwner.qtr[0] : ""} ${parcelOwner.qtr[1] ? parcelOwner.qtr[1] : ""} ${parcelOwner.qtr[2] ? parcelOwner.qtr[2] : ""
             } ${parcelOwner.qtr[3] ? parcelOwner.qtr[3] : ""}`;
