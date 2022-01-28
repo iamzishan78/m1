@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { debounce } from "lodash";
@@ -16,8 +16,12 @@ import Tags from "components/Shared/Tagger";
 import { useLazyQuery } from "@apollo/client";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 
+import { AppContext } from "AppContext";
+
 // Components
 import NavHeader from "components/Land/components/Common/NavHeader";
+import DocViewer from "components/Shared/DocViewer";
+import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
 
 const useStyles = makeStyles((theme) => ({
   detailHeader: {
@@ -182,6 +186,7 @@ const StyledTab = withStyles((theme) => ({
 export default function DetailComponents(props) {
   const { id: agreementId } = useParams();
   const { activeAgreement: agreementDetails } = useSelector(({ Land }) => Land.agreement);
+  const [stateApp] = useContext(AppContext);
 
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
@@ -314,6 +319,39 @@ export default function DetailComponents(props) {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="flex justifyBetween alignStart w-100">
+        <div className={`w-100 ${classes.tabsDetailContainer}`}>
+          {/*** Component for viewing selected pdf file*/}
+
+          {/**
+           * Detail tabs section
+           */}
+
+          {!stateApp.viewDoc && (
+            <div className={classes.tabsSection}>
+              {/* <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
+              <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
+                <HeaderSection details={checksFlatData} />
+              </div>
+              <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
+              <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
+                <SummarySection checkId={checkId} />
+              </div>
+              <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
+              <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
+                <CheckDetailsSection checkId={checkId} />
+              </div>
+            </div> */}
+            </div>
+          )}
+
+          <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
+        </div>
+
+
+        {!collapse && <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={agreementId} />}
       </div>
 
       {/**

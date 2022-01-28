@@ -130,7 +130,7 @@ export default function MetadataDrawer(props) {
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
   // Props
-  const { setCollapse, users, targetSourceId, setStateApp } = props;
+  const { setCollapse, users, targetSourceId } = props;
 
   // Queries and Mutations
   const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
@@ -347,7 +347,7 @@ export default function MetadataDrawer(props) {
           />
         </Grid>
 
-      {/* hiding for now until we get custom metadata added to statements and properties - kc 20220123 */}
+        {/* hiding for now until we get custom metadata added to statements and properties - kc 20220123 */}
         {/* <div
           onClick={() => {
             setStateApp((stateApp) => ({

@@ -20,8 +20,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     height: "100vh !important",
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-    overflow: "scroll",
     "&::-webkit-scrollbar": {
       width: "0.75em",
       height: "0.75em",
@@ -34,73 +32,50 @@ const useStyles = makeStyles((theme) => ({
     inset: "unset",
     width: (props) => props.width ?? "calc(100vw - 650px)",
   },
+  modalHeader: {
+    minHeight: "35px", width: "100%", display: "block",
+    padding: theme.spacing(2, 4, 3),
+  },
   paperTwo: {
     backgroundColor: theme.palette.background.paper,
     height: "950px",
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-    overflow: "scroll",
-    "&::-webkit-scrollbar": {
-      width: "0.75em",
-      height: "0.75em",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#929292",
-      borderRadius: 10,
-    },
     border: "0px",
     inset: "unset",
-    width: "100%"
-  },
-  container: {
-    minHeight: "35px", width: "100%", display: "block", marginTop: "-123px"
-  },
-  inContainer: {
-    width: "100%",
-    backgroundColor: theme.palette.background.paper,
-    minHeight: "100%",
-    maxHeight: "100vh",
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-    overflow: "scroll",
-    "&::-webkit-scrollbar": {
-      width: "0.75em",
-      height: "0.75em",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#929292",
-      borderRadius: 10,
-    },
   },
   ZoomIcons: {
     zIndex: "1",
     display: "flex",
     flexDirection: "column",
-    position: "sticky !important",
-    top: (props) => props.inContainer ? "60% !important" : "85% !important",
-    bottom: "0 !important",
-    left: "0",
+    position: "absolute !important",
+    bottom: "40px !important",
+    left: "40px",
     width: "3.875rem",
   },
-  loadingDiv: {
-    width: "100%", display: "flex", justifyContent: "center"
+  docViewSection: {
+    overflow: "scroll",
+    height: "95%",
+    width: "100%",
+    padding: theme.spacing(2, 4, 3),
   },
-  fileName: {
-    margin: "0 0 15px 0",
-    float: "left",
-    fontSize: "1.1rem",
+  viewerHeader: {
+    minHeight: "35px",
+    width: "100%",
+    padding: theme.spacing(2, 4, 3),
   }
 }));
 
-const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondition = false, width, onCloseHandler = null, inRevenueStatement, inContainer }) => {
-  const classes = useStyles({ width, inContainer });
+const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondition = false, width, onCloseHandler = null }) => {
+  const classes = useStyles({ width });
   const [numPages, setNumPages] = useState(null);
   let [, setPageNumber] = useState(1);
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [pdfState, setpdfState] = useState([]);
-  let [zoom, setzoom] = useState(2.0);
+  let [zoom, setzoom] = useState(1.5);
 
-  function onDocumentLoadSuccess({ numPages }) {setNumPages(numPages);}
+  function onDocumentLoadSuccess({ numPages }) {
+    setNumPages(numPages);
+  }
 
   useEffect(() => {
     setPageNumber(1);
@@ -123,59 +98,8 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
       a.click();
     }
   };
-  const onClose = () => {
-    setStateApp({ ...stateApp, viewDoc: null });
-    if (onCloseHandler) onCloseHandler();
-  }
-  const ZoomIcons = () => {
-    return <div className={classes.ZoomIcons}>
-      <IconButton onClick={() => { setzoom(zoom + 0.25); }}>
-        <ZoomInIcon fontSize={"large"} />
-      </IconButton>
-      <IconButton onClick={() => { setzoom(zoom - 0.25); }}>
-        <ZoomOutIcon fontSize={"large"} />
-      </IconButton>
-    </div>
-  }
-  const RightActions = () => {
-    return <div style={{ float: "right" }}>
-      <>
-        <IconButton size="small" style={{ margin: "0 8px" }}>
-          {stateApp?.viewDoc?.uri ? (
-            <IconButton size="small" onClick={() => downloadFile(stateApp?.viewDoc)}>
-              <GetAppIcon />
-            </IconButton>
-          ) : (
-            <CircularProgress size={20} color="secondary" />
-          )}
-        </IconButton>
-      </>
 
-      <IconButton onClick={onClose} size="small">
-        <CloseIcon className={classes.closeIcon} fontSize="small" />
-      </IconButton>
-    </div>
-  }
-  const DocPreview = () => {
-    return <div>
-      <Document
-        style={{ display: "grid", justifyContent: "center" }}
-        file={stateApp?.viewDoc?.uri}
-        scale={3.0}
-        onLoadSuccess={onDocumentLoadSuccess}
-        loading={<div className={classes.loadingDiv}><CircularProgress /></div>}
-
-      >
-        {pdfState?.map((value, key) => {
-          return (
-            <Page key={key} pageNumber={value} scale={zoom} style={{ display: "grid", justifyContent: "center", margin: "auto" }} />
-          );
-        })}
-      </Document>
-    </div>
-  }
-
-  return !!stateApp.viewDoc ?
+  return (
     <div>
       {divCondition === false ? (
         <Modal
@@ -191,34 +115,156 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
           disableBackdropClick={true}
         >
           <div style={DocStyle} className={classes.paper}>
-            <ZoomIcons />
-            <Grid item xs={12} className={classes.container}>
-              <h4 className={classes.fileName}>{stateApp?.viewDoc?.name}</h4>
-              <RightActions />
+            <Grid item xs={12} className={classes.modalHeader}>
+              <h4
+                style={{
+                  margin: "0 0 15px 0",
+                  float: "left",
+                  fontSize: "1.1rem",
+                }}
+              >
+                {stateApp?.viewDoc?.name}
+              </h4>
+
+              <div style={{ float: "right" }}>
+                {stateApp?.viewDoc?.uri ? (
+                  <IconButton onClick={() => downloadFile(stateApp?.viewDoc)}>
+                    <GetAppIcon />
+                  </IconButton>
+                ) : (
+                  <CircularProgress size={20} color="secondary" />
+                )}
+
+                <IconButton
+                  onClick={() => {
+                    setStateApp({ ...stateApp, viewDoc: null });
+                    if (onCloseHandler) {
+                      onCloseHandler();
+                    }
+                  }}
+                >
+                  <CloseIcon className={classes.closeIcon} fontSize="small" />
+                </IconButton>
+              </div>
             </Grid>
-            <DocPreview />
+
+            <div className={classes.docViewSection}>
+              <Document
+                style={{ display: "grid", justifyContent: "center" }}
+                file={stateApp?.viewDoc?.uri}
+                scale={3.0}
+                onLoadSuccess={onDocumentLoadSuccess}
+                loading={
+                  <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                    <CircularProgress />
+                  </div>
+                }
+              >
+                {pdfState?.map((value, key) => {
+                  return (
+                    <Page key={key} pageNumber={value} scale={zoom} style={{ display: "grid", justifyContent: "center", margin: "auto" }} />
+                  );
+                })}
+              </Document>
+
+              <div className={classes.ZoomIcons}>
+                {" "}
+                <IconButton
+                  onClick={() => {
+                    setzoom(zoom + 0.25);
+                  }}
+                >
+                  <ZoomInIcon fontSize="large" />
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    setzoom(zoom - 0.25);
+                  }}
+                >
+                  <ZoomOutIcon fontSize="large" />
+                </IconButton>
+              </div>
+            </div>
           </div>
         </Modal>
-      ) : inContainer ?
-        <div className={classes.inContainer}>
-          <ZoomIcons />
-          <Grid item xs={12} className={classes.container}>
-            <h4 className={classes.fileName}>{stateApp?.viewDoc?.name}</h4>
-            <RightActions />
-          </Grid>
-          <DocPreview />
-        </div>
-        : <div style={DocStyle} className={classes.paperTwo}>
-          <Grid item xs={12} style={{ minHeight: "35px", width: "100%" }}>
+      ) : (
+        <>
+          {stateApp?.viewDoc && (
+            <div style={DocStyle} className={classes.paperTwo}>
+              <Grid item xs={12} className={classes.viewerHeader}>
+                <h4
+                  style={{
+                    margin: "0 0 15px 0",
+                    float: "left",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  {stateApp?.viewDoc?.name}
+                </h4>
 
-            <h4 className={classes.fileName}>{stateApp?.viewDoc?.name}</h4>
-            <RightActions />
-          </Grid>
-          <DocPreview />
-        </div>
-      }
-    </div> : null
+                <div style={{ float: "right" }}>
+                  <IconButton size="small" style={{ margin: "0 8px" }}>
+                    {stateApp?.viewDoc?.uri ? (
+                      <IconButton size="small" onClick={() => downloadFile(stateApp?.viewDoc)}>
+                        <GetAppIcon />
+                      </IconButton>
+                    ) : (
+                      <CircularProgress size={20} color="secondary" />
+                    )}
+                  </IconButton>
 
+                  <IconButton
+                    onClick={() => {
+                      setStateApp({ ...stateApp, viewDoc: null });
+                    }}
+                    size="small"
+                  >
+                    <CloseIcon className={classes.closeIcon} fontSize="small" />
+                  </IconButton>
+                </div>
+              </Grid>
+
+              <div className={classes.docViewSection}>
+                <Document
+                  style={{ display: "grid", justifyContent: "center", width: "100%" }}
+                  file={stateApp?.viewDoc?.uri}
+                  onLoadSuccess={onDocumentLoadSuccess}
+                  loading={
+                    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                      <CircularProgress />
+                    </div>
+                  }
+                >
+                  {pdfState?.map((value, key) => {
+                    return (
+                      <Page key={key} pageNumber={value} scale={zoom} style={{ display: "grid", justifyContent: "center", width: "100%" }} />
+                    );
+                  })}
+                </Document>
+                <div className={classes.ZoomIcons}>
+                  {" "}
+                  <IconButton
+                    onClick={() => {
+                      setzoom(zoom + 0.25);
+                    }}
+                  >
+                    <ZoomInIcon fontSize={"large"} />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => {
+                      setzoom(zoom - 0.25);
+                    }}
+                  >
+                    <ZoomOutIcon fontSize={"large"} />
+                  </IconButton>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
 };
 
 export default DocViewer;
