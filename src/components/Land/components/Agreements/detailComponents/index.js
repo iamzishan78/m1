@@ -22,6 +22,7 @@ import { AppContext } from "AppContext";
 import NavHeader from "components/Land/components/Common/NavHeader";
 import DocViewer from "components/Shared/DocViewer";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
+import Summary from "components/Land/components/Agreements/detailComponents/Summary";
 
 const useStyles = makeStyles((theme) => ({
   detailHeader: {
@@ -65,12 +66,6 @@ const useStyles = makeStyles((theme) => ({
     borderTopRightRadius: 8,
   },
   tabsSection: {},
-  headerSection: {
-    padding: "20px 30px",
-    background: "#ffffff",
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-  },
   summarySection: {
     padding: 20,
     background: "#ffffff",
@@ -191,7 +186,7 @@ export default function DetailComponents(props) {
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
   const [isButtonScroll, setButtonScroll] = useState(false);
-  const [collapse, setCollapse] = useState(true);
+  const [collapse, setCollapse] = useState(false);
   const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
 
@@ -329,27 +324,24 @@ export default function DetailComponents(props) {
            * Detail tabs section
            */}
 
-          {!stateApp.viewDoc && (
-            <div className={classes.tabsSection}>
-              {/* <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
-              <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-                <HeaderSection details={checksFlatData} />
+          <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
+            <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
+              <div className={classes.summarySection} ref={tab === 0 ? selectedTabRef : null}>
+                <Summary agreementDetails={agreementDetails} />
               </div>
-              <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
+              {/* <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
               <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
                 <SummarySection checkId={checkId} />
               </div>
               <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
               <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
                 <CheckDetailsSection checkId={checkId} />
-              </div>
-            </div> */}
+              </div> */}
             </div>
-          )}
+          </div>
 
           <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
         </div>
-
 
         {!collapse && <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={agreementId} />}
       </div>
