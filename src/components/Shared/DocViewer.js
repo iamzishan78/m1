@@ -33,7 +33,9 @@ const useStyles = makeStyles((theme) => ({
     width: (props) => props.width ?? "calc(100vw - 650px)",
   },
   modalHeader: {
-    minHeight: "35px", width: "100%", display: "block",
+    minHeight: "35px",
+    width: "100%",
+    display: "block",
     padding: theme.spacing(2, 4, 3),
   },
   paperTwo: {
@@ -47,9 +49,8 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "1",
     display: "flex",
     flexDirection: "column",
-    position: "absolute !important",
+    position: "sticky !important",
     bottom: "40px !important",
-    left: "40px",
     width: "3.875rem",
   },
   docViewSection: {
@@ -62,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "35px",
     width: "100%",
     padding: theme.spacing(2, 4, 3),
-  }
+  },
 }));
 
 const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondition = false, width, onCloseHandler = null }) => {
@@ -237,7 +238,12 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
                 >
                   {pdfState?.map((value, key) => {
                     return (
-                      <Page key={key} pageNumber={value} scale={zoom} style={{ display: "grid", justifyContent: "center", width: "100%" }} />
+                      <Page
+                        key={key}
+                        pageNumber={value}
+                        scale={zoom}
+                        style={{ display: "grid", justifyContent: "center", width: "100%" }}
+                      />
                     );
                   })}
                 </Document>
