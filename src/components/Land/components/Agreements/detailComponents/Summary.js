@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, TextField, Typography } from "@material-ui/core";
+import { Grid, TextField, Typography, Button } from "@material-ui/core";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 
 import WellIcon from "components/Shared/svgIcons/well";
 import TractIcon from "components/Shared/svgIcons/tract";
 import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
+import AddIcon from "@material-ui/icons/Add";
 
 import ProgressBar from "components/Shared/ui/ProgressBar";
 
@@ -92,6 +93,15 @@ const useStyles = makeStyles((theme) => ({
     justify: "space-between",
     marginBottom: 20,
     fontWeight: "bold",
+  },
+  addDataButton: {
+    backgroundColor: "white",
+    color: "black",
+    textTransform: "capitalize",
+    "&:hover": {
+      backgroundColor: theme.palette.common.white,
+      opacity: 0.15,
+    },
   },
 }));
 
@@ -513,6 +523,11 @@ export default function Summary({ agreementDetails }) {
                 />
               </Grid>
             </Grid>
+          </Grid>
+          <Grid item>
+            <Button variant="contained" color="primary" className={classes.addDataButton} startIcon={<AddIcon />}>
+              Add Custom Data
+            </Button>
           </Grid>
         </Grid>
       </Grid>
