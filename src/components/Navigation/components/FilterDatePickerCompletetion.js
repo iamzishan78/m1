@@ -118,7 +118,7 @@ export default function FilterDatePickerCompletetion(props) {
               KeyboardButtonProps={{ "aria-label": "change date" }}
               autoOk="true"
               format={format}
-              PopoverProps={{ disablePortal: true }}
+              PopoverProps={{ disablePortal: false }}
               fullWidth={true}
               InputProps={{
                 endAdornment: (
@@ -164,7 +164,7 @@ export default function FilterDatePickerCompletetion(props) {
               KeyboardButtonProps={{ "aria-label": "change date" }}
               autoOk="true"
               format="MM/DD/YYYY"
-              PopoverProps={{ disablePortal: true }}
+              PopoverProps={{ disablePortal: false }}
               fullWidth={true}
               InputProps={{
                 endAdornment: (
