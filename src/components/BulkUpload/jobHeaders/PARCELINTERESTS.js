@@ -377,4 +377,28 @@ export default [
         required: false,
         actual_key: "parcel.qtr.3"
     },
+    {
+        label: "Cost Bearing",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.cost_bearing"
+    },
+    {
+        label: "Cost Free High Value",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.cost_free_high_value"
+    },
+    {
+        label: "Cost Bearing High Value",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.cost_bearing_high_value"
+    },
+    {
+        label: "Notes/Comments",
+        mapped_key: "",
+        required: false,
+        actual_key: "comment"
+    },
 ];

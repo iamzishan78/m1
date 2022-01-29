@@ -2327,10 +2327,6 @@ function SubTable(props) {
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
                     }
-                    console.log('column', column.name)
-                    if(column.name === 'status'){
-                      debugger
-                    }
                     return (
                       <div style={{ minWidth: "100px" }}>
                         <CustomFieldSelect
