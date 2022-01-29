@@ -148,6 +148,7 @@ const StyledTabs = withStyles({
   },
   indicator: {
     backgroundColor: "#12abe0",
+    height: "5px",
   },
 })(Tabs);
 
@@ -324,10 +325,13 @@ export default function DetailComponents(props) {
 
       <div className="flex justifyBetween alignStart w-100">
         <div className={`w-100 ${classes.tabsDetailContainer}`}>
+          {/*** Component for viewing selected pdf file*/}
+          <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
+
           {/**
            * Detail tabs section
            */}
-          <div className={classes.tabsSection}>
+          <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
             <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
                 <HeaderSection details={checksFlatData} />
@@ -348,11 +352,6 @@ export default function DetailComponents(props) {
       </div>
 
       {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
-
-      {/**
-       * Component for viewing selected pdf file
-       */}
-      <DocViewer width="calc(80vw)" />
 
       {/**
        * Menu for meta data

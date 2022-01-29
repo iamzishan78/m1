@@ -20,7 +20,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
     useEffect(() => {
         setSearch(filterList[index][0])
         if (!filterList[index][0]) {
-            setValue(null)
+            setValue({})
         }
     }, [filterList[index][0]]);
 
@@ -91,7 +91,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
                 if (reason === 'clear' || !value?.key) {
                     filterList[index].pop()
                     setSearch('')
-                    setValue(null)
+                    setValue({})
                 } else {
                     filterList[index][0] = typeof value.key === 'string' ? value.key.replace(/^\,|\,$/gm, "") : value.key
                     setSearch(value.key)

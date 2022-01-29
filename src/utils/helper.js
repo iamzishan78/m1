@@ -261,3 +261,29 @@ export const formattingGridView = (view) => {
   }
   return view;
 }
+
+export const getAppliedFilters = (filters, columns, filtersData) => {
+  const appliedFilters = []
+  filters.forEach((val, index) => {
+    if (val.length > 0) {
+      if(columns[index].custom?.isDate){
+        const filterData = filtersData[columns[index].name];
+        const data = filterData.find(f => f.key === val[0])
+        appliedFilters.push({ field: columns[index].esKey, value: data.key_as_string });
+      }else{
+        appliedFilters.push({ field: columns[index].esKey, value: val[0] })
+      }  
+    }
+  })
+  return appliedFilters
+}
+
+export const getFilterList = (columns) => {
+  const filterList = [];
+  columns.forEach((column) => {
+    if(column.options.filterList) {
+      filterList.push(column.options.filterList)
+    }
+  })
+  return filterList
+}
