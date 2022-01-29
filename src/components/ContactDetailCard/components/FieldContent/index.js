@@ -266,9 +266,14 @@ export default function FieldContent({
             className={classes.maxWidth}
             options={statusOptions}
             setDocumentType={(value) => {
+              let val = value.name
+              const data = contactStatusOptions.find(s => s.label === val)
+              if(data){
+                val = data.value
+              }
               setEditContent((editContent) => ({
                 ...editContent,
-                [fieldName]: value.name,
+                [fieldName]: val,
               }));          
             }}
             value={editContent[fieldName] === null ? "" : editContent[fieldName]}
