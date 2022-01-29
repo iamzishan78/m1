@@ -319,7 +319,7 @@ export default function DrawShapes() {
             draw.add(currentFeature)
             addCustomShapeProperties(currentFeature, draw);
             setFeatureProperty(draw, currentFeature.id, "shapeEdit", false);
-            draw.changeMode(state.lastSelectedDrawMode);
+            draw.changeMode("simple_select");
             // isDrawing: false
             return { ...state, currentFeature }
 
