@@ -626,6 +626,7 @@ const ShapeActionsPopup = (props) => {
   const isAoi = stateApp.selectedAoi?.layer?.id === "interest";
   const isCreateParcelMenu = Boolean(anchorEl);
 
+
   return (
     <Fragment>
       <Menu
@@ -657,9 +658,9 @@ const ShapeActionsPopup = (props) => {
         className={classes.convertPopover}
       >
         <MenuItem onClick={() => convertMenuAction('convert')}>
-          <Grid container spacing={0}>
-            <Grid container item xs={2} alignItems="center">
-              <ConvertContact color="#A6A6A6" width="35" height="20" />
+          <Grid container spacing={0} className={classes.convertPopoverGrid}>
+            <Grid container item xs={2} alignItems="center" className={classes.hoverGrid}>
+              <ConvertContact width="35" height="20" color='black' />
             </Grid>
             <Grid container item xs={10} alignItems="center">
               <span className={classes.convertMenuColor} >Convert tax owners to contacts</span>
@@ -667,7 +668,7 @@ const ShapeActionsPopup = (props) => {
           </Grid>
         </MenuItem>
         <MenuItem onClick={() => convertMenuAction('export')}>
-          <Grid container spacing={0}>
+          <Grid container spacing={0} className={classes.convertPopoverGrid}>
             <Grid container item xs={2} alignItems="center">
               <CloudDownloadOutlinedIcon className={classes.downloadIcon} />
             </Grid>

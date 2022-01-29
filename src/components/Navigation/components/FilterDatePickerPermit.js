@@ -154,6 +154,12 @@ export default function FilterDatePickerPermit(props) {
               InputLabelProps={{
                 shrink: true,
               }}
+              disableToolbar
+              KeyboardButtonProps={{ "aria-label": "change date" }}
+              autoOk="true"
+              format="MM/DD/YYYY"
+              PopoverProps={{ disablePortal: false }}
+              fullWidth={true}
               InputProps={{
                 inputProps: { max: moment().format("yyyy-MM-DD") },
                 endAdornment: (

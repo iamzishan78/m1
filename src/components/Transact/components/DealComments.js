@@ -262,6 +262,7 @@ export default function DealComment(props) {
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           _id: editCommentId,
+          objectType: props.targetLabel,
           isEdited: true,
         },
       },
