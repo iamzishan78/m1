@@ -1,10 +1,9 @@
 import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
-import ClearIcon from "@material-ui/icons/Clear";
-import { IconButton } from "@material-ui/core";
+import { Clear } from "@material-ui/icons";
+import { IconButton, TextField } from "@material-ui/core";
 import { useForm, Controller } from "react-hook-form";
 
 const useStyles = makeStyles((theme) => ({
@@ -12,6 +11,7 @@ const useStyles = makeStyles((theme) => ({
   datesRow: {
     display: "flex",
     flexDirection: "row",
+    margin: "12px 0"
   },
   datePicker: {
     margin: "5px",
@@ -19,18 +19,25 @@ const useStyles = makeStyles((theme) => ({
       pointerEvents: "none",
     },
     "& .MuiIconButton-root": {
-      padding: "10px",
+      padding: "10px 0px",
     },
   },
   blue: {
     "& .MuiInputBase-input": { color: "#17AADD" },
+  },
+  dateRoot: {
+    color: "#ffffff",
+    "& input": {
+      marginLeft: 12,
+    },
   },
 }));
 
 export default function FilterDatePickerSpud(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const { control, watch, setValue, reset } = useForm();
+  const { labelDates } = props;
+  const { control, reset } = useForm();
 
   useEffect(() => {
     let filter = null;
@@ -76,14 +83,14 @@ export default function FilterDatePickerSpud(props) {
   const handleStartDate = (date) => {
     setStateNav((stateNav) => ({
       ...stateNav,
-      spudDateFrom: !date ? null : moment(date),
+      spudDateFrom: date,
     }));
   };
 
   const handleEndDate = (date) => {
     setStateNav((stateNav) => ({
       ...stateNav,
-      spudDateTo: !date ? null : moment(date),
+      spudDateTo: date,
     }));
   };
 
@@ -93,43 +100,37 @@ export default function FilterDatePickerSpud(props) {
         <Controller
           control={control}
           name="spudDateFrom"
-          defaultValue={stateNav.spudDateFrom}
-          render={({ onChange, onClick, value }) => (
-            <KeyboardDatePicker
-              label={props.labelDates + " " + "From"}
+          defaultValue={""}
+          render={(props) => (
+            <TextField
+              type="date"
+              label={labelDates + " " + "From"}
               className={`${classes.datePicker} ${stateNav.spudDateFrom ? classes.blue : ""}`}
-              variant="inline"
-              value={watch("spudDateFrom")}
+              margin="dense"
+              fullWidth
+              value={props.value}
               onChange={(date) => {
-                setValue("spudDateFrom", date);
-                if (date && date.isValid()) {
-                  handleStartDate(date);
-                }
-                if (!date || !date.isValid()) {
-                  handleStartDate(null);
-                }
+                handleStartDate(date.target.value);
+                props.onChange(date.target.value);
                 return { value: date };
               }}
-              disableToolbar
-              KeyboardButtonProps={{ "aria-label": "change date" }}
-              autoOk="true"
-              format="MM/DD/YYYY"
-              PopoverProps={{ disablePortal: false }}
-              fullWidth={true}
+              InputLabelProps={{
+                shrink: true,
+              }}
               InputProps={{
                 endAdornment: (
                   <IconButton
-                    onClick={() => {
-                      setValue("spudDateFrom", null);
+                    onClick={(event) => {
                       handleStartDate(null);
+                      props.onChange(event);
                     }}
                   >
-                    <ClearIcon style={{ height: "22px", width: "22px" }} />
+                    <Clear style={{ height: 22, width: 22 }} />
                   </IconButton>
                 ),
-              }}
-              InputAdornmentProps={{
-                position: "start",
+                classes: {
+                  root: classes.dateRoot,
+                },
               }}
             />
           )}
@@ -139,42 +140,37 @@ export default function FilterDatePickerSpud(props) {
           control={control}
           name="spudDateTo"
           defaultValue={stateNav.spudDateTo}
-          render={({ onChange, onClick, value }) => (
-            <KeyboardDatePicker
-              label={props.labelDates + " " + "To"}
+          defaultValue={""}
+          render={(props) => (
+            <TextField
+              type="date"
+              label={labelDates + " " + "To"}
               className={`${classes.datePicker} ${stateNav.spudDateTo ? classes.blue : ""}`}
-              variant="inline"
-              value={watch("spudDateTo")}
+              margin="dense"
+              fullWidth
+              value={props.value}
               onChange={(date) => {
-                setValue("spudDateTo", date);
-                if (date && date.isValid()) {
-                  handleEndDate(date);
-                }
-                if (!date || !date.isValid()) {
-                  handleEndDate(null);
-                }
+                handleEndDate(date.target.value);
+                props.onChange(date.target.value);
                 return { value: date };
               }}
-              disableToolbar
-              KeyboardButtonProps={{ "aria-label": "change date" }}
-              autoOk="true"
-              format="MM/DD/YYYY"
-              PopoverProps={{ disablePortal: false }}
-              fullWidth={true}
+              InputLabelProps={{
+                shrink: true,
+              }}
               InputProps={{
                 endAdornment: (
                   <IconButton
-                    onClick={() => {
-                      setValue("spudDateTo", null);
+                    onClick={(event) => {
                       handleEndDate(null);
+                      props.onChange(event);
                     }}
                   >
-                    <ClearIcon style={{ height: "22px", width: "22px" }} />
+                    <Clear style={{ height: 22, width: 22 }} />
                   </IconButton>
                 ),
-              }}
-              InputAdornmentProps={{
-                position: "start",
+                classes: {
+                  root: classes.dateRoot,
+                },
               }}
             />
           )}

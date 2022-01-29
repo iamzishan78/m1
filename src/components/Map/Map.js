@@ -2720,6 +2720,7 @@ function Map({ type, paramId, lati, longi }) {
         filterLayers.forEach((filterLayer) => {
           const baseFilter = getLayerBaseFilters(filterLayer);
 
+          console.log("filterCustomArray[filterLayer]", filterCustomArray[filterLayer]);
           if (filterCustomArray[filterLayer]) {
             if (
               [
@@ -2730,9 +2731,10 @@ function Map({ type, paramId, lati, longi }) {
                 "rigs",
               ].indexOf(filterLayer) > -1
             ) {
+              console.log("on select operator");
               // const filterClusterLayer = filterLayer + "-clusters";
               // const filterClusterLayerLabel = filterLayer + "-clusters-counts";
-
+              console.log("baseFilter", baseFilter);
               map.setFilter(filterLayer, ["all", baseFilter, ["within", mergeIntoMultiPolygon(filterCustomArray[filterLayer])]]);
             } else if (["recent_submitted_permits", "recent_submitted_permit_laterals"].indexOf(filterLayer) > -1) {
               map.setFilter(filterLayer, [
