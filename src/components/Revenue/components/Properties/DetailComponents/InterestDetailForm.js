@@ -1,24 +1,19 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import loadashFilter from "lodash/filter";
-import get from "lodash/get";
 import moment from "moment";
 
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Grid, TextField, MenuItem, Select, Button } from "@material-ui/core";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 
-import { AppContext } from "AppContext";
-import { setStateIfDeepEqual } from "components/Shared/functions";
-import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
-import { ADDCONTACT } from "graphQL/useMutationAddContact";
 import { ADD_PROPERTY_INTEREST } from "graphQL/useMutationAddpropertyInterest";
 import { UPDATE_PROPERTY_INTEREST } from "graphQL/useMutationUpdatepropertyInterest";
 
 import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
-import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
+import ContactPaginatedAutocomplete from "components/Revenue/components/Common/ContactsPaginatedAutocomplete";
 
 const interestTypeOptions = ["Royalty Interest", "Overriding Royalty", "Working Interest"];
 
@@ -137,9 +132,9 @@ const InterestDetailForm = (props) => {
         effectiveDate: effectiveDate ? moment(effectiveDate).format("YYYY-MM-DD") : null,
         owner: owner
           ? {
-              ...owner,
-              name: owner.entityDetail.name,
-            }
+            ...owner,
+            name: owner.entityDetail.name,
+          }
           : { name: "", _id: null },
       });
     } else if (props.propertyOwnerContact) {
@@ -177,7 +172,7 @@ const InterestDetailForm = (props) => {
             name="owner"
             defaultValue={{ name: "", _id: null }}
             render={(props) => (
-              <ContactPaginatedDropdown
+              <ContactPaginatedAutocomplete
                 nameAutValue={props.value}
                 setNameAutValue={(value) => {
                   props.onChange(value);
@@ -318,87 +313,6 @@ const InterestDetailForm = (props) => {
 };
 
 export default InterestDetailForm;
-
-const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
-  const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-  const [hasNextPage, setHasNextPage] = useState(true);
-  const [isNextPageLoading, setIsNextPageLoading] = useState(false);
-  const [nameAutInputValue, NameAutInputValue] = useState("");
-  const setNameAutInputValue = (newState) => {
-    setStateIfDeepEqual(NameAutInputValue, newState);
-  };
-
-  const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
-  });
-
-  const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
-
-  useEffect(() => {
-    if (get(addContactData, "addContact.contact")) {
-      setNameAutValue({
-        name: addContactData.addContact.contact.name,
-        _id: addContactData.addContact.contact._id,
-      });
-    }
-  }, [addContactData]);
-
-  useEffect(() => {
-    if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
-      setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
-    }
-    setIsNextPageLoading(false);
-  }, [allContacts]);
-
-  useEffect(() => {
-    //will also run during initial mount
-    setIsNextPageLoading(true);
-    getPaginatedContacts({
-      variables: {
-        search: nameAutInputValue,
-      },
-    });
-  }, [nameAutInputValue]);
-
-  const loadNextPage = async (pageVariables) => {
-    setIsNextPageLoading(true);
-    fetchMorePaginatedContacts(pageVariables);
-    return null;
-  };
-
-  return (
-    <AutocompEntityNamesVirtualizeList
-      mongoEntitiesArray={mongoEntitiesArray}
-      setMongoEntitiesArray={setMongoEntitiesArray}
-      nameAutValue={nameAutValue}
-      setNameAutValue={setNameAutValue}
-      nameAutInputValue={nameAutInputValue}
-      setNameAutInputValue={setNameAutInputValue}
-      hasNextPage={hasNextPage}
-      isNextPageLoading={isNextPageLoading}
-      loadNextPage={loadNextPage}
-      addNew={true}
-      addNewOnClick={(value) => {
-        const contact = { name: value };
-        addContact({
-          variables: {
-            contact: {
-              ...contact,
-              createBy: stateApp.user.mongoId,
-              lastUpdateBy: stateApp.user.mongoId,
-            },
-          },
-          refetchQueries: ["getPaginatedContacts", "getContact"],
-          awaitRefetchQueries: true,
-        });
-      }}
-    />
-  );
-};
 
 const InterestType = ({ onChange, value, options, ...other }) => {
   const filter = createFilterOptions();
