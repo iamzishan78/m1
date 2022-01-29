@@ -257,13 +257,18 @@ const Notifications = () => {
                         refetchQueries: ["getNotifications"],
                         awaitRefetchQueries: false,
                       });
-                      history.push(
-                        `/flow/${pipelineId}/lane/${stageId}/card/${parent._id}/`
-                      );
+                      if(parentType === "DEAL"){
+                        history.push(`/flow/${pipelineId}/lane/${stageId}/card/${parent._id}/`);
+                      }else if(parentType === "PARCEL" || parentType === "UNIT"){
+                        history.push(`/map/${parentType.toLowerCase()}s/${parent._id}`);
+                      }else if(parentType === "AGREEMENT"){
+                        history.push(`/map/${parent.layer}s/${parent._id}`);
+                      }
+
                     }}
                   >
                     <Grid item xs={10} zeroMinWidth>
-                      {parent && parentType === "DEAL" && (
+                      {parent && (parentType === "DEAL" || parentType === "PARCEL" || parentType === "UNIT" || parentType === "AGREEMENT") && (
                         <span className={classes.title}>{parent.name}</span>
                       )}
                       {notificationType === "MENTION" && (

@@ -112,6 +112,7 @@ import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
+import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -2176,8 +2177,12 @@ function SubTable(props) {
             column.options = {
               ...column.options,
               customBodyRender: (value, tableMeta) => {
+                const status = contactStatusOptions.find(s => s.value === value)
                 return (
                   <>
+                    {props.parent === 'Contacts' && (
+                      value ? <p>{status ? status.label : value}</p> : <span style={{ color: "#959595" }}>N/A</span>
+                    )}
                     {props.parent === "RevenueStatementTable" && (
                       <div className="flex justifyStart alignCenter">
                         {value?.toLowerCase() === "approved" && (
