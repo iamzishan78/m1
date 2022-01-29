@@ -89,6 +89,8 @@ function MapGridWellsTable(props) {
     stateNav.spudDateTo,
     stateNav.permitDateFrom,
     stateNav.permitDateTo,
+    stateNav.stateName,
+    stateNav.countyName,
     stateApp.gridPolygonString,
     stateNav.completetionDateFrom,
     stateNav.completetionDateTo,

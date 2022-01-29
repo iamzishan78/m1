@@ -151,6 +151,8 @@ export const getMapFilters = (stateNav, searchInput, gridPolygonString) => {
     operator: stateNav.operatorName,
     wellStatus: stateNav.statusName,
     wellBoreProfile: stateNav.profileName,
+    state: stateNav.stateName ? [stateNav.stateName] : [],
+    county: stateNav.countyName ? [stateNav.countyName] : [],
   });
 
   const filters = getFilters({
@@ -252,9 +254,9 @@ export const sortColumns = (columns, gridView) => {
 };
 
 export const formattingGridView = (view) => {
-  if(view?.columns?.length > 0) {
-    for(let i = 0; i < view.columns.length; i++){
-      if(typeof view.columns[i] === 'string'){
+  if (view?.columns?.length > 0) {
+    for (let i = 0; i < view.columns.length; i++) {
+      if (typeof view.columns[i] === 'string') {
         view.columns[i] = { name: view.columns[i], display: true }
       }
     }

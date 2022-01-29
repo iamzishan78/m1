@@ -4,6 +4,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
 import { useLazyQuery } from "@apollo/client";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { debounce } from "lodash";
 
 export default function OperatorFilterJ() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -33,6 +34,8 @@ export default function OperatorFilterJ() {
     let filter;
     if (value && value.length) {
       filter = ["match", ["get", "operator"], value, true, false];
+      console.log("value", value);
+
       setStateNav((stateNav) => ({ ...stateNav, operatorName: value }));
       setOperatorName(value);
     } else {
@@ -42,16 +45,20 @@ export default function OperatorFilterJ() {
     setStateNav((stateNav) => ({ ...stateNav, filterOperator: filter }));
   };
 
-  const handleOperatorChangeByInput = (value) => {
-    getFilters({
-      variables: {
-        esIndex,
-        filterKey: "operator.keyword",
-        search: value,
-        size: 50,
-      },
-    });
-  }
+  const handleOperatorChangeByInput = React.useMemo(
+    () =>
+      debounce((request, top, callback) => {
+        getFilters({
+          variables: {
+            esIndex,
+            filterKey: "operator.keyword",
+            search: `${request}*`,
+            size: 50,
+          },
+        });
+      }, 500),
+    []
+  );
 
 
   return (
