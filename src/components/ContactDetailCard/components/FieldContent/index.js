@@ -16,9 +16,16 @@ import MergeHistory from 'components/ContactDetailCard/components/FieldContent/M
 import CopyPurchaseInfo from 'components/ContactDetailCard/components/FieldContent/CopyPurchaseInfo'
 import { textFieldLabels, getHrefValue, LinkTypes, FieldTypes } from 'components/ContactDetailCard/components/FieldContent/helper'
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style'
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import {timeZoneOptions} from  './timeZoneList';
+import { useLazyQuery } from "@apollo/client";
+import { makeStyles } from "@material-ui/core/styles";
+import { Typography, Grid } from "@material-ui/core";
+import loadashFilter from "lodash/filter";
+import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 
+const filter = createFilterOptions();
 export default function FieldContent({
   children,
   id,
@@ -72,6 +79,31 @@ export default function FieldContent({
   // contactOwnerId field used in autocomplete of contact owner
   const ignorableFieldsInCount = ['contactOwnerId'];
 
+  const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+
+  const [statusOptions, setStatusOptions] = useState([])
+  useEffect(() => {
+    getFilters({
+      variables: {
+          esIndex:'contacts_flat',
+          filterKey: 'status.keyword',
+          size: 50,
+      },
+    });
+  },[])
+
+  useEffect(() => {
+    if(filtersData?.getESFilterList?.hits){
+      let filterData = filtersData.getESFilterList.hits.map(hit => hit.key)
+      for(let i = 0; i < contactStatusOptions.length; i++){
+        filterData = filterData.filter(d => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label)
+      }
+      for(let i = 0; i < contactStatusOptions.length; i++){
+        filterData.push(contactStatusOptions[i].label)
+      }
+      setStatusOptions(filterData)
+    }
+  },[filtersData])
   useEffect(() => {
     if (content) {
       setEditContent({ ...content });
@@ -230,44 +262,22 @@ export default function FieldContent({
       else if (editContent.hasOwnProperty(fieldName)) {
         inputsArray.push(
           fieldName === 'status' ? 
-            <Select
-            labelId="status-label"
-            id="status-select"
-            className={classes.editSelectField}
-            value={editContent[fieldName] === null ? "" : editContent[fieldName]}
-            onChange={(e) => {
-              e.persist();
+          <Status
+            className={classes.maxWidth}
+            options={statusOptions}
+            setDocumentType={(value) => {
+              let val = value.name
+              const data = contactStatusOptions.find(s => s.label === val)
+              if(data){
+                val = data.value
+              }
               setEditContent((editContent) => ({
                 ...editContent,
-                [fieldName]: e.target.value,
+                [fieldName]: val,
               }));          
             }}
-            onKeyDown={(event) => {
-              event.stopPropagation();
-              if (event.key === "Escape") {
-                if (fieldsCount <= 1) {
-                  setEdit(null);
-                  setEditContent((editContent) => ({
-                    ...editContent,
-                    [fieldName]: content[fieldName],
-                  }));
-                }
-              }
-            }}
-            onBlur={() => {
-              if (fieldsCount <= 1) {
-                setEdit(null);
-                setEditContent((editContent) => ({
-                  ...editContent,
-                  [fieldName]: content[fieldName],
-                }));
-              }
-            }}
-            >
-              <MenuItem value='UnqualLead'> Unqualified Lead </MenuItem>
-              <MenuItem value='QualLead'> Qualified Lead </MenuItem>
-              <MenuItem value='Contact'> Contact </MenuItem>
-            </Select>:
+            value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+          />:
             fieldName === 'timeZone' ?
             <Autocomplete
             id={"fieldContentInput" + fieldName}
@@ -474,3 +484,147 @@ export default function FieldContent({
     </React.Fragment>
   );
 }
+
+
+
+const Status = ({ setDocumentType, value, options, ...other }) => {
+  const useStyles = makeStyles({
+    inputRoot: {
+      backgroundColor: "#ffffff",
+    },
+    listbox: {
+      boxSizing: "border-box",
+      "& ul": {
+        padding: 0,
+        margin: 0,
+      },
+    },
+  });
+
+  const classes = useStyles();
+
+  const [search, setSearch] = useState(value)
+
+  const onInputChange = (event, value) => {
+    setSearch(value);
+  };
+
+  return (
+    <Autocomplete
+      defaultValue={search}
+      value={search}
+      disableListWrap
+      classes={classes}
+      options={
+        options?.map((type) => {
+          return { _id: type, name: type };
+        }) ?? []
+      }
+      getOptionLabel={(option) => {
+        // Value selected with enter, right from the input
+        if (typeof option === "string") {
+          return option;
+        }
+        // Add "xxx" option created dynamically
+        if (option.inputValue) {
+          return option.name;
+        }
+
+        if (option?.name) return option.name;
+        else return "";
+      }}
+      getOptionSelected={(option, value) => {
+        return option?._id === search;
+      }}
+      renderOption={(option) => {
+        if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
+
+        return (
+          <Grid container spacing={0}>
+            <Grid container item xs={12} alignItems="center">
+              <Grid item xs>
+                <span style={{ fontWeight: 400 }}>{option.name}</span>
+              </Grid>
+            </Grid>
+          </Grid>
+        );
+      }}
+      onInputChange={onInputChange}
+      filterOptions={(options, params) => {
+        let inputValue = JSON.parse(JSON.stringify(search));
+        if (inputValue.name) {
+          inputValue = inputValue.name;
+        }
+        const filtered = filter(options, { ...params, inputValue });
+        const isExist = loadashFilter(filtered, (filter) => {
+          return filter._id === inputValue;
+        });
+        // Suggest the creation of a new value
+        if (inputValue !== "" && (!isExist || isExist.length === 0)) {
+          filtered.unshift({
+            name: inputValue,
+            _id: "newEntity",
+          });
+        }
+        return filtered;
+      }}
+      onChange={(event, newValue) => {
+        if (newValue && newValue._id) {
+          if (newValue._id !== "newEntity") setDocumentType(newValue);
+          else setDocumentType({ _id: "newEntity", name: newValue.name });
+        } else setSearch("");
+      }}
+      renderInput={(params) => (
+        <TextField
+          margin="dense"
+          {...params}
+          InputProps={{
+            ...params.InputProps,
+          }}
+          size="small"
+        />
+      )}
+      {...other}
+    />
+  );
+};
+
+
+{/* <Select
+            labelId="status-label"
+            id="status-select"
+            className={classes.editSelectField}
+            value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+            onChange={(e) => {
+              e.persist();
+              setEditContent((editContent) => ({
+                ...editContent,
+                [fieldName]: e.target.value,
+              }));          
+            }}
+            onKeyDown={(event) => {
+              event.stopPropagation();
+              if (event.key === "Escape") {
+                if (fieldsCount <= 1) {
+                  setEdit(null);
+                  setEditContent((editContent) => ({
+                    ...editContent,
+                    [fieldName]: content[fieldName],
+                  }));
+                }
+              }
+            }}
+            onBlur={() => {
+              if (fieldsCount <= 1) {
+                setEdit(null);
+                setEditContent((editContent) => ({
+                  ...editContent,
+                  [fieldName]: content[fieldName],
+                }));
+              }
+            }}
+            >
+              <MenuItem value='UnqualLead'> Unqualified Lead </MenuItem>
+              <MenuItem value='QualLead'> Qualified Lead </MenuItem>
+              <MenuItem value='Contact'> Contact </MenuItem>
+            </Select> */}
