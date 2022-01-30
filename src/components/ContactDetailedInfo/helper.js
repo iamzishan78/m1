@@ -18,7 +18,6 @@ export const contactStatusOptions = [
   },
 ];
 
-
 const getCreateByRow = (contactData) => {
     return contactData?.createBy && contactData?.createBy.name === null ? (
         <span>
@@ -198,7 +197,10 @@ export const getBasicInfoContent = (contactData) => {
       data: { lastName: contactData?.lastName },
       linkType: LinkTypes.None,
     },
-
+    "Entity Type": {
+      data: { ownerType: contactData?.ownerType },
+      linkType: LinkTypes.None,
+    },
     "Primary Email": {
       data: { primaryEmail: contactData?.primaryEmail },
       linkType: LinkTypes.Mail,
