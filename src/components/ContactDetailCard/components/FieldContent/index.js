@@ -24,6 +24,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import EntityType from "./EntityType";
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -123,6 +124,10 @@ export default function FieldContent({
   useEffect(() => { 
     editContent.status && handleUpdating()
   }, [editContent.status]);
+
+  useEffect(() => { 
+    editContent.ownerType && handleUpdating()
+  }, [editContent.ownerType]);
 
   useEffect(() => {
     if (fieldsCount <= 1) {
@@ -330,6 +335,23 @@ export default function FieldContent({
               />
             }
             /> :
+            fieldName === 'ownerType' ? 
+            <EntityType
+              className={classes.maxWidth}
+              options={statusOptions}
+              setDocumentType={(value) => {
+                let val = value.name
+                const data = contactStatusOptions.find(s => s.label === val)
+                if(data){
+                  val = data.value
+                }
+                setEditContent((editContent) => ({
+                  ...editContent,
+                  [fieldName]: val,
+                }));          
+              }}
+              value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+            />:
             <TextField
             key={"fieldContentInput" + fieldName}
             id={"fieldContentInput" + fieldName}
