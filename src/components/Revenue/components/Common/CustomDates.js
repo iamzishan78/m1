@@ -64,53 +64,51 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
     return moment >= 10 ? moment : `0${moment}`;
   };
 
-  const getLastMonthStartDate = () => {
-    return new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1);
-  }
-  const getLastMonthEndDate = () => {
-    return new Date(new Date().getFullYear(), new Date().getMonth(), 0);
-  }
+  // const getLastMonthStartDate = () => {
+  //   return new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1);
+  // }
+  // const getLastMonthEndDate = () => {
+  //   return new Date(new Date().getFullYear(), new Date().getMonth(), 0);
+  // }
 
   const handleDateTypeChange = (date) => {
     const currentYear = Math.round(new Date().getFullYear());
-    const currentMonth = Math.ceil(new Date().getMonth());
-    const currentQuarter = Math.ceil((new Date().getMonth() + 1) / 3);
     switch (date) {
       case CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH:
-        setFromDate(`${currentYear}-01`);
-        setToDate(moment().subtract(1, 'months').startOf('month').format('yyyy-MM'));
+        setFromDate(`${currentYear}-01-01`);
+        setToDate(moment().subtract(1, 'months').startOf('month').format('yyyy-MM-DD'));
         break;
       case CUSTOM_DATES.THIS_YEAR_TO_DATE:
-        setFromDate(`${currentYear}-01`);
-        setToDate(`${currentYear}-${getFlaggedMoment(currentMonth + 1)}`);
+        setFromDate(`${currentYear}-01-01`);
+        setToDate(`${moment().format('yyyy-MM-DD')}`);
         break;
       case CUSTOM_DATES.LAST_YEAR_TO_DATE:
-        setFromDate(`${currentYear - 1}-01`);
-        setToDate(`${currentYear}-${getFlaggedMoment(currentMonth + 1)}`);
+        setFromDate(`${currentYear - 1}-01-01`);
+        setToDate(`${moment().format('yyyy-MM-DD')}`);
         break;
       case CUSTOM_DATES.LAST_MONTH:
-        setFromDate(`${getLastMonthStartDate().getFullYear()}-${getLastMonthStartDate().getMonth() + 1}`);
-        setToDate(`${getLastMonthEndDate().getFullYear()}-${getLastMonthEndDate().getMonth() + 1}`);
+        setFromDate(`${moment().subtract(1, 'months').startOf('month').format('yyyy-MM-DD')}`);
+        setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
         break;
       case CUSTOM_DATES.THIS_MONTH:
-        setFromDate(`${currentYear}-${getFlaggedMoment(currentMonth + 1)}`);
-        setToDate(`${currentYear}-${getFlaggedMoment(currentMonth + 1)}`);
+        setFromDate(`${moment().startOf('month').format('yyyy-MM-DD')}`);
+        setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
         break;
       case CUSTOM_DATES.LAST_QUARTER:
-        setFromDate(moment().subtract(1, 'quarter').startOf('quarter').format("yyyy-MM"));
+        setFromDate(moment().subtract(1, 'quarter').startOf('quarter').format("yyyy-MM-DD"));
         setToDate(moment().subtract(1, 'quarter').endOf('quarter').format("yyyy-MM"));
         break;
       case CUSTOM_DATES.THIS_QUARTER:
-        setFromDate(`${currentYear}-${getFlaggedMoment(currentQuarter * 3 - 2)}`);
-        setToDate(`${currentYear}-${getFlaggedMoment(currentQuarter * 3)}`);
+        setFromDate(`${moment().startOf('quarter').format("yyyy-MM-DD")}`);
+        setToDate(`${moment().endOf('quarter').format("yyyy-MM-DD")}`);
         break;
       case CUSTOM_DATES.LAST_YEAR:
-        setFromDate(`${currentYear - 1}-01`);
-        setToDate(`${currentYear - 1}-12`);
+        setFromDate(`${currentYear - 1}-01-01`);
+        setToDate(`${currentYear - 1}-12-31`);
         break;
       default:
-        setFromDate(`${currentYear}-${getFlaggedMoment(currentMonth + 1)}`);
-        setToDate(`${currentYear}-${getFlaggedMoment(currentMonth + 1)}`);
+        setFromDate(`${moment().startOf('month').format('yyyy-MM-DD')}`);
+        setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
     }
   };
 
@@ -144,7 +142,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
             variant="outlined"
             placeholder=""
             fullWidth
-            value={fromDate}
+            value={moment(fromDate).format('yyyy-MM')}
             className={classes.inputFieldDate}
             InputLabelProps={{
               shrink: true,
@@ -176,7 +174,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
             variant="outlined"
             placeholder="to"
             fullWidth
-            value={toDate}
+            value={moment(toDate).format('yyyy-MM')}
             className={classes.inputFieldDate}
             onChange={(event) => {
               if (event.target.value == "") {
