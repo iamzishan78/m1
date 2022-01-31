@@ -6,17 +6,7 @@ import loadashFilter from "lodash/filter";
 import { Typography, Grid } from "@material-ui/core";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { useLazyQuery } from "@apollo/client";
-
-export const entityTypeOptions = [
-  { label: "CORPORATION", value: "CORPORATION" },
-  { label: "EDUCATIONAL INSTITUTION", value: "EDUCATIONAL INSTITUTION" },
-  { label: "GOVERNMENTAL BODY", value: "GOVERNMENTAL BODY" },
-  { label: "INDIVIDUAL", value: "INDIVIDUAL" },
-  { label: "NON PROFIT", value: "NON PROFIT" },
-  { label: "RELIGIOUS INSTITUTION", value: "RELIGIOUS INSTITUTION" },
-  { label: "TRUST", value: "TRUST" },
-  { label: "UNKNOWN", value: "UNKNOWN" }  
-];
+import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
 
 const filter = createFilterOptions();
 
