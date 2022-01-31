@@ -21,7 +21,6 @@ import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { summaryStyles } from "components/ShapeDetailCard/style";
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 
-
 export default function AgreementSummary(props) {
     const [search, setSearch] = useState('');
     const [unitProperties, setProperties] = useState(props.properties);
@@ -148,7 +147,7 @@ export default function AgreementSummary(props) {
                     />
                 </Grid>
                 <Grid item md={12}>
-                    <CommentComponent targetLabel={'unit'} targetSourceId={props.id} />
+                    <CommentComponent targetLabel={'agreement'} targetSourceId={props.id} />
                 </Grid>
             </Grid>
         </Grid>

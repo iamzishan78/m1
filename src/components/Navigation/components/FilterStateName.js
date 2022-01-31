@@ -45,7 +45,6 @@ export default function FilterStateName() {
       }));
     } else {
       const AbbName = statesAbbNames[statesNames.indexOf(newValue)];
-
       setStateNav((stateNav) => ({
         ...stateNav,
         stateName: AbbName,

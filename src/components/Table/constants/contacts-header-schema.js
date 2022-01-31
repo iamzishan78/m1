@@ -1,5 +1,6 @@
 
 /* props is just a style object*/
+import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 
 const ContactsHeadCells = [
     {
@@ -438,6 +439,9 @@ const ContactsHeadCells = [
         filter: false,
         searchable: false,
         sort: true,
+      },
+      custom: {
+        formatedFilterOptions: contactStatusOptions,
       },
     },
     {

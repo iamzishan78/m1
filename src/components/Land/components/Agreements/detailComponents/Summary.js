@@ -1,17 +1,27 @@
 import React, { useEffect } from "react";
+import { get } from "lodash";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, TextField, Typography, Button } from "@material-ui/core";
+import { Grid, TextField, Typography, Button, Box } from "@material-ui/core";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 
 import WellIcon from "components/Shared/svgIcons/well";
 import TractIcon from "components/Shared/svgIcons/tract";
 import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
 import AddIcon from "@material-ui/icons/Add";
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
 
 import ProgressBar from "components/Shared/ui/ProgressBar";
 
+import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
+import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
+
 const useStyles = makeStyles((theme) => ({
+  root: {
+    padding: "10px 25px"
+  },
   titleText: {
     textTransform: "uppercase",
     margin: "5px 16px 10px",
@@ -103,18 +113,52 @@ const useStyles = makeStyles((theme) => ({
       opacity: 0.15,
     },
   },
+  provisionCard: {
+    backgroundColor: "#F6F8F9",
+    padding: "10px",
+    "& .heading": {
+      fontWeight: "bold",
+      paddingBottom: "20px",
+      fontSize: "larger",
+    },
+    "& .text": {
+      fontWeight: "bold",
+    },
+    "& .MuiSvgIcon-root": {
+      marginRight: "10px",
+    },
+    "& .uncheck": {
+      opacity: 0.5,
+    },
+    "& .provisionRow": {
+      paddingBottom: "10px",
+    },
+  },
 }));
 
 export default function Summary({ agreementDetails }) {
   const classes = useStyles();
   const { control, reset } = useForm();
 
+  const [getStandardProvisions, { data: dataStandardProvisions = [] }] = useLazyQuery(GET_STANDARD_PROVISIONS);
+  const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
+
   useEffect(() => {
-    reset(agreementDetails);
-  }, [reset, agreementDetails]);
+    if (agreementDetails) {
+      reset(agreementDetails);
+      getAgreementProvisions({ variables: { agreementId: agreementDetails._id } });
+
+    }
+  }, [reset, agreementDetails, getAgreementProvisions]);
+
+  useEffect(() => {
+    getStandardProvisions();
+  }, [getStandardProvisions]);
+
+  const hasCustomProvision = get(agreementProvisions, "getAgreementProvisions", []).find((provision) => !provision.templateRef)
 
   return (
-    <Grid container direction="row" justify="space-between" alignItems="center">
+    <Grid container direction="row" justify="space-between" alignItems="center" className={classes.root}>
       <Grid item className={classes.infoSection}>
         <Grid
           container
@@ -533,6 +577,36 @@ export default function Summary({ agreementDetails }) {
       </Grid>
       <Grid item className={classes.mapSection}>
         <h1>Map Here</h1>
+        <Grid item md={12} className={classes.provisionCard}>
+          <Typography className='heading'>Provisions</Typography>
+          <Grid container direction="row" >
+            {
+              get(dataStandardProvisions, "getStandardProvisions", []).map((provision) => {
+                const found = get(agreementProvisions, "getAgreementProvisions", []).find((p) => p.type === provision.type)
+                return (
+                  <Grid item md={6} className='provisionRow'>
+                    <Box display='inline-flex' className={found ? '' : 'uncheck'}>
+                      {
+                        found ? <CheckIcon fontSize='medium' style={{ color: '#00b050' }} /> : <CloseIcon />
+                      }
+                      <Typography className='text'>{provision.type}</Typography>
+                    </Box>
+                  </Grid>
+                )
+              }
+              )
+            }
+            <Grid item md={6} className='provisionRow'>
+              <Box display='inline-flex' className={hasCustomProvision ? '' : 'uncheck'}>
+                {
+                  hasCustomProvision ? <CheckIcon fontSize='medium' style={{ color: '#00b050' }} /> : <CloseIcon />
+                }
+                <Typography className='text'>Other</Typography>
+              </Box>
+            </Grid>
+
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   );

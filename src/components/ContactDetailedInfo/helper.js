@@ -64,6 +64,16 @@ const getLastUpdateByRow = (contactData) => {
 } 
 
 export const getBasicInfoExpContent = (contactData) => {
+  let status = null
+  if(contactData?.status){
+    const data = contactStatusOptions.find(status => status.value === contactData.status)
+    if(data){
+      status = data.label
+    }else{
+      status = contactData.status
+    }
+  }
+  
   return {
     "Email 2": {
       data: { secondaryEmail: contactData?.secondaryEmail },
@@ -144,7 +154,7 @@ export const getBasicInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     Status: {
-      data: { status: contactData?.status ? contactStatusOptions.find(status => status.value === contactData.status)?.label: null },
+      data: { status },
       linkType: LinkTypes.None,
     },
     "Contact Owner": {
