@@ -2,16 +2,16 @@ import React, { useEffect } from "react";
 import { get } from "lodash";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useForm, Controller } from "react-hook-form";
-import { makeStyles } from "@material-ui/core/styles";
-import { Grid, TextField, Typography, Button, Box } from "@material-ui/core";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { Grid, TextField, Typography, Button, Box, FormControl, InputLabel, InputBase } from "@material-ui/core";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 
 import WellIcon from "components/Shared/svgIcons/well";
 import TractIcon from "components/Shared/svgIcons/tract";
 import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
 import AddIcon from "@material-ui/icons/Add";
-import CheckIcon from '@material-ui/icons/Check';
-import CloseIcon from '@material-ui/icons/Close';
+import CheckIcon from "@material-ui/icons/Check";
+import CloseIcon from "@material-ui/icons/Close";
 
 import ProgressBar from "components/Shared/ui/ProgressBar";
 
@@ -20,7 +20,7 @@ import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: "10px 25px"
+    padding: "10px 25px",
   },
   titleText: {
     textTransform: "uppercase",
@@ -134,7 +134,59 @@ const useStyles = makeStyles((theme) => ({
       paddingBottom: "10px",
     },
   },
+  acreageCard: {
+    backgroundColor: "#F6F8F9",
+    padding: "10px",
+    marginTop: 20,
+    "& .heading": {
+      fontWeight: "bold",
+      fontSize: "larger",
+    },
+    "& .MuiGrid-item": {
+      padding: "0px 5px",
+      marginTop: "20px",
+    },
+  },
 }));
+
+const BootstrapInput = withStyles((theme) => ({
+  root: {
+    "label + &": {
+      marginTop: theme.spacing(2),
+    },
+  },
+  input: {
+    borderRadius: 6,
+    backgroundColor: "#fff",
+    fontSize: 16,
+    padding: "10px 12px",
+    transition: theme.transitions.create(["border-color", "box-shadow"]),
+    borderColor: "##b3b4b5",
+    border: "1px solid",
+    fontFamily: [
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(","),
+    "&:focus": {
+      border: "2px solid",
+    },
+  },
+}))(InputBase);
+
+const StyledTextField = (props) => (
+  <FormControl variant="standard">
+    <InputLabel shrink>{props.label}</InputLabel>
+    <BootstrapInput type="text" disabled {...props} />
+  </FormControl>
+);
 
 export default function Summary({ agreementDetails }) {
   const classes = useStyles();
@@ -147,7 +199,6 @@ export default function Summary({ agreementDetails }) {
     if (agreementDetails) {
       reset(agreementDetails);
       getAgreementProvisions({ variables: { agreementId: agreementDetails._id } });
-
     }
   }, [reset, agreementDetails, getAgreementProvisions]);
 
@@ -155,7 +206,7 @@ export default function Summary({ agreementDetails }) {
     getStandardProvisions();
   }, [getStandardProvisions]);
 
-  const hasCustomProvision = get(agreementProvisions, "getAgreementProvisions", []).find((provision) => !provision.templateRef)
+  const hasCustomProvision = get(agreementProvisions, "getAgreementProvisions", []).find((provision) => !provision.templateRef);
 
   return (
     <Grid container direction="row" justify="space-between" alignItems="center" className={classes.root}>
@@ -576,35 +627,50 @@ export default function Summary({ agreementDetails }) {
         </Grid>
       </Grid>
       <Grid item className={classes.mapSection}>
-        <h1>Map Here</h1>
         <Grid item md={12} className={classes.provisionCard}>
-          <Typography className='heading'>Provisions</Typography>
-          <Grid container direction="row" >
-            {
-              get(dataStandardProvisions, "getStandardProvisions", []).map((provision) => {
-                const found = get(agreementProvisions, "getAgreementProvisions", []).find((p) => p.type === provision.type)
-                return (
-                  <Grid item md={6} className='provisionRow'>
-                    <Box display='inline-flex' className={found ? '' : 'uncheck'}>
-                      {
-                        found ? <CheckIcon fontSize='medium' style={{ color: '#00b050' }} /> : <CloseIcon />
-                      }
-                      <Typography className='text'>{provision.type}</Typography>
-                    </Box>
-                  </Grid>
-                )
-              }
-              )
-            }
-            <Grid item md={6} className='provisionRow'>
-              <Box display='inline-flex' className={hasCustomProvision ? '' : 'uncheck'}>
-                {
-                  hasCustomProvision ? <CheckIcon fontSize='medium' style={{ color: '#00b050' }} /> : <CloseIcon />
-                }
-                <Typography className='text'>Other</Typography>
+          <Typography className="heading">Provisions</Typography>
+          <Grid container direction="row">
+            {get(dataStandardProvisions, "getStandardProvisions", []).map((provision) => {
+              const found = get(agreementProvisions, "getAgreementProvisions", []).find((p) => p.type === provision.type);
+              return (
+                <Grid item md={6} className="provisionRow">
+                  <Box display="inline-flex" className={found ? "" : "uncheck"}>
+                    {found ? <CheckIcon fontSize="medium" style={{ color: "#00b050" }} /> : <CloseIcon />}
+                    <Typography className="text">{provision.type}</Typography>
+                  </Box>
+                </Grid>
+              );
+            })}
+            <Grid item md={6} className="provisionRow">
+              <Box display="inline-flex" className={hasCustomProvision ? "" : "uncheck"}>
+                {hasCustomProvision ? <CheckIcon fontSize="medium" style={{ color: "#00b050" }} /> : <CloseIcon />}
+                <Typography className="text">Other</Typography>
               </Box>
             </Grid>
+          </Grid>
+        </Grid>
+        <Grid item md={12} className={classes.acreageCard}>
+          <Typography className="heading">Acreage</Typography>
 
+          <Grid container direction="row" display="flex" justify="space-between" alignItems="center">
+            <Grid item xs={4}>
+              <Controller control={control} name="reportGross" label="Report Gross" as={StyledTextField} />
+            </Grid>
+            <Grid item xs={4}>
+              <Controller control={control} name="gross" label="Gross" as={StyledTextField} />
+            </Grid>
+            <Grid item xs={4}>
+              <Controller control={control} name="companyNet" label="Company Net" as={StyledTextField} />
+            </Grid>
+            <Grid item xs={4}>
+              <Controller control={control} name="reportNet" label="Report Net" as={StyledTextField} />
+            </Grid>
+            <Grid item xs={4}>
+              <Controller control={control} name="net" label="Net" as={StyledTextField} />
+            </Grid>
+            <Grid item xs={4}>
+              <Controller control={control} name="netRoyaltyAcres" label="Net Royalty Acres" as={StyledTextField} />
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
