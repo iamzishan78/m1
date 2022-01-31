@@ -669,7 +669,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   onWheel={(e) => e.target.blur()}
                 />
               </Grid>
-              {tenantName === 'providence' && (
+              {tenantName === 'Providence' && (
                 <>
                   <Grid item xs={12}>
                     <h3>Cost Bearing</h3>

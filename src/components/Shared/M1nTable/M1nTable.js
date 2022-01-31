@@ -1881,7 +1881,7 @@ function M1nTable(props) {
       const OwnersPerParcelColumns = JSON.parse(JSON.stringify(OwnersPerParcelHeadCells))
       let tenantName = window.sessionStorage.getItem("tenantName");
 
-      if(tenantName === 'providence'){
+      if(tenantName === 'Providence'){
         const index = findIndex(OwnersPerParcelColumns, (column) => column.name === "depthFrom");
         OwnersPerParcelColumns.splice(index, 0, { name: "cost_bearing_high_value", label: "Cost Bearing High Value", editabe: true })
         OwnersPerParcelColumns.splice(index, 0, { name: "cost_free_high_value", label: "Cost Free High Value", editabe: true })
