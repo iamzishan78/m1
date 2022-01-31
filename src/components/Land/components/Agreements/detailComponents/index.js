@@ -22,7 +22,7 @@ import { AppContext } from "AppContext";
 import NavHeader from "components/Land/components/Common/NavHeader";
 import DocViewer from "components/Shared/DocViewer";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
-import Summary from "components/Land/components/Agreements/detailComponents/Summary";
+import Summary from "components/Land/components/Agreements/detailComponents/summary";
 
 const useStyles = makeStyles((theme) => ({
   detailHeader: {
