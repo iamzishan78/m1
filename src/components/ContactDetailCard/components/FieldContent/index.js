@@ -120,9 +120,6 @@ export default function FieldContent({
     }
   }, [content]);
 
-  useEffect(() => { 
-    editContent.status && handleUpdating()
-  }, [editContent.status]);
 
   useEffect(() => {
     if (fieldsCount <= 1) {
@@ -142,7 +139,7 @@ export default function FieldContent({
     setEdit(!edit ? e.currentTarget : null);
   };
 
-  const handleUpdating = () => {
+  const handleUpdating = (val = null) => {
     if (fieldType == FieldTypes.Contact) {
       let trimmedEditContent = {
         _id: id,
@@ -152,9 +149,14 @@ export default function FieldContent({
       if (entity) trimmedEditContent.entity = entity;
       let differences = false;
       for (const field in editContent) {
-        if (editContent[field] !== null && editContent[field] !== undefined) {
-          trimmedEditContent[field] = editContent[field].trim();
-          if (editContent[field].trim() !== content[field]) differences = true;
+        const value = val ? val : editContent[field];
+        if (value !== null && value !== undefined) {
+          if(field === 'status'){
+            trimmedEditContent[field] = value;
+          }else{
+            trimmedEditContent[field] = value.trim();  
+          }
+          if (trimmedEditContent[field] !== content[field]) differences = true;
         }
       }
 
@@ -274,7 +276,8 @@ export default function FieldContent({
               setEditContent((editContent) => ({
                 ...editContent,
                 [fieldName]: val,
-              }));          
+              }));
+              handleUpdating(val)
             }}
             value={editContent[fieldName] === null ? "" : editContent[fieldName]}
           />:
