@@ -16,7 +16,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 
 import DetailsPanel from "./Details";
-import AssociatedWells from "components/Shared/Wells/AssociatedWells";
+import AssociatedWells from "./AssociatedWells";
 import { DocumentContext } from "../DocumentContext";
 
 const useStyles = makeStyles({

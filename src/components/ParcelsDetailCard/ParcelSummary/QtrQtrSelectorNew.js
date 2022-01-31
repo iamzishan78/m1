@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-import SmallTXQtr from "./SmallTXQtr";
+
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import { Box } from "@material-ui/core";
+import { getQtrFilterData } from "./helper";
+import SmallTXQtr from "components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/SmallTXQtr";
 
 const useStyles = makeStyles((theme) => ({
-  QtrContainer: {
-    margin: "8px 10px"
-  },
   mainDiv: {
     position: "relative",
     cursor: ({ parcelData }) =>
@@ -25,7 +28,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: ({ parcelData }) =>
       parcelData.state !== "TX" ? "#F3F3F3" : "#fff",
     height: "387px",
-    width: "387px",
+    // width: "387px",
+    marginRight: "15px",
     border: "2px solid #C9C9C9",
     "& p": {
       textAlign: "center",
@@ -88,24 +92,80 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
+const qtrOptions = ["", "E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
+
+export default function QtrQtrSelectorNew({ parcelData }) {
   const classes = useStyles({ parcelData });
 
+  const [qtr, setQtr] = useState(["", "", "", ""])
+
+  const [qtrQtr, setQtrQtr] = useState(parcelData.qtrQtr)
+  useEffect(() => {
+    const values = getQtrFilterData(qtr)
+    if (values) {
+      Object.keys(qtrQtr).forEach((key) => {
+        qtrQtr[key] = false
+      })
+      values.forEach((value) => {
+        qtrQtr[value.toLowerCase()] = true
+      })
+      setQtrQtr(qtrQtr)
+    }
+  }, [])
+
   return (
-    <div className={classes.QtrContainer}>
+    <div>
       <p className="formLabel" style={{ marginTop: "0" }}>
         Adjust the shape boundary by entering quarter calls or selecting values in the grid below
       </p>
+      <Grid container spacing={1} direction="row">
+        <Grid item md={9}>
+          <Grid container spacing={1} direction="row">
+            {
+              [1, 2, 3, 4].map((val) =>
+                <Grid item xs={3} key={val}>
+                  <Box>QTR {val}</Box>
+                  <Autocomplete
+                    options={qtrOptions}
+                    getOptionLabel={(option) => option === "" ? '-' : option}
+                    value={qtr[val - 1]}
+                    disableClearable
+                    onChange={(e, newInputValue) => {
+                      qtr[val - 1] = newInputValue ? newInputValue : "";
+
+                      const values = getQtrFilterData(qtr)
+                      if (values) {
+                        Object.keys(qtrQtr).forEach((key) => {
+                          qtrQtr[key] = false
+                        })
+                        values.forEach((value) => {
+                          qtrQtr[value.toLowerCase()] = true
+                        })
+                        setQtrQtr(qtrQtr)
+                      }
+                      setQtr([...qtr])
+                    }}
+                    renderInput={(params) => <TextField {...params} variant="outlined" size="small" className={classes.maxWidth} />}
+                  />
+                </Grid>)
+            }
+          </Grid>
+        </Grid>
+        <Grid item md={3} style={{ paddingTop: '1.8em' }}>
+          <Button variant="contained" color="primary">Update</Button>
+        </Grid>
+
+      </Grid>
       <div className={classes.mainDiv}>
         {/* //// all //// */}
         <div
           className={`${classes.qrt1} ${parcelData.state !== "TXtemporaryRemoved" &&
-              parcelData.qtrQtr &&
-              Object.entries(parcelData.qtrQtr).every(([key, value]) => {
-                return value;
-              })
-              ? classes.backgrounSecondaryQrt1
-              : ""
+            qtrQtr &&
+            Object.entries(qtrQtr).every(([key, value]) => {
+              return value;
+            })
+            ? classes.backgrounSecondaryQrt1
+            : ""
             }`}
           style={{
             top:
@@ -114,16 +174,16 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
                 : "calc(50% - 10px)",
             left:
               parcelData.state !== "TX"
-                ? "calc(50% - 28px)"
-                : "calc(50% - 11px)",
+                ? "calc(50% - 20px)"
+                : "calc(50% - 19px)",
           }}
           onClick={() => {
             if (
               parcelData.state !== "TXtemporaryRemovedtemporaryRemoved" &&
-              parcelData.qtrQtr
+              qtrQtr
             )
               if (
-                Object.entries(parcelData.qtrQtr).every(([key, value]) => {
+                Object.entries(qtrQtr).every(([key, value]) => {
                   return value;
                 })
               ) {
@@ -173,14 +233,14 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
         {/* //// NW //// */}
         <div
           className={`${classes.qrt1} ${parcelData.state !== "TXtemporaryRemoved" &&
-              parcelData.qtrQtr &&
-              Object.entries(parcelData.qtrQtr).every(([key, value]) => {
-                return ["nwnw", "nenw", "swnw", "senw"].indexOf(key) === -1
-                  ? true
-                  : value;
-              })
-              ? classes.backgrounSecondaryQrt1
-              : ""
+            qtrQtr &&
+            Object.entries(qtrQtr).every(([key, value]) => {
+              return ["nwnw", "nenw", "swnw", "senw"].indexOf(key) === -1
+                ? true
+                : value;
+            })
+            ? classes.backgrounSecondaryQrt1
+            : ""
             }`}
           style={{
             top:
@@ -190,19 +250,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
             left:
               parcelData.state !== "TX"
                 ? "calc(25% - 24px)"
-                : "calc(25% - 11px)",
+                : "calc(25% - 14px)",
           }}
           onClick={() => {
-            if (parcelData.state !== "TXtemporaryRemoved" && parcelData.qtrQtr)
+            if (parcelData.state !== "TXtemporaryRemoved" && qtrQtr)
               if (
-                Object.entries(parcelData.qtrQtr).every(([key, value]) => {
+                Object.entries(qtrQtr).every(([key, value]) => {
                   return ["nwnw", "nenw", "swnw", "senw"].indexOf(key) === -1
                     ? true
                     : value;
                 })
               ) {
                 setQtrQtr({
-                  ...parcelData.qtrQtr,
+                  ...qtrQtr,
                   nwnw: false,
                   nenw: false,
                   swnw: false,
@@ -210,7 +270,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
                 });
               } else {
                 setQtrQtr({
-                  ...parcelData.qtrQtr,
+                  ...qtrQtr,
                   nwnw: true,
                   nenw: true,
                   swnw: true,
@@ -225,14 +285,14 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
         {/* //// NE //// */}
         <div
           className={`${classes.qrt1} ${parcelData.state !== "TXtemporaryRemoved" &&
-              parcelData.qtrQtr &&
-              Object.entries(parcelData.qtrQtr).every(([key, value]) => {
-                return ["nwne", "nene", "swne", "sene"].indexOf(key) === -1
-                  ? true
-                  : value;
-              })
-              ? classes.backgrounSecondaryQrt1
-              : ""
+            qtrQtr &&
+            Object.entries(qtrQtr).every(([key, value]) => {
+              return ["nwne", "nene", "swne", "sene"].indexOf(key) === -1
+                ? true
+                : value;
+            })
+            ? classes.backgrounSecondaryQrt1
+            : ""
             }`}
           style={{
             top:
@@ -240,19 +300,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
                 ? "calc(25% - 20px)"
                 : "calc(25% - 10px)",
             right:
-              parcelData.state !== "TX" ? "calc(25% - 7px)" : "calc(25% - 8px)",
+              parcelData.state !== "TX" ? "calc(24% - 10px)" : "calc(25% + 2px)",
           }}
           onClick={() => {
-            if (parcelData.state !== "TXtemporaryRemoved" && parcelData.qtrQtr)
+            if (parcelData.state !== "TXtemporaryRemoved" && qtrQtr)
               if (
-                Object.entries(parcelData.qtrQtr).every(([key, value]) => {
+                Object.entries(qtrQtr).every(([key, value]) => {
                   return ["nwne", "nene", "swne", "sene"].indexOf(key) === -1
                     ? true
                     : value;
                 })
               ) {
                 setQtrQtr({
-                  ...parcelData.qtrQtr,
+                  ...qtrQtr,
                   nwne: false,
                   nene: false,
                   swne: false,
@@ -260,7 +320,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
                 });
               } else {
                 setQtrQtr({
-                  ...parcelData.qtrQtr,
+                  ...qtrQtr,
                   nwne: true,
                   nene: true,
                   swne: true,
@@ -275,14 +335,14 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
         {/* //// SW //// */}
         <div
           className={`${classes.qrt1} ${parcelData.state !== "TXtemporaryRemoved" &&
-              parcelData.qtrQtr &&
-              Object.entries(parcelData.qtrQtr).every(([key, value]) => {
-                return ["nwsw", "nesw", "swsw", "sesw"].indexOf(key) === -1
-                  ? true
-                  : value;
-              })
-              ? classes.backgrounSecondaryQrt1
-              : ""
+            qtrQtr &&
+            Object.entries(qtrQtr).every(([key, value]) => {
+              return ["nwsw", "nesw", "swsw", "sesw"].indexOf(key) === -1
+                ? true
+                : value;
+            })
+            ? classes.backgrounSecondaryQrt1
+            : ""
             }`}
           style={{
             bottom:
@@ -292,19 +352,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
             left:
               parcelData.state !== "TX"
                 ? "calc(25% - 24px)"
-                : "calc(25% - 11px)",
+                : "calc(25% - 14px)",
           }}
           onClick={() => {
-            if (parcelData.state !== "TXtemporaryRemoved" && parcelData.qtrQtr)
+            if (parcelData.state !== "TXtemporaryRemoved" && qtrQtr)
               if (
-                Object.entries(parcelData.qtrQtr).every(([key, value]) => {
+                Object.entries(qtrQtr).every(([key, value]) => {
                   return ["nwsw", "nesw", "swsw", "sesw"].indexOf(key) === -1
                     ? true
                     : value;
                 })
               ) {
                 setQtrQtr({
-                  ...parcelData.qtrQtr,
+                  ...qtrQtr,
                   nwsw: false,
                   nesw: false,
                   swsw: false,
@@ -312,7 +372,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
                 });
               } else {
                 setQtrQtr({
-                  ...parcelData.qtrQtr,
+                  ...qtrQtr,
                   nwsw: true,
                   nesw: true,
                   swsw: true,
@@ -327,14 +387,14 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
         {/* //// SE //// */}
         <div
           className={`${classes.qrt1} ${parcelData.state !== "TXtemporaryRemoved" &&
-              parcelData.qtrQtr &&
-              Object.entries(parcelData.qtrQtr).every(([key, value]) => {
-                return ["nwse", "nese", "swse", "sese"].indexOf(key) === -1
-                  ? true
-                  : value;
-              })
-              ? classes.backgrounSecondaryQrt1
-              : ""
+            qtrQtr &&
+            Object.entries(qtrQtr).every(([key, value]) => {
+              return ["nwse", "nese", "swse", "sese"].indexOf(key) === -1
+                ? true
+                : value;
+            })
+            ? classes.backgrounSecondaryQrt1
+            : ""
             }`}
           style={{
             bottom:
@@ -342,19 +402,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
                 ? "calc(25% - 20px)"
                 : "calc(25% - 10px)",
             right:
-              parcelData.state !== "TX" ? "calc(25% - 7px)" : "calc(25% - 8px)",
+              parcelData.state !== "TX" ? "calc(24% - 10px)" : "calc(25% + 2px)",
           }}
           onClick={() => {
-            if (parcelData.state !== "TXtemporaryRemoved" && parcelData.qtrQtr)
+            if (parcelData.state !== "TXtemporaryRemoved" && qtrQtr)
               if (
-                Object.entries(parcelData.qtrQtr).every(([key, value]) => {
+                Object.entries(qtrQtr).every(([key, value]) => {
                   return ["nwse", "nese", "swse", "sese"].indexOf(key) === -1
                     ? true
                     : value;
                 })
               ) {
                 setQtrQtr({
-                  ...parcelData.qtrQtr,
+                  ...qtrQtr,
                   nwse: false,
                   nese: false,
                   swse: false,
@@ -362,7 +422,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
                 });
               } else {
                 setQtrQtr({
-                  ...parcelData.qtrQtr,
+                  ...qtrQtr,
                   nwse: true,
                   nese: true,
                   swse: true,
@@ -386,19 +446,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${classes.bb1} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.nwnw
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.nwnw
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    nwnw: parcelData.qtrQtr.nwnw ? false : true,
+                    ...qtrQtr,
+                    nwnw: qtrQtr.nwnw ? false : true,
                   });
               }}
             >
@@ -408,19 +468,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${classes.bb1} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.nenw
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.nenw
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    nenw: parcelData.qtrQtr.nenw ? false : true,
+                    ...qtrQtr,
+                    nenw: qtrQtr.nenw ? false : true,
                   });
               }}
             >
@@ -430,19 +490,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.swnw
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.swnw
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    swnw: parcelData.qtrQtr.swnw ? false : true,
+                    ...qtrQtr,
+                    swnw: qtrQtr.swnw ? false : true,
                   });
               }}
             >
@@ -452,19 +512,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.senw
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.senw
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    senw: parcelData.qtrQtr.senw ? false : true,
+                    ...qtrQtr,
+                    senw: qtrQtr.senw ? false : true,
                   });
               }}
             >
@@ -483,19 +543,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${classes.bb1} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.nwne
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.nwne
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    nwne: parcelData.qtrQtr.nwne ? false : true,
+                    ...qtrQtr,
+                    nwne: qtrQtr.nwne ? false : true,
                   });
               }}
             >
@@ -505,19 +565,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${classes.bb1} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.nene
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.nene
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    nene: parcelData.qtrQtr.nene ? false : true,
+                    ...qtrQtr,
+                    nene: qtrQtr.nene ? false : true,
                   });
               }}
             >
@@ -527,19 +587,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.swne
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.swne
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    swne: parcelData.qtrQtr.swne ? false : true,
+                    ...qtrQtr,
+                    swne: qtrQtr.swne ? false : true,
                   });
               }}
             >
@@ -549,19 +609,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.sene
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.sene
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    sene: parcelData.qtrQtr.sene ? false : true,
+                    ...qtrQtr,
+                    sene: qtrQtr.sene ? false : true,
                   });
               }}
             >
@@ -580,19 +640,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${classes.bb1} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.nwsw
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.nwsw
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    nwsw: parcelData.qtrQtr.nwsw ? false : true,
+                    ...qtrQtr,
+                    nwsw: qtrQtr.nwsw ? false : true,
                   });
               }}
             >
@@ -602,19 +662,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${classes.bb1} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.nesw
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.nesw
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    nesw: parcelData.qtrQtr.nesw ? false : true,
+                    ...qtrQtr,
+                    nesw: qtrQtr.nesw ? false : true,
                   });
               }}
             >
@@ -624,19 +684,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.swsw
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.swsw
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    swsw: parcelData.qtrQtr.swsw ? false : true,
+                    ...qtrQtr,
+                    swsw: qtrQtr.swsw ? false : true,
                   });
               }}
             >
@@ -646,19 +706,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.sesw
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.sesw
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    sesw: parcelData.qtrQtr.sesw ? false : true,
+                    ...qtrQtr,
+                    sesw: qtrQtr.sesw ? false : true,
                   });
               }}
             >
@@ -672,19 +732,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${classes.bb1} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.nwse
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.nwse
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    nwse: parcelData.qtrQtr.nwse ? false : true,
+                    ...qtrQtr,
+                    nwse: qtrQtr.nwse ? false : true,
                   });
               }}
             >
@@ -694,19 +754,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${classes.bb1} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.nese
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.nese
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    nese: parcelData.qtrQtr.nese ? false : true,
+                    ...qtrQtr,
+                    nese: qtrQtr.nese ? false : true,
                   });
               }}
             >
@@ -716,19 +776,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.swse
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.swse
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    swse: parcelData.qtrQtr.swse ? false : true,
+                    ...qtrQtr,
+                    swse: qtrQtr.swse ? false : true,
                   });
               }}
             >
@@ -738,19 +798,19 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
               item
               sm={6}
               className={`${classes.qrt2} ${parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr &&
-                  parcelData.qtrQtr.sese
-                  ? classes.backgrounSecondaryQrt2
-                  : ""
+                qtrQtr &&
+                qtrQtr.sese
+                ? classes.backgrounSecondaryQrt2
+                : ""
                 }`}
               onClick={() => {
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
-                  parcelData.qtrQtr
+                  qtrQtr
                 )
                   setQtrQtr({
-                    ...parcelData.qtrQtr,
-                    sese: parcelData.qtrQtr.sese ? false : true,
+                    ...qtrQtr,
+                    sese: qtrQtr.sese ? false : true,
                   });
               }}
             >

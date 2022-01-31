@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
+import { debounce } from "lodash";
 
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
@@ -24,6 +25,7 @@ import { ConvertOwnerToContactContainer } from "store/containers/entity";
 import HeaderSection from "./HeaderSection";
 import NavHeader from "components/Revenue/components/Common/NavHeader";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
+import MultipleOwnerToContactDrawer from "components/Shared/M1nTable/components/SubComponents/MultipleOwnerToContactDrawer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -202,7 +204,7 @@ export default function DetailComponents(props) {
   const [, setStateApp] = useContext(AppContext);
 
   const propertyId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
-  const [propertyOwnerContact, setPropertyOwnerContacts] = useState(null);
+  const [propertyOwnerContact, setPropertyOwnerContacts] = useState([]);
   const [showInterestDetails, setShowInterestDetails] = useState(false);
   const [showOwnerDialog, setShowOwnerDialog] = useState(false);
   const [selectedInterest, setSelectedInterest] = useState(null);
@@ -212,6 +214,9 @@ export default function DetailComponents(props) {
   const [collapse, setCollapse] = useState(false);
   const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
+  const [isButtonScroll, setButtonScroll] = useState(false);
+  const [propertyDetails, setProperty] = useState(null);
+  const [entityToConvert, setEntityToConvert] = useState(null);
 
   const classes = useStyles({ ...props, showInterestDetails, collapse });
 
@@ -227,14 +232,16 @@ export default function DetailComponents(props) {
     fetchPolicy: "cache-and-network",
   });
 
-  const propertyDetails = getPropertyResult?.getProperty.property;
-
   useEffect(() => {
     getProperty({
       variables: { id: propertyId },
     });
     getAllMongoUsers();
   }, [getAllMongoUsers, getProperty, propertyId]);
+
+  useEffect(() => {
+    if (getPropertyResult) setProperty(getPropertyResult?.getProperty.property);
+  }, [getPropertyResult]);
 
   useEffect(() => {
     if (userLists && userLists.allMongoUsers) {
@@ -258,23 +265,35 @@ export default function DetailComponents(props) {
   }, [tab]);
 
   useEffect(() => {
-    if (checkIfOwnersAreContactsData?.ifAreContacts?.length > 0) {
-      setPropertyOwnerContacts({
-        _id: checkIfOwnersAreContactsData.ifAreContacts[0].isContact,
-        name: checkIfOwnersAreContactsData.ifAreContacts[0].name,
+    const idsArray = [];
+    if (propertyDetails?.owner) idsArray.push(propertyDetails.owner._id);
+    if (propertyDetails?.operator) idsArray.push(propertyDetails.operator._id);
+    if (idsArray.length > 0)
+      checkIfOwnersAreContacts({
+        variables: { idsArray },
       });
+  }, [propertyDetails, refetchContacts]);
+
+  useEffect(() => {
+    if (checkIfOwnersAreContactsData?.ifAreContacts?.length > 0) {
+      setPropertyOwnerContacts(checkIfOwnersAreContactsData?.ifAreContacts.map(c => ({
+        _id: c.isContact,
+        name: c.name,
+        entityId: c._id
+      })));
     }
   }, [checkIfOwnersAreContactsData]);
 
-  useEffect(() => {
-    if (propertyDetails?.owner) {
-      checkIfOwnersAreContacts({
-        variables: {
-          idsArray: [propertyDetails.owner],
-        },
-      });
+  const handleScroll = (e) => {
+    if (!isButtonScroll) {
+      const { scrollTop } = e.target;
+      if (scrollTop <= 150 && tab !== 0) setTab(0);
+      else if (scrollTop > 150 && tab !== 1) setTab(1);
     }
-  }, [propertyDetails, refetchContacts]);
+    handleEndScroll();
+  };
+
+  const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
 
   return (
     <NavHeader title={propertyDetails?.name}>
@@ -309,7 +328,7 @@ export default function DetailComponents(props) {
               <StyledTabs
                 value={tab}
                 onChange={(event, tab) => {
-                  // setButtonScroll(true);
+                  setButtonScroll(true);
                   setTab(tab);
                 }}
                 aria-label="ant example"
@@ -336,9 +355,9 @@ export default function DetailComponents(props) {
            * Detail tabs section
            */}
           <div className={classes.tabsSection}>
-            <div className={classes.tabsSectionDetails}>
+            <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-                <HeaderSection />
+                <HeaderSection propertyId={propertyId} propertyDetails={propertyDetails} propertyOwnerContact={propertyOwnerContact} setEntityToConvert={setEntityToConvert} />
               </div>
               <div ref={tab === 1 ? selectedTabRef : null}>
                 <PropertyInterestDetailsSection
@@ -365,6 +384,16 @@ export default function DetailComponents(props) {
             setShowOwnerDialog={setShowOwnerDialog}
             propertyOwnerContact={propertyOwnerContact}
             onClose={() => setShowInterestDetails(false)}
+          />
+        )}
+
+        {entityToConvert && (
+          <MultipleOwnerToContactDrawer
+            onClose={() => setEntityToConvert(null)}
+            rows={[entityToConvert]}
+            setM1nSelectedRowsIndexes={() => { }}
+            onSuccess={() => setRefetchContacts(!refetchContacts)}
+            setRows={() => { }}
           />
         )}
 

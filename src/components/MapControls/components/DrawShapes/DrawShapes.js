@@ -168,6 +168,15 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  convertPopoverGrid: {
+    paddingRight: theme.spacing(3),
+    color: "black",
+  },
+  hoverGrid: {
+    "&:hover": {
+      color: 'gray'
+    }
+  },
   convertPopover: {
     "& .MuiPopover-paper": {
       left: "47% !important",
@@ -180,17 +189,19 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiMenuItem-root": {
       "&:hover": {
-        color: "rgba(23, 170, 221, 1)",
+        color: "gray",
       },
     },
   },
   convertMenuColor: {
-    color: '#A6A6A6',
+    color: 'black',
+    "&:hover": {
+      color: theme.palette.info.main
+    }
   },
-  downloadIcon:{
-    color:"#A6A6A6", width: "30px", height: "28px"
-  },
-  areaExceed:{
+  downloadIcon: { width: "30px", height: "28px", },
+  contactIcon: { width: "35px", height: "20px", },
+  areaExceed: {
     fontSize: 16, marginTop: 10
   }
 }));
@@ -308,7 +319,7 @@ export default function DrawShapes() {
             draw.add(currentFeature)
             addCustomShapeProperties(currentFeature, draw);
             setFeatureProperty(draw, currentFeature.id, "shapeEdit", false);
-            draw.changeMode(state.lastSelectedDrawMode);
+            draw.changeMode("simple_select");
             // isDrawing: false
             return { ...state, currentFeature }
 

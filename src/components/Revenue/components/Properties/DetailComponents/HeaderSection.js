@@ -1,15 +1,19 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { get } from "lodash";
 import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, TextField } from "@material-ui/core";
 import { KeyboardDatePicker } from "@material-ui/pickers";
-
+import { useLazyQuery, useMutation } from "@apollo/client";
 import StateField from "./State";
 import CountyField from "./County";
 import AssociatedWellsList from "components/Shared/Wells/AssociatedWells";
-import AutoComplete from "components/Shared/components/Fields/AutoComplete";
-
 import ContactCardIcon from "components/Shared/svgIcons/contact_card";
+
+import ContactPaginatedAutocomplete from "components/Revenue/components/Common/ContactsPaginatedAutocomplete";
+
+import { CONTACT_ENTITY } from "graphQL/useQueryContactEntity";
+import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -69,6 +73,7 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     right: "6px !important",
     marginTop: "4px !important",
+    cursor: "pointer",
   },
   textArea: {
     margin: "0px 0px",
@@ -84,17 +89,60 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HeaderFunction(props) {
+export default function HeaderSection(props) {
   const classes = useStyles();
+  const { control, setValue, watch, register, reset } = useForm();
+  const { propertyDetails, propertyOwnerContact, setEntityToConvert } = props;
+  const [entityType, setEntityType] = useState("");
 
-  const { control, setValue, watch, register } = useForm();
+  const [getContactEntity, { data: contactEntityData }] = useLazyQuery(CONTACT_ENTITY);
+  const [updateProperty] = useMutation(UPDATE_PROPERTY);
 
   useEffect(() => {
     register("state");
     register("county");
   }, [register]);
 
+  useEffect(() => {
+    if (propertyDetails) {
+      reset(propertyDetails);
+    }
+  }, [propertyDetails]);
+
+  useEffect(() => {
+    const entity = get(contactEntityData, "contactEntity.entity");
+    if (entity?._id) {
+      updateProperty({
+        variables: {
+          property: {
+            _id: propertyDetails._id,
+            [entityType]: entity?._id,
+          },
+        },
+        refetchQueries: ['getProperty'],
+        awaitRefetchQueries: true
+      })
+    }
+  }, [contactEntityData]);
+
   const selectedState = watch("state", {});
+
+  const contactEntity = (contactId, entityType) => {
+    setEntityType(entityType);
+    getContactEntity({
+      variables: {
+        contactId
+      }
+    })
+  }
+
+  const checkIfContact = (entityId) => {
+    return !!propertyOwnerContact?.find((contact) => contact.entityId === entityId);
+  }
+
+  const setEntity = (entityDetails) => {
+    if (entityDetails && !checkIfContact(entityDetails?._id)) setEntityToConvert({ ...entityDetails, isEntity: true });
+  }
 
   return (
     <Grid container direction="row" justify="space-between" alignItems="center">
@@ -131,7 +179,7 @@ export default function HeaderFunction(props) {
               <Grid item xs={9}>
                 <Controller
                   control={control}
-                  name="propertyName"
+                  name="name"
                   render={(params) => <TextField {...params} variant="outlined" margin="dense" type="text" fullWidth />}
                 />
               </Grid>
@@ -161,31 +209,36 @@ export default function HeaderFunction(props) {
               <Grid item xs={9}>
                 <Controller
                   control={control}
-                  name="ownerName"
-                  render={(params) => (
-                    <AutoComplete
-                      options={["ABC MINERALS", "PARADISE RESOURCES"]}
-                      fullWidth
-                      className={classes.adornmentAutocomplete}
-                      renderInput={(params) => (
+                  name="owner"
+                  render={(props) => (
+                    <ContactPaginatedAutocomplete
+                      nameAutValue={props?.value}
+                      setNameAutValue={(value) => {
+                        contactEntity(value?._id, "owner");
+                      }}
+                      renderInput={(params2) => (
                         <TextField
+                          {...params2}
                           margin="dense"
-                          {...params}
                           variant="outlined"
                           InputLabelProps={{
-                            ...params.InputLabelProps,
+                            ...params2.InputLabelProps,
                             shrink: true,
                           }}
                           InputProps={{
-                            ...params.InputProps,
+                            ...params2.InputProps,
                             endAdornment: (
                               <React.Fragment>
-                                {params.InputProps.endAdornment}
-                                <div className={classes.contactCardIcon}>
-                                  <ContactCardIcon />
+                                {params2.InputProps.endAdornment}
+                                <div className={classes.contactCardIcon} onClick={() => setEntity(propertyDetails?.owner)}>
+                                  <ContactCardIcon fill={!(propertyDetails?.owner?._id) ? "darkgrey" : undefined} />
                                 </div>
                               </React.Fragment>
                             ),
+                          }}
+                          inputProps={{
+                            ...params2.inputProps,
+                            value: props.value?.name
                           }}
                         />
                       )}
@@ -230,31 +283,36 @@ export default function HeaderFunction(props) {
               <Grid item xs={9}>
                 <Controller
                   control={control}
-                  name="operatorName"
-                  render={(params) => (
-                    <AutoComplete
-                      options={["PIONEER NATURAL RESOURCES", "XTO ENERGY INC"]}
-                      fullWidth
-                      className={classes.adornmentAutocomplete}
-                      renderInput={(params) => (
+                  name="operator"
+                  render={(props) => (
+                    <ContactPaginatedAutocomplete
+                      nameAutValue={props?.value}
+                      setNameAutValue={(value) => {
+                        contactEntity(value?._id, "operator");
+                      }}
+                      renderInput={(params2) => (
                         <TextField
+                          {...params2}
                           margin="dense"
-                          {...params}
                           variant="outlined"
                           InputLabelProps={{
-                            ...params.InputLabelProps,
+                            ...params2.InputLabelProps,
                             shrink: true,
                           }}
                           InputProps={{
-                            ...params.InputProps,
+                            ...params2.InputProps,
                             endAdornment: (
                               <React.Fragment>
-                                {params.InputProps.endAdornment}
-                                <div className={classes.contactCardIcon}>
-                                  <ContactCardIcon />
+                                {params2.InputProps.endAdornment}
+                                <div className={classes.contactCardIcon} onClick={() => setEntity(propertyDetails?.operator)}>
+                                  <ContactCardIcon fill={!checkIfContact(propertyDetails?.operator?._id) ? "darkgrey" : undefined} />
                                 </div>
                               </React.Fragment>
                             ),
+                          }}
+                          inputProps={{
+                            ...params2.inputProps,
+                            value: props.value?.name
                           }}
                         />
                       )}
@@ -300,8 +358,12 @@ export default function HeaderFunction(props) {
         </Grid>
       </Grid>
       <Grid item className={classes.associatedWell}>
-        <AssociatedWellsList title="Associated Wells" />
+        <AssociatedWellsList title="Associated Wells" relatedObject={props.propertyId} relatedObjectType="Property" />
       </Grid>
     </Grid>
   );
+}
+
+HeaderSection.defaultProps = {
+  propertyDetails: {}
 }

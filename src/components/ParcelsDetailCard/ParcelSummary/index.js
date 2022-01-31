@@ -19,6 +19,7 @@ import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
 import { getPolygonString } from "../../Shared/functions";
 import { getParcelOriginalProperties } from '../utils/GetParcelOriginalProps'
+import QtrQtrSelectorNew from "./QtrQtrSelectorNew";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -285,6 +286,10 @@ export default function ParcelSummary(props) {
         props.setProperties({ ...props.properties, custom_data_arr: [...props.properties.custom_data_arr] })
     }
 
+    const setQtrQtr = (qtrQtr) => {
+        // setParcelObj({ ...parcelObj, qtrQtr });
+    };
+
     return <Grid container direction="row" className={classes.summaryCard}>
         <Grid item md={7} sm={12} className={classes.paddingLeft}>
             <Grid container spacing={1} direction="column" >
@@ -342,6 +347,9 @@ export default function ParcelSummary(props) {
         </Grid>
         <Grid item md={5} sm={12}>
             <Grid container spacing={2} direction="row">
+                <Grid item >
+                    <QtrQtrSelectorNew parcelData={props.customLayer} updateParcelQtr={props.updateParcelQtr} setQtrQtr={setQtrQtr} />
+                </Grid>
                 <Grid item className={classes.descriptionInput}>
                     <TextField
                         id="outlined-multiline-static"
@@ -350,7 +358,7 @@ export default function ParcelSummary(props) {
                         value={parcelProperties.legalDescription}
                         multiline
                         fullWidth
-                        rows={17}
+                        rows={6}
                         variant="outlined"
                         onChange={(e) => {
                             setProperties({ ...parcelProperties, legalDescription: e.target.value });
@@ -369,7 +377,7 @@ export default function ParcelSummary(props) {
                     />
                 </Grid>
                 <Grid item md={12}>
-                    <CommentComponent targetLabel={'unit'} targetSourceId={props.id} />
+                    <CommentComponent targetLabel={'parcel'} targetSourceId={props.id} />
                 </Grid>
             </Grid>
         </Grid>

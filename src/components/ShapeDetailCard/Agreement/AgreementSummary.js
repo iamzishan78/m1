@@ -148,7 +148,7 @@ export default function AgreementSummary(props) {
                     />
                 </Grid>
                 <Grid item md={12}>
-                    <CommentComponent targetLabel={'unit'} targetSourceId={props.id} />
+                    <CommentComponent targetLabel={'agreement'} targetSourceId={props.id} />
                 </Grid>
             </Grid>
         </Grid>
