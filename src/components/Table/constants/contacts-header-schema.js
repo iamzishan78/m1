@@ -183,6 +183,17 @@ const ContactsHeadCells = [
       },
     },
     {
+      name: "ownerType",
+      label: "Entity Type",
+      esKey: 'ownerType.keyword',
+      options: {
+        display: true,
+        filter: false, // i guess we cant dynamically remove the filter when hiding a column enabled by default
+        searchable: false,
+        sort: true,
+      },
+    },
+    {
       name: "fullContactAddress",
       label: "Primary Address",
       // editable: true,
