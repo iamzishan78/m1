@@ -122,19 +122,21 @@ function RevenuePropertiesTable(props) {
 
   // fetaching data
   React.useEffect(() => {
-    getESPaginatedList({
-      variables: {
-        esIndex: esIndex,
-        pagination: {
-          first: props.startPaginationAt,
-          keep_alive: "1micros",
+    if(esFilters.length > 0){
+      getESPaginatedList({
+        variables: {
+          esIndex: esIndex,
+          pagination: {
+            first: props.startPaginationAt,
+            keep_alive: "1micros",
+          },
+          search: props.revenueSearchQuery,
+          filter: "",
+          sort: [],
+          filters: esFilters,
         },
-        search: props.revenueSearchQuery,
-        filter: "",
-        sort: [],
-        filters: esFilters,
-      },
-    });
+      });
+    }
   }, [getESPaginatedList, props.parent, props.revenueSearchQuery, props.filterToggle]);
 
   const handleStatusChange = (_id, status) => {

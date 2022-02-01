@@ -46,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CUSTOM_DATES = {
+  ALL_DATES: "All Dates",
   THIS_YEAR_TO_LAST_MONTH: "This year-to-last-month",
   THIS_YEAR_TO_DATE: "This year to date",
   LAST_YEAR_TO_DATE: "Last year to date",
@@ -58,11 +59,8 @@ const CUSTOM_DATES = {
 };
 
 // fromDate and toDate should be passed from the parent
-export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate, label, isProperties }) {
+export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate, label, isProperties, lastCheckMinDate }) {
   const classes = useStyles();
-  if(isProperties){
-    CUSTOM_DATES.ALL_DATES="All Dates";
-  }
   useEffect(() => {
     if(isProperties){
       handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
@@ -124,6 +122,10 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
         setFromDate(`${currentYear - 1}-01-01`);
         setToDate(`${currentYear - 1}-12-31`);
         break;
+      case CUSTOM_DATES.ALL_DATES:
+        setFromDate(`${moment(lastCheckMinDate).startOf('month').format("yyyy-MM-DD")}`);
+        setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
+        break;
       default:
         setFromDate(`${moment().startOf('month').format('yyyy-MM-DD')}`);
         setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
@@ -147,7 +149,10 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
                 handleDateTypeChange(newValue);
               }
             }}
-            options={Object.values(CUSTOM_DATES)}
+            options={Object.values(CUSTOM_DATES).filter(value => {
+              if(!isProperties && value === 'All Dates')return false;
+              else return true;
+            })}
             renderInput={(params) => (
               <TextField {...params} variant="outlined" label="Date Range" placeholder="" style={{ backgroundColor: "white" }} />
             )}

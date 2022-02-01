@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { AppContext } from "AppContext";
 import { Grid, Button } from "@material-ui/core";
 import { useDispatch } from "react-redux";
@@ -48,9 +48,11 @@ export default function Properties() {
   const [stateApp] = useContext(AppContext);
   // redux
   const dispatch = useDispatch();
-  const [fromDate, setFromDate] = React.useState(moment().subtract(1, 'months').startOf('month').format('yyyy-MM-DD'));
+  const [fromDate, setFromDate] = React.useState('');
   const [toDate, setToDate] = React.useState(moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD'));
   const [filterToggle, setFilterToggle] = React.useState(false);
+  const [lastCheckMinDate, setLastCheckMinDate] = useState('');
+
   // props to pass in table
   const esIndex = "properties_flat";
   const startPaginationAt = 25;
@@ -77,6 +79,26 @@ export default function Properties() {
     },
   });
 
+  const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
+    fetchPolicy: "no-cache",
+    onCompleted: (data) => {
+      if (data?.getESMinValue) {
+        setFilterToggle(!filterToggle)
+        setLastCheckMinDate(data?.getESMinValue);
+        setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
+      }
+    },
+  });
+
+  useEffect(() => {
+    getESMinValue({
+      variables:{
+        esIndex,
+        field: "lastCheck.checkDate",
+        value_as_string: true
+      }
+    })
+  },[getESMinValue])
   // dipatching to redux
   React.useEffect(() => {
     dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }));
@@ -105,7 +127,6 @@ export default function Properties() {
     },
   ]
 
-
   return (
     <>
       <div className={classes.actionBar}>
@@ -114,7 +135,7 @@ export default function Properties() {
             <label className={classes.label}>Last Check Date</label>
           </Grid> */}
           <Grid item xs={8} md={8} lg={9} xl={8} style={{ marginTop: "4px" }}>
-            <CustomDates fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} label="Last Check Date" isProperties />
+            <CustomDates fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} label="Last Check Date" isProperties lastCheckMinDate={lastCheckMinDate} />
           </Grid>
           <Grid item xs={3} md={3} lg={3} xl={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
