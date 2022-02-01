@@ -19,6 +19,7 @@ import { setRevenuePropertyData } from "actions";
 
 function RevenuePropertiesTable(props) {
   const classes = usetableStyles();
+  const { esIndex, setESFilters } = props;
   // redux
   const dispatch = useDispatch();
   const { revenueProperties } = useSelector((state) => state.Revenue);
@@ -29,24 +30,27 @@ function RevenuePropertiesTable(props) {
   });
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
   // rearranging the data according to the requirements.
-  const tableData = elasticData?.getESPaginatedList?.hits?.map((eachRow) => {
-    return {
-      _id: eachRow._id,
-      name: eachRow.name,
-      number: eachRow.number,
-      payorName: eachRow?.operator?.name,
-      state: eachRow.state,
-      country: eachRow?.county,
-      source: eachRow?.source,
-      wellApiNumber: eachRow?.well?.apiNumber,
-      wellName: eachRow?.well?.wellName,
-      status: eachRow?.status,
-      checkNumber: eachRow?.lastCheck?.checkNumber,
-      lastChecked: new Date(eachRow?.lastCheck?.checkDate).toLocaleDateString(),
-      tags: eachRow.tags?.length > 0 ? [[eachRow.tags.map((tag) => tag.tag)], eachRow.tags.length] : [[], 0],
-    };
-  });
+  // const tableData = elasticData?.getESPaginatedList?.hits?.map((eachRow) => {
+  //   return {
+  //     _id: eachRow._id,
+  //     name: eachRow.name,
+  //     number: eachRow.number,
+  //     payorName: eachRow?.operator?.name,
+  //     state: eachRow.state,
+  //     country: eachRow?.county,
+  //     source: eachRow?.source,
+  //     wellApiNumber: eachRow?.well?.apiNumber,
+  //     wellName: eachRow?.well?.wellName,
+  //     status: eachRow?.status,
+  //     checkNumber: eachRow?.lastCheck?.checkNumber,
+  //     lastChecked: new Date(eachRow?.lastCheck?.checkDate).toLocaleDateString(),
+  //     tags: eachRow.tags?.length > 0 ? [[eachRow.tags.map((tag) => tag.tag)], eachRow.tags.length] : [[], 0],
+  //   };
+  // });
 
+
+  const tableData = elasticData?.getESPaginatedList;
+  const count = tableData?.total || 0;
   // function states
   const [columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const [selectedRows, setSelectedRows] = useState([]);
@@ -57,9 +61,23 @@ function RevenuePropertiesTable(props) {
     searchable: true,
     rowsSelected: selectedRows.map((sR) => sR.dataIndex),
     filter: true,
-    count: 10,
+    count: count,
     serverSide: true,
   };
+
+  const esFilters = props.fromDate || props.toDate ? [
+      {
+        field: "lastCheck.checkDate",
+        value: {
+          range: {
+            "lastCheck.checkDate": {
+              gte: `${props.fromDate}T00:00:00.000Z`,
+              lte: `${props.toDate}T00:00:00.000Z`,
+            },
+          },
+        },
+      },
+    ] : []
 
   React.useEffect(() => {
     const statusIndex = columns.findIndex((c) => c.name === "status");
@@ -106,16 +124,18 @@ function RevenuePropertiesTable(props) {
   React.useEffect(() => {
     getESPaginatedList({
       variables: {
-        esIndex: props.esIndex,
+        esIndex: esIndex,
         pagination: {
           first: props.startPaginationAt,
           keep_alive: "1micros",
         },
         search: props.revenueSearchQuery,
         filter: "",
+        sort: [],
+        filters: esFilters,
       },
     });
-  }, [getESPaginatedList, props.parent, props.revenueSearchQuery]);
+  }, [getESPaginatedList, props.parent, props.revenueSearchQuery, props.filterToggle]);
 
   const handleStatusChange = (_id, status) => {
     let property = {
@@ -138,10 +158,20 @@ function RevenuePropertiesTable(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getESPaginatedList, elasticData]);
 
+
+  React.useEffect(() => {
+    if (tableData) {
+      props.onPropertiesCount(count);
+    }
+  }, [tableData, props.dependencyUpdate]);
+
   const onTableChange = (action, tableState, rows, meta) => {
-    tableState.esIndex = props.esIndex;
+    tableState.esIndex = esIndex;
+    tableState.esFilters =esFilters
     // tableState.sort = [];
+
     const tableActions = props.initializeTableActions(tableState, meta, revenueProperties, columns, getESPaginatedList);
+    setESFilters(tableActions.pageESVariables.variables.filters);
     switch (action) {
       case "search":
       case "sort":
@@ -159,20 +189,6 @@ function RevenuePropertiesTable(props) {
       default:
     }
   };
-
-  React.useEffect(() => {
-    if (revenueProperties?.data) {
-      const activeCount = revenueProperties?.data.filter((item) => {
-        if (Date.parse(item.lastChecked) > Date.parse(new Date((new Date).setMonth((new Date).getMonth() - 3)).toISOString())) {
-          return item;
-        }
-      });
-      const ummappedCount = revenueProperties?.data.filter((item) => item.status != "approved");
-      props.cardSummary(revenueProperties?.data.length, activeCount.length, revenueProperties?.data.length - activeCount.length, ummappedCount.length);
-    } else {
-      props.cardSummary(0, 0, 0, 0);
-    }
-  }, [revenueProperties]);
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>

@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
+import set from 'lodash/set'
 
 // context
 import { AppContext } from "AppContext";
@@ -21,6 +22,7 @@ import AddWellInterestDialog from "components/ContactDetailCard/components/Conta
 // Header Schemas 
 import TableHeader from 'components/Shared/constants/associate-contact-parcel-header-schema.js'
 import { handleTagColumn } from "../helpers";
+import vf_currency from "components/Shared/valueformatters/vf_currency";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -84,6 +86,8 @@ function ContactParcelInterestTable(props) {
         const parcel = JSON.parse(well.parcel.shape).properties
         const original_properties = getParcelOriginalProperties(parcel);
         well.parcelName = well.parcel.name
+        well.cost_bearing_high_value = well?.cost_bearing_high_value ? vf_currency(well.cost_bearing_high_value): undefined
+        well.cost_free_high_value = well?.cost_free_high_value ? vf_currency(well.cost_free_high_value): undefined
         well.state = original_properties.state
         well.county = original_properties.county
         well.survey = original_properties.state === 'TX' ? original_properties.survey : original_properties.meridian
@@ -130,6 +134,21 @@ function ContactParcelInterestTable(props) {
       props.setRows(wells);
       const cleanAvailableTags = []; // get from backend
       const columns = handleTagColumn(TableHeader, cleanAvailableTags);
+      let tenantName = window.sessionStorage.getItem("tenantName");
+      if(tenantName !== 'Providence' && columns.length > 0){
+        let index = columns.findIndex(col => col.name === 'cost_bearing')
+        set(columns, `[${index}].options.display`, false)
+        set(columns, `[${index}].options.filter`, false)
+        set(columns, `[${index}].options.viewColumns`, false)
+        index = columns.findIndex(col => col.name === 'cost_free_high_value')
+        set(columns, `[${index}].options.display`, false)
+        set(columns, `[${index}].options.filter`, false)
+        set(columns, `[${index}].options.viewColumns`, false)
+        index = columns.findIndex(col => col.name === 'cost_bearing_high_value')
+        set(columns, `[${index}].options.display`, false)
+        set(columns, `[${index}].options.filter`, false)
+        set(columns, `[${index}].options.viewColumns`, false)
+      }
       setColumns(columns);
       props.setLoading(false);
     }
