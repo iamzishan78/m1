@@ -47,7 +47,7 @@ export default function Summary({ agreementDetails }) {
   return (
     <Grid container direction="row" justify="space-between" alignItems="center" className={classes.root}>
       <Grid item className={classes.infoSection}>
-        <FieldsSection updateAgreement={updateAgreement} control={control} getValues={getValues} />
+        <FieldsSection agreementDetails={agreementDetails} updateAgreement={updateAgreement} control={control} />
       </Grid>
       <Grid item className={classes.mapSection}>
         <Grid item md={12} className={classes.provisionCard}>
