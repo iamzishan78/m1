@@ -329,7 +329,6 @@ function AgreementsTable(props) {
           options={options}
           parent={props.parent}
           setColumnsBase={[]}
-          onRowClick={onRowClick}
         />
       </Container>
     </div>

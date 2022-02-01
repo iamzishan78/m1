@@ -108,7 +108,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                           )}
                           {field.type === "select" && (
                             <Select
-                              {...params}
+                              // {...params}
                               id={`field-${index}`}
                               variant="outlined"
                               margin="dense"
@@ -117,6 +117,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                 shrink: true,
                               }}
                               onBlur={(event) => offClickHandler(field.key, event.target.value)}
+                              value={agreementDetails?.[field.key] ?? ""}
                             >
                               {field.options.map((option) => (
                                 <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
@@ -152,7 +153,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                 {field.type === "autocomplete" && (
                   <AutoCompleteTypeComponent
                     value={agreementDetails?.[field.key]}
-                    shapeType={"Agreement"}
+                    shapeType="Agreement"
                     typeKey={field.key}
                     variant="outlined"
                     onChange={() => {}}

@@ -9,7 +9,6 @@ import { useStyles as summaryStyles, StyledTextField } from "./style";
 import CheckIcon from "@material-ui/icons/Check";
 import CloseIcon from "@material-ui/icons/Close";
 
-import { deepEqualObjects } from "components/Shared/functions";
 import FieldsSection from "./fieldsSection";
 
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
@@ -23,7 +22,7 @@ export default function Summary({ agreementDetails }) {
 
   const [getStandardProvisions, { data: dataStandardProvisions = [] }] = useLazyQuery(GET_STANDARD_PROVISIONS);
   const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
-  const [updateCustomLayer, { data: updatedUnit }] = useMutation(UPDATECUSTOMLAYER);
+  const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
   useEffect(() => {
     if (agreementDetails) {
