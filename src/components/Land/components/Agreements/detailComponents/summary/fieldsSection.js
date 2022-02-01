@@ -43,9 +43,13 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
     }
   };
 
-  const offClickHandler = () => {
+  const offClickHandler = (key, value) => {
     // console.log(console.log(getValues()));
+    console.log("name", key);
+    console.log("value", value);
+    updateAgreement(key, value);
   };
+
   return (
     <Grid container direction="row" display="flex" justify="flex-start" alignItems="center" spacing={1} className={classes.fieldsSection}>
       <Grid item xs={12} className={classes.summaryHeader}>
@@ -99,7 +103,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               InputLabelProps={{
                                 shrink: true,
                               }}
-                              onBlur={offClickHandler}
+                              onBlur={(event) => offClickHandler(field.key, event.target.value)}
                             />
                           )}
                           {field.type === "select" && (
@@ -112,7 +116,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               InputLabelProps={{
                                 shrink: true,
                               }}
-                              onBlur={offClickHandler}
+                              onBlur={(event) => offClickHandler(field.key, event.target.value)}
                             >
                               {field.options.map((option) => (
                                 <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
@@ -139,6 +143,10 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     InputLabelProps={{
                       shrink: true,
                     }}
+                    value={agreementDetails?.[field.key] ? new Date(agreementDetails[field.key]) : null}
+                    onChange={(date) => {
+                      offClickHandler(field.key, date ? String(date["_d"]) : "");
+                    }}
                   />
                 )}
                 {field.type === "autocomplete" && (
@@ -148,6 +156,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     typeKey={field.key}
                     variant="outlined"
                     onChange={() => {}}
+                    onBlur={(event) => offClickHandler(field.key, event.target.value)}
+                    autoFocus={false}
+                    id={`field-${index}`}
                   />
                 )}
               </Fragment>

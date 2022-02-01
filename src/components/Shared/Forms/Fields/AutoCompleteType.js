@@ -103,13 +103,18 @@ const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur
             ...params.InputProps,
           }}
           fullWidth
-          autoFocus
+          autoFocus={other.autoFocus}
           size="small"
         />
       )}
-      // {...other}
+      id={other.id}
+      //   {...other}
     />
   );
+};
+
+AutoCompleteTypeComponent.defaultProps = {
+  autoFocus: true,
 };
 
 export default AutoCompleteTypeComponent;

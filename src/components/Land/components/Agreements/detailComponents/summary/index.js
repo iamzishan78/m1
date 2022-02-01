@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { get } from "lodash";
+import { get, set } from "lodash";
+import { useSelector } from "react-redux";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useForm, Controller } from "react-hook-form";
 import { Grid, Typography, Box } from "@material-ui/core";
@@ -8,6 +9,7 @@ import { useStyles as summaryStyles, StyledTextField } from "./style";
 import CheckIcon from "@material-ui/icons/Check";
 import CloseIcon from "@material-ui/icons/Close";
 
+import { deepEqualObjects } from "components/Shared/functions";
 import FieldsSection from "./fieldsSection";
 
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
@@ -16,7 +18,8 @@ import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 
 export default function Summary({ agreementDetails }) {
   const classes = summaryStyles();
-  const { control, reset, getValues } = useForm();
+  const { control, reset } = useForm();
+  const activeAgreement = useSelector(({ Land }) => Land.agreement?.activeAgreement);
 
   const [getStandardProvisions, { data: dataStandardProvisions = [] }] = useLazyQuery(GET_STANDARD_PROVISIONS);
   const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
@@ -25,7 +28,7 @@ export default function Summary({ agreementDetails }) {
   useEffect(() => {
     if (agreementDetails) {
       reset(agreementDetails);
-      getAgreementProvisions({ variables: { agreementId: agreementDetails._id } });
+      getAgreementProvisions({ variables: { agreementId: activeAgreement._id } });
     }
   }, [reset, agreementDetails, getAgreementProvisions]);
 
@@ -33,12 +36,34 @@ export default function Summary({ agreementDetails }) {
     getStandardProvisions();
   }, [getStandardProvisions]);
 
-  const updateAgreement = (agreement) => {
+  const updateAgreement = (field, value) => {
+    if (agreementDetails[field] == value) return;
+    const shape = activeAgreement.shape;
+    set(shape.properties, field, value);
+    shape.properties[field] = value;
+
+    const customLayer = {};
+    let shapeLabel = shape.properties.shapeLabel;
+    if (field === "agreementNumber") shapeLabel = `${value}${shape.properties.agreementName ? `-${shape.properties.agreementName}` : ""}`;
+
+    if (field === "agreementName") shapeLabel = `${shape.properties.agreementNumber ? `${shape.properties.agreementNumber}-` : ""}${value}`;
+
+    if (field === "agreementType") {
+      customLayer.layer = value;
+    }
+
+    shape.properties.shapeLabel = shapeLabel;
+    shape.name = shapeLabel;
+    shape.properties.name = shapeLabel;
+    customLayer.shape = JSON.stringify(shape);
+    customLayer.shapeJson = shape;
+
     updateCustomLayer({
       variables: {
-        customLayerId: agreement._id,
-        customLayer: agreement,
+        customLayerId: activeAgreement._id,
+        customLayer,
       },
+      refetchQueries: ["customLayer"],
     });
   };
 
