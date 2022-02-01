@@ -15,12 +15,14 @@ import keys from "components/Shared/SpreadsheetGrid/kit/keymap";
 
 import ProgressBar from "components/Shared/ui/ProgressBar";
 
-export default function FieldsSection(props) {
+export default function FieldsSection({ updateAgreement, control, getValues }) {
   const classes = summaryStyles();
-  const { control } = useForm();
 
   useEffect(() => {
     document.addEventListener("keydown", onGlobalKeyDown, false);
+    document.addEventListener("blur", (e) => {
+      console.log("blur triggered");
+    });
     // document.addEventListener("focus", onGLobalFocus);
   }, []);
 
@@ -35,9 +37,13 @@ export default function FieldsSection(props) {
         if (!document.getElementById(`field-${Number(id.split("-")[1]) - 1}`)) {
           e.preventDefault();
           return;
-        } else document.getElementById(`field-${Number(id.split("-")[1]) - 1}`).focus();
+        } else document.getElementById(`field-${Number(id.split("-")[1])}`).focus();
       }
     }
+  };
+
+  const offClickHandler = () => {
+    console.log(console.log(getValues()));
   };
   return (
     <Grid container direction="row" display="flex" justify="flex-start" alignItems="center" spacing={1} className={classes.fieldsSection}>
@@ -52,7 +58,7 @@ export default function FieldsSection(props) {
           <Grid container spacing={2} justify="flex-end" className={classes.summaryHeaderIcons}>
             <Grid item>
               <div className={classes.summaryValue}> {0} </div>
-              <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
+              <WellIcon className={classes.icon} color="#757575" opacity="1.0" small />
             </Grid>
             <Grid item>
               <div className={classes.summaryValue}> {0} </div>
@@ -85,6 +91,7 @@ export default function FieldsSection(props) {
                   InputLabelProps={{
                     shrink: true,
                   }}
+                  onBlur={offClickHandler}
                 />
               )}
             />

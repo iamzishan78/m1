@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { debounce } from "lodash";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
@@ -13,16 +13,20 @@ import {
 } from "@material-ui/icons";
 import RuleIcon from "components/Shared/components/svgIcons/RuleIcon";
 import Tags from "components/Shared/Tagger";
-import { useLazyQuery } from "@apollo/client";
-import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 
+import { setLandReduxKey } from "actions";
 import { AppContext } from "AppContext";
 
+import { copy } from "components/Shared/functions";
 // Components
 import NavHeader from "components/Land/components/Common/NavHeader";
 import DocViewer from "components/Shared/DocViewer";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
 import Summary from "components/Land/components/Agreements/detailComponents/summary";
+
+import { useLazyQuery } from "@apollo/client";
+import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
+import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 
 const useStyles = makeStyles((theme) => ({
   detailHeader: {
@@ -180,7 +184,8 @@ const StyledTab = withStyles((theme) => ({
 
 export default function DetailComponents(props) {
   const { id: agreementId } = useParams();
-  const { activeAgreement: agreementDetails } = useSelector(({ Land }) => Land.agreement);
+  const dispatch = useDispatch();
+  const agreementDetails = useSelector(({ Land }) => Land.agreement?.activeAgreement?.shape)?.properties;
   const [stateApp] = useContext(AppContext);
 
   const [tab, setTab] = useState(0);
@@ -196,12 +201,7 @@ export default function DetailComponents(props) {
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
   });
-
-  //   useEffect(() => {
-  //     if (getCheckResult?.getCheck?.check)
-  //       dispatch(setRevenueKey("statements", { ...statements, activeStatement: getCheckResult?.getCheck?.check }));
-  //     // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   }, [getCheckResult, dispatch]);
+  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
   useEffect(() => {
     if (selectedTabRef?.current) {
@@ -215,13 +215,25 @@ export default function DetailComponents(props) {
 
   useEffect(() => {
     if (agreementId) {
-      // setCheckId(checkId);
-      // getCheck({
-      //   variables: { id: checkId },
-      // });
       getAllMongoUsers();
+      getCustomLayer({ variables: { id: agreementId } });
     }
-  }, [agreementId]);
+  }, [agreementId, getAllMongoUsers, getCustomLayer]);
+
+  useEffect(() => {
+    if (dataCustomLayer && dataCustomLayer.customLayer) {
+      let shape = JSON.parse(dataCustomLayer.customLayer.shape);
+      if (dataCustomLayer.customLayer.shapeJson) shape = copy(dataCustomLayer.customLayer.shapeJson);
+      dispatch(
+        setLandReduxKey("agreement", {
+          activeAgreement: {
+            ...dataCustomLayer.customLayer,
+            shape,
+          },
+        })
+      );
+    }
+  }, [dataCustomLayer?.customLayer]);
 
   useEffect(() => {
     if (userLists && userLists.allMongoUsers) {
@@ -269,7 +281,7 @@ export default function DetailComponents(props) {
               <div className={classes.tagsContainer}>
                 <div className={classes.highlighter}>
                   <Typography className={classes.highlight} variant="highlight">
-                    {agreementDetails.agreementType}
+                    {agreementDetails?.agreementType}
                   </Typography>
                 </div>
                 <div className={classes.tags}>

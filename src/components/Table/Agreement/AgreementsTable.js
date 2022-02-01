@@ -9,10 +9,7 @@ import moment from "moment";
 // QUERIES
 import { useLazyQuery } from "@apollo/client";
 
-import {
-  setStateIfDeepEqual,
-  deepEqualObjects,
-} from "components/Shared/functions";
+import { setStateIfDeepEqual, deepEqualObjects } from "components/Shared/functions";
 
 // Header Schemas
 import TableHeader from "components/Table/constants/agreements-header-schema";
@@ -23,7 +20,6 @@ import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
 import { setColumnsData } from "components/Table/helpers";
-import { setLandReduxKey } from "actions";
 
 const useStyles = makeStyles((theme) => ({
   agreementTable: {
@@ -71,15 +67,12 @@ function AgreementsTable(props) {
 
   // queries
 
-  const [getESPaginatedList, { data: elasticData }] = useLazyQuery(
-    GET_ES_PAGINATED_LIST,
-    {
-      fetchPolicy: "no-cache",
-      onCompleted: () => {
-        props.setLoading(false);
-      },
-    }
-  );
+  const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
+    fetchPolicy: "no-cache",
+    onCompleted: () => {
+      props.setLoading(false);
+    },
+  });
 
   // const [getESAggsActiveCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
   //     onCompleted: (aggsData) => {
@@ -169,7 +162,7 @@ function AgreementsTable(props) {
     if (tableData?.hits?.length > 0) {
       const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
       //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
-      props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
+      props.initializeGenericData(objectsIdsArray, ["comments", "tags"]);
       //   props.ifAreContacts(globalOwnerIds);
     }
   }, [tableData]);
@@ -178,44 +171,23 @@ function AgreementsTable(props) {
     if (tableData) {
       if (tableData?.hits?.length > 0) {
         const hits = tableData?.hits.map((hit) => {
-          hit.agreementType = agreementTypes.find(type => type.value === hit.agreementType || type.label === hit.agreementType)?.label
-          hit.agreementDate = hit.agreementDate
-            ? moment(new Date(hit.agreementDate)).format("MM/DD/YYYY")
-            : null;
-          hit.effectiveDate = hit.effectiveDate
-            ? moment(new Date(hit.effectiveDate)).format("MM/DD/YYYY")
-            : null;
-          hit.expirationDate = hit.expirationDate
-            ? moment(new Date(hit.expirationDate)).format("MM/DD/YYYY")
-            : null;
-          hit.extensionDate = hit.extensionDate
-            ? moment(new Date(hit.extensionDate)).format("MM/DD/YYYY")
-            : null;
+          hit.agreementType = agreementTypes.find((type) => type.value === hit.agreementType || type.label === hit.agreementType)?.label;
+          hit.agreementDate = hit.agreementDate ? moment(new Date(hit.agreementDate)).format("MM/DD/YYYY") : null;
+          hit.effectiveDate = hit.effectiveDate ? moment(new Date(hit.effectiveDate)).format("MM/DD/YYYY") : null;
+          hit.expirationDate = hit.expirationDate ? moment(new Date(hit.expirationDate)).format("MM/DD/YYYY") : null;
+          hit.extensionDate = hit.extensionDate ? moment(new Date(hit.extensionDate)).format("MM/DD/YYYY") : null;
           hit.State = hit?.originalProperties?.State;
           hit.County = hit?.originalProperties?.County;
-          hit.tags =
-            hit?.tags?.length > 0
-              ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
-              : [[], 0];
+          hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
           hit.commentsCounter = hit.comments ? hit.comments.length : 0;
-          hit = props.setGenricData(hit, hit._id, [
-            'comments', 'tags'
-          ]);
+          hit = props.setGenricData(hit, hit._id, ["comments", "tags"]);
           return hit;
         });
 
         // props.onGettingStatements(hits);
         props.setRows(hits);
 
-        setColumnsData(
-          TableHeader,
-          filters,
-          JSON.parse(JSON.stringify(TableHeader)),
-          setColumns,
-          setFilters,
-          GET_ES_FILTER_LIST,
-          esIndex
-        );
+        setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(TableHeader)), setColumns, setFilters, GET_ES_FILTER_LIST, esIndex);
 
         // let headers = copy(TableHeader)
 
@@ -316,13 +288,7 @@ function AgreementsTable(props) {
     tableState.esIndex = esIndex;
     tableState.esFilters = esStaticFilters;
     // setESSearch(tableState.searchText ? `${tableState.searchText}*` : '')
-    const tableActions = props.initializeTableActions(
-      tableState,
-      meta,
-      tableData,
-      columns,
-      getESPaginatedList
-    );
+    const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList);
     setESFilters(tableActions.pageESVariables.variables.filters);
     switch (action) {
       case "search":
@@ -342,20 +308,9 @@ function AgreementsTable(props) {
     }
   };
 
-  const onRowClick = (agreementData) => {
-    dispatch(setLandReduxKey("agreement", {
-      activeAgreement: agreementData
-    }
-    ));
-  }
-
   return (
     <div className={classes.agreementTable}>
-      <Container
-        maxWidth={false}
-        className={classes.container}
-        id={props.id ? props.id : props.parent}
-      >
+      <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
         <Table
           style={{ backgroundColor: "#fff" }}
           header={props.header}

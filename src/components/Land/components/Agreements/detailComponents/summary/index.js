@@ -12,13 +12,15 @@ import FieldsSection from "./fieldsSection";
 
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
+import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 
 export default function Summary({ agreementDetails }) {
   const classes = summaryStyles();
-  const { control, reset } = useForm();
+  const { control, reset, getValues } = useForm();
 
   const [getStandardProvisions, { data: dataStandardProvisions = [] }] = useLazyQuery(GET_STANDARD_PROVISIONS);
   const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
+  const [updateCustomLayer, { data: updatedUnit }] = useMutation(UPDATECUSTOMLAYER);
 
   useEffect(() => {
     if (agreementDetails) {
@@ -31,12 +33,21 @@ export default function Summary({ agreementDetails }) {
     getStandardProvisions();
   }, [getStandardProvisions]);
 
+  const updateAgreement = (agreement) => {
+    updateCustomLayer({
+      variables: {
+        customLayerId: agreement._id,
+        customLayer: agreement,
+      },
+    });
+  };
+
   const hasCustomProvision = get(agreementProvisions, "getAgreementProvisions", []).find((provision) => !provision.templateRef);
 
   return (
     <Grid container direction="row" justify="space-between" alignItems="center" className={classes.root}>
       <Grid item className={classes.infoSection}>
-        <FieldsSection />
+        <FieldsSection updateAgreement={updateAgreement} control={control} getValues={getValues} />
       </Grid>
       <Grid item className={classes.mapSection}>
         <Grid item md={12} className={classes.provisionCard}>

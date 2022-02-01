@@ -3425,7 +3425,6 @@ function SubTable(props) {
         }
       }
       if (props.parent === "AgreementsTable" && rows[dataIndex]?._id) {
-        props.onRowClick(rows[dataIndex]);
         history.push(`/land/agreement/details/${rows[dataIndex]?._id}`);
       }
     },
