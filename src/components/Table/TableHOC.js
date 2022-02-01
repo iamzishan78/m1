@@ -250,6 +250,14 @@ export const TableHOC = (Component) => {
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
                     }else if(columns[index].custom?.filterOptions?.length > 0){
                         pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0] })
+                    }else if(columns[index].custom?.formatedFilterOptions?.length > 0){
+                        let value = val[0];
+                        const filterData = columns[index].custom?.formatedFilterOptions;
+                        const data = filterData.find(f => f.label === value)
+                        if(data){
+                            value = data.value
+                        }
+                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value })
                     }else{
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
                     }
