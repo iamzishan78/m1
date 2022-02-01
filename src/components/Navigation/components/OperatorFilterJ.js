@@ -2,39 +2,40 @@ import React, { useState, useContext, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
-import { TOPOPERATORS } from "../../../graphQL/useQueryTopOperators";
 import { useLazyQuery } from "@apollo/client";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { debounce } from "lodash";
 
 export default function OperatorFilterJ() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [operatorName, setOperatorName] = React.useState(stateNav.operatorName);
   const [operatorList, setOperatorsList] = useState([]);
-  const [getOperators, { data: topOperatorData }] = useLazyQuery(TOPOPERATORS);
-
+  let [getFilters, { data: esOperatorsData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  const esIndex = "platformData:operator";
   useEffect(() => {
-    // use effect is querying the top operator data
-    // top operator data is used for the autocomplete filter
-
-    getOperators();
+    getFilters({
+      variables: {
+        esIndex,
+        filterKey: "operator.keyword",
+        search: "",
+        size: 50,
+      },
+    });
   }, []);
 
   useEffect(() => {
-    // this use effect is taking the top operator data response
-    // reformatting into an array
-    // and setting the operator list for the filter
-
-    if (topOperatorData) {
-      const operatorList = topOperatorData.topOperators.map((item) => item.CurrentOperator);
+    if (esOperatorsData) {
+      const operatorList = esOperatorsData.getESFilterList?.hits?.map((item) => item.key);
       setOperatorsList(operatorList);
-    } else {
-      setOperatorsList([]);
     }
-  }, [topOperatorData]);
+  }, [esOperatorsData]);
 
   const handleOperatorChange = (value) => {
     let filter;
     if (value && value.length) {
       filter = ["match", ["get", "operator"], value, true, false];
+      console.log("value", value);
+
       setStateNav((stateNav) => ({ ...stateNav, operatorName: value }));
       setOperatorName(value);
     } else {
@@ -43,6 +44,22 @@ export default function OperatorFilterJ() {
     }
     setStateNav((stateNav) => ({ ...stateNav, filterOperator: filter }));
   };
+
+  const handleOperatorChangeByInput = React.useMemo(
+    () =>
+      debounce((request, top, callback) => {
+        getFilters({
+          variables: {
+            esIndex,
+            filterKey: "operator.keyword",
+            search: `${request}*`,
+            size: 50,
+          },
+        });
+      }, 500),
+    []
+  );
+
 
   return (
     <Autocomplete
@@ -53,6 +70,9 @@ export default function OperatorFilterJ() {
         handleOperatorChange(newValue);
       }}
       multiple
+      onInputChange={(event, newInputValue) => {
+        handleOperatorChangeByInput(newInputValue);
+      }}
       options={operatorList}
       renderInput={(params) => <TextField {...params} variant="outlined" label="Operator" placeholder="" fullWidth />}
       disableListWrap

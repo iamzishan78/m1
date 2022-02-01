@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import { get } from "lodash";
 import { Grid, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Link from "@material-ui/core/Link";
@@ -18,11 +17,11 @@ import { DocumentContextProvider, DocumentContext } from "components/Document/Do
 import WellSearchApiFieldES from "components/Shared/Forms/Fields/WellSearchApiFieldES";
 
 // Hooks
-import { useMutation, useLazyQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 
-import { GET_WELL_DESCRIPTORS } from "graphQL/useQueryWellDescriptors";
 // Mutations
-import { DELETE_WELL_DESCRIPTOR, UPSERT_WELL_DESCRIPTOR } from "graphQL/useMutationWellDescriptor";
+import { DELETEWELLFROMFILEDESCRIPTOR } from "graphQL/useMutationDeleteWellFromFileDescriptor";
+import { ADD_WELL_TO_FILE_DESCRIPTOR } from "graphQL/useMutationAddWellToFileDescriptor";
 
 const useStyles = makeStyles((theme) => ({
   rootPadding: {
@@ -110,7 +109,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descriptorObject, relatedObjectType }) => {
+const AssociatedWellsList = ({ title }) => {
   // Initials
   let history = useHistory();
   const classes = useStyles();
@@ -120,41 +119,43 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
   const [isSearchActive, setSearchState] = useState(false);
   const [addWell, setAddWell] = useState(false);
   const [deletedRow, setDeletedRow] = useState("");
-  const [wells, setWells] = useState([]);
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  // const { getWellsFromDocument, wells, wellsFromDocument, getWellsLoading, setWells } = React.useContext(DocumentContext);
-  const [getWellsDescriptors, { data: associatedWells, loading: getWellsLoading }] = useLazyQuery(GET_WELL_DESCRIPTORS);
+  const { getWellsFromDocument, wells, wellsFromDocument, getWellsLoading, setWells } = React.useContext(DocumentContext);
 
   // Mutattions
-  const [deleteWellDescriptor] = useMutation(DELETE_WELL_DESCRIPTOR);
-  const [upsertWellDescriptor, { loading: upsertWellLoading }] = useMutation(UPSERT_WELL_DESCRIPTOR);
+  const [deleteWellFromDescriptor, { loading: deleteWellLoading }] = useMutation(DELETEWELLFROMFILEDESCRIPTOR, {
+    onCompleted: () =>
+      getWellsFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument._id,
+        },
+      }),
+  });
 
-  useEffect(() => {
-    const wells = get(associatedWells, "getWellsDescriptors.wellDescriptors");
-    if (wells) {
-      setWells(wells);
-    }
-  }, [associatedWells]);
+  const [addWellToFileDescriptor, { loading: addWellLoading }] = useMutation(ADD_WELL_TO_FILE_DESCRIPTOR, {
+    onCompleted: () =>
+      getWellsFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument._id,
+        },
+      }),
+  });
 
   // Fetching wells from descriptor
   useEffect(() => {
-    getWellsDescriptors({
+    getWellsFromDocument({
       variables: {
-        relatedObject,
+        descriptorObject: stateApp.selectedDocument._id,
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // delete well from File Descriptor
-  const deleteWell = async (well) => {
-    deleteWellDescriptor({
-      variables: {
-        descriptorObject: well._id,
-        relatedObject,
-      },
-      refetchQueries: ["getWellsDescriptors"],
+  const deleteWell = async (wellId) => {
+    await deleteWellFromDescriptor({
+      variables: { descriptorId: stateApp?.selectedDocument?._id, wellGlobalId: wellId },
     });
   };
 
@@ -165,13 +166,8 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
       createdBy: stateApp?.user?._id,
     };
     setAddWell(false);
-    upsertWellDescriptor({
-      variables: {
-        well: wellData,
-        relatedObject,
-        relatedObjectType,
-      },
-      refetchQueries: ["getWellsDescriptors"],
+    await addWellToFileDescriptor({
+      variables: { descriptorId: stateApp?.selectedDocument?._id, wellData: wellData },
     });
   };
 
@@ -186,11 +182,11 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
     setSearch(value);
     let existingWells = wells;
     if (value !== "") {
-      const searchedWells = existingWells.filter((well) => well?.descriptorObject.wellName.toLowerCase().includes(value));
+      const searchedWells = existingWells.filter((well) => well.wellName.toLowerCase().includes(value));
       setWells(searchedWells);
     } else {
-      const wells = get(associatedWells, "getWellsDescriptors.wellDescriptors");
-      setWells(wells);
+      const wellDescriptor = wellsFromDocument?.getWellDescriptors[0];
+      setWells(wellDescriptor?.wells);
     }
   };
   return (
@@ -258,7 +254,7 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
       </Grid>
       <Divider />
       <div className={classes.list}>
-        {(getWellsLoading || upsertWellLoading) && (
+        {(getWellsLoading === true || addWellLoading === true) && (
           <Grid container className={classes.actionGrid}>
             <Grid item xs={12}>
               <div style={{ display: "flex", justifyContent: "center" }}>
@@ -273,11 +269,11 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
             wells.map((well, index) => (
               <div style={{ padding: "0px 0px 0px" }}>
                 <ListItem key={index}>
-                  <Link className={classes.wellLink} color="primary" onClick={() => goToWell(well.descriptorObject)}>
-                    {well.descriptorObject.wellName}
+                  <Link className={classes.wellLink} color="primary" onClick={() => goToWell(well)}>
+                    {well.wellName}
                   </Link>
 
-                  {deletedRow === well.descriptorObject._id ? (
+                  {deleteWellLoading && deletedRow === well.id ? (
                     <ListItemSecondaryAction>
                       <IconButton edge="end" aria-label="delete">
                         <CircularProgress size="20px" />
@@ -286,8 +282,8 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
                   ) : (
                     <ListItemSecondaryAction
                       onClick={() => {
-                        setDeletedRow(well.descriptorObject._id);
-                        deleteWell(well.descriptorObject);
+                        setDeletedRow(well.id);
+                        deleteWell(well.id);
                       }}
                     >
                       <IconButton edge="end" aria-label="delete" className={classes.deleteIcon}>
@@ -296,7 +292,7 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
                     </ListItemSecondaryAction>
                   )}
                 </ListItem>
-                <p className={classes.secondaryText}>{well.descriptorObject?.apiNumber}</p>
+                <p className={classes.secondaryText}>{well?.apiNumber}</p>
                 <Divider />
               </div>
             ))
@@ -316,10 +312,10 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
   );
 };
 
-export default function AssociatedWellsProvider(props) {
+export default function AssociatedWellsProvider({ title }) {
   return (
     <DocumentContextProvider>
-      <AssociatedWellsList {...props} />
+      <AssociatedWellsList title={title} />
     </DocumentContextProvider>
   );
 }

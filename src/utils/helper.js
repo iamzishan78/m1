@@ -151,6 +151,8 @@ export const getMapFilters = (stateNav, searchInput, gridPolygonString) => {
     operator: stateNav.operatorName,
     wellStatus: stateNav.statusName,
     wellBoreProfile: stateNav.profileName,
+    state: stateNav.stateName ? [stateNav.stateName] : [],
+    county: stateNav.countyName ? [stateNav.countyName] : [],
   });
 
   const filters = getFilters({
@@ -252,12 +254,38 @@ export const sortColumns = (columns, gridView) => {
 };
 
 export const formattingGridView = (view) => {
-  if(view?.columns?.length > 0) {
-    for(let i = 0; i < view.columns.length; i++){
-      if(typeof view.columns[i] === 'string'){
+  if (view?.columns?.length > 0) {
+    for (let i = 0; i < view.columns.length; i++) {
+      if (typeof view.columns[i] === 'string') {
         view.columns[i] = { name: view.columns[i], display: true }
       }
     }
   }
   return view;
+}
+
+export const getAppliedFilters = (filters, columns, filtersData) => {
+  const appliedFilters = []
+  filters.forEach((val, index) => {
+    if (val.length > 0) {
+      if(columns[index].custom?.isDate){
+        const filterData = filtersData[columns[index].name];
+        const data = filterData.find(f => f.key === val[0])
+        appliedFilters.push({ field: columns[index].esKey, value: data.key_as_string });
+      }else{
+        appliedFilters.push({ field: columns[index].esKey, value: val[0] })
+      }  
+    }
+  })
+  return appliedFilters
+}
+
+export const getFilterList = (columns) => {
+  const filterList = [];
+  columns.forEach((column) => {
+    if(column.options.filterList) {
+      filterList.push(column.options.filterList)
+    }
+  })
+  return filterList
 }

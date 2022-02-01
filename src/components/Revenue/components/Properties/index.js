@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import { AppContext } from "AppContext";
 import { Grid, Button } from "@material-ui/core";
 import { useDispatch } from "react-redux";
@@ -7,9 +7,12 @@ import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards"
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTable";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import { useLazyQuery } from "@apollo/client";
+import { setStateIfDeepEqual } from "components/Shared/functions";
 // actions
 import { setRevenuePropertyData } from "actions";
+import moment from "moment";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -39,43 +42,38 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const cards = [
-  {
-    heading: "Total Properties",
-    points: "1,463",
-  },
-  {
-    heading: "Active",
-    points: "992",
-  },
-  {
-    heading: "Inactive",
-    points: "471",
-  },
-  {
-    heading: "Unmapped",
-    points: "17",
-    type: "warning",
-  },
-];
 
 export default function Properties() {
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
   // redux
   const dispatch = useDispatch();
-  const [fromDate, setFromDate] = React.useState(null);
-  const [toDate, setToDate] = React.useState(null);
-  const [cardSummary, setCardSummary] = React.useState(null);
+  const [fromDate, setFromDate] = React.useState(moment().subtract(1, 'months').startOf('month').format('yyyy-MM-DD'));
+  const [toDate, setToDate] = React.useState(moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD'));
+  const [filterToggle, setFilterToggle] = React.useState(false);
   // props to pass in table
   const esIndex = "properties_flat";
   const startPaginationAt = 25;
 
+  const [propertiesCount, setPropertiesCount] = useState(0);
+  const [esFilters, ESFilters] = useState([]);
+
+  const setESFilters = (newState) => {
+    setStateIfDeepEqual(ESFilters, newState);
+  };
+
+  const onPropertiesCount = (count) => {
+    setPropertiesCount(count);
+  };
+
   // query for Properties Table
   const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
     fetchPolicy: "no-cache",
-    onCompleted: () => {
-      console.log("compeleted");
+    onCompleted: (filteredData) => {
+      if (filteredData?.getESPaginatedList) {
+        const count = filteredData?.getESPaginatedList?.total;
+        onPropertiesCount(count);
+      }
     },
   });
 
@@ -85,56 +83,29 @@ export default function Properties() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getESPaginatedList, elasticData]);
 
-  // on filter click
-  const filterProperties = () => {
-    getESPaginatedList({
-      variables: {
-        esIndex,
-        pagination: {
-          first: startPaginationAt,
-          keep_alive: "1micros",
-        },
-        search: ``,
-        sort: [],
-        filters: [
-          {
-            field: "lastCheck.checkDate",
-            value: {
-              range: {
-                "lastCheck.checkDate": {
-                  gte: `${fromDate}-01T00:00:00.000Z`,
-                  lte: `${toDate}-01T00:00:00.000Z`,
-                },
-              },
-            },
-          },
-        ],
-      },
-    });
-  }
 
-  const handleSummary = (totalCount, activeCount, inactiveCount, unmapped) => {
-    setCardSummary([
-      {
-        heading: "Total Properties",
-        points: totalCount,
-      },
-      {
-        heading: "Active",
-        points: activeCount,
-      },
-      {
-        heading: "Inactive",
-        points: inactiveCount,
-      },
-      {
-        heading: "Unmapped",
-        points: unmapped,
-        type: "warning",
-      },
-    ])
-  }
-  
+  // cards default
+  const cardsDefault = [
+    {
+      heading: "Total Properties",
+      points: 0,
+    },
+    {
+      heading: "Active",
+      points: 0,
+    },
+    {
+      heading: "Inactive",
+      points: 0,
+    },
+    {
+      heading: "Unmapped",
+      points: 0,
+      type: "warning",
+    },
+  ]
+
+
   return (
     <>
       <div className={classes.actionBar}>
@@ -154,7 +125,7 @@ export default function Properties() {
                 </Button> */}
               </Grid>
               <Grid item>
-                <Button variant="contained" color="secondary" onClick={() => filterProperties()}>
+                <Button variant="contained" color="secondary" onClick={() => setFilterToggle(!filterToggle)}>
                   Filter
                 </Button>
               </Grid>
@@ -162,18 +133,32 @@ export default function Properties() {
           </Grid>
         </Grid>
       </div>
-      <AnalyticsCards cards={cardSummary} />
+
+      <AnalyticsCards
+        parent={"Properties"}
+        esIndex={esIndex}
+        esFilters={esFilters}
+        cardsDefault={cardsDefault}
+        totalCount={propertiesCount}
+        landSearchQuery={stateApp.revenueSearchQuery}
+      />
+
       <div className={classes.propertyTableContainer}>
         <RevenuePropertiesTable
+          esIndex={esIndex}
           header="Properties"
-          parent="RevenuePropertiesTable"
+          esFilters={esFilters}
           targetLabel="Revenue Properties"
+          parent="RevenuePropertiesTable"
           loading={false}
           dense={true}
-          cardSummary={handleSummary}
-          revenueSearchQuery={stateApp.revenueSearchQuery}
-          esIndex={esIndex}
+          fromDate={fromDate}
+          toDate={toDate}
+          filterToggle={filterToggle}
+          setESFilters={setESFilters}
+          onPropertiesCount={onPropertiesCount}
           startPaginationAt={startPaginationAt}
+          revenueSearchQuery={stateApp.revenueSearchQuery}
         />
       </div>
     </>

@@ -55,7 +55,10 @@ const AssociateContactWellHeadCells = [
   { name: "operating_rights", label: "Operating Rights" },
   { name: "nri", label: "NRI" },
   { name: "net_acres", label: "Net Acres" },
-  { name: "nra", label: "NRA", editable: true, options: { setCellProps: () => ({ style: { maxWidth: "70px" } }) } },
+  { name: "nra", label: "NRA", editable: true},
+  { name: "cost_bearing", label: "Cost Bearing"},
+  { name: "cost_free_high_value", label: "Cost Free High Value" },
+  { name: "cost_bearing_high_value", label: "Cost Bearing High Value" },
   { name: "depthFrom", label: "Depth From" },
   { name: "depthTo", label: "Depth To" },
 

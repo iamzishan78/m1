@@ -27,12 +27,13 @@ import CustomerViewCol from "components/Table/helpers/CustomerView";
 import TableHeader from "components/Table/constants/documents-header-schema.js";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { GET_ES_DOCUMENTS } from "graphQL/useQueryESDocuments";
-import { GET_ES_DOCUMENTS_FILTER } from "graphQL/useQueryESDocumentsFilter";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+// import { GET_ES_DOCUMENTS_FILTER } from "graphQL/useQueryESDocumentsFilter";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 import { AppContext } from "AppContext";
-import { sortColumns, formattingGridView } from "utils/helper";
+import { sortColumns, formattingGridView, getAppliedFilters, getFilterList } from "utils/helper";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -107,7 +108,7 @@ function DocumentsTable(props) {
           keep_alive: "1micros",
         },
         search: props.documentSearchQuery ? props.documentSearchQuery : "",
-        filters: selectedGridView?.filters ? selectedGridView?.filters : [],
+        filters: getAppliedFilters(filters, columns, stateApp.filtersData),
       },
     });
   }, [getESDocuments, props.parent, props.documentSearchQuery]);
@@ -234,15 +235,16 @@ function DocumentsTable(props) {
         JSON.parse(JSON.stringify(columnsData)),
         setColumns,
         setFilters,
-        GET_ES_DOCUMENTS_FILTER,
-        "documents_flat"
+        GET_ES_FILTER_LIST,
+        "documents_flat",
+        props.documentSearchQuery
       );
       setSelectedGridView(selectedData);
     }
   }, [gridViews, metaDatas]);
 
   useEffect(() => {
-    if (tableData?.hits?.length > 0) {
+    if (tableData?.hits) {
       props.setRows(tableData?.hits);
       let updatedColumns = columns;
       if (!isEmpty(selectedGridView)) {
@@ -263,11 +265,10 @@ function DocumentsTable(props) {
         JSON.parse(JSON.stringify(updatedColumns)),
         setColumns,
         setFilters,
-        GET_ES_DOCUMENTS_FILTER,
-        "documents_flat"
+        GET_ES_FILTER_LIST,
+        "documents_flat",
+        props.documentSearchQuery
       );
-      props.setLoading(false);
-    } else if (tableData?.length === 0) {
       props.setLoading(false);
     }
   }, [tableData, props.dependencyUpdate]);
@@ -298,14 +299,17 @@ function DocumentsTable(props) {
         true
       );
       updatedColumns = sortColumns(updatedColumns, view);
+      const filterList = getFilterList(updatedColumns);
+      setFilters(filterList);
       setColumnsData(
         TableHeader,
-        filters,
+        filterList,
         JSON.parse(JSON.stringify(updatedColumns)),
         setColumns,
         setFilters,
-        GET_ES_DOCUMENTS_FILTER,
-        "documents_flat"
+        GET_ES_FILTER_LIST,
+        "documents_flat",
+        props.documentSearchQuery
       );
     }
   }, [selectedGridView]);
@@ -338,8 +342,9 @@ function DocumentsTable(props) {
       JSON.parse(JSON.stringify(columns)),
       setColumns,
       setFilters,
-      GET_ES_DOCUMENTS_FILTER,
-      "documents_flat"
+      GET_ES_FILTER_LIST,
+      "documents_flat",
+      props.documentSearchQuery
     );
   };
 
@@ -354,6 +359,9 @@ function DocumentsTable(props) {
       selectedGridView
     );
     selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
+    if(action === 'filterChange'){
+      setFilters(tableState.filterList)
+    }
     switch (action) {
       case "search":
       case "sort":
@@ -416,34 +424,39 @@ function DocumentsTable(props) {
           columns: sortedColumns,
         },
       },
+      refetchQueries: ["getGridViews"],
+      awaitRefetchQueries: true,
     });
+    // setStateApp((state, props) => {
+    //   return {
+    //     ...state,
+    //     selectedView: { ...state.selectedView, columns: sortedColumns },
+    //   };
+    // });
+    // const newColumns = JSON.parse(JSON.stringify(columns));
+    // if(newMetaData){
+    //   newColumns.push(newMetaData)
+    //   TableHeader.push(newMetaData)
+    // }
+    // const columnsData = sortColumns(newColumns, {
+    //   ...selectedGridView,
+    //   columns: sortedColumns,
+    // });
 
-    setStateApp((state, props) => {
-      return {
-        ...state,
-        selectedView: { ...state.selectedView, columns: sortedColumns },
-      };
-    });
+    // setColumnsData(
+    //   TableHeader,
+    //   filters,
+    //   JSON.parse(JSON.stringify(columnsData)),
+    //   setColumns,
+    //   setFilters,
+    //   GET_ES_DOCUMENTS_FILTER,
+    //   "documents_flat"
+    // );
 
-    const columnsData = sortColumns(columns, {
-      ...selectedGridView,
-      columns: sortedColumns,
-    });
-
-    setColumnsData(
-      TableHeader,
-      filters,
-      JSON.parse(JSON.stringify(columnsData)),
-      setColumns,
-      setFilters,
-      GET_ES_DOCUMENTS_FILTER,
-      "documents_flat"
-    );
-
-    setRefetchList(false);
-    setTimeout(() => {
-      setSelectedGridView({ ...selectedGridView, columns: sortedColumns });
-    }, 10);
+    // setRefetchList(false);
+    // setTimeout(() => {
+    //   setSelectedGridView({ ...selectedGridView, columns: sortedColumns });
+    // }, 10);
   };
 
   const headerProps = {

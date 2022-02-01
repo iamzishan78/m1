@@ -12,7 +12,7 @@ import { Grid } from "@material-ui/core";
 import debounce from "lodash/debounce";
 
 // import value formatters
-import joinAddress from "../../../../Shared/valueformatters/join-address.js";
+import joinAddress from "components/Shared/valueformatters/join-address.js";
 
 const filter = createFilterOptions();
 
@@ -125,19 +125,19 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   const useStyles = makeStyles({
     inputRoot: props.darkCard
       ? {
-        backgroundColor: "#273551",
-        color: "#ffffff",
-        "& .MuiSvgIcon-root": {
-          fill: "#ffffff",
-        },
-      }
+          backgroundColor: "#273551",
+          color: "#ffffff",
+          "& .MuiSvgIcon-root": {
+            fill: "#ffffff",
+          },
+        }
       : {
-        backgroundColor: "#ffffff",
-        color: "grey",
-        "& .MuiSvgIcon-root": {
-          fill: "grey",
+          backgroundColor: "#ffffff",
+          color: "grey",
+          "& .MuiSvgIcon-root": {
+            fill: "grey",
+          },
         },
-      },
     listbox: {
       boxSizing: "border-box",
       "& ul": {
@@ -158,7 +158,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 
   const loadMoreItems = async (startIndex, stopIndex) => {
     if (isNextPageLoading || !hasNextPage) {
-      return () => { };
+      return () => {};
     } else {
       return loadNextPage({
         variables: {
@@ -280,7 +280,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
             ),
           }}
           size={size}
-        // placeholder="E.g. Jacob"
+          // placeholder="E.g. Jacob"
         />
       )}
       {...other}

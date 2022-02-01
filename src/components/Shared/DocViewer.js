@@ -33,7 +33,9 @@ const useStyles = makeStyles((theme) => ({
     width: (props) => props.width ?? "calc(100vw - 650px)",
   },
   modalHeader: {
-    minHeight: "35px", width: "100%", display: "block",
+    minHeight: "35px",
+    width: "100%",
+    display: "block",
     padding: theme.spacing(2, 4, 3),
   },
   paperTwo: {
@@ -47,10 +49,8 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "1",
     display: "flex",
     flexDirection: "column",
-    position: "absolute !important",
-    top: "85% !important",
-    bottom: "0 !important",
-    left: "15px",
+    position: "sticky !important",
+    bottom: "40px !important",
     width: "3.875rem",
   },
   docViewSection: {
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "35px",
     width: "100%",
     padding: theme.spacing(2, 4, 3),
-  }
+  },
 }));
 
 const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondition = false, width, onCloseHandler = null }) => {
@@ -189,76 +189,85 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
           </div>
         </Modal>
       ) : (
-        <div style={DocStyle} className={classes.paperTwo}>
-          <Grid item xs={12} className={classes.viewerHeader}>
-            <h4
-              style={{
-                margin: "0 0 15px 0",
-                float: "left",
-                fontSize: "1.1rem",
-              }}
-            >
-              {stateApp?.viewDoc?.name}
-            </h4>
+        <>
+          {stateApp?.viewDoc && (
+            <div style={DocStyle} className={classes.paperTwo}>
+              <Grid item xs={12} className={classes.viewerHeader}>
+                <h4
+                  style={{
+                    margin: "0 0 15px 0",
+                    float: "left",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  {stateApp?.viewDoc?.name}
+                </h4>
 
-            <div style={{ float: "right" }}>
-              <IconButton size="small" style={{ margin: "0 8px" }}>
-                {stateApp?.viewDoc?.uri ? (
-                  <IconButton size="small" onClick={() => downloadFile(stateApp?.viewDoc)}>
-                    <GetAppIcon />
+                <div style={{ float: "right" }}>
+                  <IconButton size="small" style={{ margin: "0 8px" }}>
+                    {stateApp?.viewDoc?.uri ? (
+                      <IconButton size="small" onClick={() => downloadFile(stateApp?.viewDoc)}>
+                        <GetAppIcon />
+                      </IconButton>
+                    ) : (
+                      <CircularProgress size={20} color="secondary" />
+                    )}
                   </IconButton>
-                ) : (
-                  <CircularProgress size={20} color="secondary" />
-                )}
-              </IconButton>
 
-              <IconButton
-                onClick={() => {
-                  setStateApp({ ...stateApp, viewDoc: null });
-                }}
-                size="small"
-              >
-                <CloseIcon className={classes.closeIcon} fontSize="small" />
-              </IconButton>
-            </div>
-          </Grid>
-
-          <div className={classes.docViewSection}>
-            <Document
-              style={{ display: "grid", justifyContent: "center", width: "100%" }}
-              file={stateApp?.viewDoc?.uri}
-              onLoadSuccess={onDocumentLoadSuccess}
-              loading={
-                <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                  <CircularProgress />
+                  <IconButton
+                    onClick={() => {
+                      setStateApp({ ...stateApp, viewDoc: null });
+                    }}
+                    size="small"
+                  >
+                    <CloseIcon className={classes.closeIcon} fontSize="small" />
+                  </IconButton>
                 </div>
-              }
-            >
-              {pdfState?.map((value, key) => {
-                return (
-                  <Page key={key} pageNumber={value} scale={zoom} style={{ display: "grid", justifyContent: "center", width: "100%" }} />
-                );
-              })}
-            </Document>
-            <div className={classes.ZoomIcons}>
-              {" "}
-              <IconButton
-                onClick={() => {
-                  setzoom(zoom + 0.25);
-                }}
-              >
-                <ZoomInIcon fontSize={"large"} />
-              </IconButton>
-              <IconButton
-                onClick={() => {
-                  setzoom(zoom - 0.25);
-                }}
-              >
-                <ZoomOutIcon fontSize={"large"} />
-              </IconButton>
+              </Grid>
+
+              <div className={classes.docViewSection}>
+                <Document
+                  style={{ display: "grid", justifyContent: "center", width: "100%" }}
+                  file={stateApp?.viewDoc?.uri}
+                  onLoadSuccess={onDocumentLoadSuccess}
+                  loading={
+                    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                      <CircularProgress />
+                    </div>
+                  }
+                >
+                  {pdfState?.map((value, key) => {
+                    return (
+                      <Page
+                        key={key}
+                        pageNumber={value}
+                        scale={zoom}
+                        style={{ display: "grid", justifyContent: "center", width: "100%" }}
+                      />
+                    );
+                  })}
+                </Document>
+                <div className={classes.ZoomIcons}>
+                  {" "}
+                  <IconButton
+                    onClick={() => {
+                      setzoom(zoom + 0.25);
+                    }}
+                  >
+                    <ZoomInIcon fontSize={"large"} />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => {
+                      setzoom(zoom - 0.25);
+                    }}
+                  >
+                    <ZoomOutIcon fontSize={"large"} />
+                  </IconButton>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
     </div>
   );
