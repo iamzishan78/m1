@@ -29,7 +29,9 @@ const StyledListSubheader = styled(ListSubheader)({
 export default function Information() {
 
   const [stateApp] = React.useContext(AppContext);
-  const uploadDate = moment(stateApp.selectedDocument.uploadedDate).format("MMM Do, YYYY, h:mm a");
+
+  const localDateTime = moment.utc(stateApp.selectedDocument.fileCreatedAt).local();
+  const createdDate = localDateTime.format('MMM Do, YYYY, h:mm a');
 
   return (
     <ListContainer>
@@ -44,7 +46,7 @@ export default function Information() {
         </StyledListItem>
         <StyledListItem>
           <StyledListSubheader>Created</StyledListSubheader>
-          <ListItemText primary={uploadDate} />
+          <ListItemText primary={createdDate} />
         </StyledListItem>
         <StyledListItem>
           <StyledListSubheader style={{ paddingLeft: 0}}>Size</StyledListSubheader>
