@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 import { Grid, Typography, Button } from "@material-ui/core";
 import { Add, ArrowDropDown } from "@material-ui/icons";
@@ -10,6 +11,7 @@ import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
 
 export default function RevenueAppBar(props) {
   const { classes } = props;
+  let history = useHistory();
   const { activeModule, actionsPanelState } = useSelector((state) => state.Revenue);
 
   return (
@@ -38,14 +40,20 @@ export default function RevenueAppBar(props) {
             )}
         </Grid>
       </Grid>
-      {(
-        activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title ||
-        activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title
-      ) && (
+      {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title) && (
           <Grid item>
             <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
               <Button color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}>
                 Add {activeModule.title}
+              </Button>
+            </div>
+          </Grid>
+        )}
+      {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title) && (
+          <Grid item>
+            <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+              <Button color="primary" variant="contained" startIcon={<Add />} onClick={() => history.push('/revenue/property/details/add')}>
+                Add New Property
               </Button>
             </div>
           </Grid>
