@@ -116,8 +116,8 @@ export const drawShapeStyles = [
             ['any', ['==', 'user_shapeEdit', true], ['!has', 'user_shapeEdit']]
         ],
         'paint': {
-            'fill-color': 'yellow',
-            'fill-outline-color': 'yellow',
+            'fill-color': '#FFFF00',
+            'fill-outline-color': '#FFFF00',
             'fill-opacity': 0.1
         }
     },
@@ -129,7 +129,7 @@ export const drawShapeStyles = [
         ],
         'paint': {
             'circle-radius': 3,
-            'circle-color': 'yellow'
+            'circle-color': '#FFFF00'
         }
     },
     {
@@ -160,9 +160,19 @@ export const drawShapeStyles = [
             'line-join': 'round'
         },
         'paint': {
-            'line-color': 'yellow',
+            'line-color': [
+                'case',
+                ['has', 'user_isrotate'],
+                '#3bb2d0',
+                '#FFFF00'
+            ],
             'line-dasharray': [0.2, 2],
-            'line-width': 6
+            'line-width': [
+                'case',
+                ['has', 'user_isrotate'],
+                3,
+                6
+            ]
         }
     },
     {
@@ -194,7 +204,7 @@ export const drawShapeStyles = [
             'line-join': 'round'
         },
         'paint': {
-            'line-color': 'yellow',
+            'line-color': '#FFFF00',
             'line-dasharray': [0.2, 2],
             'line-width': 2
         }
@@ -207,8 +217,16 @@ export const drawShapeStyles = [
             ['!=', 'mode', 'static']
         ],
         'paint': {
-            'circle-radius': 5,
-            'circle-color': 'yellow'
+            'circle-radius': [
+                'case',
+                ['has', 'user_isrotate'], 3,
+                5
+            ],
+            'circle-color': [
+                'case',
+                ['has', 'user_isrotate'], '#3bb2d0',
+                '#FFFF00'
+            ]
         }
     },
     {
@@ -220,7 +238,7 @@ export const drawShapeStyles = [
         ],
         'paint': {
             'circle-radius': 3,
-            'circle-color': 'yellow'
+            'circle-color': '#FFFF00'
         }
     },
     {
@@ -273,7 +291,7 @@ export const drawShapeStyles = [
         ],
         'paint': {
             'circle-radius': 5,
-            'circle-color': 'yellow'
+            'circle-color': '#FFFF00'
         }
     },
     {
@@ -362,5 +380,84 @@ export const drawShapeStyles = [
             'line-color': '#3bb2d0',
             'line-width': 2
         }
-    }
+    },
+
+    // Rotate 
+
+    {
+        id: 'gl-draw-line-rotate-point',
+        type: 'line',
+        filter: [
+            'all',
+            ['==', 'meta', 'midpoint'],
+            ['==', 'icon', 'rotate'],
+            ['==', '$type', 'LineString'],
+            ['!=', 'mode', 'static'],
+            // ['==', 'active', 'true']
+        ],
+        layout: {
+            'line-cap': 'round',
+            'line-join': 'round',
+        },
+        paint: {
+            'line-color': '#3bb2d0',
+            'line-dasharray': [0.2, 2],
+            'line-width': 2,
+        },
+    },
+    {
+        id: 'gl-draw-polygon-rotate-point-stroke',
+        type: 'circle',
+        filter: [
+            'all',
+            ['==', 'meta', 'midpoint'],
+            ['==', 'icon', 'rotate'],
+            ['==', '$type', 'Point'],
+            ['!=', 'mode', 'static'],
+        ],
+        paint: {
+            'circle-radius': 4,
+            'circle-color': '#fff',
+        },
+    },
+    {
+        id: 'gl-draw-polygon-rotate-point',
+        type: 'circle',
+        filter: [
+            'all',
+            ['==', 'meta', 'midpoint'],
+            ['==', 'icon', 'rotate'],
+            ['==', '$type', 'Point'],
+            ['!=', 'mode', 'static'],
+        ],
+        paint: {
+            'circle-radius': 2,
+            'circle-color': '#3bb2d0',
+        },
+    },
+    {
+        id: 'gl-draw-polygon-rotate-point-icon',
+        type: 'symbol',
+        filter: [
+            'all',
+            ['==', 'meta', 'midpoint'],
+            ['==', 'icon', 'rotate'],
+            ['==', '$type', 'Point'],
+            ['!=', 'mode', 'static'],
+        ],
+        layout: {
+            'icon-image': 'rotate',
+            'icon-allow-overlap': true,
+            'icon-ignore-placement': true,
+            'icon-rotation-alignment': 'map',
+            'icon-rotate': ['get', 'heading'],
+        },
+        paint: {
+            'icon-opacity': 1.0,
+            'icon-opacity-transition': {
+                delay: 0,
+                duration: 0,
+            },
+        },
+    },
 ]

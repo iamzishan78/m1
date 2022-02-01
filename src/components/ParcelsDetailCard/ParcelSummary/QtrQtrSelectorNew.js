@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import { Box } from "@material-ui/core";
+import { Box, FormControlLabel, Switch, Typography } from "@material-ui/core";
 import { getQtrFilterData } from "./helper";
 import { copy } from 'utils/helper';
 import SmallTXQtr from "components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/SmallTXQtr";
-import { getNewShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
+import { changeModeToScaleRotate, getDrawAdustedShape, getNewShapeFromSelectedQuarters, getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
+import { AppContext } from "AppContext";
+import { drawShapeLayerToggle } from "components/MapControls/commonHelper";
 
 const useStyles = makeStyles((theme) => ({
   mainDiv: {
@@ -105,7 +107,13 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
   const [qtr, setQtr] = useState(parcelData?.qtrQtrSelection?.selectedQtr ? copy(parcelData.qtrQtrSelection.selectedQtr) : ["", "", "", ""])
 
   const [qtrQtr, setQtrQtr] = useState(parcelData?.qtrQtrSelection?.qtrQtr ? copy(parcelData.qtrQtrSelection.qtrQtr) : {})
+  const [showAdjustGrid, setShowAdjustGrid] = useState(false)
   const [disableUpdate, setDisableUpdate] = useState(false)
+  const [stateApp] = useContext(AppContext);
+
+  const eventsConfiguredRef = useRef(false);
+
+
 
   useEffect(() => {
     if (parcelData?.qtrQtrSelection) {
@@ -134,6 +142,39 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
   useEffect(() => {
     checkForDisabled()
   }, [qtr, qtrQtr])
+
+  useEffect(() => {
+    if (!eventsConfiguredRef.current && stateApp.map) {
+      const { map } = stateApp;
+
+      map.on("draw.modechange", () => {
+        changeModeToScaleRotate(stateApp.draw);
+      });
+      eventsConfiguredRef.current = true;
+    }
+
+    return () => {
+      stateApp?.draw?.deleteAll();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateApp.map, stateApp.currentFeature]);
+
+
+  useEffect(() => {
+    if (showAdjustGrid) {
+      const feature = copy(parcelData.shape)
+      let parcelDataCopy = copy(parcelData)
+      if (parcelDataCopy?.qtrQtrSelection?.originalGeometry) {
+        feature.geometry = parcelDataCopy.qtrQtrSelection.originalGeometry
+      }
+      drawShapeLayerToggle(stateApp, "visible")
+      stateApp.draw.deleteAll();
+      getRotateAbleShapeFromSelectedQuarters(feature, stateApp.draw)
+    } else {
+      stateApp?.draw?.deleteAll();
+    }
+  }, [showAdjustGrid])
+
 
   const checkForDisabled = () => {
     let isDisabled = true
@@ -171,6 +212,22 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
 
   return (
     <div>
+      <Grid container spacing={1} direction="row">
+        <Grid item md={11}>
+          <Typography style={{ fontWeight: 700 }}> Show/adjust grid size and orientation on the map</Typography>
+        </Grid>
+        <Grid item md={1}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={showAdjustGrid}
+                onChange={() => setShowAdjustGrid(!showAdjustGrid)}
+                size="small"
+              />
+            }
+          />
+        </Grid>
+      </Grid>
       <p className="formLabel" style={{ marginTop: "0" }}>
         Adjust the shape boundary by entering quarter calls or selecting values in the grid below
       </p>
@@ -212,10 +269,19 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
             const values = Object.keys(qtrQtr).filter((key) => qtrQtr[key]).map((key) => key.toUpperCase())
             const feature = copy(parcelData.shape)
             let parcelDataCopy = copy(parcelData)
-            if (parcelDataCopy?.qtrQtrSelection?.originalGeometry) {
-              feature.geometry = parcelDataCopy.qtrQtrSelection.originalGeometry
+
+            let newShape = {}
+            const drawFeature = stateApp.draw.getAll().features[0]
+            if (drawFeature) {
+              feature.geometry = drawFeature.geometry
+              newShape = getDrawAdustedShape(feature, values)
+            } else {
+              if (parcelDataCopy?.qtrQtrSelection?.originalGeometry) {
+                feature.geometry = parcelDataCopy.qtrQtrSelection.originalGeometry
+              }
+              newShape = getNewShapeFromSelectedQuarters(feature, values)
             }
-            const newShape = getNewShapeFromSelectedQuarters(feature, values)
+
             if (!parcelDataCopy.qtrQtrSelection) parcelDataCopy.qtrQtrSelection = {}
             if (!parcelDataCopy?.qtrQtrSelection?.originalGeometry) {
               parcelDataCopy.qtrQtrSelection.originalGeometry = parcelDataCopy.shape.geometry
@@ -224,6 +290,8 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
             parcelDataCopy.qtrQtrSelection.selectedQtr = qtr
             parcelDataCopy.shape.geometry = newShape.geometry
             updateParcelQtr(parcelDataCopy)
+
+            setShowAdjustGrid(false)
           }}>Update</Button>
         </Grid>
 

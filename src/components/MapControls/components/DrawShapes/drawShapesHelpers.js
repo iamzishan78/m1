@@ -2,7 +2,7 @@ import { spatialDataAttributes } from "./constants";
 import { area, convertArea, length } from "@turf/turf";
 import polylabel from "polylabel";
 import * as turf from "@turf/turf";
-import { drawShapeLayerToggle, setFeatureProperty } from "components/MapControls/commonHelper";
+import { SRCenter } from 'mapbox-gl-draw-scale-rotate-mode';
 
 export const addCustomShapeProperties = (feature, Draw) => {
   try {
@@ -233,4 +233,121 @@ export const getNewShapeFromSelectedQuarters = (currentFeature, selectedQuarters
   newShape.properties.id = currentFeature.id;
 
   return newShape
+}
+
+export const getDrawAdustedShape = (multiPolygon, selectedQuarters) => {
+  const quarters = ["NWNW", "NWSW", "SWNW", "SWSW", "SESW", "NESW", "SENW", "NENW", "SWSE", "NWSE", "SWNE", "NWNE", "SESE", "NESE", "SENE", "NENE"]
+
+  let newShape = {
+    geometry: { type: "Polygon", coordinates: [] },
+    properties: {},
+    type: "Feature"
+  }
+
+  selectedQuarters.forEach((quarter) => {
+    const index = quarters.findIndex(q => q === quarter)
+    if (newShape.geometry.coordinates.length === 0) {
+      newShape.geometry.coordinates = multiPolygon.geometry.coordinates[index]
+    } else {
+      newShape = turf.union(newShape, { ...newShape, geometry: { type: "Polygon", coordinates: multiPolygon.geometry.coordinates[index] } })
+    }
+  })
+
+  newShape.id = multiPolygon.id
+  newShape.properties.id = multiPolygon.id;
+  return newShape
+}
+
+export const getRotateAbleShapeFromSelectedQuarters = (currentFeature, draw) => {
+  let bbox = turf.bbox(currentFeature);
+  currentFeature = turf.bboxPolygon(bbox);
+  bbox = turf.bbox(currentFeature);
+  let minX = bbox[0];
+  let maxX = bbox[2];
+
+  let minY = bbox[1];
+  let maxY = bbox[3];
+
+  const incrementX = ((maxX - minX) / 4);
+  let newShape = {}
+  let polygons = []
+
+  let m
+
+  const incrementY = ((maxY - minY) / 4);
+  for (let i = 0; i < 4; i++) {
+    bbox[2] = bbox[0] + incrementX
+    for (let j = 0; j < 4; j++) {
+      bbox[3] = bbox[1] + incrementY
+
+      m = turf.bboxClip(currentFeature, bbox);
+      polygons.push(m)
+      if (i === 0 && j === 0) {
+        newShape = m
+      } else {
+        // newShape = turf.union(m, newShape);
+      }
+
+      bbox[1] = bbox[3]
+    }
+    bbox[0] = bbox[2]
+
+    bbox[1] = minY
+    bbox[3] = maxY
+  }
+
+  const multi = {
+    geometry: { type: "MultiPolygon", coordinates: [] },
+    properties: { isrotate: 1 },
+    type: "Feature"
+  }
+
+  // m.geometry.type = "MultiPolygon"
+  // m.geometry.coordinates = []
+  let temp = polygons[3]
+  polygons[3] = polygons[0]
+  polygons[0] = temp
+
+  polygons.forEach((polygon) => {
+    multi.geometry.coordinates.push(polygon.geometry.coordinates)
+  })
+
+  m = turf.union(newShape, m)
+
+  draw.add(multi)
+
+  setTimeout(() => {
+    changeModeToScaleRotate(draw)
+  }, 1000)
+
+
+
+  setTimeout(() => {
+    console.log(draw.getAll())
+    console.log(draw.getMode())
+  }, 3000)
+
+
+}
+
+export const changeModeToScaleRotate = (draw) => {
+  const all = draw.getAll()
+  if (all?.features[0] && all.features[0].properties.isrotate) {
+    draw.changeMode("direct_select", { featureId: all.features[0].id, });
+    draw.changeMode('scaleRotateMode', {
+      // required
+      canScale: true,
+      canRotate: true, // only rotation enabled
+      canTrash: false, // disable feature delete
+
+      rotatePivot: SRCenter.Center, // rotate around center
+      // scaleCenter: SRCenter.Opposite, // scale around opposite vertex
+
+      singleRotationPoint: true, // only one rotation point
+      rotationPointRadius: 1.6, // offset rotation point
+
+      canSelectFeatures: true,
+    });
+  }
+
 }
