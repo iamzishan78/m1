@@ -301,6 +301,7 @@ export default function DrawShapes() {
         setFeatureProperty(draw, feature.id, "shapeEdit", false);
 
         let currentFeature = feature;
+
         setStateApp((state) => {
 
           drawShapeLayerToggle(state, state.lastSelectedDrawMode === "draw_polygon" ? "visible" : "none");
