@@ -264,7 +264,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
             }
           </Grid>
         </Grid>
-        <Grid item md={3} style={{ paddingTop: '1.8em' }}>
+        <Grid item md={3} style={{ paddingTop: '1.8em' , paddingLeft: '30px'}}>
           <Button variant="contained" color="primary" disabled={disableUpdate} onClick={() => {
             const values = Object.keys(qtrQtr).filter((key) => qtrQtr[key]).map((key) => key.toUpperCase())
             const feature = copy(parcelData.shape)
