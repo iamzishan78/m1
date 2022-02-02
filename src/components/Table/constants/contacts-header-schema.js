@@ -1,5 +1,6 @@
 
 /* props is just a style object*/
+import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 
 const ContactsHeadCells = [
     {
@@ -177,6 +178,17 @@ const ContactsHeadCells = [
         // display: true,
         display: false,
         filter: false,
+        searchable: false,
+        sort: true,
+      },
+    },
+    {
+      name: "ownerType",
+      label: "Entity Type",
+      esKey: 'ownerType.keyword',
+      options: {
+        display: true,
+        filter: false, // i guess we cant dynamically remove the filter when hiding a column enabled by default
         searchable: false,
         sort: true,
       },
@@ -438,6 +450,9 @@ const ContactsHeadCells = [
         filter: false,
         searchable: false,
         sort: true,
+      },
+      custom: {
+        formatedFilterOptions: contactStatusOptions,
       },
     },
     {
