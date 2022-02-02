@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Grid, TextField, Typography, Button, Box, FormControl, InputLabel, InputBase, Select, MenuItem } from "@material-ui/core";
 import { KeyboardDatePicker } from "@material-ui/pickers";
-import { useStyles as summaryStyles } from "./style";
+import { useStyles as summaryStyles, StyledTextField } from "./style";
 import WellIcon from "components/Shared/svgIcons/well";
 import TractIcon from "components/Shared/svgIcons/tract";
 import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
@@ -18,6 +18,13 @@ import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoComple
 
 export default function FieldsSection({ updateAgreement, control, agreementDetails }) {
   const classes = summaryStyles();
+  const [customFields, setCustomFields] = useState([]);
+
+  useEffect(() => {
+    if (agreementDetails?.custom_data_arr) {
+      setCustomFields(agreementDetails.custom_data_arr.map((d) => d));
+    }
+  }, [agreementDetails]);
 
   useEffect(() => {
     document.addEventListener("keydown", onGlobalKeyDown, false);
@@ -49,6 +56,8 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
     console.log("value", value);
     updateAgreement(key, value);
   };
+
+  const addCustomProperty = () => {};
 
   return (
     <Grid container direction="row" display="flex" justify="flex-start" alignItems="center" spacing={1} className={classes.fieldsSection}>
@@ -167,8 +176,32 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
           </Grid>
         </Grid>
       ))}
+      {customFields.length > 0 &&
+        customFields.map((cf, index) => (
+          <Grid item xs={12} key={index}>
+            <Grid container className={classes.gridStyle} spacing={2}>
+              <Grid item xs={3}>
+                <StyledTextField name="customKey" label="Key" value={cf.key} onBlur={(e) => addCustomProperty(cf, "key", e.target.value)} />
+              </Grid>
+              <Grid item xs={8}>
+                <StyledTextField
+                  name="customValue"
+                  label="Value"
+                  value={cf.value}
+                  onBlur={(e) => addCustomProperty(cf, "value", e.target.value)}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+        ))}
       <Grid item>
-        <Button variant="contained" color="primary" className={classes.addDataButton} startIcon={<AddIcon />}>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.addDataButton}
+          startIcon={<AddIcon />}
+          // onClick={() => setCustom(!isCustom)}
+        >
           Add Custom Data
         </Button>
       </Grid>

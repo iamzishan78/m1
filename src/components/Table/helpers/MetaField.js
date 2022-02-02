@@ -250,9 +250,9 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
         refetchQueries: ["getMetaData"],
         awaitRefetchQueries: true,
       });
-      if(updateColumnSorting){
+      if (updateColumnSorting) {
         const columnData = JSON.parse(JSON.stringify(columns));
-        columnData.push({ name, options: { display: true }})
+        columnData.push({ name, options: { display: true } })
         updateColumnSorting(columnData.map(col => ({ name: col.name, display: col.options.display ? "true" : "false" })));
       }
     }
@@ -407,14 +407,14 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
                     <Controller
                       control={control}
                       name="category"
-                      defaultValue={categoryOptions[0].value}
-                      render={(props) => (
+                      defaultValue={category ?? categoryOptions[0].value}
+                      render={(params) => (
                         <Select
                           styles={{
                             menu: (provided) => ({ ...provided, zIndex: 9999 }),
                           }}
                           value={categoryOptions.find(
-                            (op) => op.value === props.category
+                            (op) => op.value === params.value
                           )}
                           menuPlacement="auto"
                           options={categoryOptions}
@@ -426,7 +426,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
                   </Grid>
                 </Grid>
               </div>
-              {(type === "dropdown" || type === "multiselect" ) && (
+              {(type === "dropdown" || type === "multiselect") && (
                 <div style={{ padding: "0px 35px" }}>
                   <SortableComponent setItems={setItems} items={items} />
                 </div>

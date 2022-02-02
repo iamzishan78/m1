@@ -140,6 +140,7 @@ export const BootstrapInput = withStyles((theme) => ({
     },
   },
   input: {
+    width: "100%",
     borderRadius: 6,
     backgroundColor: "#fff",
     fontSize: 16,
@@ -168,6 +169,6 @@ export const BootstrapInput = withStyles((theme) => ({
 export const StyledTextField = (props) => (
   <FormControl variant="standard">
     <InputLabel shrink>{props.label}</InputLabel>
-    <BootstrapInput type="text" disabled {...props} />
+    <BootstrapInput type="text" {...props} />
   </FormControl>
 );

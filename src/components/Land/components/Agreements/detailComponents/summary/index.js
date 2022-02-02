@@ -101,22 +101,22 @@ export default function Summary({ agreementDetails }) {
 
           <Grid container direction="row" display="flex" justify="space-between" alignItems="center">
             <Grid item xs={4}>
-              <Controller control={control} name="reportGross" label="Report Gross" as={StyledTextField} />
+              <Controller control={control} name="reportGross" label="Report Gross" as={StyledTextField} disabled />
             </Grid>
             <Grid item xs={4}>
-              <Controller control={control} name="gross" label="Gross" as={StyledTextField} />
+              <Controller control={control} name="gross" label="Gross" as={StyledTextField} disabled />
             </Grid>
             <Grid item xs={4}>
-              <Controller control={control} name="companyNet" label="Company Net" as={StyledTextField} />
+              <Controller control={control} name="companyNet" label="Company Net" as={StyledTextField} disabled />
             </Grid>
             <Grid item xs={4}>
-              <Controller control={control} name="reportNet" label="Report Net" as={StyledTextField} />
+              <Controller control={control} name="reportNet" label="Report Net" as={StyledTextField} disabled />
             </Grid>
             <Grid item xs={4}>
-              <Controller control={control} name="net" label="Net" as={StyledTextField} />
+              <Controller control={control} name="net" label="Net" as={StyledTextField} disabled />
             </Grid>
             <Grid item xs={4}>
-              <Controller control={control} name="netRoyaltyAcres" label="Net Royalty Acres" as={StyledTextField} />
+              <Controller control={control} name="netRoyaltyAcres" label="Net Royalty Acres" as={StyledTextField} disabled />
             </Grid>
           </Grid>
         </Grid>
