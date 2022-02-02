@@ -20,7 +20,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
     useEffect(() => {
         setSearch(filterList[index][0])
         if (!filterList[index][0]) {
-            setValue(null)
+            setValue({})
         }
     }, [filterList[index][0]]);
 
@@ -42,6 +42,15 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
                     setStateApp((state, props) => {
                         return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
                       });
+                }else if(custom?.formatedFilterOptions){
+                    const hits = filtersData[keys[0]].hits
+                    for(let i=0; i<custom.formatedFilterOptions.length; i++){
+                        const index = hits.findIndex(h => h.key === custom.formatedFilterOptions[i].value)
+                        if(index > -1){
+                            hits[index].key = custom.formatedFilterOptions[i].label
+                        }
+                    }
+                    setOptions(hits)
                 }else{
                     setOptions(filtersData[keys[0]].hits)
                 }
@@ -91,7 +100,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
                 if (reason === 'clear' || !value?.key) {
                     filterList[index].pop()
                     setSearch('')
-                    setValue(null)
+                    setValue({})
                 } else {
                     filterList[index][0] = typeof value.key === 'string' ? value.key.replace(/^\,|\,$/gm, "") : value.key
                     setSearch(value.key)

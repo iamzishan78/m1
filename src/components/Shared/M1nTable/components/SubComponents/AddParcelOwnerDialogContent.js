@@ -96,11 +96,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const toNumber = (value) => {
+  return value ? parseInt(value.replace(/\$/g, "").replace(/\,/g, "")): null
+}
+
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
+  let tenantName = window.sessionStorage.getItem("tenantName");
   const [stateApp, setStateApp] = useContext(AppContext);
   const [newOwner, setNewOwner] = useState({
     surface_interest: null,
+    cost_bearing: null,
+    cost_bearing_high_value: null,
+    cost_free_high_value: null,
     mineral_interest: null,
     royalty_interest: null,
     orri: null,
@@ -130,6 +138,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   useEffect(() => {
     if (selectedRow) {
       const {
+        cost_bearing,
+        cost_bearing_high_value,
+        cost_free_high_value,
         surface_interest,
         mineral_interest,
         royalty_interest,
@@ -151,6 +162,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
       setNewOwner({
         surface_interest: surface_interest || null,
+        cost_bearing: cost_bearing || null,
+        cost_bearing_high_value: toNumber(cost_bearing_high_value) || null,
+        cost_free_high_value: toNumber(cost_free_high_value) || null,
         mineral_interest: mineral_interest || null,
         royalty_interest: royalty_interest || null,
         orri: orri || null,
@@ -256,6 +270,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const emptyStates = () => {
     setNewOwner({
       surface_interest: null,
+      cost_bearing: null,
+      cost_bearing_high_value: null,
+      cost_free_high_value: null,
       mineral_interest: null,
       royalty_interest: null,
       orri: null,
@@ -652,6 +669,61 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   onWheel={(e) => e.target.blur()}
                 />
               </Grid>
+              {tenantName === 'Providence' && (
+                <>
+                  <Grid item xs={12}>
+                    <h3>Cost Bearing</h3>
+                    <TextField
+                      id="standard-number"
+                      type="text"
+                      size="small"
+                      className={classes.maxWidth}
+                      value={newOwner.cost_bearing}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setNewOwner({
+                          ...newOwner,
+                          cost_bearing: value || null,
+                        });
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <h3>Cost Free High Value</h3>
+                    <TextField
+                      id="standard-number"
+                      type="number"
+                      size="small"
+                      className={ classes.maxWidth}
+                      value={newOwner.cost_free_high_value}
+                      onChange={(e) => {
+                        const value = addTrailingZeros(e.target.value);
+                        setNewOwner({
+                          ...newOwner,
+                          cost_free_high_value: value || null,
+                        });
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <h3>Cost Bearing High Value</h3>
+                    <TextField
+                      id="standard-number"
+                      type="number"
+                      size="small"
+                      className={ classes.maxWidth}
+                      value={newOwner.cost_bearing_high_value}
+                      onChange={(e) => {
+                        const value = addTrailingZeros(e.target.value);
+                        setNewOwner({
+                          ...newOwner,
+                          cost_bearing_high_value: value || null,
+                        });
+                      }}
+                    />
+                  </Grid>
+                </>
+              )}
               {props?.customLayer?.state !== "TX" && (
                 <>
                   <Grid item xs={3}>

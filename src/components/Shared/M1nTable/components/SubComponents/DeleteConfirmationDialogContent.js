@@ -10,7 +10,7 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 export default function DeleteConfirmationDialogContent(props) {
   const modalClass = Modals();
   return (
-    <Dialog style={{ zIndex: 1301 }} open={true}>
+    <Dialog style={{ zIndex: 9999999999 }} open={true}>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
         {props.header}
         <HighlightOffIcon

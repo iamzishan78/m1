@@ -112,6 +112,7 @@ import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
+import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -2176,8 +2177,12 @@ function SubTable(props) {
             column.options = {
               ...column.options,
               customBodyRender: (value, tableMeta) => {
+                const status = contactStatusOptions.find(s => s.value === value)
                 return (
                   <>
+                    {props.parent === 'Contacts' && (
+                      value ? <p>{status ? status.label : value}</p> : <span style={{ color: "#959595" }}>N/A</span>
+                    )}
                     {props.parent === "RevenueStatementTable" && (
                       <div className="flex justifyStart alignCenter">
                         {value?.toLowerCase() === "approved" && (
@@ -2321,10 +2326,6 @@ function SubTable(props) {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
-                    }
-                    console.log('column', column.name)
-                    if(column.name === 'status'){
-                      debugger
                     }
                     return (
                       <div style={{ minWidth: "100px" }}>
@@ -2554,7 +2555,7 @@ function SubTable(props) {
                       )}
                       {props.targetLabel === "contact" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span>{tableMeta.rowData[49] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span>{tableMeta.rowData[50] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 

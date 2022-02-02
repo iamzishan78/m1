@@ -3,6 +3,17 @@ import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
 import moment from "moment";
 
+export const entityTypeOptions = [
+  { label: "CORPORATION", value: "CORPORATION" },
+  { label: "EDUCATIONAL INSTITUTION", value: "EDUCATIONAL INSTITUTION" },
+  { label: "GOVERNMENTAL BODY", value: "GOVERNMENTAL BODY" },
+  { label: "INDIVIDUAL", value: "INDIVIDUAL" },
+  { label: "NON PROFIT", value: "NON PROFIT" },
+  { label: "RELIGIOUS INSTITUTION", value: "RELIGIOUS INSTITUTION" },
+  { label: "TRUST", value: "TRUST" },
+  { label: "UNKNOWN", value: "UNKNOWN" }  
+];
+
 export const contactStatusOptions = [
   {
     label: "Unqualified Lead",
@@ -17,7 +28,6 @@ export const contactStatusOptions = [
     value: "Contact",
   },
 ];
-
 
 const getCreateByRow = (contactData) => {
     return contactData?.createBy && contactData?.createBy.name === null ? (
@@ -64,6 +74,16 @@ const getLastUpdateByRow = (contactData) => {
 } 
 
 export const getBasicInfoExpContent = (contactData) => {
+  let status = null
+  if(contactData?.status){
+    const data = contactStatusOptions.find(status => status.value === contactData.status)
+    if(data){
+      status = data.label
+    }else{
+      status = contactData.status
+    }
+  }
+  
   return {
     "Email 2": {
       data: { secondaryEmail: contactData?.secondaryEmail },
@@ -144,7 +164,7 @@ export const getBasicInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     Status: {
-      data: { status: contactData?.status ? contactStatusOptions.find(status => status.value === contactData.status)?.label: null },
+      data: { status },
       linkType: LinkTypes.None,
     },
     "Contact Owner": {
@@ -171,6 +191,16 @@ export const getBasicInfoExpContent = (contactData) => {
 };
 
 export const getBasicInfoContent = (contactData) => {
+  let ownerType = null
+  if(contactData?.ownerType){
+    const data = entityTypeOptions.find(ownerType => ownerType.value === contactData.ownerType)
+    if(data){
+      ownerType = data.label
+    }else{
+      ownerType = contactData.ownerType
+    }
+  }
+
   return {
     "Full Name": {
       data: { name: contactData?.name },
@@ -188,7 +218,10 @@ export const getBasicInfoContent = (contactData) => {
       data: { lastName: contactData?.lastName },
       linkType: LinkTypes.None,
     },
-
+    "Entity Type": {
+      data: { ownerType: ownerType },
+      linkType: LinkTypes.None,
+    },
     "Primary Email": {
       data: { primaryEmail: contactData?.primaryEmail },
       linkType: LinkTypes.Mail,

@@ -348,7 +348,7 @@ export default function ParcelSummary(props) {
         <Grid item md={5} sm={12}>
             <Grid container spacing={2} direction="row">
                 <Grid item >
-                    <QtrQtrSelectorNew parcelData={props.customLayer} updateParcelQtr={props.updateParcelQtr} setQtrQtr={setQtrQtr} />
+                    {/* <QtrQtrSelectorNew parcelData={props.customLayer} updateParcelQtr={props.updateParcelQtr} setQtrQtr={setQtrQtr} /> */}
                 </Grid>
                 <Grid item className={classes.descriptionInput}>
                     <TextField
@@ -377,7 +377,7 @@ export default function ParcelSummary(props) {
                     />
                 </Grid>
                 <Grid item md={12}>
-                    <CommentComponent targetLabel={'unit'} targetSourceId={props.id} />
+                    <CommentComponent targetLabel={'parcel'} targetSourceId={props.id} />
                 </Grid>
             </Grid>
         </Grid>
