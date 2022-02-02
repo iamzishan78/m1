@@ -6,7 +6,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { Box, FormControlLabel, Switch, Typography } from "@material-ui/core";
-import { getQtrFilterData } from "./helper";
+import { getQtrFilterData } from "../../ParcelsDetailCard/ParcelSummary/helper";
 import { copy } from 'utils/helper';
 import SmallTXQtr from "components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/SmallTXQtr";
 import { changeModeToScaleRotate, drawBoundary, getDrawAdustedShape, getNewShapeFromSelectedQuarters, getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
@@ -310,7 +310,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
             }
           </Grid>
         </Grid>
-        <Grid item md={3} style={{ paddingTop: '1.8em' , paddingLeft: '30px'}}>
+        <Grid item md={3} style={{ paddingTop: '1.8em', paddingLeft: '30px' }}>
           <Button variant="contained" color="primary" disabled={disableUpdate} onClick={() => {
             updateLayerQtr()
             setShowAdjustGrid(false)

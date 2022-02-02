@@ -19,7 +19,7 @@ import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
 import { getPolygonString } from "../../Shared/functions";
 import { getParcelOriginalProperties } from '../utils/GetParcelOriginalProps'
-import QtrQtrSelectorNew from "./QtrQtrSelectorNew";
+import QtrQtrSelectorNew from "../../ShapeDetailCard/Common/QtrQtrSelectorNew";
 
 
 const useStyles = makeStyles((theme) => ({

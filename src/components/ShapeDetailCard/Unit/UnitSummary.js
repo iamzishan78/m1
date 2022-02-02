@@ -16,7 +16,7 @@ import unitDefaultData from 'components/ShapeDetailCard/Common/SummaryTable/unit
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { summaryStyles } from "components/ShapeDetailCard/style";
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
-import QtrQtrSelectorNew from "components/ParcelsDetailCard/ParcelSummary/QtrQtrSelectorNew";
+import QtrQtrSelectorNew from "components/ShapeDetailCard/Common/QtrQtrSelectorNew";
 
 export default function UnitSummary(props) {
     const [search, setSearch] = useState('');
