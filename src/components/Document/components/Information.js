@@ -30,7 +30,7 @@ export default function Information() {
 
   const [stateApp] = React.useContext(AppContext);
 
-  const localDateTime = moment.utc(stateApp.selectedDocument.fileCreatedAt).local();
+  const localDateTime = moment.utc(stateApp.selectedDocument.fileCreatedAt ?? stateApp.selectedDocument.uploadedDate).local();
   const createdDate = localDateTime.format('MMM Do, YYYY, h:mm a');
 
   return (
