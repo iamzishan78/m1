@@ -9,16 +9,18 @@ import { Box, FormControlLabel, Switch, Typography } from "@material-ui/core";
 import { getQtrFilterData } from "./helper";
 import { copy } from 'utils/helper';
 import SmallTXQtr from "components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/SmallTXQtr";
-import { changeModeToScaleRotate, getDrawAdustedShape, getNewShapeFromSelectedQuarters, getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
+import { changeModeToScaleRotate, drawBoundary, getDrawAdustedShape, getNewShapeFromSelectedQuarters, getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 import { AppContext } from "AppContext";
-import { drawShapeLayerToggle } from "components/MapControls/commonHelper";
+import { drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
+import { useMutation } from "@apollo/client";
+import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 
 const useStyles = makeStyles((theme) => ({
   mainDiv: {
     paddingTop: '10px',
     position: "relative",
-    cursor: ({ parcelData }) =>
-      parcelData.state !== "TXtemporaryRemoved" ? "pointer" : "context-menu",
+    cursor: ({ layerData }) =>
+      layerData.state !== "TXtemporaryRemoved" ? "pointer" : "context-menu",
     "& p": {
       WebkitTouchCallout: "none" /* iOS Safari */,
       WebkitUserSelect: "none" /* Safari */,
@@ -30,8 +32,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   root: {
-    backgroundColor: ({ parcelData }) =>
-      parcelData.state !== "TX" ? "#F3F3F3" : "#fff",
+    backgroundColor: ({ layerData }) =>
+      layerData.state !== "TX" ? "#F3F3F3" : "#fff",
     height: "387px",
     // width: "387px",
     marginRight: "15px",
@@ -42,8 +44,8 @@ const useStyles = makeStyles((theme) => ({
       top: "calc( 50% - 8px)",
       position: "relative",
       fontSize: "0.72rem",
-      color: ({ parcelData }) =>
-        parcelData.state !== "TXtemporaryRemoved" ? "#757575" : "#75757552",
+      color: ({ layerData }) =>
+        layerData.state !== "TXtemporaryRemoved" ? "#757575" : "#75757552",
     },
   },
   qrt: {
@@ -52,26 +54,26 @@ const useStyles = makeStyles((theme) => ({
   qrt2: {
     height: "50%",
     "&:hover": {
-      backgroundColor: ({ parcelData }) =>
-        parcelData.state !== "TX" ? "#BFEBFB !important" : "",
+      backgroundColor: ({ layerData }) =>
+        layerData.state !== "TX" ? "#BFEBFB !important" : "",
     },
   },
   qrt1: {
     position: "absolute",
-    border: ({ parcelData }) =>
-      `2px solid ${parcelData.state !== "TXtemporaryRemoved"
+    border: ({ layerData }) =>
+      `2px solid ${layerData.state !== "TXtemporaryRemoved"
         ? theme.palette.secondary.main
         : "#C9C9C9"
       }`,
     borderRadius: "4px",
-    height: ({ parcelData }) => (parcelData.state === "TX" ? "20px" : "40px"),
-    width: ({ parcelData }) => (parcelData.state === "TX" ? "20px" : "40px"),
-    color: ({ parcelData }) =>
-      parcelData.state !== "TXtemporaryRemoved"
+    height: ({ layerData }) => (layerData.state === "TX" ? "20px" : "40px"),
+    width: ({ layerData }) => (layerData.state === "TX" ? "20px" : "40px"),
+    color: ({ layerData }) =>
+      layerData.state !== "TXtemporaryRemoved"
         ? theme.palette.secondary.main
         : "#75757552",
-    backgroundColor: ({ parcelData }) =>
-      parcelData.state !== "TXtemporaryRemoved" ? "#fff" : "#F3F3F3",
+    backgroundColor: ({ layerData }) =>
+      layerData.state !== "TXtemporaryRemoved" ? "#fff" : "#F3F3F3",
     "& p": {
       textAlign: "center",
       margin: "auto 0",
@@ -79,8 +81,8 @@ const useStyles = makeStyles((theme) => ({
       position: "relative",
     },
     "&:hover": {
-      backgroundColor: ({ parcelData }) =>
-        parcelData.state !== "TXtemporaryRemoved" ? "#BFEBFB !important" : "",
+      backgroundColor: ({ layerData }) =>
+        layerData.state !== "TXtemporaryRemoved" ? "#BFEBFB !important" : "",
     },
   },
   bb2: { borderBottom: "2px solid #C9C9C9" },
@@ -99,16 +101,19 @@ const useStyles = makeStyles((theme) => ({
 
 const qtrOptions = ["", "E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
 
-export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
+export default function QtrQtrSelectorNew({ layerData }) {
   // removing state so that taxas also have same style as non taxas
-  parcelData.state = ''
+  layerData.state = ''
 
-  const classes = useStyles({ parcelData });
-  const [qtr, setQtr] = useState(parcelData?.qtrQtrSelection?.selectedQtr ? copy(parcelData.qtrQtrSelection.selectedQtr) : ["", "", "", ""])
+  const classes = useStyles({ layerData });
+  const [qtr, setQtr] = useState(layerData?.qtrQtrSelection?.selectedQtr ? copy(layerData.qtrQtrSelection.selectedQtr) : ["", "", "", ""])
 
-  const [qtrQtr, setQtrQtr] = useState(parcelData?.qtrQtrSelection?.qtrQtr ? copy(parcelData.qtrQtrSelection.qtrQtr) : {})
+  const [qtrQtr, setQtrQtr] = useState(layerData?.qtrQtrSelection?.qtrQtr ? copy(layerData.qtrQtrSelection.qtrQtr) : {})
   const [showAdjustGrid, setShowAdjustGrid] = useState(false)
   const [disableUpdate, setDisableUpdate] = useState(false)
+  const [updateCustomLayer] = useMutation(
+    UPDATECUSTOMLAYER,
+  );
   const [stateApp] = useContext(AppContext);
 
   const eventsConfiguredRef = useRef(false);
@@ -116,16 +121,16 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
 
 
   useEffect(() => {
-    if (parcelData?.qtrQtrSelection) {
-      setQtr(copy(parcelData.qtrQtrSelection.selectedQtr))
-      setQtrQtr(copy(parcelData.qtrQtrSelection.qtrQtr))
+    if (layerData?.qtrQtrSelection) {
+      setQtr(copy(layerData.qtrQtrSelection.selectedQtr))
+      setQtrQtr(copy(layerData.qtrQtrSelection.qtrQtr))
     }
 
-  }, [parcelData?.qtrQtrSelection])
+  }, [layerData?.qtrQtrSelection])
 
 
   useEffect(() => {
-    if (!parcelData?.qtrQtrSelection?.qtrQtr) {
+    if (!layerData?.qtrQtrSelection?.qtrQtr) {
       const values = getQtrFilterData(qtr)
       if (values) {
         Object.keys(qtrQtr).forEach((key) => {
@@ -162,10 +167,10 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
 
   useEffect(() => {
     if (showAdjustGrid) {
-      const feature = copy(parcelData.shape)
-      let parcelDataCopy = copy(parcelData)
-      if (parcelDataCopy?.qtrQtrSelection?.originalGeometry) {
-        feature.geometry = parcelDataCopy.qtrQtrSelection.originalGeometry
+      const feature = copy(layerData.shape)
+      let layerDataCopy = copy(layerData)
+      if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
+        feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
       }
       drawShapeLayerToggle(stateApp, "visible")
       stateApp.draw.deleteAll();
@@ -175,35 +180,76 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
     }
   }, [showAdjustGrid])
 
+  const updateLayerQtr = () => {
+    const values = Object.keys(qtrQtr).filter((key) => qtrQtr[key]).map((key) => key.toUpperCase())
+    const feature = copy(layerData.shape)
+    let layerDataCopy = copy(layerData)
+
+    let newShape = {}
+    const drawFeature = stateApp.draw.getAll().features[0]
+    if (drawFeature) {
+      feature.geometry = drawFeature.geometry
+      newShape = getDrawAdustedShape(feature, values)
+    } else {
+      if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
+        feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
+      }
+      newShape = getNewShapeFromSelectedQuarters(feature, values)
+    }
+
+    if (!layerDataCopy.qtrQtrSelection) layerDataCopy.qtrQtrSelection = {}
+    if (!layerDataCopy?.qtrQtrSelection?.originalGeometry) {
+      layerDataCopy.qtrQtrSelection.originalGeometry = layerDataCopy.shape.geometry
+    }
+    layerDataCopy.qtrQtrSelection.qtrQtr = qtrQtr
+    layerDataCopy.qtrQtrSelection.selectedQtr = qtr
+    layerDataCopy.shape.geometry = newShape.geometry
+
+    const customLayer = {
+      shapeJson: layerDataCopy.shape,
+      qtrQtrSelection: layerDataCopy.qtrQtrSelection,
+      shape: JSON.stringify(layerDataCopy.shape),
+    }
+    updateCustomLayer({
+      variables: {
+        customLayerId: layerDataCopy._id,
+        customLayer,
+      },
+    }).then(() => {
+      findBoundsMap([customLayer.shapeJson], stateApp.map);
+      drawBoundary(stateApp.map, customLayer.shapeJson);
+    });
+  };
+
 
   const checkForDisabled = () => {
     let isDisabled = true
 
-    if (!parcelData?.qtrQtrSelection?.qtrQtr && !Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
+    if (!layerData?.qtrQtrSelection?.qtrQtr && !Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
       setDisableUpdate(true)
       return
     }
 
-    if (!parcelData?.qtrQtrSelection?.qtrQtr && Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
+    if (!layerData?.qtrQtrSelection?.qtrQtr && Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
       setDisableUpdate(false)
       return
     }
     Object.keys(qtrQtr).forEach((key) => {
-      if (parcelData?.qtrQtrSelection?.qtrQtr[key] !== qtrQtr[key]) {
+      if (layerData?.qtrQtrSelection?.qtrQtr[key] !== qtrQtr[key]) {
         isDisabled = false
       }
     })
 
-    // if (!parcelData?.qtrQtrSelection?.selectedQtr && !qtr.find((q) => q !== '')) {
+    // if (!layerData?.qtrQtrSelection?.selectedQtr && !qtr.find((q) => q !== '')) {
     //   setDisableUpdate(true)
     //   return
     // }
-    // if (!parcelData?.qtrQtrSelection?.selectedQtr && qtr.find((q) => q !== '')) {
+    // if (!layerData?.qtrQtrSelection?.selectedQtr && qtr.find((q) => q !== '')) {
     //   setDisableUpdate(false)
     //   return
     // }
     // qtr.forEach((q, index) => {
-    //   if (parcelData?.qtrQtrSelection?.selectedQtr[index] !== q) {
+    //   if (layerData?.qtrQtrSelection?.selectedQtr[index] !== q) {
     //     isDisabled = false
     //   }
     // })
@@ -266,31 +312,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
         </Grid>
         <Grid item md={3} style={{ paddingTop: '1.8em' }}>
           <Button variant="contained" color="primary" disabled={disableUpdate} onClick={() => {
-            const values = Object.keys(qtrQtr).filter((key) => qtrQtr[key]).map((key) => key.toUpperCase())
-            const feature = copy(parcelData.shape)
-            let parcelDataCopy = copy(parcelData)
-
-            let newShape = {}
-            const drawFeature = stateApp.draw.getAll().features[0]
-            if (drawFeature) {
-              feature.geometry = drawFeature.geometry
-              newShape = getDrawAdustedShape(feature, values)
-            } else {
-              if (parcelDataCopy?.qtrQtrSelection?.originalGeometry) {
-                feature.geometry = parcelDataCopy.qtrQtrSelection.originalGeometry
-              }
-              newShape = getNewShapeFromSelectedQuarters(feature, values)
-            }
-
-            if (!parcelDataCopy.qtrQtrSelection) parcelDataCopy.qtrQtrSelection = {}
-            if (!parcelDataCopy?.qtrQtrSelection?.originalGeometry) {
-              parcelDataCopy.qtrQtrSelection.originalGeometry = parcelDataCopy.shape.geometry
-            }
-            parcelDataCopy.qtrQtrSelection.qtrQtr = qtrQtr
-            parcelDataCopy.qtrQtrSelection.selectedQtr = qtr
-            parcelDataCopy.shape.geometry = newShape.geometry
-            updateParcelQtr(parcelDataCopy)
-
+            updateLayerQtr()
             setShowAdjustGrid(false)
           }}>Update</Button>
         </Grid>
@@ -299,7 +321,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
       <div className={classes.mainDiv}>
         {/* //// all //// */}
         <div
-          className={`${classes.qrt1} ${parcelData.state !== "TXtemporaryRemoved" &&
+          className={`${classes.qrt1} ${layerData.state !== "TXtemporaryRemoved" &&
             qtrQtr &&
             Object.entries(qtrQtr).every(([key, value]) => {
               return value;
@@ -309,17 +331,17 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
             }`}
           style={{
             top:
-              parcelData.state !== "TX"
+              layerData.state !== "TX"
                 ? "calc(50% - 20px)"
                 : "calc(50% - 10px)",
             left:
-              parcelData.state !== "TX"
+              layerData.state !== "TX"
                 ? "calc(50% - 20px)"
                 : "calc(50% - 19px)",
           }}
           onClick={() => {
             if (
-              parcelData.state !== "TXtemporaryRemovedtemporaryRemoved" &&
+              layerData.state !== "TXtemporaryRemovedtemporaryRemoved" &&
               qtrQtr
             )
               if (
@@ -367,12 +389,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
               }
           }}
         >
-          {parcelData.state !== "TX" && <p> ALL</p>}
+          {layerData.state !== "TX" && <p> ALL</p>}
         </div>
 
         {/* //// NW //// */}
         <div
-          className={`${classes.qrt1} ${parcelData.state !== "TXtemporaryRemoved" &&
+          className={`${classes.qrt1} ${layerData.state !== "TXtemporaryRemoved" &&
             qtrQtr &&
             Object.entries(qtrQtr).every(([key, value]) => {
               return ["nwnw", "nenw", "swnw", "senw"].indexOf(key) === -1
@@ -384,16 +406,16 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
             }`}
           style={{
             top:
-              parcelData.state !== "TX"
+              layerData.state !== "TX"
                 ? "calc(25% - 20px)"
                 : "calc(25% - 10px)",
             left:
-              parcelData.state !== "TX"
+              layerData.state !== "TX"
                 ? "calc(25% - 24px)"
                 : "calc(25% - 14px)",
           }}
           onClick={() => {
-            if (parcelData.state !== "TXtemporaryRemoved" && qtrQtr)
+            if (layerData.state !== "TXtemporaryRemoved" && qtrQtr)
               if (
                 Object.entries(qtrQtr).every(([key, value]) => {
                   return ["nwnw", "nenw", "swnw", "senw"].indexOf(key) === -1
@@ -419,12 +441,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
               }
           }}
         >
-          {parcelData.state !== "TX" && <p> NW</p>}
+          {layerData.state !== "TX" && <p> NW</p>}
         </div>
 
         {/* //// NE //// */}
         <div
-          className={`${classes.qrt1} ${parcelData.state !== "TXtemporaryRemoved" &&
+          className={`${classes.qrt1} ${layerData.state !== "TXtemporaryRemoved" &&
             qtrQtr &&
             Object.entries(qtrQtr).every(([key, value]) => {
               return ["nwne", "nene", "swne", "sene"].indexOf(key) === -1
@@ -436,14 +458,14 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
             }`}
           style={{
             top:
-              parcelData.state !== "TX"
+              layerData.state !== "TX"
                 ? "calc(25% - 20px)"
                 : "calc(25% - 10px)",
             right:
-              parcelData.state !== "TX" ? "calc(24% - 10px)" : "calc(25% + 2px)",
+              layerData.state !== "TX" ? "calc(24% - 10px)" : "calc(25% + 2px)",
           }}
           onClick={() => {
-            if (parcelData.state !== "TXtemporaryRemoved" && qtrQtr)
+            if (layerData.state !== "TXtemporaryRemoved" && qtrQtr)
               if (
                 Object.entries(qtrQtr).every(([key, value]) => {
                   return ["nwne", "nene", "swne", "sene"].indexOf(key) === -1
@@ -469,12 +491,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
               }
           }}
         >
-          {parcelData.state !== "TX" && <p> NE</p>}
+          {layerData.state !== "TX" && <p> NE</p>}
         </div>
 
         {/* //// SW //// */}
         <div
-          className={`${classes.qrt1} ${parcelData.state !== "TXtemporaryRemoved" &&
+          className={`${classes.qrt1} ${layerData.state !== "TXtemporaryRemoved" &&
             qtrQtr &&
             Object.entries(qtrQtr).every(([key, value]) => {
               return ["nwsw", "nesw", "swsw", "sesw"].indexOf(key) === -1
@@ -486,16 +508,16 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
             }`}
           style={{
             bottom:
-              parcelData.state !== "TX"
+              layerData.state !== "TX"
                 ? "calc(25% - 20px)"
                 : "calc(25% - 10px)",
             left:
-              parcelData.state !== "TX"
+              layerData.state !== "TX"
                 ? "calc(25% - 24px)"
                 : "calc(25% - 14px)",
           }}
           onClick={() => {
-            if (parcelData.state !== "TXtemporaryRemoved" && qtrQtr)
+            if (layerData.state !== "TXtemporaryRemoved" && qtrQtr)
               if (
                 Object.entries(qtrQtr).every(([key, value]) => {
                   return ["nwsw", "nesw", "swsw", "sesw"].indexOf(key) === -1
@@ -521,12 +543,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
               }
           }}
         >
-          {parcelData.state !== "TX" && <p> SW</p>}
+          {layerData.state !== "TX" && <p> SW</p>}
         </div>
 
         {/* //// SE //// */}
         <div
-          className={`${classes.qrt1} ${parcelData.state !== "TXtemporaryRemoved" &&
+          className={`${classes.qrt1} ${layerData.state !== "TXtemporaryRemoved" &&
             qtrQtr &&
             Object.entries(qtrQtr).every(([key, value]) => {
               return ["nwse", "nese", "swse", "sese"].indexOf(key) === -1
@@ -538,14 +560,14 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
             }`}
           style={{
             bottom:
-              parcelData.state !== "TX"
+              layerData.state !== "TX"
                 ? "calc(25% - 20px)"
                 : "calc(25% - 10px)",
             right:
-              parcelData.state !== "TX" ? "calc(24% - 10px)" : "calc(25% + 2px)",
+              layerData.state !== "TX" ? "calc(24% - 10px)" : "calc(25% + 2px)",
           }}
           onClick={() => {
-            if (parcelData.state !== "TXtemporaryRemoved" && qtrQtr)
+            if (layerData.state !== "TXtemporaryRemoved" && qtrQtr)
               if (
                 Object.entries(qtrQtr).every(([key, value]) => {
                   return ["nwse", "nese", "swse", "sese"].indexOf(key) === -1
@@ -571,7 +593,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
               }
           }}
         >
-          {parcelData.state !== "TX" && <p> SE</p>}
+          {layerData.state !== "TX" && <p> SE</p>}
         </div>
 
         <Grid container className={classes.root} spacing={0}>
@@ -585,7 +607,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${classes.bb1} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${classes.bb1} ${classes.br1} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.nwnw
                 ? classes.backgrounSecondaryQrt2
@@ -593,7 +615,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -602,12 +624,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> NWNW</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> NWNW</p> : <SmallTXQtr />}
             </Grid>
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${classes.bb1} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${classes.bb1} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.nenw
                 ? classes.backgrounSecondaryQrt2
@@ -615,7 +637,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -624,12 +646,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> NENW</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> NENW</p> : <SmallTXQtr />}
             </Grid>
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${classes.br1} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.swnw
                 ? classes.backgrounSecondaryQrt2
@@ -637,7 +659,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -646,12 +668,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> SWNW</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> SWNW</p> : <SmallTXQtr />}
             </Grid>
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.senw
                 ? classes.backgrounSecondaryQrt2
@@ -659,7 +681,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -668,7 +690,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> SENW</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> SENW</p> : <SmallTXQtr />}
             </Grid>
           </Grid>
 
@@ -682,7 +704,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${classes.bb1} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${classes.bb1} ${classes.br1} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.nwne
                 ? classes.backgrounSecondaryQrt2
@@ -690,7 +712,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -699,12 +721,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> NWNE</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> NWNE</p> : <SmallTXQtr />}
             </Grid>
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${classes.bb1} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${classes.bb1} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.nene
                 ? classes.backgrounSecondaryQrt2
@@ -712,7 +734,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -721,12 +743,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> NENE</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> NENE</p> : <SmallTXQtr />}
             </Grid>
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${classes.br1} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.swne
                 ? classes.backgrounSecondaryQrt2
@@ -734,7 +756,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -743,12 +765,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> SWNE</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> SWNE</p> : <SmallTXQtr />}
             </Grid>
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.sene
                 ? classes.backgrounSecondaryQrt2
@@ -756,7 +778,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -765,7 +787,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> SENE</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> SENE</p> : <SmallTXQtr />}
             </Grid>
           </Grid>
 
@@ -779,7 +801,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${classes.bb1} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${classes.bb1} ${classes.br1} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.nwsw
                 ? classes.backgrounSecondaryQrt2
@@ -787,7 +809,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -796,12 +818,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> NWSW</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> NWSW</p> : <SmallTXQtr />}
             </Grid>
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${classes.bb1} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${classes.bb1} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.nesw
                 ? classes.backgrounSecondaryQrt2
@@ -809,7 +831,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -818,12 +840,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> NESW</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> NESW</p> : <SmallTXQtr />}
             </Grid>
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${classes.br1} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.swsw
                 ? classes.backgrounSecondaryQrt2
@@ -831,7 +853,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -840,12 +862,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> SWSW</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> SWSW</p> : <SmallTXQtr />}
             </Grid>
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.sesw
                 ? classes.backgrounSecondaryQrt2
@@ -853,7 +875,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -862,7 +884,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> SESW</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> SESW</p> : <SmallTXQtr />}
             </Grid>
           </Grid>
 
@@ -871,7 +893,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${classes.bb1} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${classes.bb1} ${classes.br1} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.nwse
                 ? classes.backgrounSecondaryQrt2
@@ -879,7 +901,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -888,12 +910,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> NWSE</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> NWSE</p> : <SmallTXQtr />}
             </Grid>
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${classes.bb1} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${classes.bb1} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.nese
                 ? classes.backgrounSecondaryQrt2
@@ -901,7 +923,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -910,12 +932,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> NESE</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> NESE</p> : <SmallTXQtr />}
             </Grid>
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${classes.br1} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${classes.br1} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.swse
                 ? classes.backgrounSecondaryQrt2
@@ -923,7 +945,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -932,12 +954,12 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> SWSE</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> SWSE</p> : <SmallTXQtr />}
             </Grid>
             <Grid
               item
               sm={6}
-              className={`${classes.qrt2} ${parcelData.state !== "TXtemporaryRemoved" &&
+              className={`${classes.qrt2} ${layerData.state !== "TXtemporaryRemoved" &&
                 qtrQtr &&
                 qtrQtr.sese
                 ? classes.backgrounSecondaryQrt2
@@ -945,7 +967,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                 }`}
               onClick={() => {
                 if (
-                  parcelData.state !== "TXtemporaryRemoved" &&
+                  layerData.state !== "TXtemporaryRemoved" &&
                   qtrQtr
                 )
                   setQtrQtr({
@@ -954,7 +976,7 @@ export default function QtrQtrSelectorNew({ parcelData, updateParcelQtr }) {
                   });
               }}
             >
-              {parcelData.state !== "TX" ? <p> SESE</p> : <SmallTXQtr />}
+              {layerData.state !== "TX" ? <p> SESE</p> : <SmallTXQtr />}
             </Grid>
           </Grid>
         </Grid>
