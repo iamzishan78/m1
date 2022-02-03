@@ -14,6 +14,7 @@ import { AppContext } from "AppContext";
 import { drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
 import { useMutation } from "@apollo/client";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
+import { MapControlsContext } from "components/MapControls/MapControlsContext";
 
 const useStyles = makeStyles((theme) => ({
   mainDiv: {
@@ -114,11 +115,11 @@ export default function QtrQtrSelectorNew({ layerData }) {
   const [updateCustomLayer] = useMutation(
     UPDATECUSTOMLAYER,
   );
+
   const [stateApp] = useContext(AppContext);
+  const [, setStateMapControls] = useContext(MapControlsContext);
 
   const eventsConfiguredRef = useRef(false);
-
-
 
   useEffect(() => {
     if (layerData?.qtrQtrSelection) {
@@ -172,6 +173,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
       if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
         feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
       }
+      setStateMapControls((state) => ({ ...state, selectedMapControl: "" }))
       drawShapeLayerToggle(stateApp, "visible")
       stateApp.draw.deleteAll();
       getRotateAbleShapeFromSelectedQuarters(feature, stateApp.draw)
