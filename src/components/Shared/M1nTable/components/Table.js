@@ -3730,6 +3730,14 @@ function SubTable(props) {
   //   //options.export = true;
   // }
 
+  console.log('console log critical', props.header)
+  if (props.header === "Deals" || props.header === "Activities") {
+    // adds the print and export options in the Flow grid and the Activities grid
+    options.print = true;
+    options.download = true;
+  }
+
+
   const displayCumulative = (data, total, cumulative, rowsPerPage = 25) => {
     let rows = data;
     if (total === true && rows.length !== 0) {
