@@ -42,7 +42,7 @@ export default function Information() {
         </StyledListItem>
         <StyledListItem>
           <StyledListSubheader style={{ paddingLeft: 0}}>Uploader</StyledListSubheader>
-          <ListItemText primary="-----" />
+          <ListItemText primary={stateApp.selectedDocument.uploadedBy} />
         </StyledListItem>
         <StyledListItem>
           <StyledListSubheader>Created</StyledListSubheader>
@@ -50,7 +50,7 @@ export default function Information() {
         </StyledListItem>
         <StyledListItem>
           <StyledListSubheader style={{ paddingLeft: 0}}>Size</StyledListSubheader>
-          <ListItemText primary="-----" />
+          <ListItemText primary={stateApp.selectedDocument.fileSize} />
         </StyledListItem>
         <StyledListItem>
           <StyledListSubheader style={{ paddingLeft: 0}}>File Type</StyledListSubheader>
