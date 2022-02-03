@@ -36,26 +36,27 @@ export default function Information() {
   return (
     <ListContainer>
       <List>
-        <StyledListItem>
+        {/* <StyledListItem>
           <StyledListSubheader>Owner</StyledListSubheader>
           <ListItemText primary="-----" />
-        </StyledListItem>
+        </StyledListItem> */}
         <StyledListItem>
-          <StyledListSubheader style={{ paddingLeft: 0}}>Uploader</StyledListSubheader>
+          <StyledListSubheader style={{ paddingLeft: 0}}>Uploaded By </StyledListSubheader>
           <ListItemText primary={stateApp.selectedDocument.uploadedBy} />
         </StyledListItem>
         <StyledListItem>
-          <StyledListSubheader>Created</StyledListSubheader>
+          <StyledListSubheader>Created Date</StyledListSubheader>
           <ListItemText primary={createdDate} />
-        </StyledListItem>
-        <StyledListItem>
-          <StyledListSubheader style={{ paddingLeft: 0}}>Size</StyledListSubheader>
-          <ListItemText primary={stateApp.selectedDocument.fileSize} />
         </StyledListItem>
         <StyledListItem>
           <StyledListSubheader style={{ paddingLeft: 0}}>File Type</StyledListSubheader>
           <ListItemText primary={stateApp.selectedDocument.fileType} />
-        </StyledListItem>                
+        </StyledListItem>   
+        <StyledListItem>
+          <StyledListSubheader style={{ paddingLeft: 0}}>File Size</StyledListSubheader>
+          <ListItemText primary={stateApp.selectedDocument.fileSize} />
+        </StyledListItem>
+             
       </List>
     </ListContainer>
   );
