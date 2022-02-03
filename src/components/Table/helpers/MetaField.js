@@ -123,7 +123,11 @@ const categoryOptions = [
     value: "Check",
   },
   {
-    label: "All (contacts, docs, flow, etc.)",
+    label: "Agreement",
+    value: "Agreement",
+  },
+  {
+    label: "All (contacts, docs, flow, agreement, etc.)",
     value: "All",
   },
 ];
@@ -138,7 +142,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
   );
   const [filter, setFilter] = useState("");
   const [showAddDescription, setShowAddDescription] = useState(false);
-  const { control, reset, setValue, register, getValues, watch } = useForm();
+  const { control, setValue, getValues, watch } = useForm();
   const [stateApp, setStateApp] = useContext(AppContext);
   const type = watch(
     "type",
@@ -177,8 +181,8 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
   }, [getAllLibraryMetaData]);
 
   useEffect(() => {
-    if (metaDataRes?.getAllLibraryMetaData?.gridViews) {
-      let data = metaDataRes.getAllLibraryMetaData.gridViews;
+    if (metaDataRes?.getAllLibraryMetaData?.metaData) {
+      let data = metaDataRes.getAllLibraryMetaData.metaData;
       for (let i = 0; i < columns.length; i++) {
         data = data.filter((d) => d.name !== columns[i].name);
       }
@@ -242,7 +246,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
             type: values.type,
             category: values.category,
             user: stateApp.user.mongoId,
-            dropdownOptions: items,
+            dropdownOptions: type !== "text" ? items : [],
             isAddedToLibrary: values.isAddedToLibrary,
             isCustom: true,
           },
@@ -250,11 +254,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
         refetchQueries: ["getMetaData"],
         awaitRefetchQueries: true,
       });
-      if (updateColumnSorting) {
-        const columnData = JSON.parse(JSON.stringify(columns));
-        columnData.push({ name, options: { display: true } })
-        updateColumnSorting(columnData.map(col => ({ name: col.name, display: col.options.display ? "true" : "false" })));
-      }
+      rippleEffectCall({ name });
     }
     handleClose();
   };
@@ -267,6 +267,40 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
       selectedMeta: null,
     }));
   };
+
+  const rippleEffectCall = (data) => {
+    if (updateColumnSorting) {
+      const columnData = JSON.parse(JSON.stringify(columns));
+      columnData.push({ name: data.name, options: { display: true } })
+      updateColumnSorting(columnData.map(col => ({ name: col.name, display: col.options.display ? "true" : "false" })));
+    }
+  }
+
+  const onSelectLibraryItem = (data) => {
+    if (data.category !== category) {
+      const meta = omit(data, [
+        "_id",
+        "lastUpdateAt",
+        "createAt",
+        "_ts",
+        "__v",
+      ]);
+      addMetaData({
+        variables: {
+          metaData: {
+            ...meta,
+            category: category,
+            user: stateApp.user.mongoId,
+            isAddedToLibrary: false,
+            isCustom: true,
+          },
+        },
+        refetchQueries: ["getMetaData"],
+        awaitRefetchQueries: true,
+      });
+    }
+    rippleEffectCall(data);
+  }
 
   return (
     <Dialog
@@ -534,28 +568,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
                     <div
                       className={classes.fields}
                       onClick={() => {
-                        const meta = omit(data, [
-                          "_id",
-                          "lastUpdateAt",
-                          "createAt",
-                          "_ts",
-                          "__v",
-                        ]);
-                        addMetaData({
-                          variables: {
-                            metaData: {
-                              ...meta,
-                              category: category,
-                              user: stateApp.user.mongoId,
-                              isAddedToLibrary: false,
-                              isCustom: true,
-                            },
-                          },
-                          refetchQueries: ["getMetaData"],
-                          awaitRefetchQueries: true,
-                        });
-
-                        handleClose();
+                        onSelectLibraryItem(data);
                       }}
                     >
                       <div style={{ padding: "0px 50px" }}>

@@ -19,7 +19,7 @@ const fieldsList = [
   },
   {
     label: "Agreement Type",
-    type: "select",
+    type: "dropdown",
     options: agreementTypes,
     formatValue: (value) => agreementTypes.find((at) => at.value === value)?.label || "",
     key: "agreementType",

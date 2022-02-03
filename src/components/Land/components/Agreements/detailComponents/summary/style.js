@@ -131,6 +131,9 @@ export const useStyles = makeStyles((theme) => ({
       marginTop: "20px",
     },
   },
+  pencilIcon: {
+    cursor: "pointer",
+  },
 }));
 
 export const BootstrapInput = withStyles((theme) => ({

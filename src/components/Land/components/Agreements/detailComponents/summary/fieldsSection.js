@@ -1,42 +1,79 @@
-import React, { useEffect, useState, Fragment } from "react";
-import find from "lodash.find";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { useForm, Controller } from "react-hook-form";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { Grid, TextField, Typography, Button, Box, FormControl, InputLabel, InputBase, Select, MenuItem } from "@material-ui/core";
+import React, { useEffect, useState, Fragment, useContext } from "react";
+import { useLazyQuery } from "@apollo/client";
+import { Controller } from "react-hook-form";
+import { Grid, TextField, Typography, Button, Select, MenuItem, Tooltip } from "@material-ui/core";
 import { KeyboardDatePicker } from "@material-ui/pickers";
-import { useStyles as summaryStyles, StyledTextField } from "./style";
+import { useStyles as summaryStyles } from "./style";
 import WellIcon from "components/Shared/svgIcons/well";
 import TractIcon from "components/Shared/svgIcons/tract";
 import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
 import AddIcon from "@material-ui/icons/Add";
-import fieldsList from "./data";
+import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
+import fieldsData from "./data";
 
 import keys from "components/Shared/SpreadsheetGrid/kit/keymap";
 import ProgressBar from "components/Shared/ui/ProgressBar";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
+import MetaField from "components/Table/helpers/MetaField";
+import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
+import { copy } from "utils/helper";
+
+import { AppContext } from "AppContext";
+import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 
 export default function FieldsSection({ updateAgreement, control, agreementDetails }) {
   const classes = summaryStyles();
-  const [customFields, setCustomFields] = useState([]);
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [fieldsList, setFieldsList] = useState([]);
+  const [editIconState, setEditIconState] = useState({});
 
-  useEffect(() => {
-    if (agreementDetails?.custom_data_arr) {
-      setCustomFields(agreementDetails.custom_data_arr.map((d) => d));
-    }
-  }, [agreementDetails]);
+  const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
   useEffect(() => {
     document.addEventListener("keydown", onGlobalKeyDown, false);
     document.addEventListener("blur", (e) => {
       console.log("blur triggered");
     });
-    // document.addEventListener("focus", onGLobalFocus);
   }, []);
 
-  // const onGLobalFocus = (e) => {
-  //   console.log(e);
-  // };
+  useEffect(() => {
+    getMetaData({
+      variables: {
+        user: stateApp.user?.mongoId,
+        category: "Agreement",
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    const metaData = metaDataRes?.getMetaData?.metaData;
+    const customData = [];
+    if (metaData && agreementDetails?.custom_data) {
+      Object.keys(agreementDetails?.custom_data).forEach((key) => {
+        const meta = metaData.find((m) => m.name === key);
+        if (meta) {
+          customData.push({
+            ...meta,
+            title: meta.label,
+            key: meta.name,
+            options: meta.dropdownOptions.map((o) => ({
+              label: o.value,
+              value: o.value,
+            })),
+          });
+        } else if (agreementDetails?.custom_data_arr) {
+          const meta = agreementDetails.custom_data_arr.find((m) => m.key === key);
+          if (meta) {
+            customData.push({ ...meta, title: meta.key, label: meta.key, key: meta.key });
+          }
+        }
+      });
+
+      // updateAgreement('custom_data', { "Current Operator": "PIONEER NATURAL RESOURCES" });
+    }
+    setFieldsList([...fieldsData, ...customData]);
+  }, [metaDataRes, agreementDetails]);
+
   const onGlobalKeyDown = (e) => {
     const id = e?.target?.id;
 
@@ -50,14 +87,15 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
     }
   };
 
-  const offClickHandler = (key, value) => {
-    // console.log(console.log(getValues()));
-    console.log("name", key);
-    console.log("value", value);
-    updateAgreement(key, value);
-  };
+  const offClickHandler = (key, value, isCustom) => updateAgreement(key, value, isCustom);
 
-  const addCustomProperty = () => {};
+  const addAgreementCustomData = (data) => {
+    const customData = copy(agreementDetails.custom_data) ?? {};
+    data.forEach((d) => {
+      if (!customData[d.name]) customData[d.name] = null;
+    });
+    updateAgreement("custom_data", customData);
+  };
 
   return (
     <Grid container direction="row" display="flex" justify="flex-start" alignItems="center" spacing={1} className={classes.fieldsSection}>
@@ -89,12 +127,36 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
       {fieldsList.map((field, index) => (
         <Grid item xs={12}>
           <Grid container className={classes.gridStyle}>
-            <Grid item xs={3}>
+            <Grid
+              item
+              xs={3}
+              onMouseEnter={() => {
+                setEditIconState({ [`${field.key}key`]: true });
+              }}
+              onMouseLeave={() => {
+                setEditIconState({ [`${field.key}key`]: false });
+              }}
+              style={{ display: "flex" }}
+            >
               <div className={classes.fieldLabel}>{field.label}</div>
+              {field.isCustom && editIconState[`${field.key}key`] && (
+                <Tooltip title={"Edit"} placement="top">
+                  <CreateTwoToneIcon
+                    className={classes.pencilIcon}
+                    onClick={() => {
+                      setStateApp((stateApp) => ({
+                        ...stateApp,
+                        selectedMeta: field,
+                        showFieldModal: true,
+                      }));
+                    }}
+                  />
+                </Tooltip>
+              )}
             </Grid>
             <Grid item xs={8}>
               <Fragment key={index}>
-                {(field.type === "text" || field.type === "select") && (
+                {(field.type === "text" || field.type === "dropdown" || field.type === "multiselect") && (
                   <Controller
                     control={control}
                     name={field.key}
@@ -115,9 +177,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               onBlur={(event) => offClickHandler(field.key, event.target.value)}
                             />
                           )}
-                          {field.type === "select" && (
+                          {field.type === "dropdown" && (
                             <Select
-                              // {...params}
+                              {...params}
                               id={`field-${index}`}
                               variant="outlined"
                               margin="dense"
@@ -125,8 +187,30 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               InputLabelProps={{
                                 shrink: true,
                               }}
-                              onBlur={(event) => offClickHandler(field.key, event.target.value)}
-                              value={agreementDetails?.[field.key] ?? ""}
+                              multiple={field.type === "multiselect"}
+                              onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
+                              value={
+                                !field.isCustom ? agreementDetails?.[field.key] ?? "" : agreementDetails?.custom_data?.[field.key] ?? []
+                              }
+                            >
+                              {field.options.map((option) => (
+                                <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
+                              ))}
+                            </Select>
+                          )}
+                          {field.type === "multiselect" && (
+                            <Select
+                              {...params}
+                              id={`field-${index}`}
+                              variant="outlined"
+                              margin="dense"
+                              fullWidth
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              multiple={field.type === "multiselect"}
+                              onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
+                              value={agreementDetails?.custom_data?.[field.key] ?? []}
                             >
                               {field.options.map((option) => (
                                 <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
@@ -176,31 +260,14 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
           </Grid>
         </Grid>
       ))}
-      {customFields.length > 0 &&
-        customFields.map((cf, index) => (
-          <Grid item xs={12} key={index}>
-            <Grid container className={classes.gridStyle} spacing={2}>
-              <Grid item xs={3}>
-                <StyledTextField name="customKey" label="Key" value={cf.key} onBlur={(e) => addCustomProperty(cf, "key", e.target.value)} />
-              </Grid>
-              <Grid item xs={8}>
-                <StyledTextField
-                  name="customValue"
-                  label="Value"
-                  value={cf.value}
-                  onBlur={(e) => addCustomProperty(cf, "value", e.target.value)}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        ))}
+      {stateApp.showFieldModal && <MetaField columns={[]} category="Agreement" updateColumnSorting={addAgreementCustomData} />}
       <Grid item>
         <Button
           variant="contained"
           color="primary"
           className={classes.addDataButton}
           startIcon={<AddIcon />}
-          // onClick={() => setCustom(!isCustom)}
+          onClick={() => setStateApp((stateApp) => ({ ...stateApp, showFieldModal: true }))}
         >
           Add Custom Data
         </Button>

@@ -35,11 +35,17 @@ export default function Summary({ agreementDetails }) {
     getStandardProvisions();
   }, [getStandardProvisions]);
 
-  const updateAgreement = (field, value) => {
+  const updateAgreement = (field, value, isCustom) => {
     if (agreementDetails[field] == value) return;
     const shape = activeAgreement.shape;
-    set(shape.properties, field, value);
-    shape.properties[field] = value;
+    if (!isCustom) {
+      set(shape.properties, field, value);
+      shape.properties[field] = value;
+    } else {
+      const customData = { ...agreementDetails.custom_data };
+      customData[field] = value;
+      shape.properties.custom_data = customData;
+    }
 
     const customLayer = {};
     let shapeLabel = shape.properties.shapeLabel;

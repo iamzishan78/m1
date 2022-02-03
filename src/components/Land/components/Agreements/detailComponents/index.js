@@ -204,6 +204,14 @@ export default function DetailComponents(props) {
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
   useEffect(() => {
+    return () => {
+      dispatch(setLandReduxKey("agreement", {
+        activeAgreement: {}
+      }));
+    }
+  }, []);
+
+  useEffect(() => {
     if (selectedTabRef?.current) {
       selectedTabRef.current.scrollIntoView({
         behavior: "smooth",
