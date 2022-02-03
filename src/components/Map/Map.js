@@ -1469,7 +1469,7 @@ function Map({ type, paramId, lati, longi }) {
       if (features?.length === 0)
         return ''
 
-      const shape = features.find((feature) => feature.source !== 'wellsVT')
+      const shape = features.find((feature) => feature.source !== 'wellsVT' && feature.source !== 'interests_source')
       const shapeBbox = turf.bbox(shape)
       const southWest = [shapeBbox[0], shapeBbox[1]];
       const northEast = [shapeBbox[2], shapeBbox[3]];
