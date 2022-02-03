@@ -1469,7 +1469,7 @@ function Map({ type, paramId, lati, longi }) {
       if (features?.length === 0)
         return ''
 
-      const shape = features.find((feature) => feature.source !== 'wellsVT' && feature.source !== 'interests_source')
+      const shape = features.find((feature) => feature.source !== 'wellsVT')
       const shapeBbox = turf.bbox(shape)
       const southWest = [shapeBbox[0], shapeBbox[1]];
       const northEast = [shapeBbox[2], shapeBbox[3]];
@@ -1477,6 +1477,7 @@ function Map({ type, paramId, lati, longi }) {
 
       let wellsFeatures = map.queryRenderedFeatures(polygon, { layers: ['wellpoints'] });
       features = features.concat(wellsFeatures)
+      features = features.filter((feature) => feature.source !== 'interests_source')
 
       let coordinates = [e.lngLat.lng, e.lngLat.lat];
       setTimeout(() => {
