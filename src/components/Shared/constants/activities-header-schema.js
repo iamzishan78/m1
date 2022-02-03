@@ -17,7 +17,7 @@ const ActivitiesHeadCells = [
     },
     {
       name: "type",
-      label: "Type",
+      label: "Activity Type",
     },
     {
       name: "start",
@@ -27,21 +27,21 @@ const ActivitiesHeadCells = [
       name: "end",
       label: "End Date",
     },
-    // {
-    //   name: "contactName",
-    //   label: "Contact Name",
-    // },
-    {
-      name: "ownerName",
-      label: "Activity Owner",
-    },
     {
       name: "dealName",
       label: "Deal Name",
     },
     {
+      name: "contactName",
+      label: "Contact Name",
+    },
+    {
+      name: "ownerName",
+      label: "Activity Owner",
+    },
+    {
       name: "isClosed",
-      label: "Closed",
+      label: "Completed?",
     },
     {
       name: "notes",
