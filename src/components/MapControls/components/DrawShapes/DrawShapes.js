@@ -276,6 +276,10 @@ export default function DrawShapes() {
       map.on("draw.update", ({ features, action }) => {
         if (action === "move" || action === "change_coordinates") {
           const [feature] = features;
+          // Don't run when shape is in rotate state
+          if (feature?.properties?.isrotate) {
+            return
+          }
           const { draw } = stateApp;
           if (feature) {
             addCustomShapeProperties(feature, draw);
@@ -330,6 +334,10 @@ export default function DrawShapes() {
 
       map.on("draw.selectionchange", ({ features }) => {
         const [feature] = features;
+        // Don't run when shape is in rotate state
+        if (feature?.properties?.isrotate) {
+          return
+        }
         if (feature && !feature.id.includes("edit_polygon")) {
           setStateApp((stateApp) => {
             let currentFeature = feature;
