@@ -1489,7 +1489,6 @@ function SubTable(props) {
                 },
               };
             }
-
             break;
           case "commentsCounter":
             {
@@ -2204,30 +2203,6 @@ function SubTable(props) {
                         )}
                         {value}
                       </div>
-                    )}
-                  </>
-                );
-              },
-            };
-            break;
-          case "agreementNumber":
-            column.options = {
-              ...column.options,
-              customBodyRender: (value, tableMeta, updateValue) => {
-                return (
-                  <>
-                    {props.parent === "AgreementsTable" && (
-                      <p
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (tableMeta.rowData[0]) {
-                            history.push(`/agreement/details/${tableMeta.rowData[0]}`);
-                          }
-                        }}
-                        style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-                      >
-                        {value}
-                      </p>
                     )}
                   </>
                 );
@@ -3423,9 +3398,6 @@ function SubTable(props) {
         if (rows[dataIndex]?._id) {
           history.push(`/revenue/statement/details?id=${rows[dataIndex]?._id}`);
         }
-      }
-      if (props.parent === "AgreementsTable" && rows[dataIndex]?._id) {
-        history.push(`/land/agreement/details/${rows[dataIndex]?._id}`);
       }
     },
     onChangePage: (pageState) => {
