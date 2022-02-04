@@ -5,6 +5,7 @@ export const CUSTOMLAYER = gql`
     customLayer(id: $id) {
       _id
       shapeJson
+      qtrQtrSelection
       shape
       name
       layer

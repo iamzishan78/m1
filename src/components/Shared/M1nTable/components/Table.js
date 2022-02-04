@@ -2555,7 +2555,7 @@ function SubTable(props) {
                       )}
                       {props.targetLabel === "contact" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span>{tableMeta.rowData[49] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span>{tableMeta.rowData[50] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 
@@ -3734,6 +3734,14 @@ function SubTable(props) {
   //   //options.print = true;
   //   //options.export = true;
   // }
+
+  console.log('console log critical', props.header)
+  if (props.header === "Deals" || props.header === "Activities") {
+    // adds the print and export options in the Flow grid and the Activities grid
+    options.print = true;
+    options.download = true;
+  }
+
 
   const displayCumulative = (data, total, cumulative, rowsPerPage = 25) => {
     let rows = data;
