@@ -66,7 +66,7 @@ const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, updateMelissaTable, ...other } = props;
   return (
     <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h4" style={{ fontWeight: "bold" }}>
+      <Typography variant="h5" style={{ fontWeight: "bold" }}>
         {children}
       </Typography>
       {onClose ? (
@@ -217,7 +217,7 @@ export default function BuyContactsInfoDialogContent(props) {
         >
           {props.header ? props.header : "Contact Info Purchase"}
           <Close
-            fontSize="large"
+            fontSize="medium"
             className={modalClass.closeIcon}
             onClick={props.onClose}
           />
