@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "components/Shared/M1nTable/components/Table";
@@ -49,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function AgreementsTable(props) {
-  const dispatch = useDispatch();
   const classes = useStyles();
   const { esIndex, setESFilters } = props;
   const [filters, setFilters] = useState([]);
@@ -317,7 +315,6 @@ function AgreementsTable(props) {
           columns={columns}
           rows={props.rows}
           total={false}
-          // potentialIssues={potentialIssuesList}
           addAble={{ type: "Agreements" }}
           loading={props.loading}
           targetLabel={props.targetLabel}
