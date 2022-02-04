@@ -8,7 +8,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   titleText: {
     textTransform: "uppercase",
-    margin: "5px 16px 10px",
+    margin: "5px 16px 5px",
     color: "#5a5a5a",
   },
   fieldsSection: {
@@ -25,7 +25,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   fieldLabel: {
     fontWeight: "bold",
-    fontSize: "17px",
+    fontSize: "15px",
   },
   wellsSelectField: {
     "& .MuiInputBase-root": {
