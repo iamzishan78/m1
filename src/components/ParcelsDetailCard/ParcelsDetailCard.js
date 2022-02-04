@@ -41,6 +41,8 @@ import { AppContext } from "../../AppContext";
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import ParcelSummary from "./ParcelSummary";
+import { findBoundsMap } from "components/MapControls/commonHelper";
+import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 
 const ENTER_KEY = 13;
 
@@ -352,22 +354,6 @@ export default function ParcelsDetailCard(props) {
     }
   };
 
-  const updateParcelQtr = (qtrQtr) => {
-    const shape = parcelObj.shape;
-    const customLayer = {
-      shapeJson: shape,
-      qtrQtr,
-      shape: JSON.stringify(shape),
-    }
-    updateCustomLayer({
-      variables: {
-        customLayerId: parcelObj._id,
-        customLayer,
-      },
-    });
-  };
-
-
   const updateCustomProperties = (type, value, id) => {
     const shape = parcelObj.shape;
     const customRow = parcelProperties.custom_data_arr.find((p) => p.id === id)
@@ -581,7 +567,6 @@ export default function ParcelsDetailCard(props) {
               customLayer={parcelObj}
               properties={parcelProperties}
               setProperties={setProperties}
-              updateParcelQtr={updateParcelQtr}
               updateProperties={updateProperties}
               updateCustomProperties={updateCustomProperties}
               id={props.id}

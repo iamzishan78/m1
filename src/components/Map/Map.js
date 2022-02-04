@@ -43,6 +43,7 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import polylabel from "polylabel";
 import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from "mapbox-gl-draw-circle";
 import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
+import { SRMode } from 'mapbox-gl-draw-scale-rotate-mode';
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
@@ -1476,6 +1477,7 @@ function Map({ type, paramId, lati, longi }) {
 
       let wellsFeatures = map.queryRenderedFeatures(polygon, { layers: ['wellpoints'] });
       features = features.concat(wellsFeatures)
+      features = features.filter((feature) => feature.source !== 'interests_source')
 
       let coordinates = [e.lngLat.lng, e.lngLat.lat];
       setTimeout(() => {
@@ -4993,6 +4995,7 @@ function Map({ type, paramId, lati, longi }) {
         let Draw = new MapboxDraw({
           displayControlsDefault: false,
           userProperties: true,
+          // styles: SRStyle,
           styles: drawShapeStyles,
           modes: {
             ...MapboxDraw.modes,
@@ -5002,6 +5005,7 @@ function Map({ type, paramId, lati, longi }) {
             direct_select: DirectMode,
             simple_select: SimpleSelectMode,
             draw_rectangle: CostumDrawRectangle,
+            scaleRotateMode: SRMode,
           },
         });
         newMap.addControl(Draw);
