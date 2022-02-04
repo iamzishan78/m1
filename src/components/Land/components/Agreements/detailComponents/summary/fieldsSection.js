@@ -15,11 +15,11 @@ import keys from "components/Shared/SpreadsheetGrid/kit/keymap";
 import ProgressBar from "components/Shared/ui/ProgressBar";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import MetaField from "components/Table/helpers/MetaField";
-import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 import { copy } from "utils/helper";
 
 import { AppContext } from "AppContext";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 
 export default function FieldsSection({ updateAgreement, control, agreementDetails }) {
   const classes = summaryStyles();
@@ -28,6 +28,13 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   const [editIconState, setEditIconState] = useState({});
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
+  const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
+
+  useEffect(() => {
+    if (agreementDetails?._id) {
+      getShapeSummaryDetails({ variables: { shapeId: agreementDetails._id, shapeType: "Unit" } });
+    }
+  }, [agreementDetails?._id]);
 
   useEffect(() => {
     document.addEventListener("keydown", onGlobalKeyDown, false);
@@ -109,15 +116,15 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
         <div style={{ width: "43%" }}>
           <Grid container spacing={2} justify="flex-end" className={classes.summaryHeaderIcons}>
             <Grid item>
-              <div className={classes.summaryValue}> {0} </div>
+              <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeWells || 0} </div>
               <WellIcon opacity="1.0" small color="#757575" />
             </Grid>
             <Grid item>
-              <div className={classes.summaryValue}> {0} </div>
+              <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeOwners || 0} </div>
               <TractIcon opacity="1.0" small />
             </Grid>
             <Grid item>
-              <div className={classes.summaryValue}> {0} </div>
+              <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.documents || 0} </div>
               <InsertDriveFileOutlinedIcon opacity="1.0" small />
             </Grid>
           </Grid>
