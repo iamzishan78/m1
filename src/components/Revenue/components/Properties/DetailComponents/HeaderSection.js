@@ -4,7 +4,7 @@ import moment from "moment";
 
 import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, TextField, Button } from "@material-ui/core";
+import { Grid, TextField, Button, Select, MenuItem } from "@material-ui/core";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import StateField from "./State";
@@ -35,9 +35,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
   },
-  boldLabel: {
+  label: {
     fontWeight: "bold",
-    fontSize: "15px",
+    fontSize: "13px",
   },
   wellsSelectField: {
     "& .MuiInputBase-root": {
@@ -88,20 +88,26 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiIconButton-root": {
       padding: "12px 0px",
     },
+    "& .MuiFormControl-marginNormal": {
+      margin: "0px"
+    },
   },
   textField: {
+    margin: "0px",
     "& .MuiOutlinedInput-input": {
       padding: "5px",
     },
-    "& .MuiFormHelperText-contained": {
-      justifyContent: "flex-end",
-      display: "flex",
-    },
   },
-  contactAutocomplete: {
+  field: {
     "& .MuiAutocomplete-clearIndicator": {
       marginRight: "10px",
     },
+    "& .MuiFormControl-marginNormal": {
+      margin: "0px"
+    },
+    "& .MuiFormControl-marginDense": {
+      margin: "0px"
+    }
   },
 }));
 
@@ -209,7 +215,7 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.boldLabel}>Property #</div>
+                <div className={classes.label}>Property #</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
@@ -235,7 +241,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.boldLabel}>Property</div>
+                <div className={classes.label}>Property</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
@@ -244,6 +250,7 @@ export default function HeaderSection(props) {
                   render={(params) => (
                     <TextField
                       {...params}
+                      className={classes.textField}
                       variant="outlined"
                       margin="dense"
                       type="text"
@@ -260,7 +267,7 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.boldLabel}>Owner #</div>
+                <div className={classes.label}>Owner #</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
@@ -269,6 +276,7 @@ export default function HeaderSection(props) {
                   render={(params) => (
                     <TextField
                       {...params}
+                      className={classes.textField}
                       variant="outlined"
                       margin="dense"
                       placeholder=""
@@ -285,7 +293,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.boldLabel}>Owner</div>
+                <div className={classes.label}>Owner</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
@@ -296,7 +304,7 @@ export default function HeaderSection(props) {
                       nameAutValue={
                         params.value ? params.value : { _id: "", name: "" }
                       }
-                      className={classes.contactAutocomplete}
+                      className={classes.field}
                       setNameAutValue={(value) => {
                         contactEntity(value?._id, "owner");
                       }}
@@ -343,7 +351,7 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.boldLabel}>Date</div>
+                <div className={classes.label}>Date</div>
               </Grid>
               <Grid item xs={8} className={classes.datePicker}>
                 <Controller
@@ -378,7 +386,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.boldLabel}>Operator</div>
+                <div className={classes.label}>Operator</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
@@ -386,7 +394,7 @@ export default function HeaderSection(props) {
                   name="operator"
                   render={(params) => (
                     <ContactPaginatedAutocomplete
-                      className={classes.contactAutocomplete}
+                      className={classes.field}
                       nameAutValue={
                         params.value ? params.value : { _id: "", name: "" }
                       }
@@ -438,7 +446,7 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.boldLabel}>State</div>
+                <div className={classes.label}>State</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
@@ -463,7 +471,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.boldLabel}>County</div>
+                <div className={classes.label}>County</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
@@ -484,13 +492,71 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
+          <Grid item xs={5}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={3}>
+                <div className={classes.label}>Source</div>
+              </Grid>
+              <Grid item xs={8}>
+                <Controller
+                  control={control}
+                  name="source"
+                  render={(params) => (
+                    <Select
+                      {...params}
+                      id="source-simple-select-outlined-label"
+                      variant="outlined"
+                      value={params.value ? params.value : ''}
+                      fullWidth
+                      onChange={(e) => {
+                        updatePropertyData("source", e.target.value);
+                      }}
+                    >
+                      <MenuItem value="Manual Entry">Manual Entry</MenuItem>
+                      <MenuItem value="Imported">Imported</MenuItem>
+                    </Select>
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <Grid item xs={7}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={2}>
+                <div className={classes.label}>Status</div>
+              </Grid>
+              <Grid item xs={9}>
+                <Controller
+                  control={control}
+                  name="status"
+                  render={(params) => (
+                    <Select
+                      {...params}
+                      id="status-simple-select-outlined-label"
+                      variant="outlined"
+                      value={params.value ? params.value : ''}
+                      fullWidth
+                      onChange={(e) => {
+                        updatePropertyData("status", e.target.value);
+                      }}
+                    >
+                      <MenuItem value="Approved">Approved</MenuItem>
+                      <MenuItem value="Unapproved">Unapproved</MenuItem>
+                    </Select>
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+
           <Grid item xs={12}>
             <Grid
               container
               className={`${classes.gridStyle} ${classes.textArea}`}
             >
               <Grid item style={{ flexBasis: "10.3%" }}>
-                <div className={classes.boldLabel}>Legal Description</div>
+                <div className={classes.label}>Legal Description</div>
               </Grid>
               <Grid item style={{ flexBasis: "84.8%" }}>
                 <Controller

@@ -146,7 +146,6 @@ function RevenuePropertiesTable(props) {
 
   // fetaching data
   React.useEffect(() => {
-    if(esFilters.length > 0){
       getESPaginatedList({
         variables: {
           esIndex: esIndex,
@@ -159,7 +158,6 @@ function RevenuePropertiesTable(props) {
           filters: esFilters,
         },
       });
-    }
   }, [getESPaginatedList, props.parent, props.revenueSearchQuery, props.filterToggle]);
 
   const handleStatusChange = (_id, status) => {
