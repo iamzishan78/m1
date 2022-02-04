@@ -428,7 +428,6 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
                 : ""
                 }`}
               onClick={() => {
-                debugger;
                 if (
                   parcelData.state !== "TXtemporaryRemoved" &&
                   parcelData.qtrQtr

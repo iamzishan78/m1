@@ -16,6 +16,7 @@ export const UPDATECUSTOMLAYER = gql`
         _id
         shape
         shapeJson
+        qtrQtrSelection
         name
         layer
         user {
