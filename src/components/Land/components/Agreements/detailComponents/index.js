@@ -320,10 +320,10 @@ export default function DetailComponents(props) {
             </div>
             <div className={classes.metaActions}>
               <Button startIcon={<RuleIcon />} onClick={() => setCollapse(!collapse)}>
-                Validations
+                Validation
               </Button>
               <Button startIcon={<FlowIcon />} onClick={() => setCollapse(!collapse)}>
-                Flowlines
+                Flowline
               </Button>
               <Button startIcon={<InfoOutlinedIcon />} onClick={() => setCollapse(!collapse)}>
                 Metadata
