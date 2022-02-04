@@ -3868,7 +3868,6 @@ function SubTable(props) {
     }
   };
 
-  console.log("expandedObject", expandedObject);
   return (
     <div
       style={{

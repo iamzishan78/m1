@@ -152,9 +152,9 @@ export default function BuyContactsInfoDialogContent(props) {
         variables: {
           featureId: feature.id,
           tenantId: stateApp.user.tenantId,
-          validContactData,
+          persons: validContactData,
         },
-        refetchQueries: ["getContactPurchaseData","getPaginatedContacts", "paginatedContacts", "featureQuota", "getFeatureQuota", "getCheckPurchaseData", "getESContacts"],
+        refetchQueries: ["getContactPurchaseData", "getPaginatedContacts", "paginatedContacts", "featureQuota", "getFeatureQuota", "getCheckPurchaseData", "getESContacts"],
         awaitRefetchQueries: true,
       });
     }
@@ -205,8 +205,6 @@ export default function BuyContactsInfoDialogContent(props) {
 
     }
   }, [props.rows]);
-
-  // const currentCredits = 20;
 
   return (
     <React.Fragment>
@@ -288,7 +286,7 @@ export default function BuyContactsInfoDialogContent(props) {
                   <FormLabel className={modalClass.inputContent}>
                     {dataFetched && (
                       <>
-                        {idiCoreData.getIdiCoreData.data?.find(contact => contact.contactId === row._id) ? (
+                        {idiCoreData.getIdiCoreData.data?.find(contact => contact.contactId === row.id) ? (
                           <span className={classes.iconsSuccess}>
                             <Tooltip title='Data found for contact' >
                               <CheckCircleIcon />
