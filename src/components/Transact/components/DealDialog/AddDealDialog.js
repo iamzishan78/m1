@@ -309,6 +309,8 @@ function AddDealDialog(props) {
   const [ownerId, setOwnerId] = useState("");
   const [cardId, setCardId] = useState("");
   const [users, setUsers] = useState([]);
+  const [receivedDate, setReceivedDate] = useState("");
+  const [bidDate, setBidDate] = useState("");
   const [closeDate, setCloseDate] = useState("");
   const [colaborators, setColaborators] = useState([]);
   const [originationDate, setOriginationDate] = useState(null);
@@ -643,6 +645,8 @@ function AddDealDialog(props) {
       settingNewPipeWithDefaultStage(card.pipeline ? card.pipeline : null, false);
       // setStageId
       settingNewStageAndFindNextAvailablePosition(laneId, false);
+      setReceivedDate(card.receivedDate ? moment.parseZone(card.receivedDate).format("yyyy-MM-DD") : "");
+      setBidDate(card.bidDate ? moment.parseZone(card.bidDate).format("yyyy-MM-DD") : "");
       setCloseDate(card.closeDate ? moment.parseZone(card.closeDate).format("yyyy-MM-DD") : "");
       setDealPosition(card.position ? card.position : null);
       // setColaborators(card.colaborators ? card.colaborators : []);
@@ -680,6 +684,8 @@ function AddDealDialog(props) {
     setNameAutInputValue("");
     setPipelineId(null);
     setOwnerId(null);
+    setReceivedDate("");
+    setBidDate("");
     setCloseDate("");
     setColaborators([]);
     setOriginationDate(null);
@@ -733,16 +739,26 @@ function AddDealDialog(props) {
 
     if (pipelineId && stageId && title && title.trim() !== "") {
       const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?._id;
-      let selectedDate = closeDate;
+      let selectedReceivedDate = receivedDate;
+      if (receivedDate instanceof Date) {
+        selectedReceivedDate = moment(receivedDate).format("YYYY-MM-DD");
+      }
+      let selectedBidDate = bidDate;
+      if (bidDate instanceof Date) {
+        selectedBidDate = moment(bidDate).format("YYYY-MM-DD");
+      }
+      let selectedCloseDate = closeDate;
       if (closeDate instanceof Date) {
-        selectedDate = moment(closeDate).format("YYYY-MM-DD");
+        selectedCloseDate = moment(closeDate).format("YYYY-MM-DD");
       }
       const deal = {
         name: title ? title.trim() : null,
         offerPrice: label,
         notes: description ? description.trim() : null,
         status: dealState ? dealState : "open",
-        closeDate: selectedDate && selectedDate !== "" ? new Date(`${selectedDate}T08:00`).toUTCString() : null,
+        receivedDate: selectedReceivedDate && selectedReceivedDate !== "" ? new Date(`${selectedReceivedDate}T08:00`).toUTCString() : null,
+        bidDate: selectedBidDate && selectedBidDate !== "" ? new Date(`${selectedBidDate}T08:00`).toUTCString() : null,
+        closeDate: selectedCloseDate && selectedCloseDate !== "" ? new Date(`${selectedCloseDate}T08:00`).toUTCString() : null,
       };
 
       if (cardId) {
@@ -1324,6 +1340,61 @@ function AddDealDialog(props) {
 
                   <FormControl variant="outlined" fullWidth size="small">
                     <Grid container className={classes.gridStyle}>
+                      <Grid item xs={3}>
+                        <div>Deal Received</div>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <TextField
+                          margin="dense"
+                          type="date"
+                          variant="outlined"
+                          value={receivedDate}
+                          placeholder=""
+                          fullWidth
+                          className={classes.dateRoot, classes.inputFieldDate}
+                          onChange={(e) => {
+                            setReceivedDate(e.target.value);
+                          }}
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          InputProps={{
+                            classes: {
+                              root: classes.dateRoot,
+                              focused: classes.focused,
+                              notchedOutline: classes.notchedOutline,
+                              light: classes.light
+                            },
+                          }}
+                        />
+                      </Grid>
+                      <Grid item xs={3}>
+                        <div>Bid Date</div>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <TextField
+                          margin="dense"
+                          type="date"
+                          variant="outlined"
+                          value={bidDate}
+                          placeholder=""
+                          fullWidth
+                          className={classes.inputFieldDate}
+                          onChange={(e) => {
+                            setBidDate(e.target.value);
+                          }}
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          InputProps={{
+                            classes: {
+                              root: classes.dateRoot,
+                              focused: classes.focused,
+                              notchedOutline: classes.notchedOutline,
+                            },
+                          }}
+                        />
+                      </Grid>
                       <Grid item xs={3}>
                         <div>Close Date</div>
                       </Grid>

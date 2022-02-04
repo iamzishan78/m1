@@ -2396,6 +2396,8 @@ function SubTable(props) {
                         month: "numeric",
                       });
 
+                    if (column.name === "receivedDate" && !!v) return moment.parseZone(v).format("MM/DD/yyyy");
+                    if (column.name === "bidDate" && !!v) return moment.parseZone(v).format("MM/DD/yyyy");
                     if (column.name === "closeDate" && !!v) return moment.parseZone(v).format("MM/DD/yyyy");
 
                     if ((column.name === "end" || column.name === "start") && !!v)
