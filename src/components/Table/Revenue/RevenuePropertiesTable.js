@@ -81,47 +81,6 @@ function RevenuePropertiesTable(props) {
     ] : []
 
   useEffect(() => {
-    const statusIndex = columns.findIndex((c) => c.name === "status");
-    if (statusIndex !== -1) {
-      columns[statusIndex].options.customRender = (value, tableMeta) => (
-        <>
-          {!tableMeta.rowData[8] ? (
-            <div
-              className={classes.warningCol}
-              onClick={() => {
-                dispatch(setRevenueKey("wellApiDropdownIndex", tableMeta.rowIndex));
-              }}
-            >
-              <WarningIcon />
-              <div>Unmapped</div>
-            </div>
-          ) : (
-            <div className={classes.flexAlign}>
-              {value?.toLowerCase() === "approved" ? (
-                <div className={classes.activeBadge} />
-              ) : value?.toLowerCase() === "pending" ? (
-                <div className={classes.pendingBadge} />
-              ) : value?.toLowerCase() === "declined" ? (
-                <div className={classes.declinedBadge} />
-              ) : (
-                <div className={classes.statusBtnDiv}>
-                  <div className={classes.approveBtn} onClick={() => handleStatusChange(tableMeta.rowData[0], "approved")}>
-                    Approve
-                  </div>
-                  <div className={classes.declineBtn} onClick={() => handleStatusChange(tableMeta.rowData[0], "declined")}>
-                    Decline
-                  </div>
-                </div>
-              )}
-              <div>{value}</div>
-            </div>
-          )}
-        </>
-      );
-    }
-  }, [columns]);
-
-  useEffect(() => {
     if (tableData?.hits) {
       const hits = tableData.hits.map((hit) => {
         hit = props.setGenricData(hit, hit._id, ["tracks"]);
@@ -160,21 +119,6 @@ function RevenuePropertiesTable(props) {
       });
   }, [getESPaginatedList, props.parent, props.revenueSearchQuery, props.filterToggle]);
 
-  const handleStatusChange = (_id, status) => {
-    let property = {
-      _id,
-    };
-    if (status === "declined") {
-      property = { ...property, status: "", well: {} };
-    }
-    updateProperty({
-      variables: {
-        property,
-      },
-      refetchQueries: ["getESPaginatedList"],
-      awaitRefetchQueries: true,
-    });
-  };
 
   React.useEffect(() => {
     dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }));

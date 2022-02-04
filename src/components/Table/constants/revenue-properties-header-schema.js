@@ -56,12 +56,6 @@ const RevenuePropertiesHeadCells = [
     options: { sort: true, filter: true },
   },
   {
-    name: "status",
-    label: "Status",
-    esKey: "status.keyword",
-    options: { sort: true, filter: true },
-  },
-  {
     name: "type",
     label: "Type",
     esKey: "type.keyword",
@@ -104,6 +98,12 @@ const RevenuePropertiesHeadCells = [
       print: false,
       viewColumns: false,
     },
+  },
+  {
+    name: "status",
+    label: " ",
+    esKey: "status.keyword",
+    options: { sort: true, filter: true },
   },
 ];
 
