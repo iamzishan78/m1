@@ -86,6 +86,9 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
     },
+    "& textarea": {
+      height: "323px"
+    }
   },
   foodText: {
     position: "absolute",
@@ -122,15 +125,19 @@ export default function MetadataDrawer(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
 
+  // Props
+  const { setCollapse, users, targetSourceId } = props;
+
   // States
   const [ownerId, setOwnerId] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(props.description ?? "");
   const [onFocusDescription, setFocusSate] = useState(false);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
-  // Props
-  const { setCollapse, users, targetSourceId } = props;
+  useEffect(() => {
+    setDescription(props.description);
+  }, [props.description]);
 
   // Queries and Mutations
   const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
@@ -337,6 +344,7 @@ export default function MetadataDrawer(props) {
               }
             }}
             onFocus={() => setFocusSate(true)}
+            onBlur={() => setFocusSate(false)}
             InputProps={{
               endAdornment: onFocusDescription === true && (
                 <p className={classes.foodText}>
