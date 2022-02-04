@@ -399,7 +399,7 @@ export default function DetailComponents(props) {
         )}
 
         {!collapse && !showInterestDetails && !showOwnerDialog && (
-          <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={propertyId} setStateApp={setStateApp} />
+          <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={propertyId} setStateApp={setStateApp} targetLabel="Property" />
         )}
       </div>
       {/**

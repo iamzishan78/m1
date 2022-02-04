@@ -385,7 +385,7 @@ export default function DetailComponents(props) {
           <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
         </div>
 
-        {!metaCollapse && <MetadataDrawer setCollapse={setMetaCollapse} users={users} targetSourceId={agreementId} description={agreementDetails?.description} />}
+        {!metaCollapse && <MetadataDrawer setCollapse={setMetaCollapse} users={users} targetSourceId={agreementId} description={agreementDetails?.description} targetLabel="Shape" />}
       </div>
 
       {/**

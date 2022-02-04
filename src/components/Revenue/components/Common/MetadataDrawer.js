@@ -126,7 +126,7 @@ export default function MetadataDrawer(props) {
   const dispatch = useDispatch();
 
   // Props
-  const { setCollapse, users, targetSourceId } = props;
+  const { setCollapse, users, targetSourceId, targetLabel } = props;
 
   // States
   const [ownerId, setOwnerId] = useState("");
@@ -160,7 +160,7 @@ export default function MetadataDrawer(props) {
             getRecentFiles({
               variables: {
                 relatedObjectId: targetSourceId,
-                relatedObjectType: "Check",
+                relatedObjectType: targetLabel,
               },
             });
             clearTimeout(waitBeforeRequestAgain);
@@ -181,7 +181,7 @@ export default function MetadataDrawer(props) {
       getRecentFiles({
         variables: {
           relatedObjectId: targetSourceId,
-          relatedObjectType: "Check",
+          relatedObjectType: targetLabel,
         },
       });
     }
@@ -396,12 +396,12 @@ export default function MetadataDrawer(props) {
           filesData={viewFileResult}
           id={targetSourceId}
           loading={viewFileLoading}
-          isRevenueDetailPage="Check"
+          targetLabel={targetLabel}
           setUploadedFileData={setUploadedFileData}
         />
 
         <div className={classes.commentsContainer}>
-          <CommentComponent targetLabel={"check"} targetSourceId={targetSourceId} />
+          <CommentComponent targetLabel={targetLabel} targetSourceId={targetSourceId} />
         </div>
       </div>
     </div>

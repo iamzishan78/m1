@@ -96,12 +96,13 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   input: {
+    "& .MuiAutocomplete-input": {
+      minWidth: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "150px !important" : "33px"),
+    },
     "& input": {
       caretColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "transparent"),
       color: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "#008ebf"),
       backgroundColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "#D5F4FF"),
-      maxWidth: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "33px"),
-      width: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "33px"),
       height: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "32px"),
       fontSize: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "25px"),
       margin: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "3px"),
@@ -338,7 +339,7 @@ export default function Tags(props) {
   const removeTagFromList = (id) => {
     const tags = JSON.parse(JSON.stringify(tagsArray));
     const index = tags.findIndex(tag => tag._id === id);
-    if( index > -1) {
+    if (index > -1) {
       tags.splice(index, 1);
     }
     setTagsArray(tags);
@@ -348,7 +349,7 @@ export default function Tags(props) {
   }
 
   const DeleteTag = (TagIdOIds) => {
-    if (!props.multipleIds){
+    if (!props.multipleIds) {
       removeTagFromList(TagIdOIds)
       removeTag({
         variables: {
@@ -526,7 +527,7 @@ export default function Tags(props) {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  variant={props.variant ? props.variant :"outlined"}
+                  variant={props.variant ? props.variant : "outlined"}
                   className={classes.input}
                   placeholder={!showPlusAddIcon() ? "" : "+"}
                   fullWidth
