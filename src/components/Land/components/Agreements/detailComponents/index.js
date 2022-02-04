@@ -99,16 +99,16 @@ const useStyles = makeStyles((theme) => ({
   },
   metaActions: ({ collapse }) => ({
     marginTop: "2px",
-    "& button": {
-      margin: "0px 5px",
+  }),
+  metaButton: ({ collapse }) => ({
+    margin: "0px 5px",
+    backgroundColor: !collapse ? "#eceded" : "#fff",
+    color: "grey",
+    fontWeight: "bold",
+    textTransform: "capitalize",
+    padding: "6px 12px",
+    "&:hover": {
       backgroundColor: !collapse ? "#eceded" : "#fff",
-      color: "grey",
-      fontWeight: "bold",
-      textTransform: "capitalize",
-      padding: "6px 12px",
-      "&:hover": {
-        backgroundColor: !collapse ? "#eceded" : "#fff",
-      },
     },
   }),
   menu: {
@@ -205,10 +205,12 @@ export default function DetailComponents(props) {
 
   useEffect(() => {
     return () => {
-      dispatch(setLandReduxKey("agreement", {
-        activeAgreement: {}
-      }));
-    }
+      dispatch(
+        setLandReduxKey("agreement", {
+          activeAgreement: {},
+        })
+      );
+    };
   }, []);
 
   useEffect(() => {
@@ -319,13 +321,9 @@ export default function DetailComponents(props) {
               </StyledTabs>
             </div>
             <div className={classes.metaActions}>
-              <Button startIcon={<RuleIcon />} onClick={() => setCollapse(!collapse)}>
-                Validation
-              </Button>
-              <Button startIcon={<FlowIcon />} onClick={() => setCollapse(!collapse)}>
-                Flowline
-              </Button>
-              <Button startIcon={<InfoOutlinedIcon />} onClick={() => setCollapse(!collapse)}>
+              <Button startIcon={<RuleIcon />}>Validation</Button>
+              <Button startIcon={<FlowIcon />}>Flowline</Button>
+              <Button startIcon={<InfoOutlinedIcon />} className={classes.metaButton} onClick={() => setCollapse(!collapse)}>
                 Metadata
               </Button>
               <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
