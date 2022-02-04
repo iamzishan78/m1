@@ -96,13 +96,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   input: {
-    "& .MuiAutocomplete-input": {
-      minWidth: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "150px !important" : "33px"),
-    },
     "& input": {
       caretColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "transparent"),
       color: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "#008ebf"),
       backgroundColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "#D5F4FF"),
+      maxWidth: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "33px"),
+      width: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "33px"),
       height: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "32px"),
       fontSize: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "25px"),
       margin: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "3px"),

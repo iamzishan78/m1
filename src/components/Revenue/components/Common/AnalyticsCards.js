@@ -67,8 +67,8 @@ export default function AnalyticsCards({
       if (aggsData?.getESAggsList?.aggregations?.aggs?.buckets) {
         const buckets = aggsData.getESAggsList.aggregations.aggs?.buckets;
         const activeBucket = buckets[0];
-        cards[1].points = activeBucket['doc_count'];
-        cards[2].points = totalCount - activeBucket['doc_count'];
+        cards[1].points = activeBucket?.['doc_count'];
+        cards[2].points = totalCount - activeBucket?.['doc_count'];
         setCards(cards);
       }
     },
@@ -76,7 +76,7 @@ export default function AnalyticsCards({
 
   const getApprovedCount = (buckets) => {
     const activeBucket = buckets.filter((item) => item.key === "approved" && item);
-    return activeBucket[0]['doc_count'];
+    return activeBucket[0]?.['doc_count'];
   }
 
   const [getESAggsApprovedCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
@@ -105,7 +105,7 @@ export default function AnalyticsCards({
             range: {
               field: "lastCheck.checkDate",
               ranges: [
-                { from: `${addDays((new Date((new Date).setMonth((new Date).getMonth() - 3))).toISOString(), 1)}` }
+                { from: `${addDays((new Date((new Date()).setMonth((new Date()).getMonth() - 3))).toISOString(), 1)}` }
               ]
             }
           }

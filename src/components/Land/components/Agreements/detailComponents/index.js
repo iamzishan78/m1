@@ -37,9 +37,11 @@ const useStyles = makeStyles((theme) => ({
   title: {
     display: "flex",
     alignItems: "center",
+    width: "100%"
   },
   titleText: {
     marginLeft: 16,
+    width: "100%"
   },
   highlighter: {
     background: "#263451",
@@ -84,6 +86,7 @@ const useStyles = makeStyles((theme) => ({
     "& fieldset": {
       border: "none",
     },
+    width: "100%"
   },
   tabsSectionDetails: {
     maxHeight: "calc(100vh - 280px)",
