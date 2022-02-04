@@ -172,9 +172,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
 
   const [addMetaData, { }] = useMutation(ADD_META_DATA);
   const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
-  const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(
-    GET_ALL_LIBRARY_META_DATA
-  );
+  const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(GET_ALL_LIBRARY_META_DATA);
 
   useEffect(() => {
     getAllLibraryMetaData();
@@ -563,7 +561,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
                 </Grid>
               </Grid>
               <div style={{ marginBottom: "10px" }}>
-                {filteredMetaData.map((data) => {
+                {filteredMetaData?.map((data) => {
                   return data.isAddedToLibrary ? (
                     <div
                       className={classes.fields}
@@ -584,7 +582,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
                             <div>{data.label}</div>
                             {data.type === "dropdown" && (
                               <div style={{ width: "100%", color: "#B4B9BF" }}>
-                                {data.dropdownOptions.map((option, index) => {
+                                {data.dropdownOptions?.map((option, index) => {
                                   return (
                                     <span>
                                       {option.value}
@@ -690,7 +688,7 @@ const SortableList = SortableContainer(({ items, setItems }) => {
 
   return (
     <List style={{ margin: 0, padding: 0 }} component="div">
-      {items.map((item, index) => (
+      {items?.map((item, index) => (
         <SortableItem
           key={`item-${item.value}`}
           index={index}
@@ -767,7 +765,7 @@ const SortableItem = SortableElement(
               }}
             >
               <div style={{ width: "220px", padding: "0px 10px" }}>
-                {colorPallete.map((pallet) => {
+                {colorPallete?.map((pallet) => {
                   return (
                     <div
                       style={{ display: "inline-block" }}
