@@ -31,8 +31,8 @@ const RevenuePropertiesHeadCells = [
     options: { sort: true, filter: true },
   },
   {
-    name: "country",
-    label: "Country",
+    name: "county",
+    label: "County",
     esKey: "county.keyword",
     options: { sort: true, filter: true },
   },

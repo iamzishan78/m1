@@ -59,7 +59,7 @@ const CUSTOM_DATES = {
 };
 
 // fromDate and toDate should be passed from the parent
-export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate, label, isProperties, lastCheckMinDate }) {
+export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate, label, isProperties, lastCheckMinDate, onChange }) {
   const classes = useStyles();
   useEffect(() => {
     if(isProperties){
@@ -87,6 +87,9 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
   // }
 
   const handleDateTypeChange = (date) => {
+    if(onChange){
+      onChange(date)
+    }
     const currentYear = Math.round(new Date().getFullYear());
     switch (date) {
       case CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH:
