@@ -110,15 +110,15 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
           <Grid container spacing={2} justify="flex-end" className={classes.summaryHeaderIcons}>
             <Grid item>
               <div className={classes.summaryValue}> {0} </div>
-              <WellIcon className={classes.icon} color="#757575" opacity="1.0" small />
+              <WellIcon opacity="1.0" small color="#757575" />
             </Grid>
             <Grid item>
               <div className={classes.summaryValue}> {0} </div>
-              <TractIcon className={classes.icon} opacity="1.0" small />
+              <TractIcon opacity="1.0" small />
             </Grid>
             <Grid item>
               <div className={classes.summaryValue}> {0} </div>
-              <InsertDriveFileOutlinedIcon className={classes.icon} opacity="1.0" small />
+              <InsertDriveFileOutlinedIcon opacity="1.0" small />
             </Grid>
           </Grid>
         </div>
@@ -249,7 +249,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     shapeType="Agreement"
                     typeKey={field.key}
                     variant="outlined"
-                    onChange={() => {}}
+                    onChange={() => { }}
                     onBlur={(event) => offClickHandler(field.key, event.target.value)}
                     autoFocus={false}
                     id={`field-${index}`}

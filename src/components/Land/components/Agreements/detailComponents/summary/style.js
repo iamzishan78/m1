@@ -81,6 +81,9 @@ export const useStyles = makeStyles((theme) => ({
         marginRight: "5px",
       },
     },
+    "& .MuiSvgIcon-root": {
+      fill: "#757575"
+    }
   },
   summaryHeader: {
     display: "flex",
