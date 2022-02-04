@@ -131,7 +131,7 @@ export default function Properties() {
   return (
     <>
       <div className={classes.actionBar}>
-        <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 36px" }}>
+        <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 36px 0px 45px" }}>
           {/* <Grid style={{ marginTop: "2px", padding: 0 }}>
             <label className={classes.label}>Last Check Date</label>
           </Grid> */}
