@@ -1477,6 +1477,7 @@ function Map({ type, paramId, lati, longi }) {
 
       let wellsFeatures = map.queryRenderedFeatures(polygon, { layers: ['wellpoints'] });
       features = features.concat(wellsFeatures)
+      features = features.filter((feature) => feature.source !== 'interests_source')
 
       let coordinates = [e.lngLat.lng, e.lngLat.lat];
       setTimeout(() => {

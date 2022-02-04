@@ -354,24 +354,6 @@ export default function ParcelsDetailCard(props) {
     }
   };
 
-  const updateParcelQtr = (parcel) => {
-    const customLayer = {
-      shapeJson: parcel.shape,
-      qtrQtrSelection: parcel.qtrQtrSelection,
-      shape: JSON.stringify(parcel.shape),
-    }
-    updateCustomLayer({
-      variables: {
-        customLayerId: parcelObj._id,
-        customLayer,
-      },
-    }).then(() => {
-      findBoundsMap([customLayer.shapeJson], stateApp.map);
-      drawBoundary(stateApp.map, customLayer.shapeJson);
-    });
-  };
-
-
   const updateCustomProperties = (type, value, id) => {
     const shape = parcelObj.shape;
     const customRow = parcelProperties.custom_data_arr.find((p) => p.id === id)
@@ -585,7 +567,6 @@ export default function ParcelsDetailCard(props) {
               customLayer={parcelObj}
               properties={parcelProperties}
               setProperties={setProperties}
-              updateParcelQtr={updateParcelQtr}
               updateProperties={updateProperties}
               updateCustomProperties={updateCustomProperties}
               id={props.id}
