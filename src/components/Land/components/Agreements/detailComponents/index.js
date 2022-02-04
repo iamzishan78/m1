@@ -97,18 +97,32 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     width: "100%",
   },
-  metaActions: ({ collapse }) => ({
+  metaActions: {
     marginTop: "2px",
-  }),
-  metaButton: ({ collapse }) => ({
-    margin: "0px 5px",
-    backgroundColor: !collapse ? "#eceded" : "#fff",
-    color: "grey",
-    fontWeight: "bold",
-    textTransform: "capitalize",
-    padding: "6px 12px",
+    "& button": {
+      margin: "0px 5px",
+      color: "grey",
+      fontWeight: "bold",
+      textTransform: "capitalize",
+      padding: "6px 12px",
+    },
+  },
+  metaButton: ({ metaCollapse }) => ({
+    backgroundColor: !metaCollapse ? "#eceded" : "#fff",
     "&:hover": {
-      backgroundColor: !collapse ? "#eceded" : "#fff",
+      backgroundColor: !metaCollapse ? "#eceded" : "#fff",
+    },
+  }),
+  validationButton: ({ validationCollapse }) => ({
+    backgroundColor: !validationCollapse ? "#eceded" : "#fff",
+    "&:hover": {
+      backgroundColor: !validationCollapse ? "#eceded" : "#fff",
+    },
+  }),
+  flowlineButton: ({ flowlineCollapse }) => ({
+    backgroundColor: !flowlineCollapse ? "#eceded" : "#fff",
+    "&:hover": {
+      backgroundColor: !flowlineCollapse ? "#eceded" : "#fff",
     },
   }),
   menu: {
@@ -125,9 +139,9 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-  tabsDetailContainer: ({ collapse }) => ({
+  tabsDetailContainer: ({ metaCollapse }) => ({
     padding: 20,
-    maxWidth: !collapse ? "calc(100% - 380px)" : "100%",
+    maxWidth: !metaCollapse ? "calc(100% - 380px)" : "100%",
   }),
   menuIcon: {
     marginLeft: 10,
@@ -191,11 +205,13 @@ export default function DetailComponents(props) {
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
   const [isButtonScroll, setButtonScroll] = useState(false);
-  const [collapse, setCollapse] = useState(false);
+  const [metaCollapse, setMetaCollapse] = useState(false);
+  const [validationCollapse, setValidationCollapse] = useState(true);
+  const [flowlineCollapse, setFlowlineCollapse] = useState(true);
   const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
 
-  const classes = useStyles({ ...props, collapse });
+  const classes = useStyles({ ...props, metaCollapse, validationCollapse, flowlineCollapse });
   // queries
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
@@ -321,9 +337,17 @@ export default function DetailComponents(props) {
               </StyledTabs>
             </div>
             <div className={classes.metaActions}>
-              <Button startIcon={<RuleIcon />}>Validation</Button>
-              <Button startIcon={<FlowIcon />}>Flowline</Button>
-              <Button startIcon={<InfoOutlinedIcon />} className={classes.metaButton} onClick={() => setCollapse(!collapse)}>
+              <Button
+                startIcon={<RuleIcon />}
+                className={classes.validationButton}
+                onClick={() => setValidationCollapse(!validationCollapse)}
+              >
+                Validation
+              </Button>
+              <Button startIcon={<FlowIcon />} className={classes.flowlineButton} onClick={() => setFlowlineCollapse(!flowlineCollapse)}>
+                Flowline
+              </Button>
+              <Button startIcon={<InfoOutlinedIcon />} className={classes.metaButton} onClick={() => setMetaCollapse(!metaCollapse)}>
                 Metadata
               </Button>
               <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
@@ -361,7 +385,7 @@ export default function DetailComponents(props) {
           <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
         </div>
 
-        {!collapse && <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={agreementId} />}
+        {!metaCollapse && <MetadataDrawer setCollapse={setMetaCollapse} users={users} targetSourceId={agreementId} />}
       </div>
 
       {/**
