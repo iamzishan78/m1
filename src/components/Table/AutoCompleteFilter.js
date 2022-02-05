@@ -25,9 +25,9 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
     }, [filterList[index][0]]);
 
     useEffect(() => {
-        if (!custom?.filterOptions) {
+        if(!custom?.filterOptions){
             getFiltersAction("");
-        } else {
+        }else{
             setOptions(custom?.filterOptions)
         }
     }, []);
@@ -35,24 +35,27 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
     useEffect(() => {
         if (filtersData) {
             const keys = Object.keys(filtersData)
-            if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits) {
-                if (custom?.isDate) {
-                    const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key: moment(new Date(hit.key)).format("MM/DD/YYYY") }))
+            if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits){
+                if(custom?.isDate){
+                    const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key:moment(new Date(hit.key)).format("MM/DD/YYYY") }))
                     setOptions(hits)
                     setStateApp((state, props) => {
                         return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
-                    });
-                } else if (custom?.isPurchased) {
-                    const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key: hit.key }));
-                    setOptions(hits);
-                    setStateApp((state, props) => {
-                        return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
-                    });
-                } else {
+                      });
+                }else if(custom?.formatedFilterOptions){
+                    const hits = filtersData[keys[0]].hits
+                    for(let i=0; i<custom.formatedFilterOptions.length; i++){
+                        const index = hits.findIndex(h => h.key === custom.formatedFilterOptions[i].value)
+                        if(index > -1){
+                            hits[index].key = custom.formatedFilterOptions[i].label
+                        }
+                    }
+                    setOptions(hits)
+                }else{
                     setOptions(filtersData[keys[0]].hits)
                 }
             }
-
+                
         }
 
     }, [filtersData]);
@@ -92,7 +95,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
             value={value}
             inputValue={search}
             getOptionSelected={(option, value) => option.key === value.key}
-            getOptionLabel={(option) => custom?.isPurchased && option?.key?.toString().replace(/^\,|\,$/gm, "") === "true" ? "Yes" : custom?.isPurchased && option?.key?.toString().replace(/^\,|\,$/gm, "") === "false" ? "No" : option?.key?.toString().replace(/^\,|\,$/gm, "")}
+            getOptionLabel={(option) => option?.key?.toString().replace(/^\,|\,$/gm, "")}
             onChange={(e, value, reason) => {
                 if (reason === 'clear' || !value?.key) {
                     filterList[index].pop()
@@ -103,7 +106,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
                     setSearch(value.key)
                     setValue(value)
                 }
-                if (setFilters) setFilters(filterList)
+                if(setFilters) setFilters(filterList)
                 onChange(filterList[index], index, column);
             }}
             options={options}
