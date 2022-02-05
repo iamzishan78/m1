@@ -16,6 +16,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 
 import DetailsPanel from "./Details";
+import Information from "./Information";
 import AssociatedWells from "./AssociatedWells";
 import { DocumentContext } from "../DocumentContext";
 
@@ -386,6 +387,11 @@ export default function DocumentDrawer() {
               />
             )}
             {activePanel === "Wells" && <AssociatedWells />}
+            {activePanel === "Info" && (
+              <Information
+                fileData={fileData}
+              />
+            )}
           </div>
         </div>
       </div>

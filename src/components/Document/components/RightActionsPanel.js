@@ -1,6 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import HomeIcon from "@material-ui/icons/HomeOutlined";
+import InfoOutlined from "@material-ui/icons/InfoOutlined";
 import WellIcon from "components/Shared/svgIcons/well";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
@@ -65,6 +66,12 @@ export default function Drawer(props) {
         <WellIcon {...props} />
       </Badge>
     ),
+    Info: (props) => (
+      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary" >
+        <InfoOutlined {...props} />
+      </Badge>
+    ),    
+    
   };
 
   return (
