@@ -202,7 +202,7 @@ export default function UnitDetailCard(props) {
           openTabIdex={selectedTab}
           tabPanels={[
             <UnitSummary properties={properties} setProperties={setProperties} updateProperties={updateProperties}
-              updateCustomProperties={updateCustomProperties} id={props.id} />,
+              updateCustomProperties={updateCustomProperties} id={props.id} customLayer={uniObj} />,
             <TabPanels
               value={selectedTab}
               panels={[
