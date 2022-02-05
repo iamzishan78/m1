@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { Warning as WarningIcon } from "@material-ui/icons";
@@ -8,6 +8,7 @@ import TableHeader from "components/Table/constants/revenue-properties-header-sc
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
 import { useLazyQuery, useMutation } from "@apollo/client";
+import { handleSelectedGridChange } from 'components/Table/helpers'
 import { setRevenueKey } from "actions";
 
 // QUERIES
@@ -43,7 +44,7 @@ function RevenuePropertiesTable(props) {
   //     wellName: eachRow?.well?.wellName,
   //     status: eachRow?.status,
   //     checkNumber: eachRow?.lastCheck?.checkNumber,
-  //     lastChecked: new Date(eachRow?.lastCheck?.checkDate).toLocaleDateString(),
+  //     lastChecked: ne2w Date(eachRow?.lastCheck?.checkDate).toLocaleDateString(),
   //     tags: eachRow.tags?.length > 0 ? [[eachRow.tags.map((tag) => tag.tag)], eachRow.tags.length] : [[], 0],
   //   };
   // });
@@ -66,20 +67,25 @@ function RevenuePropertiesTable(props) {
   };
 
   const esFilters = props.fromDate || props.toDate ? [
-      {
-        field: "lastCheck.checkDate",
-        value: {
-          range: {
-            "lastCheck.checkDate": {
-              gte: `${props.fromDate}T00:00:00.000Z`,
-              lte: `${props.toDate}T00:00:00.000Z`,
-            },
+    {
+      field: "lastCheck.checkDate",
+      value: {
+        range: {
+          "lastCheck.checkDate": {
+            gte: `${props.fromDate}T00:00:00.000Z`,
+            lte: `${props.toDate}T00:00:00.000Z`,
           },
         },
       },
-    ] : []
+    },
+  ] : props.esFilters ? props.esFilters : []
 
-  React.useEffect(() => {
+  useEffect(() => {
+    handleSelectedGridChange(TableHeader, { filters: esFilters }, columns, true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.esFilters])
+
+  useEffect(() => {
     const statusIndex = columns.findIndex((c) => c.name === "status");
     if (statusIndex !== -1) {
       columns[statusIndex].options.customRender = (value, tableMeta) => (
@@ -121,7 +127,7 @@ function RevenuePropertiesTable(props) {
   }, [columns]);
 
   // fetaching data
-  React.useEffect(() => {
+  useEffect(() => {
     getESPaginatedList({
       variables: {
         esIndex: esIndex,
@@ -135,6 +141,7 @@ function RevenuePropertiesTable(props) {
         filters: esFilters,
       },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getESPaginatedList, props.parent, props.revenueSearchQuery, props.filterToggle]);
 
   const handleStatusChange = (_id, status) => {
@@ -153,30 +160,33 @@ function RevenuePropertiesTable(props) {
     });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getESPaginatedList, elasticData]);
 
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (tableData) {
       props.onPropertiesCount(count);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableData, props.dependencyUpdate]);
 
   const onTableChange = (action, tableState, rows, meta) => {
     tableState.esIndex = esIndex;
-    tableState.esFilters =esFilters
     // tableState.sort = [];
 
+
     const tableActions = props.initializeTableActions(tableState, meta, revenueProperties, columns, getESPaginatedList);
-    setESFilters(tableActions.pageESVariables.variables.filters);
     switch (action) {
-      case "search":
-      case "sort":
       case "filterChange":
       case "resetFilters":
+        setESFilters(tableActions.pageESVariables.variables.filters);
+        tableActions.genericESAction();
+        break
+      case "search":
+      case "sort":
       case "changeRowsPerPage":
         tableActions.genericESAction();
         break;

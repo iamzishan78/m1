@@ -9,7 +9,7 @@ import Popper from "@material-ui/core/Popper";
 import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
 
-const ButtonDropDown = ({ options, children, onClick }) => {
+const ButtonDropDown = ({ options, children, onClick, ...rest }) => {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -40,7 +40,7 @@ const ButtonDropDown = ({ options, children, onClick }) => {
 
   return (
     <>
-      <ButtonGroup variant="contained" color="primary" ref={anchorRef} aria-label="split button">
+      <ButtonGroup variant="contained" color="primary" ref={anchorRef} aria-label="split button" {...rest}>
         <Button onClick={handleClick}>
           <>{children}</>
           {options[selectedIndex].text}
@@ -48,6 +48,7 @@ const ButtonDropDown = ({ options, children, onClick }) => {
         <Button
           color="primary"
           size="small"
+          {...rest}
           aria-controls={open ? "split-button-menu" : undefined}
           aria-expanded={open ? "true" : undefined}
           aria-label="select merge strategy"

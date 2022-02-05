@@ -158,7 +158,7 @@ function ContactsTable(props) {
   useEffect(() => {
     tableRef.current.changePage(0)
     tableRef.current.isFetching = false;
-    if(!isEmpty(selectedGridView)){
+    if (!isEmpty(selectedGridView)) {
       const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns, true)
       setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
     }
@@ -200,7 +200,7 @@ function ContactsTable(props) {
     );
     selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
 
-    if(action === 'filterChange'){
+    if (action === 'filterChange') {
       setFilters(tableState.filterList)
     }
     switch (action) {
@@ -212,7 +212,7 @@ function ContactsTable(props) {
         tableActions.genericESAction();
         break;
       case "changePage":
-        if(tableRef.current.isFetching === false){
+        if (tableRef.current.isFetching === false) {
           tableRef.current.isFetching = true
           return;
         }

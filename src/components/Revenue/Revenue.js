@@ -17,16 +17,21 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/revenue/properties",
     component: "Properties",
   },
+  REVENUE_STATEMENTS: {
+    title: "Revenue Statements",
+    link: "/revenue/statements",
+    component: "RevenueStatements",
+  },
+  REPORTING_GROUPS: {
+    title: "Reporting Groups",
+    link: "/revenue/reporting-groups",
+    component: "ReportingGroups",
+  },
   REVENUE_PROPERTY_DETAILS: {
     isExcluded: true,
     title: "Properties",
     link: "/revenue/property/details/:id",
     component: "RevenuePropertyDetails",
-  },
-  REVENUE_STATEMENTS: {
-    title: "Revenue Statements",
-    link: "/revenue/statements",
-    component: "RevenueStatements",
   },
   REVENUE_STATEMENT_DETAILS: {
     isExcluded: true,
