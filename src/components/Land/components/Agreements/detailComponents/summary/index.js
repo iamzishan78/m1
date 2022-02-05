@@ -77,7 +77,7 @@ export default function Summary({ agreementDetails }) {
   return (
     <Grid container direction="row" justify="space-between" alignItems="center" className={classes.root}>
       <Grid item className={classes.infoSection}>
-        <FieldsSection agreementDetails={{ ...agreementDetails, _id: activeAgreement._id }} updateAgreement={updateAgreement} control={control} />
+        <FieldsSection agreementDetails={{ ...agreementDetails, _id: activeAgreement?._id }} updateAgreement={updateAgreement} control={control} />
       </Grid>
       <Grid item className={classes.mapSection}>
         <Grid item md={12} className={classes.provisionCard}>
