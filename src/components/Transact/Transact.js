@@ -50,6 +50,8 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: "250px",
     minWidth: "250px",
     maxHeight: "150px",
+    display: "flex",
+    "flex-direction": "column",
   },
   cardHeaderStyle: {
     display: "flex",
@@ -63,9 +65,11 @@ const useStyles = makeStyles((theme) => ({
   cardDescStyle: {
     color: "#2e4451",
     padding: "10px",
+    margin: "inherit",
     whiteSpace: "pre-wrap",
     textAlign: "left",
     fontSize: "12px",
+    overflow: "hidden",
   },
   cardTitle: {
     color: "#1CB6DA",
@@ -405,7 +409,7 @@ export default function Transact() {
     }
   }, [pipeToShowTab, dealFilter]);
 
-  const handleDataChange = (newData) => {};
+  const handleDataChange = (newData) => { };
 
   const handleCardClick = (cardId, metadata, laneId) => {
     history.push(`${history.location.pathname}/lane/${laneId}/card/${cardId}`);
@@ -445,14 +449,14 @@ export default function Transact() {
     let movedCardDescriptor =
       sourceLaneId === targetLaneId
         ? {
-            _id: cardDetails.metadata.descriptorId,
-            relatedObject: targetLaneId,
-            position: unfilteredTargetPosition,
-          }
+          _id: cardDetails.metadata.descriptorId,
+          relatedObject: targetLaneId,
+          position: unfilteredTargetPosition,
+        }
         : {
-            _id: cardDetails.metadata.descriptorId,
-            isCurrent: false,
-          };
+          _id: cardDetails.metadata.descriptorId,
+          isCurrent: false,
+        };
 
     // update unfilteredSourceLane descriptors
     // including dragging down in same lane
@@ -561,9 +565,10 @@ export default function Transact() {
     const cardPrice = metadata && metadata.offerPrice ? metadata.offerPrice : 0;
     const formattedPrice = vf_currency(cardPrice);
 
-    let formattedDate = null;
-
-    if (metadata?.closeDate) formattedDate = moment.parseZone(new Date(metadata.closeDate)).format("MM/DD/YY");
+    let formattedBidDate = null;
+    if (metadata?.bidDate) formattedBidDate = moment.parseZone(new Date(metadata.bidDate)).format("MM/DD/YY");
+    let formattedCloseDate = null;
+    if (metadata?.closeDate) formattedCloseDate = moment.parseZone(new Date(metadata.closeDate)).format("MM/DD/YY");
 
     let owner = null;
     let ownerId = null;
@@ -601,12 +606,22 @@ export default function Transact() {
           </div>
 
           <div className={CardClasses.cardSubheading}>
-            {formattedDate && (
+            {formattedBidDate && (
+              <>
+                <br />
+                <span>
+                  Bid Date {"   "}
+                  <span style={{ fontWeight: "normal" }}>{formattedBidDate}</span>
+                </span>
+              </>
+            )}
+
+            {formattedCloseDate && (
               <>
                 <br />
                 <span>
                   Est. Close {"   "}
-                  <span style={{ fontWeight: "normal" }}>{formattedDate}</span>
+                  <span style={{ fontWeight: "normal" }}>{formattedCloseDate}</span>
                 </span>
               </>
             )}
@@ -725,22 +740,22 @@ export default function Transact() {
                   Card: (cardProps) => <GetCard {...cardProps} />,
                 }}
 
-                //onCardAdd = {handleCardAdd}
-                //onCardDelete = {handleCardDelete}
-                // handleDragStart = {}
-                // handleDragEnd={}
-                // handleLaneDragStart
-                // onDataChange
-                // onCardAdd
-                // onBeforeCardDelete
-                // onCardDelete
-                // onCardMoveAcrossLanes
-                // onLaneAdd
-                // onLaneDelete
-                // onLaneUpdate
-                // onLaneClick
-                // onLaneScroll
-                //onCardMoveAcrossLanes
+              //onCardAdd = {handleCardAdd}
+              //onCardDelete = {handleCardDelete}
+              // handleDragStart = {}
+              // handleDragEnd={}
+              // handleLaneDragStart
+              // onDataChange
+              // onCardAdd
+              // onBeforeCardDelete
+              // onCardDelete
+              // onCardMoveAcrossLanes
+              // onLaneAdd
+              // onLaneDelete
+              // onLaneUpdate
+              // onLaneClick
+              // onLaneScroll
+              //onCardMoveAcrossLanes
               />
             )}
             {stateApp.dealDisplayType === "table" && (

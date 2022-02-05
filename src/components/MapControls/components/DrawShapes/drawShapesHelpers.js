@@ -269,7 +269,6 @@ export const getRotateAbleShapeFromSelectedQuarters = (currentFeature, draw) => 
   let maxY = bbox[3];
 
   const incrementX = ((maxX - minX) / 4);
-  let newShape = {}
   let polygons = []
 
   let m
@@ -282,12 +281,6 @@ export const getRotateAbleShapeFromSelectedQuarters = (currentFeature, draw) => 
 
       m = turf.bboxClip(currentFeature, bbox);
       polygons.push(m)
-      if (i === 0 && j === 0) {
-        newShape = m
-      } else {
-        // newShape = turf.union(m, newShape);
-      }
-
       bbox[1] = bbox[3]
     }
     bbox[0] = bbox[2]
@@ -302,8 +295,6 @@ export const getRotateAbleShapeFromSelectedQuarters = (currentFeature, draw) => 
     type: "Feature"
   }
 
-  // m.geometry.type = "MultiPolygon"
-  // m.geometry.coordinates = []
   let temp = polygons[3]
   polygons[3] = polygons[0]
   polygons[0] = temp
@@ -312,28 +303,19 @@ export const getRotateAbleShapeFromSelectedQuarters = (currentFeature, draw) => 
     multi.geometry.coordinates.push(polygon.geometry.coordinates)
   })
 
-  m = turf.union(newShape, m)
-
   draw.add(multi)
 
   setTimeout(() => {
     changeModeToScaleRotate(draw)
   }, 1000)
-
-
-
-  setTimeout(() => {
-    console.log(draw.getAll())
-    console.log(draw.getMode())
-  }, 3000)
-
-
 }
+
 
 export const changeModeToScaleRotate = (draw) => {
   const all = draw.getAll()
-  if (all?.features[0] && all.features[0].properties.isrotate) {
-    draw.changeMode("direct_select", { featureId: all.features[0].id, });
+  const feature = all.features.find((f) => f.properties.isrotate)
+  if (feature) {
+    draw.changeMode("direct_select", { featureId: feature.id, });
     draw.changeMode('scaleRotateMode', {
       // required
       canScale: true,

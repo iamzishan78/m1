@@ -19,7 +19,7 @@ import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
 import { getPolygonString } from "../../Shared/functions";
 import { getParcelOriginalProperties } from '../utils/GetParcelOriginalProps'
-import QtrQtrSelectorNew from "./QtrQtrSelectorNew";
+import QtrQtrSelectorNew from "../../ShapeDetailCard/Common/QtrQtrSelectorNew";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -348,7 +348,7 @@ export default function ParcelSummary(props) {
         <Grid item md={5} sm={12}>
             <Grid container spacing={2} direction="row">
                 <Grid item >
-                    <QtrQtrSelectorNew parcelData={props.customLayer} updateParcelQtr={props.updateParcelQtr} setQtrQtr={setQtrQtr} />
+                    <QtrQtrSelectorNew layerData={props.customLayer} />
                 </Grid>
                 <Grid item className={classes.descriptionInput}>
                     <TextField

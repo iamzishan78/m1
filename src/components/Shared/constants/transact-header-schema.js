@@ -24,6 +24,14 @@ const TransactDealsHeadCells = [
       label: "Offer Price",
     },
     {
+      name: "receivedDate",
+      label: "Deal Received",
+    },
+    {
+      name: "bidDate",
+      label: "Bid Date",
+    },
+    {
       name: "closeDate",
       label: "Expected Close Date",
     },
