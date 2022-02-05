@@ -16,6 +16,7 @@ import unitDefaultData from 'components/ShapeDetailCard/Common/SummaryTable/unit
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { summaryStyles } from "components/ShapeDetailCard/style";
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
+import QtrQtrSelectorNew from "components/ShapeDetailCard/Common/QtrQtrSelectorNew";
 
 export default function UnitSummary(props) {
     const [search, setSearch] = useState('');
@@ -88,6 +89,9 @@ export default function UnitSummary(props) {
         </Grid>
         <Grid item md={5} sm={12}>
             <Grid container spacing={2} direction="row">
+                <Grid item >
+                    <QtrQtrSelectorNew layerData={props.customLayer} />
+                </Grid>
                 <Grid item className={classes.descriptionInput}>
                     <TextField
                         id="outlined-multiline-static"
@@ -96,7 +100,7 @@ export default function UnitSummary(props) {
                         value={unitProperties.description}
                         multiline
                         fullWidth
-                        rows={17}
+                        rows={6}
                         variant="outlined"
                         onChange={(e) => {
                             setProperties({ ...unitProperties, description: e.target.value });
