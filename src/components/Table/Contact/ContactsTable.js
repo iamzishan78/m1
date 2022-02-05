@@ -19,7 +19,7 @@ import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { REMOVE_CONTACTS } from "graphQL/useMutationRemoveContact";
 import { GET_ES_CONTACTS } from "graphQL/useQueryESContacts";
-// import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
+import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 
 import { getContactsAddress } from 'utils/helper';
 
@@ -84,9 +84,9 @@ function ContactsTable(props) {
     GET_ES_CONTACTS,
     { fetchPolicy: "no-cache" }
   );
-  // const [getCheckPurchaseData, { data: ContactPurchaseData }] = useLazyQuery(
-  //   GET_CHECK_PURCHASE_DATA
-  // );
+  const [getCheckPurchaseData, { data: ContactPurchaseData }] = useLazyQuery(
+    GET_CHECK_PURCHASE_DATA
+  );
   const [updateGridView, { data: updatedGridView }] =
     useMutation(UPDATE_GRID_VIEW);
   const [removeContact] = useMutation(REMOVE_CONTACTS);
@@ -115,27 +115,27 @@ function ContactsTable(props) {
     });
   }, [getESContacts, props.parent, props.contactSearchQuery, selectedGridView]);
 
-  // useEffect(() => {
-  //   if (tableData?.hits) {
-  //     const objectsIdsArray = tableData.hits.map((contact) => contact._id);
-  //     getCheckPurchaseData({
-  //       variables: {
-  //         contactIds: objectsIdsArray,
-  //       },
-  //     });
-  //   }
-  // }, [tableData]);
+  useEffect(() => {
+    if (tableData?.hits) {
+      const objectsIdsArray = tableData.hits.map((contact) => contact._id);
+      getCheckPurchaseData({
+        variables: {
+          contactIds: objectsIdsArray,
+        },
+      });
+    }
+  }, [tableData]);
 
-  // useEffect(() => {
-  //   if (ContactPurchaseData?.getCheckPurchaseData) {
-  //     const rows = JSON.parse(JSON.stringify(props.rows));
-  //     for (let i = 0; i < ContactPurchaseData?.getCheckPurchaseData.length; i++) {
-  //       const index = rows.findIndex((row) => row._id === ContactPurchaseData.getCheckPurchaseData[i]);
-  //       rows[index].isPurchased = true;
-  //     }
-  //     props.setRows(rows);
-  //   }
-  // }, [ContactPurchaseData]);
+  useEffect(() => {
+    if (ContactPurchaseData?.getCheckPurchaseData) {
+      const rows = JSON.parse(JSON.stringify(props.rows));
+      for (let i = 0; i < ContactPurchaseData?.getCheckPurchaseData.length; i++) {
+        const index = rows.findIndex((row) => row._id === ContactPurchaseData.getCheckPurchaseData[i]);
+        rows[index].isPurchased = true;
+      }
+      props.setRows(rows);
+    }
+  }, [ContactPurchaseData]);
 
   useEffect(() => {
     if (tableData?.hits) {
