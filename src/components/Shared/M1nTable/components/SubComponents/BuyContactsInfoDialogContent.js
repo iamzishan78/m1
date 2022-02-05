@@ -141,7 +141,7 @@ export default function BuyContactsInfoDialogContent(props) {
 
   function loadPersonData() {
     if (props.rows.length > currentCredits) {
-      dispatch(showErrorMessage(`Your remaning credits are ${currentCredits} but you are trying to use ${props.rows.length}`));
+      dispatch(showErrorMessage(`Your remaning credit count is ${currentCredits} but you are trying to use ${props.rows.length}`));
     } else {
 
       setBuyNowClicked(true)
