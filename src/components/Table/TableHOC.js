@@ -244,24 +244,29 @@ export const TableHOC = (Component) => {
             };
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0) {
-                    if(columns[index].custom?.isDate){
+                    if (columns[index].custom?.isDate) {
                         const filterData = stateApp.filtersData[columns[index].name];
                         const data = filterData.find(f => f.key === val[0])
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
-                    }else if(columns[index].custom?.filterOptions?.length > 0){
+                    } else if (columns[index].custom?.filterOptions?.length > 0) {
                         pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0] })
-                    }else if(columns[index].custom?.formatedFilterOptions?.length > 0){
+                    } else if (columns[index].custom?.formatedFilterOptions?.length > 0) {
                         let value = val[0];
                         const filterData = columns[index].custom?.formatedFilterOptions;
                         const data = filterData.find(f => f.label === value)
-                        if(data){
+                        if (data) {
                             value = data.value
                         }
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value })
-                    }else{
+                    } else if (columns[index].custom?.formatedFilterOptions?.length > 0 && columns[index].custom?.isPurchased) {
+                        let value = val[0];
+                        const filterData = columns[index].custom?.formatedFilterOptions;
+                        const data = filterData.find(f => f.label === value)
+                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string })
+                    } else {
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
                     }
-                    
+
                 }
             })
             if (selectedGridView?.filters && selectedGridView.type === 'Default') {

@@ -553,6 +553,12 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     fontSize: "smaller",
   },
+  customWarning: {
+    "& .MuiSvgIcon-root":{
+      fill: "#ffa800"
+    }
+    
+  }
 }));
 
 function SubTable(props) {
@@ -572,7 +578,7 @@ function SubTable(props) {
 
   // function state
   const [trueTargetLabel, TrueTargetLabel] = useState(null);
-  const [contactDataMissing, setContactDataMissing] = useState([]);
+  // const [contactDataMissing, setContactDataMissing] = useState([]);
   const [rowsPerPage, RowsPerPage] = useState(props.startPaginationAt);
   const [firstMount, FirstMount] = useState(true);
   const [title, Title] = useState("");
@@ -1139,6 +1145,50 @@ function SubTable(props) {
       }, 500),
     []
   );
+
+  const valueFormatter = (column, v) => {
+    if (
+      (column.name === "status" && props.targetLabel === "deal") ||
+      (column.name === "type" && props.targetLabel === "activity")
+    )
+      return capitalizeFirstLetter(v);
+
+    if (column.name === "appraisedValue") return vf_currency(v);
+
+    if (column.name === "taxValue") return vf_currency(v);
+
+    if (column.name === "offerPrice" && !!v && !isNaN(v)) return vf_currency(v);
+    if (
+      (column.name === "seller_asking_price" ||
+        column.name === "competitor_offer_price" ||
+        column.name === "offer_price") &&
+      !!v &&
+      !isNaN(v)
+    )
+      return vf_currency(v);
+
+    if (column.name === "lastUpdateAt")
+      return anyToDate(v).toLocaleString("en-US", {
+        year: "numeric",
+        day: "numeric",
+        month: "numeric",
+      });
+
+    if (column.name === "receivedDate" && !!v) return moment.parseZone(v).format("MM/DD/yyyy");
+    if (column.name === "bidDate" && !!v) return moment.parseZone(v).format("MM/DD/yyyy");
+    if (column.name === "closeDate" && !!v) return moment.parseZone(v).format("MM/DD/yyyy");
+
+    if ((column.name === "end" || column.name === "start") && !!v)
+      return anyToDate(v).toLocaleString("en-US", {
+        year: "numeric",
+        day: "numeric",
+        month: "numeric",
+        minute: "2-digit",
+        hour: "2-digit",
+      });
+
+    return v;
+  };
 
   useEffect(() => {
     if (props.columns) {
@@ -2194,7 +2244,20 @@ function SubTable(props) {
                         {value}
                       </div>
                     )}
-                    {props.parent === "RevenuePropertiesTable" && column.options.customBodyRender}
+                    {props.parent === "RevenuePropertiesTable" && (
+                      <>
+                        {value?.toLowerCase() === 'approved' && (
+                          <div className="flex justifyCenter alignCenter success w-100">
+                            <CheckCircle size={20} />
+                          </div>
+                        )}
+                        {value?.toLowerCase() === 'unapproved' && (
+                          <div className={`flex justifyCenter alignCenter w-100 ${classes.customWarning}`}>
+                            <WarningIcon size={20} />
+                          </div>
+                        )}
+                      </>
+                    )}
                     {props.parent === "AgreementsTable" && (
                       <div style={{ display: "flex", "align-items": "center" }}>
                         {value?.toLowerCase() === "approved" ? (
@@ -2368,47 +2431,6 @@ function SubTable(props) {
                       />
                     );
                   }
-                  const valueFormatter = (v) => {
-                    if (
-                      (column.name === "status" && props.targetLabel === "deal") ||
-                      (column.name === "type" && props.targetLabel === "activity")
-                    )
-                      return capitalizeFirstLetter(v);
-
-                    if (column.name === "appraisedValue") return vf_currency(v);
-
-                    if (column.name === "taxValue") return vf_currency(v);
-
-                    if (column.name === "offerPrice" && !!v && !isNaN(v)) return vf_currency(v);
-                    if (
-                      (column.name === "seller_asking_price" ||
-                        column.name === "competitor_offer_price" ||
-                        column.name === "offer_price") &&
-                      !!v &&
-                      !isNaN(v)
-                    )
-                      return vf_currency(v);
-
-                    if (column.name === "lastUpdateAt")
-                      return anyToDate(v).toLocaleString("en-US", {
-                        year: "numeric",
-                        day: "numeric",
-                        month: "numeric",
-                      });
-
-                    if (column.name === "closeDate" && !!v) return moment.parseZone(v).format("MM/DD/yyyy");
-
-                    if ((column.name === "end" || column.name === "start") && !!v)
-                      return anyToDate(v).toLocaleString("en-US", {
-                        year: "numeric",
-                        day: "numeric",
-                        month: "numeric",
-                        minute: "2-digit",
-                        hour: "2-digit",
-                      });
-
-                    return v;
-                  };
 
                   if (column.name === "isClosed" && props.targetLabel === "activity" && value === true)
                     return (
@@ -2452,7 +2474,7 @@ function SubTable(props) {
                           e.stopPropagation();
                         }}
                       >
-                        {valueFormatter(value)}
+                        {valueFormatter(column, value)}
                       </div>
                     );
                   }
@@ -2471,8 +2493,8 @@ function SubTable(props) {
                           color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                           fgColor="#000"
                           name={
-                            valueFormatter(tableMeta.rowData[8]) ||
-                            valueFormatter(
+                            valueFormatter(column, tableMeta.rowData[8]) ||
+                            valueFormatter(column, 
                               `${tableMeta.rowData[10]
                                 ? tableMeta.rowData[10]
                                 : tableMeta.rowData[8]
@@ -2481,7 +2503,7 @@ function SubTable(props) {
                               }`
                             )
                           }
-                          // name={valueFormatter(`${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
+                          // name={valueFormatter(column, `${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
                           size="35"
                           round
                         />
@@ -2498,7 +2520,7 @@ function SubTable(props) {
                       {props.targetLabel !== "contact" && props.targetLabel !== "documents" && (
                         <CellContentEdition
                           id={tableMeta.rowData[0]}
-                          content={{ [column.name]: valueFormatter(value) }}
+                          content={{ [column.name]: valueFormatter(column, value) }}
                           targetLabel={props.targetLabel}
                           dropDownOptions={column.dropDownOptions ? column.dropDownOptions : null}
                           entityId={
@@ -2515,7 +2537,7 @@ function SubTable(props) {
                       {props.targetLabel === "contact" && column.name !== "name" && (
                         <CellContentEdition
                           id={tableMeta.rowData[0]}
-                          content={{ [column.name]: valueFormatter(value) }}
+                          content={{ [column.name]: valueFormatter(column, value) }}
                           targetLabel={props.targetLabel}
                           dropDownOptions={column.dropDownOptions ? column.dropDownOptions : null}
                           entityId={
@@ -2973,19 +2995,19 @@ function SubTable(props) {
                           className={classes.multiSelectionTopBarButtons}
                           disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
                           onClick={() => {
-                            const rows = getSelectedRows();
-                            const contacts = [];
-                            for (let i = 0; i < rows.length; i++) {
-                              if (!rows[i].firstName || !rows[i].lastName || !rows[i].address1) {
-                                contacts.push(rows[i]);
-                              }
-                            }
-                            setContactDataMissing(contacts);
-                            if (contacts.length > 0) {
-                              handleExpandClick(null, null, getSelectedRows(), "contactDataMissing");
-                            } else {
-                              handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData");
-                            }
+                            // const rows = getSelectedRows();
+                            // const contacts = [];
+                            // for (let i = 0; i < rows.length; i++) {
+                            //   if (!rows[i].firstName || !rows[i].lastName || !rows[i].address1) {
+                            //     contacts.push(rows[i]);
+                            //   }
+                            // }
+                            // setContactDataMissing(contacts);
+                            // if (contacts.length > 0) {
+                            //   handleExpandClick(null, null, getSelectedRows(), "contactDataMissing");
+                            // } else {
+                            handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData");
+                            // }
                           }}
                         >
                           Contact Data
@@ -3465,10 +3487,11 @@ function SubTable(props) {
         return temp_rows;
       } else {
         const result_data = data.sort((a, b) => {
-          return (a.data[colIndex] < b.data[colIndex] ? -1 : 1) * (order === "desc" ? 1 : -1);
-        });
+          const aTest = typeof a.data[colIndex] === 'string' ? a.data[colIndex].toLowerCase() : a.data[colIndex];
+          const bTest = typeof b.data[colIndex] === 'string' ? b.data[colIndex].toLowerCase() : b.data[colIndex];
 
-        result_data.splice(insertInBetween, 0, { data: cumulative_array });
+          return (aTest == null) - (bTest == null) || (aTest < bTest ? -1 : 1) * (order === "desc" ? 1 : -1);
+        });
 
         return result_data;
       }
@@ -3713,6 +3736,17 @@ function SubTable(props) {
         });
       }
     },
+    onDownload: (buildHead, buildBody, columns, data) => {
+      const formattedData = data.map((row) => {
+        return {
+          index: row.index,
+          data: row.data.map((el, ind) => {
+            return valueFormatter(columns?.[ind], el)
+          })
+        }
+      })
+      return "\uFEFF" + buildHead(columns) + buildBody(formattedData);
+    } 
   };
 
   if (props.header === "Well Interests" && props.parent === "owner_WellInterests") {
@@ -4032,9 +4066,10 @@ function SubTable(props) {
           <AddContactDialogContent onClose={handleCloseDialog} parent={props.addAble.parent} />
         )}
 
-        {openDialog === "contactDataMissing" && (
+        {/* moved component in buyContactsInfoData and handled its operations there */}
+        {/* {openDialog === "contactDataMissing" && (
           <ContactDataMissingDialog openDialog={openDialog} onClose={handleCloseDialog} contacts={contactDataMissing} />
-        )}
+        )} */}
         {openDialog === "multipleOwnerToContact" && (
           <MultipleOwnerToContactDrawer
             onClose={handleCloseDialog}

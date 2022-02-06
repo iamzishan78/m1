@@ -199,7 +199,6 @@ function ContactsTable(props) {
       selectedGridView
     );
     selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
-
     if (action === 'filterChange') {
       setFilters(tableState.filterList)
     }
