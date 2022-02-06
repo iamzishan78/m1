@@ -91,12 +91,13 @@ export default function AnalyticsCards(props) {
             <Typography variant="h6" component="div" className={classes.cardHeaderTypography}>
               Potential Issues
             </Typography>
-            <div className={classes.issuesBadges}>
+            {/* hiding until we have more warning types/rules --kc 02/06/2022 */}
+            {/* <div className={classes.issuesBadges}>
               <div style={{ marginRight: 6 }}>
                 <WarningIcon />
               </div>
               <div>{props.potentialIssues.length}</div>
-            </div>
+            </div> */}
             <Typography variant="h6" component="div" className={classes.cardNumberTypography} style={{ color: "red" }}>
               {props.potentialIssues.length}
             </Typography>
@@ -106,7 +107,7 @@ export default function AnalyticsCards(props) {
 
         {tooltip && (
           <div className={classes.tooltip}>
-            <p className={classes.tooltipText}>Sum of details does not match check account</p>
+            <p className={classes.tooltipText}>Sum of check details does not match check amount</p>
           </div>
         )}
 
