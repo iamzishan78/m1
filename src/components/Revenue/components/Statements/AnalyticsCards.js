@@ -106,7 +106,7 @@ export default function AnalyticsCards(props) {
 
         {tooltip && (
           <div className={classes.tooltip}>
-            <p className={classes.tooltipText}>Sum of details does not match check account</p>
+            <p className={classes.tooltipText}>Sum of check details does not match check amount</p>
           </div>
         )}
 
