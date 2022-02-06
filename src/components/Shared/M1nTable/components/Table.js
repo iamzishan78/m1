@@ -553,6 +553,12 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     fontSize: "smaller",
   },
+  customWarning: {
+    "& .MuiSvgIcon-root":{
+      fill: "#ffa800"
+    }
+    
+  }
 }));
 
 function SubTable(props) {
@@ -2238,7 +2244,20 @@ function SubTable(props) {
                         {value}
                       </div>
                     )}
-                    {props.parent === "RevenuePropertiesTable" && column.options.customBodyRender}
+                    {props.parent === "RevenuePropertiesTable" && (
+                      <>
+                        {value?.toLowerCase() === 'approved' && (
+                          <div className="flex justifyCenter alignCenter success w-100">
+                            <CheckCircle size={20} />
+                          </div>
+                        )}
+                        {value?.toLowerCase() === 'unapproved' && (
+                          <div className={`flex justifyCenter alignCenter w-100 ${classes.customWarning}`}>
+                            <WarningIcon size={20} />
+                          </div>
+                        )}
+                      </>
+                    )}
                     {props.parent === "AgreementsTable" && (
                       <div style={{ display: "flex", "align-items": "center" }}>
                         {value?.toLowerCase() === "approved" ? (

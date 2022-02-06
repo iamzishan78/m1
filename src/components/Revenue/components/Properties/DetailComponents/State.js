@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function FilterStateName({ onStateChange }) {
+export default function FilterStateName({ value, onStateChange }) {
   const classes = useStyles();
 
   const handleStateNameChange = (event, newValue) => {
@@ -34,6 +34,7 @@ export default function FilterStateName({ onStateChange }) {
       <Autocomplete
         className={classes.autoC}
         options={statesNames}
+        value={value ? statesNames[statesAbbNames.indexOf(value)]: ''}
         getOptionLabel={(option) => option}
         autoSelect
         disableListWrap
