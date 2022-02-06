@@ -105,11 +105,11 @@ export default function AnalyticsCards(props) {
 
         </Card>
 
-        {tooltip && (
+        {/* {tooltip && (
           <div className={classes.tooltip}>
             <p className={classes.tooltipText}>Sum of check details does not match check amount</p>
           </div>
-        )}
+        )} */}
 
       </Grid>
     </Grid>
