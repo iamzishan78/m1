@@ -27,6 +27,17 @@ export const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     fontSize: "15px",
   },
+  field: {
+    "& .MuiAutocomplete-clearIndicator": {
+      marginRight: "10px",
+    },
+    "& .MuiFormControl-marginNormal": {
+      margin: "0px",
+    },
+    "& .MuiFormControl-marginDense": {
+      margin: "0px",
+    },
+  },
   wellsSelectField: {
     "& .MuiInputBase-root": {
       borderRadius: "8px",
@@ -60,6 +71,7 @@ export const useStyles = makeStyles((theme) => ({
     position: "absolute",
     right: "6px !important",
     marginTop: "4px !important",
+    cursor: "pointer",
   },
   textArea: {
     margin: "0px 0px",
