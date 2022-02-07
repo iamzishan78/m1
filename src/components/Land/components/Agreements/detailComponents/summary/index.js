@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useForm, Controller } from "react-hook-form";
 import { Grid, Typography, Box } from "@material-ui/core";
-import { useStyles as summaryStyles, StyledTextField } from "./style";
+import { useStyles as summaryStyles, StyledTextField } from "../style";
 
 import CheckIcon from "@material-ui/icons/Check";
 import CloseIcon from "@material-ui/icons/Close";
@@ -29,6 +29,7 @@ export default function Summary({ agreementDetails }) {
       reset(agreementDetails);
       getAgreementProvisions({ variables: { agreementId: activeAgreement._id } });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reset, agreementDetails, getAgreementProvisions]);
 
   useEffect(() => {
@@ -36,7 +37,7 @@ export default function Summary({ agreementDetails }) {
   }, [getStandardProvisions]);
 
   const updateAgreement = (field, value, isCustom) => {
-    if (agreementDetails[field] == value) return;
+    if (agreementDetails[field] === value) return;
     const shape = activeAgreement.shape;
     if (!isCustom) {
       set(shape.properties, field, value);
@@ -77,7 +78,11 @@ export default function Summary({ agreementDetails }) {
   return (
     <Grid container direction="row" justify="space-between" alignItems="center" className={classes.root}>
       <Grid item className={classes.infoSection}>
-        <FieldsSection agreementDetails={{ ...agreementDetails, _id: activeAgreement?._id }} updateAgreement={updateAgreement} control={control} />
+        <FieldsSection
+          agreementDetails={{ ...agreementDetails, _id: activeAgreement?._id }}
+          updateAgreement={updateAgreement}
+          control={control}
+        />
       </Grid>
       <Grid item className={classes.mapSection}>
         <Grid item md={12} className={classes.provisionCard}>

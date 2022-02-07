@@ -7,9 +7,9 @@ export const useStyles = makeStyles((theme) => ({
     padding: "10px 25px",
   },
   titleText: {
+    marginRight: "15px",
     textTransform: "uppercase",
-    margin: "5px 16px 5px",
-    color: "#5a5a5a",
+    fontWeight: "bold",
   },
   fieldsSection: {
     margin: "0px 0px",
@@ -82,8 +82,8 @@ export const useStyles = makeStyles((theme) => ({
       },
     },
     "& .MuiSvgIcon-root": {
-      fill: "#757575"
-    }
+      fill: "#757575",
+    },
   },
   summaryHeader: {
     display: "flex",

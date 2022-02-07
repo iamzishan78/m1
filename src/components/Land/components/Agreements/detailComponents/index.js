@@ -23,6 +23,7 @@ import NavHeader from "components/Land/components/Common/NavHeader";
 import DocViewer from "components/Shared/DocViewer";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
 import Summary from "components/Land/components/Agreements/detailComponents/summary";
+import RelatedParties from "components/Land/components/Agreements/detailComponents/relatedParties";
 
 import { useLazyQuery } from "@apollo/client";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
@@ -37,11 +38,11 @@ const useStyles = makeStyles((theme) => ({
   title: {
     display: "flex",
     alignItems: "center",
-    width: "100%"
+    width: "100%",
   },
   titleText: {
     marginLeft: 16,
-    width: "100%"
+    width: "100%",
   },
   highlighter: {
     background: "#263451",
@@ -72,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     borderTopRightRadius: 8,
   },
   tabsSection: {},
-  summarySection: {
+  tabDetailSection: {
     padding: 20,
     background: "#ffffff",
     borderBottomLeftRadius: 8,
@@ -86,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
     "& fieldset": {
       border: "none",
     },
-    width: "100%"
+    width: "100%",
   },
   tabsSectionDetails: {
     maxHeight: "calc(100vh - 280px)",
@@ -371,24 +372,28 @@ export default function DetailComponents(props) {
 
           <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
             <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
-              <div className={classes.summarySection} ref={tab === 0 ? selectedTabRef : null}>
+              <div className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null} style={{ backgroundColor: "#fff" }}>
                 <Summary agreementDetails={agreementDetails} />
               </div>
-              {/* <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
-              <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
-                <SummarySection checkId={checkId} />
+              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
+              <div className={classes.tabDetailSection} ref={tab === 1 ? selectedTabRef : null}>
+                <RelatedParties agreementDetails={agreementDetails} />
               </div>
-              <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
-              <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
-                <CheckDetailsSection checkId={checkId} />
-              </div> */}
             </div>
           </div>
 
           <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
         </div>
 
-        {!metaCollapse && <MetadataDrawer setCollapse={setMetaCollapse} users={users} targetSourceId={agreementId} description={agreementDetails?.description} targetLabel="Shape" />}
+        {!metaCollapse && (
+          <MetadataDrawer
+            setCollapse={setMetaCollapse}
+            users={users}
+            targetSourceId={agreementId}
+            description={agreementDetails?.description}
+            targetLabel="Shape"
+          />
+        )}
       </div>
 
       {/**

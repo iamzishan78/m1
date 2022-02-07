@@ -3,7 +3,7 @@ import { useLazyQuery } from "@apollo/client";
 import { Controller } from "react-hook-form";
 import { Grid, TextField, Typography, Button, Select, MenuItem, Tooltip } from "@material-ui/core";
 import { KeyboardDatePicker } from "@material-ui/pickers";
-import { useStyles as summaryStyles } from "./style";
+import { useStyles as summaryStyles } from "../style";
 import WellIcon from "components/Shared/svgIcons/well";
 import TractIcon from "components/Shared/svgIcons/tract";
 import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
@@ -108,7 +108,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
     <Grid container direction="row" display="flex" justify="flex-start" alignItems="center" spacing={1} className={classes.fieldsSection}>
       <Grid item xs={12} className={classes.summaryHeader}>
         <div style={{ display: "flex", width: "50%" }}>
-          <Typography variant="h5" style={{ marginRight: "15px", textTransform: "uppercase", fontWeight: "bold" }}>
+          <Typography variant="h5" className={classes.titleText}>
             Summary
           </Typography>
           <ProgressBar value={35} height="3px" isNumeric />
@@ -256,7 +256,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     shapeType="Agreement"
                     typeKey={field.key}
                     variant="outlined"
-                    onChange={() => { }}
+                    onChange={() => {}}
                     onBlur={(event) => offClickHandler(field.key, event.target.value)}
                     autoFocus={false}
                     id={`field-${index}`}
