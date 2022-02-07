@@ -113,6 +113,8 @@ import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import Link from "@material-ui/core/Link";
+
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -1734,6 +1736,9 @@ function SubTable(props) {
                             }));
 
                             routeChange(`/contact/details/${value}`);
+                            // const newWindow = window.open(window.location.origin + `/contact/details/${value}/?tenant=${window.sessionStorage.getItem("tenantName")}`, '_blank', 'noopener,noreferrer')\
+                            // const newWindow = window.open(window.location.origin + `/contact/details/${value}}`, '_blank', 'noopener,noreferrer')
+                            // if (newWindow) newWindow.opener = null
                             setTitle("Contact Details");
                             setSubTitle(" ");
 
@@ -1791,7 +1796,11 @@ function SubTable(props) {
                         {!value || value === "false" ? (
                           <Convert_contact style={{ margin: "4px" }} />
                         ) : (
-                          <Contact_card style={{ margin: "4px" }} />
+                          <Link 
+                            href={window.location.origin + `/contact/details/${value}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
+                            onClick={(e) => e.preventDefault()}>
+                            <Contact_card style={{ margin: "4px" }} />
+                          </Link>
                         )}
                       </IconButton>
                     </Tooltip>
