@@ -12,7 +12,8 @@ import { COMMENTSCOUNTER } from "graphQL/useQueryCommentsCounter";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { TRACKSBYOBJECTTYPE } from "graphQL/useQueryTracksByObjectType";
 
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+// import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { AutoCompleteFilter } from "./AutoCompleteFilter";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { get } from "lodash";
@@ -52,7 +53,12 @@ export const TableESHOC = (Component) => {
         const [dataTracks, DataTracks] = useState(null);
         const setDataTracks = (newState) => { setStateIfDeepEqual(DataTracks, newState) };
 
-        const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
+        // const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
+        //     fetchPolicy: "no-cache", onCompleted: () => {
+        //         setLoading(false);
+        //     }
+        // });
+        const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
             fetchPolicy: "no-cache", onCompleted: () => {
                 setLoading(false);
             }
@@ -77,7 +83,7 @@ export const TableESHOC = (Component) => {
 
         const [stateApp, setStateApp] = useContext(AppContext);
 
-        const tableData = elasticData?.getESPaginatedList
+        const tableData = elasticData?.getESSimpleSearch
 
         useEffect(() => {
             if (constDataTracks?.tracksByObjectType) {
@@ -117,14 +123,28 @@ export const TableESHOC = (Component) => {
 
         useEffect(() => {
             if (tableMeta?.esIndex) {
-                getESPaginatedList({
+                // getESPaginatedList({
+                //     variables: {
+                //         esIndex: tableMeta.esIndex,
+                //         pagination: {
+                //             first: tableMeta.startPaginationAt,
+                //             keep_alive: "1micros"
+                //         },
+                //         search: tableMeta.extendSearchQuery,
+                //         filters: tableMeta.filters ? tableMeta.filters : [],
+                //         polygon: tableMeta.polygon ? tableMeta.polygon : undefined
+                //     }
+                // });
+                getESSimpleSearch({
                     variables: {
-                        esIndex: tableMeta.esIndex,
+                        index: tableMeta.esIndex,
                         pagination: {
                             first: tableMeta.startPaginationAt,
                             keep_alive: "1micros"
                         },
-                        search: tableMeta.extendSearchQuery,
+                        search: {
+                            query: tableMeta.extendSearchQuery
+                        },
                         filters: tableMeta.filters ? tableMeta.filters : [],
                         polygon: tableMeta.polygon ? tableMeta.polygon : undefined
                     }
@@ -281,8 +301,11 @@ export const TableESHOC = (Component) => {
             let pageESVariables = {
                 variables: {
                     polygon: tableState.polygon ? tableState.polygon : undefined,
-                    esIndex: tableState.esIndex,
-                    search: tableState.searchText ? `${tableState.searchText}*` : '',
+                    index: tableState.esIndex,
+                    // search: tableState.searchText ? `${tableState.searchText}*` : '',
+                    search: {
+                        query: tableState.searchText
+                    },
                     pagination: {
                         // pit: tableData?.before_pit,
                         first: tableState.rowsPerPage,
@@ -354,10 +377,10 @@ export const TableESHOC = (Component) => {
                     });
                 },
                 extendSearchQuery: (extraSearch) => {
-                    if (pageESVariables.variables.search)
-                        pageESVariables.variables.search = `${pageESVariables.variables.search} AND ${extraSearch}`
-                    else
-                        pageESVariables.variables.search = `${extraSearch}`
+                    // if (pageESVariables.variables.search)
+                    //     pageESVariables.variables.search = `${pageESVariables.variables.search} AND ${extraSearch}`
+                    // else
+                    //     pageESVariables.variables.search = `${extraSearch}`
                 }
             }
         }
@@ -366,7 +389,7 @@ export const TableESHOC = (Component) => {
             tableState.esIndex = tableMeta.esIndex;
             tableState.filters = tableMeta.filters ? tableMeta.filters : [];
             tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
-            const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
+            const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch)
             switch (action) {
                 case "search":
                 case "sort":

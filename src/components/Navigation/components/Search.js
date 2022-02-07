@@ -34,7 +34,7 @@ import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
 // import { PAGINATEDOWNERSQUERY } from "graphQL/useQueryPaginatedOwner";
 // import { PAGINATEDOPERATORSQUERY } from "graphQL/useQueryPaginatedOperators";
 // import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 
 // custom components
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
@@ -275,7 +275,7 @@ function Search() {
     }
   }, [searchHistoryList]);
 
-  const [getESPaginatedList, { data: esSearchData }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
+  const [getESSimpleSearch, { data: esSearchData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });
   //////////// Search History End//////////////////
   const startPaginationAt = 25;
 
@@ -310,16 +310,7 @@ function Search() {
     () => ({
       "wells": {
         esIndex: "platformData:wells",
-        search: (request) => (() => {
-          let searchString = ""
-          if (request.input) {
-            searchString = request.input.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
-          }
-      
-          return searchString
-            ? `(wellName:(${searchString.join('* AND ')}*) OR api:(${searchString.join('* AND ')}*))^2 OR (wellName:(${searchString.join('* ')}*) OR api:(${searchString.join('* ')}*))`
-            : ""
-        })(),
+        search: (request) => `${request.input}`,
         formatOptions: (data) => {
           return { ...data, Source: wellCogIndexName, Primary: data.WellName, Secondary: data.ApiNumber }
         }
@@ -408,14 +399,28 @@ function Search() {
     () =>
       debounce((request) => {
         const { esIndex, search } = esCallData[searchOption]
-        getESPaginatedList({
+        // getESPaginatedList({
+        //   variables: {
+        //     esIndex,
+        //     pagination: {
+        //       first: request.searchTop ? request.searchTop : startPaginationAt,
+        //       keep_alive: "1micros"
+        //     },
+        //     search: search(request),
+        //     sort: [],
+        //   }
+        // })
+        getESSimpleSearch({
           variables: {
-            esIndex,
+            index: esIndex,
             pagination: {
               first: request.searchTop ? request.searchTop : startPaginationAt,
               keep_alive: "1micros"
             },
-            search: search(request),
+            search: {
+              query: search(request),
+              fields: ["wellName", "api"]
+            },
             sort: [],
           }
         })
@@ -425,10 +430,10 @@ function Search() {
 
   useEffect(() => {
     let newOptions = []
-    if (esSearchData?.getESPaginatedList?.hits) {
+    if (esSearchData?.getESSimpleSearch?.hits) {
       const { formatOptions } = esCallData[searchOption]
       newOptions = [
-        ...esSearchData.getESPaginatedList.hits.map((result) => {
+        ...esSearchData.getESSimpleSearch.hits.map((result) => {
           return formatOptions(result);
         }),
       ];
