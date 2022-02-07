@@ -1735,10 +1735,7 @@ function SubTable(props) {
                               contactFromMap: true,
                             }));
 
-                            routeChange(`/contact/details/${value}`);
-                            // const newWindow = window.open(window.location.origin + `/contact/details/${value}/?tenant=${window.sessionStorage.getItem("tenantName")}`, '_blank', 'noopener,noreferrer')\
-                            // const newWindow = window.open(window.location.origin + `/contact/details/${value}}`, '_blank', 'noopener,noreferrer')
-                            // if (newWindow) newWindow.opener = null
+                            routeChange(`/contact/details/${value}/`);
                             setTitle("Contact Details");
                             setSubTitle(" ");
 
@@ -1797,7 +1794,11 @@ function SubTable(props) {
                           <Convert_contact style={{ margin: "4px" }} />
                         ) : (
                           <Link 
-                            href={window.location.origin + `/contact/details/${value}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
+                            href={
+                              window.location.origin
+                              +
+                              `/contact/details/${value}/?tenant=${window.sessionStorage.getItem("tenantName")}`
+                            }
                             onClick={(e) => e.preventDefault()}>
                             <Contact_card style={{ margin: "4px" }} />
                           </Link>
