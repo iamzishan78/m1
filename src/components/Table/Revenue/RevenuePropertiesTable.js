@@ -129,7 +129,7 @@ function RevenuePropertiesTable(props) {
 
 
   useEffect(() => {
-    if (tableData) {
+    if (tableData && props.onPropertiesCount) {
       props.onPropertiesCount(count);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
