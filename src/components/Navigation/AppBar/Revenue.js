@@ -1,16 +1,26 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 import { Grid, Typography, Button } from "@material-ui/core";
 import { Add, ArrowDropDown } from "@material-ui/icons";
-
+import { useMutation } from "@apollo/client";
 
 import RevenueSearch from "components/Navigation/components/RevenueSearch";
 import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
+import { ADD_PROPERTY } from "graphQL/useMutationAddProperty";
 
 export default function RevenueAppBar(props) {
   const { classes } = props;
+  let history = useHistory();
   const { activeModule, actionsPanelState } = useSelector((state) => state.Revenue);
+
+  const [addProperty] = useMutation(ADD_PROPERTY, {
+    onCompleted: (data) => {
+      if(data?.addProperty?.property)
+        history.push(`/revenue/property/details/${data.addProperty.property._id}`)
+    }
+  });
 
   return (
     <Grid
@@ -38,14 +48,27 @@ export default function RevenueAppBar(props) {
             )}
         </Grid>
       </Grid>
-      {(
-        activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title ||
-        activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title
-      ) && (
+      {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title) && (
           <Grid item>
             <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
               <Button color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}>
                 Add {activeModule.title}
+              </Button>
+            </div>
+          </Grid>
+        )}
+      {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title) && (
+          <Grid item>
+            <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+              <Button color="primary" variant="contained" startIcon={<Add />} onClick={() => {
+                  addProperty({
+                    variables:{
+                      property: {}
+                    }
+                  })
+                }}
+              >
+                Add New Property
               </Button>
             </div>
           </Grid>

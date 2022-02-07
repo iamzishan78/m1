@@ -34,9 +34,19 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#fff",
     },
   },
+  inputFieldDate: {
+    "& .MuiOutlinedInput-input": {
+      paddingLeft: '0px'
+    }
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 }));
 
 const CUSTOM_DATES = {
+  ALL_DATES: "All Dates",
   THIS_YEAR_TO_LAST_MONTH: "This year-to-last-month",
   THIS_YEAR_TO_DATE: "This year to date",
   LAST_YEAR_TO_DATE: "Last year to date",
@@ -45,14 +55,19 @@ const CUSTOM_DATES = {
   LAST_QUARTER: "Last Quarter",
   THIS_QUARTER: "This Quarter",
   LAST_YEAR: "Last Year",
+  CUSTOM: "Custom",
 };
 
 // fromDate and toDate should be passed from the parent
-export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate }) {
+export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate, label, isProperties, lastCheckMinDate, onChange }) {
   const classes = useStyles();
-
   useEffect(() => {
-    handleDateTypeChange(CUSTOM_DATES.LAST_MONTH);
+    if(isProperties){
+      handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+    }else{
+      handleDateTypeChange(CUSTOM_DATES.LAST_MONTH);
+    }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -72,6 +87,9 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
   // }
 
   const handleDateTypeChange = (date) => {
+    if(onChange){
+      onChange(date)
+    }
     const currentYear = Math.round(new Date().getFullYear());
     switch (date) {
       case CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH:
@@ -90,6 +108,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
         setFromDate(`${moment().subtract(1, 'months').startOf('month').format('yyyy-MM-DD')}`);
         setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
         break;
+      case CUSTOM_DATES.CUSTOM:
       case CUSTOM_DATES.THIS_MONTH:
         setFromDate(`${moment().startOf('month').format('yyyy-MM-DD')}`);
         setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
@@ -106,6 +125,10 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
         setFromDate(`${currentYear - 1}-01-01`);
         setToDate(`${currentYear - 1}-12-31`);
         break;
+      case CUSTOM_DATES.ALL_DATES:
+        setFromDate(`${moment(lastCheckMinDate).startOf('month').format("yyyy-MM-DD")}`);
+        setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
+        break;
       default:
         setFromDate(`${moment().startOf('month').format('yyyy-MM-DD')}`);
         setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
@@ -113,9 +136,13 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
   };
 
   return (
-    <Grid item xs={8} md={8} style={{ marginTop: "4px" }}>
       <Grid container direction="row" display="flex" alignItems="center" spacing={3}>
-        <Grid item xs={3} style={{ marginTop: "2px" }}>
+        {label && (
+          <Grid style={{ marginTop: "2px", padding: 0 }}>
+            <label className={classes.label}>{label}</label>
+          </Grid>
+        )}
+        <Grid item xs={3} sm={3} md={3} lg={3} xl={3} style={{ marginTop: "2px" }}>
           <Autocomplete
             size="small"
             onChange={(event, newValue) => {
@@ -125,16 +152,19 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
                 handleDateTypeChange(newValue);
               }
             }}
-            options={Object.values(CUSTOM_DATES)}
+            options={Object.values(CUSTOM_DATES).filter(value => {
+              if(!isProperties && value === 'All Dates')return false;
+              else return true;
+            })}
             renderInput={(params) => (
               <TextField {...params} variant="outlined" label="Date Range" placeholder="" style={{ backgroundColor: "white" }} />
             )}
-            defaultValue={CUSTOM_DATES.LAST_MONTH}
+            defaultValue={isProperties ?  CUSTOM_DATES.ALL_DATES : CUSTOM_DATES.LAST_MONTH}
             disableListWrap
             id="custom-date-dropdown"
           />
         </Grid>
-        <Grid item xs={4} >
+        <Grid item xs={3} sm={3} md={3} lg={3} xl={3} >
           <TextField
             size="small"
             margin="dense"
@@ -166,7 +196,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
         <Grid>
           <label>to</label>
         </Grid>
-        <Grid item xs={4} >
+        <Grid item xs={3} sm={3} md={3} lg={3} xl={3} >
           <TextField
             size="small"
             margin="dense"
@@ -196,6 +226,5 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
           />
         </Grid>
       </Grid>
-    </Grid>
   );
 }

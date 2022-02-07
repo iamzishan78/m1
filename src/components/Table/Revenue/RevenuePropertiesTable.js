@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { Warning as WarningIcon } from "@material-ui/icons";
@@ -76,82 +76,49 @@ function RevenuePropertiesTable(props) {
             },
           },
         },
+        includeEmpty: props.selectedFilter === 'All Dates' ? true: undefined
       },
     ] : []
 
-  React.useEffect(() => {
-    const statusIndex = columns.findIndex((c) => c.name === "status");
-    if (statusIndex !== -1) {
-      columns[statusIndex].options.customRender = (value, tableMeta) => (
-        <>
-          {!tableMeta.rowData[8] ? (
-            <div
-              className={classes.warningCol}
-              onClick={() => {
-                dispatch(setRevenueKey("wellApiDropdownIndex", tableMeta.rowIndex));
-              }}
-            >
-              <WarningIcon />
-              <div>Unmapped</div>
-            </div>
-          ) : (
-            <div className={classes.flexAlign}>
-              {value?.toLowerCase() === "approved" ? (
-                <div className={classes.activeBadge} />
-              ) : value?.toLowerCase() === "pending" ? (
-                <div className={classes.pendingBadge} />
-              ) : value?.toLowerCase() === "declined" ? (
-                <div className={classes.declinedBadge} />
-              ) : (
-                <div className={classes.statusBtnDiv}>
-                  <div className={classes.approveBtn} onClick={() => handleStatusChange(tableMeta.rowData[0], "approved")}>
-                    Approve
-                  </div>
-                  <div className={classes.declineBtn} onClick={() => handleStatusChange(tableMeta.rowData[0], "declined")}>
-                    Decline
-                  </div>
-                </div>
-              )}
-              <div>{value}</div>
-            </div>
-          )}
-        </>
-      );
+  useEffect(() => {
+    if (tableData?.hits) {
+      const hits = tableData.hits.map((hit) => {
+        hit = props.setGenricData(hit, hit._id, ["tracks"]);
+        hit.payorName = hit?.operator?.name;
+        hit.wellApiNumber = hit?.well?.apiNumber
+        hit.wellName = hit?.well?.wellName;
+        hit.checkNumber = hit?.lastCheck?.checkNumber;
+        hit.amount = hit?.lastCheck?.netOwnerValue;
+        hit.type = hit?.lastCheck?.interestType[0];
+        hit.lastChecked = new Date(hit?.lastCheck?.checkDate).toLocaleDateString();
+        hit.tags = hit?.tags?.length > 0
+          ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+          : [[], 0];
+        hit.commentsCounter = hit.comments ? hit.comments.length : 0;
+        return hit;
+      });
+      props.setRows(JSON.parse(JSON.stringify(hits)));
+      props.setLoading(false);
     }
-  }, [columns]);
+  }, [tableData, props.dependencyUpdate]);
+
 
   // fetaching data
   React.useEffect(() => {
-    getESPaginatedList({
-      variables: {
-        esIndex: esIndex,
-        pagination: {
-          first: props.startPaginationAt,
-          keep_alive: "1micros",
+      getESPaginatedList({
+        variables: {
+          esIndex: esIndex,
+          pagination: {
+            first: props.startPaginationAt,
+            keep_alive: "1micros",
+          },
+          search: props.revenueSearchQuery,
+          filter: "",
+          filters: esFilters,
         },
-        search: props.revenueSearchQuery,
-        filter: "",
-        sort: [],
-        filters: esFilters,
-      },
-    });
+      });
   }, [getESPaginatedList, props.parent, props.revenueSearchQuery, props.filterToggle]);
 
-  const handleStatusChange = (_id, status) => {
-    let property = {
-      _id,
-    };
-    if (status === "declined") {
-      property = { ...property, status: "", well: {} };
-    }
-    updateProperty({
-      variables: {
-        property,
-      },
-      refetchQueries: ["getESPaginatedList"],
-      awaitRefetchQueries: true,
-    });
-  };
 
   React.useEffect(() => {
     dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }));
@@ -170,7 +137,7 @@ function RevenuePropertiesTable(props) {
     tableState.esFilters =esFilters
     // tableState.sort = [];
 
-    const tableActions = props.initializeTableActions(tableState, meta, revenueProperties, columns, getESPaginatedList);
+    const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList);
     setESFilters(tableActions.pageESVariables.variables.filters);
     switch (action) {
       case "search":
@@ -196,7 +163,7 @@ function RevenuePropertiesTable(props) {
         style={{ backgroundColor: "#fff" }}
         header={props.header}
         columns={columns}
-        rows={revenueProperties?.data}
+        rows={props.rows}
         total={false}
         potentialIssues={potentialIssuesList}
         addAble={{ type: "RevenueProperties" }}

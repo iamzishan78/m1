@@ -553,6 +553,12 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     fontSize: "smaller",
   },
+  customWarning: {
+    "& .MuiSvgIcon-root":{
+      fill: "#ffa800"
+    }
+    
+  }
 }));
 
 function SubTable(props) {
@@ -572,7 +578,7 @@ function SubTable(props) {
 
   // function state
   const [trueTargetLabel, TrueTargetLabel] = useState(null);
-  const [contactDataMissing, setContactDataMissing] = useState([]);
+  // const [contactDataMissing, setContactDataMissing] = useState([]);
   const [rowsPerPage, RowsPerPage] = useState(props.startPaginationAt);
   const [firstMount, FirstMount] = useState(true);
   const [title, Title] = useState("");
@@ -2176,7 +2182,7 @@ function SubTable(props) {
                         <WarningIcon />
 
                         <div id="alertTootip" className={classes.tooltip}>
-                          <p style={{ fontSize: 14, lineHeight: "120%", textAlign: "left" }}>Sum of details does not match check account</p>
+                          <p style={{ fontSize: 14, lineHeight: "120%", textAlign: "left" }}>Sum of check details does not match check amount</p>
                         </div>
                       </div>
                     )}
@@ -2238,7 +2244,20 @@ function SubTable(props) {
                         {value}
                       </div>
                     )}
-                    {props.parent === "RevenuePropertiesTable" && column.options.customBodyRender}
+                    {props.parent === "RevenuePropertiesTable" && (
+                      <>
+                        {value?.toLowerCase() === 'approved' && (
+                          <div className="flex justifyCenter alignCenter success w-100">
+                            <CheckCircle size={20} />
+                          </div>
+                        )}
+                        {value?.toLowerCase() === 'unapproved' && (
+                          <div className={`flex justifyCenter alignCenter w-100 ${classes.customWarning}`}>
+                            <WarningIcon size={20} />
+                          </div>
+                        )}
+                      </>
+                    )}
                     {props.parent === "AgreementsTable" && (
                       <div style={{ display: "flex", "align-items": "center" }}>
                         {value?.toLowerCase() === "approved" ? (
@@ -2976,19 +2995,19 @@ function SubTable(props) {
                           className={classes.multiSelectionTopBarButtons}
                           disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
                           onClick={() => {
-                            const rows = getSelectedRows();
-                            const contacts = [];
-                            for (let i = 0; i < rows.length; i++) {
-                              if (!rows[i].firstName || !rows[i].lastName || !rows[i].address1) {
-                                contacts.push(rows[i]);
-                              }
-                            }
-                            setContactDataMissing(contacts);
-                            if (contacts.length > 0) {
-                              handleExpandClick(null, null, getSelectedRows(), "contactDataMissing");
-                            } else {
-                              handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData");
-                            }
+                            // const rows = getSelectedRows();
+                            // const contacts = [];
+                            // for (let i = 0; i < rows.length; i++) {
+                            //   if (!rows[i].firstName || !rows[i].lastName || !rows[i].address1) {
+                            //     contacts.push(rows[i]);
+                            //   }
+                            // }
+                            // setContactDataMissing(contacts);
+                            // if (contacts.length > 0) {
+                            //   handleExpandClick(null, null, getSelectedRows(), "contactDataMissing");
+                            // } else {
+                            handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData");
+                            // }
                           }}
                         >
                           Contact Data
@@ -4047,9 +4066,10 @@ function SubTable(props) {
           <AddContactDialogContent onClose={handleCloseDialog} parent={props.addAble.parent} />
         )}
 
-        {openDialog === "contactDataMissing" && (
+        {/* moved component in buyContactsInfoData and handled its operations there */}
+        {/* {openDialog === "contactDataMissing" && (
           <ContactDataMissingDialog openDialog={openDialog} onClose={handleCloseDialog} contacts={contactDataMissing} />
-        )}
+        )} */}
         {openDialog === "multipleOwnerToContact" && (
           <MultipleOwnerToContactDrawer
             onClose={handleCloseDialog}
