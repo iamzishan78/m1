@@ -50,15 +50,15 @@ export default function RelatedParties(props) {
     <div className={classes.root}>
       <Accordion className={classes.accordionRoot}>
         <AccordionSummary
-          aria-controls="panel1a-content"
-          id="panel1a-header"
+          aria-label="Expand"
+          aria-controls="additional-actions1-content"
           expandIcon={
-            <IconButton size="large">
-              <ExpandMoreIcon size="large" />
+            <IconButton>
+              <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
           defaultExpanded={true}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {}}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>

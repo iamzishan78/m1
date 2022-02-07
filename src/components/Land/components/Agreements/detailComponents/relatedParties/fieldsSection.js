@@ -80,7 +80,13 @@ export default function FieldsSection({ setPartiesNumber }) {
     <>
       <Grid container display="flex" direction="row">
         {parties.map((party, index) => (
-          <Grid item xs={12} onMouseEnter={() => setHoverParty(index)} onMouseLeave={() => setHoverParty(-1)}>
+          <Grid
+            item
+            xs={12}
+            onMouseEnter={() => setHoverParty(index)}
+            onMouseLeave={() => setHoverParty(-1)}
+            style={{ margin: "20px 0px 35px" }}
+          >
             <Grid container className={customClasses.gridStyle} justify="space-between">
               <Grid item xs={1} style={{ display: "flex" }}>
                 <div className={customClasses.fieldLabel}>Party {index + 1}</div>
