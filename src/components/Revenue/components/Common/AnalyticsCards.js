@@ -75,8 +75,8 @@ export default function AnalyticsCards({
   });
 
   const getApprovedCount = (buckets) => {
-    const activeBucket = buckets.filter((item) => item.key === "approved" && item);
-    return activeBucket[0]?.['doc_count'];
+    const activeBucket = buckets.filter((item) => item.key.toLowerCase() === "approved" && item);
+    return activeBucket && activeBucket?.length > 0 ? activeBucket[0]['doc_count'] : 0
   }
 
   const [getESAggsApprovedCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, {

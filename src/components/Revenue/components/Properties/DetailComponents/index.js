@@ -383,7 +383,7 @@ export default function DetailComponents(props) {
             propertyDetails={propertyDetails}
             selectedInterest={selectedInterest}
             setShowOwnerDialog={setShowOwnerDialog}
-            propertyOwnerContact={propertyOwnerContact}
+            propertyOwnerContact={propertyOwnerContact?.find(owner => owner.entityId === propertyDetails?.owner?._id)}
             onClose={() => setShowInterestDetails(false)}
           />
         )}

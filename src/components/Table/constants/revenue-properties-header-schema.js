@@ -31,8 +31,8 @@ const RevenuePropertiesHeadCells = [
     options: { sort: true, filter: true },
   },
   {
-    name: "country",
-    label: "Country",
+    name: "county",
+    label: "County",
     esKey: "county.keyword",
     options: { sort: true, filter: true },
   },
@@ -53,12 +53,6 @@ const RevenuePropertiesHeadCells = [
     name: "wellName",
     label: "Well Name",
     esKey: "well.wellName.keyword",
-    options: { sort: true, filter: true },
-  },
-  {
-    name: "status",
-    label: "Status",
-    esKey: "status.keyword",
     options: { sort: true, filter: true },
   },
   {
@@ -104,6 +98,12 @@ const RevenuePropertiesHeadCells = [
       print: false,
       viewColumns: false,
     },
+  },
+  {
+    name: "status",
+    label: " ",
+    esKey: "status.keyword",
+    options: { sort: true, filter: true },
   },
 ];
 

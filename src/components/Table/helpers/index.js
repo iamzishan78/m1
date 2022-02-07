@@ -9,51 +9,51 @@ import get from "lodash/get";
 export const handleTagColumn = (TableHeader, cleanAvailableTags) => {
   return cleanAvailableTags.length > 0
     ? TableHeader.map((column) => {
-        if (column.name === "tags") {
-          return {
-            ...column,
-            options: {
-              ...column.options,
-              filterOptions: {
-                ...column.options.filterOptions,
-                names: cleanAvailableTags,
-              },
+      if (column.name === "tags") {
+        return {
+          ...column,
+          options: {
+            ...column.options,
+            filterOptions: {
+              ...column.options.filterOptions,
+              names: cleanAvailableTags,
             },
-          };
-        }
-        return column;
-      })
+          },
+        };
+      }
+      return column;
+    })
     : TableHeader.map((column) => {
-        if (column.name === "tags") {
-          return {
-            ...column,
-            options: {
-              ...column.options,
-              filter: false,
-            },
-          };
-        }
-        return column;
-      });
+      if (column.name === "tags") {
+        return {
+          ...column,
+          options: {
+            ...column.options,
+            filter: false,
+          },
+        };
+      }
+      return column;
+    });
 };
 
 export const handleCustomFilterColumns = (TableHeader, filterObject) => {
   return filterObject && Object.keys(filterObject)?.length > 0
     ? TableHeader.map((column) => {
-        if (Object.keys(filterObject).includes(column.name)) {
-          return {
-            ...column,
-            options: {
-              ...column.options,
-              filterOptions: {
-                ...column.options.filterOptions,
-                names: filterObject[column.name]?.map((el) => el._id),
-              },
+      if (Object.keys(filterObject).includes(column.name)) {
+        return {
+          ...column,
+          options: {
+            ...column.options,
+            filterOptions: {
+              ...column.options.filterOptions,
+              names: filterObject[column.name]?.map((el) => el._id),
             },
-          };
-        }
-        return column;
-      })
+          },
+        };
+      }
+      return column;
+    })
     : TableHeader;
 };
 
@@ -65,7 +65,7 @@ const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column) => {
       if (column.esKey && !column.noFilter) {
         column.options.filter = true;
       }
-    } else if(column.name !== ' ') {
+    } else if (column.name !== ' ') {
       column.options.display = false;
       column.options.filter = false;
     }
@@ -78,6 +78,10 @@ const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column) => {
       if (column.esKey && !column.noFilter) {
         column.options.filter = true;
       }
+    } else if (TableHeader.find((col) => col.name === column.name).options.forceFilter !== undefined &&
+      TableHeader.find((col) => col.name === column.name).options.forceFilter) {
+      column.options.display = false;
+      column.options.filter = true;
     } else {
       column.options.display = false;
       column.options.filter = false;
@@ -105,6 +109,9 @@ export const setColumnsData = (
         filter: true,
         filterType: "custom",
         filterList: filters[index],
+        customFilterListOptions: {
+          render: v => v.map(l => l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l),
+        },
         filterOptions: {
           display: (filterList, onChange, index, column) => {
             column.filterKey = TableHeader.find(
@@ -143,7 +150,7 @@ export const handleSelectedGridChange = (
   if (selectedGridView?.filters) {
     columns.forEach((column, index) => {
       setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
-      if(isGridChanged){
+      if (isGridChanged) {
         const value = get(
           selectedGridView?.filters?.find((filter) => {
             return JSON.stringify(filter.field) === JSON.stringify(column.esKey);
@@ -163,7 +170,7 @@ export const handleSelectedGridChange = (
   } else {
     columns.forEach((column, index) => {
       setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
-      if(isGridChanged){
+      if (isGridChanged) {
         if (column.options) {
           column.options.filterList = [];
         }
@@ -176,7 +183,7 @@ export const handleSelectedGridChange = (
 export const HeaderComponent = ({
   Icon,
   label,
-  selectedGridView = { 
+  selectedGridView = {
     type: "Default"
   },
   setShowViewModal,
