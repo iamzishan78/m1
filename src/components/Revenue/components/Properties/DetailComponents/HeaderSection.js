@@ -230,7 +230,7 @@ export default function HeaderSection(props) {
                       type="text"
                       fullWidth
                       onKeyDown={(e) => onKeyDown(e, "number", params.value)}
-                      onBlur={() => setValue("number", propertyDetails.number)}
+                      onBlur={(e) => updatePropertyData("number", params.value)}
                     />
                   )}
                 />
@@ -256,7 +256,7 @@ export default function HeaderSection(props) {
                       type="text"
                       fullWidth
                       onKeyDown={(e) => onKeyDown(e, "name", params.value)}
-                      onBlur={() => setValue("name", propertyDetails.name)}
+                      onBlur={(e) => updatePropertyData("name", params.value)}
                     />
                   )}
                 />
@@ -572,23 +572,7 @@ export default function HeaderSection(props) {
                       fullWidth
                       multiline
                       rows={5}
-                      InputProps={{
-                        endAdornment: (
-                          <React.Fragment>
-                            <Button
-                              color="secondary"
-                              onClick={() => {
-                                updatePropertyData(
-                                  "legalDescription",
-                                  params.value
-                                );
-                              }}
-                            >
-                              Update
-                            </Button>
-                          </React.Fragment>
-                        ),
-                      }}
+                      onBlur={(e) => updatePropertyData("legalDescription", params.value)}
                     />
                   )}
                 />
