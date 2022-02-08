@@ -228,7 +228,7 @@ function SuggestedOwnerTable(props) {
     setSelectedYear(selectedYear);
   };
 
-  const suggestedOwnerToParcel = async (m1nSelectedRowsIndexes, setSelectedRow) => {
+  const suggestedOwnerToParcel = async (m1nSelectedRowsIndexes) => {
     const { rows } = props;
     const selectedRows = [];
     const globalOwnerIds = [];
@@ -243,6 +243,7 @@ function SuggestedOwnerTable(props) {
       }
     }
     if (globalOwnerIds.length > 0) {
+      props.setLoading(true);
       convertMultitpleOwnerToContact({
         variables: {
           ownerIds: globalOwnerIds,
@@ -277,10 +278,11 @@ function SuggestedOwnerTable(props) {
       );
     }
     if (selectedRows.length > 0) {
+      props.setLoading(true);
       addParcel(selectedRows);
     }
-    setSelectedRow([])
-    props.setSelectedTab(0)
+    // setSelectedRow([])
+    // props.setSelectedTab(0)
   };
 
   const addParcel = (selectedRows) => {
@@ -304,13 +306,9 @@ function SuggestedOwnerTable(props) {
             createBy: stateApp.user.mongoId,
             lastUpdateBy: stateApp.user.mongoId,
           },
-        },
-        refetchQueries: [
-          "getCustomLayer",
-          "getparcelOwners",
-          "getContactParcelInterests",
-        ],
-        awaitRefetchQueries: true,
+        }
+      }).then(() => {
+        props.setSelectedTab(0)
       });
     }
   };
