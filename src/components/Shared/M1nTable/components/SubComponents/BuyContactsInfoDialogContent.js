@@ -141,7 +141,7 @@ export default function BuyContactsInfoDialogContent(props) {
 
   function loadPersonData() {
     if (validContactData.length > currentCredits) {
-      dispatch(showErrorMessage(`Your remaning credit count is ${currentCredits} but you are trying to use ${validContactData.length}`));
+      dispatch(showErrorMessage(`Requested amount of ${validContactData.length} is greater than remaining credit balance of ${currentCredits} `));
     } else {
 
       setBuyNowClicked(true)
