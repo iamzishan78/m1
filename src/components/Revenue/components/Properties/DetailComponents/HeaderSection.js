@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { get } from "lodash";
 import moment from "moment";
+import { useHistory } from "react-router-dom";
 
 import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
@@ -13,6 +14,7 @@ import AssociatedWellsList from "components/Shared/Wells/AssociatedWells";
 import ContactCardIcon from "components/Shared/svgIcons/contact_card";
 
 import ContactPaginatedAutocomplete from "components/Revenue/components/Common/ContactsPaginatedAutocomplete";
+import { AppContext } from "AppContext";
 
 import { CONTACT_ENTITY } from "graphQL/useQueryContactEntity";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
@@ -113,6 +115,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function HeaderSection(props) {
   const classes = useStyles();
+  let history = useHistory();
+  const [stateApp, setStateApp] = useContext(AppContext);
   const { control, setValue, watch, register, reset } = useForm();
   const { propertyDetails, propertyOwnerContact, setEntityToConvert } = props;
   const [entityType, setEntityType] = useState("");
@@ -321,9 +325,17 @@ export default function HeaderSection(props) {
                                 {params2.InputProps.endAdornment}
                                 <div
                                   className={classes.contactCardIcon}
-                                  onClick={() =>
-                                    setEntity(propertyDetails?.owner)
-                                  }
+                                  onClick={(e) =>{
+                                    e.stopPropagation();
+                                    if(params?.value?._id){
+                                      history.push(`/contact/details/${params?.value?._id}`);
+                                      setStateApp((stateApp) => ({
+                                        ...stateApp,
+                                        selectedContact: `${params?.value?._id}`,
+                                    }));
+                                    }
+                                    // setEntity(propertyDetails?.owner)
+                                  }}
                                 >
                                   <ContactCardIcon
                                     fill={
@@ -414,9 +426,17 @@ export default function HeaderSection(props) {
                                 {params2.InputProps.endAdornment}
                                 <div
                                   className={classes.contactCardIcon}
-                                  onClick={() =>
-                                    setEntity(propertyDetails?.operator)
-                                  }
+                                  onClick={(e) =>{
+                                    e.stopPropagation();
+                                    if(params?.value?._id) {
+                                      history.push(`/contact/details/${params?.value?._id}`);
+                                      setStateApp((stateApp) => ({
+                                        ...stateApp,
+                                        selectedContact: `${params?.value?._id}`,
+                                    }));
+                                    // setEntity(propertyDetails?.owner)
+                                    }
+                                  }}
                                 >
                                   <ContactCardIcon
                                     fill={
