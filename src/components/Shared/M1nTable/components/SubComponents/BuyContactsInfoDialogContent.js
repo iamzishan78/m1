@@ -140,8 +140,8 @@ export default function BuyContactsInfoDialogContent(props) {
   }, [idiCoreData]);
 
   function loadPersonData() {
-    if (props.rows.length > currentCredits) {
-      dispatch(showErrorMessage(`Your remaning credit count is ${currentCredits} but you are trying to use ${props.rows.length}`));
+    if (validContactData.length > currentCredits) {
+      dispatch(showErrorMessage(`Requested amount of ${validContactData.length} is greater than remaining credit balance of ${currentCredits} `));
     } else {
 
       setBuyNowClicked(true)
