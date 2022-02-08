@@ -353,7 +353,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange }) => {
         maxWidth: "380px"
       }}
     >
-      {value && value.length > 0 ? (
+      {value && value.length > 0 && Array.isArray(value) ? (
         value.map((v, index) => {
           const opt = dropdownOptions.find((opt) => opt.value === v);
           const pallete = colorPallete.find(
