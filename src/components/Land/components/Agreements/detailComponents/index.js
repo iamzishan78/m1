@@ -377,7 +377,7 @@ export default function DetailComponents(props) {
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
               <div className={classes.tabDetailSection} ref={tab === 1 ? selectedTabRef : null}>
-                <RelatedParties agreementDetails={agreementDetails} />
+                <RelatedParties agreementDetails={agreementDetails} agreementId={agreementId} />
               </div>
             </div>
           </div>

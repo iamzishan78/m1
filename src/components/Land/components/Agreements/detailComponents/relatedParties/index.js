@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
@@ -6,6 +7,8 @@ import { useStyles as customStyles } from "../style";
 
 // Components
 import Fields from "./fieldsSection";
+
+import { GET_RELATED_PARTIES } from "graphQL/useQueryRelatedParty";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,17 +44,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function RelatedParties(props) {
+export default function RelatedParties({ agreementId }) {
   const classes = useStyles();
   const customClasses = customStyles();
-  const [partiesNumber, setPartiesNumber] = useState(1);
+
+  const [getRelatedParties, { data: relatedPartiesData }] = useLazyQuery(GET_RELATED_PARTIES);
+
+  useEffect(() => {
+    if (agreementId) {
+      getRelatedParties({
+        variables: {
+          customLayerId: agreementId,
+        },
+      });
+    }
+  }, [agreementId, getRelatedParties]);
+
+  const relatedParties = React.useMemo(() => {
+    return relatedPartiesData?.getRelatedParties?.relatedParties.length > 0 ? relatedPartiesData?.getRelatedParties?.relatedParties : [{}];
+  }, [relatedPartiesData]);
 
   return (
     <div className={classes.root}>
       <Accordion className={classes.accordionRoot}>
         <AccordionSummary
-          aria-label="Expand"
-          aria-controls="additional-actions1-content"
           expandIcon={
             <IconButton>
               <ExpandMoreIcon fontSize="large" />
@@ -65,12 +81,12 @@ export default function RelatedParties(props) {
               <Typography variant="h5" className={customClasses.titleText}>
                 Related Parties
               </Typography>
-              <Chip color="info" label={partiesNumber} />
+              <Chip color="info" label={relatedParties.length} />
             </Grid>
           </Grid>
         </AccordionSummary>
         <AccordionDetails className={classes.accordionDetails}>
-          <Fields setPartiesNumber={setPartiesNumber} />
+          <Fields relatedParties={relatedParties} agreementId={agreementId} />
         </AccordionDetails>
       </Accordion>
     </div>
