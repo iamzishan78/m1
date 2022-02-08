@@ -42,13 +42,30 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
   },
 };
 
+const replaceId = (link, path) => {
+  const linkSplitted = link.split('/');
+  const pathSplitted = path.split('/');
+  for(let i = 0; i < linkSplitted.length; i++){
+    if(linkSplitted[i] !== pathSplitted[i] && linkSplitted[i] !== ':id'){
+      return false
+    }
+  }
+  return true
+}
+
 export default function Revenue() {
   const location = useLocation();
   const dispatch = useDispatch();
   const { actionsPanelState, activeModule } = useSelector((state) => state.Revenue);
 
   useEffect(() => {
-    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => location.pathname.startsWith(item.link));
+    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => {
+      const path = location.pathname;
+      if(item.link.includes(':id')){
+        return replaceId(item.link, path)
+      }
+      return path.startsWith(item.link)
+    });
     if (option) {
       dispatch(setActiveModule(option));
     }
