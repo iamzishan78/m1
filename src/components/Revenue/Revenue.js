@@ -19,6 +19,7 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
   },
   REVENUE_PROPERTY_DETAILS: {
     isExcluded: true,
+    parent: "PROPERTIES",
     title: "Properties",
     link: "/revenue/property/details/:id",
     component: "RevenuePropertyDetails",
@@ -30,12 +31,14 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
   },
   REVENUE_STATEMENT_DETAILS: {
     isExcluded: true,
+    parent: "REVENUE_STATEMENTS",
     title: "Revenue Statements",
     link: "/revenue/statement/details",
     component: "RevenueStatementDetails",
   },
   REVENUE_STATEMENT_LINE_ITEM: {
     isExcluded: true,
+    parent: "REVENUE_STATEMENTS",
     title: "Revenue Statements",
     link: "/revenue/statement/:id/line-item",
     component: "RevenueStatementLineItem",
@@ -66,7 +69,9 @@ export default function Revenue() {
       }
       return path.startsWith(item.link)
     });
-    if (option) {
+    if (option?.parent) {
+      dispatch(setActiveModule(SIDE_PANEL_MENU_ITEMS_LIST[option.parent]));
+    }else if(option){
       dispatch(setActiveModule(option));
     }
   }, [location.pathname, dispatch]);
