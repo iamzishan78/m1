@@ -131,22 +131,19 @@ export default function HeaderSection(props) {
       const data = JSON.parse(JSON.stringify(propertyDetails));
       delete data.owner;
       delete data.operator;
-      reset(data);
+      let owner = {};
+      let operator = {};
+      if (propertyOwnerContact) {
+        owner = propertyOwnerContact?.find(
+          (owner) => owner.entityId === propertyDetails?.owner?._id
+        );
+        operator = propertyOwnerContact?.find(
+          (owner) => owner.entityId === propertyDetails?.operator?._id
+        );
+      }
+      reset({ ...data, owner, operator });
     }
-  }, [propertyDetails]);
-
-  useEffect(() => {
-    if (propertyOwnerContact) {
-      const owner = propertyOwnerContact?.find(
-        (owner) => owner.entityId === propertyDetails?.owner?._id
-      );
-      setValue("owner", owner);
-      const operator = propertyOwnerContact?.find(
-        (owner) => owner.entityId === propertyDetails?.operator?._id
-      );
-      setValue("operator", operator);
-    }
-  }, [propertyOwnerContact]);
+  }, [propertyDetails, propertyOwnerContact]);
 
   useEffect(() => {
     const entity = get(contactEntityData, "contactEntity.entity");
