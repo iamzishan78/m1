@@ -61,19 +61,18 @@ export default function RelatedParties({ agreementId }) {
   }, [agreementId, getRelatedParties]);
 
   const relatedParties = React.useMemo(() => {
-    return relatedPartiesData?.getRelatedParties?.relatedParties.length > 0 ? relatedPartiesData?.getRelatedParties?.relatedParties : [{}];
+    return relatedPartiesData?.getRelatedParties?.relatedParties.length > 0 ? relatedPartiesData?.getRelatedParties?.relatedParties : [];
   }, [relatedPartiesData]);
 
   return (
     <div className={classes.root}>
-      <Accordion className={classes.accordionRoot}>
+      <Accordion className={classes.accordionRoot} defaultExpanded={true}>
         <AccordionSummary
           expandIcon={
             <IconButton>
               <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
-          defaultExpanded={true}
           onClick={(e) => {}}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
@@ -81,16 +80,12 @@ export default function RelatedParties({ agreementId }) {
               <Typography variant="h5" className={customClasses.titleText}>
                 Related Parties
               </Typography>
-              <Chip color="info" label={relatedParties.length} />
+              {relatedParties.length > 0 && <Chip color="info" label={relatedParties.length} />}
             </Grid>
           </Grid>
         </AccordionSummary>
         <AccordionDetails className={classes.accordionDetails}>
-          <Fields
-            relatedParties={relatedParties}
-            agreementId={agreementId}
-            partiesLoading={!(partiesLoading === false && relatedPartiesData)}
-          />
+          <Fields relatedParties={relatedParties} agreementId={agreementId} partiesLoading={!relatedPartiesData} />
         </AccordionDetails>
       </Accordion>
     </div>
