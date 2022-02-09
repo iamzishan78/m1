@@ -79,37 +79,56 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function FieldsSection({ relatedParties, agreementId }) {
+export default function FieldsSection({ relatedParties, agreementId, partiesLoading }) {
   const customClasses = customStyles();
   const classes = useStyles();
-  const { control, reset } = useForm();
+  const name = "parties";
+  const { control, reset } = useForm({});
 
   const [openCommentsDialog, setCommentsDialog] = useState(false);
-  const [anchorEl, setAnchorEl] = useState();
+  const [, setAnchorEl] = useState();
   const [hoverParty, setHoverParty] = useState(-1);
 
-  useEffect(() => {
-    reset({
-      parties: relatedParties,
-    });
-  }, [relatedParties]);
-
   const [upsertRelatedParty] = useMutation(UPSERT_RELATED_PARTY);
-  const name = "parties";
+
   const arrayField = useFieldArray({
     control,
     name,
   });
-  let { fields, append } = arrayField;
+  let { fields, append, remove } = arrayField;
 
   const addNewParty = () => {
     append({});
   };
 
+  useEffect(() => {
+    if (partiesLoading === false) {
+      let parties = fields;
+      const relatedPartiesIds = relatedParties.map((party) => party.id);
+      relatedParties.forEach((party) => {
+        if (party.id) {
+          const index = fields.findIndex((f) => f.id === party.id);
+          if (index !== -1) {
+            parties[index] = party;
+          } else parties.push(party);
+        }
+      });
+      parties = parties.filter((p) => (relatedPartiesIds.includes(p.id) || p.id) && p.isDeleted !== true);
+      if (relatedParties.length !== 0 && parties.length === 0) parties.push({});
+      // else if (relatedParties.length !== 0 && parties[0].id && !parties[0]._id) parties = parties.filter((p, index) => index !== 0);
+      reset({ parties });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reset, relatedParties]);
+
   const handleUpdateParty = (params, index) => {
+    const party = { ...fields[index], ...params };
+    const _fields = fields;
+    _fields[index] = party;
+    reset({ parties: _fields });
     upsertRelatedParty({
       variables: {
-        relatedParty: { ...relatedParties[index], ...params, name: `Party ${index + 1}` },
+        relatedParty: party,
         customLayerId: agreementId,
       },
       refetchQueries: ["getRelatedParties"],
@@ -134,7 +153,6 @@ export default function FieldsSection({ relatedParties, agreementId }) {
                     render={(params) => {
                       return (
                         <AutoComplete
-                          {...params}
                           value={item.type}
                           onChange={(value) => handleUpdateParty({ type: value }, index)}
                           options={["Attorney", "Broker", "Lessor Contact", "Surface Landowner"]}
@@ -145,7 +163,7 @@ export default function FieldsSection({ relatedParties, agreementId }) {
                               {...params1}
                               variant="outlined"
                               InputLabelProps={{
-                                ...params.InputLabelProps,
+                                ...params1.InputLabelProps,
                                 shrink: true,
                               }}
                             />
@@ -156,38 +174,32 @@ export default function FieldsSection({ relatedParties, agreementId }) {
                   />
                 </Grid>
                 <Grid item xs={5} style={{ paddingLeft: "20px" }}>
-                  <Controller
-                    control={control}
-                    name={`${name}.${index}.descriptorObject.entityDetail`}
-                    render={(params) => (
-                      <ContactPaginatedAutocomplete
-                        nameAutValue={item.descriptorObject?.entityDetail ?? { _id: "", name: "" }}
-                        className={customClasses.field}
-                        setNameAutValue={(value) => {
-                          handleUpdateParty({ descriptorObject: value?._id }, index);
+                  <ContactPaginatedAutocomplete
+                    nameAutValue={item.descriptorObject?.entityDetail ?? { _id: "", name: "" }}
+                    className={customClasses.field}
+                    setNameAutValue={(value) => {
+                      handleUpdateParty({ descriptorObject: value?._id }, index);
+                    }}
+                    renderInput={(params2) => (
+                      <TextField
+                        {...params2}
+                        margin="dense"
+                        variant="outlined"
+                        InputLabelProps={{
+                          ...params2.InputLabelProps,
+                          shrink: true,
                         }}
-                        renderInput={(params2) => (
-                          <TextField
-                            {...params2}
-                            margin="dense"
-                            variant="outlined"
-                            InputLabelProps={{
-                              ...params2.InputLabelProps,
-                              shrink: true,
-                            }}
-                            InputProps={{
-                              ...params2.InputProps,
-                              endAdornment: (
-                                <React.Fragment>
-                                  {params2.InputProps.endAdornment}
-                                  <div className={customClasses.contactCardIcon}>
-                                    <ContactCardIcon fill={!item.descriptorObject?._id ? "darkgrey" : undefined} />
-                                  </div>
-                                </React.Fragment>
-                              ),
-                            }}
-                          />
-                        )}
+                        InputProps={{
+                          ...params2.InputProps,
+                          endAdornment: (
+                            <React.Fragment>
+                              {params2.InputProps.endAdornment}
+                              <div className={customClasses.contactCardIcon}>
+                                <ContactCardIcon fill={!item.descriptorObject?._id ? "darkgrey" : undefined} />
+                              </div>
+                            </React.Fragment>
+                          ),
+                        }}
                       />
                     )}
                   />
@@ -205,6 +217,7 @@ export default function FieldsSection({ relatedParties, agreementId }) {
                           setCommentsDialog({ state: true, targetSourceId: item.descriptorObject?._id });
                         }}
                         aria-label="show comments"
+                        disabled={!item.descriptorObject?._id}
                       >
                         <ChatIcon />
                       </IconButton>
@@ -240,7 +253,9 @@ export default function FieldsSection({ relatedParties, agreementId }) {
                               <ListItem
                                 button
                                 onClick={() => {
-                                  handleUpdateParty({ _id: item?._id, isDeleted: true });
+                                  if (item._id) {
+                                    handleUpdateParty({ _id: item?._id, isDeleted: true }, index);
+                                  } else remove(index);
                                   popupState.close();
                                 }}
                               >
