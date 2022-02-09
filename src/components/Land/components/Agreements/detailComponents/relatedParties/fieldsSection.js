@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { v4 as uuid } from "uuid";
 import { useMutation } from "@apollo/client";
 import { useStyles as customStyles } from "../style";
 import { makeStyles } from "@material-ui/styles";
@@ -10,8 +10,6 @@ import {
   Tooltip,
   Badge,
   IconButton,
-  Menu,
-  MenuItem,
   ListItemIcon,
   ListItemText,
   Dialog,
@@ -23,6 +21,7 @@ import { DeleteOutline as DeleteIcon, MoreVert as MoreVertIcon } from "@material
 import AddIcon from "@material-ui/icons/Add";
 import ChatIcon from "@material-ui/icons/Chat";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
+import { copy } from "utils/helper";
 
 import Comments from "components/Shared/Comments";
 import ContactCardIcon from "components/Shared/svgIcons/contact_card";
@@ -33,7 +32,7 @@ import { UPSERT_RELATED_PARTY } from "graphQL/useMutationRelatedParty";
 
 const useStyles = makeStyles((theme) => ({
   icons: {
-    backgroundColor: (props) => (props.dense ? "transparent" : "#efefef"),
+    backgroundColor: "transparent",
     marginLeft: "auto",
     "&:hover": {
       backgroundColor: "#dadbde !important",
@@ -48,10 +47,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   iconSelected: {
-    color: "#011133 !important",
-    "& p": {
-      color: "#011133 !important",
-    },
+    backgroundColor: "#17aadd !important",
   },
   noCommentsIcon: {
     color: "darkgrey",
@@ -82,23 +78,23 @@ const useStyles = makeStyles((theme) => ({
 export default function FieldsSection({ relatedParties, agreementId, partiesLoading }) {
   const customClasses = customStyles();
   const classes = useStyles();
-  const name = "parties";
-  const { control, reset } = useForm({});
 
+  const [partyTypes, setPartyTypes] = useState(["Attorney", "Broker", "Lessor Contact", "Surface Landowner"]);
   const [openCommentsDialog, setCommentsDialog] = useState(false);
   const [, setAnchorEl] = useState();
   const [hoverParty, setHoverParty] = useState(-1);
 
   const [upsertRelatedParty] = useMutation(UPSERT_RELATED_PARTY);
 
-  const arrayField = useFieldArray({
-    control,
-    name,
-  });
-  let { fields, append, remove } = arrayField;
+  const [fields, setFields] = useState([]);
 
   const addNewParty = () => {
-    append({});
+    setFields([...fields, { id: uuid() }]);
+  };
+  const removeParty = (index) => {
+    const _fields = copy(fields);
+    _fields.splice(index, 1);
+    setFields(_fields);
   };
 
   useEffect(() => {
@@ -114,18 +110,27 @@ export default function FieldsSection({ relatedParties, agreementId, partiesLoad
         }
       });
       parties = parties.filter((p) => (relatedPartiesIds.includes(p.id) || p.id) && p.isDeleted !== true);
-      if (relatedParties.length !== 0 && parties.length === 0) parties.push({});
-      // else if (relatedParties.length !== 0 && parties[0].id && !parties[0]._id) parties = parties.filter((p, index) => index !== 0);
-      reset({ parties });
+      if (relatedParties.length === 0 && parties.length === 0) parties.push({ id: uuid() });
+      setFields(parties);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reset, relatedParties]);
+  }, [relatedParties]);
+
+  useEffect(() => {
+    if (relatedParties.length > 0) {
+      const types = copy(partyTypes);
+      relatedParties.forEach((party) => {
+        if (party.type && !types.includes(party.type)) types.push(party.type);
+      });
+      if (types.length !== partyTypes.length) setPartyTypes(types);
+    }
+  }, [relatedParties]);
 
   const handleUpdateParty = (params, index) => {
     const party = { ...fields[index], ...params };
     const _fields = fields;
     _fields[index] = party;
-    reset({ parties: _fields });
+    setFields(_fields);
     upsertRelatedParty({
       variables: {
         relatedParty: party,
@@ -147,30 +152,29 @@ export default function FieldsSection({ relatedParties, agreementId, partiesLoad
                   <div className={customClasses.fieldLabel}>Party {index + 1}</div>
                 </Grid>
                 <Grid item xs={4}>
-                  <Controller
-                    control={control}
-                    name={`${name}.${index}.type`}
-                    render={(params) => {
-                      return (
-                        <AutoComplete
-                          value={item.type}
-                          onChange={(value) => handleUpdateParty({ type: value }, index)}
-                          options={["Attorney", "Broker", "Lessor Contact", "Surface Landowner"]}
-                          fullWidth
-                          renderInput={(params1) => (
-                            <TextField
-                              margin="dense"
-                              {...params1}
-                              variant="outlined"
-                              InputLabelProps={{
-                                ...params1.InputLabelProps,
-                                shrink: true,
-                              }}
-                            />
-                          )}
-                        />
-                      );
+                  <AutoComplete
+                    value={item.type ?? ""}
+                    onChange={(value) => {
+                      if (!value || typeof value === "string") {
+                        handleUpdateParty({ type: value }, index);
+                      } else {
+                        setPartyTypes([...partyTypes, value.value]);
+                        handleUpdateParty({ type: value.value }, index);
+                      }
                     }}
+                    options={partyTypes}
+                    fullWidth
+                    renderInput={(params1) => (
+                      <TextField
+                        margin="dense"
+                        {...params1}
+                        variant="outlined"
+                        InputLabelProps={{
+                          ...params1.InputLabelProps,
+                          shrink: true,
+                        }}
+                      />
+                    )}
                   />
                 </Grid>
                 <Grid item xs={5} style={{ paddingLeft: "20px" }}>
@@ -205,13 +209,17 @@ export default function FieldsSection({ relatedParties, agreementId, partiesLoad
                   />
                 </Grid>
                 <Grid item xs={1} style={{ textAlign: "right" }}>
-                  <Tooltip title={"Add Comments"} placement="top" style={{ marginRight: "10px" }}>
-                    <Badge badgeContent={item.comments ?? 0} color="secondary">
+                  <Tooltip title={item?.comments !== 0 ? "Comments" : "Add Comments"} placement="top" style={{ marginRight: "10px" }}>
+                    <Badge badgeContent={item?.comments ?? null} color="secondary">
                       <IconButton
-                        id={`add-comments-button-${index}`}
-                        size={"medium"}
+                        id={`${index}-comments`}
+                        size={"small"}
                         color="primary"
-                        className={`${classes.icons} ${classes.noCommentsIcon} ${classes.iconSelected}`}
+                        className={`${classes.icons} ${item?.comments !== 0 ? "" : classes.noCommentsIcon} ${
+                          openCommentsDialog?.targetSourceId && openCommentsDialog?.targetSourceId === item.descriptorObject?._id
+                            ? classes.iconSelected
+                            : ""
+                        }`}
                         onClick={(e) => {
                           e.stopPropagation();
                           setCommentsDialog({ state: true, targetSourceId: item.descriptorObject?._id });
@@ -255,14 +263,16 @@ export default function FieldsSection({ relatedParties, agreementId, partiesLoad
                                 onClick={() => {
                                   if (item._id) {
                                     handleUpdateParty({ _id: item?._id, isDeleted: true }, index);
-                                  } else remove(index);
+                                  } else {
+                                    removeParty(index);
+                                  }
                                   popupState.close();
                                 }}
                               >
                                 <ListItemIcon>
                                   <DeleteIcon size="medium" />
                                 </ListItemIcon>
-                                <ListItemText>Delete Agreement</ListItemText>
+                                <ListItemText>Delete Related Party</ListItemText>
                               </ListItem>
                             </List>
                           </Popover>
@@ -279,7 +289,7 @@ export default function FieldsSection({ relatedParties, agreementId, partiesLoad
         </Grid>
         <Grid item>
           <Button variant="contained" color="primary" className={customClasses.addDataButton} startIcon={<AddIcon />} onClick={addNewParty}>
-            Add Custom Data
+            Add Another Party
           </Button>
         </Grid>
       </Grid>
