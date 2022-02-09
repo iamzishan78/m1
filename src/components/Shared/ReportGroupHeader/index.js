@@ -1,0 +1,222 @@
+import React, { useState, useContext, useEffect, useCallback } from "react";
+import { AppContext } from "AppContext";
+import { Grid, Button, Select, MenuItem, TextField, Dialog } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
+import { useLazyQuery, useMutation } from "@apollo/client";
+// actions
+import { ADD_GRID_VIEW } from "graphQL/useMutationAddGridView";
+import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
+import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
+import ButtonDropDown from "components/Shared/M1nTable/components/ButtonGroup";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+
+const useStyles = makeStyles((theme) => ({
+    actionBar: {
+        padding: "10px 40px",
+        display: 'flex',
+        alignItems: 'center',
+        backgroundColor: "#f7f7f7",
+        width: "100%",
+        minHeight: "65px",
+
+        '& .MuiSelect-select:focus, & .MuiOutlinedInput-root': {
+            backgroundColor: "#ffff"
+        },
+        "& .MuiButtonGroup-groupedContainedSecondary:not(:last-child)": {
+            borderColor: "#ffff"
+        }
+    },
+    textField: {
+        height: "100%",
+        width: "100%",
+        "& .MuiFormHelperText-contained": {
+            justifyContent: "flex-end",
+            display: "flex",
+        },
+    },
+}));
+
+
+export default function ReportGroupHeader({ type, esFilters, setESFilters, setFilterToggle }) {
+    const classes = useStyles();
+    const [stateApp] = useContext(AppContext);
+    // redux
+
+    const [getGridViews, { data: gridViews }] = useLazyQuery(GET_GRID_VIEWS);
+    const [addGridView] = useMutation(ADD_GRID_VIEW);
+    const [updateGridView] = useMutation(UPDATE_GRID_VIEW);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [config, setConfig] = useState({});
+
+    const All_TYPE = `All ${type}`
+    const [reportingGroup, setReportingGroup] = React.useState(All_TYPE);
+
+    // props to pass in tabl
+
+
+    useEffect(() => {
+        getGridViews({
+            variables: {
+                module: type,
+                userId: stateApp.user.mongoId,
+            }
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+
+    const handleAddUpdateDelete = useCallback((updatedConfig) => {
+        const actionType = config.type || updatedConfig.type
+        if (['update', 'delete'].includes(actionType)) {
+            const gridViewId = gridViews?.getGridViews?.gridViews.find((view) => view.name === reportingGroup)._id
+            const name = config.name || updatedConfig.name
+            const isDeleted = actionType === 'update' ? false : true
+            updateGridView({
+                variables: {
+                    gridView: {
+                        _id: gridViewId,
+                        name,
+                        isDeleted,
+                        filters: esFilters,
+                    },
+                },
+                refetchQueries: ["getGridViews"],
+                awaitRefetchQueries: true,
+            }).then((resp) => {
+                if (resp.data.updateGridView.success) {
+                    setReportingGroup(actionType === 'update' ? name : All_TYPE)
+                }
+                setConfig({ show: false })
+            });;
+        } else if (config.type === 'new') {
+            addGridView({
+                variables: {
+                    gridView: {
+                        name: config.name,
+                        module: type,
+                        type: "Custom",
+                        user: stateApp.user.mongoId,
+                        filters: esFilters,
+                        // columns: columns.map((col) => ({ name: col.name, display: col.options.display })),
+                    },
+                },
+                refetchQueries: ["getGridViews"],
+                awaitRefetchQueries: true,
+
+            }).then((resp) => {
+                if (resp.data.addGridView.success) {
+                    setReportingGroup(config.name)
+                }
+                setConfig({ show: false })
+            });
+        }
+        return config
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [esFilters, gridViews, config, reportingGroup]);
+
+
+    const ButtonActions = React.useMemo(() => {
+        return [{
+            isShow: false, text: 'Update Group', action: () => {
+                handleAddUpdateDelete({ type: 'update', name: reportingGroup })
+            }
+        },
+        { isShow: true, text: 'Save as New Group', action: () => setConfig({ show: true, type: 'new', name: reportingGroup + " - Copy" }) },
+        { isShow: true, text: 'Edit Report Group Name', action: () => setConfig({ show: true, type: 'update', name: reportingGroup }) },
+        { isShow: true, text: 'Delete Report Group', action: () => setDeleteDialogOpen(true) }
+        ]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [reportingGroup, handleAddUpdateDelete]);
+
+    return (
+        <>
+            <Grid container direction="row" display="flex" justify="space-between" className={classes.actionBar}>
+                <Grid item xs={3} md={3}>
+                    {config.show ? <TextField
+                        fullWidth={true}
+                        className={classes.textField}
+                        variant="outlined"
+                        id="reddit-input"
+                        value={config.name}
+                        autoFocus
+                        required
+                        helperText={"Return to save"}
+                        InputProps={{
+                            className: classes.textFieldInput,
+                            disableUnderline: true,
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        InputLabelProps={{ className: classes.textFieldLabel }}
+                        onChange={(e) => setConfig({ ...config, name: e.target.value })}
+                        onKeyDown={(e) => {
+                            if (e.keyCode === 13) {
+                                e.preventDefault();
+                                handleAddUpdateDelete()
+                            }
+                        }}
+                        onBlur={() => setConfig({ show: false })}
+                    /> : <Select
+                        className={classes.viewSwitcher}
+                        variant="outlined"
+                        value={reportingGroup}
+                        fullWidth
+                        onChange={(e) => {
+                            setReportingGroup(e.target.value)
+                            const gridView = gridViews?.getGridViews?.gridViews.find((view) => view.name === e.target.value)
+                            if (gridView) {
+                                setESFilters(gridView.filters)
+                                setFilterToggle((value) => !value)
+                                // selectGridView(gridView)
+                            } else {
+                                setESFilters([])
+                                setFilterToggle((value) => !value)
+                            }
+                        }}
+                    >
+                        <MenuItem value={All_TYPE}>{All_TYPE}</MenuItem>
+                        {
+                            gridViews?.getGridViews?.gridViews.map((view) => <MenuItem value={view.name}>{view.name}</MenuItem>)
+                        }
+                    </Select>
+                    }
+                </Grid>
+
+
+                {
+                    esFilters.length > 0 && <Grid item xs={4} md={4}>
+                        <Grid container display="flex" justify="flex-end" direction="row" spacing={2} >
+                            <Grid item>
+                                {
+                                    reportingGroup === All_TYPE ? <Button variant="contained" color="secondary" onClick={() => setConfig({ show: true, type: 'new', name: reportingGroup + " - Copy" })}>
+                                        Save as New Group
+                                    </Button>
+                                        : <ButtonDropDown variant="contained" color="secondary" options={ButtonActions} />
+                                }
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                }
+            </Grid>
+
+            {deleteDialogOpen && (
+                <Dialog
+                    className={classes.dialog}
+                    open={deleteDialogOpen ? true : false}
+                    onClose={setDeleteDialogOpen}
+                    fullWidth={false}
+                    maxWidth="sm"
+                >
+                    <DeleteConfirmationDialogContent
+                        header={`Delete Report Group`}
+                        onClose={setDeleteDialogOpen}
+                        deleteFunc={() => handleAddUpdateDelete({ type: 'delete', name: reportingGroup })}
+                        m1nSelectedRowsIds={null}
+                        setM1nSelectedRowsIndexes={() => { }}
+                    >
+                        Do you want to delete this report group?
+                    </DeleteConfirmationDialogContent>
+                </Dialog>
+            )}
+        </>
+    );
+}

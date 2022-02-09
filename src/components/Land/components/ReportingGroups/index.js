@@ -1,12 +1,13 @@
 import React, { useState, useContext } from "react";
 import { AppContext } from "AppContext";
 import { makeStyles } from "@material-ui/styles";
-import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTable";
-import ReportGroupHeader from "components/Shared/ReportGroupHeader";
+import AgreementsTable from "components/Table/Agreement/AgreementsTable";
 // actions
+import ReportGroupHeader from "components/Shared/ReportGroupHeader";
+
 
 const useStyles = makeStyles((theme) => ({
-  root: { paddingTop: '100px' },
+  root: { paddingTop: '30px' },
   propertyTableContainer: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
@@ -24,27 +25,23 @@ export default function ReportingGroups() {
 
   const [filterToggle, setFilterToggle] = React.useState(false);
   // props to pass in table
-  const esIndex = "properties_flat";
-  const startPaginationAt = 25;
+  const esIndex = "shapes_flat";
   const [esFilters, setESFilters] = useState([]);
 
   return (
     <div className={classes.root}>
-      <ReportGroupHeader type='Properties' esFilters={esFilters} setESFilters={setESFilters} setFilterToggle={setFilterToggle} />
+      <ReportGroupHeader type={'Agreements'} esFilters={esFilters} setESFilters={setESFilters} setFilterToggle={setFilterToggle} />
 
       <div className={classes.propertyTableContainer}>
-        <RevenuePropertiesTable
+        <AgreementsTable
           esIndex={esIndex}
-          header="Properties"
+          header="Agreements"
           esFilters={esFilters}
-          targetLabel="Revenue Properties"
-          parent="RevenuePropertiesTable"
-          loading={false}
-          dense={true}
           filterToggle={filterToggle}
+          targetLabel="agreement"
+          parent="AgreementsTable"
           setESFilters={setESFilters}
-          startPaginationAt={startPaginationAt}
-          revenueSearchQuery={stateApp.revenueSearchQuery}
+          landSearchQuery={stateApp.landSearchQuery}
         />
       </div>
     </div>
