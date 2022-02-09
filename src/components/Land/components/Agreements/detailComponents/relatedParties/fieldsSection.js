@@ -215,7 +215,7 @@ export default function FieldsSection({ relatedParties, agreementId, partiesLoad
                         id={`${index}-comments`}
                         size={"small"}
                         color="primary"
-                        className={`${classes.icons} ${item?.comments !== 0 ? "" : classes.noCommentsIcon} ${
+                        className={`${classes.icons} ${!item?.comments || item?.comments === 0 ? classes.noCommentsIcon : ""} ${
                           openCommentsDialog?.targetSourceId && openCommentsDialog?.targetSourceId === item.descriptorObject?._id
                             ? classes.iconSelected
                             : ""
