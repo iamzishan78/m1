@@ -6,6 +6,7 @@ import TaskIcon from "@material-ui/icons/WatchLater";
 import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
 import DefaultIcon from "@material-ui/icons/Event";
+import TextMessageIcon from '@material-ui/icons/QuestionAnswerOutlined';
 import ContactMailIcon from '@material-ui/icons/ContactMail';
 import Avatar from "@material-ui/core/Avatar";
 import { makeStyles } from "@material-ui/core/styles";
@@ -74,7 +75,7 @@ function SummarySection({ activity }) {
     email: "email",
     call: "calls",
     deadline: "deadlines",
-    task: "tasks",
+    text_message: "text message",
     meeting: "meetings",
     mailer: "mailers sent",
   };
@@ -89,9 +90,9 @@ function SummarySection({ activity }) {
         color = `blue${color}`;
         Icon = <EmailIcon />;
         break;
-      case "task":
+      case "text_message":
         color = `red${color}`;
-        Icon = <TaskIcon />;
+        Icon = <TextMessageIcon />;
         break;
       case "call":
         color = `green${color}`;
@@ -131,7 +132,7 @@ export default function ActivitySummary({ activityLog }) {
     return activityLog.filter((act) => act.type === type).length;
   };
 
-  const types = ["call", "email", "task", "deadline", "meeting", "mailer"];
+  const types = ["call", "email", "text_message", "deadline", "meeting", "mailer"];
 
   return (
     <div className={classes.summaryRoot}>
