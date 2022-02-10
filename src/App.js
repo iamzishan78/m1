@@ -333,7 +333,7 @@ function App() {
                         <PrivateRoute exact path="/title" component={TitleOpinionProvider} />
                         <PrivateRoute exact path="/alerts" component={AlertsProvider} />
                         <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider} />
-                        <PrivateRoute title="Contacts" exact path="/contacts" component={ContactsProvider} />
+                        <PrivateRoute title="Contacts" path="/contacts" component={ContactsProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId" component={ContactDetailsProvider} />
                         <PrivateRoute
                           exact
