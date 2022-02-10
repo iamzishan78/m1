@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Container } from "@material-ui/core";
+import { useSelector } from "react-redux";
 import isEmpty from "lodash/isEmpty";
+import get from "lodash/get";
 import moment from "moment";
 
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
@@ -22,6 +24,7 @@ import { GET_ES_CONTACTS } from "graphQL/useQueryESContacts";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 
 import { getContactsAddress } from 'utils/helper';
+import { copy } from 'utils/helper';
 
 import {
   deepEqualObjects,
@@ -78,6 +81,8 @@ function ContactsTable(props) {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState(defaultView);
+  const { activeModule } = useSelector(({ contact }) => contact);
+
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
@@ -289,6 +294,14 @@ function ContactsTable(props) {
     return view;
   }
 
+  const getSelectedView = () => {
+    const view = copy(selectedGridView);
+    if(selectedGridView.type === 'Default') {
+      view.name = view.name.replace('Contacts', get(activeModule, 'title',''))
+    }
+    return view;
+  }
+
   const headerProps = {
     columns,
     Icon: Contact,
@@ -296,7 +309,7 @@ function ContactsTable(props) {
     showViewModal,
     setShowSaveAsNew,
     setShowViewModal,
-    selectedGridView,
+    selectedGridView : getSelectedView(),
     updateGridView,
     selectedFilters: selectedFilters.current,
   };

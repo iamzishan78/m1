@@ -11,7 +11,6 @@ import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
 
 import { AppContext } from "../../../AppContext";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
@@ -69,12 +68,10 @@ const useStyles = makeStyles((theme) => ({
 
 const ContactSearch = () => {
   const classes = useStyles();
-  const location = useLocation();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [search, setSearch] = useState("");
   const { quickActionsPanelState, activeModule } = useSelector(({ contact }) => contact);
 
-  console.log('activeModule',activeModule)
   const isAllowed = stateApp?.user?.features?.find(
     (f) => f.name === FEATURES.CONTACTSUBMENU
   );
