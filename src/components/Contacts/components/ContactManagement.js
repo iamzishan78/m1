@@ -18,6 +18,7 @@ const ContactManagement = () => {
     <div className={classes.root}>
       <ContactsTable
         parent="Contacts"
+        headerLabel="Contact Management"
         contactSearchQuery={stateApp.contactSearchQuery}
         userId={stateApp.user.mongoId}
       />

@@ -446,9 +446,9 @@ const ContactsHeadCells = [
     label: "Status",
     esKey: 'status.keyword',
     options: {
-      display: false,
-      filter: false,
-      searchable: false,
+      display: true,
+      filter: true,
+      searchable: true,
       sort: true,
     },
     custom: {

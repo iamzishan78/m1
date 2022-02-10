@@ -122,6 +122,7 @@ export default function Contacts() {
         <div className={classes.root}>
           <ContactsTable
             parent="Contacts"
+            headerLabel="Contacts"
             contactSearchQuery={stateApp.contactSearchQuery}
             userId={stateApp.user.mongoId}
           />

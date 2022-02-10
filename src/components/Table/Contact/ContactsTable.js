@@ -31,6 +31,14 @@ import {
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
+    "& .MuiToolbar-regular > div:nth-child(2)":{
+      overflow: "auto",
+      display: "flex",
+      flexDirection: "row-reverse"
+    },
+    "& .MuiToolbar-regular > div:nth-child(1)":{
+      minWidth: "400px"
+    }
   },
   details: {
     display: "block",
@@ -278,7 +286,7 @@ function ContactsTable(props) {
   const headerProps = {
     columns,
     Icon: Contact,
-    label: 'Contacts',
+    label: props.headerLabel,
     showViewModal,
     setShowSaveAsNew,
     setShowViewModal,
