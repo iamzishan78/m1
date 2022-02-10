@@ -143,10 +143,13 @@ export const TableESHOC = (Component) => {
                             keep_alive: "1micros"
                         },
                         search: {
-                            query: tableMeta.extendSearchQuery
+                            query: tableMeta.extendSearchQuery,
+                            fields: tableMeta.searchFields
                         },
-                        filters: tableMeta.filters ? tableMeta.filters : [],
-                        polygon: tableMeta.polygon ? tableMeta.polygon : undefined
+                        filters: [
+                            ...(tableMeta.filters ? tableMeta.filters : []),
+                            ...(tableMeta.polygon) ? [tableMeta.polygon] : []
+                        ]
                     }
                 });
             }
@@ -300,11 +303,12 @@ export const TableESHOC = (Component) => {
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
             let pageESVariables = {
                 variables: {
-                    polygon: tableState.polygon ? tableState.polygon : undefined,
+                    // polygon: tableState.polygon ? tableState.polygon : undefined,
                     index: tableState.esIndex,
                     // search: tableState.searchText ? `${tableState.searchText}*` : '',
                     search: {
-                        query: tableState.searchText
+                        query: tableState.searchText,
+                        fields: tableMeta.searchFields
                     },
                     pagination: {
                         // pit: tableData?.before_pit,
@@ -313,17 +317,16 @@ export const TableESHOC = (Component) => {
                     },
                     ...(!isEmpty(tableState.sortOrder)) && {
                         sort:
-                            [{
-                                [columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
-                                    columns.find(el => el.name === tableState.sortOrder?.name)?.name]: {
-                                    order: tableState.sortOrder?.direction,
-                                    // unmapped_type: "null",
-                                    missing: "_last"
-                                }
-                            }]
+                            {
+                                field: columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
+                                    columns.find(el => el.name === tableState.sortOrder?.name)?.name,
+                                order: tableState.sortOrder?.direction
+                                // unmapped_type: "null",
+                                // missing: "_last"
+                            }
                     },
 
-                    filters: [],
+                    filters: tableState.filters ? [...tableState.filters] : []
                 },
             };
             tableState.filterList.forEach((val, index) => {
@@ -351,6 +354,9 @@ export const TableESHOC = (Component) => {
                 selectedGridView.filters.forEach(filter => {
                     pageESVariables.variables.filters.push(filter)
                 })
+            }
+            if (tableState.polygon) {
+                pageESVariables.variables.filters.push(tableState.polygon)
             }
             return {
                 pageESVariables,
@@ -418,6 +424,8 @@ export const TableESHOC = (Component) => {
             searchable: true,
             rowsSelected: selectedRows.map((sR => sR.dataIndex)),
             filter: true,
+            searchText: tableMeta.extendSearchQuery,
+            searchFields: tableMeta.searchFields,
             customToolbar: () => {
 
                 return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>

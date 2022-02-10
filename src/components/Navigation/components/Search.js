@@ -311,6 +311,7 @@ function Search() {
       "wells": {
         esIndex: "platformData:wells",
         search: (request) => `${request.input}`,
+        searchFields: ["wellName", "api"],
         formatOptions: (data) => {
           return { ...data, Source: wellCogIndexName, Primary: data.WellName, Secondary: data.ApiNumber }
         }
@@ -328,16 +329,8 @@ function Search() {
       },
       "tax owners": {
         esIndex: "platformData:globalowner",
-        search: (request) => (() => {
-          let searchString = ""
-          if (request.input) {
-            searchString = request.input.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
-          }
-      
-          return searchString
-            ? `(ownerName:(${searchString.join('* AND ')}*))^4 OR (ownerName:(${searchString.join('* ')}*))^2 OR (_all:(${searchString.join('* ')}*))`
-            : ""
-        })(),
+        search: (request) => `${request.input}`,
+        searchFields: ["ownerName", "_all"],
         formatOptions: (data) => {
           return {
             ...data, Source: 'globalowner-index', Primary: data.OwnerName, Secondary: `${data.StreetAddress}\n${data.City}\n${data.State}\n${data.Zip}`,
@@ -346,8 +339,8 @@ function Search() {
       },
       "operators": {
         esIndex: "platformData:operator",
-        search: (request) => request.input ? `operator:*${request.input}*` : '',
-
+        search: (request) => `${request.input}`,
+        searchFields: ["operator", "_all"],
         formatOptions: (data) => {
           return { ...data, Source: operatorIndexName, Primary: data.Operator, Secondary: null }
         }
@@ -398,7 +391,7 @@ function Search() {
   const callESSearch = React.useMemo(
     () =>
       debounce((request) => {
-        const { esIndex, search } = esCallData[searchOption]
+        const { esIndex, search, searchFields } = esCallData[searchOption]
         // getESPaginatedList({
         //   variables: {
         //     esIndex,
@@ -419,7 +412,7 @@ function Search() {
             },
             search: {
               query: search(request),
-              fields: ["wellName", "api"]
+              fields: searchFields
             },
             sort: [],
           }

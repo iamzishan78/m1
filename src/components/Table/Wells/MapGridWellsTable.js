@@ -68,8 +68,13 @@ function MapGridWellsTable(props) {
     setTableMeta({
       addableName: "Wells",
       extendSearchQuery: search,
+      searchFields: ["wellName", "api"],
       filters: filters,
-      polygon: stateApp?.currentFeature?.geometry,
+      polygon: stateApp?.currentFeature?.geometry && {
+        type: "geo_intersects",
+        field: "geoJSON",
+        value: stateApp?.currentFeature?.geometry
+      },
       TableHeader: copy(TableHeader),
       esIndex: "platformData:wells",
       startPaginationAt: 25,
