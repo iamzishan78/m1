@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { v4 as uuid } from "uuid";
+import { useHistory } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { useStyles as customStyles } from "../style";
 import { makeStyles } from "@material-ui/styles";
@@ -75,9 +76,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function FieldsSection({ relatedParties, agreementId, partiesLoading }) {
+export default function FieldsSection({ relatedParties, agreementId, agreementName, partiesLoading }) {
   const customClasses = customStyles();
   const classes = useStyles();
+  const history = useHistory();
 
   const [partyTypes, setPartyTypes] = useState(["Attorney", "Broker", "Lessor Contact", "Surface Landowner"]);
   const [openCommentsDialog, setCommentsDialog] = useState(false);
@@ -198,7 +200,21 @@ export default function FieldsSection({ relatedParties, agreementId, partiesLoad
                           endAdornment: (
                             <React.Fragment>
                               {params2.InputProps.endAdornment}
-                              <div className={customClasses.contactCardIcon}>
+                              <div
+                                className={customClasses.contactCardIcon}
+                                onClick={(e) => {
+                                  if (item.descriptorObject?._id) {
+                                    history.replace(`/contact/details/${item.descriptorObject?._id}`, {
+                                      showAgreementBreadcrumb: true,
+                                      agreementBreadcrumbsParams: {
+                                        Agreements: "/land/agreements",
+                                        [agreementName]: `/land/agreement/details/${agreementId}`,
+                                      },
+                                    });
+                                    e.stopPropagation();
+                                  }
+                                }}
+                              >
                                 <ContactCardIcon fill={!item.descriptorObject?._id ? "darkgrey" : undefined} />
                               </div>
                             </React.Fragment>

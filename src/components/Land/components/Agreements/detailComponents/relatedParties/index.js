@@ -44,11 +44,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function RelatedParties({ agreementId }) {
+export default function RelatedParties({ agreementId, agreementDetails }) {
   const classes = useStyles();
   const customClasses = customStyles();
 
-  const [getRelatedParties, { data: relatedPartiesData, loading: partiesLoading }] = useLazyQuery(GET_RELATED_PARTIES);
+  const [getRelatedParties, { data: relatedPartiesData }] = useLazyQuery(GET_RELATED_PARTIES);
 
   useEffect(() => {
     if (agreementId) {
@@ -85,7 +85,12 @@ export default function RelatedParties({ agreementId }) {
           </Grid>
         </AccordionSummary>
         <AccordionDetails className={classes.accordionDetails}>
-          <Fields relatedParties={relatedParties} agreementId={agreementId} partiesLoading={!relatedPartiesData} />
+          <Fields
+            relatedParties={relatedParties}
+            agreementId={agreementId}
+            agreementName={agreementDetails?.agreementName}
+            partiesLoading={!relatedPartiesData}
+          />
         </AccordionDetails>
       </Accordion>
     </div>

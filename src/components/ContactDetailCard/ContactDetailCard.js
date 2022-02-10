@@ -308,7 +308,7 @@ export default function ContactDetailCard(props) {
 
   let history = useHistory();
   const pathName = history.location.pathname;
-  const contactId = pathName.split('contact/details/')[1].replace('/', '');
+  const contactId = pathName.split("contact/details/")[1].replace("/", "");
   const shrinkRightColumn = useSelector(({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn);
   const { selectedPipe } = useSelector(({ Flow }) => Flow);
   const classes = useStyles({ ...props, shrinkRightColumn });
@@ -472,6 +472,23 @@ export default function ContactDetailCard(props) {
   };
   const isPrevUrlFlowline = getFlowlineReturnUrl() && stateApp.activeDeal?._id;
 
+  const agreementBreadcrumbsParams = React.useMemo(() => {
+    const { state } = history.location;
+    const params = [];
+    if (state) {
+      const { showAgreementBreadcrumb, agreementBreadcrumbsParams: breadcrumbParams } = state;
+      if (showAgreementBreadcrumb && breadcrumbParams) {
+        Object.keys(breadcrumbParams).forEach((key) => {
+          params.push({
+            text: key,
+            url: breadcrumbParams[key],
+          });
+        });
+      }
+    }
+    return params;
+  }, [history.location]);
+
   const ExtenstionGetter = (name) => {
     let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
 
@@ -493,7 +510,20 @@ export default function ContactDetailCard(props) {
           }}
         >
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-
+            {agreementBreadcrumbsParams.map((item, index) => (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => history.push(item.url)}
+                key={index}
+              >
+                {item.text}
+              </Link>
+            ))}
             {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
               <Link
                 style={{
@@ -735,8 +765,9 @@ export default function ContactDetailCard(props) {
                         <span className={classes.socialMediaSection}>
                           {contactData.facebook && (
                             <a
-                              href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${contactData.facebook
-                                }`}
+                              href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${
+                                contactData.facebook
+                              }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -745,8 +776,9 @@ export default function ContactDetailCard(props) {
                           )}
                           {contactData.twitter && (
                             <a
-                              href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${contactData.twitter
-                                }`}
+                              href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${
+                                contactData.twitter
+                              }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -755,8 +787,9 @@ export default function ContactDetailCard(props) {
                           )}
                           {contactData.linkedIn && (
                             <a
-                              href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${contactData.linkedIn
-                                }`}
+                              href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${
+                                contactData.linkedIn
+                              }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -975,7 +1008,7 @@ export default function ContactDetailCard(props) {
               header="Contact Data Integration"
               onClose={handleCloseDialog}
               rows={[contactData]}
-              setRows={() => { }}
+              setRows={() => {}}
               updateMelissaTable={() => {
                 getLastMelissaRecord({
                   variables: {
