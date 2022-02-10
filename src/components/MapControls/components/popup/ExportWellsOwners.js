@@ -123,6 +123,9 @@ const ExportWellsOwners = ({
   ]);
 
   const onExport = () => {
+    // to make sure export is done once
+    onClose();
+
     const { filters, search } = getMapFilters(stateNav, "", "");
     execAsyncExportJobAction({
       client,
@@ -160,7 +163,6 @@ const ExportWellsOwners = ({
     //   hiddenElement.download = "taxOwnersInterest.csv";
     //   hiddenElement.click();
     // }
-    onClose();
   };
 
   return (
