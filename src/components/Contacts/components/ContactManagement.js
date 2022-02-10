@@ -4,6 +4,8 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import { AppContext } from "AppContext";
 
+import ContactsAnalyticsCards from 'components/Contacts/components/ContactsAnalyticsCards';
+
 const useStyles = makeStyles((theme) => ({
   root: {
       padding: "0px 30px"
@@ -16,6 +18,7 @@ const ContactManagement = () => {
 
   return (
     <div className={classes.root}>
+      <ContactsAnalyticsCards />
       <ContactsTable
         parent="Contacts"
         headerLabel="Contact Management"

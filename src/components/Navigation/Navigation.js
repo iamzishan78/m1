@@ -23,7 +23,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { SIDE_PANEL_MENU_ITEMS_LIST } from 'components/Contacts/Contacts'
+import { contactManagementRoutes } from 'utils/data';
 import SupportCenterModal from "./components/SupportCenter";
 import { useStyles } from "./Common";
 
@@ -404,7 +404,7 @@ export default function Navigation(props) {
               )}
               {(location.pathname === "/contacts" || 
                 location.pathname === "/contacts/" || 
-                Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => item.link === location.pathname)) && <ContactSearch />}
+                Object.values(contactManagementRoutes).find((item) => item.link === location.pathname)) && <ContactSearch />}
               {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
 
               {location.pathname.startsWith("/flow") && <DealSearch />}

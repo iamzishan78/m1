@@ -36,6 +36,12 @@ const useStyles = makeStyles((theme) => ({
       display: "flex",
       flexDirection: "row-reverse"
     },
+    "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(1)":{
+      marginRight: '52px'
+    },
+    "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(2)":{
+      marginRight: '-104px'
+    },
     "& .MuiToolbar-regular > div:nth-child(1)":{
       minWidth: "400px"
     }

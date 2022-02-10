@@ -15,6 +15,8 @@ import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import ContactsTable from "components/Table/Contact/ContactsTable";
 import * as Components from "components/Contacts/components";
 
+import { contactManagementRoutes } from 'utils/data';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: "65px",
@@ -40,39 +42,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SIDE_PANEL_MENU_ITEMS_LIST = {
-  PORTFOLIO: {
-    featureFlag: "CONTACTSUBMENU",
-    title: "Leads",
-    link: "/contacts/leads",
-    component: "ContactsTable",
-  },
-  AGREEMENTS: {
-    featureFlag: "CONTACTSUBMENU",
-    title: "Prospects",
-    link: "/contacts/prospects",
-    component: "ContactsTable",
-  },
-  CONTACTS: {
-    featureFlag: "CONTACTSUBMENU",
-    title: "Contacts",
-    link: "/contacts",
-    component: "ContactsTable",
-  },
-  TRACTS: {
-    featureFlag: "CONTACTSUBMENU",
-    title: "Activity Dashboard",
-    link: "/contacts/activityDashboard",
-    component: "ContactsTable",
-  },
-  REPORTING_GROUPS: {
-    featureFlag: "CONTACTSUBMENU",
-    title: "Campaign Management",
-    link: "/contacts/campaignManagement",
-    component: "ContactsTable",
-  },
-};
-
 export default function Contacts() {
   const classes = useStyles();
   const location = useLocation();
@@ -83,7 +52,7 @@ export default function Contacts() {
   );
 
   useEffect(() => {
-    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find(
+    const option = Object.values(contactManagementRoutes).find(
       (item) => item.link === location.pathname
     );
     if (option) {
@@ -103,15 +72,15 @@ export default function Contacts() {
           handlePanelStateChange={handlePanelStateChange}
           quickActionsPanelState={quickActionsPanelState}
           activeModule={activeModule}
-          actions={SIDE_PANEL_MENU_ITEMS_LIST}
+          actions={contactManagementRoutes}
         >
-          {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
+          {Object.keys(contactManagementRoutes).map((option) => (
             <Switch>
               <Route
                 exact
-                path={SIDE_PANEL_MENU_ITEMS_LIST[option].link}
+                path={contactManagementRoutes[option].link}
                 component={
-                  Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component]
+                  Components[contactManagementRoutes[option].component]
                 }
               />
             </Switch>

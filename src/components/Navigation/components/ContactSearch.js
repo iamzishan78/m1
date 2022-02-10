@@ -72,8 +72,9 @@ const ContactSearch = () => {
   const location = useLocation();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [search, setSearch] = useState("");
-  const { quickActionsPanelState } = useSelector(({ contact }) => contact);
+  const { quickActionsPanelState, activeModule } = useSelector(({ contact }) => contact);
 
+  console.log('activeModule',activeModule)
   const isAllowed = stateApp?.user?.features?.find(
     (f) => f.name === FEATURES.CONTACTSUBMENU
   );
@@ -103,14 +104,7 @@ const ContactSearch = () => {
                 variant="h5"
                 style={{ color: "black", fontWeight: "bold", marginRight: "20px" }}
               >
-                {(() => {
-                  switch (location.pathname) {
-                    case "/contacts":
-                      return "Contacts";
-                    default:
-                      return "";
-                  }
-                })()}
+                {activeModule.title ? activeModule.title: 'Contacts' }
               </Typography>
             </Grid>
           )}
@@ -134,7 +128,7 @@ const ContactSearch = () => {
               className={classes.contactSearchField}
               margin="dense"
               variant="outlined"
-              placeholder="Search for contact"
+              placeholder={`Search for ${activeModule.title ? 'lead, contact or prospect': 'contact'}` }
               InputProps={{
                 startAdornment: (
                   <InputAdornment>
@@ -179,10 +173,6 @@ const ContactSearch = () => {
         ></div>
       </Grid>
     </Grid>
-    // <div className={classes.search}
-    //   style={{ marginLeft: isAllowed && quickActionsPanelState ? "433px" : "7px" }}
-    // >
-    // </div>
   );
 };
 

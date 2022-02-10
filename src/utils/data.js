@@ -88,3 +88,36 @@ export const wellsKeys = [
   "MaxCompletionRecordDate",
   "plugDate"
 ]
+
+export const contactManagementRoutes = {
+  PORTFOLIO: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Leads",
+    link: "/contacts/leads",
+    component: "ContactsTable",
+  },
+  AGREEMENTS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Prospects",
+    link: "/contacts/prospects",
+    component: "ContactsTable",
+  },
+  CONTACTS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Contacts",
+    link: "/contacts",
+    component: "ContactsTable",
+  },
+  TRACTS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Activity Dashboard",
+    link: "/contacts/activityDashboard",
+    component: "ContactsTable",
+  },
+  REPORTING_GROUPS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Campaign Management",
+    link: "/contacts/campaignManagement",
+    component: "ContactsTable",
+  },
+};
