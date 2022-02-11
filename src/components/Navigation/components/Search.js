@@ -392,17 +392,6 @@ function Search() {
     () =>
       debounce((request) => {
         const { esIndex, search, searchFields } = esCallData[searchOption]
-        // getESPaginatedList({
-        //   variables: {
-        //     esIndex,
-        //     pagination: {
-        //       first: request.searchTop ? request.searchTop : startPaginationAt,
-        //       keep_alive: "1micros"
-        //     },
-        //     search: search(request),
-        //     sort: [],
-        //   }
-        // })
         getESSimpleSearch({
           variables: {
             index: esIndex,

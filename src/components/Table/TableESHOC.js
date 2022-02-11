@@ -12,10 +12,8 @@ import { COMMENTSCOUNTER } from "graphQL/useQueryCommentsCounter";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { TRACKSBYOBJECTTYPE } from "graphQL/useQueryTracksByObjectType";
 
-// import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { AutoCompleteFilter } from "./AutoCompleteFilter";
-// import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { get } from "lodash";
 
@@ -54,11 +52,6 @@ export const TableESHOC = (Component) => {
         const [dataTracks, DataTracks] = useState(null);
         const setDataTracks = (newState) => { setStateIfDeepEqual(DataTracks, newState) };
 
-        // const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
-        //     fetchPolicy: "no-cache", onCompleted: () => {
-        //         setLoading(false);
-        //     }
-        // });
         const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
             fetchPolicy: "no-cache", onCompleted: () => {
                 setLoading(false);
@@ -127,18 +120,6 @@ export const TableESHOC = (Component) => {
 
         useEffect(() => {
             if (tableMeta?.esIndex) {
-                // getESPaginatedList({
-                //     variables: {
-                //         esIndex: tableMeta.esIndex,
-                //         pagination: {
-                //             first: tableMeta.startPaginationAt,
-                //             keep_alive: "1micros"
-                //         },
-                //         search: tableMeta.extendSearchQuery,
-                //         filters: tableMeta.filters ? tableMeta.filters : [],
-                //         polygon: tableMeta.polygon ? tableMeta.polygon : undefined
-                //     }
-                // });
                 getESSimpleSearch({
                     variables: {
                         index: tableMeta.esIndex,
@@ -308,9 +289,7 @@ export const TableESHOC = (Component) => {
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
             let pageESVariables = {
                 variables: {
-                    // polygon: tableState.polygon ? tableState.polygon : undefined,
                     index: tableState.esIndex,
-                    // search: tableState.searchText ? `${tableState.searchText}*` : '',
                     search: {
                         query: tableState.searchText,
                         fields: tableMeta.searchFields
