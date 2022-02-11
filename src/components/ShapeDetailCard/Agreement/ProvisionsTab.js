@@ -352,7 +352,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                                 label="Frequency"
                                                 options={frequenciesList}
                                                 value={value}
-                                                onChange={(_, value) => { if (value) onChange(value.name); handleChange(item, index) }}
+                                                onChange={(_, value) => { onChange(value?.name ?? ""); handleChange(item, index) }}
                                             />
                                         )}
                                     />

@@ -73,7 +73,7 @@ export default function RelatedParties({ agreementId, agreementDetails }) {
               <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
-          onClick={(e) => {}}
+          onClick={(e) => { }}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>
@@ -89,6 +89,7 @@ export default function RelatedParties({ agreementId, agreementDetails }) {
             relatedParties={relatedParties}
             agreementId={agreementId}
             agreementName={agreementDetails?.agreementName}
+            agreementNumber={agreementDetails?.agreementNumber}
             partiesLoading={!relatedPartiesData}
           />
         </AccordionDetails>
