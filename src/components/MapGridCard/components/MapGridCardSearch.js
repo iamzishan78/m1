@@ -14,7 +14,7 @@ import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { setMapGridCardState } from "../../../actions";
 
 import { useLazyQuery } from "@apollo/client";
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 
 const leaseIndexName = 'lease-index-v2';
 const operatorIndexName = 'operator-index';
@@ -60,7 +60,7 @@ function MapGridCardSearch(props) {
   const [options, setOptions] = React.useState([]);
   const [searchTop] = React.useState(100);
 
-  const [getESPaginatedList, { data: esSearchData }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
+  const [getESSimpleSearch, { data: esSearchData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });
 
   const startPaginationAt = 50;
 
@@ -85,16 +85,7 @@ function MapGridCardSearch(props) {
     () => ({
       "well": {
         esIndex: "platformData:wells",
-        search: (request) => (() => {
-          let searchString = ""
-          if (request.input) {
-            searchString = request.input.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
-          }
-      
-          return searchString
-            ? `(wellName:(${searchString.join('* AND ')}*) OR api:(${searchString.join('* AND ')}*))^2 OR (wellName:(${searchString.join('* ')}*) OR api:(${searchString.join('* ')}*))`
-            : ""
-        })(),
+        search: (request) => `${request.input}`,
         formatOptions: (data) => {
           return { ...data, Source: wellCogIndexName, Primary: data.WellName, Secondary: data.ApiNumber }
         }
@@ -180,7 +171,7 @@ function MapGridCardSearch(props) {
     if (esSearchData) {
       const { formatOptions } = esCallData[props.searchOption]
       newOptions = [
-        ...esSearchData.getESPaginatedList.hits.map((result) => {
+        ...esSearchData.getESSimpleSearch.hits.map((result) => {
           return formatOptions(result);
         }),
       ];
