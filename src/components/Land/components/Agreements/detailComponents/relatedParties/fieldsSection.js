@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function FieldsSection({ relatedParties, agreementId, agreementName, partiesLoading }) {
+export default function FieldsSection({ relatedParties, agreementId, agreementName, agreementNumber, partiesLoading }) {
   const customClasses = customStyles();
   const classes = useStyles();
   const history = useHistory();
@@ -208,7 +208,7 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
                                       showAgreementBreadcrumb: true,
                                       agreementBreadcrumbsParams: {
                                         Agreements: "/land/agreements",
-                                        [agreementName]: `/land/agreement/details/${agreementId}`,
+                                        [`${agreementNumber} - ${agreementName}`]: `/land/agreement/details/${agreementId}`,
                                       },
                                     });
                                     e.stopPropagation();
@@ -231,11 +231,10 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
                         id={`${index}-comments`}
                         size={"small"}
                         color="primary"
-                        className={`${classes.icons} ${!item?.comments || item?.comments === 0 ? classes.noCommentsIcon : ""} ${
-                          openCommentsDialog?.targetSourceId && openCommentsDialog?.targetSourceId === item.descriptorObject?._id
-                            ? classes.iconSelected
-                            : ""
-                        }`}
+                        className={`${classes.icons} ${!item?.comments || item?.comments === 0 ? classes.noCommentsIcon : ""} ${openCommentsDialog?.targetSourceId && openCommentsDialog?.targetSourceId === item.descriptorObject?._id
+                          ? classes.iconSelected
+                          : ""
+                          }`}
                         onClick={(e) => {
                           e.stopPropagation();
                           setCommentsDialog({ state: true, targetSourceId: item.descriptorObject?._id });
