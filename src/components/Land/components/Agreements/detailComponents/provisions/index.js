@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useLazyQuery } from "@apollo/client";
+import React from "react";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
@@ -7,8 +6,6 @@ import { useStyles as customStyles } from "../style";
 
 // Components
 import ProvisionsTab from "components/ShapeDetailCard/Agreement/ProvisionsTab";
-
-import { GET_RELATED_PARTIES } from "graphQL/useQueryRelatedParty";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -48,22 +45,6 @@ export default function RelatedParties({ agreementId, agreementProvisions, stand
     const classes = useStyles();
     const customClasses = customStyles();
 
-    const [getRelatedParties, { data: relatedPartiesData }] = useLazyQuery(GET_RELATED_PARTIES);
-
-    useEffect(() => {
-        if (agreementId) {
-            getRelatedParties({
-                variables: {
-                    customLayerId: agreementId,
-                },
-            });
-        }
-    }, [agreementId, getRelatedParties]);
-
-    const relatedParties = React.useMemo(() => {
-        return relatedPartiesData?.getRelatedParties?.relatedParties.length > 0 ? relatedPartiesData?.getRelatedParties?.relatedParties : [];
-    }, [relatedPartiesData]);
-
     return (
         <div className={classes.root}>
             <Accordion className={classes.accordionRoot} defaultExpanded={true}>
@@ -80,7 +61,7 @@ export default function RelatedParties({ agreementId, agreementProvisions, stand
                             <Typography variant="h5" className={customClasses.titleText}>
                                 Provisions & Obligations
                             </Typography>
-                            {relatedParties.length > 0 && <Chip color="info" label={relatedParties.length} />}
+                            {agreementProvisions.length > 0 && <Chip color="info" label={agreementProvisions.length} />}
                         </Grid>
                     </Grid>
                 </AccordionSummary>
