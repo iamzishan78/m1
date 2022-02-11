@@ -18,6 +18,7 @@ import Badge from "@material-ui/core/Badge";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
+import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import { CONTACT_PURCHASE_DATA } from "graphQL/useQueryContactPurchaseData";
@@ -658,7 +659,12 @@ export default function ContactDetailCard(props) {
               </Button> */}
                 {contactData.primaryEmail && (
                   <a href={"mailto:" + contactData.primaryEmail}>
-                    <Button variant="contained">Email</Button>
+                    <Button
+                      color="secondary"
+                      startIcon={<EmailOutlinedIcon />}
+                    >
+                      Email
+                    </Button>
                   </a>
                 )}
 
