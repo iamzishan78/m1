@@ -205,16 +205,6 @@ function UnitOwnersTable(props) {
     filter: true,
     customToolbar: () => {
       return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-        <FeatureFlag feature={FEATURES.IDICORE}>
-          <Button
-            color="secondary"
-            startIcon={<RequestPageIcon color="rgba(0, 0, 0, 0.26)" />}
-            className={classes.multiSelectionTopBarButtons}
-            disabled={true}
-          >
-            Contact Data
-          </Button>
-        </FeatureFlag>
         <Button
           color="secondary"
           className={classes.multiSelectionTopBarButtons}
