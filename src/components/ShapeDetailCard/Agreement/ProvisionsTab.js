@@ -95,10 +95,11 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
     const [, setStateApp] = useContext(AppContext);
     const [, setStateNav] = useContext(NavigationContext);
     const [selectionProvision, setSelectedProvision] = useState('')
-    const [frequenciesList, setFrequencies] = useState([]);
+    const [frequenciesList, setFrequenciesList] = useState([]);
+    const [provisionAutoCompleteList, setProvisionsList] = useState([]);
     const { control, register, reset, getValues } = useForm();
 
-    const [getProvisionAutoCompleteList, { data: dataProvisionAutoCompleteList = [] }] = useLazyQuery(GET_PROVISION_AUTOCOMPLETE_LIST);
+    const [getProvisionAutoCompleteList, { data: dataProvisionAutoCompleteList }] = useLazyQuery(GET_PROVISION_AUTOCOMPLETE_LIST);
     const [createAgreementProvision] = useMutation(CREATE_AGREEMENT_PROVISION,);
 
     const { fields, append } = useFieldArray({
@@ -110,20 +111,19 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
     useEffect(() => { reset({ provisions }) }, [])
 
     useEffect(() => {
-        getProvisionAutoCompleteList({ variables: { key: 'type', agreementId: id } });
-        (async () => {
-            new Promise(async (resolve, reject) => {
-                getProvisionAutoCompleteList({
-                    variables: {
-                        key: 'frequency',
-                        agreementId: id
-                    }
-                })
-            })
-        })();
+        getProvisionAutoCompleteList({ variables: { keys: ['type', 'frequency'], agreementId: id } });
     }, [])
 
-    useEffect(() => { reset({ provisions }) }, [provisions])
+    useEffect(() => { reset({ provisions }) }, [provisions]);
+
+    useEffect(() => {
+        if (dataProvisionAutoCompleteList?.provisionAutoCompleteList) {
+            dataProvisionAutoCompleteList?.provisionAutoCompleteList.forEach(list => {
+                if (list.key === 'type') setProvisionsList(list.list);
+                else if (list.key === 'frequency') setFrequenciesList(Array.from(new Set(['Annual', 'Monthly', 'Quartrly', 'Weekly', ...list.list])));
+            });
+        }
+    }, [dataProvisionAutoCompleteList]);
 
     const addRemoveProvision = (addProvision, provision) => {
         if (addProvision) {
@@ -155,8 +155,6 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                 });
         }
     }, 500)
-
-    const provisionAutoCompleteList = dataProvisionAutoCompleteList?.provisionAutoCompleteList || []
 
     const getParty = (item) => {
         return item?.parties && item?.parties[0] ? item?.parties[0] : item?.parties
@@ -345,13 +343,13 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                     <Controller
                                         control={control}
                                         name={`provisions[${index}].frequency`}
-                                        defaultValue={item.type}
+                                        defaultValue={item.frequency}
                                         render={(
                                             { onChange, value, ref },
                                         ) => (
                                             <AutoCompleteWithNewOption
                                                 variant="outlined"
-                                                options={provisionAutoCompleteList}
+                                                options={frequenciesList}
                                                 value={value}
                                                 onChange={(_, value) => { if (value) onChange(value.name); handleChange(item, index) }}
                                             />
