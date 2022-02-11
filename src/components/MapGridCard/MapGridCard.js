@@ -26,6 +26,7 @@ import MapGridContactTable from "components/Table/Contact/MapGridContactTable";
 
 import SearchPanel from "./components/SearchPanel";
 import { platformDataInitialData } from "./components/data";
+import MapGridLayersTable from "components/Table/Layer/MapGridLayersTable";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -612,10 +613,39 @@ function MapGridCard(props) {
     />
   );
 
+  const LayerGridCard = () => {
+    return (
+      <Card className={`${mapGridCardActivated === "exp" ? "noDrag" : ""} ${classes.dockMenu}`}>
+        <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: "relative" }}>
+          <div style={{ position: "relative" }} classes={classes.gridTables}>
+            <MapGridLayersTable
+              dense
+              parent="search"
+              customOptions={options}
+              // targetLabel={tab.label}
+              header={
+                <SearchPanel
+                  isShapeGridOnly={stateApp.gridPolygonString}
+                  handleChange={handleSearchPanelChange}
+                  value={searchTapValue}
+                  ativateSearchPanel={ativateSearchPanel}
+                />
+              }
+            />
+          </div>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <div className={classes.card}>
-      {mapGridCardActivated === "min" ? CardReturn() : CardReturn()}
-      {mapGridCardActivated === "exp" && blackOut()}
+      {stateApp.layerGridCard ? LayerGridCard() :
+        <>
+          {mapGridCardActivated === "min" ? CardReturn() : CardReturn()}
+          {mapGridCardActivated === "exp" && blackOut()}
+        </>}
+
     </div>
   );
 }

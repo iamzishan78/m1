@@ -5,6 +5,7 @@ import { get } from "lodash";
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import AddALayer from "components/MapControls/components/addALayer";
 import LayerStyling from "components/MapControls/components/LayerStyling";
+import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -21,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Secondarypanel = () => {
   const [stateMapControls] = useContext(MapControlsContext);
+  const [stateApp] = useContext(AppContext);
 
   const leftPixels = useMemo(() => {
     return get(document.getElementById("layer-side-panel"), "style.minWidth", "0px");
@@ -31,7 +33,7 @@ const Secondarypanel = () => {
   return (
     <div className={classes.root}>
       {stateMapControls.addLayer && <AddALayer />}
-      {stateMapControls.selectedLayer && <LayerStyling layer={stateMapControls.selectedLayer} />}
+      {stateApp.selectedLayer && <LayerStyling layer={stateApp.selectedLayer} fileName={stateApp.selectedLayer.fileName} />}
     </div>
   );
 };

@@ -11,7 +11,6 @@ const SearchPanel = ({ isShapeGridOnly, handleChange, value, ativateSearchPanel 
         <>
             <Grid container direction="row" spacing={2}>
                 <Grid item>
-
                     <SearchByTypeSelectField isShapeGridOnly={isShapeGridOnly} handleChange={handleChange} value={value} backgroundColor='#ffffff' />
                 </Grid>
                 <Grid item>
@@ -21,7 +20,6 @@ const SearchPanel = ({ isShapeGridOnly, handleChange, value, ativateSearchPanel 
                     />
                 </Grid>
             </Grid>
-
             {/* <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small /> */}
         </>
     )

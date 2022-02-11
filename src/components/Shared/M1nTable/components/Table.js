@@ -556,10 +556,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "smaller",
   },
   customWarning: {
-    "& .MuiSvgIcon-root":{
+    "& .MuiSvgIcon-root": {
       fill: "#ffa800"
     }
-    
+
   }
 }));
 
@@ -1793,7 +1793,7 @@ function SubTable(props) {
                         {!value || value === "false" ? (
                           <Convert_contact style={{ margin: "4px" }} />
                         ) : (
-                          <Link 
+                          <Link
                             href={
                               window.location.origin
                               +
@@ -2504,7 +2504,7 @@ function SubTable(props) {
                           fgColor="#000"
                           name={
                             valueFormatter(column, tableMeta.rowData[8]) ||
-                            valueFormatter(column, 
+                            valueFormatter(column,
                               `${tableMeta.rowData[10]
                                 ? tableMeta.rowData[10]
                                 : tableMeta.rowData[8]
@@ -3756,7 +3756,7 @@ function SubTable(props) {
         }
       })
       return "\uFEFF" + buildHead(columns) + buildBody(formattedData);
-    } 
+    }
   };
 
   if (props.header === "Well Interests" && props.parent === "owner_WellInterests") {

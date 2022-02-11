@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Checkbox from "@material-ui/core/Checkbox";
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
@@ -30,7 +30,7 @@ const useStyles = makeStyles(() => ({
 
 const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) => {
   const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   const [, setStateMapControls] = useContext(MapControlsContext);
 
@@ -63,10 +63,24 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
     updateLayer(updatedLayer);
   };
 
+  useEffect(() => {
+    setStateApp((state) => {
+      if (state.selectedLayer) {
+        handleColorPicker(layer)
+      }
+      return state
+    });
+  }, [layer.fileName])
+
   const handleColorPicker = (layer) => {
+    setStateApp((state) => ({
+      ...state,
+      selectedLayer: layer,
+    }))
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       selectedLayer: layer,
+      map: stateApp.map,
       addLayer: false
     }));
   };

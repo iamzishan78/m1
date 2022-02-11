@@ -1,6 +1,6 @@
 import React, { useState, createContext } from "react";
 
-const MapControlsContext = createContext([{}, () => {}]);
+const MapControlsContext = createContext([{}, () => { }]);
 
 const layers = [
   { name: "Basins", value: "basinLayer" },
