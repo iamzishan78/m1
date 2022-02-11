@@ -330,7 +330,7 @@ function Search() {
       "tax owners": {
         esIndex: "platformData:globalowner",
         search: (request) => `${request.input}`,
-        searchFields: ["ownerName", "_all"],
+        searchFields: ["ownerName", "streetAddress", "city", "state", "zip"],
         formatOptions: (data) => {
           return {
             ...data, Source: 'globalowner-index', Primary: data.OwnerName, Secondary: `${data.StreetAddress}\n${data.City}\n${data.State}\n${data.Zip}`,
@@ -340,14 +340,15 @@ function Search() {
       "operators": {
         esIndex: "platformData:operator",
         search: (request) => `${request.input}`,
-        searchFields: ["operator", "_all"],
+        searchFields: ["operator"],
         formatOptions: (data) => {
           return { ...data, Source: operatorIndexName, Primary: data.Operator, Secondary: null }
         }
       },
       "leases": {
         esIndex: "platformData:lease",
-        search: (request) => request.input ? `lease:*${request.input}*` : '',
+        search: (request) => `${request.input}`,
+        searchFields: ["lease", "leaseId"],
         formatOptions: (data) => {
           return {
             ...data, Source: leaseIndexName, Primary: data.Lease && ["", "N/A", "(N/A)"].includes(data.Lease) ? "--" : data.Lease,
@@ -357,7 +358,12 @@ function Search() {
       },
       "units": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `layer:unit AND (name:${request.input}* OR shapeJson.properties.uNumber:${request.input}*)` : '',
+        search: (request) => `${request.input}`,
+        searchFields: ["name", "shapeJson.properties.uNumber", "shapeJson.properties.originalProperties.County", "data.shapeJson.properties.originalProperties.State"],
+        filter: {
+          field: "layer",
+          value: "unit"
+        },
         formatOptions: (data) => {
           const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State || ''}` : null
           const Primary = data?.shapeJson?.properties?.uNumber ? `${data?.shapeJson?.properties?.uNumber} - ${data.name}` : data.name
@@ -369,7 +375,12 @@ function Search() {
 
       "tracts": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `layer:parcel AND name:${request.input}*` : '',
+        search: (request) => `${request.input}`,
+        searchFields: ["name", "shapeJson.properties.originalProperties.County", "data.shapeJson.properties.originalProperties.State"],
+        filter: {
+          field: "layer",
+          value: "parcel"
+        },
         formatOptions: (data) => {
           const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State || ''}` : null
           return {
@@ -379,7 +390,12 @@ function Search() {
       },
       "agreements": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `shapeJson.properties.type:(agreement) AND shapeJson.properties.shapeLabel:${request.input}*` : '',
+        search: (request) => `${request.input}`,
+        searchFields: ["shapeJson.properties.shapeLabel", "layer"],
+        filter: {
+          field: "shapeJson.properties.type",
+          value: "agreement"
+        },
         formatOptions: (data) => {
           return {
             ...data, Source: 'shapes_flat', Primary: data?.shapeJson?.properties?.shapeLabel, Secondary: capitalizeFirstLetter(data.layer)
@@ -391,7 +407,7 @@ function Search() {
   const callESSearch = React.useMemo(
     () =>
       debounce((request) => {
-        const { esIndex, search, searchFields } = esCallData[searchOption]
+        const { esIndex, search, searchFields, filter } = esCallData[searchOption]
         getESSimpleSearch({
           variables: {
             index: esIndex,
@@ -403,6 +419,7 @@ function Search() {
               query: search(request),
               fields: searchFields
             },
+            ...(filter) && { filters: [ filter ] },
             sort: [],
           }
         })
