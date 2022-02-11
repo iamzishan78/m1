@@ -90,31 +90,34 @@ export const wellsKeys = [
 ]
 
 export const contactManagementRoutes = {
-  PORTFOLIO: {
+  LEADS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Leads",
     link: "/contacts/leads",
     component: "ContactsTable",
+    showAnalytics: true,
   },
-  AGREEMENTS: {
+  PROSPECTS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Prospects",
     link: "/contacts/prospects",
     component: "ContactsTable",
+    showAnalytics: true,
   },
   CONTACTS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Contacts",
     link: "/contacts",
     component: "ContactsTable",
+    showAnalytics: true,
   },
-  TRACTS: {
+  ACTIVITY: {
     featureFlag: "CONTACTSUBMENU",
     title: "Activity Dashboard",
     link: "/contacts/activityDashboard",
     component: "ContactsTable",
   },
-  REPORTING_GROUPS: {
+  CAMPAIGN: {
     featureFlag: "CONTACTSUBMENU",
     title: "Campaign Management",
     link: "/contacts/campaignManagement",

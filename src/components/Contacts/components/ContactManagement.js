@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { useSelector } from "react-redux";
 import ContactsTable from "components/Table/Contact/ContactsTable";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -15,10 +16,13 @@ const useStyles = makeStyles((theme) => ({
 const ContactManagement = () => {
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
+  const { activeModule } = useSelector(({ contact }) => contact);
 
   return (
     <div className={classes.root}>
-      <ContactsAnalyticsCards />
+      {activeModule.showAnalytics &&(
+        <ContactsAnalyticsCards />
+      )}
       <ContactsTable
         parent="Contacts"
         headerLabel="Contact Management"
