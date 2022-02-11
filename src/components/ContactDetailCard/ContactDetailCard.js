@@ -657,16 +657,24 @@ export default function ContactDetailCard(props) {
               >
                 Buy Contact Info
               </Button> */}
-                {contactData.primaryEmail && (
-                  <a href={"mailto:" + contactData.primaryEmail}>
-                    <Button
-                      color="secondary"
-                      startIcon={<EmailOutlinedIcon />}
-                    >
-                      Email
-                    </Button>
-                  </a>
-                )}
+              
+              {contactData.primaryEmail ? (
+                <a href={"mailto:" + contactData.primaryEmail}>
+                  <Button
+                    color="secondary"
+                    startIcon={<EmailOutlinedIcon />}
+                  >
+                    Email
+                  </Button>
+                </a>
+                ) : 
+                  (<Button
+                    color="secondary"
+                    startIcon={<EmailOutlinedIcon />}
+                    disabled
+                  >
+                    Email
+                  </Button>)}
 
                 <Button className={classes.menuIcon} onClick={handleClick}>
                   <MoreVertIcon aria-controls="simple-menu" aria-haspopup="true" />
