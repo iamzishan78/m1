@@ -45,16 +45,8 @@ function MapGridTaxOwnersTable(props) {
   useEffect(() => {
     props.setTableMeta({
       addableName: "Tax Owners",
-      extendSearchQuery: (() => {
-        let searchString = ""
-        if (searchInput) {
-          searchString = searchInput.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
-        }
-    
-        return searchString
-          ? `(ownerName:(${searchString.join('* AND ')}*))^4 OR (ownerName:(${searchString.join('* ')}*))^2 OR (_all:(${searchString.join('* ')}*))`
-          : ""
-      })(),
+      extendSearchQuery: searchInput,
+      searchFields: ["ownerName", "_all"],
       TableHeader: copy(TableHeader),
       esIndex: "platformData:globalowner",
       startPaginationAt: 25,

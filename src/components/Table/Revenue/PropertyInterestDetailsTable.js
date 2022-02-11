@@ -38,7 +38,8 @@ function PropertyInterestDetailsTable(props) {
     props.setTableMeta({
       addableName: "Property Interest",
       addBtnText: "INTEREST",
-      extendSearchQuery: `property._id:(${props.propertyId})`,
+      searchFields: ["owner.entityDetail.name", "_all"],
+      filters: [{ field: "property._id", value: props.propertyId }],
       TableHeader: copy(TableHeader),
       esIndex: "propertyinterest_flat",
       startPaginationAt: 25,
