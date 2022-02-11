@@ -95,6 +95,7 @@ export const contactManagementRoutes = {
     title: "Leads",
     link: "/contacts/leads",
     component: "ContactsTable",
+    filterValue: 'QualLead',
     showAnalytics: true,
   },
   PROSPECTS: {

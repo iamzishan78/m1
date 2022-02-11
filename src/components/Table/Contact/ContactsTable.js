@@ -121,6 +121,17 @@ function ContactsTable(props) {
   const orderByTracks = false;
   const startPaginationAt = 25;
 
+  const getFilters = () => {
+    let newFilters = []
+    if(selectedGridView?.filters){
+      newFilters = selectedGridView.filters
+    }
+    if(props.customAppliedFilters){
+      newFilters = [...newFilters, ...props.customAppliedFilters]
+    }
+    return newFilters;
+  }
+
   useEffect(() => {
     getESContacts({
       variables: {
@@ -129,10 +140,10 @@ function ContactsTable(props) {
           keep_alive: "1micros",
         },
         search: esSearch,
-        filters: selectedGridView?.filters ? selectedGridView?.filters : [],
+        filters: getFilters(),
       },
     });
-  }, [getESContacts, props.parent, props.contactSearchQuery, selectedGridView]);
+  }, [getESContacts, props.parent, props.contactSearchQuery, selectedGridView, props.customAppliedFilters]);
 
   useEffect(() => {
     if (tableData?.hits) {
@@ -178,10 +189,14 @@ function ContactsTable(props) {
     tableRef.current.changePage(0)
     tableRef.current.isFetching = false;
     if (!isEmpty(selectedGridView)) {
-      const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns, true)
+      const view = copy(selectedGridView);
+      if(view){
+        view.filters = getFilters();
+      }
+      const updatedColumns = handleSelectedGridChange(TableHeader, view, columns, true);
       setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
     }
-  }, [selectedGridView]);
+  }, [selectedGridView,  props.customAppliedFilters]);
 
   const count = tableData?.total || 0;
   const options = {
