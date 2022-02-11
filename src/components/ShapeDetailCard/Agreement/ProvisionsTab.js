@@ -92,10 +92,11 @@ const styles = makeStyles(() => ({
 export default function ProvisionsTab({ provisions, standardProvisions, id }) {
     const classes = styles();
     let history = useHistory();
-    const [stateApp, setStateApp] = useContext(AppContext);
-    const [stateNav, setStateNav] = useContext(NavigationContext);
+    const [, setStateApp] = useContext(AppContext);
+    const [, setStateNav] = useContext(NavigationContext);
     const [selectionProvision, setSelectedProvision] = useState('')
-    const { control, register, reset, getValues, setValue } = useForm();
+    const [frequenciesList, setFrequencies] = useState([]);
+    const { control, register, reset, getValues } = useForm();
 
     const [getProvisionAutoCompleteList, { data: dataProvisionAutoCompleteList = [] }] = useLazyQuery(GET_PROVISION_AUTOCOMPLETE_LIST);
     const [createAgreementProvision] = useMutation(CREATE_AGREEMENT_PROVISION,);
@@ -109,7 +110,17 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
     useEffect(() => { reset({ provisions }) }, [])
 
     useEffect(() => {
-        getProvisionAutoCompleteList({ variables: { key: 'type', agreementId: id } })
+        getProvisionAutoCompleteList({ variables: { key: 'type', agreementId: id } });
+        (async () => {
+            new Promise(async (resolve, reject) => {
+                getProvisionAutoCompleteList({
+                    variables: {
+                        key: 'frequency',
+                        agreementId: id
+                    }
+                })
+            })
+        })();
     }, [])
 
     useEffect(() => { reset({ provisions }) }, [provisions])
@@ -272,7 +283,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
 
                         <Grid item>
                             <Grid container direction="row" spacing={2} >
-                                <Grid item md={3} >
+                                <Grid item md={2} >
                                     <Controller
                                         control={control}
                                         name={`provisions[${index}].startDate`}
@@ -301,7 +312,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                         )}
                                     />
                                 </Grid>
-                                <Grid item md={3} >
+                                <Grid item md={2} >
                                     <Controller
                                         control={control}
                                         name={`provisions[${index}].endDate`}
@@ -325,6 +336,24 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                                     handleChange(item, index)
                                                 }}
                                                 KeyboardButtonProps={{ "aria-label": "change date" }}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                <Grid item md={2}>
+                                    <Controller
+                                        control={control}
+                                        name={`provisions[${index}].frequency`}
+                                        defaultValue={item.type}
+                                        render={(
+                                            { onChange, value, ref },
+                                        ) => (
+                                            <AutoCompleteWithNewOption
+                                                variant="outlined"
+                                                options={provisionAutoCompleteList}
+                                                value={value}
+                                                onChange={(_, value) => { if (value) onChange(value.name); handleChange(item, index) }}
                                             />
                                         )}
                                     />

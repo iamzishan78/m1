@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { debounce } from "lodash";
+import { debounce, get } from "lodash";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import {
@@ -24,10 +24,13 @@ import DocViewer from "components/Shared/DocViewer";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
 import Summary from "components/Land/components/Agreements/detailComponents/summary";
 import RelatedParties from "components/Land/components/Agreements/detailComponents/relatedParties";
+import Provisions from "components/Land/components/Agreements/detailComponents/provisions";
 
 import { useLazyQuery } from "@apollo/client";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
+import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
+import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 
 const useStyles = makeStyles((theme) => ({
   detailHeader: {
@@ -222,6 +225,8 @@ export default function DetailComponents(props) {
     fetchPolicy: "no-cache",
   });
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
+  const [getStandardProvisions, { data: standardProvisions }] = useLazyQuery(GET_STANDARD_PROVISIONS);
+  const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
 
   useEffect(() => {
     return () => {
@@ -231,7 +236,17 @@ export default function DetailComponents(props) {
         })
       );
     };
-  }, []);
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (agreementId) {
+      getAgreementProvisions({ variables: { agreementId: agreementId } });
+    }
+  }, [agreementId, getAgreementProvisions]);
+
+  useEffect(() => {
+    getStandardProvisions();
+  }, [getStandardProvisions]);
 
   useEffect(() => {
     if (selectedTabRef?.current) {
@@ -373,11 +388,24 @@ export default function DetailComponents(props) {
           <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
             <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
               <div className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null} style={{ backgroundColor: "#fff" }}>
-                <Summary agreementDetails={agreementDetails} />
+                <Summary
+                  agreementDetails={agreementDetails}
+                  agreementProvisions={get(agreementProvisions, "getAgreementProvisions", [])}
+                  standardProvisions={get(standardProvisions, "getStandardProvisions", [])}
+                />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
               <div className={classes.tabDetailSection} ref={tab === 1 ? selectedTabRef : null}>
                 <RelatedParties agreementDetails={agreementDetails} agreementId={agreementId} />
+              </div>
+              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
+              <div className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
+                <Provisions
+                  agreementDetails={agreementDetails}
+                  agreementId={agreementId}
+                  agreementProvisions={get(agreementProvisions, "getAgreementProvisions", [])}
+                  standardProvisions={get(standardProvisions, "getStandardProvisions", [])}
+                />
               </div>
             </div>
           </div>

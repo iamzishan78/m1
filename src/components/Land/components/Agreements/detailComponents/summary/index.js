@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { get, set } from "lodash";
+import { set } from "lodash";
 import { useSelector } from "react-redux";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useForm, Controller } from "react-hook-form";
 import { Grid, Typography, Box } from "@material-ui/core";
 import { useStyles as summaryStyles, StyledTextField } from "../style";
@@ -11,30 +11,20 @@ import CloseIcon from "@material-ui/icons/Close";
 
 import FieldsSection from "./fieldsSection";
 
-import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
-import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 
-export default function Summary({ agreementDetails }) {
+export default function Summary({ agreementDetails, agreementProvisions, standardProvisions }) {
   const classes = summaryStyles();
   const { control, reset } = useForm();
   const activeAgreement = useSelector(({ Land }) => Land.agreement?.activeAgreement);
 
-  const [getStandardProvisions, { data: dataStandardProvisions = [] }] = useLazyQuery(GET_STANDARD_PROVISIONS);
-  const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
   useEffect(() => {
     if (agreementDetails) {
       reset(agreementDetails);
-      getAgreementProvisions({ variables: { agreementId: activeAgreement._id } });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reset, agreementDetails, getAgreementProvisions]);
-
-  useEffect(() => {
-    getStandardProvisions();
-  }, [getStandardProvisions]);
+  }, [reset, agreementDetails]);
 
   const updateAgreement = (field, value, isCustom) => {
     if (agreementDetails[field] === value) return;
@@ -73,7 +63,7 @@ export default function Summary({ agreementDetails }) {
     });
   };
 
-  const hasCustomProvision = get(agreementProvisions, "getAgreementProvisions", []).find((provision) => !provision.templateRef);
+  const hasCustomProvision = agreementProvisions.find((provision) => !provision.templateRef);
 
   return (
     <Grid container direction="row" justify="space-between" alignItems="center" className={classes.root}>
@@ -88,8 +78,8 @@ export default function Summary({ agreementDetails }) {
         <Grid item md={12} className={classes.provisionCard}>
           <Typography className="heading">Provisions</Typography>
           <Grid container direction="row">
-            {get(dataStandardProvisions, "getStandardProvisions", []).map((provision) => {
-              const found = get(agreementProvisions, "getAgreementProvisions", []).find((p) => p.type === provision.type);
+            {standardProvisions.map((provision) => {
+              const found = agreementProvisions.find((p) => p.type === provision.type);
               return (
                 <Grid item md={6} className="provisionRow">
                   <Box display="inline-flex" className={found ? "" : "uncheck"}>
