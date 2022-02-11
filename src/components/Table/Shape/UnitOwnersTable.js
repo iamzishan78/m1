@@ -103,34 +103,21 @@ function UnitOwnersTable(props) {
       props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
       props.ifAreContacts(globalOwnerIds);
     }
-  }, [tableData]);
+  }, [tableData, elasticData]);
 
   useEffect(() => {
-    if (tableData?.hits) {
-      const objectsIdsArray = tableData.hits.map((contact) => contact._id);
+    if (tableData?.hits?.length > 0) {
+      const objectsIdsArray = tableData.hits.map((contact) => contact.contactId);
+      console.log("objectsIdsArray", objectsIdsArray);
       getCheckPurchaseData({
         variables: {
           contactIds: objectsIdsArray,
         },
       });
     }
-  }, [tableData]);
+  }, [tableData, elasticData]);
 
-  useEffect(() => {
-    if (ContactPurchaseData?.getCheckPurchaseData) {
-      console.log("ContactPurchaseData", ContactPurchaseData);
-      const rows = JSON.parse(JSON.stringify(props.rows));
-      for (let i = 0; i < ContactPurchaseData?.getCheckPurchaseData.length; i++) {
-        const contactId = ContactPurchaseData.getCheckPurchaseData[i];
-        for (let index in rows) {
-          if (rows[index]._id === contactId) {
-            rows[index].isPurchased = true;
-          }
-        }
-      }
-      props.setRows(rows);
-    }
-  }, [ContactPurchaseData]);
+  
 
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
@@ -143,6 +130,15 @@ function UnitOwnersTable(props) {
         hit = props.setGenricData(hit, hit.ownerEntity, ['comments', 'tracks', 'tags', 'ifAreContacts']);
         return hit;
       });
+      if (ContactPurchaseData?.getCheckPurchaseData) {
+        for (let i = 0; i < ContactPurchaseData?.getCheckPurchaseData.length; i++) {
+          for (let index in hits) {
+            if (hits[index].contactId === ContactPurchaseData.getCheckPurchaseData[i]) {
+              hits[index].isPurchased = true;
+            }
+          }
+        }
+      }
       props.setRows(copy(hits));
       TableHeader.forEach((column) => {
         if (column?.options?.filter) {
@@ -171,7 +167,7 @@ function UnitOwnersTable(props) {
       props.setRows([]);
       props.setLoading(false);
     }
-  }, [tableData, props.dependencyUpdate]);
+  }, [tableData, ContactPurchaseData, props.dependencyUpdate]);
 
 
   ////////////Contact Wells end///////////////////////////////////////////////
@@ -215,15 +211,6 @@ function UnitOwnersTable(props) {
             startIcon={<RequestPageIcon color="rgba(0, 0, 0, 0.26)" />}
             className={classes.multiSelectionTopBarButtons}
             disabled={true}
-            onClick={() => {
-              let contacts = [];
-              for (let i in selectedRows) {
-                console.log(selectedRows[i]);
-                contacts.push(props.rows[selectedRows[i].dataIndex]);
-              }
-              selectRow(contacts);
-              handleExpandClick(contacts, "buyContactsInfoData")
-            }}
           >
             Contact Data
           </Button>
@@ -249,6 +236,7 @@ function UnitOwnersTable(props) {
                 let contacts = [];
                 for (let i in selectedRows) {
                   console.log(selectedRows[i]);
+                  props.rows[selectedRows[i].dataIndex]._id = props.rows[selectedRows[i].dataIndex].contactId;
                   contacts.push(props.rows[selectedRows[i].dataIndex]);
                 }
                 selectRow(contacts);
@@ -295,7 +283,6 @@ function UnitOwnersTable(props) {
     selectRow(null);
   }
 
-  console.log("props", props);
   return (
     <Container
       maxWidth={false}
