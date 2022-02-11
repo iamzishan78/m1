@@ -121,3 +121,23 @@ export const contactManagementRoutes = {
     component: "ContactsTable",
   },
 };
+
+export const contactsAnalyticsCards = [
+  {
+    heading: "Total Contacts",
+    points: 0,
+  },
+  {
+    heading: "Recently Added",
+    points: 0,
+  },
+  {
+    heading: "Recently Contacted",
+    points: 0,
+  },
+  {
+    heading: "Missing Contact Info",
+    points: 0,
+    type: "warning",
+  },
+];

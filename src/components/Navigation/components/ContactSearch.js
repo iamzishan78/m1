@@ -12,7 +12,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useSelector } from "react-redux";
 
-import { AppContext } from "../../../AppContext";
+import { AppContext } from "AppContext";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const useStyles = makeStyles((theme) => ({
