@@ -90,12 +90,18 @@ export const wellsKeys = [
 ]
 
 export const contactManagementRoutes = {
+  ALLENTITIES: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "All Entities",
+    link: "/contacts",
+    component: "ContactsTable",
+  },
   LEADS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Leads",
     link: "/contacts/leads",
     component: "ContactsTable",
-    filterValue: 'QualLead',
+    filterValue: 'Lead',
     showAnalytics: true,
   },
   PROSPECTS: {
@@ -103,13 +109,15 @@ export const contactManagementRoutes = {
     title: "Prospects",
     link: "/contacts/prospects",
     component: "ContactsTable",
+    filterValue: 'Prospect',
     showAnalytics: true,
   },
   CONTACTS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Contacts",
-    link: "/contacts",
+    link: "/contacts/contact",
     component: "ContactsTable",
+    filterValue: 'Contact',
     showAnalytics: true,
   },
   ACTIVITY: {

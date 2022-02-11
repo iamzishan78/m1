@@ -18,14 +18,24 @@ export const contactStatusOptions = [
   {
     label: "Unqualified Lead",
     value: "UnqualLead",
+    notInclude: true
   },
   {
     label: "Qualified Lead",
     value: "QualLead",
+    notInclude: true
   },
   {
-    label: "Contact",
-    value: "Contact",
+    label: "Lead",
+    value: "Lead",
+  },
+  {
+    label: "Prospect",
+    value: "Prospect",
+  },
+  {
+    label: "Deal Contact",
+    value: "Deal Contact",
   },
 ];
 
@@ -163,7 +173,7 @@ export const getBasicInfoExpContent = (contactData) => {
       data: { territory: contactData?.territory },
       linkType: LinkTypes.None,
     },
-    Status: {
+    Stage: {
       data: { status },
       linkType: LinkTypes.None,
     },

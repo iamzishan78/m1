@@ -19,7 +19,7 @@ const ContactManagement = () => {
   const { activeModule } = useSelector(({ contact }) => contact);
 
   const getCustomAppliedFilters = () => {
-    if(activeModule){
+    if(activeModule?.filterValue){
       return [{
         field: "status.keyword",
         value: activeModule.filterValue
@@ -29,9 +29,9 @@ const ContactManagement = () => {
   
   return (
     <div className={classes.root}>
-      {activeModule.showAnalytics &&(
+      {/* {activeModule.showAnalytics &&(
         <ContactsAnalyticsCards />
-      )}
+      )} */}
       <ContactsTable
         parent="Contacts"
         headerLabel="Contact Management"

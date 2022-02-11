@@ -95,12 +95,15 @@ export default function FieldContent({
 
   useEffect(() => {
     if(filtersData?.getESFilterList?.hits){
+      const allFiltersData = filtersData.getESFilterList.hits.map(hit => hit.key)
       let filterData = filtersData.getESFilterList.hits.map(hit => hit.key)
       for(let i = 0; i < contactStatusOptions.length; i++){
         filterData = filterData.filter(d => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label)
       }
       for(let i = 0; i < contactStatusOptions.length; i++){
-        filterData.push(contactStatusOptions[i].label)
+        if((contactStatusOptions[i].notInclude && allFiltersData.find(d => d === contactStatusOptions[i].value)) || !contactStatusOptions[i].notInclude){
+          filterData.push(contactStatusOptions[i].label)
+        }
       }
       setStatusOptions(filterData)
     }

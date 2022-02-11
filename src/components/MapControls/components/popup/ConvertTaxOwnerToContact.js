@@ -166,7 +166,7 @@ const ConvertTaxOwnerToContact = ({
         </div>
 
         <div className={classes.field}>
-          <label className={classes.bold}>Contact Status</label>
+          <label className={classes.bold}>Contact Stage</label>
           <Controller
             control={control}
             name="contactStatus"
