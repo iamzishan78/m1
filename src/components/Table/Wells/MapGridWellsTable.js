@@ -64,12 +64,12 @@ function MapGridWellsTable(props) {
   );
 
   useEffect(() => {
-    const { filters, search } = getMapFilters(stateNav, searchInput, stateApp.gridPolygonString);
+    const { filters } = getMapFilters(stateNav, "", stateApp.gridPolygonString, "simple");
     setTableMeta({
       addableName: "Wells",
-      extendSearchQuery: search,
+      extendSearchQuery: searchInput,
       searchFields: ["wellName", "api"],
-      filters: filters,
+      filters,
       polygon: stateApp?.currentFeature?.geometry && {
         type: "geo_intersects",
         field: "geoJSON",

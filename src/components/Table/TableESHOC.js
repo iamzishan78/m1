@@ -15,7 +15,8 @@ import { TRACKSBYOBJECTTYPE } from "graphQL/useQueryTracksByObjectType";
 // import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { AutoCompleteFilter } from "./AutoCompleteFilter";
-import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+// import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { get } from "lodash";
 
 import { setColumnsData } from "components/Table/helpers";
@@ -77,6 +78,9 @@ export const TableESHOC = (Component) => {
         const [checkIfOwnersAreContacts, { data: checkIfOwnersAreContactsData }] = useLazyQuery(IFARECONTACTS, { fetchPolicy: "cache-and-network", });
         const checkIfOwnersAreContactsDataRef = useRef();
         checkIfOwnersAreContactsDataRef.current = checkIfOwnersAreContactsData;
+
+        const activeSearchRef = useRef();
+        const activeFiltersRef = useRef();
 
 
         const [dependencyUpdate, SetDependencyUpdate] = useState(false);
@@ -185,7 +189,8 @@ export const TableESHOC = (Component) => {
                                     column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
                                     return (
                                         <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-                                            extendSearchQuery={extendSearchQuery} query={GET_ES_FILTER_LIST} esIndex={esIndex} custom={custom}/>
+                                            extendSearchQuery={extendSearchQuery} searchFields={tableMeta.searchFields} query={GET_ES_SIMPLE_FILTER}
+                                            esIndex={esIndex} filters={activeFiltersRef.current} custom={custom}/>
                                     );
                                 }
                             }
@@ -396,6 +401,8 @@ export const TableESHOC = (Component) => {
             tableState.filters = tableMeta.filters ? tableMeta.filters : [];
             tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
             const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch)
+            activeSearchRef.current = tableActions.pageESVariables.variables.search;
+            activeFiltersRef.current = tableActions.pageESVariables.variables.filters;
             switch (action) {
                 case "search":
                 case "sort":
