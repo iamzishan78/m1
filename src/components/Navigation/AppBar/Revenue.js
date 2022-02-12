@@ -63,7 +63,10 @@ export default function RevenueAppBar(props) {
               <Button color="primary" variant="contained" startIcon={<Add />} onClick={() => {
                   addProperty({
                     variables:{
-                      property: {}
+                      property: {
+                        source: 'Manual Entry',
+                        status: 'Unapproved'
+                      }
                     }
                   })
                 }}

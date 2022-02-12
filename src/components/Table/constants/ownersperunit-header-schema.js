@@ -137,6 +137,36 @@ const OwnersPerUnitHeadCells = [
     },
   },
 
+  {
+    name: "isPurchased",
+    label: "Purchased Data Exists",
+    esKey: 'isPurchased',
+    options: {
+      display: false,
+      filter: false,
+      forceFilter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+    custom: {
+      key_as_string: true,
+      isPurchased: true,
+      formatedFilterOptions: [
+        {
+          label: "Yes",
+          value: 'true',
+        },
+        {
+          label: "No",
+          value: 'false'
+        },
+      ]
+    }
+  },
+
 ];
 
 export default OwnersPerUnitHeadCells;

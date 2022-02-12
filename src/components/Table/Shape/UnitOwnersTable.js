@@ -5,10 +5,17 @@ import { Container, Button, Dialog, Tooltip, IconButton } from "@material-ui/cor
 import Table from "components/Shared/M1nTable/components/Table";
 import DeleteIcon from "@material-ui/icons/Delete";
 import TableHOC from "components/Table/TableHOC";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
+import RequestPageIcon from "components/Shared/svgIcons/request_page";
+import RightDialog from "components/ContactDetailCard/components/RightDialog";
+import BuyContactsInfoDialogContent from "../../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
+
 
 // QUERIES 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
+import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 
 import { addTrailingZeros, copy, deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent"
@@ -24,11 +31,11 @@ import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 
-
 function UnitOwnersTable(props) {
   const classes = usetableStyles();
   const [addToTable, setAddToTable] = useState(false)
   const [openDialog, setOpenDialog] = useState(null);
+  const [expandedObject, ExpandedObject] = useState();
 
   // function states 
   const [columns, Columns] = useState([]);
@@ -45,6 +52,10 @@ function UnitOwnersTable(props) {
       setSelectedRows([])
     }
   });
+
+  const [getCheckPurchaseData, { data: ContactPurchaseData }] = useLazyQuery(
+    GET_CHECK_PURCHASE_DATA
+  );
 
   const [updateShapeOwners, { data: updateData }] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
@@ -65,7 +76,11 @@ function UnitOwnersTable(props) {
 
   const startPaginationAt = 25
   const extendSearchQuery = `shape._id:${props.customLayer._id}`
-  const esIndex = 'shapeowners_flat'
+  const esIndex = 'shapeowners_flat';
+
+  const setExpandedObject = (newState) => {
+    setStateIfDeepEqual(ExpandedObject, newState);
+  };
 
   ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
@@ -88,7 +103,21 @@ function UnitOwnersTable(props) {
       props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
       props.ifAreContacts(globalOwnerIds);
     }
-  }, [tableData]);
+  }, [tableData, elasticData]);
+
+  useEffect(() => {
+    if (tableData?.hits?.length > 0) {
+      const objectsIdsArray = tableData.hits.map((contact) => contact.contactId);
+      console.log("objectsIdsArray", objectsIdsArray);
+      getCheckPurchaseData({
+        variables: {
+          contactIds: objectsIdsArray,
+        },
+      });
+    }
+  }, [tableData, elasticData]);
+
+  
 
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
@@ -101,6 +130,15 @@ function UnitOwnersTable(props) {
         hit = props.setGenricData(hit, hit.ownerEntity, ['comments', 'tracks', 'tags', 'ifAreContacts']);
         return hit;
       });
+      if (ContactPurchaseData?.getCheckPurchaseData) {
+        for (let i = 0; i < ContactPurchaseData?.getCheckPurchaseData.length; i++) {
+          for (let index in hits) {
+            if (hits[index].contactId === ContactPurchaseData.getCheckPurchaseData[i]) {
+              hits[index].isPurchased = true;
+            }
+          }
+        }
+      }
       props.setRows(copy(hits));
       TableHeader.forEach((column) => {
         if (column?.options?.filter) {
@@ -129,7 +167,7 @@ function UnitOwnersTable(props) {
       props.setRows([]);
       props.setLoading(false);
     }
-  }, [tableData, props.dependencyUpdate]);
+  }, [tableData, ContactPurchaseData, props.dependencyUpdate]);
 
 
   ////////////Contact Wells end///////////////////////////////////////////////
@@ -166,7 +204,6 @@ function UnitOwnersTable(props) {
     rowsSelected: selectedRows.map((sR => sR.dataIndex)),
     filter: true,
     customToolbar: () => {
-
       return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
         <Button
           color="secondary"
@@ -180,8 +217,28 @@ function UnitOwnersTable(props) {
     customToolbarSelect: ({ data }) => {
       return <div style={{ height: "48px", display: "flex" }}>
         <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
+          <FeatureFlag feature={FEATURES.IDICORE}>
+            <Button
+              color="secondary"
+              startIcon={<RequestPageIcon color="white" />}
+              className={classes.multiSelectionTopBarButtons}
+              onClick={() => {
+                let contacts = [];
+                for (let i in selectedRows) {
+                  console.log(selectedRows[i]);
+                  props.rows[selectedRows[i].dataIndex]._id = props.rows[selectedRows[i].dataIndex].contactId;
+                  contacts.push(props.rows[selectedRows[i].dataIndex]);
+                }
+                selectRow(contacts);
+                handleExpandClick(contacts, "buyContactsInfoData")
+              }}
+            >
+              Contact Data
+            </Button>
+          </FeatureFlag>
           <Tooltip title={"Delete"}>
-            <IconButton size="medium" style={{ margin: "0 5px" }} aria-label="delete" onClick={(e) => { setOpenDialog("delete"); }}>
+            <IconButton size="medium" style={{ margin: "0 5px" }} aria-label="delete"
+              onClick={(e) => { setOpenDialog("delete"); }}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>
@@ -189,11 +246,15 @@ function UnitOwnersTable(props) {
       </div>
     },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
-      setAddToTable(true)
-      selectRow({ ...props.rows[dataIndex] })
+      setAddToTable(true);
+      selectRow({ ...props.rows[dataIndex] });
     }
   }
 
+  const handleExpandClick = async (idOrValues, type) => {
+    setExpandedObject(idOrValues);
+    setOpenDialog(type);
+  };
 
   const deleteFunc = (ids) => {
     if (ids.length > 0) {
@@ -207,6 +268,10 @@ function UnitOwnersTable(props) {
     }
   }
 
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    selectRow(null);
+  }
 
   return (
     <Container
@@ -227,9 +292,25 @@ function UnitOwnersTable(props) {
         }
       />}
 
-      <Dialog open={openDialog ? true : false} onClose={() => setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
-        {
-          openDialog === "delete" && <DeleteConfirmationDialogContent
+      {openDialog && openDialog === "buyContactsInfoData" && (
+        <RightDialog
+          open={openDialog ? true : false}
+          handleClickDialogClose={handleCloseDialog}
+          width={"700px"}
+        >
+          <BuyContactsInfoDialogContent
+            header="Contact Data Integration"
+            onClose={() => { setOpenDialog(null); selectRow(null); }}
+            rows={expandedObject}
+            setRows={setExpandedObject}
+            setSelectedRow={selectRow}
+          />
+        </RightDialog>
+      )}
+
+      {openDialog && openDialog === "delete" && (
+        <Dialog open={openDialog ? true : false} onClose={() => setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
+          <DeleteConfirmationDialogContent
             header="Delete Interest Owner(s)"
             onClose={() => setOpenDialog(null)}
             deleteFunc={deleteFunc}
@@ -243,8 +324,8 @@ function UnitOwnersTable(props) {
               : ""
               } from  this Unit?`}
           </DeleteConfirmationDialogContent>
-        }
-      </Dialog>
+        </Dialog>
+      )}
 
 
       <Table
