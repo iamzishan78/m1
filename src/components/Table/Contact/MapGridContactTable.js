@@ -46,7 +46,8 @@ function MapGridContactTable(props) {
   useEffect(() => {
     setTableMeta({
       addableName: "Contact",
-      extendSearchQuery: searchInput ? `*${searchInput}*`: '',
+      extendSearchQuery: searchInput,
+      searchFields: ["name", "_all"],
       TableHeader: copy(TableHeader),
       esIndex: "contacts_flat",
       startPaginationAt: 25,

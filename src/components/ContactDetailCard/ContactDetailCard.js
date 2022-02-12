@@ -307,7 +307,8 @@ export default function ContactDetailCard(props) {
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
   let history = useHistory();
-  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
+  const pathName = history.location.pathname;
+  const contactId = pathName.split('contact/details/')[1].replace('/', '');
   const shrinkRightColumn = useSelector(({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn);
   const { selectedPipe } = useSelector(({ Flow }) => Flow);
   const classes = useStyles({ ...props, shrinkRightColumn });
