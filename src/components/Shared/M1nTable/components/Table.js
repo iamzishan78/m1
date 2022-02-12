@@ -2597,6 +2597,14 @@ function SubTable(props) {
                         </FeatureFlag>
                       )}
 
+                      {props.parent === "ownersPerParcel" && column.name === "name" && (
+                        <FeatureFlag feature={FEATURES.IDICORE}>
+                          <span> {tableMeta.rowData[18] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                        </FeatureFlag>
+                      )}
+
+
+
                       {/* temporarily removing the purchased data icon as we do not have functionality to actually purchase contact data currently - KC 3/17/21 */}
                       {/* {props.targetLabel === "contact" &&
                         column.name === "name" &&
@@ -2822,7 +2830,6 @@ function SubTable(props) {
       props.header === "Interest Owners Tied to Contact"
         ? false
         : (selectedRows, displayData, setSelectedRow) => {
-          debugger;
           //// if contacts set the multi selection top bar: ////
 
           if (props.addAble.type === "suggestedOwnerToParcel") {
@@ -3167,19 +3174,56 @@ function SubTable(props) {
 
           //// if Parcel Ownership set the multi selection top bar: ////
           if (props.targetLabel === "Parcel Ownership") {
+            const getSelectedRows = () => {
+              const selectedRows = [];
+              for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+                rows[m1nSelectedRowsIndexes[i]]._id = rows[m1nSelectedRowsIndexes[i]].isContact;
+                console.log("rows m1Selected", rows[m1nSelectedRowsIndexes[i]]);
+                selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+              }
+              return selectedRows;
+            };
+
             return (
-              <Tooltip title={"Delete"}>
-                <IconButton
-                  size="medium"
-                  style={{ margin: "0 5px" }}
-                  onClick={(e) => {
-                    handleExpandClick(null, null, null, "deleteParcelOwnership");
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    height: "35px",
+                    display: "flex",
                   }}
-                  aria-label="delete"
                 >
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
+
+                  <FeatureFlag feature={FEATURES.IDICORE}>
+                    <Button
+                      color="secondary"
+                      startIcon={<RequestPageIcon color="white" />}
+                      className={classes.multiSelectionTopBarButtons}
+                      disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+                      onClick={() => handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData")}
+                    >
+                      Contact Data
+                    </Button>
+                  </FeatureFlag>
+                  <Tooltip title={"Delete"}>
+                    <IconButton
+                      size="medium"
+                      style={{ margin: "0 5px" }}
+                      onClick={(e) => {
+                        handleExpandClick(null, null, null, "deleteParcelOwnership");
+                      }}
+                      aria-label="delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              </div>
             );
           }
 
