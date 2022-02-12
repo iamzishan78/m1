@@ -16,7 +16,7 @@ import { copy } from "components/Shared/functions";
 import { getLayerColor } from "components/Shared/SidePanel/compoennts/common";
 import vf_number from "components/Shared/valueformatters/vf_number";
 import { useDispatch } from "react-redux";
-import { toggleMapGridCardAtived } from "actions";
+import { setMapGridCardState } from "actions";
 
 function trim(str) {
   return str.replace(/^\s+|\s+$/gm, "");
@@ -491,7 +491,8 @@ function LayerStyling(props) {
                     ...state,
                     layerGridCard: true,
                   }));
-                  dispatch(toggleMapGridCardAtived());
+                  handleClose()
+                  dispatch(setMapGridCardState({ mapGridCardActivated: true }));
                 }}>
                   <GridOnIcon />
                 </IconButton>

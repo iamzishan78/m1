@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { useDispatch } from "react-redux";
 import Checkbox from "@material-ui/core/Checkbox";
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
@@ -11,6 +12,8 @@ import { AppContext } from "AppContext.js";
 
 import { Grid } from "@material-ui/core";
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import GridOnIcon from "@material-ui/icons/GridOn";
+import { setMapGridCardState } from "actions";
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 
 import { IconButton } from '@material-ui/core';
@@ -30,6 +33,7 @@ const useStyles = makeStyles(() => ({
 
 const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const [, setStateMapControls] = useContext(MapControlsContext);
@@ -66,7 +70,10 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
   useEffect(() => {
     setStateApp((state) => {
       if (state.selectedLayer) {
-        handleColorPicker(layer)
+        setStateApp((state) => ({
+          ...state,
+          selectedLayer: layer,
+        }))
       }
       return state
     });
@@ -159,8 +166,24 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
         {/* <Grid item xs={4}>
           {layerClickabilityControl}
         </Grid> */}
+        {/* <Grid item xs={4}> */}
+        {/* {layerClickabilityControl} */}
+        {/* </Grid> */}
+
         <Grid item xs={4}>
-          {/* {layerClickabilityControl} */}
+          {layer.file && <Tooltip title="Grid">
+            <IconButton size="small" aria-label="Grid" style={{ color: '#ffff' }} onClick={() => {
+              setStateApp((state) => ({
+                ...state,
+                layerGridCard: true,
+                selectedLayer: layer,
+              }));
+              dispatch(setMapGridCardState({ mapGridCardActivated: true }));
+            }}>
+              <GridOnIcon />
+            </IconButton>
+          </Tooltip>}
+
         </Grid>
         <Grid item xs={4} className={classes.formControl}>
           <FormControlLabel

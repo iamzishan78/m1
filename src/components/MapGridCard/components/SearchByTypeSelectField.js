@@ -88,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, isShapeGridOnly }) => {
+const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, isShapeGridOnly, isLayerOnly }) => {
 
   const classes = useStyles({ backgroundColor, color });
   const [search, setSearch] = useState('');
@@ -96,7 +96,8 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
   const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
 
   const platformData = useMemo(() => {
-    return platformDataInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())).filter(data => isShapeGridOnly ? data.shapeGrid ? true : false : true)
+    let data = platformDataInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())).filter(data => isShapeGridOnly ? data.shapeGrid ? true : false : true)
+    return data.filter((data) => !data.isLayer || (data.isLayer && isLayerOnly))
 
   }, [search])
 

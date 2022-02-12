@@ -1,34 +1,37 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Container } from "@material-ui/core";
-import { useSelector } from "react-redux";
 
 // context
 import { AppContext } from "AppContext";
 import Table from "components/Shared/M1nTable/components/Table";
-import MUIDataTable, { TableViewCol } from "mui-datatables";
-import { NavigationContext } from "components/Navigation/NavigationContext";
 
 // QUERIES
-import { deepEqualObjects, copy } from "components/Shared/functions";
+import { deepEqualObjects } from "components/Shared/functions";
 
 // Header Schemas
 
 
 // Utilities
 import { usetableStyles } from "../Styles";
+import { useSelector } from "react-redux";
 
 function MapGridLayersTable(props) {
   const classes = usetableStyles();
 
   const [rows, setRows] = useState([])
+  const [loading, setLoading] = useState(false)
   const [columns, setColumns] = useState([])
   const [stateApp] = useContext(AppContext);
+
+  const searchInput = useSelector(
+    (state) => state.MapGridCard.searchInputValue
+  );
 
   const setRowsCount = (selectedLayer) => {
     const rows = stateApp.map.querySourceFeatures(selectedLayer.layerPaintProps[0].sourceProps, {
       sourceLayer: selectedLayer.identifier
     });
-    if (rows) {
+    if (rows?.length > 0) {
       setRows(rows.map((row) => {
         const newProperties = {}
         Object.keys(row.properties).forEach((col, index) => {
@@ -48,14 +51,21 @@ function MapGridLayersTable(props) {
         }))
       ])
     }
-    return rows
+    return rows || 0
   }
 
   useEffect(() => {
     if (stateApp?.selectedLayer?.file) {
-      setRowsCount(stateApp.selectedLayer)
+      setRows([])
+      setLoading(true)
+      let rows = setRowsCount(stateApp.selectedLayer)
       const interval = setInterval(() => {
-        if (setRowsCount(stateApp.selectedLayer).length > 0) clearInterval(interval);
+        if (rows.length > 0) {
+          setLoading(false)
+          clearInterval(interval)
+        }
+        else
+          rows = setRowsCount(stateApp.selectedLayer)
       }, 1000);
     }
   }, [stateApp.selectedLayer, stateApp.map])
@@ -74,8 +84,8 @@ function MapGridLayersTable(props) {
         columns={columns}
         rows={rows}
         total={false}
-        // loading={props.loading}
-        // targetLabel={props.targetLabel}
+        loading={loading}
+        targetLabel={props.targetLabel}
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={false}
@@ -84,6 +94,9 @@ function MapGridLayersTable(props) {
         options={{
           ...props.options,
           ...props.customOptions,
+          search: false,
+          serverSide: false,
+          searchText: searchInput,
         }}
         // parent={props.parent}
         setColumnsBase={[]}
