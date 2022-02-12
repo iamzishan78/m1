@@ -50,6 +50,9 @@ function PropertyInterestDetailsTable(props) {
 
   useEffect(() => {
     if (props.addToTable) {
+      if(props.addToTable === 'add'){
+        props.setSelectedInterest(null);
+      }
       props.onClickAdd();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,7 +67,7 @@ function PropertyInterestDetailsTable(props) {
 
   useEffect(() => {
     if (!props.showInterestDetails) {
-      props.setAddToTable(false);
+      props.setAddToTable('');
       props.setSelectedInterest(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
