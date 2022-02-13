@@ -28,7 +28,7 @@ export const TableESHOC = (Component) => {
         const [columns, Columns] = useState([]);
         const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
-        const [addToTable, setAddToTable] = useState(false)
+        const [addToTable, setAddToTable] = useState('')
         const [openDialog, setOpenDialog] = useState(null);
         const [clickedRow, setClickedRow] = useState();
 
@@ -418,7 +418,7 @@ export const TableESHOC = (Component) => {
                     <Button
                         color="secondary"
                         className={classes.multiSelectionTopBarButtons}
-                        onClick={() => { setAddToTable(true); setClickedRow(null) }}
+                        onClick={() => { setAddToTable('add'); setClickedRow(null) }}
                     >
                         {tableMeta.addBtnText ? 
                             `+ ADD ${tableMeta.addBtnText}` : 
@@ -439,7 +439,7 @@ export const TableESHOC = (Component) => {
                 </div>)
             },
             onRowClick: (rowData, { dataIndex, rowIndex }) => {
-                setAddToTable(true)
+                setAddToTable('update')
                 setClickedRow({ ...rows[dataIndex] })
             }
         }

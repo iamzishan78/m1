@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
-import { debounce } from "lodash";
+import { debounce, get } from "lodash";
 
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import { Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText, Dialog } from "@material-ui/core";
 import {
   DescriptionOutlined as DocumentIcon,
   InfoOutlined as InfoOutlinedIcon,
@@ -12,6 +12,7 @@ import {
   Delete as DeleteIcon,
 } from "@material-ui/icons";
 
+import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { GET_PROPERTY } from "graphQL/useQueryGetProperty";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
@@ -26,6 +27,7 @@ import HeaderSection from "./HeaderSection";
 import NavHeader from "components/Revenue/components/Common/NavHeader";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
 import MultipleOwnerToContactDrawer from "components/Shared/M1nTable/components/SubComponents/MultipleOwnerToContactDrawer";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -209,6 +211,7 @@ export default function DetailComponents(props) {
   const [showInterestDetails, setShowInterestDetails] = useState(false);
   const [showOwnerDialog, setShowOwnerDialog] = useState(false);
   const [selectedInterest, setSelectedInterest] = useState(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [tab, setTab] = useState(0);
   const [refetchContacts, setRefetchContacts] = useState(false);
   const selectedTabRef = useRef(null);
@@ -220,7 +223,8 @@ export default function DetailComponents(props) {
   const [entityToConvert, setEntityToConvert] = useState(null);
 
   const classes = useStyles({ ...props, showInterestDetails, collapse });
-
+  
+  const [updateProperty] = useMutation(UPDATE_PROPERTY);
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
   });
@@ -294,10 +298,27 @@ export default function DetailComponents(props) {
     handleEndScroll();
   };
 
+  const deleteFunc = (ids) => {
+    if (ids.length > 0) {
+      for(let i=0; i<ids.length; i++) {
+        updateProperty({
+          variables: {
+            property: {
+              _id: propertyDetails._id,
+              IsDeleted: true,
+            },
+          }
+        }).then((res) => {
+          history.push('/revenue/properties')
+        });;
+      }
+    }
+  }
+
   const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
 
   return (
-    <NavHeader title={propertyDetails?.name}>
+    <NavHeader title={`${get(propertyDetails,'number','')}-${get(propertyDetails,'name', '')}`}>
       {/**
        * Detail title section
        */}
@@ -402,6 +423,22 @@ export default function DetailComponents(props) {
           <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={propertyId} setStateApp={setStateApp} targetLabel="Property" />
         )}
       </div>
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        fullWidth={true}
+        maxWidth={"sm"}
+      >
+          <DeleteConfirmationDialogContent
+            header={`Delete Property`}
+            onClose={() => setOpenDeleteDialog(false)}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={[propertyDetails?._id]}
+            setM1nSelectedRowsIndexes={() => {}}
+          >
+            {`Do you want to delete this property?`}
+          </DeleteConfirmationDialogContent>
+      </Dialog>
       {/**
        * Menu for meta data
        */}
@@ -416,7 +453,7 @@ export default function DetailComponents(props) {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <MenuItem>
+        <MenuItem onClick={() => setOpenDeleteDialog(true)}>
           <ListItemIcon>
             <DeleteIcon size="medium" />
           </ListItemIcon>
