@@ -658,7 +658,7 @@ export default function ContactDetailCard(props) {
                 Buy Contact Info
               </Button> */}
               
-              {contactData.primaryEmail ? (
+            {contactData.primaryEmail ? (
                 <a href={"mailto:" + contactData.primaryEmail}>
                   <Button
                     color="secondary"

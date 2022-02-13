@@ -114,6 +114,7 @@ import CheckIcon from "@material-ui/icons/Check";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import Link from "@material-ui/core/Link";
+import MoreVert from "@material-ui/icons/MoreVert";
 
 
 // suppress debug console logs
@@ -1307,6 +1308,20 @@ function SubTable(props) {
                       {dateTime ? <span>{moment(dateTime).format("MM/DD/YYYY")}</span> : <span style={{ color: "#959595" }}>N/A</span>}
                     </span>
                   );
+                },
+              };
+            }
+            break;
+          }
+          case "kebabMenu" : {
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  console.log("value : ", value)
+                  console.log("tableMeta : ", tableMeta)
+                  console.log("updateValue : ", updateValue)
+                  return   <MoreVert aria-controls="simple-menu" aria-haspopup="true" />
                 },
               };
             }
