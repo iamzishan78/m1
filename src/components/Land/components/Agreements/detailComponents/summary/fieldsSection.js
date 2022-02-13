@@ -1,25 +1,20 @@
 import React, { useEffect, useState, Fragment, useContext } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { Controller } from "react-hook-form";
-import { Grid, TextField, Typography, Button, Select, MenuItem, Tooltip } from "@material-ui/core";
+import { Grid, TextField, Button, Select, MenuItem, Tooltip } from "@material-ui/core";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import { useStyles as summaryStyles } from "../style";
-import WellIcon from "components/Shared/svgIcons/well";
-import TractIcon from "components/Shared/svgIcons/tract";
-import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
 import AddIcon from "@material-ui/icons/Add";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import fieldsData from "./data";
 
 import keys from "components/Shared/SpreadsheetGrid/kit/keymap";
-import ProgressBar from "components/Shared/ui/ProgressBar";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import MetaField from "components/Table/helpers/MetaField";
 import { copy } from "utils/helper";
 
 import { AppContext } from "AppContext";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
-import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 
 export default function FieldsSection({ updateAgreement, control, agreementDetails }) {
   const classes = summaryStyles();
@@ -28,13 +23,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   const [editIconState, setEditIconState] = useState({});
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
-  const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
-
-  useEffect(() => {
-    if (agreementDetails?._id) {
-      getShapeSummaryDetails({ variables: { shapeId: agreementDetails._id, shapeType: "Unit" } });
-    }
-  }, [agreementDetails?._id]);
 
   useEffect(() => {
     document.addEventListener("keydown", onGlobalKeyDown, false);
@@ -106,31 +94,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 
   return (
     <Grid container direction="row" display="flex" justify="flex-start" alignItems="center" spacing={1} className={classes.fieldsSection}>
-      <Grid item xs={12} className={classes.summaryHeader}>
-        <div style={{ display: "flex", width: "50%" }}>
-          <Typography variant="h5" className={classes.titleText}>
-            Summary
-          </Typography>
-          <ProgressBar value={35} height="3px" isNumeric />
-        </div>
-        <div style={{ width: "43%" }}>
-          <Grid container spacing={2} justify="flex-end" className={classes.summaryHeaderIcons}>
-            <Grid item>
-              <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeWells || 0} </div>
-              <WellIcon opacity="1.0" small color="#757575" />
-            </Grid>
-            <Grid item>
-              <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeOwners || 0} </div>
-              <TractIcon opacity="1.0" small />
-            </Grid>
-            <Grid item>
-              <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.documents || 0} </div>
-              <InsertDriveFileOutlinedIcon opacity="1.0" small />
-            </Grid>
-          </Grid>
-        </div>
-      </Grid>
-
       {fieldsList.map((field, index) => (
         <Grid item xs={12}>
           <Grid container className={classes.gridStyle}>
@@ -256,7 +219,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     shapeType="Agreement"
                     typeKey={field.key}
                     variant="outlined"
-                    onChange={() => {}}
+                    onChange={() => { }}
                     onBlur={(event) => offClickHandler(field.key, event.target.value)}
                     autoFocus={false}
                     id={`field-${index}`}

@@ -6,6 +6,34 @@ export const useStyles = makeStyles((theme) => ({
   root: {
     padding: "10px 25px",
   },
+  accordionRoot: {
+    borderRadius: "5px",
+    margin: "10px 0px",
+    boxShadow: "none",
+    "& .MuiButtonBase-root.MuiAccordionSummary-root": {
+      maxHeight: "50px",
+      minHeight: "50px",
+      padding: 0,
+    },
+    "&.MuiAccordion-root.Mui-expanded": {
+      margin: 0,
+    },
+  },
+  accordionHeading: {
+    display: "flex !important",
+    alignItems: "center",
+    "& .MuiChip-root": {
+      width: "40px",
+      fontSize: "1.2rem",
+      fontWeight: "bold",
+      color: "#fff",
+      borderRadius: "3px !important",
+      backgroundColor: "#18aadd",
+    },
+  },
+  accordionDetails: {
+    padding: 0,
+  },
   titleText: {
     marginRight: "15px",
     textTransform: "uppercase",
@@ -100,8 +128,8 @@ export const useStyles = makeStyles((theme) => ({
   summaryHeader: {
     display: "flex",
     justify: "space-between",
-    marginBottom: 20,
     fontWeight: "bold",
+    width: "51%"
   },
   addDataButton: {
     backgroundColor: "white",
