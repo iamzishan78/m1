@@ -40,14 +40,6 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#dadbde !important",
     },
   },
-  colorIcon: {
-    backgroundColor: (props) => (props.dense ? "transparent" : "#efefef"),
-    marginLeft: "auto",
-    color: `${theme.palette.secondary.main} !important`,
-    "&:hover": {
-      backgroundColor: "#dadbde !important",
-    },
-  },
   iconSelected: {
     backgroundColor: "#17aadd !important",
   },

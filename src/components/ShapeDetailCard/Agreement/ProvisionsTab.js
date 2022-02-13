@@ -35,25 +35,18 @@ const styles = makeStyles(() => ({
             backgroundColor: 'white',
         },
         padding: '15px',
-        '& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary, & .MuiIconButton-label ': {
-            color: '#7f7f7f !important',
-            'svg': {
-                fill: '#7f7f7f !important'
-            }
-        },
         '& .MuiIconButton-root, & .MuiButtonBase-root': {
             "&:hover": {
                 backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
             },
         },
-        '& .MuiIconButton-label svg': {
-            color: '#7f7f7f !important',
-            fill: '#7f7f7f !important'
-        }
     },
     accordion: {
         border: '3px solid #d9d9d9',
         backgroundColor: '#fcfcfc',
+    },
+    accordionSummary: {
+        padding: "0px 17px !important"
     },
     provisionCard: {
         border: '1px solid #d9d9d9',
@@ -65,7 +58,13 @@ const styles = makeStyles(() => ({
     },
     marginNormal: {
         marginTop: '0px',
-        marginBottom: '0px'
+        marginBottom: '0px',
+        "& .MuiIconButton-label": {
+            "& .MuiSvgIcon-root": {
+                color: '#7f7f7f !important',
+                fill: '#7f7f7f !important'
+            }
+        }
     },
     unchecked: { opacity: 0.5 },
     checked: { opacity: 1 },
@@ -175,6 +174,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
+                    className={classes.accordionSummary}
                 >
                     <Typography className={classes.heading}>Standard Provisions</Typography>
                 </AccordionSummary>
@@ -405,7 +405,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                     <CommentsWithIcon
                                         objectId={item._id}
                                         targetLabel={'provision'}
-                                        iconZiseSmall={false}
+                                        iconZiseSmall
                                     />
                                 </Grid>
 
