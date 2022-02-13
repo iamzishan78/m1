@@ -17,6 +17,7 @@ import {
   Popover,
   List,
   ListItem,
+  Typography
 } from "@material-ui/core";
 import { DeleteOutline as DeleteIcon, MoreVert as MoreVertIcon } from "@material-ui/icons";
 import AddIcon from "@material-ui/icons/Add";
@@ -155,7 +156,12 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
                 </Grid>
                 <Grid item xs={4}>
                   <AutoComplete
+                    defaultValue={item.type ?? ""}
                     value={item.type ?? ""}
+                    options={partyTypes}
+                    getOptionSelected={(option, value) => {
+                      return option === value;
+                    }}
                     onChange={(value) => {
                       if (!value || typeof value === "string") {
                         handleUpdateParty({ type: value }, index);
@@ -164,8 +170,21 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
                         handleUpdateParty({ type: value.value }, index);
                       }
                     }}
-                    options={partyTypes}
-                    fullWidth
+                    renderOption={(option) => {
+                      if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option}'</Typography>;
+
+                      return (
+                        <Grid container spacing={0}>
+                          <Grid container item xs={12} alignItems="center">
+                            <Grid item xs>
+                              <Typography variant="body2" color="textSecondary">
+                                {option}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      );
+                    }}
                     renderInput={(params1) => (
                       <TextField
                         margin="dense"
