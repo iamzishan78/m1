@@ -23,6 +23,7 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
   },
   AGREEMENT_DETAIL: {
     isExcluded: true,
+    parent: "AGREEMENTS",
     title: "Agreements",
     link: "/land/agreement/details/:id",
     component: "AgreementDetails",
@@ -47,11 +48,30 @@ export default function Revenue() {
   const { quickActionsPanelState, activeModule } = useSelector(({ Land }) => Land);
 
   useEffect(() => {
-    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => location.pathname.startsWith(item.link));
-    if (option) {
+    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => {
+      const path = location.pathname;
+      if (item.link.includes(':id')) {
+        return replaceId(item.link, path)
+      }
+      return path.startsWith(item.link)
+    });
+    if (option?.parent) {
+      dispatch(setActiveModuleLand(SIDE_PANEL_MENU_ITEMS_LIST[option.parent]));
+    } else if (option) {
       dispatch(setActiveModuleLand(option));
     }
   }, [location.pathname, dispatch]);
+
+  const replaceId = (link, path) => {
+    const linkSplitted = link.split('/');
+    const pathSplitted = path.split('/');
+    for (let i = 0; i < linkSplitted.length; i++) {
+      if (linkSplitted[i] !== pathSplitted[i] && linkSplitted[i] !== ':id') {
+        return false
+      }
+    }
+    return true
+  }
 
   const handlePanelStateChange = (state) => {
     dispatch(toggleLandActionsPanel(state));
