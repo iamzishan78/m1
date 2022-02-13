@@ -611,6 +611,16 @@ function SubTable(props) {
   const [dataWell, setDataWell] = useState();
   const [activeRowIndex, setActiveRowIndex] = useState("null");
 
+  // dropdown menu state
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   // deep state
   const setFirstMount = (newState) => {
     setStateIfDeepEqual(FirstMount, newState);
@@ -1206,6 +1216,35 @@ function SubTable(props) {
           };
           return;
         }
+
+        <Menu
+        style={{ zIndex: "1305" }}
+        id="menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        getContentAnchorEl={null}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+         <MenuItem
+            style={{ width: "250px" }}
+            onClick={() => {
+            }}
+          >
+            Rename view
+          </MenuItem>
+
+          <MenuItem
+            style={{ width: "250px" }}
+            onClick={() => {
+            }}
+          >
+            Rename 
+          </MenuItem>
+        
+      </Menu>
         switch (column.name) {
           case "detailCard":
             column.options = {
@@ -1321,7 +1360,7 @@ function SubTable(props) {
                   console.log("value : ", value)
                   console.log("tableMeta : ", tableMeta)
                   console.log("updateValue : ", updateValue)
-                  return   <MoreVert aria-controls="simple-menu" aria-haspopup="true" />
+                  return   <MoreVert  onClick={handleClick} aria-controls="simple-menu" aria-haspopup="true" />
                 },
               };
             }
