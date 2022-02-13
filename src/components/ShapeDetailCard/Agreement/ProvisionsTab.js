@@ -120,7 +120,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
         if (dataProvisionAutoCompleteList?.provisionAutoCompleteList) {
             dataProvisionAutoCompleteList?.provisionAutoCompleteList.forEach(list => {
                 if (list.key === 'type') setProvisionsList(list.list);
-                else if (list.key === 'frequency') setFrequenciesList(Array.from(new Set(['Annual', 'Monthly', 'Quartrly', 'Weekly', ...list.list])));
+                else if (list.key === 'frequency') setFrequenciesList(Array.from(new Set(['Annual', 'Monthly', 'Quarterly', 'Weekly', ...list.list])));
             });
         }
     }, [dataProvisionAutoCompleteList]);
@@ -349,6 +349,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                         ) => (
                                             <AutoCompleteWithNewOption
                                                 variant="outlined"
+                                                label="Frequency"
                                                 options={frequenciesList}
                                                 value={value}
                                                 onChange={(_, value) => { onChange(value?.name ?? ""); handleChange(item, index) }}
