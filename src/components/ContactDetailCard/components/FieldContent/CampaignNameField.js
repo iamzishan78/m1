@@ -13,7 +13,6 @@ import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-
 
 const useStyles = makeStyles((theme) => ({
   rootDiv: {
-    width: ({ width }) => (width ? width : "500px"),
     "& > * + *": {
       marginTop: theme.spacing(5),
     },
@@ -45,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
     "& .h4After": { margin: "0 0 0 13px", color: "#B7B7B7 !important" },
   },
   chip: {
-    "& .MuiAutocomplete-inputRoot": { minHeight: "56px" },
     "& .MuiChip-root": {
       backgroundColor: "#ECEDED",
       color: "#606060",
@@ -78,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Tags(props) {
+export default function CampaignNameField(props) {
   const [tFActive, setTFActive] = useState(false);
   const [textValue, setTextValue] = useState("");
   const [loadingTags, setLoadingTags] = useState(true);
@@ -245,6 +243,6 @@ export default function Tags(props) {
   );
 }
 
-Tags.defaultProps = {
+CampaignNameField.defaultProps = {
   type: "textfield",
 };

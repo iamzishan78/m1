@@ -39,6 +39,37 @@ export const contactStatusOptions = [
   },
 ];
 
+export const contactNewStatusOptions = [
+  {
+    label: "Good Call",
+    value: "Good Call"
+  },
+  {
+    label: "Negative",
+    value: "Negative"
+  },
+  {
+    label: "No Attempt",
+    value: "No Attempt",
+  },
+  {
+    label: "No Chance",
+    value: "No Chance",
+  },
+  {
+    label: "Positive",
+    value: "Positive",
+  },
+  {
+    label: "Unsure",
+    value: "Unsure",
+  },
+  {
+    label: "Circle Back",
+    value: "Circle Back",
+  },
+];
+
 const getCreateByRow = (contactData) => {
     return contactData?.createBy && contactData?.createBy.name === null ? (
         <span>
@@ -84,13 +115,23 @@ const getLastUpdateByRow = (contactData) => {
 } 
 
 export const getBasicInfoExpContent = (contactData) => {
-  let status = null
+  let stage = null
   if(contactData?.status){
     const data = contactStatusOptions.find(status => status.value === contactData.status)
     if(data){
-      status = data.label
+      stage = data.label
     }else{
-      status = contactData.status
+      stage = contactData.status
+    }
+  }
+
+  let contactStatus = null
+  if(contactData?.contactStatus){
+    const data = contactNewStatusOptions.find(status => status.value === contactData.contactStatus)
+    if(data){
+      contactStatus = data.label
+    }else{
+      contactStatus = contactData.contactStatus
     }
   }
 
@@ -181,7 +222,11 @@ export const getBasicInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     Stage: {
-      data: { status },
+      data: { status: stage },
+      linkType: LinkTypes.None,
+    },
+    Status: {
+      data: { contactStatus },
       linkType: LinkTypes.None,
     },
     "Contact Owner": {
