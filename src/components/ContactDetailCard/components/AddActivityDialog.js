@@ -156,7 +156,8 @@ const mergeDateAndTime = (d, t) => {
 
 function AddActivityDialog(props) {
   const classes = useStyles();
-  const { selectedActivity, onClose, contactData } = props;
+  const { selectedActivity, onClose, contactData, defaultActivityType } = props;
+  
   const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
 
@@ -297,7 +298,7 @@ function AddActivityDialog(props) {
         id: stateApp.user.mongoId,
       });
       setDealId(null);
-      setActivityType("call");
+      setActivityType(defaultActivityType || 'call');
       setActivityName("");
       setStartDate(getCurrentDate());
       setEndDate(getCurrentDate());

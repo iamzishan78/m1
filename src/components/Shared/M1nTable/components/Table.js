@@ -123,6 +123,8 @@ import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import { CONTACT } from "graphQL/useQueryContact";
+import ConfirmationDialog from "components/ContactDetailCard/components/ConfirmationDialog";
 
 
 // suppress debug console logs
@@ -630,6 +632,8 @@ function SubTable(props) {
   const [handleSearch, setHandleSearch] = useState(() => () => { });
   const [dataWell, setDataWell] = useState();
   const [activeRowIndex, setActiveRowIndex] = useState("null");
+  const [defaultActivityType, setDefaultAcitivityType] = useState("call");
+  const [contact, setContact] = useState(null);
 
   // deep state
   const setFirstMount = (newState) => {
@@ -641,6 +645,7 @@ function SubTable(props) {
   const setTrueTargetLabel = (newState) => {
     setStateIfDeepEqual(TrueTargetLabel, newState);
   };
+  
   const setM1nSelectedRowsTracks = (newState) => {
     setStateIfDeepEqual(M1nSelectedRowsTracks, newState);
   };
@@ -712,6 +717,8 @@ function SubTable(props) {
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
+  const [getContact, { data: contactData }] = useLazyQuery(CONTACT);
+  
 
   const [viewFile, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
@@ -863,6 +870,13 @@ function SubTable(props) {
   //   setM1nSelectedRowsIndexes([]);
   //   setM1nSelectedRowsIds([]);
   // }, [rows])
+
+  //// save contact data chosen by action menu
+  useEffect(() => {
+    if (contactData && contactData.contact) {
+      setContact(contactData.contact);
+    }
+  }, [contactData,contact]);
 
   //// opening the well detail card after fetch the extra well data needed
   useEffect(() => {
@@ -1113,6 +1127,19 @@ function SubTable(props) {
     setOpenDialog(type);
   };
 
+  const handleActivity = async (userId, activityType, type) => {
+    closeMenu()
+    getContact({
+      variables: {
+        contactId: userId,
+      },
+    });
+   
+    
+   setDefaultAcitivityType(activityType)
+    setOpenDialog(type);
+    
+  };
   ////setting all icons columns/////
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserIndex, setSelectedUserIndex] = useState(null);
@@ -1152,9 +1179,10 @@ function SubTable(props) {
     );
   };
 
-  const openActionMenu = (event, rowIndex, user) => {
+  const openActionMenu = (event, rowIndex, user, tableMeta) => {
+
+    const userId = user.rowData[0]
     event.stopPropagation();
-    setSelectedUserIndex(rowIndex);
     setUsermanagementSettings(
       <Menu
         anchorEl={event.currentTarget}
@@ -1167,27 +1195,27 @@ function SubTable(props) {
         onClose={closeMenu}
       >
         
-        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleExpandClick(null, null, null, "")}>
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(null, null, null, "")}>
           <MailOutlineOutlinedIcon className={classes.menuIcons} />
          Send email
         </MenuItem>
         <Divider />
-        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleExpandClick(null, null, null, "recentActivites")}>
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(userId,"call", "recentActivites")}>
           <CallOutlinedIcon className={classes.menuIcons} />
           Add call logs
         </MenuItem>
         <Divider />
-        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}>
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(userId, "meeting", "recentActivites")}>
           <EventOutlinedIcon className={classes.menuIcons} />
           Add meeting
         </MenuItem>
         <Divider />
-        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}>
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(userId, "task", "recentActivites")}>
           <AssignmentTurnedInOutlinedIcon className={classes.menuIcons} />
           Add task
         </MenuItem>
         <Divider />
-        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}>
+        <MenuItem className={classes.actionMenuItem} onClick={(e) =>  handleActivity(userId, null, "deleteConfirmation")}>
           <DeleteOutlinedIcon className={classes.menuIcons} />
          Delete conctact
         </MenuItem>
@@ -1392,7 +1420,8 @@ function SubTable(props) {
                           onClick={(e) => {
                             openActionMenu(
                               e,
-                              tableMeta.rowIndex
+                              tableMeta.rowIndex,
+                              tableMeta
                             
                             );
                           }}
@@ -4118,11 +4147,13 @@ function SubTable(props) {
           <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width="450px">
          <AddActivityDialog
           onClose={() =>   setOpenDialog('')}
-          id={props.id}
-          contactData={props.contactData}
+          id={contact?._id}
+          contactData={contact}
+          defaultActivityType= {defaultActivityType}
         />
           </RightDialog>
         )}
+        
 
 
         {openDialog && openDialog === "buyContactsInfo" && (
@@ -4413,6 +4444,9 @@ function SubTable(props) {
                   {`Do you want to permanently delete the instrument${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
                     } from  this parcel?`}
                 </DeleteConfirmationDialogContent>
+              )}
+              {openDialog === "deleteConfirmation" && (
+              <ConfirmationDialog openDialog={openDialog} handleDialogClose={setOpenDialog} id={contact?._id} />
               )}
               {openDialog === "deleteContact" && (
                 <DeleteConfirmationDialogContent
