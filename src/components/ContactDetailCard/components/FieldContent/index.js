@@ -21,7 +21,7 @@ import { useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
-import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import { contactStatusOptions, contactNewStatusOptions } from "components/ContactDetailedInfo/helper";
 import EntityType from "./EntityType";
 import CampaignNameField from './CampaignNameField';
 
@@ -80,9 +80,11 @@ export default function FieldContent({
   const ignorableFieldsInCount = ['contactOwnerId'];
 
   const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  const [getContactStatusFilters, { data: contactStatusFiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
   const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   const [statusOptions, setStatusOptions] = useState([])
+  const [newStatusOptions, setNewStatusOptions] = useState([])
   const [campaignNameOptions, setCampaignNameOptions] = useState([])
 
   useEffect(() => {
@@ -90,6 +92,13 @@ export default function FieldContent({
       variables: {
           esIndex:'contacts_flat',
           filterKey: 'status.keyword',
+          size: 50,
+      },
+    });
+    getContactStatusFilters({
+      variables: {
+          esIndex:'contacts_flat',
+          filterKey: 'contactStatus.keyword',
           size: 50,
       },
     });
@@ -117,6 +126,19 @@ export default function FieldContent({
       setStatusOptions(filterData)
     }
   },[filtersData])
+ 
+  useEffect(() => {
+    if(contactStatusFiltersData?.getESFilterList?.hits){
+      let filterData = contactStatusFiltersData.getESFilterList.hits.map(hit => hit.key)
+      for(let i = 0; i < contactNewStatusOptions.length; i++){
+        filterData = filterData.filter(d => d !== contactNewStatusOptions[i].value && d !== contactNewStatusOptions[i].label)
+      }
+      for(let i = 0; i < contactNewStatusOptions.length; i++){
+          filterData.push(contactNewStatusOptions[i].label)
+      }
+      setNewStatusOptions(filterData)
+    }
+  },[contactStatusFiltersData])
 
   useEffect(() => {
     if(campaignfiltersData?.getESFilterList?.hits){
@@ -288,6 +310,24 @@ export default function FieldContent({
 
       else if (editContent.hasOwnProperty(fieldName)) {
         inputsArray.push(
+          fieldName === 'contactStatus' ? 
+          <Status
+            className={classes.maxWidth}
+            options={newStatusOptions}
+            setDocumentType={(value) => {
+              let val = value.name
+              const data = contactStatusOptions.find(s => s.label === val)
+              if(data){
+                val = data.value
+              }
+              setEditContent((editContent) => ({
+                ...editContent,
+                [fieldName]: val,
+              }));
+              handleUpdating(val)
+            }}
+            value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+          />:
           fieldName === 'status' ? 
           <Status
             className={classes.maxWidth}
