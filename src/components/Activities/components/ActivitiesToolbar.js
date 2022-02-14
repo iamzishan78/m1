@@ -218,7 +218,7 @@ const ActivitiesToolbar = ({
             )}
             onClick={() => setActivityFilterByType("mailer")}
           >
-            <ContactMailIcon /> <span>Mailer Campaign</span>
+            <ContactMailIcon /> <span>Mailer</span>
           </span>
         </div>
       </div>

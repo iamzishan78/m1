@@ -443,7 +443,7 @@ const ContactsHeadCells = [
   },
   {
     name: "status",
-    label: "Status",
+    label: "Stage",
     esKey: 'status.keyword',
     options: {
       display: true,
