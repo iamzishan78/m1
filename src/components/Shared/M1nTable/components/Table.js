@@ -630,8 +630,6 @@ function SubTable(props) {
   const [handleSearch, setHandleSearch] = useState(() => () => { });
   const [dataWell, setDataWell] = useState();
   const [activeRowIndex, setActiveRowIndex] = useState("null");
-  const [activityModalOpen, setActivityModalOpen] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState(null);
 
   // deep state
   const setFirstMount = (newState) => {
@@ -4122,7 +4120,6 @@ function SubTable(props) {
           onClose={() =>   setOpenDialog('')}
           id={props.id}
           contactData={props.contactData}
-          selectedActivity={selectedActivity}
         />
           </RightDialog>
         )}
