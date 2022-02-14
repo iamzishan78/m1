@@ -300,6 +300,19 @@ const useStyles = makeStyles((theme) => ({
     background: "white !important",
     color: "black !important",
   },
+
+  emailButton: {
+    backgroundColor: "#011133 !important",
+    '& .MuiButton-label': {
+      color: 'white !important'
+    },
+  },
+  disabledButton: {
+    backgroundColor: "white !important",
+    '& .MuiButton-label': {
+      color: 'grey !important'
+    },
+  }
 }));
 
 export default function ContactDetailCard(props) {
@@ -661,7 +674,7 @@ export default function ContactDetailCard(props) {
             {contactData.primaryEmail ? (
                 <a href={"mailto:" + contactData.primaryEmail}>
                   <Button
-                    color="secondary"
+                  className={classes.emailButton}
                     startIcon={<EmailOutlinedIcon />}
                   >
                     Email
@@ -669,7 +682,8 @@ export default function ContactDetailCard(props) {
                 </a>
                 ) : 
                   (<Button
-                    color="secondary"
+                    className={classes.disabledButton}
+                    variant="outlined"
                     startIcon={<EmailOutlinedIcon />}
                     disabled
                   >

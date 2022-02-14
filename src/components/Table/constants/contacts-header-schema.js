@@ -636,7 +636,7 @@ const ContactsHeadCells = [
     }
   },
   {
-    name: "kebabMenu",
+    name: "actionMenu",
     label: " ",
     options: {
       filter: false,

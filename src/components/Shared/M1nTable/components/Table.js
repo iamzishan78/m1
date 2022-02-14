@@ -17,6 +17,13 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
 import ChatIcon from "@material-ui/icons/Chat";
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
+
+import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
+import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
+import MailOutlineOutlinedIcon from '@material-ui/icons/MailOutlineOutlined';
+import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
+
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import M1nTable from "../M1nTable";
 import WellIcon from "../../svgIcons/well";
@@ -42,7 +49,7 @@ import { deepEqualObjects, setStateIfDeepEqual } from "../../functions";
 import InviteUserDialog from "./SubComponents/InviteUserDialog";
 import ReinviteUserDialog from "./SubComponents/ReinviteUserDialog";
 import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogContent";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
 import AddParcelToEntityDialogContent from "./SubComponents/AddParcelToEntityDialogContent/AddParcelToEntityDialogContent";
 import Convert_contact from "../../svgIcons/convert_contact";
 import Contact_card from "../../svgIcons/contact_card";
@@ -114,7 +121,8 @@ import CheckIcon from "@material-ui/icons/Check";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import Link from "@material-ui/core/Link";
-import MoreVert from "@material-ui/icons/MoreVert";
+import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
 
 // suppress debug console logs
@@ -329,6 +337,10 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: "#dadbde !important",
     },
+  },
+  menuIcons: {
+    marginRight: "8px",
+    
   },
   colorIcon: {
     backgroundColor: (props) => (props.dense ? "transparent" : "#efefef"),
@@ -560,8 +572,16 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiSvgIcon-root":{
       fill: "#ffa800"
     }
-    
-  }
+  },
+actionMenuItem: {
+  padding: 5,
+  paddingLeft: 10,
+  width: "260px",
+  color: "#5a5a5a",
+"&  .MuiSvgIcon-root": {
+    fill: "#5a5a5a"
+}
+}
 }));
 
 function SubTable(props) {
@@ -610,16 +630,8 @@ function SubTable(props) {
   const [handleSearch, setHandleSearch] = useState(() => () => { });
   const [dataWell, setDataWell] = useState();
   const [activeRowIndex, setActiveRowIndex] = useState("null");
-
-  // dropdown menu state
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const [activityModalOpen, setActivityModalOpen] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState(null);
 
   // deep state
   const setFirstMount = (newState) => {
@@ -1142,6 +1154,49 @@ function SubTable(props) {
     );
   };
 
+  const openActionMenu = (event, rowIndex, user) => {
+    event.stopPropagation();
+    setSelectedUserIndex(rowIndex);
+    setUsermanagementSettings(
+      <Menu
+        anchorEl={event.currentTarget}
+        getContentAnchorEl={null}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+        keepMounted
+        id={rowIndex}
+        open={true}
+        onClose={closeMenu}
+      >
+        
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleExpandClick(null, null, null, "")}>
+          <MailOutlineOutlinedIcon className={classes.menuIcons} />
+         Send email
+        </MenuItem>
+        <Divider />
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleExpandClick(null, null, null, "recentActivites")}>
+          <CallOutlinedIcon className={classes.menuIcons} />
+          Add call logs
+        </MenuItem>
+        <Divider />
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}>
+          <EventOutlinedIcon className={classes.menuIcons} />
+          Add meeting
+        </MenuItem>
+        <Divider />
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}>
+          <AssignmentTurnedInOutlinedIcon className={classes.menuIcons} />
+          Add task
+        </MenuItem>
+        <Divider />
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}>
+          <DeleteOutlinedIcon className={classes.menuIcons} />
+         Delete conctact
+        </MenuItem>
+      </Menu>
+    );
+  };
+
   const searchRequest = (e) => {
     e.setLoading(true);
     e.tableState.page = 0;
@@ -1217,34 +1272,6 @@ function SubTable(props) {
           return;
         }
 
-        <Menu
-        style={{ zIndex: "1305" }}
-        id="menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        getContentAnchorEl={null}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        transformOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-         <MenuItem
-            style={{ width: "250px" }}
-            onClick={() => {
-            }}
-          >
-            Rename view
-          </MenuItem>
-
-          <MenuItem
-            style={{ width: "250px" }}
-            onClick={() => {
-            }}
-          >
-            Rename 
-          </MenuItem>
-        
-      </Menu>
         switch (column.name) {
           case "detailCard":
             column.options = {
@@ -1352,15 +1379,31 @@ function SubTable(props) {
             }
             break;
           }
-          case "kebabMenu" : {
+          case "actionMenu" : {
             {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  console.log("value : ", value)
-                  console.log("tableMeta : ", tableMeta)
-                  console.log("updateValue : ", updateValue)
-                  return   <MoreVert  onClick={handleClick} aria-controls="simple-menu" aria-haspopup="true" />
+                  let id = props.targetLabel + tableMeta.columnIndex;
+                  return (
+                    <>
+                      <Tooltip title="Actions" placement="top" style={{ marginRight: "10px" }}>
+                        <IconButton
+                          id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                          size={props.dense ? "small" : "medium"}
+                          onClick={(e) => {
+                            openActionMenu(
+                              e,
+                              tableMeta.rowIndex
+                            
+                            );
+                          }}
+                        >
+                         <MoreVertOutlinedIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </>
+                  );
                 },
               };
             }
@@ -1456,7 +1499,7 @@ function SubTable(props) {
                             );
                           }}
                         >
-                          <MoreHorizIcon />
+                         <MoreHorizIcon />
                         </IconButton>
                       </Tooltip>
                     </>
@@ -3519,6 +3562,7 @@ function SubTable(props) {
         }
       }
     },
+   
     onChangePage: (pageState) => {
       setPageInd(pageState);
     },
@@ -4072,6 +4116,18 @@ function SubTable(props) {
           </RightDialog>
         )}
 
+{openDialog && openDialog === "recentActivites" && (
+          <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width="450px">
+         <AddActivityDialog
+          onClose={() =>   setOpenDialog('')}
+          id={props.id}
+          contactData={props.contactData}
+          selectedActivity={selectedActivity}
+        />
+          </RightDialog>
+        )}
+
+
         {openDialog && openDialog === "buyContactsInfo" && (
           <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
             <BuyContactsInfoDialogContent
@@ -4300,6 +4356,7 @@ function SubTable(props) {
               {openDialog === "addParcelInterestsToEntity" && (
                 <AddParcelToEntityDialogContent onClose={handleCloseDialog} entityId={props.addAble.entityId} />
               )}
+
               {openDialog === "deleteOwnersFromContact" && (
                 <DeleteConfirmationDialogContent
                   header="Delete Owner(s)"
