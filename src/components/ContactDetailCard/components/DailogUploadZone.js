@@ -40,19 +40,7 @@ const useStyles = makeStyles((theme) => ({
 export default function UploadZone(props) {
   const dispatch = useDispatch();
   const [inputFile, setInputFile] = useState(null);
-  const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(ADDDESCRIPTORFILE, {
-    refetchQueries: ["getRecentContactFiles"],
-    awaitRefetchQueries: true,
-    //   onCompleted: () => {
-    //     // setTimeout(() => {
-    //     //   getRecentFiles({
-    //     //     variables: {
-    //     //       contactId: props.id,
-    //     //     },
-    //     //   });
-    //     // }, 3000);
-    //   },
-  });
+  const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(ADDDESCRIPTORFILE);
 
   useEffect(() => {
     if (addFileData && addFileData?.addFileDescriptor?.success) {
@@ -101,6 +89,8 @@ export default function UploadZone(props) {
             relatedObjectId: props.relatedObjectId,
             relatedObjectType: props.relatedObjectType,
           },
+          refetchQueries: ["getRecentContactFiles"],
+          awaitRefetchQueries: true,
         });
       }
     }
@@ -166,9 +156,9 @@ export default function UploadZone(props) {
 
         maxFileSize={104857600}
         dropzoneClass={classes.dropzoneClass}
-      // getFileAddedMessage={(value) => {
-      // 	alert("File is been added", value);
-      // }}
+        // getFileAddedMessage={(value) => {
+        // 	alert("File is been added", value);
+        // }}
       ></DropzoneAreaBase>
       {(props.loading || addFileLoading) && (
         <div style={{ display: "flex", justifyContent: "center" }}>

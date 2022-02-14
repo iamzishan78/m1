@@ -87,8 +87,8 @@ const useStyles = makeStyles((theme) => ({
       border: "none",
     },
     "& textarea": {
-      height: "323px"
-    }
+      height: "323px",
+    },
   },
   foodText: {
     position: "absolute",
@@ -123,7 +123,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function MetadataDrawer(props) {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   // Props
   const { setCollapse, users, targetSourceId, targetLabel } = props;

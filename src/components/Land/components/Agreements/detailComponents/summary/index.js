@@ -3,7 +3,7 @@ import { set } from "lodash";
 import { useSelector } from "react-redux";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useForm, Controller } from "react-hook-form";
-import { Grid, Typography, Box, Accordion, AccordionSummary, AccordionDetails, IconButton, } from "@material-ui/core";
+import { Grid, Typography, Box, Accordion, AccordionSummary, AccordionDetails, IconButton } from "@material-ui/core";
 import { useStyles as summaryStyles, StyledTextField } from "../style";
 
 import CheckIcon from "@material-ui/icons/Check";
@@ -28,9 +28,14 @@ export default function Summary({ agreementDetails, agreementProvisions, standar
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
   useEffect(() => {
+    if (activeAgreement?._id) {
+      getShapeSummaryDetails({ variables: { shapeId: activeAgreement._id } });
+    }
+  }, [activeAgreement, getShapeSummaryDetails]);
+
+  useEffect(() => {
     if (agreementDetails) {
       reset(agreementDetails);
-      getShapeSummaryDetails({ variables: { shapeId: agreementDetails._id, shapeType: "Unit" } });
     }
   }, [reset, agreementDetails, getShapeSummaryDetails]);
 
@@ -83,7 +88,7 @@ export default function Summary({ agreementDetails, agreementProvisions, standar
                 <ExpandMoreIcon fontSize="large" />
               </IconButton>
             }
-            onClick={(e) => { }}
+            onClick={(e) => {}}
           >
             <Grid container direction="row" justify="space-between" alignItems="center">
               <Grid item className={classes.summaryHeader}>

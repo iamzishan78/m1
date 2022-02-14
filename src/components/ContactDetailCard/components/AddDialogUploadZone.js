@@ -9,11 +9,11 @@ import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 // import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import DeleteDocumentConfirmation from "../../Shared/DeleteDocumentConfirmation";
-import { AppContext } from "../../../AppContext";
-import { GETRECENTCONTACTFILES } from "../../../graphQL/useQueryGetContactFiles";
-import { DELETEDESCRIPTORFILE } from "../../../graphQL/useMutationDeleteDescriptorFile";
-import { VIEWFILEQUERY } from "../../../graphQL/useQueryViewFile";
+import DeleteDocumentConfirmation from "components/Shared/DeleteDocumentConfirmation";
+import { AppContext } from "AppContext";
+import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
+import { DELETEDESCRIPTORFILE } from "graphQL/useMutationDeleteDescriptorFile";
+import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 import UploadZone from "./DailogUploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
 import { pdfjs } from "react-pdf";
@@ -158,7 +158,7 @@ const Documents = memo((props) => {
 
   const [relatedObjectType, limit] = useMemo(() => {
     if (props.isTransactPage) return ["Deal", 99];
-    if (props.targetLabel) return [props.targetLabel, 101]
+    if (props.targetLabel) return [props.targetLabel, 101];
     else return ["Contact", 2];
   }, [props.isTransactPage]);
 
