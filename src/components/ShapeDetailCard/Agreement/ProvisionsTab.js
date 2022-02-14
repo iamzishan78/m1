@@ -99,6 +99,27 @@ const styles = makeStyles(() => ({
       fill: "grey",
     },
   },
+  menuIcon: {
+    background: "transparent",
+    align: "center",
+    "& svg": {
+      fill: "#808080 !important",
+    },
+  },
+  menu: {
+    "& .MuiListItem-gutters": {
+      paddingLeft: "10px !important",
+      paddingRight: "10px !important",
+    },
+    "& .MuiListItem-root": {
+      "& .MuiListItemIcon-root": {
+        minWidth: "25px",
+        "& .MuiSvgIcon-root": {
+          fill: "red !important",
+        },
+      },
+    },
+  },
 }));
 
 export default function ProvisionsTab({ provisions, standardProvisions, id }) {
@@ -487,13 +508,14 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                                 <ListItem
                                   button
                                   onClick={() => {
+                                    addRemoveProvision(false, item);
                                     popupState.close();
                                   }}
                                 >
                                   <ListItemIcon>
                                     <DeleteIcon size="medium" />
                                   </ListItemIcon>
-                                  <ListItemText>Delete Related Party</ListItemText>
+                                  <ListItemText>Delete Provision/Obligation</ListItemText>
                                 </ListItem>
                               </List>
                             </Popover>
