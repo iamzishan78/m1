@@ -17,7 +17,7 @@ import {
   Popover,
   List,
   ListItem,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { DeleteOutline as DeleteIcon, MoreVert as MoreVertIcon } from "@material-ui/icons";
 import AddIcon from "@material-ui/icons/Add";
@@ -163,7 +163,7 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
                       }
                     }}
                     renderOption={(option) => {
-                      if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option}'</Typography>;
+                      if (option.id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.value}'</Typography>;
 
                       return (
                         <Grid container spacing={0}>
@@ -242,10 +242,11 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
                         id={`${index}-comments`}
                         size={"small"}
                         color="primary"
-                        className={`${classes.icons} ${!item?.comments || item?.comments === 0 ? classes.noCommentsIcon : ""} ${openCommentsDialog?.targetSourceId && openCommentsDialog?.targetSourceId === item.descriptorObject?._id
-                          ? classes.iconSelected
-                          : ""
-                          }`}
+                        className={`${classes.icons} ${!item?.comments || item?.comments === 0 ? classes.noCommentsIcon : ""} ${
+                          openCommentsDialog?.targetSourceId && openCommentsDialog?.targetSourceId === item.descriptorObject?._id
+                            ? classes.iconSelected
+                            : ""
+                        }`}
                         onClick={(e) => {
                           e.stopPropagation();
                           setCommentsDialog({ state: true, targetSourceId: item.descriptorObject?._id });
