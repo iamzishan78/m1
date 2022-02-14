@@ -25,13 +25,13 @@ function RevenueStatementTable(props) {
     const classes = usetableStyles();
 
     // function states 
-    const [columns, s] = useState([]);
+    const [columns, Columns] = useState([]);
     const [filters, setFilters] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
     const [potentialIssuesList, setPotentialIssuesList] = useState([]);
     const [pIssuesArr, setIssuesArr] = useState([]);
 
-    const setColumns = (newState) => { setStateIfDeepEqual(s, newState); };
+    const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
     // queries 
 
