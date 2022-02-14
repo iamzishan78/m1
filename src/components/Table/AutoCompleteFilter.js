@@ -102,7 +102,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
                 setOpen(false);
             }}
             value={value}
-            inputValue={search}
+            inputValue={search?.toString()}
             getOptionSelected={(option, value) => option.key === value.key}
             getOptionLabel={(option) => option?.key?.toString().replace(/^\,|\,$/gm, "")}
             onChange={(e, value, reason) => {

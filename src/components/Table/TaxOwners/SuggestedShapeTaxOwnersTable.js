@@ -144,7 +144,7 @@ function SuggestedShapeTaxOwnersTable(props) {
         polygon: getPolygonString(props.customLayer?.shape),
         userId: stateApp.user.mongoId,
         pagination: {
-          first: tableState.rowsPerPage,
+          first: 10000/*tableState.rowsPerPage*/,
           after: null,
         },
         ...(!isEmpty(tableState.sortOrder)) && {
@@ -165,44 +165,44 @@ function SuggestedShapeTaxOwnersTable(props) {
 
     switch (action) {
       case "changeRowsPerPage":
-        props.setLoading(true);
-        tableState.page = 0;
-        meta.setPageInd(tableState.page);
-        meta.setRowsPerPage(tableState.rowsPerPage);
-        getPaginatedShapeWellOwners(pageVariables);
+        // props.setLoading(true);
+        // tableState.page = 0;
+        // meta.setPageInd(tableState.page);
+        // meta.setRowsPerPage(tableState.rowsPerPage);
+        // getPaginatedShapeWellOwners(pageVariables);
         break;
       case "changePage":
       case "search":
-        props.setLoading(true);
-        if (tableState.page > meta.pageInd) {
-          setCount((state, props) => {
-            return (tableState.page + 1) * tableState.rowsPerPage
-          })
-        }
-        getPaginatedShapeWellOwners({
-          ...pageVariables,
-          variables: {
-            ...pageVariables.variables,
-            search: tableState.searchText,
-            pagination: {
-              ...pageVariables.variables.pagination,
-              before:
-                props.rows && tableState.page < meta.pageInd
-                  ? props.rows[0]?.cursor
-                  : null,
-              after:
-                props.rows && tableState.page > meta.pageInd
-                  ? props.rows[props.rows.length - 1]?.cursor
-                  : null,
-            },
-          },
-        });
+        // props.setLoading(true);
+        // if (tableState.page > meta.pageInd) {
+        //   setCount((state, props) => {
+        //     return (tableState.page + 1) * tableState.rowsPerPage
+        //   })
+        // }
+        // getPaginatedShapeWellOwners({
+        //   ...pageVariables,
+        //   variables: {
+        //     ...pageVariables.variables,
+        //     search: tableState.searchText,
+        //     pagination: {
+        //       ...pageVariables.variables.pagination,
+        //       before:
+        //         props.rows && tableState.page < meta.pageInd
+        //           ? props.rows[0]?.cursor
+        //           : null,
+        //       after:
+        //         props.rows && tableState.page > meta.pageInd
+        //           ? props.rows[props.rows.length - 1]?.cursor
+        //           : null,
+        //     },
+        //   },
+        // });
         break;
       case "sort":
-        props.setLoading(true);
-        tableState.page = 0;
-        meta.setPageInd(tableState.page);
-        getPaginatedShapeWellOwners(pageVariables);
+        // props.setLoading(true);
+        // tableState.page = 0;
+        // meta.setPageInd(tableState.page);
+        // getPaginatedShapeWellOwners(pageVariables);
         break;
       case "onSearchClose":
         break;
@@ -223,7 +223,7 @@ function SuggestedShapeTaxOwnersTable(props) {
     rowsPerPageOptions:
       count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
     count: suggestedOwnersCount || count || 0,
-    serverSide: true,
+    serverSide: false,
     searchable: true,
     filter: true,
     customToolbar: () => {
