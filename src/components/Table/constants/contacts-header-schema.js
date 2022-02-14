@@ -245,8 +245,8 @@ const ContactsHeadCells = [
     label: "Primary Work Phone",
     esKey: 'AltPhone.keyword',
     options: {
-      // display: true,
-      filter: true,
+      display: false,
+      filter: false,
       searchable: false,
       sort: true,
     },
@@ -453,6 +453,17 @@ const ContactsHeadCells = [
     },
     custom: {
       formatedFilterOptions: contactStatusOptions,
+    },
+  },
+  {
+    name: "contactStatus",
+    label: "Status",
+    esKey: 'contactStatus.keyword',
+    options: {
+      display: true,
+      filter: true,
+      searchable: true,
+      sort: true,
     },
   },
   {
