@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import { useMutation } from "@apollo/client";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 import {
@@ -25,6 +23,7 @@ import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import EntityType from "./EntityType";
+import CampaignNameField from './CampaignNameField';
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -81,13 +80,23 @@ export default function FieldContent({
   const ignorableFieldsInCount = ['contactOwnerId'];
 
   const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   const [statusOptions, setStatusOptions] = useState([])
+  const [campaignNameOptions, setCampaignNameOptions] = useState([])
+
   useEffect(() => {
     getFilters({
       variables: {
           esIndex:'contacts_flat',
           filterKey: 'status.keyword',
+          size: 50,
+      },
+    });
+    getCampaignFilters({
+      variables: {
+          esIndex:'contacts_flat',
+          filterKey: 'campaignName.keyword',
           size: 50,
       },
     });
@@ -108,6 +117,14 @@ export default function FieldContent({
       setStatusOptions(filterData)
     }
   },[filtersData])
+
+  useEffect(() => {
+    if(campaignfiltersData?.getESFilterList?.hits){
+      const allFiltersData = campaignfiltersData.getESFilterList.hits.map(hit => hit.key)
+      setCampaignNameOptions(allFiltersData.filter(d=> d))
+    }
+  },[campaignfiltersData]);
+
   useEffect(() => {
     if (content) {
       setEditContent({ ...content });
@@ -162,7 +179,7 @@ export default function FieldContent({
           if(field === 'status'){
             trimmedEditContent[field] = value;
           }else{
-            trimmedEditContent[field] = value.trim();  
+            trimmedEditContent[field] = typeof value === 'string' ? value.trim() : value;
           }
           if (trimmedEditContent[field] !== content[field]) differences = true;
         }
@@ -422,6 +439,7 @@ export default function FieldContent({
   }
 
   let textArray = [];
+  let campaignName = false;
   for (const key in showContent) {
     if (
       showContent.hasOwnProperty(key) &&
@@ -442,6 +460,8 @@ export default function FieldContent({
         textArray = [[textArray.join(", "), showContent[key]].join(" ")];
       } else if (key === "jobTitle") {
         textArray = [[textArray.join(", "), showContent[key]].join(" - ")];
+      } else if (key === "campaignName") {
+        campaignName = true
       } else if (key === "contactOwner" || key === "contactOwnerId") {
         if (key === "contactOwner")
           textArray.push(showContent[key] || '');
@@ -450,36 +470,49 @@ export default function FieldContent({
     }
   }
 
-  const renderOutput = (
-    <span>
-      {childrenLeft && !onlyChildren && children ? children : ""}
-      {textArray.length > 0
-        ? onlyChildren
-          ? children
+  const renderOutput = campaignName ? 
+    <CampaignNameField
+      className={classes.maxWidth}
+      options={campaignNameOptions}
+      onChange={(value) => {
+        setEditContent((editContent) => ({
+          ...editContent,
+          campaignName: value,
+        }));
+        handleUpdating(value)
+      }}
+      value={editContent['campaignName'] === null ? [] : editContent['campaignName']}
+      fullWidth
+    /> : (
+      <span>
+        {childrenLeft && !onlyChildren && children ? children : ""}
+        {textArray.length > 0
+          ? onlyChildren
             ? children
-            : ""
-          : textArray.join(", ")
-        : `${name ? name + " " : ""} Not Available`}
-      {!onlyChildren && !disabled && (
-        <PencilEditIcon
-          handleUpdating={handleUpdating}
-          anchorEl={edit}
-          setAnchorEl={setEdit}
-          content={inputsArray}
-          onClick={handleEditClick}
-        />
-      )}
-      {
-        fieldType == FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
-      }
-      {
-        isPurchased && <CopyPurchaseInfo updateContact={updateContact} userId={stateApp.user.mongoId}  content={content} contactId={id} />
-      }
+              ? children
+              : ""
+            : textArray.join(", ")
+          : `${name ? name + " " : ""} Not Available`}
+        {!onlyChildren && !disabled && (
+          <PencilEditIcon
+            handleUpdating={handleUpdating}
+            anchorEl={edit}
+            setAnchorEl={setEdit}
+            content={inputsArray}
+            onClick={handleEditClick}
+          />
+        )}
+        {
+          fieldType == FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
+        }
+        {
+          isPurchased && <CopyPurchaseInfo updateContact={updateContact} userId={stateApp.user.mongoId}  content={content} contactId={id} />
+        }
 
-      {!childrenLeft && !onlyChildren && children ? children : ""}
-      {isCurEdited ? " (edited)" : ""}
-    </span>
-  );
+        {!childrenLeft && !onlyChildren && children ? children : ""}
+        {isCurEdited ? " (edited)" : ""}
+      </span>
+    );
 
   return (
     <React.Fragment>
@@ -616,43 +649,3 @@ const Status = ({ setDocumentType, value, options, ...other }) => {
     />
   );
 };
-
-
-{/* <Select
-            labelId="status-label"
-            id="status-select"
-            className={classes.editSelectField}
-            value={editContent[fieldName] === null ? "" : editContent[fieldName]}
-            onChange={(e) => {
-              e.persist();
-              setEditContent((editContent) => ({
-                ...editContent,
-                [fieldName]: e.target.value,
-              }));          
-            }}
-            onKeyDown={(event) => {
-              event.stopPropagation();
-              if (event.key === "Escape") {
-                if (fieldsCount <= 1) {
-                  setEdit(null);
-                  setEditContent((editContent) => ({
-                    ...editContent,
-                    [fieldName]: content[fieldName],
-                  }));
-                }
-              }
-            }}
-            onBlur={() => {
-              if (fieldsCount <= 1) {
-                setEdit(null);
-                setEditContent((editContent) => ({
-                  ...editContent,
-                  [fieldName]: content[fieldName],
-                }));
-              }
-            }}
-            >
-              <MenuItem value='UnqualLead'> Unqualified Lead </MenuItem>
-              <MenuItem value='QualLead'> Qualified Lead </MenuItem>
-              <MenuItem value='Contact'> Contact </MenuItem>
-            </Select> */}

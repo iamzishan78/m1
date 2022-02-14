@@ -93,6 +93,13 @@ export const getBasicInfoExpContent = (contactData) => {
       status = contactData.status
     }
   }
+
+  let campaignName = []
+  if(typeof contactData?.campaignName === 'string'){
+    campaignName = [contactData?.campaignName]
+  }else if(Array.isArray(contactData?.campaignName)){
+    campaignName = contactData.campaignName
+  }
   
   return {
     "Email 2": {
@@ -157,7 +164,7 @@ export const getBasicInfoExpContent = (contactData) => {
     },
 
     "Campaign Name": {
-      data: { campaignName: contactData?.campaignName },
+      data: { campaignName },
       linkType: LinkTypes.None,
     },
     "Lead Source": {
