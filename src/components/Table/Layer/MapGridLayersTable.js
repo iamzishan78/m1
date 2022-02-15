@@ -14,6 +14,7 @@ import { deepEqualObjects } from "components/Shared/functions";
 // Utilities
 import { usetableStyles } from "../Styles";
 import { useSelector } from "react-redux";
+import { layer } from "@fortawesome/fontawesome-svg-core";
 
 function MapGridLayersTable(props) {
   const classes = usetableStyles();
@@ -28,23 +29,49 @@ function MapGridLayersTable(props) {
   );
 
   const setRowsCount = (selectedLayer) => {
-    const rows = stateApp.map.querySourceFeatures(selectedLayer.layerPaintProps[0].sourceProps, {
+    let rows = stateApp.map.querySourceFeatures(selectedLayer.layerPaintProps[0].sourceProps, {
       sourceLayer: selectedLayer.identifier
     });
     if (rows?.length > 0) {
-      setRows(rows.map((row) => {
+      rows = rows.filter((row) => row.properties.layerGeometry === selectedLayer.layerGeometry)
+      setRows(rows.map((row, index) => {
         const newProperties = {}
         Object.keys(row.properties).forEach((col, index) => {
           newProperties[col.replace(/ /g, '_').replace(/\(/g, '').trim()] = row.properties[col]
         })
+        if (!newProperties.ID) {
+          newProperties.ID = index + 1
+        }
+        if (selectedLayer.layerGeometry === 'Point') {
+          newProperties.Lng = row.geometry.coordinates[0]
+          newProperties.Lat = row.geometry.coordinates[1]
+        }
         return { ...newProperties, geom: JSON.stringify(row.geometry) }
       }));
 
-      setColumns([
+      const predefinedCols = [
+        {
+          name: 'ID', label: 'ID',
+          options: { customRender: (value) => { return <div>{value}</div>; } }
+        },
         {
           name: 'geom', label: 'geom',
-          options: { filter: false, sort: false, index: 1, searchable: false, customRender: (value) => { return <div>{value}</div>; } }
+          options: { customRender: (value) => { return <div>{value}</div>; } }
         },
+      ]
+      if (selectedLayer.layerGeometry === 'Point') {
+        predefinedCols.push({
+          name: 'Lng', label: 'Lng',
+          options: { customRender: (value) => { return <div>{value}</div>; } }
+        })
+        predefinedCols.push({
+          name: 'Lat', label: 'Lat',
+          options: { customRender: (value) => { return <div>{value}</div>; } }
+        })
+      }
+
+      setColumns([
+        ...predefinedCols,
         ...Object.keys(rows[0].properties).map((column) => ({
           name: column.replace(/ /g, '_').replace(/\(/g, '').trim(), label: column,
           options: { customRender: (value) => { return <div>{value}</div>; } }
@@ -67,6 +94,10 @@ function MapGridLayersTable(props) {
         else
           rows = setRowsCount(stateApp.selectedLayer)
       }, 1000);
+
+      return () => {
+        clearInterval(interval)
+      }
     }
   }, [stateApp.selectedLayer, stateApp.map])
 

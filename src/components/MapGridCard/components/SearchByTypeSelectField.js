@@ -97,9 +97,15 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
 
   const platformData = useMemo(() => {
     let data = platformDataInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())).filter(data => isShapeGridOnly ? data.shapeGrid ? true : false : true)
-    return data.filter((data) => !data.isLayer || (data.isLayer && isLayerOnly))
+    return data.filter((data) => {
+      if (!data.isLayer) return true
+      if (data.isLayer && isLayerOnly) {
+        data.label = isLayerOnly.name
+        return true
+      } else return false
+    });
 
-  }, [search])
+  }, [search, isLayerOnly])
 
   const userDefinedData = useMemo(() => {
     return userDefinedInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())).filter(data => isShapeGridOnly ? data.shapeGrid ? true : false : true)
