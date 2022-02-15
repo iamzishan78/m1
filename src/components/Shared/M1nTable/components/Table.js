@@ -4448,9 +4448,7 @@ function SubTable(props) {
                     } from  this parcel?`}
                 </DeleteConfirmationDialogContent>
               )}
-              {openDialog === "deleteConfirmation" && (
-              <ConfirmationDialog openDialog={openDialog} handleDialogClose={setOpenDialog} id={contact?._id} />
-              )}
+            
               {openDialog === "deleteContact" && (
                 <DeleteConfirmationDialogContent
                   header="Delete Contact(s)"
