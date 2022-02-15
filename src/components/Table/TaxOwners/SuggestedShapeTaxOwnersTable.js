@@ -95,7 +95,11 @@ function SuggestedShapeTaxOwnersTable(props) {
       variables: {
         polygon: queryPoly,
         userId: stateApp.user.mongoId,
-        sort: {}
+        sort: {},
+        pagination: {
+          first: 10000/*tableState.rowsPerPage*/,
+          after: null,
+        },
       },
     });
     getShapeOwnersWellCount({
@@ -172,6 +176,7 @@ function SuggestedShapeTaxOwnersTable(props) {
         // getPaginatedShapeWellOwners(pageVariables);
         break;
       case "changePage":
+        break;
       case "search":
         // props.setLoading(true);
         // if (tableState.page > meta.pageInd) {
