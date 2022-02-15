@@ -634,6 +634,7 @@ function SubTable(props) {
   const [activeRowIndex, setActiveRowIndex] = useState("null");
   const [defaultActivityType, setDefaultAcitivityType] = useState("call");
   const [contact, setContact] = useState(null);
+  const [activityModalOpen, setActivityModalOpen] = useState(false);
 
   // deep state
   const setFirstMount = (newState) => {
@@ -1126,20 +1127,27 @@ function SubTable(props) {
     setExpandedObject(idOrValues);
     setOpenDialog(type);
   };
-
-  const handleActivity = async (userId, activityType, type) => {
-    closeMenu()
-    getContact({
-      variables: {
-        contactId: userId,
-      },
-    });
-   
+  
+  // handleActivity if type is 'deleteContact' open delete confirmation dialog otherwise open activiy modal for other types
+  const handleActivity = async (contactId, activityType, type) => {
+    if(type){
+      setM1nSelectedRowsIds([contactId]);
+      setOpenDialog(type);
+      }
+      else
+      {
+        getContact({
+          variables: {
+            contactId: contactId,
+          },
+        });
     
-   setDefaultAcitivityType(activityType)
-    setOpenDialog(type);
-    
+       setDefaultAcitivityType(activityType)
+       setActivityModalOpen(true);
+      }
+      setUsermanagementSettings([]);
   };
+
   ////setting all icons columns/////
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserIndex, setSelectedUserIndex] = useState(null);
@@ -1180,8 +1188,7 @@ function SubTable(props) {
   };
 
   const openActionMenu = (event, rowIndex, user, tableMeta) => {
-
-    const userId = user.rowData[0]
+    const contactId = user.rowData[0]
     event.stopPropagation();
     setUsermanagementSettings(
       <Menu
@@ -1200,22 +1207,22 @@ function SubTable(props) {
          Send email
         </MenuItem>
         <Divider />
-        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(userId,"call", "recentActivites")}>
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId,"call", null)}>
           <CallOutlinedIcon className={classes.menuIcons} />
           Add call logs
         </MenuItem>
         <Divider />
-        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(userId, "meeting", "recentActivites")}>
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, "meeting", null)}>
           <EventOutlinedIcon className={classes.menuIcons} />
           Add meeting
         </MenuItem>
         <Divider />
-        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(userId, "task", "recentActivites")}>
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, "task", null)}>
           <AssignmentTurnedInOutlinedIcon className={classes.menuIcons} />
           Add task
         </MenuItem>
         <Divider />
-        <MenuItem className={classes.actionMenuItem} onClick={(e) =>  handleActivity(userId, null, "deleteConfirmation")}>
+        <MenuItem className={classes.actionMenuItem} onClick={(e) =>  handleActivity(contactId, null, "deleteContact")}>
           <DeleteOutlinedIcon className={classes.menuIcons} />
          Delete conctact
         </MenuItem>
@@ -4143,18 +4150,14 @@ function SubTable(props) {
           </RightDialog>
         )}
 
-{openDialog && openDialog === "recentActivites" && (
-          <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width="450px">
+<RightDialog open={activityModalOpen ? true : false} handleClickDialogClose={() => setActivityModalOpen(false)} width="450px">
          <AddActivityDialog
-          onClose={() =>   setOpenDialog('')}
+           onClose={() => setActivityModalOpen(false)}
           id={contact?._id}
           contactData={contact}
           defaultActivityType= {defaultActivityType}
         />
           </RightDialog>
-        )}
-        
-
 
         {openDialog && openDialog === "buyContactsInfo" && (
           <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
