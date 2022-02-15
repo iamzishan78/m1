@@ -200,7 +200,6 @@ function AddActivityDialog(props) {
 
   useEffect(() => {
     setActivityType(defaultActivityType || "call");
-    console.log("defaultActivityType : ", defaultActivityType)
   }, [defaultActivityType]);
 
   useEffect(() => {
