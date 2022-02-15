@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { v4 as uuid } from "uuid";
 import shp from "shpjs";
-import { useMutation } from "@apollo/client";
+import { useMutation, useApolloClient } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { MapControlsContext } from "../MapControlsContext";
@@ -24,6 +24,8 @@ import { showErrorMessage } from "../../../actions";
 import { getDefaultSettings } from './addUserHelper'
 import Loader from "components/Loaders";
 import { BlockBlobClient } from "@azure/storage-blob";
+import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
+import { CREATE_JOB } from "graphQL/useMutationCreateJob";
 
 const Alert = (props) => {
   return <MuiAlert elevation={5} variant="filled" {...props} />;
@@ -57,6 +59,7 @@ export default function AddUserData(props) {
   const [url, setUrl] = useState("");
 
   const [stateApp, setStateApp] = useContext(AppContext);
+  const client = useApolloClient();
 
 
   const [addFile, { data: fileData }] = useMutation(ADDFILE);
@@ -162,7 +165,7 @@ export default function AddUserData(props) {
             .then((response) => {
               return response._response.bodyAsText
             })
-            .then((response) => {
+            .then(async (response) => {
               let type = fileContent.featureTypes[0]
               const sourceProps = layerName + uuid() + "_source"
               const defaultSettings = getDefaultSettings(type, layerName, sourceProps)
@@ -184,13 +187,37 @@ export default function AddUserData(props) {
                 awaitRefetchQueries: true,
               });
 
-              Loader.createToast('layer-creation', 'Layer creation in progress')
-              const interval = setInterval(() => {
-                if (stateApp.map.isSourceLoaded(sourceProps)) {
-                  Loader.successToast('layer-creation', 'Layer created')
-                  clearInterval(interval);
-                }
-              }, 1000);
+              const jobInitialization = await client.mutate({
+                mutation: INITIALIZE_EXPORT_JOB,
+                variables: {
+                  jobName: "Shape File Import",
+                  jobType: "SHAPEFILEIMPORT",
+                  requestPayload: {
+                    fileId: file_id,
+                  },
+                  userId: stateApp.user.mongoId,
+                },
+              });
+
+              await client.mutate({
+                mutation: CREATE_JOB,
+                variables: {
+                  jobId: jobInitialization?.data?.initializeExportJob?.job?._id,
+                  sendEmail: false,
+                },
+              });
+              setStateApp((state) => ({
+                ...state,
+                bulkUpload: !state.bulkUpload,
+              }));
+
+              // Loader.createToast('layer-creation', 'Layer creation in progress')
+              // const interval = setInterval(() => {
+              //   if (stateApp.map.isSourceLoaded(sourceProps)) {
+              //     Loader.successToast('layer-creation', 'Layer created')
+              //     clearInterval(interval);
+              //   }
+              // }, 1000);
               handleClose();
             })
             .catch((error) => {
