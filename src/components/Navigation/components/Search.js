@@ -407,7 +407,7 @@ function Search() {
   const callESSearch = React.useMemo(
     () =>
       debounce((request) => {
-        const { esIndex, search, searchFields, filter } = esCallData[searchOption]
+        const { esIndex, search, searchFields, filter } = ( esCallData[searchOption] || { search: () => {} } )
         getESSimpleSearch({
           variables: {
             index: esIndex,
