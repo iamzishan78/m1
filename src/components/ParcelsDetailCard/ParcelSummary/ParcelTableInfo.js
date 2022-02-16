@@ -162,7 +162,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-function TableTextField({ data, value, onChange, onKeyDown, onBlur, showMessage, type }) {
+function TableTextField({ data, value, onChange, onKeyDown, onBlur, setTableDataState, showMessage, type }) {
   const classes = useStyles();
   return (
     <TextField
@@ -173,12 +173,13 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, showMessage,
       autoFocus
       onChange={(e) => {
         e.persist();
-        onChange(e, data, type)
+        onChange(e, data, type);
       }}
       onKeyDown={(e) => {
         if (e.keyCode === 13) {
           e.stopPropagation();
-          onKeyDown(e, data, type)
+          onKeyDown(e, data, type);
+          setTableDataState({});
         }
       }}
 
@@ -341,12 +342,12 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
                   }
                   {(data.type === 'text' || data.type === 'number') &&
                     <TableTextField data={data} value={tableTempProperties[data.key]} showMessage={tableDataState[data.key] === true}
-                      onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} type='value' />
+                      onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} setTableDataState={setTableDataState} type='value' />
                   }
 
                   {(data.type === 'textarea') &&
                     <TableTextField data={data} value={tableTempProperties[data.key]} showMessage={tableDataState[data.key] === true}
-                      onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} type='value' />
+                      onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} setTableDataState={setTableDataState} type='value' />
                   }
 
                   {data.type === 'autocomplete' &&
