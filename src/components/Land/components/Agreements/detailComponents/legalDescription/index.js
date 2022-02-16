@@ -65,10 +65,7 @@ export default function LagalDescription({ agreementDetails, updateAgreement }) 
     if (agreementDetails) reset(agreementDetails);
   }, [reset, agreementDetails]);
 
-  const offClickHandler = (key, value) => {
-    debugger;
-    updateAgreement(key, value);
-  }
+  const offClickHandler = (key, value) => updateAgreement(key, value);
 
   return (
     <div className={classes.root}>
