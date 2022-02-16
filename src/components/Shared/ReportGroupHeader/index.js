@@ -84,7 +84,13 @@ export default function ReportGroupHeader({ type, esFilters, setESFilters, setFi
                 awaitRefetchQueries: true,
             }).then((resp) => {
                 if (resp.data.updateGridView.success) {
-                    setReportingGroup(actionType === 'update' ? name : All_TYPE)
+                    if (actionType === 'update') {
+                        setReportingGroup(name)
+                    } else {
+                        setReportingGroup(All_TYPE)
+                        setESFilters([])
+                        setFilterToggle((value) => !value)
+                    }
                 }
                 setConfig({ show: false })
             });;
