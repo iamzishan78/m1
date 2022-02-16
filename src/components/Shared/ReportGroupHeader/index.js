@@ -121,7 +121,7 @@ export default function ReportGroupHeader({ type, esFilters, setESFilters, setFi
                 handleAddUpdateDelete({ type: 'update', name: reportingGroup })
             }
         },
-        { isShow: true, text: 'Save as New Group', action: () => setConfig({ show: true, type: 'new', name: reportingGroup + " - Copy" }) },
+        { isShow: true, text: 'Save as New Report Group', action: () => setConfig({ show: true, type: 'new', name: reportingGroup + " - Copy" }) },
         { isShow: true, text: 'Edit Report Group Name', action: () => setConfig({ show: true, type: 'update', name: reportingGroup }) },
         { isShow: true, text: 'Delete Report Group', action: () => setDeleteDialogOpen(true) }
         ]
