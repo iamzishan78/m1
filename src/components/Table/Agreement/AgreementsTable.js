@@ -53,6 +53,7 @@ function AgreementsTable(props) {
   const classes = useStyles();
 
   // function states
+  const [filters, setFilters] = useState([]);
   const [columns, Columns] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   // const [potentialIssuesList, setPotentialIssuesList] = useState([]);
@@ -185,10 +186,10 @@ function AgreementsTable(props) {
 
         setColumnsData(
           TableHeader,
-          esFilters,
+          filters,
           JSON.parse(JSON.stringify(TableHeader)),
           setColumns,
-          setESFilters,
+          setFilters,
           GET_ES_FILTER_LIST,
           esIndex,
           extendSearchQuery
@@ -300,12 +301,14 @@ function AgreementsTable(props) {
         tableActions.extendSearchQuery(extendSearchQuery);
         setESFilters(tableActions.pageESVariables.variables.filters);
         tableActions.genericESAction();
+        setFilters(tableState.filterList)
         break;
       case "search":
       case "sort":
       case "changeRowsPerPage":
         tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.genericESAction();
+        setFilters(tableState.filterList)
         break;
       case "rowSelectionChange":
         setSelectedRows(tableState.selectedRows.data);
