@@ -37,7 +37,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
   const theme = useTheme();
 
   return (
-    <div style={{ zIndex: 1001 }}>
+    <div style={{ zIndex: 1223 }}> {/* zIndex greater than zIndex of ExpandableCard */}
       <Drawer
         variant="permanent"
         anchor="left"
