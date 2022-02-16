@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { get } from "lodash";
 import moment from "moment";
+import { useHistory } from "react-router-dom";
 
 import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
@@ -13,6 +14,7 @@ import AssociatedWellsList from "components/Shared/Wells/AssociatedWells";
 import ContactCardIcon from "components/Shared/svgIcons/contact_card";
 
 import ContactPaginatedAutocomplete from "components/Revenue/components/Common/ContactsPaginatedAutocomplete";
+import { AppContext } from "AppContext";
 
 import { CONTACT_ENTITY } from "graphQL/useQueryContactEntity";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
@@ -113,6 +115,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function HeaderSection(props) {
   const classes = useStyles();
+  let history = useHistory();
+  const [stateApp, setStateApp] = useContext(AppContext);
   const { control, setValue, watch, register, reset } = useForm();
   const { propertyDetails, propertyOwnerContact, setEntityToConvert } = props;
   const [entityType, setEntityType] = useState("");
@@ -131,22 +135,19 @@ export default function HeaderSection(props) {
       const data = JSON.parse(JSON.stringify(propertyDetails));
       delete data.owner;
       delete data.operator;
-      reset(data);
+      let owner = {};
+      let operator = {};
+      if (propertyOwnerContact) {
+        owner = propertyOwnerContact?.find(
+          (owner) => owner.entityId === propertyDetails?.owner?._id
+        );
+        operator = propertyOwnerContact?.find(
+          (owner) => owner.entityId === propertyDetails?.operator?._id
+        );
+      }
+      reset({ ...data, owner, operator });
     }
-  }, [propertyDetails]);
-
-  useEffect(() => {
-    if (propertyOwnerContact) {
-      const owner = propertyOwnerContact?.find(
-        (owner) => owner.entityId === propertyDetails?.owner?._id
-      );
-      setValue("owner", owner);
-      const operator = propertyOwnerContact?.find(
-        (owner) => owner.entityId === propertyDetails?.operator?._id
-      );
-      setValue("operator", operator);
-    }
-  }, [propertyOwnerContact]);
+  }, [propertyDetails, propertyOwnerContact]);
 
   useEffect(() => {
     const entity = get(contactEntityData, "contactEntity.entity");
@@ -230,7 +231,7 @@ export default function HeaderSection(props) {
                       type="text"
                       fullWidth
                       onKeyDown={(e) => onKeyDown(e, "number", params.value)}
-                      onBlur={() => setValue("number", propertyDetails.number)}
+                      onBlur={(e) => updatePropertyData("number", params.value)}
                     />
                   )}
                 />
@@ -256,7 +257,7 @@ export default function HeaderSection(props) {
                       type="text"
                       fullWidth
                       onKeyDown={(e) => onKeyDown(e, "name", params.value)}
-                      onBlur={() => setValue("name", propertyDetails.name)}
+                      onBlur={(e) => updatePropertyData("name", params.value)}
                     />
                   )}
                 />
@@ -324,9 +325,17 @@ export default function HeaderSection(props) {
                                 {params2.InputProps.endAdornment}
                                 <div
                                   className={classes.contactCardIcon}
-                                  onClick={() =>
-                                    setEntity(propertyDetails?.owner)
-                                  }
+                                  onClick={(e) =>{
+                                    e.stopPropagation();
+                                    if(params?.value?._id){
+                                      history.push(`/contact/details/${params?.value?._id}`);
+                                      setStateApp((stateApp) => ({
+                                        ...stateApp,
+                                        selectedContact: `${params?.value?._id}`,
+                                    }));
+                                    }
+                                    // setEntity(propertyDetails?.owner)
+                                  }}
                                 >
                                   <ContactCardIcon
                                     fill={
@@ -417,9 +426,17 @@ export default function HeaderSection(props) {
                                 {params2.InputProps.endAdornment}
                                 <div
                                   className={classes.contactCardIcon}
-                                  onClick={() =>
-                                    setEntity(propertyDetails?.operator)
-                                  }
+                                  onClick={(e) =>{
+                                    e.stopPropagation();
+                                    if(params?.value?._id) {
+                                      history.push(`/contact/details/${params?.value?._id}`);
+                                      setStateApp((stateApp) => ({
+                                        ...stateApp,
+                                        selectedContact: `${params?.value?._id}`,
+                                    }));
+                                    // setEntity(propertyDetails?.owner)
+                                    }
+                                  }}
                                 >
                                   <ContactCardIcon
                                     fill={
@@ -572,23 +589,7 @@ export default function HeaderSection(props) {
                       fullWidth
                       multiline
                       rows={5}
-                      InputProps={{
-                        endAdornment: (
-                          <React.Fragment>
-                            <Button
-                              color="secondary"
-                              onClick={() => {
-                                updatePropertyData(
-                                  "legalDescription",
-                                  params.value
-                                );
-                              }}
-                            >
-                              Update
-                            </Button>
-                          </React.Fragment>
-                        ),
-                      }}
+                      onBlur={(e) => updatePropertyData("legalDescription", params.value)}
                     />
                   )}
                 />

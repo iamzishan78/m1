@@ -139,7 +139,7 @@ const InterestDetailForm = (props) => {
           : { name: "", _id: null },
       });
     } else if (props.propertyOwnerContact) {
-      setValue("owner", props.propertyOwnerContact);
+      reset({owner: props.propertyOwnerContact});
     } else if (props.propertyDetails?.owner) {
       props.setShowOwnerDialog(true);
     }

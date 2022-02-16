@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
@@ -72,12 +72,14 @@ const ExportWellsOwners = ({
   const client = useApolloClient();
 
   const { currentFeature, user } = stateApp;
-  const { control, watch } = useForm();
+  const { control } = useForm();
   const [includeFilter, setIncludeFilter] = useState(true);
 
-  const exportWells = watch("exportWells", false);
-  const exportOwners = watch("exportOwners", false);
-  const exportOwnersInterest = watch("exportOwnersInterest", false);
+  const exportWells = useWatch({ control, name: "exportWells", defaultValue: false });
+  const exportOwners = useWatch({ control, name: "exportOwners", defaultValue: false });
+  const exportOwnersInterest = useWatch({ control, name: "exportOwnersInterest", defaultValue: false });
+
+  const exportDisabled = fetching || (!exportWells && !exportOwners && !exportOwnersInterest);
 
   useEffect(() => {
     if (!includeFilter) {
@@ -121,6 +123,9 @@ const ExportWellsOwners = ({
   ]);
 
   const onExport = () => {
+    // to make sure export is done once
+    onClose();
+
     const { filters, search } = getMapFilters(stateNav, "", "");
     execAsyncExportJobAction({
       client,
@@ -158,7 +163,6 @@ const ExportWellsOwners = ({
     //   hiddenElement.download = "taxOwnersInterest.csv";
     //   hiddenElement.click();
     // }
-    onClose();
   };
 
   return (
@@ -253,7 +257,16 @@ const ExportWellsOwners = ({
               <Button onClick={onClose}>Cancel</Button>
             </Grid>
             <Grid item>
-              <Button variant="contained" component="span" style={{ backgroundColor: "#00abed", color: "white" }} onClick={onExport}>
+              <Button
+                variant="contained"
+                component="span"
+                style={{ 
+                  backgroundColor: exportDisabled ? "#D3D3D3" : "#00abed",
+                  color: exportDisabled ? "#999999": "white"
+                }}
+                onClick={onExport}
+                disabled={exportDisabled}
+              >
                 {fetching ? <CircularProgress size={14} /> : "Export"}
               </Button>
             </Grid>

@@ -12,9 +12,9 @@ import { COMMENTSCOUNTER } from "graphQL/useQueryCommentsCounter";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { TRACKSBYOBJECTTYPE } from "graphQL/useQueryTracksByObjectType";
 
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { AutoCompleteFilter } from "./AutoCompleteFilter";
-import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { get } from "lodash";
 
 import { setColumnsData } from "components/Table/helpers";
@@ -28,7 +28,7 @@ export const TableESHOC = (Component) => {
         const [columns, Columns] = useState([]);
         const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
-        const [addToTable, setAddToTable] = useState(false)
+        const [addToTable, setAddToTable] = useState('')
         const [openDialog, setOpenDialog] = useState(null);
         const [clickedRow, setClickedRow] = useState();
 
@@ -52,7 +52,7 @@ export const TableESHOC = (Component) => {
         const [dataTracks, DataTracks] = useState(null);
         const setDataTracks = (newState) => { setStateIfDeepEqual(DataTracks, newState) };
 
-        const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
+        const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
             fetchPolicy: "no-cache", onCompleted: () => {
                 setLoading(false);
             }
@@ -72,12 +72,15 @@ export const TableESHOC = (Component) => {
         const checkIfOwnersAreContactsDataRef = useRef();
         checkIfOwnersAreContactsDataRef.current = checkIfOwnersAreContactsData;
 
+        const activeSearchRef = useRef();
+        const activeFiltersRef = useRef();
+
 
         const [dependencyUpdate, SetDependencyUpdate] = useState(false);
 
         const [stateApp, setStateApp] = useContext(AppContext);
 
-        const tableData = elasticData?.getESPaginatedList
+        const tableData = elasticData?.getESSimpleSearch
 
         useEffect(() => {
             if (constDataTracks?.tracksByObjectType) {
@@ -117,16 +120,21 @@ export const TableESHOC = (Component) => {
 
         useEffect(() => {
             if (tableMeta?.esIndex) {
-                getESPaginatedList({
+                getESSimpleSearch({
                     variables: {
-                        esIndex: tableMeta.esIndex,
+                        index: tableMeta.esIndex,
                         pagination: {
                             first: tableMeta.startPaginationAt,
                             keep_alive: "1micros"
                         },
-                        search: tableMeta.extendSearchQuery,
-                        filters: tableMeta.filters ? tableMeta.filters : [],
-                        polygon: tableMeta.polygon ? tableMeta.polygon : undefined
+                        search: {
+                            query: tableMeta.extendSearchQuery,
+                            fields: tableMeta.searchFields
+                        },
+                        filters: [
+                            ...(tableMeta.filters ? tableMeta.filters : []),
+                            ...(tableMeta.polygon) ? [tableMeta.polygon] : []
+                        ]
                     }
                 });
             }
@@ -162,7 +170,8 @@ export const TableESHOC = (Component) => {
                                     column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
                                     return (
                                         <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-                                            extendSearchQuery={extendSearchQuery} query={GET_ES_FILTER_LIST} esIndex={esIndex} custom={custom}/>
+                                            extendSearchQuery={extendSearchQuery} searchFields={tableMeta.searchFields} query={GET_ES_SIMPLE_FILTER}
+                                            esIndex={esIndex} filters={activeFiltersRef.current} custom={custom}/>
                                     );
                                 }
                             }
@@ -280,9 +289,11 @@ export const TableESHOC = (Component) => {
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
             let pageESVariables = {
                 variables: {
-                    polygon: tableState.polygon ? tableState.polygon : undefined,
-                    esIndex: tableState.esIndex,
-                    search: tableState.searchText ? `${tableState.searchText}*` : '',
+                    index: tableState.esIndex,
+                    search: {
+                        query: tableState.searchText,
+                        fields: tableMeta.searchFields
+                    },
                     pagination: {
                         // pit: tableData?.before_pit,
                         first: tableState.rowsPerPage,
@@ -290,17 +301,16 @@ export const TableESHOC = (Component) => {
                     },
                     ...(!isEmpty(tableState.sortOrder)) && {
                         sort:
-                            [{
-                                [columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
-                                    columns.find(el => el.name === tableState.sortOrder?.name)?.name]: {
-                                    order: tableState.sortOrder?.direction,
-                                    // unmapped_type: "null",
-                                    missing: "_last"
-                                }
-                            }]
+                            {
+                                field: columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
+                                    columns.find(el => el.name === tableState.sortOrder?.name)?.name,
+                                order: tableState.sortOrder?.direction
+                                // unmapped_type: "null",
+                                // missing: "_last"
+                            }
                     },
 
-                    filters: [],
+                    filters: tableState.filters ? [...tableState.filters] : []
                 },
             };
             tableState.filterList.forEach((val, index) => {
@@ -329,6 +339,9 @@ export const TableESHOC = (Component) => {
                     pageESVariables.variables.filters.push(filter)
                 })
             }
+            if (tableState.polygon) {
+                pageESVariables.variables.filters.push(tableState.polygon)
+            }
             return {
                 pageESVariables,
                 genericESAction: () => {
@@ -354,10 +367,10 @@ export const TableESHOC = (Component) => {
                     });
                 },
                 extendSearchQuery: (extraSearch) => {
-                    if (pageESVariables.variables.search)
-                        pageESVariables.variables.search = `${pageESVariables.variables.search} AND ${extraSearch}`
-                    else
-                        pageESVariables.variables.search = `${extraSearch}`
+                    // if (pageESVariables.variables.search)
+                    //     pageESVariables.variables.search = `${pageESVariables.variables.search} AND ${extraSearch}`
+                    // else
+                    //     pageESVariables.variables.search = `${extraSearch}`
                 }
             }
         }
@@ -366,7 +379,9 @@ export const TableESHOC = (Component) => {
             tableState.esIndex = tableMeta.esIndex;
             tableState.filters = tableMeta.filters ? tableMeta.filters : [];
             tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
-            const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
+            const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch)
+            activeSearchRef.current = tableActions.pageESVariables.variables.search;
+            activeFiltersRef.current = tableActions.pageESVariables.variables.filters;
             switch (action) {
                 case "search":
                 case "sort":
@@ -395,13 +410,15 @@ export const TableESHOC = (Component) => {
             searchable: true,
             rowsSelected: selectedRows.map((sR => sR.dataIndex)),
             filter: true,
+            searchText: tableMeta.extendSearchQuery,
+            searchFields: tableMeta.searchFields,
             customToolbar: () => {
 
                 return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
                     <Button
                         color="secondary"
                         className={classes.multiSelectionTopBarButtons}
-                        onClick={() => { setAddToTable(true); setClickedRow(null) }}
+                        onClick={() => { setAddToTable('add'); setClickedRow(null) }}
                     >
                         {tableMeta.addBtnText ? 
                             `+ ADD ${tableMeta.addBtnText}` : 
@@ -422,7 +439,7 @@ export const TableESHOC = (Component) => {
                 </div>)
             },
             onRowClick: (rowData, { dataIndex, rowIndex }) => {
-                setAddToTable(true)
+                setAddToTable('update')
                 setClickedRow({ ...rows[dataIndex] })
             }
         }

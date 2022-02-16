@@ -43,6 +43,7 @@ import { SHAPEWELLS } from "../../../graphQL/useQueryPaginatedShapeWells";
 import { SHAPEWELLSCOUNT } from "../../../graphQL/useQueryShapeWellsCount";
 import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
+import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 import vf_currency from "components/Shared/valueformatters/vf_currency";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -229,7 +230,9 @@ function M1nTable(props) {
     fetchPolicy: "cache-and-network",
   });
   const [updateDocument, { loading: updateFileloading }] = useMutation(UPDATE_DOCUMENT);
-
+  const [getCheckPurchaseData, { data: ContactPurchaseData }] = useLazyQuery(
+    GET_CHECK_PURCHASE_DATA
+  );
   ////////////General begin///////////////////////////////////////////////
 
   useEffect(() => {
@@ -1792,6 +1795,18 @@ function M1nTable(props) {
     }
   }, [dataParcelOwners, parcelOwnerLoading]);
 
+
+  useEffect(() => {
+    if (checkIfOwnersAreContactsData?.ifAreContacts) {
+      const contactIdsArray = checkIfOwnersAreContactsData.ifAreContacts.map((contact) => contact.isContact);
+      getCheckPurchaseData({
+        variables: {
+          contactIds: contactIdsArray,
+        },
+      });
+    }
+  }, [dataParcelOwners, checkIfOwnersAreContactsData])
+
   useEffect(() => {
     if (
       props.parent &&
@@ -1820,8 +1835,8 @@ function M1nTable(props) {
 
       const parcelOwners = dataParcelOwners.parcelOwners.map((o) => {
         let parcelOwner = { ...o };
-        parcelOwner.cost_bearing_high_value = parcelOwner?.cost_bearing_high_value ? vf_currency(parcelOwner.cost_bearing_high_value): undefined
-        parcelOwner.cost_free_high_value = parcelOwner?.cost_free_high_value ? vf_currency(parcelOwner.cost_free_high_value): undefined
+        parcelOwner.cost_bearing_high_value = parcelOwner?.cost_bearing_high_value ? vf_currency(parcelOwner.cost_bearing_high_value) : undefined
+        parcelOwner.cost_free_high_value = parcelOwner?.cost_free_high_value ? vf_currency(parcelOwner.cost_free_high_value) : undefined
         if (parcelOwner.qtr) {
           parcelOwner.qtr_calls = `${parcelOwner.qtr[0] ? parcelOwner.qtr[0] : ""} ${parcelOwner.qtr[1] ? parcelOwner.qtr[1] : ""} ${parcelOwner.qtr[2] ? parcelOwner.qtr[2] : ""
             } ${parcelOwner.qtr[3] ? parcelOwner.qtr[3] : ""}`;
@@ -1881,7 +1896,20 @@ function M1nTable(props) {
       const OwnersPerParcelColumns = JSON.parse(JSON.stringify(OwnersPerParcelHeadCells))
       let tenantName = window.sessionStorage.getItem("tenantName");
 
-      if(tenantName === 'Providence'){
+      if (ContactPurchaseData?.getCheckPurchaseData) {
+        for (let index in parcelOwners) {
+          for (let i = 0; i < ContactPurchaseData?.getCheckPurchaseData.length; i++) {
+            const contactId = ContactPurchaseData.getCheckPurchaseData[i];
+            const isContactId = parcelOwners[index].isContact;
+            if (isContactId === contactId) {
+              parcelOwners[index].isPurchased = true;
+              break;
+            }
+          }
+        }
+      }
+
+      if (tenantName === 'Providence') {
         const index = findIndex(OwnersPerParcelColumns, (column) => column.name === "depthFrom");
         OwnersPerParcelColumns.splice(index, 0, { name: "cost_bearing_high_value", label: "Cost Bearing High Value", editabe: true })
         OwnersPerParcelColumns.splice(index, 0, { name: "cost_free_high_value", label: "Cost Free High Value", editabe: true })
@@ -1889,7 +1917,7 @@ function M1nTable(props) {
       }
 
       const index = findIndex(OwnersPerParcelColumns, (column) => column.name === "qtr_calls");
-      
+
       if (props.customLayer.state === "TX") {
         OwnersPerParcelColumns[index].options = {
           display: false,
@@ -1960,7 +1988,7 @@ function M1nTable(props) {
       setRows(parcelOwners);
       setLoading(false);
     }
-  }, [dataParcelOwners, dataTagSamples, checkIfOwnersAreContactsData, dataCommentsCounter, dataTracks]);
+  }, [dataParcelOwners, dataTagSamples, ContactPurchaseData, checkIfOwnersAreContactsData, dataCommentsCounter, dataTracks]);
 
   useEffect(() => {
     if (abstractWellData) {
