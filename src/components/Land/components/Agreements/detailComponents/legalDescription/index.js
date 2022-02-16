@@ -1,9 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import _ from "underscore";
 import { Controller, useForm } from "react-hook-form";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton, TextField } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import { useStyles as customStyles } from "../style";
+
+import { copy } from "components/Shared/functions";
+import AgreementOwnersTractsTable from "components/Table/Agreement/AgreementOwnersTractsTable";
 
 // Components
 const useStyles = makeStyles((theme) => ({
@@ -36,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   accordionDetails: {
-    padding: "0px 80px 0px 0px",
+    padding: "30px 18px"
   },
   numberField: {
     "& .MuiOutlinedInput-root": {
@@ -56,14 +60,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LagalDescription({ agreementDetails, updateAgreement }) {
+export default function LagalDescription({ agreementDetails, activeAgreement, updateAgreement }) {
   const classes = useStyles();
   const customClasses = customStyles();
   const { reset, control } = useForm();
+  const [uniObj, setUniObj] = useState();
+  const [tractsNumber, setTractsNumber] = useState(0);
 
   useEffect(() => {
-    if (agreementDetails) reset(agreementDetails);
+    if (!_.isEmpty(agreementDetails)) reset(agreementDetails);
   }, [reset, agreementDetails]);
+
+  useEffect(() => {
+    if (activeAgreement) {
+      let shape = activeAgreement.shape;
+      if (activeAgreement.shapeJson) shape = copy(activeAgreement.shapeJson);
+      setUniObj({
+        ...activeAgreement,
+        shape,
+      });
+    }
+  }, [activeAgreement]);
 
   const offClickHandler = (key, value) => updateAgreement(key, value);
 
@@ -83,141 +100,162 @@ export default function LagalDescription({ agreementDetails, updateAgreement }) 
               <Typography variant="h5" className={customClasses.titleText}>
                 Legal Description
               </Typography>
-              <Chip color="info" label={1} />
+              <Chip color="info" label={tractsNumber} />
             </Grid>
           </Grid>
         </AccordionSummary>
         <AccordionDetails className={classes.accordionDetails}>
-          <Grid container display="row" alignItems="center" justify="space-between">
-            <Grid item xs={6}>
-              <Controller
-                control={control}
-                name="legalDesctiption"
-                render={params => (
-                  <TextField
-                    {...params}
-                    label="Full Legal Description"
-                    variant="outlined"
-                    multiline
-                    rows={7}
-                    fullWidth
-                    className={classes.numberField}
-                    onBlur={(event) => offClickHandler("legalDesctiption", event.target.value)}
+          <Grid container direction="column" alignItems="center" spacing={4} style={{ display: "block" }}>
+            <Grid item xs={12} style={{ padding: "0px 50px 0px 0px" }}>
+              <Grid container display="flex" direction="row" alignItems="center" justify="space-between">
+                <Grid item xs={6}>
+                  <Controller
+                    control={control}
+                    name="legalDesctiption"
+                    defaultValue={agreementDetails?.legalDescription ?? ""}
+                    render={params => (
+                      <TextField
+                        {...params}
+                        label="Full Legal Description"
+                        variant="outlined"
+                        multiline
+                        rows={7}
+                        fullWidth
+                        className={classes.numberField}
+                        onBlur={(event) => offClickHandler("legalDesctiption", event.target.value)}
+                      />
+                    )}
                   />
-                )}
-              />
-            </Grid>
-            <Grid item xs={5}>
-              <Grid container display="row" alignItems="center" justify="center" spacing={3}>
-                <Grid item xs={12}>
-                  <Grid container display="row" alignItems="center" justify="space-between" spacing={3}>
-                    <Grid item xs={4}>
-                      <Controller
-                        name="grossAcres"
-                        control={control}
-                        render={params => (
-                          <TextField
-                            {...params}
-                            defaultValue={params.value ?? null}
-                            label="Gross"
-                            variant="outlined"
-                            type="number"
-                            className={classes.numberField}
-                            onBlur={(event) => offClickHandler("grossAcres", event.target.value)}
-                          />
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Controller
-                        name="netAcres"
-                        control={control}
-                        render={params => (
-                          <TextField
-                            {...params}
-                            label="Net"
-                            variant="outlined"
-                            type="number"
-                            className={classes.numberField}
-                            onBlur={(event) => offClickHandler("netAcres", event.target.value)}
-                          />
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Controller
-                        name="coNetAcres"
-                        control={control}
-                        render={params => (
-                          <TextField
-                            {...params}
-                            label="Co. Net"
-                            variant="outlined"
-                            type="number"
-                            className={classes.numberField}
-                            onBlur={(event) => offClickHandler("coNetAcres", event.target.value)}
-                          />
-                        )}
-                      />
-                    </Grid>
-                  </Grid>
                 </Grid>
+                <Grid item xs={5}>
+                  <Grid container display="row" alignItems="center" justify="center" spacing={3}>
+                    <Grid item xs={12}>
+                      <Grid container display="row" alignItems="center" justify="space-between" spacing={3}>
+                        <Grid item xs={4}>
+                          <Controller
+                            name="grossAcres"
+                            defaultValue={activeAgreement?.grossAcres ?? ""}
+                            control={control}
+                            render={params => (
+                              <TextField
+                                {...params}
+                                label="Gross"
+                                variant="outlined"
+                                type="number"
+                                className={classes.numberField}
+                                onBlur={(event) => offClickHandler("grossAcres", event.target.value)}
+                              />
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Controller
+                            name="netAcres"
+                            defaultValue={activeAgreement?.netAcres ?? ""}
+                            control={control}
+                            render={params => (
+                              <TextField
+                                {...params}
+                                label="Net"
+                                variant="outlined"
+                                type="number"
+                                className={classes.numberField}
+                                onBlur={(event) => offClickHandler("netAcres", event.target.value)}
+                              />
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Controller
+                            name="coNetAcres"
+                            defaultValue={activeAgreement?.coNetAcres ?? ""}
+                            control={control}
+                            render={params => (
+                              <TextField
+                                {...params}
+                                label="Co. Net"
+                                variant="outlined"
+                                type="number"
+                                className={classes.numberField}
+                                onBlur={(event) => offClickHandler("coNetAcres", event.target.value)}
+                              />
+                            )}
+                          />
+                        </Grid>
+                      </Grid>
+                    </Grid>
 
-                <Grid item xs={12}>
-                  <Grid container display="row" alignItems="center" justify="space-between" spacing={3}>
-                    <Grid item xs={4}>
-                      <Controller
-                        name="reportGrossAcres"
-                        control={control}
-                        render={params => (
-                          <TextField
-                            {...params}
-                            label="Report Gross"
-                            variant="outlined"
-                            type="number"
-                            className={classes.numberField}
-                            onBlur={(event) => offClickHandler("reportGrossAcres", event.target.value)}
+                    <Grid item xs={12}>
+                      <Grid container display="row" alignItems="center" justify="space-between" spacing={3}>
+                        <Grid item xs={4}>
+                          <Controller
+                            name="reportGrossAcres"
+                            defaultValue={activeAgreement?.reportGrossAcres ?? ""}
+                            control={control}
+                            render={params => (
+                              <TextField
+                                {...params}
+                                label="Report Gross"
+                                variant="outlined"
+                                type="number"
+                                className={classes.numberField}
+                                onBlur={(event) => offClickHandler("reportGrossAcres", event.target.value)}
+                              />
+                            )}
                           />
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Controller
-                        name="reportNet"
-                        control={control}
-                        render={params => (
-                          <TextField
-                            {...params}
-                            label="Report Net"
-                            variant="outlined"
-                            type="number"
-                            className={classes.numberField}
-                            onBlur={(event) => offClickHandler("reportNet", event.target.value)}
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Controller
+                            name="reportNet"
+                            defaultValue={activeAgreement?.reportNet ?? ""}
+                            control={control}
+                            render={params => (
+                              <TextField
+                                {...params}
+                                label="Report Net"
+                                variant="outlined"
+                                type="number"
+                                className={classes.numberField}
+                                onBlur={(event) => offClickHandler("reportNet", event.target.value)}
+                              />
+                            )}
                           />
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Controller
-                        name="netRoyalty"
-                        control={control}
-                        render={params => (
-                          <TextField
-                            {...params}
-                            defaultValue={params.value ?? null}
-                            label="Net Royalty"
-                            variant="outlined"
-                            type="number"
-                            className={classes.numberField}
-                            onBlur={(event) => offClickHandler("netRoyalty", event.target.value)}
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Controller
+                            name="netRoyalty"
+                            defaultValue={activeAgreement?.netRoyalty ?? ""}
+                            control={control}
+                            render={params => (
+                              <TextField
+                                {...params}
+                                defaultValue={params.value ?? null}
+                                label="Net Royalty"
+                                variant="outlined"
+                                type="number"
+                                className={classes.numberField}
+                                onBlur={(event) => offClickHandler("netRoyalty", event.target.value)}
+                              />
+                            )}
                           />
-                        )}
-                      />
+                        </Grid>
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
+            {uniObj && (
+              <Grid item xs={12} style={{ padding: "35px 20px 0px 0px" }}>
+                <AgreementOwnersTractsTable
+                  customLayer={uniObj}
+                  shapeType="Agreement"
+                  header={"Tracts"}
+                  setTractsNumber={setTractsNumber}
+                  dense
+                />
+              </Grid>
+            )}
           </Grid>
         </AccordionDetails>
       </Accordion>

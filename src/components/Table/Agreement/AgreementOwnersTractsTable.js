@@ -68,6 +68,11 @@ function AgreementOwnersTractsTable(props) {
     })
   }, []);
 
+  useEffect(() => {
+    if (props.setTractsNumber) props.setTractsNumber(props.rows.length);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.rows]);
+
   return (
     <Container
       maxWidth={false}

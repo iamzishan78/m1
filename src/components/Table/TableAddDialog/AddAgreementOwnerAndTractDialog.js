@@ -210,7 +210,9 @@ function AddAgreementOwnerAndTractDialog(props) {
             shapeId: props.shapeId,
             ...ownerToAdd,
           },
-        }
+        },
+        refetchQueries: ["getESSimpleSearch"],
+        awaitRefetchQueries: true
       });
     }
   }
