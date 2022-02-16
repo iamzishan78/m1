@@ -63,8 +63,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
           }
         }
       });
-
-      // updateAgreement('custom_data', { "Current Operator": "PIONEER NATURAL RESOURCES" });
     }
     setFieldsList([...fieldsData, ...customData]);
   }, [metaDataRes, agreementDetails]);

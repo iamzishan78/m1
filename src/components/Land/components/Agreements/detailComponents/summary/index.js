@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
-import { set } from "lodash";
 import { useSelector } from "react-redux";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { useForm, Controller } from "react-hook-form";
 import { Grid, Typography, Box, Accordion, AccordionSummary, AccordionDetails, IconButton } from "@material-ui/core";
 import { useStyles as summaryStyles, StyledTextField } from "../style";
@@ -16,16 +15,13 @@ import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutli
 import FieldsSection from "./fieldsSection";
 import ProgressBar from "components/Shared/ui/ProgressBar";
 
-import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 
-export default function Summary({ agreementDetails, agreementProvisions, standardProvisions }) {
+export default function Summary({ agreementDetails, activeAgreement, agreementProvisions, standardProvisions, updateAgreement }) {
   const classes = summaryStyles();
   const { control, reset } = useForm();
-  const activeAgreement = useSelector(({ Land }) => Land.agreement?.activeAgreement);
 
   const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
-  const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
   useEffect(() => {
     if (activeAgreement?._id) {
@@ -39,43 +35,6 @@ export default function Summary({ agreementDetails, agreementProvisions, standar
     }
   }, [reset, agreementDetails, getShapeSummaryDetails]);
 
-  const updateAgreement = (field, value, isCustom) => {
-    if (agreementDetails[field] === value) return;
-    const shape = activeAgreement.shape;
-    if (!isCustom) {
-      set(shape.properties, field, value);
-      shape.properties[field] = value;
-    } else {
-      const customData = { ...agreementDetails.custom_data };
-      customData[field] = value;
-      shape.properties.custom_data = customData;
-    }
-
-    const customLayer = {};
-    let shapeLabel = shape.properties.shapeLabel;
-    if (field === "agreementNumber") shapeLabel = `${value}${shape.properties.agreementName ? `-${shape.properties.agreementName}` : ""}`;
-
-    if (field === "agreementName") shapeLabel = `${shape.properties.agreementNumber ? `${shape.properties.agreementNumber}-` : ""}${value}`;
-
-    if (field === "agreementType") {
-      customLayer.layer = value;
-    }
-
-    shape.properties.shapeLabel = shapeLabel;
-    shape.name = shapeLabel;
-    shape.properties.name = shapeLabel;
-    customLayer.shape = JSON.stringify(shape);
-    customLayer.shapeJson = shape;
-
-    updateCustomLayer({
-      variables: {
-        customLayerId: activeAgreement._id,
-        customLayer,
-      },
-      refetchQueries: ["customLayer"],
-    });
-  };
-
   const hasCustomProvision = agreementProvisions.find((provision) => !provision.templateRef);
 
   return (
@@ -88,7 +47,7 @@ export default function Summary({ agreementDetails, agreementProvisions, standar
                 <ExpandMoreIcon fontSize="large" />
               </IconButton>
             }
-            onClick={(e) => {}}
+            onClick={(e) => { }}
           >
             <Grid container direction="row" justify="space-between" alignItems="center">
               <Grid item className={classes.summaryHeader}>

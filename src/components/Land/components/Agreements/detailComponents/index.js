@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { debounce, get } from "lodash";
+import { debounce, get, set } from "lodash";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import {
@@ -25,12 +25,14 @@ import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer"
 import Summary from "components/Land/components/Agreements/detailComponents/summary";
 import RelatedParties from "components/Land/components/Agreements/detailComponents/relatedParties";
 import Provisions from "components/Land/components/Agreements/detailComponents/provisions";
+import LegalDescription from "components/Land/components/Agreements/detailComponents/legalDescription";
 
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
+import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 
 const useStyles = makeStyles((theme) => ({
   detailHeader: {
@@ -207,6 +209,7 @@ export default function DetailComponents(props) {
   const { id: agreementId } = useParams();
   const dispatch = useDispatch();
   const agreementDetails = useSelector(({ Land }) => Land.agreement?.activeAgreement?.shape)?.properties;
+  const activeAgreement = useSelector(({ Land }) => Land.agreement?.activeAgreement);
   const [stateApp] = useContext(AppContext);
 
   const [tab, setTab] = useState(0);
@@ -227,6 +230,7 @@ export default function DetailComponents(props) {
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
   const [getStandardProvisions, { data: standardProvisions }] = useLazyQuery(GET_STANDARD_PROVISIONS);
   const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
+  const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
   useEffect(() => {
     return () => {
@@ -291,6 +295,43 @@ export default function DetailComponents(props) {
       );
     }
   }, [userLists]);
+
+  const updateAgreement = (field, value, isCustom) => {
+    if (agreementDetails[field] === value) return;
+    const shape = activeAgreement.shape;
+    if (!isCustom) {
+      set(shape.properties, field, value);
+      shape.properties[field] = value;
+    } else {
+      const customData = { ...agreementDetails.custom_data };
+      customData[field] = value;
+      shape.properties.custom_data = customData;
+    }
+
+    const customLayer = {};
+    let shapeLabel = shape.properties.shapeLabel;
+    if (field === "agreementNumber") shapeLabel = `${value}${shape.properties.agreementName ? `-${shape.properties.agreementName}` : ""}`;
+
+    if (field === "agreementName") shapeLabel = `${shape.properties.agreementNumber ? `${shape.properties.agreementNumber}-` : ""}${value}`;
+
+    if (field === "agreementType") {
+      customLayer.layer = value;
+    }
+
+    shape.properties.shapeLabel = shapeLabel;
+    shape.name = shapeLabel;
+    shape.properties.name = shapeLabel;
+    customLayer.shape = JSON.stringify(shape);
+    customLayer.shapeJson = shape;
+
+    updateCustomLayer({
+      variables: {
+        customLayerId: activeAgreement._id,
+        customLayer,
+      },
+      refetchQueries: ["customLayer"],
+    });
+  };
 
   const handleScroll = (e) => {
     if (!isButtonScroll) {
@@ -390,8 +431,10 @@ export default function DetailComponents(props) {
               <div className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null} style={{ backgroundColor: "#fff" }}>
                 <Summary
                   agreementDetails={agreementDetails}
+                  activeAgreement={activeAgreement}
                   agreementProvisions={get(agreementProvisions, "getAgreementProvisions", [])}
                   standardProvisions={get(standardProvisions, "getStandardProvisions", [])}
+                  updateAgreement={updateAgreement}
                 />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
@@ -406,6 +449,10 @@ export default function DetailComponents(props) {
                   agreementProvisions={get(agreementProvisions, "getAgreementProvisions", [])}
                   standardProvisions={get(standardProvisions, "getStandardProvisions", [])}
                 />
+              </div>
+              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
+              <div className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
+                <LegalDescription agreementDetails={agreementDetails} agreementId={agreementId} updateAgreement={updateAgreement} />
               </div>
             </div>
           </div>
