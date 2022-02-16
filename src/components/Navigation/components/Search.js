@@ -34,7 +34,7 @@ import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
 // import { PAGINATEDOWNERSQUERY } from "graphQL/useQueryPaginatedOwner";
 // import { PAGINATEDOPERATORSQUERY } from "graphQL/useQueryPaginatedOperators";
 // import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 
 // custom components
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
@@ -275,7 +275,7 @@ function Search() {
     }
   }, [searchHistoryList]);
 
-  const [getESPaginatedList, { data: esSearchData }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
+  const [getESSimpleSearch, { data: esSearchData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });
   //////////// Search History End//////////////////
   const startPaginationAt = 25;
 
@@ -310,16 +310,8 @@ function Search() {
     () => ({
       "wells": {
         esIndex: "platformData:wells",
-        search: (request) => (() => {
-          let searchString = ""
-          if (request.input) {
-            searchString = request.input.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
-          }
-      
-          return searchString
-            ? `(wellName:(${searchString.join('* AND ')}*) OR api:(${searchString.join('* AND ')}*))^2 OR (wellName:(${searchString.join('* ')}*) OR api:(${searchString.join('* ')}*))`
-            : ""
-        })(),
+        search: (request) => `${request.input}`,
+        searchFields: ["wellName", "api"],
         formatOptions: (data) => {
           return { ...data, Source: wellCogIndexName, Primary: data.WellName, Secondary: data.ApiNumber }
         }
@@ -337,16 +329,8 @@ function Search() {
       },
       "tax owners": {
         esIndex: "platformData:globalowner",
-        search: (request) => (() => {
-          let searchString = ""
-          if (request.input) {
-            searchString = request.input.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
-          }
-      
-          return searchString
-            ? `(ownerName:(${searchString.join('* AND ')}*))^4 OR (ownerName:(${searchString.join('* ')}*))^2 OR (_all:(${searchString.join('* ')}*))`
-            : ""
-        })(),
+        search: (request) => `${request.input}`,
+        searchFields: ["ownerName", "streetAddress", "city", "state", "zip"],
         formatOptions: (data) => {
           return {
             ...data, Source: 'globalowner-index', Primary: data.OwnerName, Secondary: `${data.StreetAddress}\n${data.City}\n${data.State}\n${data.Zip}`,
@@ -355,15 +339,16 @@ function Search() {
       },
       "operators": {
         esIndex: "platformData:operator",
-        search: (request) => request.input ? `operator:*${request.input}*` : '',
-
+        search: (request) => `${request.input}`,
+        searchFields: ["operator"],
         formatOptions: (data) => {
           return { ...data, Source: operatorIndexName, Primary: data.Operator, Secondary: null }
         }
       },
       "leases": {
         esIndex: "platformData:lease",
-        search: (request) => request.input ? `lease:*${request.input}*` : '',
+        search: (request) => `${request.input}`,
+        searchFields: ["lease", "leaseId"],
         formatOptions: (data) => {
           return {
             ...data, Source: leaseIndexName, Primary: data.Lease && ["", "N/A", "(N/A)"].includes(data.Lease) ? "--" : data.Lease,
@@ -373,7 +358,12 @@ function Search() {
       },
       "units": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `layer:unit AND (name:${request.input}* OR shapeJson.properties.uNumber:${request.input}*)` : '',
+        search: (request) => `${request.input}`,
+        searchFields: ["name", "shapeJson.properties.uNumber", "shapeJson.properties.originalProperties.County", "data.shapeJson.properties.originalProperties.State"],
+        filter: {
+          field: "layer",
+          value: "unit"
+        },
         formatOptions: (data) => {
           const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State || ''}` : null
           const Primary = data?.shapeJson?.properties?.uNumber ? `${data?.shapeJson?.properties?.uNumber} - ${data.name}` : data.name
@@ -385,7 +375,12 @@ function Search() {
 
       "tracts": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `layer:parcel AND name:${request.input}*` : '',
+        search: (request) => `${request.input}`,
+        searchFields: ["name", "shapeJson.properties.originalProperties.County", "data.shapeJson.properties.originalProperties.State"],
+        filter: {
+          field: "layer",
+          value: "parcel"
+        },
         formatOptions: (data) => {
           const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State || ''}` : null
           return {
@@ -395,7 +390,12 @@ function Search() {
       },
       "agreements": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `shapeJson.properties.type:(agreement) AND shapeJson.properties.shapeLabel:${request.input}*` : '',
+        search: (request) => `${request.input}`,
+        searchFields: ["shapeJson.properties.shapeLabel", "layer"],
+        filter: {
+          field: "shapeJson.properties.type",
+          value: "agreement"
+        },
         formatOptions: (data) => {
           return {
             ...data, Source: 'shapes_flat', Primary: data?.shapeJson?.properties?.shapeLabel, Secondary: capitalizeFirstLetter(data.layer)
@@ -407,15 +407,19 @@ function Search() {
   const callESSearch = React.useMemo(
     () =>
       debounce((request) => {
-        const { esIndex, search } = esCallData[searchOption]
-        getESPaginatedList({
+        const { esIndex, search, searchFields, filter } = ( esCallData[searchOption] || { search: () => {} } )
+        getESSimpleSearch({
           variables: {
-            esIndex,
+            index: esIndex,
             pagination: {
               first: request.searchTop ? request.searchTop : startPaginationAt,
               keep_alive: "1micros"
             },
-            search: search(request),
+            search: {
+              query: search(request),
+              fields: searchFields
+            },
+            ...(filter) && { filters: [ filter ] },
             sort: [],
           }
         })
@@ -425,10 +429,10 @@ function Search() {
 
   useEffect(() => {
     let newOptions = []
-    if (esSearchData?.getESPaginatedList?.hits) {
+    if (esSearchData?.getESSimpleSearch?.hits) {
       const { formatOptions } = esCallData[searchOption]
       newOptions = [
-        ...esSearchData.getESPaginatedList.hits.map((result) => {
+        ...esSearchData.getESSimpleSearch.hits.map((result) => {
           return formatOptions(result);
         }),
       ];

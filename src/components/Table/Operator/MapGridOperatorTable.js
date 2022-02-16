@@ -48,7 +48,8 @@ function MapGridOperatorTable(props) {
   useEffect(() => {
     setTableMeta({
       addableName: "Operator",
-      extendSearchQuery: searchInput ? `operator:*${searchInput}*`: '',
+      extendSearchQuery: searchInput,
+      searchFields: ["operator", "_all"],
       TableHeader: copy(TableHeader),
       esIndex: "platformData:operator",
       startPaginationAt: 25,
