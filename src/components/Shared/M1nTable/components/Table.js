@@ -1480,6 +1480,10 @@ function SubTable(props) {
                         className={`${classes.icons}`}
                         onClick={(e) => {
                           e.stopPropagation();
+                          // for unit wells we need to use globalWell instead of wellId
+                          if (props.targetLabel === "well") {
+                            value.wellId = props.rows[tableMeta.rowIndex].globalWell ?? value.wellId;
+                          }
                           handleClickFlyToIcon(props.targetLabel, value);
                         }}
                         aria-label="fly"
