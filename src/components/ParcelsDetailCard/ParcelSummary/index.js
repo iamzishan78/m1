@@ -256,9 +256,9 @@ export default function ParcelSummary(props) {
 
     useEffect(() => {
         getShapeSummaryDetails({ variables: { shapeId: props.id, shapeType: 'Parcel' } });
-        props.setProperties({ ...props.properties, ...getParcelOriginalProperties(props.properties) });
+        // props.setProperties({ ...props.properties, ...getParcelOriginalProperties(props.properties) });
         setProperties({ ...props.properties, ...getParcelOriginalProperties(props.properties) })
-    }, [props.id]);
+    }, [props, getShapeSummaryDetails]);
 
     useEffect(() => {
         if (props.customLayer) {

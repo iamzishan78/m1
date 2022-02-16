@@ -6,6 +6,8 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 // import TableHead from '@material-ui/core/TableHead';
 import TableRow from "@material-ui/core/TableRow";
+import Typography from "@material-ui/core/Typography";
+import Link from "@material-ui/core/Link";
 
 import { AppContext } from "../../../AppContext";
 
@@ -70,6 +72,38 @@ export default function TableSummary(props) {
     }
   }, [props.summary, setSummary]);
 
+  function getStyledApiNumber(summary) {
+    const states = ["TX", "NM", "LA", "OK", "CO", "WY", "UT", "KS"];
+    const links = [
+      "http://webapps2.rrc.texas.gov/EWA/leaseDetailAction.do?searchType=apiNo&selTab=1&apiNo=" + summary.ApiNumber.substring(2) + "&distCode=7C&leaseNo=20848&methodToCall=displayLeaseDetail&rrcActionMan=H4sIAAAAAAAAALWPT0vDQBDFP009LjObbRoPcwii51aLIsHDNhlSYdsNs4lV2A_vtFIQ_5zE0zzeY2Z-LyMA2YyAhBcibd2Oz3F_20rXwBOd_ANv_DAkazQ2I7_6ZPr4MivqCjS3NLM31w-1yuIoDxzCJgqvJpa3j2umi5o62vG4jd06XvkQ1JiT8DjJfh3v2Eu7Vasi-AbRpFNaS5_M4MXv7n2YWNkW5ErMFTmEhcuX9PhlFf-dP525SzqvLX3P8onzx1L4l1LNb6-OdQmzJYRcqHAEea6zVOMdFVf0QucBAAA",
+      "https://wwwapps.emnrd.state.nm.us/ocd/ocdpermitting/data/WellDetails.aspx?api=" + summary.ApiNumber.substring(0, 2) + "-" + summary.ApiNumber.substring(2, 5) + "-" + summary.ApiNumber.substring(5),
+      "https://sonlite.dnr.state.la.us/sundown/cart_prod/cart_con_wellinfo2?p_wsn=" + summary.StateWellId,
+      "https://occpermit.com/WellBrowse/Home.aspx",
+      "https://cogcc.state.co.us/cogisdb/Facility/FacilityDetail?api=" + summary.ApiNumber.substring(2),
+      "https://pipeline.wyo.gov/Wellapino.cfm?napino=" + summary.ApiNumber.substring(3) + "&s1=Y",
+      "https://dataexplorer.ogm.utah.gov/DataMining.html?EntityType=Well&EntityKeyName=API&EntityKeyValue=" + summary.ApiNumber + "&DETAILSONLY=True",
+      "https://chasm.kgs.ku.edu/ords/qualified.well_page.DisplayWell?f_kid=" + summary.StateWellId
+    ];
+    if (summary.ApiNumber && states.includes(summary.State)) {
+      return (
+        <Link
+          href={links[states.indexOf(summary.State)]}
+          variant="body2"
+          target="_blank"
+        >
+          <Typography
+            variant="subtitle2"
+          >
+            <span style={{ padding: 0 }}>{summary.ApiNumber}</span>
+          </Typography>
+        </Link>
+      );
+    } else
+      return summary.ApiNumber ? summary.ApiNumber : "--";
+
+      
+  }
+
   return (
     <TableContainer className={classes.tableContainer}>
 
@@ -84,8 +118,8 @@ export default function TableSummary(props) {
               <TableCell scope="row" className={classes.rowName}>
                 API Number
               </TableCell>
-              <TableCell className={classes.rowCell}>
-                {summary.ApiNumber ? summary.ApiNumber : "--"}
+              <TableCell className={classes.tableRow}>
+                {getStyledApiNumber(summary)}
               </TableCell>
               <TableCell scope="row" className={classes.rowName}>
                 Well Name
