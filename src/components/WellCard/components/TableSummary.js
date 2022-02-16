@@ -94,7 +94,7 @@ export default function TableSummary(props) {
           <Typography
             variant="subtitle2"
           >
-            <span style={{ padding: 10 }}>{summary.ApiNumber}</span>
+            <span style={{ padding: 0 }}>{summary.ApiNumber}</span>
           </Typography>
         </Link>
       );
@@ -118,7 +118,7 @@ export default function TableSummary(props) {
               <TableCell scope="row" className={classes.rowName}>
                 API Number
               </TableCell>
-              <TableCell className={classes.rowCell}>
+              <TableCell className={classes.tableRow}>
                 {getStyledApiNumber(summary)}
               </TableCell>
               <TableCell scope="row" className={classes.rowName}>
