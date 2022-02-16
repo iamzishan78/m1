@@ -4,14 +4,14 @@ import { useLocation } from "react-router-dom";
 
 import { Grid, Typography, Button } from "@material-ui/core";
 import Add from "@material-ui/icons/Add";
-
+import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Land/index";
 import LandSearch from "components/Navigation/components/LandSearch";
 
 export default function LandAppBar(props) {
   const location = useLocation();
 
   const { classes } = props;
-  const { quickActionsPanelState } = useSelector(({ Land }) => Land);
+  const { activeModule, quickActionsPanelState } = useSelector(({ Land }) => Land);
 
   return (
     <Grid
@@ -26,21 +26,17 @@ export default function LandAppBar(props) {
         <Grid container direction="row" display="flex" justify="flex-start" alignItems="center">
           <Grid item md={2.5}>
             <Typography variant="h5" style={{ color: "black", fontWeight: "bold" }}>
-              {(() => {
-                switch (location.pathname) {
-                  case "/land/agreements":
-                    return "Agreement";
-                  case "/land/tracts":
-                    return "Tracts";
-                  default:
-                    return "";
-                }
-              })()}
+              {activeModule.title}
             </Typography>
           </Grid>
-          <Grid item md={5} style={{ marginLeft: "20px" }}>
-            <LandSearch />
-          </Grid>
+
+          {(
+            activeModule.title !== SIDE_PANEL_MENU_ITEMS_LIST.REPORTING_GROUPS.title
+          ) && (
+              <Grid item md={5} style={{ marginLeft: "20px" }}>
+                <LandSearch activeModule={activeModule} />
+              </Grid>
+            )}
         </Grid>
       </Grid>
       <Grid item>
