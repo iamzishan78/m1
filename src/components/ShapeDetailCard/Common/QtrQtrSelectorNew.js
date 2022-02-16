@@ -312,8 +312,8 @@ export default function QtrQtrSelectorNew({ layerData }) {
             }
           </Grid>
         </Grid>
-        <Grid item md={3} style={{ paddingTop: '1.8em', paddingLeft: '30px' }}>
-          <Button variant="contained" color="primary" disabled={disableUpdate} onClick={() => {
+        <Grid item md={3} style={{ paddingTop: '1.8em',  }}>
+          <Button variant="contained" color="primary" size="large" disabled={disableUpdate} onClick={() => {
             updateLayerQtr()
             setShowAdjustGrid(false)
           }}>Update</Button>

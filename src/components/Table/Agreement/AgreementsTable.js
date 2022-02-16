@@ -15,6 +15,7 @@ import {
 
 // Header Schemas
 import TableHeader from "components/Table/constants/agreements-header-schema";
+import { handleSelectedGridChange } from 'components/Table/helpers'
 
 // Utilities
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
@@ -51,9 +52,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function AgreementsTable(props) {
-  const { esIndex, setESFilters } = props;
+  const { esIndex, setESFilters, esFilters } = props;
   const classes = useStyles();
-  const [filters, setFilters] = useState([]);
 
   // function states
   const [columns, Columns] = useState([]);
@@ -100,14 +100,7 @@ function AgreementsTable(props) {
   // const issues = potentialIssues?.getPotentialIssuesSummary;
 
   const startPaginationAt = 10;
-  // const esIndex = 'shapes_flat';
-  const esStaticFilters = [
-    {
-      field: "shapeJson.properties.type",
-      value: "agreement",
-    },
-  ];
-
+  const extendSearchQuery = `shapeJson.properties.type:agreement`
   const count = tableData?.total || 0;
   const options = {
     rowsPerPageOptions: [10, 25, 50, 100],
@@ -129,12 +122,12 @@ function AgreementsTable(props) {
     getESPaginatedList({
       variables: {
         esIndex,
-        search: esSearch,
+        search: esSearch ? `${esSearch} AND ${extendSearchQuery}` : extendSearchQuery,
         pagination: {
           first: startPaginationAt,
           keep_alive: "1micros",
         },
-        filters: esStaticFilters,
+        filters: esFilters,
       },
     });
     // Potential Issues
@@ -144,7 +137,7 @@ function AgreementsTable(props) {
     //         size: 50,
     //     },
     // });
-  }, [props.parent, esSearch]);
+  }, [props.parent, esSearch, props.filterToggle]);
 
   //  Potential issues
   // useEffect(() => {
@@ -163,13 +156,18 @@ function AgreementsTable(props) {
   // }, [issues]);
 
   useEffect(() => {
-      if (tableData?.hits?.length > 0) {
-        const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
+    if (tableData?.hits?.length > 0) {
+      const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
       //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
-        props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
+      props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
       //   props.ifAreContacts(globalOwnerIds);
-      }
-    }, [tableData]);
+    }
+  }, [tableData]);
+
+  useEffect(() => {
+    handleSelectedGridChange(TableHeader, { filters: esFilters }, columns, true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [esFilters])
 
   useEffect(() => {
     if (tableData) {
@@ -206,12 +204,13 @@ function AgreementsTable(props) {
 
         setColumnsData(
           TableHeader,
-          filters,
+          esFilters,
           JSON.parse(JSON.stringify(TableHeader)),
           setColumns,
-          setFilters,
+          setESFilters,
           GET_ES_FILTER_LIST,
-          esIndex
+          esIndex,
+          extendSearchQuery
         );
 
         // let headers = copy(TableHeader)
@@ -245,7 +244,8 @@ function AgreementsTable(props) {
         // setPotentialIssuesList([]);
       }
 
-      props.onAgreementCount(count);
+      if (props.onAgreementCount)
+        props.onAgreementCount(count);
       // getESAggsActiveCount({
       //     variables: {
       //         esIndex,
@@ -311,28 +311,27 @@ function AgreementsTable(props) {
 
   const onTableChange = (action, tableState, rows, meta) => {
     tableState.esIndex = esIndex;
-    tableState.esFilters = esStaticFilters;
     // setESSearch(tableState.searchText ? `${tableState.searchText}*` : '')
-    const tableActions = props.initializeTableActions(
-      tableState,
-      meta,
-      tableData,
-      columns,
-      getESPaginatedList
-    );
-    setESFilters(tableActions.pageESVariables.variables.filters);
+    const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList);
+
     switch (action) {
-      case "search":
-      case "sort":
       case "filterChange":
       case "resetFilters":
+        tableActions.extendSearchQuery(extendSearchQuery);
+        setESFilters(tableActions.pageESVariables.variables.filters);
+        tableActions.genericESAction();
+        break;
+      case "search":
+      case "sort":
       case "changeRowsPerPage":
+        tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.genericESAction();
         break;
       case "rowSelectionChange":
         setSelectedRows(tableState.selectedRows.data);
         break;
       case "changePage":
+        tableActions.extendSearchQuery(extendSearchQuery);
         tableActions.changeESPage();
         break;
       default:

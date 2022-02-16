@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Container } from "@material-ui/core";
-import { useDispatch, useSelector } from "react-redux";
-import { Warning as WarningIcon } from "@material-ui/icons";
+import { useDispatch } from "react-redux";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 import TableHeader from "components/Table/constants/revenue-properties-header-schema";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
-import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { setRevenueKey } from "actions";
+import { useLazyQuery } from "@apollo/client";
+import { handleSelectedGridChange } from 'components/Table/helpers'
 
 // QUERIES
 import { deepEqualObjects } from "components/Shared/functions";
@@ -22,13 +20,11 @@ function RevenuePropertiesTable(props) {
   const { esIndex, setESFilters } = props;
   // redux
   const dispatch = useDispatch();
-  const { revenueProperties } = useSelector((state) => state.Revenue);
 
   // query for Properties Table
   const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
     fetchPolicy: "no-cache",
   });
-  const [updateProperty] = useMutation(UPDATE_PROPERTY);
   // rearranging the data according to the requirements.
   // const tableData = elasticData?.getESPaginatedList?.hits?.map((eachRow) => {
   //   return {
@@ -43,7 +39,7 @@ function RevenuePropertiesTable(props) {
   //     wellName: eachRow?.well?.wellName,
   //     status: eachRow?.status,
   //     checkNumber: eachRow?.lastCheck?.checkNumber,
-  //     lastChecked: new Date(eachRow?.lastCheck?.checkDate).toLocaleDateString(),
+  //     lastChecked: ne2w Date(eachRow?.lastCheck?.checkDate).toLocaleDateString(),
   //     tags: eachRow.tags?.length > 0 ? [[eachRow.tags.map((tag) => tag.tag)], eachRow.tags.length] : [[], 0],
   //   };
   // });
@@ -66,19 +62,24 @@ function RevenuePropertiesTable(props) {
   };
 
   const esFilters = props.fromDate || props.toDate ? [
-      {
-        field: "lastCheck.checkDate",
-        value: {
-          range: {
-            "lastCheck.checkDate": {
-              gte: `${props.fromDate}T00:00:00.000Z`,
-              lte: `${props.toDate}T00:00:00.000Z`,
-            },
+    {
+      field: "lastCheck.checkDate",
+      value: {
+        range: {
+          "lastCheck.checkDate": {
+            gte: `${props.fromDate}T00:00:00.000Z`,
+            lte: `${props.toDate}T00:00:00.000Z`,
           },
         },
-        includeEmpty: props.selectedFilter === 'All Dates' ? true: undefined
+        includeEmpty: props.selectedFilter === 'All Dates' ? true : undefined
       },
-    ] : []
+    },
+  ] : props.esFilters ? props.esFilters : []
+
+  useEffect(() => {
+    handleSelectedGridChange(TableHeader, { filters: esFilters }, columns, true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.esFilters])
 
   useEffect(() => {
     if (tableData?.hits) {
@@ -104,46 +105,50 @@ function RevenuePropertiesTable(props) {
 
 
   // fetaching data
-  React.useEffect(() => {
-      getESPaginatedList({
-        variables: {
-          esIndex: esIndex,
-          pagination: {
-            first: props.startPaginationAt,
-            keep_alive: "1micros",
-          },
-          search: props.revenueSearchQuery,
-          filter: "",
-          filters: esFilters,
+  useEffect(() => {
+    getESPaginatedList({
+      variables: {
+        esIndex: esIndex,
+        pagination: {
+          first: props.startPaginationAt,
+          keep_alive: "1micros",
         },
-      });
+        search: props.revenueSearchQuery,
+        filter: "",
+        filters: esFilters,
+      },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getESPaginatedList, props.parent, props.revenueSearchQuery, props.filterToggle]);
 
 
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getESPaginatedList, elasticData]);
 
 
-  React.useEffect(() => {
-    if (tableData) {
+  useEffect(() => {
+    if (tableData && props.onPropertiesCount) {
       props.onPropertiesCount(count);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableData, props.dependencyUpdate]);
 
   const onTableChange = (action, tableState, rows, meta) => {
     tableState.esIndex = esIndex;
-    tableState.esFilters =esFilters
     // tableState.sort = [];
 
     const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList);
-    setESFilters(tableActions.pageESVariables.variables.filters);
+    // setESFilters(tableActions.pageESVariables.variables.filters);
     switch (action) {
-      case "search":
-      case "sort":
       case "filterChange":
       case "resetFilters":
+        setESFilters(tableActions.pageESVariables.variables.filters);
+        tableActions.genericESAction();
+        break
+      case "search":
+      case "sort":
       case "changeRowsPerPage":
         tableActions.genericESAction();
         break;

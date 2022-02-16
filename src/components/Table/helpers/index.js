@@ -159,7 +159,7 @@ export const handleSelectedGridChange = (
           ""
         );
         let filterList = [];
-        if (value) {
+        if (value && typeof value !== "object") {
           filterList = [value];
         }
         if (column?.options?.filter) {
