@@ -722,13 +722,20 @@ function SubTable(props) {
   // handlers
   const handleWellFlyTo = (value) => {
     let unitId = history.location.pathname.split("/");
+    history.push(
+      `/map/wells/${value?.wellId.toUpperCase()}`,
+      { 
+        fromUnitDetail: true,
+        unitName: stateApp.selectedShape.shapeLabel,
+        unitId: unitId[unitId.length-1]
+      }
+    );
     setStateApp((stateApp) => ({
       ...stateApp,
       selectedShape: null,
       selectedWellId: value.wellId ? value.wellId.toLowerCase() : null,
       wellSelectedCoordinates: [value.center[0], value.center[1]]
     }));
-    history.push(`/map/wells/${value?.wellId.toUpperCase()}`, { fromUnitDetail: true, unitId: unitId[unitId.length-1] });
   };
 
   const handleLocationFlyTo = (newValue) => {

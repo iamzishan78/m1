@@ -522,7 +522,7 @@ function ExpandableCard(props) {
                 setStateApp({ ...stateApp, selectedWell: null, selectedWellId: null, wellSelectedCoordinates: [] });
                 history.push(`/map/units/${history.location?.state?.unitId}`);
               }}>
-              Unit
+              {history.location?.state?.unitName}
             </Typography>
             <Typography className={classes.unClickable} color="inherit">Wells</Typography>
             <Typography className={classes.currentLocation}> {title.toUpperCase()}</Typography>
