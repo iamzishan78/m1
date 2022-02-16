@@ -25,6 +25,8 @@ import { getDefaultSettings } from './addUserHelper'
 import Loader from "components/Loaders";
 import { uploadFileData } from "components/Shared/functions";
 import { BlockBlobClient } from "@azure/storage-blob";
+import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
+import { CREATE_JOB } from "graphQL/useMutationCreateJob";
 
 const Alert = (props) => {
   return <MuiAlert elevation={5} variant="filled" {...props} />;
@@ -179,7 +181,7 @@ export default function AddUserGroupData(props) {
           return response._response.bodyAsText
         })
         .then(() => {
-          fileContent.featureTypes.forEach((type, index) => {
+          fileContent.featureTypes.forEach(async (type, index) => {
             const layerName = layerNames[index]
             const defaultSettings = getDefaultSettings(type, layerName, sourceProps)
             addLayer({
@@ -204,13 +206,37 @@ export default function AddUserGroupData(props) {
             });
 
             if (index === fileContent.featureTypes.length - 1) {
-              Loader.createToast('group-creation', 'Group layer creation in progress')
-              const interval = setInterval(() => {
-                if (stateApp.map.isSourceLoaded(sourceProps)) {
-                  Loader.successToast('group-creation', 'Group layer created')
-                  clearInterval(interval);
-                }
-              }, 1000);
+
+              const jobInitialization = await client.mutate({
+                mutation: INITIALIZE_EXPORT_JOB,
+                variables: {
+                  jobName: "Shape File Import",
+                  jobType: "SHAPEFILEIMPORT",
+                  requestPayload: {
+                    fileId: file_id,
+                  },
+                  userId: stateApp.user.mongoId,
+                },
+              });
+
+              await client.mutate({
+                mutation: CREATE_JOB,
+                variables: {
+                  jobId: jobInitialization?.data?.initializeExportJob?.job?._id,
+                  sendEmail: false,
+                },
+              });
+              setStateApp((state) => ({
+                ...state,
+                bulkUpload: !state.bulkUpload,
+              }));
+              // Loader.createToast('group-creation', 'Group layer creation in progress')
+              // const interval = setInterval(() => {
+              //   if (stateApp.map.isSourceLoaded(sourceProps)) {
+              //     Loader.successToast('group-creation', 'Group layer created')
+              //     clearInterval(interval);
+              //   }
+              // }, 1000);
               handleClose();
             }
           })
