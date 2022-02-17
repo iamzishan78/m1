@@ -72,12 +72,82 @@ const unitsColumnHeaders = [
       },
     },
     {
-      name: "PermitCount",
-      label: "Active Permits",
-      esKey: "permitCount",
+      name: "ownersCount",
+      label: "Owners",
+      esKey: "ownerCount.keyword",
       options: {
         sort: true,
-        filter: true,
+        filter: false,
+      },
+    },
+    {
+      name: "campaignName",
+      label: "Campaign Name",
+      esKey: "ownerCount.keyword",
+      options: {
+        sort: true,
+        filter: false,
+      },
+    },
+    {
+      name: "qualifier",
+      label: "Qualifier",
+      esKey: "qualifier.keyword",
+      options: {
+        sort: true,
+        filter: false,
+      },
+    },
+    {
+      name: "unitStatus",
+      label: "Unit Status",
+      esKey: "unitStatus.keyword",
+      options: {
+        sort: true,
+        filter: false,
+      },
+    },
+    {
+      name: "lastUpdated",
+      label: "Last Updated",
+      esKey: "lastUpdated.keyword",
+      options: {
+        sort: true,
+        filter: false,
+      },
+    },
+    {
+      name: "tags",
+      label: "Tags ",
+      options: {
+        sort: false,
+        filter: false,
+        download: false,
+        print: false,
+        filterOptions: {
+          names: [],
+          logic(rowVal, pickedTags) {
+            let containIts = true;
+            pickedTags.map((pickedTag) => {
+              if (rowVal[0].indexOf(pickedTag) === -1) {
+                containIts = false;
+              }
+            });
+            return !containIts;
+          },
+        },
+      },
+    },
+    {
+      name: "commentsCounter",
+      label: " ",
+      options: {
+        filter: false,
+        searchable: false,
+        sort: false,
+        download: false,
+        print: false,
+        viewColumns: false,
       },
     },
     {

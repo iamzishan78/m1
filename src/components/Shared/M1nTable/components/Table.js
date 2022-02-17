@@ -754,6 +754,11 @@ function SubTable(props) {
     }
   };
 
+  const handleUnitFlyTo = (newValue) => {
+    const data = props.rows.find(row => row.Id === newValue.objToPopulateSearchLayer.objectId)
+    history.push(`/map/units/${data._id}`)
+  };
+
   const handleOperatorFlyTo = (value) => {
     getOperatorWells({
       variables: {
@@ -805,6 +810,9 @@ function SubTable(props) {
     }
     if (entityType === "location") {
       handleLocationFlyTo(searchTarget);
+    }
+    if (entityType === "unit") {
+      handleUnitFlyTo(searchTarget);
     }
   };
 

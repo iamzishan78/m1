@@ -10,7 +10,7 @@ import TableESHOC from "components/Table/TableESHOC";
 import Table from "components/Shared/M1nTable/components/Table";
 
 // QUERIES
-import { GET_SHAPE_OWNERS_COUNT_BY_ID } from "graphQL/useQueryShapeOwnersCountById";
+import { GET_SHAPE_OWNERS_DATA_BY_ID } from "graphQL/useQueryShapeOwnersDataById";
 import { deepEqualObjects, copy } from "components/Shared/functions";
 
 // Header Schemas
@@ -25,7 +25,7 @@ function MapGridUnitTable(props) {
     (state) => state.MapGridCard.searchInputValue
   );
 
-  const [getShapeOwnerCountById, { data: ownerCount }] = useLazyQuery(GET_SHAPE_OWNERS_COUNT_BY_ID, { fetchPolicy: "no-cache" });
+  const [getShapeOwnerDataById, { data: owners }] = useLazyQuery(GET_SHAPE_OWNERS_DATA_BY_ID, { fetchPolicy: "no-cache" });
 
   const setTableMeta = React.useMemo(
     () =>
@@ -65,18 +65,25 @@ function MapGridUnitTable(props) {
   ]);
 
   useEffect(() => {
-
-  },[ownerCount])
+    if(owners?.getShapeOwnerDataById){
+      const rows = JSON.parse(JSON.stringify(props.rows))
+      for(let i=0; i<rows.length; i++){
+        rows[i].ownersCount = owners?.getShapeOwnerDataById[rows[i]._id].total
+      }
+      props.setRows(rows)
+    }
+  },[owners])
   
   useEffect(() => {
       if(props.rows.length > 0) {
-        debugger
-        const ids = props.rows.map(row => row._id)
-        getShapeOwnerCountById({
+        const ids = props.rows.filter(row => typeof row.ownersCount !== 'number').map(row => row._id)
+        if(ids.length > 0){
+          getShapeOwnerDataById({
             variables: {
                 ids
             }
         })
+        }
       }
   },[props.rows])
 
