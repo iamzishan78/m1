@@ -91,8 +91,13 @@ const ContactBulkProgress = () => {
         message = dataJobs.getJobsStatus.jobs[i].activitiesStatus[dataJobs.getJobsStatus.jobs[i].activitiesStatus.length - 1];
       } else {
         const status = dataJobs.getJobsStatus.jobs[i].status;
-        message =
-          status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Export successfully completed" : "Export Failed";
+        const type = dataJobs.getJobsStatus.jobs[i].type;
+        if(type === 'contacts'){
+          message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Contacts creation completed" : "Contacts creation failed";
+        }else{
+          message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Export successfully completed" : "Export Failed";
+        }
+
       }
 
       if (state === "create") {
