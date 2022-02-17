@@ -91,26 +91,6 @@ const OwnersPerUnitHeadCells = [
     },
   },
   {
-    name: "isTracked",
-    label: "Track",
-    options: {
-      filter: false,
-      searchable: false,
-      download: false,
-      print: false,
-      filterOptions: {
-        names: ["Tracked", "Untracked"],
-        logic(tracked, filterVal) {
-          return !(
-            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
-            (filterVal.indexOf("Untracked") >= 0 && !tracked)
-          );
-        },
-      },
-      filterType: "dropdown",
-    },
-  },
-  {
     name: "isSuggested",
     label: " ",
     options: {
