@@ -18,6 +18,10 @@ import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import Loader from "components/Loaders";
 import { convertMultipleOwnerToContactAction } from "store/actions/contactActions";
 import Tags from "components/Shared/Tagger";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 // import Typography from '@material-ui/core/Typography';
 
 const styles = () => ({
@@ -30,6 +34,9 @@ const styles = () => ({
     '& .MuiSvgIcon-root': {
       fill: 'rgb(20, 171, 223) !important'
     }
+  },
+  fullWidth: {
+    width: "100%",
   },
 });
 
@@ -45,7 +52,16 @@ const TAB = Object.freeze({
   EXISTING: 1
 });
 
-export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes, isEntities, onSuccess }) {
+const MultipleOwnerToContactDrawer = ({
+  onClose,
+  rows,
+  setRows,
+  setM1nSelectedRowsIndexes,
+  getContactCampaignAction,
+  campaignList,
+  isEntities,
+  onSuccess
+}) => {
   const [stateApp] = React.useContext(AppContext);
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -53,7 +69,10 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const [primaryOwner, setPrimaryOwner] = useState(rows[0]);
   const [tab, setTab] = useState(TAB.NEW);
   const [actionType, setActionType] = useState('single');
+  const [campaignName, setCampaignName] = useState('');
   const [contactOwner, setContactOwner] = useState('');
+  const [searchCampaign, setSearchCampaign] = useState("");
+  const [contactStatus, setContactStatus] = useState(contactStatusOptions[0].value);
   const [loading, setLoading] = useState(false);
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
@@ -68,6 +87,13 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
+
+  useEffect(() => {
+    getContactCampaignAction({
+      search: searchCampaign ? `${searchCampaign}*` : "*",
+    });
+    // eslint-disable-next-line
+  }, [searchCampaign]);
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
@@ -276,22 +302,73 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           </Box>
 
           {tab === TAB.NEW &&
-            <Box p={3} pt={3}>
-              <Grid container direction="column"  >
-                <Grid item>
-                  <Typography style={{ fontWeight: "bold" }}>Contact Owner</Typography>
+            <>
+              <Box p={3} pt={3}>
+                <Grid container direction="column"  >
+                  <Grid item>
+                    <Typography style={{ fontWeight: "bold" }}>Contact Status</Typography>
+                  </Grid>
+                  <Grid item >
+                    <Select
+                      styles={{
+                        menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                      }}
+                      value={contactStatus}
+                      menuPlacement="auto"
+                      onChange={(e) => {
+                        setContactStatus(e.target.value)
+                      }}
+                      className={classes.fullWidth}
+                      isDisabled={stateApp.selectedMeta}
+                    >
+                      <MenuItem value="UnqualLead"> Unqualified Lead </MenuItem>
+                      <MenuItem value="QualLead"> Qualified Lead </MenuItem>
+                      <MenuItem value="Contact"> Contact </MenuItem>
+                    </Select>
+                  </Grid>
                 </Grid>
-                <Grid item >
-                  <ContactAutoComplete
-                    value={contactOwner}
-                    contactValue="email"
-                    onChange={(e, user) => {
-                      setContactOwner(user.value);
-                    }}
-                  />
+              </Box>            
+              <Box p={3} pt={3}>
+                <Grid container direction="column"  >
+                  <Grid item>
+                    <Typography style={{ fontWeight: "bold" }}>Contact Owner</Typography>
+                  </Grid>
+                  <Grid item >
+                    <ContactAutoComplete
+                      value={contactOwner}
+                      contactValue="email"
+                      onChange={(e, user) => {
+                        setContactOwner(user.value);
+                      }}
+                    />
+                  </Grid>
                 </Grid>
-              </Grid>
-            </Box>
+              </Box>
+              <Box p={3} pt={3}>
+                <Grid container direction="column"  >
+                  <Grid item>
+                    <Typography style={{ fontWeight: "bold" }}>Campaign Name</Typography>
+                  </Grid>
+                  <Grid item >
+                    <AutoCompleteWithAddNew
+                      value={searchCampaign}
+                      onSearch={(value) => {
+                        setSearchCampaign(value);
+                      }}
+                      setValue={(value) => {
+                        setCampaignName(value);
+                      }}
+                      options={
+                        campaignList.map((campaign) => ({
+                        _id: campaign,
+                        name: campaign,
+                      }))
+                    }
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
+            </>
           }
           <Box p={3} pt={3}>
             <Tags setTagId={setTagId} targetLabel="contact" targetSourceId="new" />
@@ -338,3 +415,5 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     </RightDialog>
   );
 }
+
+export default MultipleOwnerToContactDrawer;

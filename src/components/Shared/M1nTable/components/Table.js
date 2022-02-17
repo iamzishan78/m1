@@ -58,7 +58,7 @@ import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
 import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
 import moment from "moment";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
-import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
+import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
 import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
 import Grid from "@material-ui/core/Grid";
@@ -4194,7 +4194,7 @@ function SubTable(props) {
           <ContactDataMissingDialog openDialog={openDialog} onClose={handleCloseDialog} contacts={contactDataMissing} />
         )} */}
         {openDialog === "multipleOwnerToContact" && (
-          <MultipleOwnerToContactDrawer
+          <MultipleOwnerToContactDrawerContainer
             onClose={handleCloseDialog}
             rows={expandedObject}
             setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
