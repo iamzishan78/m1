@@ -87,11 +87,24 @@ export const getSearchQuery = (extendSearchQuery, filters) => {
   return query;
 };
 
-export const getFilters = (filters) => {
+export const getTermsFilters = (filters) => {
+ return Object.entries(filters).filter(([key, value]) => {
+    return Array.isArray(value) && value.length > 0
+  }).map(([key, value]) => {
+    return {
+      type: "terms",
+      field: `${key}.keyword`,
+      value
+    }
+  })
+};
+
+export const getRangeFilters = (filters, format) => {
   const customFilters = [];
   Object.entries(filters).map((filter, index) => {
     if (filter[1].from || filter[1].to) {
       customFilters.push({
+        type: "range",
         field: filter[0],
         value: {
           range: {
@@ -101,6 +114,12 @@ export const getFilters = (filters) => {
             },
           },
         },
+        ...(format === "simple") && {
+          value: {
+            gte: filter[1].from ? filter[1].from : null,
+            lte: filter[1].to ? filter[1].to : null,
+          }
+        }
       });
     }
     return true;
@@ -134,17 +153,8 @@ export const getContactsAddress = (contact) => {
   };
 };
 
-export const getMapFilters = (stateNav, searchInput, gridPolygonString) => {
-  const extendSearchQuery = (() => {
-    let searchString = ""
-    if (searchInput) {
-      searchString = searchInput.replace(/([!*+&|()[\]{}^~?:"])/g, "\\$1").split(/\s+/)
-    }
-
-    return searchString
-      ? `(wellName:(${searchString.join('* AND ')}*) OR api:(${searchString.join('* AND ')}*))^2 OR (wellName:(${searchString.join('* ')}*) OR api:(${searchString.join('* ')}*))`
-      : ""
-  })()
+export const getMapFilters = (stateNav, searchInput, gridPolygonString, format) => {
+  const extendSearchQuery = searchInput
 
   const search = getSearchQuery(extendSearchQuery, {
     wellType: stateNav.typeName,
@@ -154,8 +164,19 @@ export const getMapFilters = (stateNav, searchInput, gridPolygonString) => {
     state: stateNav.stateName ? [stateNav.stateName] : [],
     county: stateNav.countyName ? [stateNav.countyName] : [],
   });
+  
+  const termsFilters = (format === "simple")
+    ? getTermsFilters({
+      wellType: stateNav.typeName,
+      operator: stateNav.operatorName,
+      wellStatus: stateNav.statusName,
+      wellBoreProfile: stateNav.profileName,
+      state: stateNav.stateName ? [stateNav.stateName] : [],
+      county: stateNav.countyName ? [stateNav.countyName] : [],
+    })
+    : [];
 
-  const filters = getFilters({
+  const rangeFilters = getRangeFilters({
     spudDate: {
       from: stateNav.spudDateFrom
         ? moment.parseZone(stateNav.spudDateFrom).utc(true).valueOf()
@@ -188,10 +209,10 @@ export const getMapFilters = (stateNav, searchInput, gridPolygonString) => {
         ? moment.parseZone(stateNav.firstProdDateTo).utc(true).valueOf()
         : null,
     },
-  });
+  }, format);
 
   const polygon = getShapeFilter(gridPolygonString);
-  return { search, filters, polygon };
+  return { search, filters: [...termsFilters, ...rangeFilters], polygon };
 };
 
 const dataToCsv = (wells, keys, csv) => {
