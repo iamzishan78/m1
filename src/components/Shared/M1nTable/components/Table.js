@@ -113,6 +113,8 @@ import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import Link from "@material-ui/core/Link";
+
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -553,6 +555,12 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     fontSize: "smaller",
   },
+  customWarning: {
+    "& .MuiSvgIcon-root": {
+      fill: "#ffa800"
+    }
+
+  }
 }));
 
 function SubTable(props) {
@@ -572,7 +580,7 @@ function SubTable(props) {
 
   // function state
   const [trueTargetLabel, TrueTargetLabel] = useState(null);
-  const [contactDataMissing, setContactDataMissing] = useState([]);
+  // const [contactDataMissing, setContactDataMissing] = useState([]);
   const [rowsPerPage, RowsPerPage] = useState(props.startPaginationAt);
   const [firstMount, FirstMount] = useState(true);
   const [title, Title] = useState("");
@@ -1735,7 +1743,7 @@ function SubTable(props) {
                               contactFromMap: true,
                             }));
 
-                            routeChange(`/contact/details/${value}`);
+                            routeChange(`/contact/details/${value}/`);
                             setTitle("Contact Details");
                             setSubTitle(" ");
 
@@ -1793,7 +1801,15 @@ function SubTable(props) {
                         {!value || value === "false" ? (
                           <Convert_contact style={{ margin: "4px" }} />
                         ) : (
-                          <Contact_card style={{ margin: "4px" }} />
+                          <Link
+                            href={
+                              window.location.origin
+                              +
+                              `/contact/details/${value}/?tenant=${window.sessionStorage.getItem("tenantName")}`
+                            }
+                            onClick={(e) => e.preventDefault()}>
+                            <Contact_card style={{ margin: "4px" }} />
+                          </Link>
                         )}
                       </IconButton>
                     </Tooltip>
@@ -2184,7 +2200,7 @@ function SubTable(props) {
                         <WarningIcon />
 
                         <div id="alertTootip" className={classes.tooltip}>
-                          <p style={{ fontSize: 14, lineHeight: "120%", textAlign: "left" }}>Sum of details does not match check account</p>
+                          <p style={{ fontSize: 14, lineHeight: "120%", textAlign: "left" }}>Sum of check details does not match check amount</p>
                         </div>
                       </div>
                     )}
@@ -2246,7 +2262,20 @@ function SubTable(props) {
                         {value}
                       </div>
                     )}
-                    {props.parent === "RevenuePropertiesTable" && column.options.customBodyRender}
+                    {props.parent === "RevenuePropertiesTable" && (
+                      <>
+                        {value?.toLowerCase() === 'approved' && (
+                          <div className="flex justifyCenter alignCenter success w-100">
+                            <CheckCircle size={20} />
+                          </div>
+                        )}
+                        {value?.toLowerCase() === 'unapproved' && (
+                          <div className={`flex justifyCenter alignCenter w-100 ${classes.customWarning}`}>
+                            <WarningIcon size={20} />
+                          </div>
+                        )}
+                      </>
+                    )}
                     {props.parent === "AgreementsTable" && (
                       <div style={{ display: "flex", "align-items": "center" }}>
                         {value?.toLowerCase() === "approved" ? (
@@ -2483,7 +2512,7 @@ function SubTable(props) {
                           fgColor="#000"
                           name={
                             valueFormatter(column, tableMeta.rowData[8]) ||
-                            valueFormatter(column, 
+                            valueFormatter(column,
                               `${tableMeta.rowData[10]
                                 ? tableMeta.rowData[10]
                                 : tableMeta.rowData[8]
@@ -2569,6 +2598,20 @@ function SubTable(props) {
                           <span>{tableMeta.rowData[50] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
+
+                      {props.targetLabel === "Unit Ownership" && column.name === "name" && (
+                        <FeatureFlag feature={FEATURES.IDICORE}>
+                          <span> {tableMeta.rowData[17] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                        </FeatureFlag>
+                      )}
+
+                      {props.parent === "ownersPerParcel" && column.name === "name" && (
+                        <FeatureFlag feature={FEATURES.IDICORE}>
+                          <span> {tableMeta.rowData[18] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                        </FeatureFlag>
+                      )}
+
+
 
                       {/* temporarily removing the purchased data icon as we do not have functionality to actually purchase contact data currently - KC 3/17/21 */}
                       {/* {props.targetLabel === "contact" &&
@@ -2915,7 +2958,16 @@ function SubTable(props) {
               </div>
             );
           }
-          if (props.addAble.type === "wellInterest") {
+          if (props.addAble.type === "wellInterest" && props.parent === "ownersPerUnit") {
+
+            const getSelectedRows = () => {
+              const selectedRows = [];
+              for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+                selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+              }
+              return selectedRows;
+            };
+
             return (
               <div
                 style={{
@@ -2930,6 +2982,19 @@ function SubTable(props) {
                     display: "flex",
                   }}
                 >
+
+                  <FeatureFlag feature={FEATURES.IDICORE}>
+                    <Button
+                      color="secondary"
+                      startIcon={<RequestPageIcon color="white" />}
+                      className={classes.multiSelectionTopBarButtons}
+                      disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+                      onClick={() => handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData")}
+                    >
+                      Contact Data
+                    </Button>
+                  </FeatureFlag>
+
                   <Tooltip title={"Delete"}>
                     <IconButton
                       size="medium"
@@ -2946,6 +3011,40 @@ function SubTable(props) {
               </div>
             );
           }
+          if (props.addAble.type === "wellInterest") {
+            return (
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    height: "35px",
+                    display: "flex",
+                  }}
+                >
+                  <h2 style={{ color: "#000000" }}>heelo</h2>
+                  <Tooltip title={"Delete"}>
+                    <IconButton
+                      size="medium"
+                      style={{ margin: "0 5px" }}
+                      onClick={(e) => {
+                        handleExpandClick(null, null, null, "deleteWellInterest");
+                      }}
+                      aria-label="delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              </div>
+            );
+          }
+
+
           if (
             props.header === "Owner's Contacts" ||
             props.header === "Contacts" ||
@@ -2984,19 +3083,19 @@ function SubTable(props) {
                           className={classes.multiSelectionTopBarButtons}
                           disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
                           onClick={() => {
-                            const rows = getSelectedRows();
-                            const contacts = [];
-                            for (let i = 0; i < rows.length; i++) {
-                              if (!rows[i].firstName || !rows[i].lastName || !rows[i].address1) {
-                                contacts.push(rows[i]);
-                              }
-                            }
-                            setContactDataMissing(contacts);
-                            if (contacts.length > 0) {
-                              handleExpandClick(null, null, getSelectedRows(), "contactDataMissing");
-                            } else {
-                              handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData");
-                            }
+                            // const rows = getSelectedRows();
+                            // const contacts = [];
+                            // for (let i = 0; i < rows.length; i++) {
+                            //   if (!rows[i].firstName || !rows[i].lastName || !rows[i].address1) {
+                            //     contacts.push(rows[i]);
+                            //   }
+                            // }
+                            // setContactDataMissing(contacts);
+                            // if (contacts.length > 0) {
+                            //   handleExpandClick(null, null, getSelectedRows(), "contactDataMissing");
+                            // } else {
+                            handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData");
+                            // }
                           }}
                         >
                           Contact Data
@@ -3083,19 +3182,56 @@ function SubTable(props) {
 
           //// if Parcel Ownership set the multi selection top bar: ////
           if (props.targetLabel === "Parcel Ownership") {
+            const getSelectedRows = () => {
+              const selectedRows = [];
+              for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+                rows[m1nSelectedRowsIndexes[i]]._id = rows[m1nSelectedRowsIndexes[i]].isContact;
+                console.log("rows m1Selected", rows[m1nSelectedRowsIndexes[i]]);
+                selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+              }
+              return selectedRows;
+            };
+
             return (
-              <Tooltip title={"Delete"}>
-                <IconButton
-                  size="medium"
-                  style={{ margin: "0 5px" }}
-                  onClick={(e) => {
-                    handleExpandClick(null, null, null, "deleteParcelOwnership");
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    height: "35px",
+                    display: "flex",
                   }}
-                  aria-label="delete"
                 >
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
+
+                  <FeatureFlag feature={FEATURES.IDICORE}>
+                    <Button
+                      color="secondary"
+                      startIcon={<RequestPageIcon color="white" />}
+                      className={classes.multiSelectionTopBarButtons}
+                      disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+                      onClick={() => handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData")}
+                    >
+                      Contact Data
+                    </Button>
+                  </FeatureFlag>
+                  <Tooltip title={"Delete"}>
+                    <IconButton
+                      size="medium"
+                      style={{ margin: "0 5px" }}
+                      onClick={(e) => {
+                        handleExpandClick(null, null, null, "deleteParcelOwnership");
+                      }}
+                      aria-label="delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              </div>
             );
           }
 
@@ -3735,7 +3871,7 @@ function SubTable(props) {
         }
       })
       return "\uFEFF" + buildHead(columns) + buildBody(formattedData);
-    } 
+    }
   };
 
   if (props.header === "Well Interests" && props.parent === "owner_WellInterests") {
@@ -3758,7 +3894,6 @@ function SubTable(props) {
   //   //options.export = true;
   // }
 
-  console.log('console log critical', props.header)
   if (props.header === "Deals" || props.header === "Activities") {
     // adds the print and export options in the Flow grid and the Activities grid
     options.print = true;
@@ -4055,9 +4190,10 @@ function SubTable(props) {
           <AddContactDialogContent onClose={handleCloseDialog} parent={props.addAble.parent} />
         )}
 
-        {openDialog === "contactDataMissing" && (
+        {/* moved component in buyContactsInfoData and handled its operations there */}
+        {/* {openDialog === "contactDataMissing" && (
           <ContactDataMissingDialog openDialog={openDialog} onClose={handleCloseDialog} contacts={contactDataMissing} />
-        )}
+        )} */}
         {openDialog === "multipleOwnerToContact" && (
           <MultipleOwnerToContactDrawer
             onClose={handleCloseDialog}

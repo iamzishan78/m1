@@ -58,7 +58,8 @@ function AgreementOwnersTractsTable(props) {
     props.setTableMeta({
       shapeType: props.shapeType,
       addableName: "Tract",
-      extendSearchQuery: `shape._id:${props.customLayer._id}`,
+      searchFields: ["contact.entityDetail.name", "_all"],
+      filters: [{ field: "shape._id", value: props.customLayer._id }],
       TableHeader: copy(TableHeader),
       esIndex: 'shapeowners_flat',
       startPaginationAt: 25,

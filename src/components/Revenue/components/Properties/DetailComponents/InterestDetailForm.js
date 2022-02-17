@@ -6,6 +6,7 @@ import moment from "moment";
 
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Grid, TextField, MenuItem, Select, Button } from "@material-ui/core";
+import { KeyboardDatePicker } from "@material-ui/pickers";
 import { useMutation } from "@apollo/client";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 
@@ -138,7 +139,7 @@ const InterestDetailForm = (props) => {
           : { name: "", _id: null },
       });
     } else if (props.propertyOwnerContact) {
-      setValue("owner", props.propertyOwnerContact);
+      reset({owner: props.propertyOwnerContact});
     } else if (props.propertyDetails?.owner) {
       props.setShowOwnerDialog(true);
     }
@@ -225,26 +226,20 @@ const InterestDetailForm = (props) => {
             name="effectiveDate"
             defaultValue={null}
             render={(props) => (
-              <TextField
-                value={props.value}
-                margin="dense"
-                type="date"
-                vaient=""
-                placeholder=""
+              <KeyboardDatePicker
+                autoOk
+                disableToolbar
+                variant="inline"
+                format="MM/DD/YYYY"
+                margin="normal"
+                id="date-picker-inline"
+                value={props.value ? props.value : null}
+                onChange={(date) => {
+                  props.onChange(date);
+                }}
+                KeyboardButtonProps={{ "aria-label": "change date" }}
+                InputAdornmentProps={{ position: "start" }}
                 fullWidth
-                onChange={(e) => {
-                  props.onChange(e.target.value);
-                }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                InputProps={{
-                  classes: {
-                    root: classes.dateRoot,
-                    focused: classes.focused,
-                    notchedOutline: classes.notchedOutline,
-                  },
-                }}
               />
             )}
           />

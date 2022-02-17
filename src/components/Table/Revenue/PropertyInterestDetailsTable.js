@@ -24,7 +24,7 @@ function PropertyInterestDetailsTable(props) {
 
   const formatHits = (hits) => {
     return hits.map((hit) => {
-      hit.effectiveDate = moment(hit.effectiveDate).format("MM/DD/YYYY");
+      hit.effectiveDate = hit.effectiveDate ? moment(hit.effectiveDate).format("MM/DD/YYYY"): null;
       hit.tags =
         hit?.tags?.length > 0
           ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
@@ -38,7 +38,8 @@ function PropertyInterestDetailsTable(props) {
     props.setTableMeta({
       addableName: "Property Interest",
       addBtnText: "INTEREST",
-      extendSearchQuery: `property._id:(${props.propertyId})`,
+      searchFields: ["owner.entityDetail.name", "_all"],
+      filters: [{ field: "property._id", value: props.propertyId }],
       TableHeader: copy(TableHeader),
       esIndex: "propertyinterest_flat",
       startPaginationAt: 25,
@@ -49,6 +50,9 @@ function PropertyInterestDetailsTable(props) {
 
   useEffect(() => {
     if (props.addToTable) {
+      if(props.addToTable === 'add'){
+        props.setSelectedInterest(null);
+      }
       props.onClickAdd();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,7 +67,7 @@ function PropertyInterestDetailsTable(props) {
 
   useEffect(() => {
     if (!props.showInterestDetails) {
-      props.setAddToTable(false);
+      props.setAddToTable('');
       props.setSelectedInterest(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
