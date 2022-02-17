@@ -89,7 +89,7 @@ export default function UploadZone(props) {
             relatedObjectId: props.relatedObjectId,
             relatedObjectType: props.relatedObjectType,
           },
-          refetchQueries: ["getRecentContactFiles"],
+          refetchQueries: ["getRecentContactFiles", "getParcelFiles", "getParcelFilesCount"],
           awaitRefetchQueries: true,
         });
       }

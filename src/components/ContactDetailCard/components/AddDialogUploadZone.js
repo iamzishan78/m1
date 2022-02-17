@@ -194,11 +194,6 @@ const Documents = memo((props) => {
           }, 1000);
         } else {
           setFileRequestCounter(1);
-          // dispatch(
-          //   showWarningMessage(
-          //     "Please wait a few seconds until the last uploaded file is ready, then reload the app"
-          //   )
-          // );
         }
       } else setFileRequestCounter(1);
     },
@@ -245,7 +240,7 @@ const Documents = memo((props) => {
         variables: {
           id: fileIdToDelete,
         },
-        refetchQueries: ["getRecentContactFiles", "getContactFiles"],
+        refetchQueries: ["getRecentContactFiles", "getContactFiles", "getParcelFiles", "getParcelFilesCount"],
         awaitRefetchQueries: true,
       });
       setFileIdToDelete(null);

@@ -381,14 +381,7 @@ export default function MetadataDrawer(props) {
 
         <div className="flex justifyBetween alignCenter" style={{ padding: "20px 16px", marginBottom: -56 }}>
           <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents</h4>
-          <h4
-            className={classes.viewAll}
-            onClick={() => {
-              console.log("navigate to view all page for documents");
-            }}
-          >
-            View All
-          </h4>
+          <h4 className={classes.viewAll}>View All</h4>
         </div>
 
         <AddDialogeUploadZone

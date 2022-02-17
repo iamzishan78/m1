@@ -26,6 +26,7 @@ import Summary from "components/Land/components/Agreements/detailComponents/summ
 import RelatedParties from "components/Land/components/Agreements/detailComponents/relatedParties";
 import Provisions from "components/Land/components/Agreements/detailComponents/provisions";
 import LegalDescription from "components/Land/components/Agreements/detailComponents/legalDescription";
+import Documents from "components/Land/components/Agreements/detailComponents/documents";
 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
@@ -220,6 +221,7 @@ export default function DetailComponents(props) {
   const [flowlineCollapse, setFlowlineCollapse] = useState(true);
   const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
+  const [uniObj, setUniObj] = useState();
 
   const classes = useStyles({ ...props, metaCollapse, validationCollapse, flowlineCollapse });
   // queries
@@ -295,6 +297,17 @@ export default function DetailComponents(props) {
       );
     }
   }, [userLists]);
+
+  useEffect(() => {
+    if (activeAgreement) {
+      let shape = activeAgreement.shape;
+      if (activeAgreement.shapeJson) shape = copy(activeAgreement.shapeJson);
+      setUniObj({
+        ...activeAgreement,
+        shape,
+      });
+    }
+  }, [activeAgreement]);
 
   const updateAgreement = (field, value, isCustom) => {
     if (agreementDetails[field] === value) return;
@@ -452,7 +465,11 @@ export default function DetailComponents(props) {
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
               <div className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
-                <LegalDescription agreementDetails={agreementDetails} activeAgreement={activeAgreement} agreementId={agreementId} updateAgreement={updateAgreement} />
+                <LegalDescription agreementDetails={agreementDetails} uniObj={uniObj} agreementId={agreementId} updateAgreement={updateAgreement} />
+              </div>
+              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
+              <div className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
+                <Documents uniObj={uniObj} />
               </div>
             </div>
           </div>

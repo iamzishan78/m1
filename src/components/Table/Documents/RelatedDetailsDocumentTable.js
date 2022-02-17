@@ -68,6 +68,7 @@ function RelatedDetailsDocumentTable(props) {
         relatedObjectId: props.customLayer._id,
         relatedObjectType: props.relatedObjectType,
       },
+      refetchQueries: ["getParcelFilesCount"],
     });
   }, [getAllFiles, props.customLayer._id]);
 
@@ -236,8 +237,9 @@ function RelatedDetailsDocumentTable(props) {
             m1nSelectedRowsIds={selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
             setM1nSelectedRowsIndexes={setSelectedRows}
           >
-            {`Do you want to permanently delete the document${selectedRows && selectedRows.length > 1 && selectedRows.length > 1 ? "s" : ""
-              } from  this ${props.name || props.relatedObjectType}?`}
+            {`Do you want to permanently delete the document${
+              selectedRows && selectedRows.length > 1 && selectedRows.length > 1 ? "s" : ""
+            } from  this ${props.name || props.relatedObjectType}?`}
           </DeleteConfirmationDialogContent>
         )}
       </Dialog>
@@ -273,11 +275,7 @@ function RelatedDetailsDocumentTable(props) {
         }}
       >
         <Toolbar>
-          <Grid
-            justify="space-between"
-            container
-            spacing={24}
-          >
+          <Grid justify="space-between" container spacing={24}>
             <Grid item>
               <Typography className={classes.fileTitle} type="title" color="inherit">
                 {stateApp.pdfView?.fileName}
@@ -342,8 +340,8 @@ function RelatedDetailsDocumentTable(props) {
 
 RelatedDetailsDocumentTable.defaultProps = {
   addAble: {
-    type: "relatedDocument"
-  }
-}
+    type: "relatedDocument",
+  },
+};
 
 export default React.memo(TableHOC(RelatedDetailsDocumentTable), deepEqualObjects);

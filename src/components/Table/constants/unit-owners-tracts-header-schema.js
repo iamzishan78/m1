@@ -12,7 +12,6 @@ const UnitOwnersTractHeadCells = [
   {
     name: "tractName", label: "Tract Name", esKey: 'tract.trackName.keyword', options: { sort: true, filter: true }, style: { minWidth: 200, maxWidth: 300 }
   },
-
   {
     name: "meridian", label: "Meridian", esKey: 'tract.meridian.keyword', options: { sort: true, filter: true }
   },

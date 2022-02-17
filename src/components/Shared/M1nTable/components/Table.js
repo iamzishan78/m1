@@ -2301,7 +2301,7 @@ function SubTable(props) {
                         {value}
                       </p>
                     )} */}
-                    {(props.parent === "RevenueStatementTable" || props.parent === "RevenuePropertiesTable") && (
+                    {(props.parent === "RevenueStatementTable" || props.parent === "RevenuePropertiesTable") ? (
                       <div className={classes.flexAlign}>
                         {value?.toLowerCase() === "approved" ? (
                           <div className={classes.activeBadge} />
@@ -2317,6 +2317,8 @@ function SubTable(props) {
                         )}
                         <div>{value}</div>
                       </div>
+                    ) : (
+                      <div>{value}</div>
                     )}
                   </>
                 );

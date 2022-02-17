@@ -60,27 +60,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LagalDescription({ agreementDetails, activeAgreement, updateAgreement }) {
+export default function LagalDescription({ agreementDetails, uniObj, updateAgreement }) {
   const classes = useStyles();
   const customClasses = customStyles();
   const { reset, control } = useForm();
-  const [uniObj, setUniObj] = useState();
   const [tractsNumber, setTractsNumber] = useState(0);
 
   useEffect(() => {
     if (!_.isEmpty(agreementDetails)) reset(agreementDetails);
   }, [reset, agreementDetails]);
-
-  useEffect(() => {
-    if (activeAgreement) {
-      let shape = activeAgreement.shape;
-      if (activeAgreement.shapeJson) shape = copy(activeAgreement.shapeJson);
-      setUniObj({
-        ...activeAgreement,
-        shape,
-      });
-    }
-  }, [activeAgreement]);
 
   const offClickHandler = (key, value) => updateAgreement(key, value);
 
@@ -134,7 +122,7 @@ export default function LagalDescription({ agreementDetails, activeAgreement, up
                         <Grid item xs={4}>
                           <Controller
                             name="grossAcres"
-                            defaultValue={activeAgreement?.grossAcres ?? ""}
+                            defaultValue={agreementDetails?.grossAcres ?? ""}
                             control={control}
                             render={params => (
                               <TextField
@@ -151,7 +139,7 @@ export default function LagalDescription({ agreementDetails, activeAgreement, up
                         <Grid item xs={4}>
                           <Controller
                             name="netAcres"
-                            defaultValue={activeAgreement?.netAcres ?? ""}
+                            defaultValue={agreementDetails?.netAcres ?? ""}
                             control={control}
                             render={params => (
                               <TextField
@@ -168,7 +156,7 @@ export default function LagalDescription({ agreementDetails, activeAgreement, up
                         <Grid item xs={4}>
                           <Controller
                             name="coNetAcres"
-                            defaultValue={activeAgreement?.coNetAcres ?? ""}
+                            defaultValue={agreementDetails?.coNetAcres ?? ""}
                             control={control}
                             render={params => (
                               <TextField
@@ -190,7 +178,7 @@ export default function LagalDescription({ agreementDetails, activeAgreement, up
                         <Grid item xs={4}>
                           <Controller
                             name="reportGrossAcres"
-                            defaultValue={activeAgreement?.reportGrossAcres ?? ""}
+                            defaultValue={agreementDetails?.reportGrossAcres ?? ""}
                             control={control}
                             render={params => (
                               <TextField
@@ -207,7 +195,7 @@ export default function LagalDescription({ agreementDetails, activeAgreement, up
                         <Grid item xs={4}>
                           <Controller
                             name="reportNet"
-                            defaultValue={activeAgreement?.reportNet ?? ""}
+                            defaultValue={agreementDetails?.reportNet ?? ""}
                             control={control}
                             render={params => (
                               <TextField
@@ -224,7 +212,7 @@ export default function LagalDescription({ agreementDetails, activeAgreement, up
                         <Grid item xs={4}>
                           <Controller
                             name="netRoyalty"
-                            defaultValue={activeAgreement?.netRoyalty ?? ""}
+                            defaultValue={agreementDetails?.netRoyalty ?? ""}
                             control={control}
                             render={params => (
                               <TextField
