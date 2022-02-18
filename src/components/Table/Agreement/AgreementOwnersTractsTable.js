@@ -9,7 +9,7 @@ import TableESHOC from "components/Table/TableESHOC";
 import { useMutation } from "@apollo/client";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 
-import { deepEqualObjects, copy } from "components/Shared/functions";
+import { deepEqualObjects } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 // Header Schemas 
@@ -60,7 +60,7 @@ function AgreementOwnersTractsTable(props) {
       addableName: "Tract",
       searchFields: ["contact.entityDetail.name", "_all"],
       filters: [{ field: "shape._id", value: props.customLayer._id }],
-      TableHeader: copy(TableHeader),
+      TableHeader: TableHeader,
       esIndex: 'shapeowners_flat',
       startPaginationAt: 25,
 

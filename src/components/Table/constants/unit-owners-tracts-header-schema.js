@@ -24,13 +24,24 @@ const UnitOwnersTractHeadCells = [
   {
     name: "range", label: "Range", esKey: 'tract.range.keyword', options: { sort: true, filter: true }
   },
-  // {
-  //   name: "altSurvey", label: "Alt Survey", esKey: 'tract.altSurvey.keyword', options: { sort: true, filter: true }
-  // },
-  // {
-  //   name: "legalDescription", label: "Legal Description", esKey: 'tract.legalDescription.keyword', options: { sort: true, filter: true }
-  // },
-
+  {
+    name: "qtrQtrSelection", label: "QTR Calls", esKey: 'tract.qtrQtrSelection.selectedQtr.keyword',
+    options: {
+      sort: true,
+      filter: true,
+      customRender: (value) => {
+        let qtrCalls = "";
+        value?.selectedQtr?.forEach(qtrValue => {
+          qtrCalls += `${qtrValue} `;
+        })
+        return (
+          <p style={{ minWidth: 100, }}>
+            {qtrCalls}
+          </p>
+        );
+      },
+    }
+  },
   {
     name: "name", label: "Name", esKey: 'contact.entityDetail.name.keyword', options: { sort: true, filter: true }
   },

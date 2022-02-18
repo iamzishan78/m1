@@ -85,7 +85,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
   const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
 
-  const tract = watch('tract', {})
+  const tract = watch('tract', {});
 
   const parcelOwnersRadioBValue = watch('parcelOwnersRadioBValue', 'true')
 
@@ -180,6 +180,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   const handleSave = () => {
     const ownerToAdd = getValues()
     ownerToAdd.isTractOwner = isTractOwner
+    ownerToAdd.tract.qtrQtrSelection = selectedShapeLayer?.qtrQtrSelection;
     Object.keys(ownerToAdd).forEach((key) => {
       if (['mineral_interest', 'royalty_interest', 'orri', 'net_acres'].includes(key))
         ownerToAdd[key] = addTrailingZeros(ownerToAdd[key])
