@@ -26,6 +26,8 @@ export const TableESHOC = (Component) => {
         const classes = usetableStyles();
 
         const [columns, Columns] = useState([]);
+        const [filters, setFilters] = useState([]);
+
         const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
         const [addToTable, setAddToTable] = useState('')
@@ -149,7 +151,7 @@ export const TableESHOC = (Component) => {
 
         useEffect(() => {
             if (tableData?.hits?.length > 0) {
-                let { TableHeader, extendSearchQuery, formatColumns, formatHits, esIndex } = tableMeta
+                let { TableHeader, formatColumns, formatHits } = tableMeta
                 let hits = tableData?.hits
                 if (formatHits)
                     hits = formatHits(hits)
@@ -158,28 +160,29 @@ export const TableESHOC = (Component) => {
                 if (formatColumns)
                     TableHeader = formatColumns(TableHeader, hits)
 
-                TableHeader.forEach((column) => {
-                    if (column?.options?.filter) {
-                        const custom = column.custom;
-                        column.options = {
-                            ...column.options,
-                            filter: true,
-                            filterType: 'custom',
-                            filterOptions: {
-                                display: (filterList, onChange, index, column) => {
-                                    column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
-                                    return (
-                                        <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-                                            extendSearchQuery={extendSearchQuery} searchFields={tableMeta.searchFields} query={GET_ES_SIMPLE_FILTER}
-                                            esIndex={esIndex} filters={activeFiltersRef.current} custom={custom}/>
-                                    );
-                                }
-                            }
-                        }
-                    }
-                })
+                // TableHeader.forEach((column) => {
+                //     if (column?.options?.filter) {
+                //         const custom = column.custom;
+                //         column.options = {
+                //             ...column.options,
+                //             filter: true,
+                //             filterType: 'custom',
+                //             filterOptions: {
+                //                 display: (filterList, onChange, index, column) => {
+                //                     column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
+                //                     return (
+                //                         <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
+                //                             extendSearchQuery={extendSearchQuery} searchFields={tableMeta.searchFields} query={GET_ES_SIMPLE_FILTER}
+                //                             esIndex={esIndex} filters={activeFiltersRef.current} custom={custom} />
+                //                     );
+                //                 }
+                //             }
+                //         }
+                //     }
+                // })
 
-                setColumns(TableHeader);
+                setColumnsData(TableHeader)
+                // setColumns(TableHeader);
                 setLoading(false);
             }
             else if (tableData?.hits?.length === 0) {
@@ -190,6 +193,53 @@ export const TableESHOC = (Component) => {
             tableData,
             dependencyUpdate
         ]);
+
+
+        const setColumnsData = (columns) => {
+            let { TableHeader, extendSearchQuery, esIndex } = tableMeta
+            columns.forEach((column, index) => {
+                const tableCol = TableHeader.find((el) => el.name === column.name)
+                if (column?.options?.filter) {
+                    const custom = column.custom;
+                    column.options = {
+                        ...tableCol.options,
+                        ...column.options,
+                        filter: true,
+                        filterType: "custom",
+                        // filterList: filters[index],
+                        customFilterListOptions: {
+                            render: v => v.map(l => l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l),
+                        },
+                        filterOptions: {
+                            display: (filterList, onChange, index, column) => {
+                                column.filterKey = TableHeader.find(
+                                    (el) => el.name === column.name
+                                )?.esKey;
+                                return (
+                                    <AutoCompleteFilter
+                                        esIndex={esIndex}
+                                        setFilters={setFilters}
+                                        filterList={filterList}
+                                        column={column}
+                                        index={index}
+                                        onChange={onChange}
+                                        query={GET_ES_SIMPLE_FILTER}
+                                        searchFields={tableMeta.searchFields}
+                                        filters={activeFiltersRef.current}
+                                        extendSearchQuery={extendSearchQuery}
+                                        custom={custom}
+                                    />
+                                );
+                            },
+                        },
+                        // onFilterChange: (columnChanged, filterList) => {
+                        //   setFilters(filterList);
+                        // },
+                    };
+                }
+            });
+            setColumns(columns);
+        };
 
         const initializeGenericData = useCallback((ids, actions) => {
             if (actions.includes("comments")) {
@@ -287,6 +337,10 @@ export const TableESHOC = (Component) => {
         }
 
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
+            tableState.esIndex = tableMeta.esIndex;
+            tableState.filters = tableMeta.filters ? tableMeta.filters : [];
+            tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
+
             let pageESVariables = {
                 variables: {
                     index: tableState.esIndex,
@@ -301,13 +355,13 @@ export const TableESHOC = (Component) => {
                     },
                     ...(!isEmpty(tableState.sortOrder)) && {
                         sort:
-                            {
-                                field: columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
-                                    columns.find(el => el.name === tableState.sortOrder?.name)?.name,
-                                order: tableState.sortOrder?.direction
-                                // unmapped_type: "null",
-                                // missing: "_last"
-                            }
+                        {
+                            field: columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
+                                columns.find(el => el.name === tableState.sortOrder?.name)?.name,
+                            order: tableState.sortOrder?.direction
+                            // unmapped_type: "null",
+                            // missing: "_last"
+                        }
                     },
 
                     filters: tableState.filters ? [...tableState.filters] : []
@@ -315,21 +369,21 @@ export const TableESHOC = (Component) => {
             };
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0) {
-                    if(columns[index].custom?.isDate){
+                    if (columns[index].custom?.isDate) {
                         const filterData = stateApp.filtersData[columns[index].name];
                         const data = filterData.find(f => f.key === val[0])
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
-                    }else if(columns[index].custom?.filterOptions?.length > 0){
+                    } else if (columns[index].custom?.filterOptions?.length > 0) {
                         pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0] })
-                    }else if(columns[index].custom?.formatedFilterOptions?.length > 0){
+                    } else if (columns[index].custom?.formatedFilterOptions?.length > 0) {
                         let value = val[0];
                         const filterData = columns[index].custom?.formatedFilterOptions;
                         const data = filterData.find(f => f.label === value)
-                        if(data){
+                        if (data) {
                             value = data.value
                         }
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value })
-                    }else{
+                    } else {
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
                     }
                 }
@@ -375,13 +429,29 @@ export const TableESHOC = (Component) => {
             }
         }
 
+
+        const viewColumnsChange = (tableColumns) => {
+            for (let i = 0; i < tableColumns.length; i++) {
+                if (tableColumns[i].display === "true") {
+                    columns[i].options.display = true;
+                    if (columns[i].esKey && !columns[i].noFilter) {
+                        columns[i].options.filter = true;
+                    }
+                } else {
+                    columns[i].options.display = false;
+                }
+            }
+            setColumnsData(JSON.parse(JSON.stringify(columns)));
+        };
+
         const onTableChange = (action, tableState, rows, meta) => {
-            tableState.esIndex = tableMeta.esIndex;
-            tableState.filters = tableMeta.filters ? tableMeta.filters : [];
-            tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
+
             const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch)
             activeSearchRef.current = tableActions.pageESVariables.variables.search;
             activeFiltersRef.current = tableActions.pageESVariables.variables.filters;
+
+            if (action === 'filterChange') { setFilters(tableState.filterList) }
+
             switch (action) {
                 case "search":
                 case "sort":
@@ -397,6 +467,10 @@ export const TableESHOC = (Component) => {
                 case "changePage":
                     tableActions.extendSearchQuery(tableMeta.extendSearchQuery);
                     tableActions.changeESPage();
+                    break;
+
+                case "viewColumnsChange":
+                    viewColumnsChange(tableState.columns);
                     break;
                 default:
             }
@@ -420,8 +494,8 @@ export const TableESHOC = (Component) => {
                         className={classes.multiSelectionTopBarButtons}
                         onClick={() => { setAddToTable('add'); setClickedRow(null) }}
                     >
-                        {tableMeta.addBtnText ? 
-                            `+ ADD ${tableMeta.addBtnText}` : 
+                        {tableMeta.addBtnText ?
+                            `+ ADD ${tableMeta.addBtnText}` :
                             `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
                     </Button>
                 </div>

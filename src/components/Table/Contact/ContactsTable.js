@@ -24,9 +24,11 @@ import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 import { getContactsAddress } from 'utils/helper';
 
 import {
+  copy,
   deepEqualObjects,
   setStateIfDeepEqual,
 } from "components/Shared/functions";
+import TableESHOC from "../TableESHOC";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -92,6 +94,7 @@ function ContactsTable(props) {
   const [removeContact] = useMutation(REMOVE_CONTACTS);
 
   const tableData = ContactsData?.getESContacts;
+  const genericDataActions = ['tracks']
 
   const addAble = { parent: false, type: "contact" };
   const targetLabel = "contact";
@@ -102,18 +105,52 @@ function ContactsTable(props) {
   const orderByTracks = false;
   const startPaginationAt = 25;
 
-  useEffect(() => {
-    getESContacts({
-      variables: {
-        pagination: {
-          first: startPaginationAt,
-          keep_alive: "1micros",
-        },
-        search: esSearch,
-        filters: selectedGridView?.filters ? selectedGridView?.filters : [],
-      },
+  // useEffect(() => {
+  //   getESContacts({
+  //     variables: {
+  //       pagination: {
+  //         first: startPaginationAt,
+  //         keep_alive: "1micros",
+  //       },
+  //       search: esSearch,
+  //       filters: selectedGridView?.filters ? selectedGridView?.filters : [],
+  //     },
+  //   });
+  // }, [getESContacts, props.parent, props.contactSearchQuery, selectedGridView]);
+
+
+  const formatHits = (hits) => {
+    hits = hits.map((hit) => {
+      hit = getContactsAddress(props.setGenricData(hit, hit._id, ["tracks"]));
+      hit.tags = hit?.tags?.length > 0
+        ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+        : [[], 0];
+      hit.commentsCounter = hit.comments ? hit.comments.length : 0;
+      return hit;
     });
-  }, [getESContacts, props.parent, props.contactSearchQuery, selectedGridView]);
+    return hits
+  }
+
+  useEffect(() => {
+    props.setTableMeta({
+      addableName: "Contact",
+      extendSearchQuery: esSearch,
+      searchFields: ["_all"],
+      TableHeader: copy(TableHeader),
+      esIndex: "contacts_flat",
+      filters: selectedGridView?.filters ? selectedGridView?.filters : [],
+      startPaginationAt: 25,
+      // formatColumns,
+      formatHits,
+      initializeGenericData: { key: 'id', actions: genericDataActions }
+    });
+    // eslint-disable-next-line
+  }, [
+    props.contactSearchQuery,
+    selectedGridView
+    // searchInput
+  ]);
+
 
   useEffect(() => {
     if (tableData?.hits) {
@@ -137,23 +174,23 @@ function ContactsTable(props) {
     }
   }, [ContactPurchaseData]);
 
-  useEffect(() => {
-    if (tableData?.hits) {
-      const hits = tableData.hits.map((hit) => {
-        hit = getContactsAddress(props.setGenricData(hit, hit._id, ["tracks"]));
-        hit.tags = hit?.tags?.length > 0
-          ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
-          : [[], 0];
-        hit.commentsCounter = hit.comments ? hit.comments.length : 0;
-        return hit;
-      });
-      props.setRows(JSON.parse(JSON.stringify(hits)));
-      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
-      props.setLoading(false);
-    } else if (tableData?.length === 0) {
-      props.setLoading(false);
-    }
-  }, [ContactsData, tableData, props.dependencyUpdate]);
+  // useEffect(() => {
+  //   if (tableData?.hits) {
+  //     const hits = tableData.hits.map((hit) => {
+  //       hit = getContactsAddress(props.setGenricData(hit, hit._id, ["tracks"]));
+  //       hit.tags = hit?.tags?.length > 0
+  //         ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+  //         : [[], 0];
+  //       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
+  //       return hit;
+  //     });
+  //     props.setRows(JSON.parse(JSON.stringify(hits)));
+  //     setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
+  //     props.setLoading(false);
+  //   } else if (tableData?.length === 0) {
+  //     props.setLoading(false);
+  //   }
+  // }, [ContactsData, tableData, props.dependencyUpdate]);
 
   useEffect(() => {
     tableRef.current.changePage(0)
@@ -164,15 +201,15 @@ function ContactsTable(props) {
     }
   }, [selectedGridView]);
 
-  const count = tableData?.total || 0;
-  const options = {
-    rowsPerPageOptions: [10, 25, 50, 100],
-    count: count,
-    serverSide: true,
-    search: false,
-    filter: true,
-    searchText: props.contactSearchQuery,
-  };
+  // const count = tableData?.total || 0;
+  // const options = {
+  //   rowsPerPageOptions: [10, 25, 50, 100],
+  //   count: count,
+  //   serverSide: true,
+  //   search: false,
+  //   filter: true,
+  //   searchText: props.contactSearchQuery,
+  // };
 
 
   const viewColumnsChange = (tableColumns) => {
@@ -314,9 +351,9 @@ function ContactsTable(props) {
           header={header}
           headerComponent={HeaderComponent}
           headerProps={headerProps}
-          columns={columns}
-          rows={props.searchedRows}
-          total={total}
+          columns={props.columns}
+          rows={props.rows}
+          // total={total}
           loading={loading}
           addAble={addAble}
           targetLabel={targetLabel}
@@ -325,15 +362,18 @@ function ContactsTable(props) {
           orderByTracks={orderByTracks}
           startPaginationAt={startPaginationAt}
           contactId={props.contactId}
-          options={options}
+          options={{
+            ...props.options,
+            ...props.customOptions,
+          }}
           parent={props.parent}
           setColumnsBase={[]}
           deleteFunc={deleteFunc}
-          onTableChange={onTableChange}
+        // onTableChange={onTableChange}
         />
       </Container>
     </>
   );
 }
 
-export default React.memo(TableHOC(ContactsTable), deepEqualObjects);
+export default React.memo(TableESHOC(ContactsTable), deepEqualObjects);
