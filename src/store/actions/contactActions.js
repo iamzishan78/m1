@@ -23,3 +23,8 @@ export const setActiveModuleContact = (payload) => {
     payload,
   };
 };
+export const convertMultipleOwnerToContactAction = {
+  STARTED: (payload) => ({ type: CONVERT_MULTIPLE_OWNER_TO_CONTACT.STARTED, payload }),
+  FULLFILLED: (payload) => ({ type: CONVERT_MULTIPLE_OWNER_TO_CONTACT.FULLFILLED, payload }),
+  REJECTED: () => ({ type: CONVERT_MULTIPLE_OWNER_TO_CONTACT.REJECTED }),
+};
