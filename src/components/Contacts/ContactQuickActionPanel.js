@@ -10,14 +10,13 @@ import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import MenuIcon from "@material-ui/icons/Menu";
 
 import { useStyles, StyledMenu, StyledMenuItem } from "components/Land/style";
+import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Land";
 
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 export default function QuickActionsPanel({
   children,
-  title,
-  actions,
   handlePanelStateChange,
   quickActionsPanelState,
   activeModule,
@@ -48,7 +47,7 @@ export default function QuickActionsPanel({
         >
           <Grid item style={{ alignItems: "center" }}>
             <Typography variant="h5" style={{ fontWeight: "normal" }}>
-              {title}
+              Land Management
             </Typography>
           </Grid>
           <Grid item>
@@ -69,25 +68,25 @@ export default function QuickActionsPanel({
           Quick Actions
         </Typography>
         <StyledMenu>
-          {Object.keys(actions)
-            .filter((key) => !actions[key].isExcluded)
+          {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST)
+            .filter((key) => !SIDE_PANEL_MENU_ITEMS_LIST[key].isExcluded)
             .map((key, index) => (
-              actions[key].featureFlag && <FeatureFlag feature={FEATURES[actions[key].featureFlag]}>
+              SIDE_PANEL_MENU_ITEMS_LIST[key].featureFlag && <FeatureFlag feature={FEATURES[SIDE_PANEL_MENU_ITEMS_LIST[key].featureFlag]}>
               <StyledMenuItem
                 onClick={() =>
-                  handleMenuItemClick(actions[key].link)
+                  handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)
                 }
                 key={index}
                 isSelected
                 style={{
                   backgroundColor:
-                    activeModule.title === actions[key].title
+                    activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST[key].title
                       ? "#4B618F"
                       : "",
                 }}
               >
                 <ListItemText>
-                  {actions[key].title}
+                  {SIDE_PANEL_MENU_ITEMS_LIST[key].title}
                 </ListItemText>
               </StyledMenuItem>
               </FeatureFlag>
@@ -104,7 +103,7 @@ export default function QuickActionsPanel({
           top: "65px",
           display: "flex",
           flexDirection: "column",
-          // height: "calc(100vh - 65px)",
+          height: "calc(100vh - 65px)",
           alignItems: "stretch",
         }}
       >

@@ -38,7 +38,9 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
 export default function Revenue() {
   const location = useLocation();
   const dispatch = useDispatch();
-  const { quickActionsPanelState, activeModule } = useSelector(({ Land }) => Land);
+  const { quickActionsPanelState, activeModule } = useSelector(
+    ({ Land }) => Land
+  );
 
   //   useEffect(() => {
   //     const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => item.link === location.pathname);
@@ -54,7 +56,9 @@ export default function Revenue() {
   //   }, [location.pathname]);
 
   useEffect(() => {
-    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => item.link === location.pathname);
+    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find(
+      (item) => item.link === location.pathname
+    );
     if (option) {
       dispatch(setActiveModuleLand(option));
     }
@@ -65,7 +69,13 @@ export default function Revenue() {
   };
 
   return (
-    <QuickActionPanel handlePanelStateChange={handlePanelStateChange} quickActionsPanelState={quickActionsPanelState} activeModule={activeModule}>
+    <QuickActionPanel
+      title="Land Management"
+      handlePanelStateChange={handlePanelStateChange}
+      quickActionsPanelState={quickActionsPanelState}
+      activeModule={activeModule}
+      actions={SIDE_PANEL_MENU_ITEMS_LIST}
+    >
       {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
         <Switch>
           <Route

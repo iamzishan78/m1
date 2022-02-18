@@ -1,11 +1,25 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
+import { Switch, Route, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-import ContactsTable from "components/Table/Contact/ContactsTable";
+
+import {
+  toggleContactActionsPanel,
+  setActiveModuleContact,
+} from "store/actions/contactActions";
 import { AppContext } from "AppContext";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
+
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import QuickActionPanel from "components/Land/components/QuickActionPanel";
+import ContactsTable from "components/Table/Contact/ContactsTable";
+import * as Components from "components/Contacts/components";
+
+import { contactManagementRoutes } from 'utils/data';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    marginTop: '65px',
+    marginTop: "65px",
     "& div": {
       "&>.MuiPaper-root": {
         display: "flex",
@@ -30,11 +44,59 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Contacts() {
   const classes = useStyles();
+  const location = useLocation();
   const [stateApp] = useContext(AppContext);
+  const dispatch = useDispatch();
+  const { quickActionsPanelState, activeModule } = useSelector(
+    ({ contact }) => contact
+  );
+
+  useEffect(() => {
+    const option = Object.values(contactManagementRoutes).find(
+      (item) => item.link === location.pathname
+    );
+    if (option) {
+      dispatch(setActiveModuleContact(option));
+    }
+  }, [location.pathname]);
+
+  const handlePanelStateChange = (state) => {
+    dispatch(toggleContactActionsPanel(state));
+  };
 
   return (
-    <div className={classes.root}>
-      <ContactsTable parent="Contacts" contactSearchQuery={stateApp.contactSearchQuery} userId={stateApp.user.mongoId} />
-    </div>
+    <>
+      <FeatureFlag feature={FEATURES.CONTACTSUBMENU}>
+        <QuickActionPanel
+          title="Contact Management"
+          handlePanelStateChange={handlePanelStateChange}
+          quickActionsPanelState={quickActionsPanelState}
+          activeModule={activeModule}
+          actions={contactManagementRoutes}
+        >
+          {Object.keys(contactManagementRoutes).map((option) => (
+            <Switch>
+              <Route
+                exact
+                path={contactManagementRoutes[option].link}
+                component={
+                  Components[contactManagementRoutes[option].component]
+                }
+              />
+            </Switch>
+          ))}
+        </QuickActionPanel>
+      </FeatureFlag>
+      <FeatureFlag feature={FEATURES.CONTACTSUBMENU} noAccess>
+        <div className={classes.root}>
+          <ContactsTable
+            parent="Contacts"
+            headerLabel="Contacts"
+            contactSearchQuery={stateApp.contactSearchQuery}
+            userId={stateApp.user.mongoId}
+          />
+        </div>
+      </FeatureFlag>
+    </>
   );
 }
