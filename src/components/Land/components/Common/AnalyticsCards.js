@@ -33,14 +33,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function AnalyticsCards({
-  parent,
-  esIndex,
-  esFilters,
-  totalCount,
-  cardsDefault,
-  landSearchQuery,
-}) {
+export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount, cardsDefault, landSearchQuery }) {
   const classes = useStyles();
   const [cards, setCards] = useState(cardsDefault);
 
@@ -75,13 +68,16 @@ export default function AnalyticsCards({
     },
   });
 
-  const [getESAggsGrossAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsGrossAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.grossAcresSum) {
-        const grossAcresSum = aggsData.getESAggsList.aggregations.grossAcresSum.value.sum
-        setCardPoint((Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + 'K', 1)
+        const grossAcresSum = aggsData.getESAggsList.aggregations.grossAcresSum.value.sum;
+        setCardPoint(
+          (Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
+          1
+        );
         // props.onGrossAcresSum(
         //   aggsData?.getESAggsList?.aggregations?.grossAcresSum?.value
         // );
@@ -89,13 +85,16 @@ export default function AnalyticsCards({
     },
   });
 
-  const [getESAggsNetAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsNetAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.netAcresSum) {
-        const netAcresSum = aggsData.getESAggsList.aggregations.netAcresSum.value
-        setCardPoint((Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + 'K', 2)
+        const netAcresSum = aggsData.getESAggsList.aggregations.netAcresSum.value;
+        setCardPoint(
+          (Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
+          2
+        );
         // props.onNetAcresSum(
         //   aggsData?.getESAggsList?.aggregations?.netAcresSum?.value
         // );
@@ -103,13 +102,16 @@ export default function AnalyticsCards({
     },
   });
 
-  const [getESAggsNetRoyaltyAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsNetRoyaltyAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum) {
-        const netRoyaltyAcresSum = aggsData.getESAggsList.aggregations.netRoyaltyAcresSum.value
-        setCardPoint((Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + 'K', 3)
+        const netRoyaltyAcresSum = aggsData.getESAggsList.aggregations.netRoyaltyAcresSum.value;
+        setCardPoint(
+          (Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
+          3
+        );
         // props.onNetRoyaltyAcresSum(
         //   aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum?.value
         // );
@@ -160,7 +162,7 @@ export default function AnalyticsCards({
     getESAggsGrossAcresSum({
       variables: {
         esIndex: "shapeowners_flat",
-        search: landSearchQuery ? `${landSearchQuery}*` : '',
+        search: landSearchQuery ? `${landSearchQuery}*` : "",
         filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters.slice(1)],
         aggs: {
           grossAcresSum: {
@@ -186,16 +188,16 @@ export default function AnalyticsCards({
       
                   return stats
               `,
-              reduce_script: "return states[0]"
-            }
-          }
+              reduce_script: "return states[0]",
+            },
+          },
         },
       },
     });
     getESAggsNetAcresSum({
       variables: {
         esIndex: "shapeowners_flat",
-        search: landSearchQuery ? `${landSearchQuery}*` : '',
+        search: landSearchQuery ? `${landSearchQuery}*` : "",
         filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters.slice(1)],
         aggs: {
           netAcresSum: {
@@ -209,7 +211,7 @@ export default function AnalyticsCards({
     getESAggsNetRoyaltyAcresSum({
       variables: {
         esIndex: "shapeowners_flat",
-        search: landSearchQuery ? `${landSearchQuery}*` : '',
+        search: landSearchQuery ? `${landSearchQuery}*` : "",
         filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters.slice(1)],
         aggs: {
           netRoyaltyAcresSum: {
@@ -239,24 +241,12 @@ export default function AnalyticsCards({
   }, [totalCount]);
 
   return (
-    <Grid
-      container
-      direction="row"
-      display="flex"
-      align="center"
-      spacing={4}
-      textAlign="left"
-      className={classes.root}
-    >
+    <Grid container direction="row" display="flex" align="center" spacing={4} textAlign="left" className={classes.root}>
       {cards.map((card, index) => (
         <Grid item md={3} key={index}>
           <Card variant="outlined" className={classes.card}>
             <CardContent className={classes.cardContent}>
-              <Typography
-                variant="h6"
-                component="div"
-                className={classes.cardHeaderTypography}
-              >
+              <Typography variant="h6" component="div" className={classes.cardHeaderTypography}>
                 {card.heading}
               </Typography>
               {card.type === "error" && (

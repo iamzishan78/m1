@@ -88,3 +88,68 @@ export const wellsKeys = [
   "MaxCompletionRecordDate",
   "plugDate"
 ]
+
+export const contactManagementRoutes = {
+  ALLENTITIES: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "All Entities",
+    link: "/contacts",
+    component: "ContactsTable",
+  },
+  LEADS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Leads",
+    link: "/contacts/leads",
+    component: "ContactsTable",
+    filterValue: 'Lead',
+    showAnalytics: true,
+  },
+  PROSPECTS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Prospects",
+    link: "/contacts/prospects",
+    component: "ContactsTable",
+    filterValue: 'Prospect',
+    showAnalytics: true,
+  },
+  CONTACTS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Contacts",
+    link: "/contacts/contact",
+    component: "ContactsTable",
+    filterValue: 'Contact',
+    showAnalytics: true,
+  },
+  ACTIVITY: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Activity Dashboard",
+    link: "/contacts/activityDashboard",
+    component: "ContactsTable",
+  },
+  CAMPAIGN: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Campaign Management",
+    link: "/contacts/campaignManagement",
+    component: "ContactsTable",
+  },
+};
+
+export const contactsAnalyticsCards = [
+  {
+    heading: "Total Contacts",
+    points: 0,
+  },
+  {
+    heading: "Recently Added",
+    points: 0,
+  },
+  {
+    heading: "Recently Contacted",
+    points: 0,
+  },
+  {
+    heading: "Missing Contact Info",
+    points: 0,
+    type: "warning",
+  },
+];

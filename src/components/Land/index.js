@@ -50,10 +50,10 @@ export default function Revenue() {
   useEffect(() => {
     const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => {
       const path = location.pathname;
-      if (item.link.includes(':id')) {
-        return replaceId(item.link, path)
+      if (item.link.includes(":id")) {
+        return replaceId(item.link, path);
       }
-      return path.startsWith(item.link)
+      return path.startsWith(item.link);
     });
     if (option?.parent) {
       dispatch(setActiveModuleLand(SIDE_PANEL_MENU_ITEMS_LIST[option.parent]));
@@ -63,28 +63,31 @@ export default function Revenue() {
   }, [location.pathname, dispatch]);
 
   const replaceId = (link, path) => {
-    const linkSplitted = link.split('/');
-    const pathSplitted = path.split('/');
+    const linkSplitted = link.split("/");
+    const pathSplitted = path.split("/");
     for (let i = 0; i < linkSplitted.length; i++) {
-      if (linkSplitted[i] !== pathSplitted[i] && linkSplitted[i] !== ':id') {
-        return false
+      if (linkSplitted[i] !== pathSplitted[i] && linkSplitted[i] !== ":id") {
+        return false;
       }
     }
-    return true
-  }
+    return true;
+  };
 
   const handlePanelStateChange = (state) => {
     dispatch(toggleLandActionsPanel(state));
   };
 
   return (
-    <QuickActionPanel handlePanelStateChange={handlePanelStateChange} quickActionsPanelState={quickActionsPanelState} activeModule={activeModule}>
+    <QuickActionPanel
+      title="Land Management"
+      handlePanelStateChange={handlePanelStateChange}
+      quickActionsPanelState={quickActionsPanelState}
+      activeModule={activeModule}
+      actions={SIDE_PANEL_MENU_ITEMS_LIST}
+    >
       {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
         <Switch>
-          <Route
-            path={SIDE_PANEL_MENU_ITEMS_LIST[option].link}
-            component={Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component]}
-          />
+          <Route path={SIDE_PANEL_MENU_ITEMS_LIST[option].link} component={Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component]} />
         </Switch>
       ))}
     </QuickActionPanel>

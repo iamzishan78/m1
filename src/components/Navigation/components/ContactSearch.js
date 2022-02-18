@@ -1,10 +1,19 @@
 import React, { useContext, useState } from "react";
-import { InputAdornment, TextField, IconButton, Tooltip } from "@material-ui/core";
+import {
+  InputAdornment,
+  TextField,
+  IconButton,
+  Tooltip,
+  Grid,
+  Typography,
+} from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
+import { useSelector } from "react-redux";
 
-import { AppContext } from "../../../AppContext";
+import { AppContext } from "AppContext";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const useStyles = makeStyles((theme) => ({
   search: {
@@ -61,61 +70,106 @@ const ContactSearch = () => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [search, setSearch] = useState("");
+  const { quickActionsPanelState, activeModule } = useSelector(({ contact }) => contact);
+
+  const isAllowed = stateApp?.user?.features?.find(
+    (f) => f.name === FEATURES.CONTACTSUBMENU
+  );
 
   return (
-    <div className={classes.search}>
-      <TextField
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setTimeout(() => {
-            setStateApp((stateApp) => ({
-              ...stateApp,
-              contactSearchQuery: e.target.value,
-              isContactSearching: true,
-            }));
-          }, 500);
-        }}
-        style={{
-          margin: 0,
-          width: "100%",
-        }}
-        className={classes.contactSearchField}
-        margin="dense"
-        variant="outlined"
-        placeholder="Search for contact"
-        InputProps={{
-          startAdornment: (
-            <InputAdornment>
-              <IconButton size="small">
-                <SearchIcon htmlColor="grey" />
-              </IconButton>
-            </InputAdornment>
-          ),
-          endAdornment: (
-            <>
-              <Tooltip title="Clear">
-                <IconButton
-                  size="small"
-                  htmlColor="#fff"
-                  className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" && classes.activeBtn}`}
-                  onClick={() => {
-                    setSearch("");
-                    setStateApp((stateApp) => ({
-                      ...stateApp,
-                      contactSearchQuery: "",
-                      isContactSearching: true,
-                    }));
-                  }}
-                >
-                  <ClearIcon />
-                </IconButton>
-              </Tooltip>
-            </>
-          ),
-        }}
-      />
-    </div>
+    <Grid
+      container
+      direction="row"
+      display="flex"
+      justify="space-between"
+      alignItems="center"
+      style={{
+        marginLeft: isAllowed && quickActionsPanelState ? "433px" : "7px",
+      }}
+    >
+      <Grid item md={8}>
+        <Grid
+          container
+          direction="row"
+          display="flex"
+          justify="flex-start"
+          alignItems="center"
+        >
+          {isAllowed && (
+            <Grid item md={2.5}>
+              <Typography
+                variant="h5"
+                style={{ color: "black", fontWeight: "bold", marginRight: "20px" }}
+              >
+                {activeModule.title ? activeModule.title: 'Contacts' }
+              </Typography>
+            </Grid>
+          )}
+          <Grid item md={6}>
+            <TextField
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setTimeout(() => {
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    contactSearchQuery: e.target.value,
+                    isContactSearching: true,
+                  }));
+                }, 500);
+              }}
+              style={{
+                margin: 0,
+                width: "100%",
+              }}
+              className={classes.contactSearchField}
+              margin="dense"
+              variant="outlined"
+              placeholder={`Search for ${activeModule.title ? 'lead, contact or prospect': 'contact'}` }
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment>
+                    <IconButton size="small">
+                      <SearchIcon htmlColor="grey" />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <>
+                    <Tooltip title="Clear">
+                      <IconButton
+                        size="small"
+                        htmlColor="#fff"
+                        className={`${classes.toggleBtn} ${
+                          stateApp.activityDisplayType === "table" &&
+                          classes.activeBtn
+                        }`}
+                        onClick={() => {
+                          setSearch("");
+                          setStateApp((stateApp) => ({
+                            ...stateApp,
+                            contactSearchQuery: "",
+                            isContactSearching: true,
+                          }));
+                        }}
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                ),
+              }}
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid item>
+        <div
+          className={classes.filterTabs}
+          style={{ paddingRight: "10px" }}
+        ></div>
+      </Grid>
+    </Grid>
   );
 };
 

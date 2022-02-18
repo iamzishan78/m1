@@ -53,7 +53,7 @@ export const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
     backgroundColor: "#0e1119",
     color: "white",
-    zIndex: 3,
+    zIndex: 1001,
   },
   quickActionText: {
     margin: "30px 10px 10px 10px",
@@ -70,7 +70,7 @@ export const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   pulloutBox: {
-    zIndex: 2,
+    zIndex: 1000,
     position: "absolute",
     top: "140px",
     height: "80px",
