@@ -72,6 +72,12 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
 
   const offClickHandler = (key, value) => updateAgreement(key, value);
 
+  const handleKeyDown = (e) => {
+    if (e.keyCode === 38 || e.keyCode === 40) {
+      e.preventDefault();
+    }
+  }
+
   return (
     <div className={classes.root}>
       <Accordion className={classes.accordionRoot} defaultExpanded={true}>
@@ -81,7 +87,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
               <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
-          onClick={(e) => {}}
+          onClick={(e) => { }}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>
@@ -132,10 +138,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 type="number"
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("grossAcres", event.target.value)}
-                                onWheel={(event) => {
-                                  event.stopPropagation();
-                                  event.target.blur();
-                                }}
+                                onKeyDown={handleKeyDown}
                               />
                             )}
                           />
@@ -153,9 +156,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 type="number"
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("netAcres", event.target.value)}
-                                onWheel={(event) => {
-                                  event.preventDefault();
-                                }}
+                                onKeyDown={handleKeyDown}
                               />
                             )}
                           />
@@ -173,9 +174,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 type="number"
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("coNetAcres", event.target.value)}
-                                onWheel={(event) => {
-                                  event.preventDefault();
-                                }}
+                                onKeyDown={handleKeyDown}
                               />
                             )}
                           />
@@ -198,9 +197,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 type="number"
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("reportGrossAcres", event.target.value)}
-                                onWheel={(event) => {
-                                  event.preventDefault();
-                                }}
+                                onKeyDown={handleKeyDown}
                               />
                             )}
                           />
@@ -218,9 +215,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 type="number"
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("reportNet", event.target.value)}
-                                onWheel={(event) => {
-                                  event.preventDefault();
-                                }}
+                                onKeyDown={handleKeyDown}
                               />
                             )}
                           />
@@ -233,15 +228,12 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                             render={(params) => (
                               <TextField
                                 {...params}
-                                defaultValue={params.value ?? null}
                                 label="Net Royalty"
                                 variant="outlined"
                                 type="number"
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("netRoyalty", event.target.value)}
-                                onWheel={(event) => {
-                                  event.preventDefault();
-                                }}
+                                onKeyDown={handleKeyDown}
                               />
                             )}
                           />
