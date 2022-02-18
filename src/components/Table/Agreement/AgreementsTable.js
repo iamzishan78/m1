@@ -56,6 +56,7 @@ function AgreementsTable(props) {
   const classes = useStyles();
 
   // function states
+  const [filters, setFilters] = useState([]);
   const [columns, Columns] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   // const [potentialIssuesList, setPotentialIssuesList] = useState([]);
@@ -165,7 +166,11 @@ function AgreementsTable(props) {
   }, [tableData]);
 
   useEffect(() => {
+    if (esFilters.length === 0) {
+      setFilters([])
+    }
     handleSelectedGridChange(TableHeader, { filters: esFilters }, columns, true)
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [esFilters])
 
@@ -204,10 +209,10 @@ function AgreementsTable(props) {
 
         setColumnsData(
           TableHeader,
-          esFilters,
+          filters,
           JSON.parse(JSON.stringify(TableHeader)),
           setColumns,
-          setESFilters,
+          setFilters,
           GET_ES_FILTER_LIST,
           esIndex,
           extendSearchQuery
@@ -319,12 +324,14 @@ function AgreementsTable(props) {
       case "resetFilters":
         tableActions.extendSearchQuery(extendSearchQuery);
         setESFilters(tableActions.pageESVariables.variables.filters);
+        setFilters(tableState.filterList)
         tableActions.genericESAction();
         break;
       case "search":
       case "sort":
       case "changeRowsPerPage":
         tableActions.extendSearchQuery(extendSearchQuery);
+        setFilters(tableState.filterList)
         tableActions.genericESAction();
         break;
       case "rowSelectionChange":

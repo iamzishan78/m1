@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button, Grid, Container, Box, CircularProgress, Tab, Tabs, IconButton, FormControl, RadioGroup, FormControlLabel, Radio } from "@material-ui/core";
+import { useDispatch } from "react-redux";
 
 import CloseSharp from "@material-ui/icons/CloseSharp";
 import DoneSharpIcon from "@material-ui/icons/DoneSharp";
@@ -15,6 +16,7 @@ import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { CONVERT_MULTITPLE_OWNER_TO_CONTACT } from "graphQL/useMutationConvertMultitpleOwnerToContact";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import Loader from "components/Loaders";
+import { convertMultipleOwnerToContactAction } from "store/actions/contactActions";
 import Tags from "components/Shared/Tagger";
 // import Typography from '@material-ui/core/Typography';
 
@@ -45,6 +47,7 @@ const TAB = Object.freeze({
 
 export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes, isEntities, onSuccess }) {
   const [stateApp] = React.useContext(AppContext);
+  const dispatch = useDispatch();
   const classes = useStyles();
 
   const [primaryOwner, setPrimaryOwner] = useState(rows[0]);
@@ -123,28 +126,37 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       existingContactId = nameAutValue._id
       action = ACTION.COMBINE
     }
-    Loader.createToast('contact-creation', 'Contact Creation in Progress')
-    convertMultitpleOwnerToContact({
-      variables: { ownerIds, entitiesIds, existingContactId, contactOwner, action, userId: stateApp.user.mongoId, tagsIds: newTagsIds },
-      refetchQueries: ["checkIfOwnersAreContacts"],
-      awaitRefetchQueries: true
-    }).then(
-      res => {
-        if (res.data && res.data.convertMultitpleOwnerToContact) {
-          const { success, message } = res.data.convertMultitpleOwnerToContact
-          if (success) {
-            if(onSuccess) onSuccess()
-            Loader.successToast('contact-creation', message)
-          } else {
-            Loader.errorToast('contact-creation', message)
-          }
-        } else {
-          Loader.errorToast('contact-creation', "Failed to convert to contact")
-        }
-      },
-      err => { console.log(err); Loader.errorToast('contact-creation', "Failed to convert to contact") }
-    );
 
+    const index = rows.findIndex(row => row.id === primaryOwner.id);
+    if(index > -1){
+      rows[index].isPrimary = true
+    }
+
+    if(entitiesIds.length === 0){
+      dispatch(convertMultipleOwnerToContactAction.STARTED({ rows, existingContactId, actionType: action, contactOwner, userId: stateApp.user.mongoId, tags: newTagsIds }))
+    }else{
+      Loader.createToast('contact-creation', 'Contact Creation in Progress')
+      convertMultitpleOwnerToContact({
+        variables: { ownerIds, entitiesIds, existingContactId, contactOwner, action, userId: stateApp.user.mongoId, tagsIds: newTagsIds },
+        refetchQueries: ["checkIfOwnersAreContacts"],
+        awaitRefetchQueries: true
+      }).then(
+        res => {
+          if (res.data && res.data.convertMultitpleOwnerToContact) {
+            const { success, message } = res.data.convertMultitpleOwnerToContact
+            if (success) {
+              if(onSuccess) onSuccess()
+              Loader.successToast('contact-creation', message)
+            } else {
+              Loader.errorToast('contact-creation', message)
+            }
+          } else {
+            Loader.errorToast('contact-creation', "Failed to convert to contact")
+          }
+        },
+        err => { console.log(err); Loader.errorToast('contact-creation', "Failed to convert to contact") }
+      );
+    }
     setM1nSelectedRowsIndexes([])
     onClose();
     setLoading(false);
@@ -272,6 +284,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                 <Grid item >
                   <ContactAutoComplete
                     value={contactOwner}
+                    contactValue="email"
                     onChange={(e, user) => {
                       setContactOwner(user.value);
                     }}

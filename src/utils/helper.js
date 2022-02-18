@@ -66,6 +66,7 @@ export const formatTaxOwners = (owners, formData) => {
       status: formData.contactStatus,
       contactOwner: formData.contactOwner,
       ownerType: owners[i].OwnerType,
+      isPrimary: owners[i].isPrimary,
       "entityDetail.address1": owners[i].StreetAddress,
       "entityDetail.globalOwner": owners[i].globalOwnerId,
     });
