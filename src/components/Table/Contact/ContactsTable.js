@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Container } from "@material-ui/core";
+import { useSelector } from "react-redux";
 import isEmpty from "lodash/isEmpty";
+import get from "lodash/get";
 import moment from "moment";
 
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
@@ -22,6 +24,7 @@ import { GET_ES_CONTACTS } from "graphQL/useQueryESContacts";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 
 import { getContactsAddress } from 'utils/helper';
+import { copy } from 'utils/helper';
 
 import {
   deepEqualObjects,
@@ -31,6 +34,20 @@ import {
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
+    "& .MuiToolbar-regular > div:nth-child(2)":{
+      overflow: "auto",
+      display: "flex",
+      flexDirection: "row-reverse"
+    },
+    "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(1)":{
+      marginRight: '52px'
+    },
+    "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(2)":{
+      marginRight: '-104px'
+    },
+    "& .MuiToolbar-regular > div:nth-child(1)":{
+      minWidth: "400px"
+    }
   },
   details: {
     display: "block",
@@ -64,6 +81,8 @@ function ContactsTable(props) {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState(defaultView);
+  const { activeModule } = useSelector(({ contact }) => contact);
+
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
@@ -102,6 +121,17 @@ function ContactsTable(props) {
   const orderByTracks = false;
   const startPaginationAt = 25;
 
+  const getFilters = () => {
+    let newFilters = []
+    if(selectedGridView?.filters){
+      newFilters = selectedGridView.filters
+    }
+    if(props.customAppliedFilters){
+      newFilters = [...newFilters, ...props.customAppliedFilters]
+    }
+    return newFilters;
+  }
+
   useEffect(() => {
     getESContacts({
       variables: {
@@ -110,10 +140,10 @@ function ContactsTable(props) {
           keep_alive: "1micros",
         },
         search: esSearch,
-        filters: selectedGridView?.filters ? selectedGridView?.filters : [],
+        filters: getFilters(),
       },
     });
-  }, [getESContacts, props.parent, props.contactSearchQuery, selectedGridView]);
+  }, [getESContacts, props.parent, props.contactSearchQuery, selectedGridView, props.customAppliedFilters]);
 
   useEffect(() => {
     if (tableData?.hits) {
@@ -159,10 +189,14 @@ function ContactsTable(props) {
     tableRef.current.changePage(0)
     tableRef.current.isFetching = false;
     if (!isEmpty(selectedGridView)) {
-      const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns, true)
+      const view = copy(selectedGridView);
+      if(view){
+        view.filters = getFilters();
+      }
+      const updatedColumns = handleSelectedGridChange(TableHeader, view, columns, true);
       setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
     }
-  }, [selectedGridView]);
+  }, [selectedGridView,  props.customAppliedFilters]);
 
   const count = tableData?.total || 0;
   const options = {
@@ -275,14 +309,27 @@ function ContactsTable(props) {
     return view;
   }
 
+  const getSelectedView = () => {
+    const view = copy(selectedGridView);
+    if(selectedGridView.type === 'Default') {
+      if(get(activeModule, 'title','').includes('All')){
+        view.name = view.name.replace('Contacts', get(activeModule, 'title','').replace('All ', ''))
+      }else{
+        view.name = view.name.replace('Contacts', get(activeModule, 'title',''))
+      }
+      
+    }
+    return view;
+  }
+
   const headerProps = {
     columns,
     Icon: Contact,
-    label: 'Contacts',
+    label: props.headerLabel,
     showViewModal,
     setShowSaveAsNew,
     setShowViewModal,
-    selectedGridView,
+    selectedGridView : getSelectedView(),
     updateGridView,
     selectedFilters: selectedFilters.current,
   };

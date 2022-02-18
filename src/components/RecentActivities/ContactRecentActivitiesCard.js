@@ -95,6 +95,9 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
       case "call":
         name = "Calls";
         break;
+        case "text_message":
+          name = "Text Messages";
+           break;
       case "email":
         name = "Emails";
         break;
@@ -105,7 +108,7 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
         name = "Tasks";
         break;
       case "mailer":
-        name = "Mailer Campaign";
+        name = "Mailers";
         break;
       default:
         name = "Calls";
@@ -137,11 +140,13 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
         </Grid>
 
         {getCheckboxItem("call")}
+        {getCheckboxItem("text_message")}
+        {getCheckboxItem("email")}
+        {getCheckboxItem("mailer")}
         {getCheckboxItem("meeting")}
         {getCheckboxItem("task")}
-        {getCheckboxItem("email")}
         {getCheckboxItem("deadline")}
-        {getCheckboxItem("mailer")}
+
       </div>
     </div>
   );
@@ -155,7 +160,7 @@ export default function ViewActivities() {
 
   const id = history.location.pathname.split("/")[history.location.pathname.split("/").length - 2];
 
-  const [activitiesFilter, setActivitiesFilter] = useState(["call", "meeting", "email", "task", "deadline", "mailer"]);
+  const [activitiesFilter, setActivitiesFilter] = useState(["call", "text_message","meeting", "email", "task", "deadline", "mailer"]);
   const [contactData, setContactData] = useState(null);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);

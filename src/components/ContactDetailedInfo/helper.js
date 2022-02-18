@@ -18,14 +18,55 @@ export const contactStatusOptions = [
   {
     label: "Unqualified Lead",
     value: "UnqualLead",
+    notInclude: true
   },
   {
     label: "Qualified Lead",
     value: "QualLead",
+    notInclude: true
   },
   {
-    label: "Contact",
-    value: "Contact",
+    label: "Lead",
+    value: "Lead",
+  },
+  {
+    label: "Prospect",
+    value: "Prospect",
+  },
+  {
+    label: "Deal Contact",
+    value: "Deal Contact",
+  },
+];
+
+export const contactNewStatusOptions = [
+  {
+    label: "Good Call",
+    value: "Good Call"
+  },
+  {
+    label: "Negative",
+    value: "Negative"
+  },
+  {
+    label: "No Attempt",
+    value: "No Attempt",
+  },
+  {
+    label: "No Chance",
+    value: "No Chance",
+  },
+  {
+    label: "Positive",
+    value: "Positive",
+  },
+  {
+    label: "Unsure",
+    value: "Unsure",
+  },
+  {
+    label: "Circle Back",
+    value: "Circle Back",
   },
 ];
 
@@ -74,14 +115,31 @@ const getLastUpdateByRow = (contactData) => {
 } 
 
 export const getBasicInfoExpContent = (contactData) => {
-  let status = null
+  let stage = null
   if(contactData?.status){
     const data = contactStatusOptions.find(status => status.value === contactData.status)
     if(data){
-      status = data.label
+      stage = data.label
     }else{
-      status = contactData.status
+      stage = contactData.status
     }
+  }
+
+  let contactStatus = null
+  if(contactData?.contactStatus){
+    const data = contactNewStatusOptions.find(status => status.value === contactData.contactStatus)
+    if(data){
+      contactStatus = data.label
+    }else{
+      contactStatus = contactData.contactStatus
+    }
+  }
+
+  let campaignName = []
+  if(typeof contactData?.campaignName === 'string'){
+    campaignName = [contactData?.campaignName]
+  }else if(Array.isArray(contactData?.campaignName)){
+    campaignName = contactData.campaignName
   }
   
   return {
@@ -147,7 +205,7 @@ export const getBasicInfoExpContent = (contactData) => {
     },
 
     "Campaign Name": {
-      data: { campaignName: contactData?.campaignName },
+      data: { campaignName },
       linkType: LinkTypes.None,
     },
     "Lead Source": {
@@ -163,8 +221,12 @@ export const getBasicInfoExpContent = (contactData) => {
       data: { territory: contactData?.territory },
       linkType: LinkTypes.None,
     },
+    Stage: {
+      data: { status: stage },
+      linkType: LinkTypes.None,
+    },
     Status: {
-      data: { status },
+      data: { contactStatus },
       linkType: LinkTypes.None,
     },
     "Contact Owner": {
