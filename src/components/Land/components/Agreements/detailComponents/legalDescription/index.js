@@ -73,6 +73,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
   const offClickHandler = (key, value) => updateAgreement(key, value);
 
   const handleKeyDown = (e) => {
+    console.log(e.keyCode);
     if (e.keyCode === 38 || e.keyCode === 40) {
       e.preventDefault();
     }
@@ -139,6 +140,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("grossAcres", event.target.value)}
                                 onKeyDown={handleKeyDown}
+                                onWheel={(e) => e.target.blur()}
                               />
                             )}
                           />
@@ -157,6 +159,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("netAcres", event.target.value)}
                                 onKeyDown={handleKeyDown}
+                                onWheel={(e) => e.target.blur()}
                               />
                             )}
                           />
@@ -175,6 +178,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("coNetAcres", event.target.value)}
                                 onKeyDown={handleKeyDown}
+                                onWheel={(e) => e.target.blur()}
                               />
                             )}
                           />
@@ -198,6 +202,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("reportGrossAcres", event.target.value)}
                                 onKeyDown={handleKeyDown}
+                                onWheel={(e) => e.target.blur()}
                               />
                             )}
                           />
@@ -216,6 +221,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("reportNet", event.target.value)}
                                 onKeyDown={handleKeyDown}
+                                onWheel={(e) => e.target.blur()}
                               />
                             )}
                           />
@@ -234,6 +240,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("netRoyalty", event.target.value)}
                                 onKeyDown={handleKeyDown}
+                                onWheel={(e) => e.target.blur()}
                               />
                             )}
                           />
