@@ -26,6 +26,7 @@ import Summary from "components/Land/components/Agreements/detailComponents/summ
 import RelatedParties from "components/Land/components/Agreements/detailComponents/relatedParties";
 import Provisions from "components/Land/components/Agreements/detailComponents/provisions";
 import LegalDescription from "components/Land/components/Agreements/detailComponents/legalDescription";
+import RelatedWells from "components/Land/components/Agreements/detailComponents/relatedWells";
 import Documents from "components/Land/components/Agreements/detailComponents/documents";
 
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -465,7 +466,16 @@ export default function DetailComponents(props) {
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
               <div className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
-                <LegalDescription agreementDetails={agreementDetails} uniObj={uniObj} agreementId={agreementId} updateAgreement={updateAgreement} />
+                <LegalDescription
+                  agreementDetails={agreementDetails}
+                  uniObj={uniObj}
+                  agreementId={agreementId}
+                  updateAgreement={updateAgreement}
+                />
+              </div>
+              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
+              <div className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
+                <RelatedWells uniObj={uniObj} />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
               <div className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
