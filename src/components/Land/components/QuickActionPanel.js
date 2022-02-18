@@ -78,14 +78,6 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
           [classes.landRootExpanded]: quickActionsPanelState,
           [classes.landRootCollapsed]: !quickActionsPanelState,
         })}
-        style={{
-          position: "relative",
-          top: "65px",
-          display: "flex",
-          flexDirection: "column",
-          // height: "calc(100vh - 65px)",
-          alignItems: "stretch",
-        }}
       >
         {children}
       </div>

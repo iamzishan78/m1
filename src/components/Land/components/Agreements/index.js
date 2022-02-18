@@ -40,7 +40,7 @@ function Agreements(props) {
   ];
 
   return (
-    <div style={{ marginTop: 62, padding: "75px 56px" }}>
+    <div style={{ marginTop: 56, padding: "75px 56px" }}>
       <AnalyticsCards
         parent={"Agreements"}
         esIndex={esIndex}

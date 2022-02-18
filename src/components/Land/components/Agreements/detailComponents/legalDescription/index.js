@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   accordionDetails: {
-    padding: "30px 18px"
+    padding: "30px 18px",
   },
   numberField: {
     "& .MuiOutlinedInput-root": {
@@ -81,7 +81,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
               <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
-          onClick={(e) => { }}
+          onClick={(e) => {}}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>
@@ -101,7 +101,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                     control={control}
                     name="legalDesctiption"
                     defaultValue={agreementDetails?.legalDescription ?? ""}
-                    render={params => (
+                    render={(params) => (
                       <TextField
                         {...params}
                         label="Full Legal Description"
@@ -124,7 +124,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                             name="grossAcres"
                             defaultValue={agreementDetails?.grossAcres ?? ""}
                             control={control}
-                            render={params => (
+                            render={(params) => (
                               <TextField
                                 {...params}
                                 label="Gross"
@@ -132,6 +132,10 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 type="number"
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("grossAcres", event.target.value)}
+                                onWheel={(event) => {
+                                  event.stopPropagation();
+                                  event.target.blur();
+                                }}
                               />
                             )}
                           />
@@ -141,7 +145,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                             name="netAcres"
                             defaultValue={agreementDetails?.netAcres ?? ""}
                             control={control}
-                            render={params => (
+                            render={(params) => (
                               <TextField
                                 {...params}
                                 label="Net"
@@ -149,6 +153,9 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 type="number"
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("netAcres", event.target.value)}
+                                onWheel={(event) => {
+                                  event.preventDefault();
+                                }}
                               />
                             )}
                           />
@@ -158,7 +165,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                             name="coNetAcres"
                             defaultValue={agreementDetails?.coNetAcres ?? ""}
                             control={control}
-                            render={params => (
+                            render={(params) => (
                               <TextField
                                 {...params}
                                 label="Co. Net"
@@ -166,6 +173,9 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 type="number"
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("coNetAcres", event.target.value)}
+                                onWheel={(event) => {
+                                  event.preventDefault();
+                                }}
                               />
                             )}
                           />
@@ -180,7 +190,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                             name="reportGrossAcres"
                             defaultValue={agreementDetails?.reportGrossAcres ?? ""}
                             control={control}
-                            render={params => (
+                            render={(params) => (
                               <TextField
                                 {...params}
                                 label="Report Gross"
@@ -188,6 +198,9 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 type="number"
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("reportGrossAcres", event.target.value)}
+                                onWheel={(event) => {
+                                  event.preventDefault();
+                                }}
                               />
                             )}
                           />
@@ -197,7 +210,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                             name="reportNet"
                             defaultValue={agreementDetails?.reportNet ?? ""}
                             control={control}
-                            render={params => (
+                            render={(params) => (
                               <TextField
                                 {...params}
                                 label="Report Net"
@@ -205,6 +218,9 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 type="number"
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("reportNet", event.target.value)}
+                                onWheel={(event) => {
+                                  event.preventDefault();
+                                }}
                               />
                             )}
                           />
@@ -214,7 +230,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                             name="netRoyalty"
                             defaultValue={agreementDetails?.netRoyalty ?? ""}
                             control={control}
-                            render={params => (
+                            render={(params) => (
                               <TextField
                                 {...params}
                                 defaultValue={params.value ?? null}
@@ -223,6 +239,9 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 type="number"
                                 className={classes.numberField}
                                 onBlur={(event) => offClickHandler("netRoyalty", event.target.value)}
+                                onWheel={(event) => {
+                                  event.preventDefault();
+                                }}
                               />
                             )}
                           />

@@ -7,7 +7,7 @@ import { useLazyQuery } from "@apollo/client";
 
 import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 
-const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles(() => ({
   root: {},
   card: { borderRadius: "8px" },
   cardHeaderTypography: {
