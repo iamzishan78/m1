@@ -1,6 +1,4 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useLazyQuery } from "@apollo/client";
 import { useForm, Controller } from "react-hook-form";
 import { Grid, Typography, Box, Accordion, AccordionSummary, AccordionDetails, IconButton } from "@material-ui/core";
 import { useStyles as summaryStyles, StyledTextField } from "../style";
@@ -15,25 +13,15 @@ import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutli
 import FieldsSection from "./fieldsSection";
 import ProgressBar from "components/Shared/ui/ProgressBar";
 
-import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
-
-export default function Summary({ agreementDetails, activeAgreement, agreementProvisions, standardProvisions, updateAgreement }) {
+export default function Summary({ agreementDetails, activeAgreement, agreementProvisions, standardProvisions, updateAgreement, shapeSummaryDetails }) {
   const classes = summaryStyles();
   const { control, reset } = useForm();
-
-  const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
-
-  useEffect(() => {
-    if (activeAgreement?._id) {
-      getShapeSummaryDetails({ variables: { shapeId: activeAgreement._id } });
-    }
-  }, [activeAgreement, getShapeSummaryDetails]);
 
   useEffect(() => {
     if (agreementDetails) {
       reset(agreementDetails);
     }
-  }, [reset, agreementDetails, getShapeSummaryDetails]);
+  }, [reset, agreementDetails]);
 
   const hasCustomProvision = agreementProvisions.find((provision) => !provision.templateRef);
 
@@ -60,15 +48,15 @@ export default function Summary({ agreementDetails, activeAgreement, agreementPr
                 <div style={{ width: "40%" }}>
                   <Grid container spacing={2} justify="flex-end" className={classes.summaryHeaderIcons}>
                     <Grid item>
-                      <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeWells || 0} </div>
+                      <div className={classes.summaryValue}> {shapeSummaryDetails?.shapeWells || 0} </div>
                       <WellIcon opacity="1.0" small color="#757575" />
                     </Grid>
                     <Grid item>
-                      <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeOwners || 0} </div>
+                      <div className={classes.summaryValue}> {shapeSummaryDetails?.shapeOwners || 0} </div>
                       <TractIcon opacity="1.0" small />
                     </Grid>
                     <Grid item>
-                      <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.documents || 0} </div>
+                      <div className={classes.summaryValue}> {shapeSummaryDetails?.documents || 0} </div>
                       <InsertDriveFileOutlinedIcon opacity="1.0" small />
                     </Grid>
                   </Grid>

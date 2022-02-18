@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex !important",
     alignItems: "center",
     "& .MuiChip-root": {
-      width: "40px",
+      width: "auto",
       fontSize: "1.2rem",
       fontWeight: "bold",
       color: "#fff",
@@ -63,10 +63,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LagalDescription({ uniObj }) {
+export default function LagalDescription({ uniObj, shapeSummaryDetails }) {
   const classes = useStyles();
   const customClasses = customStyles();
-  const [tractsNumber, setTractsNumber] = useState(0);
   const [selectedWellTab, setWellSelectedTab] = useState(0);
 
   const WellHeader = ({ selectedWellTab, setWellSelectedTab }) => (
@@ -88,14 +87,14 @@ export default function LagalDescription({ uniObj }) {
               <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
-          onClick={(e) => {}}
+          onClick={(e) => { }}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>
               <Typography variant="h5" className={customClasses.titleText}>
                 Related Wells
               </Typography>
-              <Chip color="info" label={12} />
+              <Chip color="info" label={shapeSummaryDetails?.shapeWells} />
             </Grid>
           </Grid>
         </AccordionSummary>

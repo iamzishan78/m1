@@ -23,7 +23,7 @@ export const useStyles = makeStyles((theme) => ({
     display: "flex !important",
     alignItems: "center",
     "& .MuiChip-root": {
-      width: "40px",
+      width: "auto",
       fontSize: "1.2rem",
       fontWeight: "bold",
       color: "#fff",

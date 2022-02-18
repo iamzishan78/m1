@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex !important",
     alignItems: "center",
     "& .MuiChip-root": {
-      width: "40px",
+      width: "auto",
       fontSize: "1.2rem",
       fontWeight: "bold",
       color: "#fff",
@@ -100,7 +100,7 @@ export default function LagalDescription({ uniObj }) {
               <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
-          onClick={(e) => {}}
+          onClick={(e) => { }}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>

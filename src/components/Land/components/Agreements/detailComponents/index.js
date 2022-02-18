@@ -35,6 +35,7 @@ import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
+import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 
 const useStyles = makeStyles((theme) => ({
   detailHeader: {
@@ -233,6 +234,7 @@ export default function DetailComponents(props) {
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
   const [getStandardProvisions, { data: standardProvisions }] = useLazyQuery(GET_STANDARD_PROVISIONS);
   const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
+  const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
   useEffect(() => {
@@ -309,6 +311,12 @@ export default function DetailComponents(props) {
       });
     }
   }, [activeAgreement]);
+
+  useEffect(() => {
+    if (activeAgreement?._id) {
+      getShapeSummaryDetails({ variables: { shapeId: activeAgreement._id } });
+    }
+  }, [activeAgreement, getShapeSummaryDetails]);
 
   const updateAgreement = (field, value, isCustom) => {
     if (agreementDetails[field] === value) return;
@@ -449,6 +457,7 @@ export default function DetailComponents(props) {
                   agreementProvisions={get(agreementProvisions, "getAgreementProvisions", [])}
                   standardProvisions={get(standardProvisions, "getStandardProvisions", [])}
                   updateAgreement={updateAgreement}
+                  shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails}
                 />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
@@ -475,7 +484,7 @@ export default function DetailComponents(props) {
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
               <div className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
-                <RelatedWells uniObj={uniObj} />
+                <RelatedWells uniObj={uniObj} shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails} />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
               <div className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
