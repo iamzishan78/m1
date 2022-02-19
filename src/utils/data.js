@@ -95,6 +95,7 @@ export const contactManagementRoutes = {
     title: "All Entities",
     link: "/contacts",
     component: "ContactsTable",
+    search: true
   },
   LEADS: {
     featureFlag: "CONTACTSUBMENU",
@@ -103,6 +104,7 @@ export const contactManagementRoutes = {
     component: "ContactsTable",
     filterValue: 'Lead',
     showAnalytics: true,
+    search: true
   },
   PROSPECTS: {
     featureFlag: "CONTACTSUBMENU",
@@ -111,6 +113,7 @@ export const contactManagementRoutes = {
     component: "ContactsTable",
     filterValue: 'Prospect',
     showAnalytics: true,
+    search: true
   },
   CONTACTS: {
     featureFlag: "CONTACTSUBMENU",
@@ -119,18 +122,21 @@ export const contactManagementRoutes = {
     component: "ContactsTable",
     filterValue: 'Contact',
     showAnalytics: true,
+    search: true
   },
   ACTIVITY: {
     featureFlag: "CONTACTSUBMENU",
     title: "Activity Dashboard",
     link: "/contacts/activityDashboard",
-    component: "ContactsTable",
+    component: "ActivitiesTable",
+    search: false
   },
   CAMPAIGN: {
     featureFlag: "CONTACTSUBMENU",
     title: "Campaign Management",
     link: "/contacts/campaignManagement",
     component: "ContactsTable",
+    search: true
   },
 };
 

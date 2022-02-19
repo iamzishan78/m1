@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CUSTOM_DATES = {
+export const CUSTOM_DATES = {
   ALL_DATES: "All Dates",
   THIS_YEAR_TO_LAST_MONTH: "This year-to-last-month",
   THIS_YEAR_TO_DATE: "This year to date",
