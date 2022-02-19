@@ -227,6 +227,10 @@ function ExpandableCard(props) {
       background: "white",
       color: "lightgrey",
     },
+    unClickable: {
+      marginLeft: "10px",
+      fontSize: "16px",
+    },    
     prevlocation: {
       marginLeft: "10px",
       fontSize: "16px",
@@ -507,15 +511,38 @@ function ExpandableCard(props) {
   // BreadCrum for Document's well
   const DisplayBreadCrums = () => {
     return <div className={classes.breadcrumContainer}>
-      <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-        <Typography className={classes.prevlocation} color="inherit" onClick={() => { setStateApp({ ...stateApp, DocumentDrawer: false }); history.push('/documents'); }}>
-          Documents
-        </Typography>
-        <Typography className={classes.prevlocation} color="inherit" onClick={() => { setStateApp({ ...stateApp, DocumentDrawer: true }); history.push('/documents'); }}>
-          Wells
-        </Typography>
-        <Typography className={classes.currentLocation}> {title.toUpperCase()}</Typography>
-      </Breadcrumbs>
+      
+        {
+          history.location?.state?.fromUnitDetail
+          &&
+          <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+            <Typography className={classes.unClickable} color="inherit">Units</Typography>
+            <Typography className={classes.prevlocation} color="inherit"
+              onClick={() => {
+                setStateApp({ ...stateApp, selectedWell: null, selectedWellId: null, wellSelectedCoordinates: [] });
+                history.push(`/map/units/${history.location?.state?.unitId}`);
+              }}>
+              {history.location?.state?.unitName}
+            </Typography>
+            <Typography className={classes.unClickable} color="inherit">Wells</Typography>
+            <Typography className={classes.currentLocation}> {title.toUpperCase()}</Typography>
+          </Breadcrumbs>
+        }{
+          history.location?.state?.showWellBreadcrumb
+          &&
+          <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+            <Typography className={classes.prevlocation} color="inherit"
+              onClick={() => { setStateApp({ ...stateApp, DocumentDrawer: false }); history.push('/documents'); }}>
+              Documents
+            </Typography>
+            <Typography className={classes.prevlocation} color="inherit"
+              onClick={() => { setStateApp({ ...stateApp, DocumentDrawer: true }); history.push('/documents'); }}>
+              Wells
+            </Typography>
+            <Typography className={classes.currentLocation}> {title.toUpperCase()}</Typography>
+          </Breadcrumbs>
+        }
+      
     </div>
   }
 
@@ -551,8 +578,9 @@ function ExpandableCard(props) {
           open={openBugModal}
           onClose={() => setOpenBugModal(false)}
         />
-
-        {(history.location?.state?.showWellBreadcrumb) && <DisplayBreadCrums />}
+        {( history.location?.state?.fromUnitDetail
+         || history.location?.state?.showWellBreadcrumb)
+         && <DisplayBreadCrums />}
 
         {(history.location?.state?.showAgreementBreadcrumb || history.location?.state?.showTractsBreadcrumb) && (
           <Grid container spacing={2} alignItems="center" className={classes.breadcrumb}>
