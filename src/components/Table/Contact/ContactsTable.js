@@ -338,10 +338,17 @@ function ContactsTable(props) {
       view.name === "Recently Modified" ||
       view.name === "Recently Added"
     ) {
-      view.filters[0].value.range[view.filters[0].field].gte =
-        moment().subtract(30, "days").toISOString();
-      view.filters[0].value.range[view.filters[0].field].lte =
-        moment().toISOString();
+      view.filters[0] = {
+        field: view.filters[0].field,
+        type: 'range',
+        value: {
+          gte: moment().subtract(30, "days").toISOString(),
+          lte: moment().toISOString()
+        }
+      }
+      // view.filters[0].type = 'range'
+      // view.filters[0].value.gte = moment().subtract(30, "days").toISOString();
+      // view.filters[0].value.lte = moment().toISOString();
     }
     return view;
   }

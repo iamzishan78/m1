@@ -359,7 +359,7 @@ function DocumentsTable(props) {
       selectedGridView
     );
     selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
-    if(action === 'filterChange'){
+    if (action === 'filterChange') {
       setFilters(tableState.filterList)
     }
     switch (action) {
@@ -402,6 +402,7 @@ function DocumentsTable(props) {
       view.filters[0].value = user._id;
     }
     if (view.name === "Recently Modified" || view.name === "Recently Added") {
+      view.filters[0].type = 'range'
       view.filters[0].value.range[view.filters[0].field].gte = moment()
         .subtract(30, "days")
         .toISOString();
