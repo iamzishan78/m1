@@ -379,6 +379,7 @@ export default function DetailInfo(props) {
                               isMerged={!!props.contactData.mergedContacts}
                               content={row.data}
                               linkType={row.linkType}
+                              noMargin={key === 'Campaign Name'}
                             >
                               {row.inner}
                             </FieldContent>

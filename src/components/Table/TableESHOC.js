@@ -133,6 +133,7 @@ export const TableESHOC = (Component) => {
                             query: tableMeta.extendSearchQuery,
                             fields: tableMeta.searchFields
                         },
+                        sort: tableMeta.defaultSort,
                         filters: [
                             ...(tableMeta.filters ? tableMeta.filters : []),
                             ...(tableMeta.polygon) ? [tableMeta.polygon] : []
@@ -353,16 +354,48 @@ export const TableESHOC = (Component) => {
                         first: tableState.rowsPerPage,
                         after: null,
                     },
-                    ...(!isEmpty(tableState.sortOrder)) && {
-                        sort:
-                        {
-                            field: columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
-                                columns.find(el => el.name === tableState.sortOrder?.name)?.name,
-                            order: tableState.sortOrder?.direction
-                            // unmapped_type: "null",
-                            // missing: "_last"
-                        }
-                    },
+                    ...(!isEmpty(tableState.sortOrder)) ? {
+                        sort: (() => {
+                            let field = columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
+                                columns.find(el => el.name === tableState.sortOrder?.name)?.name;
+                            // if (!Array.isArray(field)) field = [ field ]
+                            if (Array.isArray(field)) {
+                                return [
+                                    {
+                                        _script: {
+                                            type: "number",
+                                            script: {
+                                                lang: "painless",
+                                                source: `if (
+                                                    ${field.map(el => `doc['${el}'].isEmpty()`).join(' && ')}
+                                                ) {return 1} else {return 0}`
+                                            },
+                                            order: "asc"
+                                        }
+                                    },
+                                    {
+                                        _script: {
+                                            type: "string",
+                                            script: {
+                                                lang: "painless",
+                                                source: `${field.map(el => `if (!doc['${el}'].isEmpty()) {return doc['${el}'].value}`).join(' else ')}
+                                                    else {return ''}`
+                                            },
+                                            order: tableState.sortOrder?.direction
+                                        }
+                                    }
+                                ]
+                            } else {
+                                return {
+                                    [field]: {
+                                        order: tableState.sortOrder?.direction,
+                                        // unmapped_type: "null",
+                                        missing: "_last"
+                                    }
+                                }
+                            }
+                        })()
+                    } : tableMeta.defaultSort,
 
                     filters: tableState.filters ? [...tableState.filters] : []
                 },
@@ -383,9 +416,15 @@ export const TableESHOC = (Component) => {
                             value = data.value
                         }
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value })
+                    } else if (columns[index].custom?.formatedFilterOptions?.length > 0 && columns[index].custom?.isPurchased) {
+                        let value = val[0];
+                        const filterData = columns[index].custom?.formatedFilterOptions;
+                        const data = filterData.find(f => f.label === value)
+                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string })
                     } else {
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
                     }
+
                 }
             })
             if (selectedGridView?.filters && selectedGridView.type === 'Default') {

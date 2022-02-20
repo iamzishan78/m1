@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Container } from "@material-ui/core";
+import { useSelector } from "react-redux";
 import isEmpty from "lodash/isEmpty";
+import get from "lodash/get";
 import moment from "moment";
 
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
 import Contact from "components/Shared/svgIcons/contact";
 import Table from "components/Shared/M1nTable/components/Table";
-import TableHOC from "components/Table/TableHOC";
+import TableESHOC from "../TableESHOC";
 
 import Loader from "components/Loaders";
 import GridView from "components/Shared/GridView";
@@ -28,11 +30,25 @@ import {
   deepEqualObjects,
   setStateIfDeepEqual,
 } from "components/Shared/functions";
-import TableESHOC from "../TableESHOC";
+
 
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
+    "& .MuiToolbar-regular > div:nth-child(2)": {
+      overflow: "auto",
+      display: "flex",
+      flexDirection: "row-reverse"
+    },
+    "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(1)": {
+      marginRight: '52px'
+    },
+    "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(2)": {
+      marginRight: '-104px'
+    },
+    "& .MuiToolbar-regular > div:nth-child(1)": {
+      minWidth: "400px"
+    }
   },
   details: {
     display: "block",
@@ -66,6 +82,8 @@ function ContactsTable(props) {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState(defaultView);
+  const { activeModule } = useSelector(({ contact }) => contact);
+
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
@@ -131,6 +149,17 @@ function ContactsTable(props) {
     return hits
   }
 
+  const getFilters = () => {
+    let newFilters = []
+    if (selectedGridView?.filters) {
+      newFilters = selectedGridView.filters
+    }
+    if (props.customAppliedFilters) {
+      newFilters = [...newFilters, ...props.customAppliedFilters]
+    }
+    return newFilters;
+  }
+
   useEffect(() => {
     props.setTableMeta({
       addableName: "Contact",
@@ -138,8 +167,9 @@ function ContactsTable(props) {
       searchFields: ["_all"],
       TableHeader: copy(TableHeader),
       esIndex: "contacts_flat",
-      filters: selectedGridView?.filters ? selectedGridView?.filters : [],
+      filters: getFilters(),
       startPaginationAt: 25,
+      defaultSort: { field: 'lastUpdateAt', order: 'desc' },
       // formatColumns,
       formatHits,
       initializeGenericData: { key: 'id', actions: genericDataActions }
@@ -147,7 +177,7 @@ function ContactsTable(props) {
     // eslint-disable-next-line
   }, [
     props.contactSearchQuery,
-    selectedGridView
+    selectedGridView, props.customAppliedFilters
     // searchInput
   ]);
 
@@ -196,10 +226,14 @@ function ContactsTable(props) {
     tableRef.current.changePage(0)
     tableRef.current.isFetching = false;
     if (!isEmpty(selectedGridView)) {
-      const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns, true)
+      const view = copy(selectedGridView);
+      if (view) {
+        view.filters = getFilters();
+      }
+      const updatedColumns = handleSelectedGridChange(TableHeader, view, columns, true);
       setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
     }
-  }, [selectedGridView]);
+  }, [selectedGridView, props.customAppliedFilters]);
 
   // const count = tableData?.total || 0;
   // const options = {
@@ -312,17 +346,35 @@ function ContactsTable(props) {
     return view;
   }
 
+  const getSelectedView = () => {
+    const view = copy(selectedGridView);
+    if (selectedGridView.type === 'Default') {
+      if (get(activeModule, 'title', '').includes('All')) {
+        view.name = view.name.replace('Contacts', get(activeModule, 'title', '').replace('All ', ''))
+      } else {
+        view.name = view.name.replace('Contacts', get(activeModule, 'title', ''))
+      }
+
+    }
+    return view;
+  }
+
   const headerProps = {
     columns,
     Icon: Contact,
-    label: 'Contacts',
+    label: props.headerLabel,
     showViewModal,
     setShowSaveAsNew,
     setShowViewModal,
-    selectedGridView,
+    selectedGridView: getSelectedView(),
     updateGridView,
     selectedFilters: selectedFilters.current,
   };
+
+  delete props.options.customToolbar;
+  delete props.options.customToolbarSelect;
+  delete props.options.onRowClick;
+  props.options.search = false
 
   return (
     <>
@@ -353,7 +405,7 @@ function ContactsTable(props) {
           headerProps={headerProps}
           columns={props.columns}
           rows={props.rows}
-          // total={total}
+          total={total}
           loading={loading}
           addAble={addAble}
           targetLabel={targetLabel}

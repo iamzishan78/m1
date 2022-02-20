@@ -721,22 +721,21 @@ function SubTable(props) {
 
   // handlers
   const handleWellFlyTo = (value) => {
-    // setting state to fly to the selected well
+    let unitId = history.location.pathname.split("/");
+    history.push(
+      `/map/wells/${value?.wellId.toUpperCase()}`,
+      {
+        fromUnitDetail: true,
+        unitName: stateApp.selectedShape.shapeLabel,
+        unitId: unitId[unitId.length - 1]
+      }
+    );
     setStateApp((stateApp) => ({
       ...stateApp,
-      fitBounds: null,
-      selectedWell: null,
+      selectedShape: null,
       selectedWellId: value.wellId ? value.wellId.toLowerCase() : null,
-      wellSelectedCoordinates: [value.center[0], value.center[1]],
-      wellListFromSearch: [
-        {
-          id: value.wellId,
-          longitude: value.center[0],
-          latitude: value.center[1],
-        },
-      ],
+      wellSelectedCoordinates: [value.center[0], value.center[1]]
     }));
-    stateApp.toggleLayersActivity("Search", true);
   };
 
   const handleLocationFlyTo = (newValue) => {
@@ -1481,6 +1480,10 @@ function SubTable(props) {
                         className={`${classes.icons}`}
                         onClick={(e) => {
                           e.stopPropagation();
+                          // for unit wells we need to use globalWell instead of wellId
+                          if (props.targetLabel === "well") {
+                            value.wellId = props.rows[tableMeta.rowIndex].globalWell ?? value.wellId;
+                          }
                           handleClickFlyToIcon(props.targetLabel, value);
                         }}
                         aria-label="fly"
@@ -3355,12 +3358,16 @@ function SubTable(props) {
       return (
         <>
           <div
-            style={{
-              display: "inline",
-              float: "left",
-              marginRight: "15px",
-              marginTop: "5px",
-            }}
+            style={
+              props.addAble.type === "contact" ? {
+                marginRight: "67px",
+                marginTop: "5px",
+              } : {
+                display: "inline",
+                float: "left",
+                marginRight: "15px",
+                marginTop: "5px",
+              }}
           >
             {props.addAble.type === "parcelInterest" && (
               <Button color="secondary" className={classes.multiSelectionTopBarButtons} disabled={true} onClick={() => { }}>

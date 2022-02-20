@@ -10,7 +10,7 @@ import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { toggleBulkUploadAction } from "store/actions/commonActions";
 import { GET_JOB_UPLOAD_URI } from "graphQL/useQueryGetJobUploadUri";
-import { GET_CONTACT_CAMPAIGN, CONVERT_TAX_OWNER_TO_CONTACT } from "store/type";
+import { GET_CONTACT_CAMPAIGN, CONVERT_TAX_OWNER_TO_CONTACT, CONVERT_MULTIPLE_OWNER_TO_CONTACT } from "store/type";
 
 function* getContactCampaign(action) {
   try {
@@ -58,8 +58,47 @@ function* convertTaxOwnerToContact(action) {
   }
 }
 
+function* convertMultipleOwnerToContact(action) {
+  const bulkUpload = yield select((state) => state.common.bulkUpload);
+  try {
+    const { rows, existingContactId, actionType, userId } = action.payload;
+    let owners = [];
+    for(let i = 0; i < rows.length; i++) {
+      owners.push({ node: {...rows[i], OwnerType: rows[i].ownershipType } });
+    }
+    owners = formatTaxOwners(copy(owners), action.payload);
+
+    const uploadUri = yield call(Api.query, GET_JOB_UPLOAD_URI, {
+      jobName: "Contacts",
+      jobType: "CONTACTS",
+      userId,
+      requestPayload: {
+        existingContactId,
+        actionType
+      },
+    });
+
+    const { uri, id, internalKey } = uploadUri.data.getJobUploadUri.job;
+
+    yield put(toggleBulkUploadAction(!bulkUpload));
+    const res = yield call(Api.fetchBlob, JSON.stringify(owners), id, internalKey, uri);
+    if (res?._response?.status === 201) {
+      const jobResponse = yield call(Api.mutate, CREATE_JOB, { jobId: id, sendEmail: false });
+      yield call(Api.mutate, UPDATE_JOB, {
+        job: {
+          _id: id,
+          createJobResponse: get(jobResponse, "data.createJob", null),
+        },
+      });
+    }
+  } catch (error) {
+    yield put(convertTaxOwnerToContactAction.REJECTED());
+  }
+}
+
 /// /////////// Watchers ///////////////////////
 export function* watcherContacts() {
   yield takeLatest(GET_CONTACT_CAMPAIGN.STARTED, getContactCampaign);
   yield takeLatest(CONVERT_TAX_OWNER_TO_CONTACT.STARTED, convertTaxOwnerToContact);
+  yield takeLatest(CONVERT_MULTIPLE_OWNER_TO_CONTACT.STARTED, convertMultipleOwnerToContact);
 }
