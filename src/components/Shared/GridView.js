@@ -387,7 +387,7 @@ const InputField = ({
                   type: "Custom",
                   user,
                   filters: selectedFilters,
-                  columns: columns.map((col) => ({ name: col.name, display: col.options.display })),
+                  columns: columns.map((col) => ({ name: col.name, display: col.options.display === false ? false : true })),
                 },
               },
               refetchQueries: ["getGridViews"],

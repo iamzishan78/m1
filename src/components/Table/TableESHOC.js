@@ -17,9 +17,9 @@ import { AutoCompleteFilter } from "./AutoCompleteFilter";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { get } from "lodash";
 
-import { setColumnsData } from "components/Table/helpers";
-
+import { copy } from 'utils/helper';
 import { usetableStyles } from "./Styles";
+import { handleSelectedGridChange } from "./helpers";
 
 export const TableESHOC = (Component) => {
     return function HOC(props) {
@@ -82,7 +82,7 @@ export const TableESHOC = (Component) => {
 
         const [stateApp, setStateApp] = useContext(AppContext);
 
-        const tableData = elasticData?.getESSimpleSearch
+        const tableData = elasticData?.getESSimpleSearch || {}
 
         useEffect(() => {
             if (constDataTracks?.tracksByObjectType) {
@@ -140,7 +140,11 @@ export const TableESHOC = (Component) => {
                         ]
                     }
                 });
+
+                if (tableMeta.selectedGridView)
+                    handleSelectedGridChange(tableMeta.TableHeader, tableMeta.selectedGridView, columns, true);
             }
+            // eslint-disable-next-line
         }, [tableMeta]);
 
         useEffect(() => {
@@ -196,18 +200,16 @@ export const TableESHOC = (Component) => {
         ]);
 
 
-        const setColumnsData = (columns) => {
+        const setColumnsData = (tableCols) => {
             let { TableHeader, extendSearchQuery, esIndex } = tableMeta
-            columns.forEach((column, index) => {
-                const tableCol = TableHeader.find((el) => el.name === column.name)
+            tableCols.forEach((column, index) => {
                 if (column?.options?.filter) {
                     const custom = column.custom;
                     column.options = {
-                        ...tableCol.options,
                         ...column.options,
                         filter: true,
                         filterType: "custom",
-                        // filterList: filters[index],
+                        filterList: undefined,
                         customFilterListOptions: {
                             render: v => v.map(l => l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l),
                         },
@@ -237,9 +239,14 @@ export const TableESHOC = (Component) => {
                         //   setFilters(filterList);
                         // },
                     };
+                } else {
+                    column.options = {
+                        ...column.options,
+                        filterList: undefined,
+                    }
                 }
             });
-            setColumns(columns);
+            setColumns(tableCols);
         };
 
         const initializeGenericData = useCallback((ids, actions) => {
@@ -337,9 +344,25 @@ export const TableESHOC = (Component) => {
             return data
         }
 
+        const handleMultiFieldFilter = (esFilter) => {
+            const filters = []
+            if (esFilter) {
+                esFilter.forEach((filter) => {
+                    if (typeof filter.field === 'string') {
+                        filters.push(filter)
+                    } else {
+                        filter.field.forEach((_, index) => {
+                            filters.push({ field: filter.field[index], value: filter.value[index] })
+                        })
+                    }
+                })
+            }
+            return filters
+        }
+
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
             tableState.esIndex = tableMeta.esIndex;
-            tableState.filters = tableMeta.filters ? tableMeta.filters : [];
+            // tableState.filters = tableMeta.filters ? tableMeta.filters : [];
             tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
 
             let pageESVariables = {
@@ -395,7 +418,7 @@ export const TableESHOC = (Component) => {
                                 }
                             }
                         })()
-                    } : tableMeta.defaultSort,
+                    } : { sort: tableMeta.defaultSort },
 
                     filters: tableState.filters ? [...tableState.filters] : []
                 },
@@ -435,6 +458,7 @@ export const TableESHOC = (Component) => {
             if (tableState.polygon) {
                 pageESVariables.variables.filters.push(tableState.polygon)
             }
+
             return {
                 pageESVariables,
                 genericESAction: () => {
@@ -442,7 +466,13 @@ export const TableESHOC = (Component) => {
                     tableState.page = 0;
                     meta.setPageInd(tableState.page);
                     meta.setRowsPerPage(tableState.rowsPerPage);
-                    gqlQuery(pageESVariables);
+                    gqlQuery({
+                        ...pageESVariables,
+                        variables: {
+                            ...pageESVariables.variables,
+                            filters: handleMultiFieldFilter(pageESVariables.variables.filters)
+                        },
+                    });
                 },
                 changeESPage: () => {
                     setLoading(true);
@@ -456,6 +486,7 @@ export const TableESHOC = (Component) => {
                                 before: rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
                                 after: rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
                             },
+                            filters: handleMultiFieldFilter(pageESVariables.variables.filters)
                         },
                     });
                 },
@@ -471,26 +502,26 @@ export const TableESHOC = (Component) => {
 
         const viewColumnsChange = (tableColumns) => {
             for (let i = 0; i < tableColumns.length; i++) {
-                if (tableColumns[i].display === "true") {
+                if (tableColumns[i].display === "true" || tableColumns[i].display === true) {
                     columns[i].options.display = true;
                     if (columns[i].esKey && !columns[i].noFilter) {
                         columns[i].options.filter = true;
                     }
                 } else {
                     columns[i].options.display = false;
+                    columns[i].options.filter = false;
+                    delete columns[i].options.filterOptions;
                 }
             }
-            setColumnsData(JSON.parse(JSON.stringify(columns)));
+            setColumnsData(copy(columns));
         };
 
         const onTableChange = (action, tableState, rows, meta) => {
-
             const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch)
             activeSearchRef.current = tableActions.pageESVariables.variables.search;
             activeFiltersRef.current = tableActions.pageESVariables.variables.filters;
 
             if (action === 'filterChange') { setFilters(tableState.filterList) }
-
             switch (action) {
                 case "search":
                 case "sort":
@@ -591,6 +622,9 @@ export const TableESHOC = (Component) => {
                 onTableChange={onTableChange}
                 columns={columns}
                 setColumns={setColumns}
+
+                activeSearchRef={activeSearchRef}
+                activeFiltersRef={activeFiltersRef}
             />
         );
     };
