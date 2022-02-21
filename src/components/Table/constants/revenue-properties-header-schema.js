@@ -46,13 +46,13 @@ const RevenuePropertiesHeadCells = [
   {
     name: "wellApiNumber",
     label: "Well API",
-    esKey: "well.apiNumber.keyword",
+    esKey: "wells.apiNumber.keyword",
     options: { sort: true, filter: true },
   },
   {
     name: "wellName",
     label: "Well Name",
-    esKey: "well.wellName.keyword",
+    esKey: "wells.wellName.keyword",
     options: { sort: true, filter: true },
   },
   // {
