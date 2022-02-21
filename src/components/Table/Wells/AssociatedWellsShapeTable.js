@@ -77,10 +77,13 @@ function AssociatedWellsShapeTable(props) {
 
     ////////////Contact Wells begin///////////////////////////////////////////////
     useEffect(() => {
+        // if (props.customLayer?.shape) {
+        //     props.customLayer.shape = {};   // this will make it like it doesn't have boundary
+        // }
         getPaginatedShapeWells({
             variables: {
                 polygon: getPolygonString(props.customLayer?.shape),
-                userId: stateApp.user.mongoId,
+                shapeId: props.customLayer?._id
             },
         });
         getShapeWellsCount({
