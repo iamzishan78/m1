@@ -78,7 +78,7 @@ const RevenueStatementHeadCells = [
 
 const useStyles = makeStyles({
     root: {
-        width: '100%',
+        width: '100%'
     },
     container: {
         maxHeight: 440,
@@ -86,7 +86,11 @@ const useStyles = makeStyles({
         flexDirection: "column-reverse",
         "& .MuiTableCell-head": {
             background: "#f2f2f2"
-        }
+        },
+        "&::-webkit-scrollbar": {
+            width: "0.75em",
+            height: "0.75em",
+        },
     },
     infiniteScroll: {
         display: "flex", flexDirection: "column-reverse"
@@ -166,8 +170,11 @@ function CheckDetailsEditableTable(props) {
             });
             if (checkDetail?.getESPaginatedList?.hits.length > 0) {
                 const newProperty = checkDetail.getESPaginatedList.hits[0].property
-
+                set(row, '', value)
+                set(row, `property.state`, '')
+                set(row, `property.county`, '')
                 Object.keys(newProperty).forEach((key) => { set(row, `property.${key}`, newProperty[key]) })
+                console.log("Row", row)
             }
         }
 
@@ -311,7 +318,7 @@ function CheckDetailsEditableTable(props) {
         <Paper elevation={3} >
             <Grid container style={{ backgroundColor: "#F2F2F2" }} >
                 <Grid item md={12} style={{ border: '1px solid #c1c1c1', paddingBottom: '10px' }}>
-                    <Grid container direction="row" justifyContent="space-between" alignItems="center" className={{ justifyContent: 'space-between' }}>
+                    <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: "space-between" }}>
                         <Grid item style={{ display: 'flex' }}>
                             {
                                 search.open ?
