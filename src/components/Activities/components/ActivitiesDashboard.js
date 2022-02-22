@@ -36,10 +36,8 @@ const useStyles = makeStyles((theme) => ({
 const ActivitiesDashboard = () => {
   const classes = useStyles();
   const [filterToggle, setFilterToggle] = useState(false);
-  const [appliedFilters, setAppliedFilters] = useState({
-    toDate: null,
-    fromDate: null,
-  });
+  const [appliedFilters, setAppliedFilters] = useState({toDate: null,fromDate: null});
+  const [tableFilters, setTableFilters] = useState([]);
   const [lastCheckMinDate, setLastCheckMinDate] = useState("");
 
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
@@ -63,7 +61,7 @@ const ActivitiesDashboard = () => {
   }, [getESMinValue]);
 
   const filtersChange = (filters) => {
-    debugger
+    setTableFilters(filters)
   }
   return (
     <>
@@ -76,6 +74,7 @@ const ActivitiesDashboard = () => {
       />
       <ActivityAnalytics
         filterToggle={filterToggle}
+        tableFilters={tableFilters}
         appliedFilters={appliedFilters}
         setAppliedFilters={setAppliedFilters}
       />

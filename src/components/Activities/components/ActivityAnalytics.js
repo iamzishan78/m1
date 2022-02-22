@@ -9,7 +9,7 @@ import DonutChart from "components/Shared/Charts/DonutChart";
 import StackedBarChart from "components/Shared/Charts/StackedBarChart";
 import { getFilters } from "components/Table/Activities/ActivitiesTable";
 
-const ActivityAnalytics = ({ appliedFilters }) => {
+const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
   const [stateApp] = useContext(AppContext);
   const [analyticsData, setAnalyticsData] = useState([]);
 
@@ -25,6 +25,14 @@ const ActivityAnalytics = ({ appliedFilters }) => {
     }
   );
 
+  const getAllFilters = () => {
+    let rangeFilters = [];
+    if(!tableFilters.find(filter => filter.type === 'range')){
+      rangeFilters = getFilters(appliedFilters);
+    }
+    return [...rangeFilters, ...tableFilters]
+  }
+
   useEffect(() => {
     getActivityAnalytics({
       variables: {
@@ -32,10 +40,10 @@ const ActivityAnalytics = ({ appliedFilters }) => {
           fields: ["name", "_all"],
           query: stateApp.activitySearchQuery,
         },
-        filters: getFilters(appliedFilters),
+        filters: getAllFilters(),
       },
     });
-  }, [stateApp.activitySearchQuery, appliedFilters]);
+  }, [stateApp.activitySearchQuery, appliedFilters, tableFilters]);
 
   return (
     <Grid
