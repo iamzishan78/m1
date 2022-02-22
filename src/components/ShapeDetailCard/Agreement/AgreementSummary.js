@@ -20,6 +20,7 @@ import agreementDefaultData from "components/ShapeDetailCard/Common/SummaryTable
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { summaryStyles } from "components/ShapeDetailCard/style";
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
+import Acreage from "components/Land/components/Agreements/detailComponents/summary/Acreage";
 
 export default function AgreementSummary(props) {
   const [search, setSearch] = useState("");
@@ -118,6 +119,8 @@ export default function AgreementSummary(props) {
               </Grid>
             </Grid>
           </Grid>
+          <Acreage properties={unitProperties} />
+
           <Grid item className={classes.descriptionInput}>
             <TextField
               id="outlined-multiline-static"

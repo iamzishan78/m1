@@ -99,7 +99,6 @@ function AssociatedWellsShapeTable(props) {
             const objectsIdsArray = wells.map((well) => well.id);
             props.initializeGenericData(objectsIdsArray, ['comments', 'tags'])
         }
-
     }, [tableData])
 
     useEffect(() => {

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Grid, Typography, Box, Accordion, AccordionSummary, AccordionDetails, IconButton } from "@material-ui/core";
-import { useStyles as summaryStyles, StyledTextField } from "../style";
+import { useStyles as summaryStyles } from "../style";
 
 import CheckIcon from "@material-ui/icons/Check";
 import CloseIcon from "@material-ui/icons/Close";
@@ -12,8 +12,16 @@ import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutli
 
 import FieldsSection from "./fieldsSection";
 import ProgressBar from "components/Shared/ui/ProgressBar";
+import Acreage from "./Acreage";
 
-export default function Summary({ agreementDetails, activeAgreement, agreementProvisions, standardProvisions, updateAgreement, shapeSummaryDetails }) {
+export default function Summary({
+  agreementDetails,
+  activeAgreement,
+  agreementProvisions,
+  standardProvisions,
+  updateAgreement,
+  shapeSummaryDetails,
+}) {
   const classes = summaryStyles();
   const { control, reset } = useForm();
 
@@ -96,30 +104,7 @@ export default function Summary({ agreementDetails, activeAgreement, agreementPr
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item md={12} className={classes.acreageCard}>
-                  <Typography className="heading">Acreage</Typography>
-
-                  <Grid container direction="row" display="flex" justify="space-between" alignItems="center">
-                    <Grid item xs={4}>
-                      <Controller control={control} name="reportGross" label="Report Gross" as={StyledTextField} disabled />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Controller control={control} name="gross" label="Gross" as={StyledTextField} disabled />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Controller control={control} name="companyNet" label="Company Net" as={StyledTextField} disabled />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Controller control={control} name="reportNet" label="Report Net" as={StyledTextField} disabled />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Controller control={control} name="net" label="Net" as={StyledTextField} disabled />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Controller control={control} name="netRoyaltyAcres" label="Net Royalty Acres" as={StyledTextField} disabled />
-                    </Grid>
-                  </Grid>
-                </Grid>
+                <Acreage properties={agreementDetails} />
               </Grid>
             </Grid>
           </AccordionDetails>

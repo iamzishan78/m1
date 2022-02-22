@@ -129,7 +129,7 @@ export const useStyles = makeStyles((theme) => ({
     display: "flex",
     justify: "space-between",
     fontWeight: "bold",
-    width: "51%"
+    width: "51%",
   },
   addDataButton: {
     backgroundColor: "white",
@@ -164,7 +164,7 @@ export const useStyles = makeStyles((theme) => ({
   acreageCard: {
     backgroundColor: "#F6F8F9",
     padding: "10px",
-    marginTop: 20,
+    marginTop: "8px",
     "& .heading": {
       fontWeight: "bold",
       fontSize: "larger",

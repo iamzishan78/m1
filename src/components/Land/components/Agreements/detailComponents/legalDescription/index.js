@@ -77,7 +77,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
     if (e.keyCode === 38 || e.keyCode === 40) {
       e.preventDefault();
     }
-  }
+  };
 
   return (
     <div className={classes.root}>
@@ -88,7 +88,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
               <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
-          onClick={(e) => { }}
+          onClick={(e) => {}}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>
@@ -166,8 +166,8 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                         </Grid>
                         <Grid item xs={4}>
                           <Controller
-                            name="coNetAcres"
-                            defaultValue={agreementDetails?.coNetAcres ?? ""}
+                            name="companyNetAcres"
+                            defaultValue={agreementDetails?.companyNetAcres ?? ""}
                             control={control}
                             render={(params) => (
                               <TextField
@@ -176,7 +176,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                                 variant="outlined"
                                 type="number"
                                 className={classes.numberField}
-                                onBlur={(event) => offClickHandler("coNetAcres", event.target.value)}
+                                onBlur={(event) => offClickHandler("companyNetAcres", event.target.value)}
                                 onKeyDown={handleKeyDown}
                                 onWheel={(e) => e.target.blur()}
                               />

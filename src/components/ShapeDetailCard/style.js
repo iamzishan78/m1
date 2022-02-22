@@ -22,8 +22,8 @@ export const detailCardStyles = makeStyles((theme) => ({
   },
   documentHeader: {
     "& svg": {
-      transform: "translate(-4%, 22%)"
-    }
+      transform: "translate(-4%, 22%)",
+    },
   },
   descriptionInput: {
     width: "100%",
@@ -153,6 +153,9 @@ export const summaryStyles = makeStyles((theme) => ({
     },
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
+    },
+    "& textarea": {
+      maxHeight: "150px",
     },
   },
   icon: {
