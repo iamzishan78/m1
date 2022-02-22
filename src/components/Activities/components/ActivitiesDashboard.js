@@ -35,8 +35,13 @@ const useStyles = makeStyles((theme) => ({
 
 const ActivitiesDashboard = () => {
   const classes = useStyles();
+  const esIndex = "activities_flat";
+  const searchFields = ["name", "_all"];
   const [filterToggle, setFilterToggle] = useState(false);
-  const [appliedFilters, setAppliedFilters] = useState({toDate: null,fromDate: null});
+  const [appliedFilters, setAppliedFilters] = useState({
+    toDate: null,
+    fromDate: null,
+  });
   const [tableFilters, setTableFilters] = useState([]);
   const [lastCheckMinDate, setLastCheckMinDate] = useState("");
 
@@ -53,7 +58,7 @@ const ActivitiesDashboard = () => {
   useEffect(() => {
     getESMinValue({
       variables: {
-        esIndex: "activities_flat",
+        esIndex,
         field: "dateTime",
         value_as_string: true,
       },
@@ -61,13 +66,17 @@ const ActivitiesDashboard = () => {
   }, [getESMinValue]);
 
   const filtersChange = (filters) => {
-    setTableFilters(filters)
-  }
+    setTableFilters(filters);
+  };
+
   return (
     <>
       <ActivitiesDashboardFilter
+        esIndex={esIndex}
+        searchFields={searchFields}
         setFilterToggle={setFilterToggle}
         filterToggle={filterToggle}
+        tableFilters={tableFilters}
         appliedFilters={appliedFilters}
         lastCheckMinDate={lastCheckMinDate}
         setAppliedFilters={setAppliedFilters}
@@ -80,6 +89,8 @@ const ActivitiesDashboard = () => {
       />
       <div className={classes.root}>
         <ActivitiesTable
+          esIndex={esIndex}
+          searchFields={searchFields}
           filtersChange={filtersChange}
           appliedFilters={appliedFilters}
           filterToggle={filterToggle}

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Button } from "@material-ui/core";
+import { Grid} from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import moment from "moment";
 
-import CustomDates from "components/Revenue/components/Common/CustomDates";
+import ActivitiesFilters from "./ActivitiesFilters";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -33,19 +33,26 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ActivitiesDashboardFilter = ({
+  esIndex,
+  searchFields,
   setFilterToggle,
   filterToggle,
   setAppliedFilters,
+  tableFilters,
+  appliedFilters,
   lastCheckMinDate,
 }) => {
   const classes = useStyles();
 
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
+  const [campaignName, setCampaignName] = useState("");
 
   useEffect(() => {
-    setFromDate(`${moment(lastCheckMinDate).startOf("month").format("yyyy-MM-DD")}`)
-  },[lastCheckMinDate])
+    setFromDate(
+      `${moment(lastCheckMinDate).startOf("month").format("yyyy-MM-DD")}`
+    );
+  }, [lastCheckMinDate]);
 
   return (
     <div className={classes.actionBar}>
@@ -56,38 +63,24 @@ const ActivitiesDashboardFilter = ({
         justify="space-between"
         style={{ padding: "0px 36px 0px 45px" }}
       >
-        <Grid item xs={8} md={8} lg={9} xl={8} style={{ marginTop: "4px" }}>
-          <CustomDates
-            isProperties
+        <Grid item xs={12} md={12} lg={12} xl={12} style={{ marginTop: "4px" }}>
+          <ActivitiesFilters
+            isActivity
             fromDate={fromDate}
             setFromDate={setFromDate}
             toDate={toDate}
             setToDate={setToDate}
-            lastCheckMinDate={lastCheckMinDate}
+            minDate={lastCheckMinDate}
+            campaignName={campaignName}
+            setCampaignName={setCampaignName}
+            esIndex={esIndex}
+            searchFields={searchFields}
+            tableFilters={tableFilters}
+            appliedFilters={appliedFilters}
+            setFilterToggle={setFilterToggle}
+            filterToggle={filterToggle}
+            setAppliedFilters={setAppliedFilters}
           />
-        </Grid>
-        <Grid item xs={3} md={3} lg={3} xl={4}>
-          <Grid
-            container
-            display="flex"
-            justify="flex-end"
-            direction="row"
-            spacing={2}
-            className={classes.actionsGrid}
-          >
-            <Grid item>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => {
-                  setAppliedFilters({fromDate, toDate})
-                  setFilterToggle(!filterToggle)
-                }}
-              >
-                Filter
-              </Button>
-            </Grid>
-          </Grid>
         </Grid>
       </Grid>
     </div>

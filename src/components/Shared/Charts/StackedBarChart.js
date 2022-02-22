@@ -6,15 +6,15 @@ const StackedBarChart = ({ data, colors, height }) => {
   const series = [
     {
       name: "Marine Sprite",
-      data: [44, 55, 41],
+      data: [44],
     },
     {
       name: "Striking Calf",
-      data: [53, 32, 33],
+      data: [53],
     },
     {
       name: "Tank Picture",
-      data: [12, 17, 11],
+      data: [12],
     },
   ];
   const options = {
@@ -28,7 +28,7 @@ const StackedBarChart = ({ data, colors, height }) => {
       },
     },
     xaxis: {
-      categories: [2008, 2009, 2010],
+      categories: [2008],
       labels: {
         show: false
       }

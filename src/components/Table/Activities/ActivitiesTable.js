@@ -37,6 +37,9 @@ export const getFilters = (appliedFilters) => {
       },
     }, 'simple');
     if(range.length > 0) filters = [...filters, ...range]
+    if(appliedFilters.campaignName){
+      filters.push({ field: 'contact.campaignName.keyword', value: appliedFilters.campaignName})
+    }
   }
   return filters;
 };
@@ -45,7 +48,7 @@ export const getFilters = (appliedFilters) => {
 function ActivitiesTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
-  const { appliedFilters } = props;
+  const { appliedFilters, esIndex, searchFields } = props;
   const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
     refetchQueries: ["getESPaginatedList", "getESFilterList"],
     awaitRefetchQueries: true,
@@ -84,9 +87,9 @@ function ActivitiesTable(props) {
     props.setTableMeta({
       filters: getFilters(appliedFilters),
       extendSearchQuery: stateApp.activitySearchQuery,
-      searchFields: ["name", "_all"],
+      searchFields,
       TableHeader: copy(TableHeader),
-      esIndex: "activities_flat",
+      esIndex,
       startPaginationAt: 25,
       formatHits,
       setAppliedFilters: props.filtersChange,

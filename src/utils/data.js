@@ -190,3 +190,16 @@ export const activityTypes = [
     label: "Mailers",
   },
 ];
+
+export const CUSTOM_DATES = {
+  ALL_DATES: "All Dates",
+  THIS_YEAR_TO_LAST_MONTH: "This year-to-last-month",
+  THIS_YEAR_TO_DATE: "This year to date",
+  LAST_YEAR_TO_DATE: "Last year to date",
+  LAST_MONTH: "Last Month",
+  THIS_MONTH: "This Month",
+  LAST_QUARTER: "Last Quarter",
+  THIS_QUARTER: "This Quarter",
+  LAST_YEAR: "Last Year",
+  CUSTOM: "Custom",
+};

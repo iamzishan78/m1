@@ -100,14 +100,14 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
       <Grid item md={4} style={{ padding: "10px" }}>
         <Card variant="outlined">
           <CardContent style={{ height: "265px" }}>
-            <StackedBarChart height={250} />
+            <StackedBarChart height={100} />
           </CardContent>
         </Card>
       </Grid>
       <Grid item md={4} style={{ padding: "10px" }}>
         <Card variant="outlined">
           <CardContent style={{ height: "265px" }}>
-            <StackedBarChart height={250} />
+            <StackedBarChart height={100} />
           </CardContent>
         </Card>
       </Grid>

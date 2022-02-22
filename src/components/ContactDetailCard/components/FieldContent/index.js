@@ -557,8 +557,8 @@ export default function FieldContent({
   return (
     <React.Fragment>
       <p
-        className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP
-          }`}
+        className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP}`}
+        style={campaignName ? { width: '100%'} : {}}
       >
         {(linkType == LinkTypes.Mail || linkType == LinkTypes.Simple) &&
           textArray.length > 0 ? (
