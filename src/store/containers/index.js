@@ -14,6 +14,7 @@ import {
 import {
   getContactCampaignAction,
   convertTaxOwnerToContactAction,
+  convertMultipleOwnerToContactAction
 } from "store/actions/contactActions";
 import { getShapeOwnersSelectors } from "store/selectors/index";
 
@@ -28,6 +29,7 @@ const MultipleOwnerToContactDrawerDispatch = (dispatch) => {
   return bindActionCreators(
     {
       getContactCampaignAction: getContactCampaignAction.STARTED,
+      convertMultipleOwnerToContactAction: convertMultipleOwnerToContactAction.STARTED,
     },
     dispatch
   );
