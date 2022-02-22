@@ -192,6 +192,11 @@ export default function MetadataDrawer(props) {
       viewFiles({
         variables: { fileIds: ID },
       });
+
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        metaDrawerViewFiles: ID
+      }))
       //* Getting most recent uploaded pdf file
       let recentFile = {};
       files.getFileDescriptors
@@ -347,7 +352,7 @@ export default function MetadataDrawer(props) {
           />
         </Grid>
 
-      {/* hiding for now until we get custom metadata added to statements and properties - kc 20220123 */}
+        {/* hiding for now until we get custom metadata added to statements and properties - kc 20220123 */}
         {/* <div
           onClick={() => {
             setStateApp((stateApp) => ({

@@ -4,7 +4,9 @@ import { Grid, Typography, TextField, IconButton, InputAdornment } from "@materi
 import AutoComplete from "components/Shared/components/Fields/AutoComplete";
 import moment from "moment";
 import { KeyboardDatePicker } from "@material-ui/pickers";
+import debounce from "lodash/debounce";
 import ContactCardIcon from "components/Shared/svgIcons/contact_card";
+import { Controller, useForm } from "react-hook-form";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -60,12 +62,15 @@ export default function HeaderFunction(props) {
   const classes = useStyles();
   const [check, updateCheck] = useState({});
 
-  const handleUpdateCheck = (checkKey) => {
+  const { control, reset } = useForm();
+
+  const handleUpdateCheck = debounce((checkKey) => {
     updateCheck({ ...check, ...checkKey });
-  };
+  }, 500)
 
   useEffect(() => {
     if (props?.details) {
+      reset(props?.details)
       updateCheck(props?.details);
     }
   }, [props]);
@@ -87,11 +92,24 @@ export default function HeaderFunction(props) {
               <div className={classes.boldLabel}>Check Number</div>
             </Grid>
             <Grid item xs={5}>
-              <TextField
-                margin="dense"
-                type="text"
-                variant="outlined"
-                value={check?.checkNumber || ""}
+
+              <Controller
+                control={control}
+                name="checkNumber"
+                defaultValue={''}
+                render={(props) => (
+                  <TextField
+                    margin="dense"
+                    type="text"
+                    variant="outlined"
+                    onChange={(e) => {
+                      props.onChange(e.target.value)
+                      handleUpdateCheck({ checkNumber: e.target.value })
+                    }
+                    }
+                    value={props.value || ""}
+                  />
+                )}
               />
             </Grid>
           </Grid>
