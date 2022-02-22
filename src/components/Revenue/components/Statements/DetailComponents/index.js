@@ -1,20 +1,24 @@
 import React, { useState, useRef, useEffect, useContext, useMemo } from "react";
+import { useHistory } from "react-router-dom";
+import { matchRoutes } from "react-router-config";
 import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "lodash";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import { CircularProgress, Dialog, DialogTitle, Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import {
   LocalAtm as CurrencyIcon,
   InfoOutlined as InfoOutlinedIcon,
   Delete as DeleteIcon,
   MoreHoriz as MoreHorizIcon,
 } from "@material-ui/icons";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import Tags from "components/Shared/Tagger";
 import MetaField from "components/Table/helpers/MetaField";
 import { useLocation } from "react-router";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { GETCHECK } from "graphQL/useQueryCheck";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
+import { REMOVE_CHECKS } from "graphQL/useMutationRemoveChecks";
 import { AppContext } from "AppContext";
 
 // Components
@@ -199,6 +203,12 @@ export default function DetailComponents(props) {
   const { search } = location;
   const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
+  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
+  const [loader, setLoader] = useState(false);
+  const [checkIdToDelete, setCheckIdToDelete] = useState(null);
+
+  const history = useHistory();
+  const previousRoute = history.pathHistory[1];
 
   const classes = useStyles({ ...props, collapse });
   // queries
@@ -209,7 +219,34 @@ export default function DetailComponents(props) {
     fetchPolicy: "no-cache",
   });
 
+  // mutations
+  const [removeChecks, { data: removeChecksResult }] = useMutation(REMOVE_CHECKS, {
+    refetchQueries: ["getESPaginatedList"],
+    awaitRefetchQueries: true,
+  });
+
   const checksFlatData = getCheckResult?.getCheck?.check;
+
+  const handleDeleteCancel = () => {
+    setCheckIdToDelete(null);
+    setOpenDeleteConfirmDialog(false);
+    setAnchorEl(false)
+  };
+
+  const handleDeleteAccept = () => {
+    // Check Document Logic goes here
+    if (checkIdToDelete) {
+      setLoader(true);
+      removeChecks({
+        variables: {
+          checkIds: [checkIdToDelete]
+        }
+      }).then(() => {
+        setLoader(false);
+        history.push(previousRoute || "/revenue/statements");
+      })
+    }
+  };
 
   useEffect(() => {
     if (getCheckResult?.getCheck?.check)
@@ -267,113 +304,136 @@ export default function DetailComponents(props) {
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
 
   return (
-    <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor?.["name"]}`}>
-      {/**
+    <>
+      <Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
+        <DeleteConfirmationDialogContent
+          header="Delete Statement"
+          onClose={handleDeleteCancel}
+          deleteFunc={handleDeleteAccept}
+          m1nSelectedRowsIds={[document._id]}
+          setM1nSelectedRowsIndexes={() => { }}
+        >
+          Do you want to delete the selected statement?
+        </DeleteConfirmationDialogContent>
+      </Dialog>
+      <Dialog open={loader} style={{ zIndex: 99999999999 }}>
+        <DialogTitle id="alert-dialog-title">
+          <CircularProgress />
+        </DialogTitle>
+      </Dialog>
+      <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor?.["name"]}`}>
+        {/**
        * Detail title section
        */}
-      <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
-        <div className="flex column alignStart justifyStart w-100">
-          <div className={classes.title}>
-            <IconButton className={classes.icon}>
-              <CurrencyIcon />
-            </IconButton>
-            <div className={classes.titleText}>
-              {checksFlatData && (
-                <Typography
-                  style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
-                >{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
-              )}
-              <div className={classes.tagsContainer}>
-                <div className={classes.highlighter}>
-                  <Typography className={classes.highlight} variant="highlight">
-                    Revenue Check
-                  </Typography>
-                </div>
-                <div className={classes.tags}>
-                  <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom onlyTags />
+        <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
+          <div className="flex column alignStart justifyStart w-100">
+            <div className={classes.title}>
+              <IconButton className={classes.icon}>
+                <CurrencyIcon />
+              </IconButton>
+              <div className={classes.titleText}>
+                {checksFlatData && (
+                  <Typography
+                    style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
+                  >{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
+                )}
+                <div className={classes.tagsContainer}>
+                  <div className={classes.highlighter}>
+                    <Typography className={classes.highlight} variant="highlight">
+                      Revenue Check
+                    </Typography>
+                  </div>
+                  <div className={classes.tags}>
+                    <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom onlyTags />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className={classes.actionsContainer}>
-            <div className={classes.tabsHeader}>
-              <StyledTabs
-                value={tab}
-                onChange={(event, tab) => {
-                  setButtonScroll(true);
-                  setTab(tab);
-                }}
-                aria-label="ant example"
-              >
-                <StyledTab label="Header" />
-                <StyledTab label="Summary" />
-                <StyledTab label="Check Details" />
-              </StyledTabs>
-            </div>
-            <div className={classes.metaActions}>
-              <Button startIcon={<InfoOutlinedIcon />} onClick={() => setCollapse(!collapse)}>
-                Metadata
-              </Button>
-              <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
-                <MoreHorizIcon size="medium" />
-              </IconButton>
+            <div className={classes.actionsContainer}>
+              <div className={classes.tabsHeader}>
+                <StyledTabs
+                  value={tab}
+                  onChange={(event, tab) => {
+                    setButtonScroll(true);
+                    setTab(tab);
+                  }}
+                  aria-label="ant example"
+                >
+                  <StyledTab label="Header" />
+                  <StyledTab label="Summary" />
+                  <StyledTab label="Check Details" />
+                </StyledTabs>
+              </div>
+              <div className={classes.metaActions}>
+                <Button startIcon={<InfoOutlinedIcon />} onClick={() => setCollapse(!collapse)}>
+                  Metadata
+                </Button>
+                <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
+                  <MoreHorizIcon size="medium" />
+                </IconButton>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex justifyBetween alignStart w-100">
-        <div className={`w-100 ${classes.tabsDetailContainer}`}>
-          {/*** Component for viewing selected pdf file*/}
-          <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
+        <div className="flex justifyBetween alignStart w-100">
+          <div className={`w-100 ${classes.tabsDetailContainer}`}>
+            {/*** Component for viewing selected pdf file*/}
+            <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
 
-          {/**
+            {/**
            * Detail tabs section
            */}
-          <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
-            <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
-              <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-                <HeaderSection details={checksFlatData} />
-              </div>
-              <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
-              <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
-                <SummarySection checkId={checkId} />
-              </div>
-              <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
-              <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
-                <CheckDetailsSection checkId={checkId} />
+            <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
+              <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
+                <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
+                  <HeaderSection details={checksFlatData} />
+                </div>
+                <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
+                <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
+                  <SummarySection checkId={checkId} />
+                </div>
+                <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
+                <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
+                  <CheckDetailsSection checkId={checkId} />
+                </div>
               </div>
             </div>
           </div>
+
+          {!collapse && <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={checkId} setStateApp={setStateApp} />}
         </div>
 
-        {!collapse && <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={checkId} setStateApp={setStateApp} targetLabel="Check" />}
-      </div>
+        {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
 
-      {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
-
-      {/**
+        {/**
        * Menu for meta data
        */}
-      <Menu
-        id="revStatementMenu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={() => setAnchorEl(null)}
-        className={classes.menu}
-        getContentAnchorEl={null}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        transformOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <MenuItem>
-          <ListItemIcon>
-            <DeleteIcon size="medium" />
-          </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
-        </MenuItem>
-      </Menu>
-    </NavHeader>
+        <Menu
+          id="revStatementMenu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={() => setAnchorEl(null)}
+          className={classes.menu}
+          getContentAnchorEl={null}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          transformOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <MenuItem
+            onClick={() => {
+              setOpenDeleteConfirmDialog(true);
+              setCheckIdToDelete(checkId);
+            }}
+          >
+            <ListItemIcon>
+              <DeleteIcon size="medium" />
+            </ListItemIcon>
+            <ListItemText>Delete</ListItemText>
+          </MenuItem>
+        </Menu>
+      </NavHeader>
+    </>
   );
 }

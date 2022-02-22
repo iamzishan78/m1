@@ -197,6 +197,11 @@ export default function MetadataDrawer(props) {
       viewFiles({
         variables: { fileIds: ID },
       });
+
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        metaDrawerViewFiles: ID
+      }))
       //* Getting most recent uploaded pdf file
       let recentFile = {};
       files.getFileDescriptors
