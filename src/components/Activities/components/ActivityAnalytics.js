@@ -1,10 +1,42 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Grid, Card, CardContent } from "@material-ui/core";
+import { useLazyQuery } from "@apollo/client";
+import get from 'lodash/get';
 
+import { AppContext } from "AppContext";
+import { GET_ACTIVITY_ANALYTICS } from "graphQL/useQueryActivityAnalytics";
 import DonutChart from "components/Shared/Charts/DonutChart";
 import StackedBarChart from "components/Shared/Charts/StackedBarChart";
+import { getFilters } from "components/Table/Activities/ActivitiesTable";
 
-const ActivityAnalytics = ({ activities }) => {
+const ActivityAnalytics = ({ appliedFilters }) => {
+  const [stateApp] = useContext(AppContext);
+  const [analyticsData, setAnalyticsData] = useState([]);
+
+  const [getActivityAnalytics] = useLazyQuery(
+    GET_ACTIVITY_ANALYTICS,
+    {
+      fetchPolicy: "no-cache",
+      onCompleted: (data) => {
+        if(data?.getActivityAnalytics){
+          setAnalyticsData(data?.getActivityAnalytics)
+        }
+      },
+    }
+  );
+
+  useEffect(() => {
+    getActivityAnalytics({
+      variables: {
+        search: {
+          fields: ["name", "_all"],
+          query: stateApp.activitySearchQuery,
+        },
+        filters: getFilters(appliedFilters),
+      },
+    });
+  }, [stateApp.activitySearchQuery, appliedFilters]);
+
   return (
     <Grid
       container
@@ -23,10 +55,10 @@ const ActivityAnalytics = ({ activities }) => {
               style={{
                 position: "relative",
                 top: "85px",
-                fontSize: 18
+                fontSize: 18,
               }}
             >
-              {activities.length}
+              {get(analyticsData,'total', 0)}
             </div>
             <DonutChart
               height={240}
@@ -34,25 +66,22 @@ const ActivityAnalytics = ({ activities }) => {
               data={[
                 {
                   title: "Calls",
-                  value: activities.filter((act) => act.type === "call").length,
+                  value: get(analyticsData,'activitiesCount.call', 0),
                   color: "#A3B2DD",
                 },
                 {
                   title: "Emails",
-                  value: activities.filter((act) => act.type === "email")
-                    .length,
+                  value: get(analyticsData,'activitiesCount.email', 0),
                   color: "#FFD78E",
                 },
                 {
                   title: "Texts",
-                  value: activities.filter((act) => act.type === "text_message")
-                    .length,
+                  value: get(analyticsData,'activitiesCount.text_message', 0),
                   color: "#CDCDCD",
                 },
                 {
                   title: "Mailers",
-                  value: activities.filter((act) => act.type === "mailer")
-                    .length,
+                  value: get(analyticsData,'activitiesCount.mailer', 0),
                   color: "#F5B296",
                 },
               ]}

@@ -119,8 +119,7 @@ const ActivitySearch = ({ showLabel }) => {
                 setTimeout(() => {
                   setStateApp((stateApp) => ({
                     ...stateApp,
-                    contactSearchQuery: e.target.value,
-                    isContactSearching: true,
+                    activitySearchQuery: e.target.value
                   }));
                 }, 500);
               }}
@@ -154,8 +153,7 @@ const ActivitySearch = ({ showLabel }) => {
                           setSearch("");
                           setStateApp((stateApp) => ({
                             ...stateApp,
-                            contactSearchQuery: "",
-                            isContactSearching: true,
+                            activitySearchQuery: ""
                           }));
                         }}
                       >

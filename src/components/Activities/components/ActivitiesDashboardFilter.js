@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
+import moment from "moment";
 
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 
@@ -34,13 +35,17 @@ const useStyles = makeStyles((theme) => ({
 const ActivitiesDashboardFilter = ({
   setFilterToggle,
   filterToggle,
-  fromDate,
-  setFromDate,
-  toDate,
-  setToDate,
+  setAppliedFilters,
   lastCheckMinDate,
 }) => {
   const classes = useStyles();
+
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
+
+  useEffect(() => {
+    setFromDate(`${moment(lastCheckMinDate).startOf("month").format("yyyy-MM-DD")}`)
+  },[lastCheckMinDate])
 
   return (
     <div className={classes.actionBar}>
@@ -74,7 +79,10 @@ const ActivitiesDashboardFilter = ({
               <Button
                 variant="contained"
                 color="secondary"
-                onClick={() => setFilterToggle(!filterToggle)}
+                onClick={() => {
+                  setAppliedFilters({fromDate, toDate})
+                  setFilterToggle(!filterToggle)
+                }}
               >
                 Filter
               </Button>

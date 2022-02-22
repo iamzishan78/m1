@@ -1,9 +1,9 @@
 export const campaignVariables = {
-    esIndex: "contacts_flat",
-    filterKey: "campaignName.keyword",
-    search: '',
-    size: 50,
-  }
+  esIndex: "contacts_flat",
+  filterKey: "campaignName.keyword",
+  search: "",
+  size: 50,
+};
 
 export const wellsKeys = [
   "wellName",
@@ -86,8 +86,8 @@ export const wellsKeys = [
   "CurrentOperator",
   "Lease",
   "MaxCompletionRecordDate",
-  "plugDate"
-]
+  "plugDate",
+];
 
 export const contactManagementRoutes = {
   ALLENTITIES: {
@@ -95,48 +95,48 @@ export const contactManagementRoutes = {
     title: "All Entities",
     link: "/contacts",
     component: "ContactsTable",
-    search: true
+    search: true,
   },
   LEADS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Leads",
     link: "/contacts/leads",
     component: "ContactsTable",
-    filterValue: 'Lead',
+    filterValue: "Lead",
     showAnalytics: true,
-    search: true
+    search: true,
   },
   PROSPECTS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Prospects",
     link: "/contacts/prospects",
     component: "ContactsTable",
-    filterValue: 'Prospect',
+    filterValue: "Prospect",
     showAnalytics: true,
-    search: true
+    search: true,
   },
   CONTACTS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Contacts",
     link: "/contacts/contact",
     component: "ContactsTable",
-    filterValue: 'Contact',
+    filterValue: "Contact",
     showAnalytics: true,
-    search: true
+    search: true,
   },
   ACTIVITY: {
     featureFlag: "CONTACTSUBMENU",
     title: "Activity Dashboard",
     link: "/contacts/activityDashboard",
-    component: "ActivitiesTable",
-    search: false
+    component: "ActivitiesDashboard",
+    search: false,
   },
   CAMPAIGN: {
     featureFlag: "CONTACTSUBMENU",
     title: "Campaign Management",
     link: "/contacts/campaignManagement",
     component: "ContactsTable",
-    search: true
+    search: true,
   },
 };
 
@@ -157,5 +157,36 @@ export const contactsAnalyticsCards = [
     heading: "Missing Contact Info",
     points: 0,
     type: "warning",
+  },
+];
+
+export const activityTypes = [
+  {
+    value: "deadline",
+    label: "Deadlines",
+  },
+  {
+    value: "call",
+    label: "Calls",
+  },
+  {
+    value: "text_message",
+    label: "Text Messages",
+  },
+  {
+    value: "email",
+    label: "Emails",
+  },
+  {
+    value: "meeting",
+    label: "Meetings",
+  },
+  {
+    value: "task",
+    label: "Tasks",
+  },
+  {
+    value: "mailer",
+    label: "Mailers",
   },
 ];

@@ -84,7 +84,6 @@ export default function Properties() {
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
       if (data?.getESMinValue) {
-        debugger
         setFilterToggle(!filterToggle)
         setLastCheckMinDate(data?.getESMinValue);
         setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
