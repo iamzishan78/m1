@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import { Grid, InputAdornment, TextField, Tooltip, IconButton } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
@@ -22,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: fade(theme.palette.common.white, 0.15),
     marginRight: theme.spacing(2),
     marginLeft: "-7px !important",
-    width: "35%",
+    width: "555px",
     transition: "width 0.5s",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
@@ -73,6 +74,8 @@ const ActivitySearch = () => {
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [nameAutInputValue, setNameAutInputValue] = useState("");
 
+  const { quickActionsPanelState } = useSelector(({ common }) => common);
+
   const handleSelectActivity = (id) => {
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -109,7 +112,7 @@ const ActivitySearch = () => {
   );
 
   return (
-    <>
+    <div style={{ marginLeft: quickActionsPanelState ? "425px" : "0px" }}>
       <Autocomplete
         className={classes.search}
         style={{
@@ -205,7 +208,7 @@ const ActivitySearch = () => {
           />
         )}
       />
-    </>
+    </div>
   );
 };
 

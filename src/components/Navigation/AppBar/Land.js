@@ -1,16 +1,12 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
 
-import { Grid, Typography, Button } from "@material-ui/core";
-import Add from "@material-ui/icons/Add";
+import { Grid, Typography } from "@material-ui/core";
 import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Land/index";
 import LandSearch from "components/Navigation/components/LandSearch";
 
 export default function LandAppBar(props) {
-  const location = useLocation();
 
-  const { classes } = props;
   const { activeModule, quickActionsPanelState } = useSelector(({ common }) => common);
 
   return (
@@ -38,23 +34,6 @@ export default function LandAppBar(props) {
               </Grid>
             )}
         </Grid>
-      </Grid>
-      <Grid item>
-        <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-          {/* <Button color="primary" variant="contained" startIcon={<Add />}>
-            Add{" "}
-            {(() => {
-              switch (location.pathname) {
-                case "/land/agreements":
-                  return "Agreement";
-                case "/land/tracts":
-                  return "Tract";
-                default:
-                  return "";
-              }
-            })()}
-          </Button> */}
-        </div>
       </Grid>
     </Grid>
   );

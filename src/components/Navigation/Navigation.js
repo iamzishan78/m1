@@ -306,7 +306,7 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (location.pathname === "/calendar") {
+    if (location.pathname.startsWith("/calendar")) {
       setMatchActivities(true);
     } else {
       setMatchActivities(false);
@@ -397,11 +397,7 @@ export default function Navigation(props) {
         >
           {stateApp.user && (
             <Toolbar>
-              {location.pathname.startsWith("/calendar") && (
-                <>
-                  <ActivitySearch />
-                </>
-              )}
+              {location.pathname.startsWith("/calendar") && <ActivitySearch />}
               {location.pathname === "/documents" && (
                 <>
                   <DocumentSearch />

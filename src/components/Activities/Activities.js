@@ -47,7 +47,7 @@ const ActivitiesCalendar = ({
         startAccessor={"start"}
         view={view}
         defaultDate={new Date()}
-        style={{ height: "calc(100vh - 65px)", position: "relative" }}
+        style={{ height: "calc(100vh - 67px)", position: "relative" }}
         step={60}
         onSelectEvent={(e) => onEventClick(e)}
         showMultiDayTimes
