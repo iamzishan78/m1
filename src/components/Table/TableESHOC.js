@@ -26,7 +26,7 @@ export const TableESHOC = (Component) => {
         const classes = usetableStyles();
 
         const [columns, Columns] = useState([]);
-        const [filters, setFilters] = useState([]);
+        // const [filters, setFilters] = useState([]);
 
         const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
@@ -165,39 +165,14 @@ export const TableESHOC = (Component) => {
                 if (formatColumns)
                     TableHeader = formatColumns(TableHeader, hits)
 
-                // TableHeader.forEach((column) => {
-                //     if (column?.options?.filter) {
-                //         const custom = column.custom;
-                //         column.options = {
-                //             ...column.options,
-                //             filter: true,
-                //             filterType: 'custom',
-                //             filterOptions: {
-                //                 display: (filterList, onChange, index, column) => {
-                //                     column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
-                //                     return (
-                //                         <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-                //                             extendSearchQuery={extendSearchQuery} searchFields={tableMeta.searchFields} query={GET_ES_SIMPLE_FILTER}
-                //                             esIndex={esIndex} filters={activeFiltersRef.current} custom={custom} />
-                //                     );
-                //                 }
-                //             }
-                //         }
-                //     }
-                // })
-
                 setColumnsData(TableHeader)
-                // setColumns(TableHeader);
                 setLoading(false);
             }
             else if (tableData?.hits?.length === 0) {
                 setRows([]);
                 setLoading(false);
             }
-        }, [
-            tableData,
-            dependencyUpdate
-        ]);
+        }, [tableData, dependencyUpdate]);
 
 
         const setColumnsData = (tableCols) => {
@@ -221,7 +196,7 @@ export const TableESHOC = (Component) => {
                                 return (
                                     <AutoCompleteFilter
                                         esIndex={esIndex}
-                                        setFilters={setFilters}
+                                        // setFilters={setFilters}
                                         filterList={filterList}
                                         column={column}
                                         index={index}
@@ -235,9 +210,6 @@ export const TableESHOC = (Component) => {
                                 );
                             },
                         },
-                        // onFilterChange: (columnChanged, filterList) => {
-                        //   setFilters(filterList);
-                        // },
                     };
                 } else {
                     column.options = {
@@ -489,12 +461,6 @@ export const TableESHOC = (Component) => {
                             filters: handleMultiFieldFilter(pageESVariables.variables.filters)
                         },
                     });
-                },
-                extendSearchQuery: (extraSearch) => {
-                    // if (pageESVariables.variables.search)
-                    //     pageESVariables.variables.search = `${pageESVariables.variables.search} AND ${extraSearch}`
-                    // else
-                    //     pageESVariables.variables.search = `${extraSearch}`
                 }
             }
         }
@@ -521,21 +487,20 @@ export const TableESHOC = (Component) => {
             activeSearchRef.current = tableActions.pageESVariables.variables.search;
             activeFiltersRef.current = tableActions.pageESVariables.variables.filters;
 
-            if (action === 'filterChange') { setFilters(tableState.filterList) }
+            // if (action === 'filterChange') { setFilters(tableState.filterList) }
+
             switch (action) {
                 case "search":
                 case "sort":
                 case "filterChange":
                 case "resetFilters":
                 case "changeRowsPerPage":
-                    tableActions.extendSearchQuery(tableMeta.extendSearchQuery);
                     tableActions.genericESAction();
                     break;
                 case "rowSelectionChange":
                     setSelectedRows(tableState.selectedRows.data)
                     break;
                 case "changePage":
-                    tableActions.extendSearchQuery(tableMeta.extendSearchQuery);
                     tableActions.changeESPage();
                     break;
 
