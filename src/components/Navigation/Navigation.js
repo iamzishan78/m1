@@ -108,7 +108,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
-        selectedMenuIndexActivities: 0,
+        selectedMenuIndexCalendar: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
@@ -124,7 +124,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
-        selectedMenuIndexActivities: 0,
+        selectedMenuIndexCalendar: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
@@ -140,7 +140,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
-        selectedMenuIndexActivities: 0,
+        selectedMenuIndexCalendar: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
@@ -157,7 +157,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
-        selectedMenuIndexActivities: 0,
+        selectedMenuIndexCalendar: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
@@ -177,7 +177,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 1,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
-        selectedMenuIndexActivities: 0,
+        selectedMenuIndexCalendar: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
@@ -193,7 +193,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
-        selectedMenuIndexActivities: 0,
+        selectedMenuIndexCalendar: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
@@ -209,7 +209,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 1,
         selectedMenuIndexStudio: 0,
-        selectedMenuIndexActivities: 0,
+        selectedMenuIndexCalendar: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
@@ -225,12 +225,12 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 1,
-        selectedMenuIndexActivities: 0,
+        selectedMenuIndexCalendar: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
       }));
-    } else if (location.pathname === "/activities") {
+    } else if (location.pathname === "/calendar") {
       setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
@@ -241,7 +241,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
-        selectedMenuIndexActivities: 1,
+        selectedMenuIndexCalendar: 1,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
@@ -257,7 +257,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
-        selectedMenuIndexActivities: 0,
+        selectedMenuIndexCalendar: 0,
         selectedMenuIndexDocuments: 1,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
@@ -273,7 +273,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
-        selectedMenuIndexActivities: 0,
+        selectedMenuIndexCalendar: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 1,
         selectedMenuIndexLand: 0,
@@ -289,7 +289,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
-        selectedMenuIndexActivities: 0,
+        selectedMenuIndexCalendar: 0,
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 1,
@@ -306,7 +306,7 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (location.pathname === "/activities") {
+    if (location.pathname === "/calendar") {
       setMatchActivities(true);
     } else {
       setMatchActivities(false);
@@ -397,7 +397,7 @@ export default function Navigation(props) {
         >
           {stateApp.user && (
             <Toolbar>
-              {location.pathname === "/activities" && (
+              {location.pathname === "/calendar" && (
                 <>
                   <ActivitySearch />
                 </>
@@ -407,8 +407,8 @@ export default function Navigation(props) {
                   <DocumentSearch />
                 </>
               )}
-              {(location.pathname === "/contacts" || 
-                location.pathname === "/contacts/" || 
+              {(location.pathname === "/contacts" ||
+                location.pathname === "/contacts/" ||
                 Object.values(contactManagementRoutes).find((item) => item.link === location.pathname)) && <ContactSearch />}
               {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
 

@@ -214,7 +214,7 @@ const Activities = () => {
   }, [stateApp.selectedActivityId]);
 
   const onEventClick = (event) => {
-    window.history.pushState("", "", `/activities/${event._id}`);
+    window.history.pushState("", "", `/calendar/${event._id}`);
     setSelectedActivityId(event._id);
     onModalOpen();
   };

@@ -259,17 +259,17 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               selected: classes.menuListItemSelected,
             }}
             button
-            selected={stateNav.selectedMenuIndexActivities === 1}
-            onClick={(event) => handleListItemClick("/activities")}
-            key="activities"
+            selected={stateNav.selectedMenuIndexCalendar === 1}
+            onClick={(event) => handleListItemClick("/calendar")}
+            key="calendar"
           >
             <div className={classes.tabContent}>
-              <Tooltip title="Activities" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+              <Tooltip title="Calendar" placement="right" classes={{ tooltip: classes.iconTooltip }}>
                 <ListItemIcon className={classes.sideNavIcon}>
                   <ActivityIcon />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Activities" />
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Calendar" />
               <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
                   beta

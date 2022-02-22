@@ -3470,7 +3470,7 @@ function SubTable(props) {
 
       if (props.targetLabel === "activity") {
         if (rows[dataIndex]?._id) {
-          window.history.pushState("", "", `/activities/${rows[dataIndex]._id}`);
+          window.history.pushState("", "", `/calendar/${rows[dataIndex]._id}`);
           setStateApp((stateApp) => ({
             ...stateApp,
             selectedActivityId: rows[dataIndex]._id,

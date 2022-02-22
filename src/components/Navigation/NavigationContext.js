@@ -6,12 +6,12 @@ export const DRAWING_MODES = {
   DRAW_CIRCLE: "drag_circle",
 };
 
-const NavigationContext = createContext([{}, () => {}]);
+const NavigationContext = createContext([{}, () => { }]);
 const initialValue = {
   selectedMenuIndexFind: 0,
   selectedMenuIndexTrack: 0,
   selectedMenuIndexTransact: 0,
-  selectedMenuIndexActivities: 0,
+  selectedMenuIndexCalendar: 0,
   selectedMenuIndexTitle: 0,
   selectedMenuIndexAlerts: 0,
   selectedMenuIndexDashboard: 0,
@@ -60,7 +60,7 @@ const initialValue = {
   filterOwnerConfidence: null,
   filterHasOwners: null,
   filterTags: null,
-  filterTagsLoading: () => {},
+  filterTagsLoading: () => { },
   filterAllInterestTypes: null,
   filterAllOwnershipTypes: null,
   filterGeography: null,

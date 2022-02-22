@@ -365,7 +365,7 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
   }, [dealsData]);
 
   const onModalClose = () => {
-    window.history.pushState("", "", `/activities`);
+    window.history.pushState("", "", `/calendar`);
     clearFields();
     setSelectedActivityId(null);
     setStateApp((stateApp) => ({
@@ -510,20 +510,20 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
       open={stateApp.activityDialog ? true : false}
       onClose={
         addLoading && updateLoading
-          ? () => {}
+          ? () => { }
           : () => {
-              onModalClose();
-            }
+            onModalClose();
+          }
       }
     >
       <ExpandableCardProvider
         expanded={true}
         handleCloseExpandableCard={
           addLoading && updateLoading
-            ? () => {}
+            ? () => { }
             : () => {
-                onModalClose();
-              }
+              onModalClose();
+            }
         }
         title={addNew ? "Add Activity" : "Activity Details"}
         subTitle={""}

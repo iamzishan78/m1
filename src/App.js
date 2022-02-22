@@ -190,8 +190,8 @@ const PrivateRoute = ({ component, ...options }) => {
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now() && apolloClient
       ? component
       : (() => {
-          return Login;
-        })();
+        return Login;
+      })();
 
   return (
     <div>
@@ -240,7 +240,7 @@ function App() {
 
     if (!apolloClient) {
       const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions })
-      const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { ...fetchOptions.headers, batch: "true" }})
+      const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { ...fetchOptions.headers, batch: "true" } })
 
       let client = new ApolloClient({
         // uri: endpoint,
@@ -277,7 +277,7 @@ function App() {
     if (apolloClient && endpoint) {
       setApolloClient((state, props) => {
         const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions })
-        const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { ...fetchOptions.headers, batch: "true" }})
+        const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { ...fetchOptions.headers, batch: "true" } })
 
         return new ApolloClient({
           // ...state.link.options,
@@ -303,7 +303,7 @@ function App() {
           setApolloClient={updateApolloClient}
           setApolloClientEndpoint={updateApolloClientEndpoint}
           setApolloClientToken={updateApolloClientToken}
-          
+
         />
         {apolloClient ? (
           <ApolloProvider client={apolloClient}>
@@ -328,8 +328,8 @@ function App() {
                         <PrivateRoute exact path="/flow/:pipelineId/lane/:laneId/card/:cardId/" component={TransactProvider} />
                         <PrivateRoute exact path="/documents" component={DocumentProvider} />
                         <PrivateRoute exact path="/documents/:documentId/view" component={DocumentProvider} />
-                        <PrivateRoute exact path="/activities" component={ActivitiesProvider} />
-                        <PrivateRoute exact path="/activities/:eventId" component={ActivitiesProvider} />
+                        <PrivateRoute exact path="/calendar" component={ActivitiesProvider} />
+                        <PrivateRoute exact path="/calendar/:eventId" component={ActivitiesProvider} />
                         <PrivateRoute exact path="/title" component={TitleOpinionProvider} />
                         <PrivateRoute exact path="/alerts" component={AlertsProvider} />
                         <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider} />
