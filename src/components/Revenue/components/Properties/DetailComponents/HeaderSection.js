@@ -145,7 +145,7 @@ export default function HeaderSection(props) {
           (owner) => owner.entityId === propertyDetails?.operator?._id
         );
       }
-      reset({ ...data, owner, operator });
+      reset({ ...data, owner: { ...owner, number: data.ownerNumber }, operator });
     }
   }, [propertyDetails, propertyOwnerContact]);
 
@@ -282,8 +282,8 @@ export default function HeaderSection(props) {
                       margin="dense"
                       placeholder=""
                       fullWidth
-                      // onKeyDown={(e) => onKeyDown(e, "ownerNumber", params.value)}
-                      // onBlur={() => setValue("ownerNumber", propertyDetails.ownerNumber)}
+                      onKeyDown={(e) => onKeyDown(e, "ownerNumber", params.value)}
+                      onBlur={() => setValue("ownerNumber", propertyDetails.ownerNumber)}
                     />
                   )}
                 />
