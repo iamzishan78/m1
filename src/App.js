@@ -328,8 +328,7 @@ function App() {
                         <PrivateRoute exact path="/flow/:pipelineId/lane/:laneId/card/:cardId/" component={TransactProvider} />
                         <PrivateRoute exact path="/documents" component={DocumentProvider} />
                         <PrivateRoute exact path="/documents/:documentId/view" component={DocumentProvider} />
-                        <PrivateRoute exact path="/calendar" component={ActivitiesProvider} />
-                        <PrivateRoute exact path="/calendar/:eventId" component={ActivitiesProvider} />
+                        <PrivateRoute path="/calendar" component={ActivitiesProvider} />
                         <PrivateRoute exact path="/title" component={TitleOpinionProvider} />
                         <PrivateRoute exact path="/alerts" component={AlertsProvider} />
                         <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider} />

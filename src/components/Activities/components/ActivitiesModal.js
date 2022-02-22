@@ -365,7 +365,7 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
   }, [dealsData]);
 
   const onModalClose = () => {
-    window.history.pushState("", "", `/calendar`);
+    window.history.pushState("", "", `/calendar/activities`);
     clearFields();
     setSelectedActivityId(null);
     setStateApp((stateApp) => ({
@@ -507,7 +507,7 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
       className={classes.dialogExpCard}
       fullWidth
       maxWidth="xl"
-      open={stateApp.activityDialog ? true : false}
+      open={!!stateApp.activityDialog}
       onClose={
         addLoading && updateLoading
           ? () => { }

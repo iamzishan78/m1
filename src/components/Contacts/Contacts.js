@@ -48,7 +48,7 @@ export default function Contacts() {
   const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
   const { quickActionsPanelState, activeModule } = useSelector(
-    ({ contact }) => contact
+    ({ common }) => common
   );
 
   useEffect(() => {

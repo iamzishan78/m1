@@ -260,7 +260,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             }}
             button
             selected={stateNav.selectedMenuIndexCalendar === 1}
-            onClick={(event) => handleListItemClick("/calendar")}
+            onClick={(event) => handleListItemClick("/calendar/activities")}
             key="calendar"
           >
             <div className={classes.tabContent}>

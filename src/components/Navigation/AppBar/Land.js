@@ -11,7 +11,7 @@ export default function LandAppBar(props) {
   const location = useLocation();
 
   const { classes } = props;
-  const { activeModule, quickActionsPanelState } = useSelector(({ Land }) => Land);
+  const { activeModule, quickActionsPanelState } = useSelector(({ common }) => common);
 
   return (
     <Grid

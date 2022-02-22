@@ -13,7 +13,6 @@ import moment from "moment";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
 
-// import { setRevenueKey } from "actions";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -212,7 +211,6 @@ export default function MetadataDrawer(props) {
             }
           }
         });
-      //   dispatch(setRevenueKey("statements", { ...statements, recentFile }));
     }
   }, [files, uploadedFiles, viewFiles]);
 

@@ -37,7 +37,7 @@ import CellContentEdition from "./SubComponents/CellContentEdition";
 import Avatar from "react-avatar";
 import RoomIcon from "@material-ui/icons/Room";
 import { useDispatch } from "react-redux";
-import { setMapGridCardState, setRevenueKey } from "actions";
+import { setMapGridCardState } from "actions";
 import { deepEqualObjects, setStateIfDeepEqual } from "../../functions";
 import InviteUserDialog from "./SubComponents/InviteUserDialog";
 import ReinviteUserDialog from "./SubComponents/ReinviteUserDialog";
@@ -3470,7 +3470,7 @@ function SubTable(props) {
 
       if (props.targetLabel === "activity") {
         if (rows[dataIndex]?._id) {
-          window.history.pushState("", "", `/calendar/${rows[dataIndex]._id}`);
+          window.history.pushState("", "", `/calendar/activities/${rows[dataIndex]._id}`);
           setStateApp((stateApp) => ({
             ...stateApp,
             selectedActivityId: rows[dataIndex]._id,

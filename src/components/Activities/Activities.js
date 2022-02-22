@@ -150,13 +150,14 @@ const Activities = () => {
 
   useEffect(() => {
     if (events.length > 0) {
-      const eventId = history.location.pathname.split("/")[2];
+      const eventId = history.location.pathname.split("/")[3];
       if (eventId) {
         setSelectedActivityId(eventId);
         onModalOpen();
       }
     }
   }, [events]);
+
   useEffect(() => {
     if (activitiesData) {
       setEvents(
@@ -214,7 +215,7 @@ const Activities = () => {
   }, [stateApp.selectedActivityId]);
 
   const onEventClick = (event) => {
-    window.history.pushState("", "", `/calendar/${event._id}`);
+    window.history.pushState("", "", `/calendar/activities/${event._id}`);
     setSelectedActivityId(event._id);
     onModalOpen();
   };

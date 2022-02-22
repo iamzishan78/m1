@@ -4,7 +4,7 @@ import { Switch, Route, useLocation } from "react-router-dom";
 import RevenueActionsPanel from "./QuickActionsPanel";
 import * as Components from "components/Revenue/components";
 
-import { setActiveModule, toggleActionsPanel } from "actions";
+import { setActiveModule, toggleQuickActionsPanel } from "store/actions/commonActions";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
   PORTFOLIO: {
@@ -53,8 +53,8 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
 const replaceId = (link, path) => {
   const linkSplitted = link.split('/');
   const pathSplitted = path.split('/');
-  for(let i = 0; i < linkSplitted.length; i++){
-    if(linkSplitted[i] !== pathSplitted[i] && linkSplitted[i] !== ':id'){
+  for (let i = 0; i < linkSplitted.length; i++) {
+    if (linkSplitted[i] !== pathSplitted[i] && linkSplitted[i] !== ':id') {
       return false
     }
   }
@@ -64,29 +64,29 @@ const replaceId = (link, path) => {
 export default function Revenue() {
   const location = useLocation();
   const dispatch = useDispatch();
-  const { actionsPanelState, activeModule } = useSelector((state) => state.Revenue);
+  const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
   useEffect(() => {
     const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => {
       const path = location.pathname;
-      if(item.link.includes(':id')){
+      if (item.link.includes(':id')) {
         return replaceId(item.link, path)
       }
       return path.startsWith(item.link)
     });
     if (option?.parent) {
       dispatch(setActiveModule(SIDE_PANEL_MENU_ITEMS_LIST[option.parent]));
-    }else if(option){
+    } else if (option) {
       dispatch(setActiveModule(option));
     }
   }, [location.pathname, dispatch]);
 
   const handlePanelStateChange = () => {
-    dispatch(toggleActionsPanel(!actionsPanelState));
+    dispatch(toggleQuickActionsPanel(!quickActionsPanelState));
   };
 
   return (
-    <RevenueActionsPanel handlePanelStateChange={handlePanelStateChange} expandedPanel={actionsPanelState} activeModule={activeModule}>
+    <RevenueActionsPanel handlePanelStateChange={handlePanelStateChange} expandedPanel={quickActionsPanelState} activeModule={activeModule}>
       {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
         <Switch>
           <Route

@@ -6,7 +6,7 @@ import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import * as Components from "components/Land/components";
 
 //Actions
-import { toggleLandActionsPanel, setActiveModuleLand } from "actions";
+import { toggleQuickActionsPanel, setActiveModule } from "store/actions/commonActions";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
   PORTFOLIO: {
@@ -45,7 +45,7 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
 export default function Revenue() {
   const location = useLocation();
   const dispatch = useDispatch();
-  const { quickActionsPanelState, activeModule } = useSelector(({ Land }) => Land);
+  const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
   useEffect(() => {
     const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => {
@@ -56,9 +56,9 @@ export default function Revenue() {
       return path.startsWith(item.link);
     });
     if (option?.parent) {
-      dispatch(setActiveModuleLand(SIDE_PANEL_MENU_ITEMS_LIST[option.parent]));
+      dispatch(setActiveModule(SIDE_PANEL_MENU_ITEMS_LIST[option.parent]));
     } else if (option) {
-      dispatch(setActiveModuleLand(option));
+      dispatch(setActiveModule(option));
     }
   }, [location.pathname, dispatch]);
 
@@ -74,7 +74,7 @@ export default function Revenue() {
   };
 
   const handlePanelStateChange = (state) => {
-    dispatch(toggleLandActionsPanel(state));
+    dispatch(toggleQuickActionsPanel(state));
   };
 
   return (

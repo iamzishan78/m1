@@ -13,11 +13,11 @@ import { ADD_PROPERTY } from "graphQL/useMutationAddProperty";
 export default function RevenueAppBar(props) {
   const { classes } = props;
   let history = useHistory();
-  const { activeModule, actionsPanelState } = useSelector((state) => state.Revenue);
+  const { activeModule, quickActionsPanelState } = useSelector(({ common }) => common);
 
   const [addProperty] = useMutation(ADD_PROPERTY, {
     onCompleted: (data) => {
-      if(data?.addProperty?.property)
+      if (data?.addProperty?.property)
         history.push(`/revenue/property/details/${data.addProperty.property._id}`)
     }
   });
@@ -29,7 +29,7 @@ export default function RevenueAppBar(props) {
       display="flex"
       justify="space-between"
       alignItems="center"
-      style={{ marginLeft: actionsPanelState ? "433px" : "7px" }}
+      style={{ marginLeft: quickActionsPanelState ? "433px" : "7px" }}
     >
       <Grid item md={8}>
         <Grid container direction="row" display="flex" justify="flex-start" alignItems="center">
@@ -49,33 +49,33 @@ export default function RevenueAppBar(props) {
         </Grid>
       </Grid>
       {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title) && (
-          <Grid item>
-            <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-              <Button color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}>
-                Add {activeModule.title}
-              </Button>
-            </div>
-          </Grid>
-        )}
+        <Grid item>
+          <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+            <Button color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}>
+              Add {activeModule.title}
+            </Button>
+          </div>
+        </Grid>
+      )}
       {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title) && (
-          <Grid item>
-            <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-              <Button color="primary" variant="contained" startIcon={<Add />} onClick={() => {
-                  addProperty({
-                    variables:{
-                      property: {
-                        source: 'Manual Entry',
-                        status: 'Unapproved'
-                      }
-                    }
-                  })
-                }}
-              >
-                Add New Property
-              </Button>
-            </div>
-          </Grid>
-        )}
+        <Grid item>
+          <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+            <Button color="primary" variant="contained" startIcon={<Add />} onClick={() => {
+              addProperty({
+                variables: {
+                  property: {
+                    source: 'Manual Entry',
+                    status: 'Unapproved'
+                  }
+                }
+              })
+            }}
+            >
+              Add New Property
+            </Button>
+          </div>
+        </Grid>
+      )}
     </Grid>
   );
 }

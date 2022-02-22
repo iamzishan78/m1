@@ -230,7 +230,7 @@ export default function Navigation(props) {
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
       }));
-    } else if (location.pathname === "/calendar") {
+    } else if (location.pathname === "/calendar/activities") {
       setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
@@ -397,7 +397,7 @@ export default function Navigation(props) {
         >
           {stateApp.user && (
             <Toolbar>
-              {location.pathname === "/calendar" && (
+              {location.pathname.startsWith("/calendar") && (
                 <>
                   <ActivitySearch />
                 </>
