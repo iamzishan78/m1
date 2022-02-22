@@ -320,10 +320,13 @@ const SummarySection = ({ checkId }) => {
       let { deductType, taxType } = adjSummary;
 
       const deducts =
-        deductType?.buckets?.length > 0 &&
-        deductType?.buckets?.map((item) => ({ name: item.key, value: (item.ownerDeducts?.value).toFixed(2) }));
+        deductType?.buckets?.length > 0 ?
+        deductType?.buckets?.map((item) => ({ name: item.key, value: (item.ownerDeducts?.value).toFixed(2) })) :
+        [];
       const taxes =
-        taxType?.buckets?.length > 0 && taxType?.buckets?.map((item) => ({ name: item.key, value: (item.ownerTax?.value).toFixed(2) }));
+        taxType?.buckets?.length > 0 ?
+        taxType?.buckets?.map((item) => ({ name: item.key, value: (item.ownerTax?.value).toFixed(2) })) :
+        [];
 
       const adjustments = [...deducts, ...taxes];
       let totalAdjustment = 0;

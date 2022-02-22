@@ -20,7 +20,7 @@ export default function AutoCompleteComponent(props) {
           return option;
         }
         // Add "xxx" option created dynamically
-        if (option.inputValue) {
+        if (option?.inputValue) {
           return option.name;
         }
 
@@ -31,13 +31,13 @@ export default function AutoCompleteComponent(props) {
         return option?._id === value?._id;
       }}
       renderOption={(option) => {
-        if (option.id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.value}'</Typography>;
+        if (option?.id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.value}'</Typography>;
 
         return (
           <Grid container spacing={0}>
             <Grid container item xs={12} alignItems="center">
               <Grid item xs>
-                <span style={{ fontWeight: 400 }}>{option.name}</span>
+                <span style={{ fontWeight: 400 }}>{option?.name}</span>
 
                 <Typography variant="body2" color="textSecondary">
                   {option}
@@ -53,7 +53,7 @@ export default function AutoCompleteComponent(props) {
         const filtered = filter(options, { ...params, inputValue });
 
         const isExist = loadashFilter(filtered, (filter) => {
-          return filter.includes(inputValue);
+          return filter?.includes(inputValue);
         });
         // Suggest the creation of a new value
         if (inputValue !== "" && (!isExist || isExist.length === 0) && rest.canAdd === undefined) {
