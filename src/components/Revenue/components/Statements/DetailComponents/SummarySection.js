@@ -270,7 +270,7 @@ const SummarySection = ({ checkId }) => {
     if (revSummary) {
       setRevenueSummaryDetails([
         { name: "Gross Revenue", value: `${revSummary?.grossRevenue?.value.toFixed(2)}` },
-        { name: "Adjustments", value: `(${(revSummary?.ownerDeducts?.value + revSummary?.ownerTax?.value).toFixed(2)})` },
+        { name: "Adjustments", value: `${(revSummary?.ownerDeducts?.value + revSummary?.ownerTax?.value).toFixed(2)}` },
         { name: "Net Revenue", value: `${(revSummary?.netOwnerValue?.value).toFixed(2)}` },
         { name: "Lease Payments", value: revSummary?.leasePayments?.value ? `${revSummary.leasePayments.value.toFixed(2)}` : "-" },
         { name: "Other", value: revSummary?.other?.value ? `${revSummary.other.value.toFixed(2)}` : "-" },
