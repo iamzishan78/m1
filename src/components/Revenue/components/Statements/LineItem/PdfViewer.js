@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useSelector } from "react-redux";
 import _ from "underscore";
 import { useLazyQuery } from "@apollo/client";
@@ -10,6 +10,7 @@ import ZoomOutIcon from "@material-ui/icons/ZoomOut";
 import { Document, Page } from "react-pdf";
 
 import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
+import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
   paperTwo: {
@@ -54,14 +55,16 @@ export default function PdfViewer({ togglePdfViewState }) {
 
   const recentFile = useSelector(({ Revenue }) => Revenue?.statements?.recentFile);
 
+  const [stateApp] = useContext(AppContext);
+
   const [viewFile, { data: viewFileResult, loading: fileLoading }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
 
   useEffect(() => {
-    if (recentFile) {
+    if (recentFile || (stateApp.metaDrawerViewFiles && stateApp.metaDrawerViewFiles[0])) {
       viewFile({
-        variables: { fileId: recentFile.fileId },
+        variables: { fileId: recentFile?.fileId || stateApp.metaDrawerViewFiles[0] },
       });
     }
   }, [recentFile, viewFile]);
