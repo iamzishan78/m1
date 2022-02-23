@@ -10,6 +10,7 @@ import RevenueSearch from "components/Navigation/components/RevenueSearch";
 import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
 import { ADD_PROPERTY } from "graphQL/useMutationAddProperty";
 import { ADD_CHECK_DATA } from "graphQL/useMutationAddCheck";
+import ButtonDropDown from "components/Shared/M1nTable/components/ButtonGroup";
 
 export default function RevenueAppBar(props) {
   const { classes } = props;
@@ -30,6 +31,17 @@ export default function RevenueAppBar(props) {
 
     }
   });
+
+  const RevenueStatementAction = React.useMemo(() => {
+    return [{
+      isShow: false, text: `Add ${activeModule.title}`, action: () => {
+        addCheck({ variables: { check: {} } })
+      }
+    },
+    { isShow: true, text: 'Import Statement', action: () => { } },
+    ]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeModule]);
 
   return (
     <Grid
@@ -60,20 +72,8 @@ export default function RevenueAppBar(props) {
       {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title) && (
         <Grid item>
           <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-            <Button color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}
-              onClick={() => {
-                addCheck({
-                  variables: {
-                    checkDetail: {
-                      source: 'Manual Entry',
-                      status: 'Unapproved'
-                    }
-                  }
-                })
-              }}
-            >
-              Add {activeModule.title}
-            </Button>
+
+            <ButtonDropDown variant="contained" color="primary" options={RevenueStatementAction} />
           </div>
         </Grid>
       )}
