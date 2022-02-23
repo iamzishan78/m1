@@ -10,7 +10,7 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { AppContext } from "../../../AppContext";
+import { AppContext } from "AppContext";
 
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
@@ -28,6 +28,7 @@ const useToolbarStyles = makeStyles((theme) => ({
     borderRadius: 3,
     display: "flex",
     alignItems: "center",
+    marginRight: "10px"
   },
   filterDisplay: {
     color: "#d9d9d9",
@@ -94,12 +95,15 @@ const ActivitiesToolbar = ({
   setActivityFilterByType,
   activityFilterByTime,
   setActivityFilterByTime,
+  activityFilterByOwner,
+  setActivityFilterByOwner,
   view,
   setView,
+  mongoUsers,
   ...toolbar
 }) => {
   const classes = useToolbarStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
 
   const goToBack = () => {
     toolbar.onNavigate("PREV");
@@ -107,23 +111,23 @@ const ActivitiesToolbar = ({
   const goToNext = () => {
     toolbar.onNavigate("NEXT");
   };
-  const goToCurrent = () => {
-    toolbar.onNavigate("TODAY");
-  };
-  const goToNextWeek = () => {
-    var today = new Date();
-    toolbar.onNavigate(
-      "DATE",
-      new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
-    );
-  };
-  const goToTomorrow = () => {
-    var today = new Date();
-    toolbar.onNavigate(
-      "DATE",
-      new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000)
-    );
-  };
+  // const goToCurrent = () => {
+  //   toolbar.onNavigate("TODAY");
+  // };
+  // const goToNextWeek = () => {
+  //   var today = new Date();
+  //   toolbar.onNavigate(
+  //     "DATE",
+  //     new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
+  //   );
+  // };
+  // const goToTomorrow = () => {
+  //   var today = new Date();
+  //   toolbar.onNavigate(
+  //     "DATE",
+  //     new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000)
+  //   );
+  // };
 
   const handleViewChange = (event) => {
     const view = event.target.value;
@@ -131,15 +135,23 @@ const ActivitiesToolbar = ({
     toolbar.onView(view);
   };
 
+  const acitvityOwnerOptions = React.useMemo(() => {
+    let ownerOptions = [{ label: 'All', value: 'all' }];
+    if (mongoUsers) {
+      mongoUsers.filter(u => u.name).forEach(u => { ownerOptions.push({ ...u, label: u.displayName, value: u._id }) });
+    }
+    return ownerOptions;
+  }, [mongoUsers]);
+
   return (
     <div className={classes.root}>
       <div className={classes.left}>
         <div className={classes.filterByTypeDisplay}>
           <Autocomplete
-            id="combo-box-demo"
+            id="activityFilterByType"
             options={activitiesTypesOptions}
             getOptionLabel={(option) => option.label}
-            style={{ width: 250 }}
+            style={{ width: 220 }}
             size="small"
             defaultValue={activitiesTypesOptions.find(o => o.value === activityFilterByType)}
             value={activitiesTypesOptions.find(o => o.value === activityFilterByType)}
@@ -152,6 +164,28 @@ const ActivitiesToolbar = ({
                 label="Activity Type"
                 variant="outlined"
                 value={activityFilterByType}
+              />
+            )}
+          />
+        </div>
+        <div className={classes.filterByTypeDisplay}>
+          <Autocomplete
+            id="activityFilterByOwner"
+            options={acitvityOwnerOptions}
+            getOptionLabel={(option) => option.label}
+            style={{ width: 220 }}
+            size="small"
+            defaultValue={acitvityOwnerOptions.find(u => u.value === activityFilterByOwner)}
+            value={acitvityOwnerOptions.find(u => u.value === activityFilterByOwner)}
+            onChange={(_, value) => {
+              setActivityFilterByOwner(value?.value ?? 'all');
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Activity Owner"
+                variant="outlined"
+                value={activityFilterByOwner}
               />
             )}
           />
