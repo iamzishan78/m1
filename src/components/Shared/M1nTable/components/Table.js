@@ -3896,7 +3896,9 @@ function SubTable(props) {
   if (props.header === "Deals" || props.header === "Activities") {
     // adds the print and export options in the Flow grid and the Activities grid
     options.print = true;
-    options.download = true;
+    if(props.targetLabel !== 'activitiesDashboard'){
+      options.download = true;
+    }
   }
 
 

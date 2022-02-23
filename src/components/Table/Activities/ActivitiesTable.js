@@ -1,14 +1,17 @@
 import React, { useContext, useEffect } from "react";
 import get from "lodash/get";
 // context
-import { Container, Dialog } from "@material-ui/core";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import { Container, Dialog, IconButton } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import { useMutation } from "@apollo/client";
+import { useDispatch } from "react-redux";
 
 import { AppContext } from "AppContext";
 import { deepEqualObjects, copy } from "components/Shared/functions";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
+import { execCommonAsyncExportJobAction } from "store/actions/commonActions";
 // Header Schemas
 import TableHeader from "components/Table/constants/activity-table-header-schema";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
@@ -20,36 +23,56 @@ import { activityTypes } from "utils/data";
 import { getRangeFilters } from "utils/helper";
 
 export const getFilters = (appliedFilters) => {
-  let filters = []
+  let filters = [];
   if (appliedFilters) {
-    let range = []
-    range = getRangeFilters({
-      dateTime: {
-        from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-        to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+    let range = [];
+    range = getRangeFilters(
+      {
+        dateTime: {
+          from: appliedFilters.fromDate
+            ? new Date(appliedFilters.fromDate).toISOString()
+            : null,
+          to: appliedFilters.toDate
+            ? new Date(appliedFilters.toDate).toISOString()
+            : null,
+        },
       },
-    }, 'simple');
-    if(range.length > 0) filters = [...filters, ...range]
-    range = getRangeFilters({
-      endDateTime: {
-        from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-        to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+      "simple"
+    );
+    if (range.length > 0) filters = [...filters, ...range];
+    range = getRangeFilters(
+      {
+        endDateTime: {
+          from: appliedFilters.fromDate
+            ? new Date(appliedFilters.fromDate).toISOString()
+            : null,
+          to: appliedFilters.toDate
+            ? new Date(appliedFilters.toDate).toISOString()
+            : null,
+        },
       },
-    }, 'simple');
-    if(range.length > 0) filters = [...filters, ...range]
-    if(appliedFilters.campaignName){
-      filters.push({ field: 'contact.campaignName.keyword', value: appliedFilters.campaignName})
+      "simple"
+    );
+    if (range.length > 0) filters = [...filters, ...range];
+    if (appliedFilters.campaignName) {
+      filters.push({
+        field: "contact.campaignName.keyword",
+        value: appliedFilters.campaignName,
+      });
     }
-    if(appliedFilters.qualifier){
-      filters.push({ field: 'owner.email.keyword', value: appliedFilters.qualifier})
+    if (appliedFilters.qualifier) {
+      filters.push({
+        field: "owner.email.keyword",
+        value: appliedFilters.qualifier,
+      });
     }
   }
   return filters;
 };
 
-
 function ActivitiesTable(props) {
   const classes = usetableStyles();
+  const dispatch = useDispatch();
   const [stateApp] = useContext(AppContext);
   const { appliedFilters, esIndex, searchFields } = props;
   const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
@@ -116,6 +139,10 @@ function ActivitiesTable(props) {
     }
   };
 
+  const onDownload = (e) => {
+    dispatch(execCommonAsyncExportJobAction.STARTED());
+  };
+
   return (
     <Container
       maxWidth={false}
@@ -162,7 +189,23 @@ function ActivitiesTable(props) {
         orderByTracks={false}
         startPaginationAt={null}
         onTableChange={props.onTableChange}
-        options={props.options}
+        options={{
+          ...props.options,
+          customToolbar: () => {
+            return (
+              <div
+                style={{
+                  display: "inline",
+                  float: "left",
+                }}
+              >
+                <IconButton onClick={onDownload}>
+                  <CloudDownloadIcon />
+                </IconButton>
+              </div>
+            );
+          },
+        }}
         parent={props.parent}
         setColumnsBase={[]}
       />

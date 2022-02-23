@@ -94,6 +94,7 @@ const ActivitiesDashboard = () => {
           filtersChange={filtersChange}
           appliedFilters={appliedFilters}
           filterToggle={filterToggle}
+          targetLabel={'activitiesDashboard'}
           header="Activities"
         />
       </div>
