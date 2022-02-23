@@ -724,10 +724,10 @@ function SubTable(props) {
     let unitId = history.location.pathname.split("/");
     history.push(
       `/map/wells/${value?.wellId.toUpperCase()}`,
-      { 
+      {
         fromUnitDetail: true,
         unitName: stateApp.selectedShape.shapeLabel,
-        unitId: unitId[unitId.length-1]
+        unitId: unitId[unitId.length - 1]
       }
     );
     setStateApp((stateApp) => ({
@@ -3367,7 +3367,7 @@ function SubTable(props) {
                 float: "left",
                 marginRight: "15px",
                 marginTop: "5px",
-            }}
+              }}
           >
             {props.addAble.type === "parcelInterest" && (
               <Button color="secondary" className={classes.multiSelectionTopBarButtons} disabled={true} onClick={() => { }}>
@@ -3573,11 +3573,11 @@ function SubTable(props) {
         //   history.push(`/revenue/property/details?id=${rows[dataIndex]?._id}`);
         // }
       }
-      if (props.parent === "RevenueStatementTable") {
-        if (rows[dataIndex]?._id) {
-          history.push(`/revenue/statement/details?id=${rows[dataIndex]?._id}`);
-        }
-      }
+      // if (props.parent === "RevenueStatementTable") {
+      //   if (rows[dataIndex]?._id) {
+      //     history.push(`/revenue/statement/details?id=${rows[dataIndex]?._id}`);
+      //   }
+      // }
     },
     onChangePage: (pageState) => {
       setPageInd(pageState);
