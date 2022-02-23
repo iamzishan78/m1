@@ -40,19 +40,20 @@ const ActivitiesDashboardFilter = ({
   setAppliedFilters,
   tableFilters,
   appliedFilters,
-  lastCheckMinDate,
+  minDate,
 }) => {
   const classes = useStyles();
 
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [campaignName, setCampaignName] = useState("");
+  const [qualifier, setQualifier] = useState("");
 
   useEffect(() => {
     setFromDate(
-      `${moment(lastCheckMinDate).startOf("month").format("yyyy-MM-DD")}`
+      `${moment(minDate).startOf("month").format("yyyy-MM-DD")}`
     );
-  }, [lastCheckMinDate]);
+  }, [minDate]);
 
   return (
     <div className={classes.actionBar}>
@@ -70,9 +71,11 @@ const ActivitiesDashboardFilter = ({
             setFromDate={setFromDate}
             toDate={toDate}
             setToDate={setToDate}
-            minDate={lastCheckMinDate}
+            minDate={minDate}
             campaignName={campaignName}
             setCampaignName={setCampaignName}
+            qualifier={qualifier}
+            setQualifier={setQualifier}
             esIndex={esIndex}
             searchFields={searchFields}
             tableFilters={tableFilters}

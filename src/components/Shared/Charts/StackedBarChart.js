@@ -1,23 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import ReactApexChart from "react-apexcharts";
 
-const StackedBarChart = ({ data, colors, height }) => {
-  const series = [
-    {
-      name: "Marine Sprite",
-      data: [44],
-    },
-    {
-      name: "Striking Calf",
-      data: [53],
-    },
-    {
-      name: "Tank Picture",
-      data: [12],
-    },
-  ];
-  const options = {
+const StackedBarChart = ({ data, toolTipFormatter, xAxisFormatter, xAxisLabel }) => {
+
+  const [series, setSeries] = useState([])
+  const [options, setOptions] = useState({
     chart: {
       type: "bar",
       stacked: true,
@@ -28,9 +16,10 @@ const StackedBarChart = ({ data, colors, height }) => {
       },
     },
     xaxis: {
-      categories: [2008],
+      categories: [],
       labels: {
-        show: false
+        show: xAxisLabel,
+        formatter: xAxisFormatter ? xAxisFormatter: (val) => { return val}
       }
     },
     fill: {
@@ -43,16 +32,26 @@ const StackedBarChart = ({ data, colors, height }) => {
       enabled: false,
     },
     tooltip: {
-        enabled: false,
-    }
-  };
+        enabled: true,
+        y: {
+          formatter: toolTipFormatter ? toolTipFormatter: (val) => { return val}
+        }
+    },
+  })
+  
+  useEffect(() => {
+    setSeries(data.series);
+    const opt = JSON.parse(JSON.stringify(options));
+    opt.xaxis.categories = data.xaxis
+    setOptions(opt);
+  },[data]);
 
   return (
     <ReactApexChart
       options={options}
       series={series}
       type="bar"
-      height={height}
+      height={100 + data.xaxis.length * 20}
       className="apex-charts"
     />
   );

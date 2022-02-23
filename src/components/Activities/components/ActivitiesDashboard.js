@@ -43,14 +43,14 @@ const ActivitiesDashboard = () => {
     fromDate: null,
   });
   const [tableFilters, setTableFilters] = useState([]);
-  const [lastCheckMinDate, setLastCheckMinDate] = useState("");
+  const [minDate, setMinDate] = useState("");
 
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
       if (data?.getESMinValue) {
         setFilterToggle(!filterToggle);
-        setLastCheckMinDate(data?.getESMinValue);
+        setMinDate(data?.getESMinValue);
       }
     },
   });
@@ -78,7 +78,7 @@ const ActivitiesDashboard = () => {
         filterToggle={filterToggle}
         tableFilters={tableFilters}
         appliedFilters={appliedFilters}
-        lastCheckMinDate={lastCheckMinDate}
+        minDate={minDate}
         setAppliedFilters={setAppliedFilters}
       />
       <ActivityAnalytics

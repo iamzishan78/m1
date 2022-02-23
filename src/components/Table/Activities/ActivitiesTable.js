@@ -40,6 +40,9 @@ export const getFilters = (appliedFilters) => {
     if(appliedFilters.campaignName){
       filters.push({ field: 'contact.campaignName.keyword', value: appliedFilters.campaignName})
     }
+    if(appliedFilters.qualifier){
+      filters.push({ field: 'owner.email.keyword', value: appliedFilters.qualifier})
+    }
   }
   return filters;
 };

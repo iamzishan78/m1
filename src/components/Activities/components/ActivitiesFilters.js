@@ -61,6 +61,8 @@ export default function CustomDatesActivities({
   minDate,
   campaignName,
   setCampaignName,
+  qualifier,
+  setQualifier,
   esIndex,
   searchFields,
   tableFilters,
@@ -205,16 +207,16 @@ export default function CustomDatesActivities({
             appliedFilters={appliedFilters}
           />
         </Grid>
-        {/* <Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: "4px" }}>
-          <CampaignFilter
-            value={campaignName}
-            setValue={setCampaignName}
+        <Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: "4px" }}>
+          <QualifierFilter
+            value={qualifier}
+            setValue={setQualifier}
             esIndex={esIndex}
             searchFields={searchFields}
             tableFilters={tableFilters}
             appliedFilters={appliedFilters}
           />
-        </Grid> */}
+        </Grid>
       </Grid>
       <Grid item xs={1} md={1} lg={1} xl={1}>
         <Grid
@@ -230,7 +232,7 @@ export default function CustomDatesActivities({
               variant="contained"
               color="secondary"
               onClick={() => {
-                setAppliedFilters({ fromDate, toDate, campaignName });
+                setAppliedFilters({ fromDate, toDate, campaignName, qualifier });
                 setFilterToggle(!filterToggle);
               }}
             >
@@ -293,7 +295,7 @@ const CampaignFilter = ({
         console.log(value);
         if (reason === "clear" || !selectedValue?.key) {
           setSearch("");
-          setValue({});
+          setValue("");
         } else {
           setSearch(selectedValue.key);
           setValue(selectedValue.key);
@@ -311,6 +313,88 @@ const CampaignFilter = ({
           {...params}
           variant="outlined"
           label="Campaign Name"
+          placeholder=""
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+          style={{ backgroundColor: "white" }}
+        />
+      )}
+      defaultValue={null}
+      disableListWrap
+      id="custom-date-dropdown"
+    />
+  );
+};
+
+const QualifierFilter = ({
+  esIndex,
+  value,
+  setValue,
+  tableFilters,
+  appliedFilters,
+  searchFields,
+}) => {
+  const [stateApp] = useContext(AppContext);
+  const [search, setSearch] = useState("");
+
+  const [getQualifiers, { data: filtersData }] = useLazyQuery(
+    GET_ES_SIMPLE_FILTER,
+    { fetchPolicy: "no-cache" }
+  );
+
+  const getAllFilters = () => {
+    let rangeFilters = [];
+    if (!tableFilters.find((filter) => filter.type === "range")) {
+      rangeFilters = getFilters(appliedFilters);
+    }
+    return [...rangeFilters, ...tableFilters];
+  };
+
+  useEffect(() => {
+    const filterKey = "owner.email.keyword";
+    getQualifiers({
+      variables: {
+        esIndex,
+        index: esIndex,
+        filters: getAllFilters(),
+        filterKey,
+        search: { query: stateApp.activitySearchQuery, fields: searchFields },
+        size: 50,
+        filterAggs: {
+          query: search,
+          field: filterKey,
+          size: 50,
+        },
+      },
+    });
+  }, [search]);
+
+  return (
+    <Autocomplete
+      size="small"
+      onChange={(e, selectedValue, reason) => {
+        console.log(value);
+        if (reason === "clear" || !selectedValue?.key) {
+          setSearch("");
+          setValue("");
+        } else {
+          setSearch(selectedValue.key);
+          setValue(selectedValue.key);
+        }
+      }}
+      value={value}
+      inputValue={search?.toString()}
+      options={get(filtersData, "getESSimpleFilter.hits", [])}
+      getOptionSelected={(option, value) => option.key === value}
+      getOptionLabel={(option) =>
+        option?.key?.toString().replace(/^\,|\,$/gm, "")
+      }
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          variant="outlined"
+          label="Qualifier"
           placeholder=""
           onChange={(e) => {
             setSearch(e.target.value);
