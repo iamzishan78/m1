@@ -9,12 +9,12 @@ import * as Components from "components/Land/components";
 import { toggleQuickActionsPanel, setActiveModule } from "store/actions/commonActions";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
-  PORTFOLIO: {
-    featureFlag: "LANDPORTFOLIO",
-    title: "Portfolio",
-    link: "/land/portfolio",
-    component: "Portfolio",
-  },
+  // PORTFOLIO: {
+  //   featureFlag: "LANDPORTFOLIO",
+  //   title: "Portfolio",
+  //   link: "/land/portfolio",
+  //   component: "Portfolio",
+  // },
   AGREEMENTS: {
     featureFlag: "LANDMODULE",
     title: "Agreements",

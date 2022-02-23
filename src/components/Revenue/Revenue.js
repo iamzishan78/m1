@@ -7,11 +7,11 @@ import * as Components from "components/Revenue/components";
 import { setActiveModule, toggleQuickActionsPanel } from "store/actions/commonActions";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
-  PORTFOLIO: {
-    title: "Portfolio",
-    link: "/revenue/portfolio",
-    component: "Portfolio",
-  },
+  // PORTFOLIO: {
+  //   title: "Portfolio",
+  //   link: "/revenue/portfolio",
+  //   component: "Portfolio",
+  // },
   PROPERTIES: {
     title: "Properties",
     link: "/revenue/properties",
