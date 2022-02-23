@@ -62,12 +62,12 @@ const CUSTOM_DATES = {
 export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate, label, isProperties, lastCheckMinDate, onChange }) {
   const classes = useStyles();
   useEffect(() => {
-    if(isProperties){
+    if (isProperties) {
       handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
-    }else{
+    } else {
       handleDateTypeChange(CUSTOM_DATES.LAST_MONTH);
     }
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -87,7 +87,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
   // }
 
   const handleDateTypeChange = (date) => {
-    if(onChange){
+    if (onChange) {
       onChange(date)
     }
     const currentYear = Math.round(new Date().getFullYear());
@@ -136,95 +136,95 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
   };
 
   return (
-      <Grid container direction="row" display="flex" alignItems="center" spacing={3}>
-        {label && (
-          <Grid style={{ marginTop: "2px", padding: 0 }}>
-            <label className={classes.label}>{label}</label>
-          </Grid>
-        )}
-        <Grid item xs={3} sm={3} md={3} lg={3} xl={3} style={{ marginTop: "2px" }}>
-          <Autocomplete
-            size="small"
-            onChange={(event, newValue) => {
-              if (newValue === null) {
-                handleDateTypeChange("This Month");
-              } else {
-                handleDateTypeChange(newValue);
-              }
-            }}
-            options={Object.values(CUSTOM_DATES).filter(value => {
-              if(!isProperties && value === 'All Dates')return false;
-              else return true;
-            })}
-            renderInput={(params) => (
-              <TextField {...params} variant="outlined" label="Date Range" placeholder="" style={{ backgroundColor: "white" }} />
-            )}
-            defaultValue={isProperties ?  CUSTOM_DATES.ALL_DATES : CUSTOM_DATES.LAST_MONTH}
-            disableListWrap
-            id="custom-date-dropdown"
-          />
+    <Grid container direction="row" display="flex" alignItems="center" spacing={3}>
+      {label && (
+        <Grid style={{ marginTop: "2px", padding: 0 }}>
+          <label className={classes.label}>{label}</label>
         </Grid>
-        <Grid item xs={3} sm={3} md={3} lg={3} xl={3} >
-          <TextField
-            size="small"
-            margin="dense"
-            type="month"
-            variant="outlined"
-            placeholder=""
-            fullWidth
-            value={moment(fromDate).format('yyyy-MM')}
-            className={classes.inputFieldDate}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            InputProps={{
-              classes: {
-                root: classes.dateRoot,
-                focused: classes.focused,
-                notchedOutline: classes.notchedOutline,
-              },
-            }}
-            onChange={(event) => {
-              if (event.target.value == "") {
-                setFromDate(`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`)
-              } else {
-                setFromDate(event.target.value);
-              }
-            }}
-          />
-        </Grid>
-        <Grid>
-          <label>to</label>
-        </Grid>
-        <Grid item xs={3} sm={3} md={3} lg={3} xl={3} >
-          <TextField
-            size="small"
-            margin="dense"
-            type="month"
-            variant="outlined"
-            placeholder="to"
-            fullWidth
-            value={moment(toDate).format('yyyy-MM')}
-            className={classes.inputFieldDate}
-            onChange={(event) => {
-              if (event.target.value == "") {
-                setToDate(`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`)
-              } else {
-                setToDate(event.target.value);
-              }
-            }}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            InputProps={{
-              classes: {
-                root: classes.dateRoot,
-                focused: classes.focused,
-                notchedOutline: classes.notchedOutline,
-              },
-            }}
-          />
-        </Grid>
+      )}
+      <Grid item xs={3} sm={3} md={3} lg={3} xl={3} style={{ marginTop: "2px" }}>
+        <Autocomplete
+          size="small"
+          onChange={(event, newValue) => {
+            if (newValue === null) {
+              handleDateTypeChange("This Month");
+            } else {
+              handleDateTypeChange(newValue);
+            }
+          }}
+          options={Object.values(CUSTOM_DATES).filter(value => {
+            if (!isProperties && value === 'All Dates') return false;
+            else return true;
+          })}
+          renderInput={(params) => (
+            <TextField {...params} variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
+          )}
+          defaultValue={isProperties ? CUSTOM_DATES.ALL_DATES : CUSTOM_DATES.LAST_MONTH}
+          disableListWrap
+          id="custom-date-dropdown"
+        />
       </Grid>
+      <Grid item xs={3} sm={3} md={3} lg={3} xl={3} >
+        <TextField
+          size="small"
+          margin="dense"
+          type="month"
+          variant="outlined"
+          placeholder=""
+          fullWidth
+          value={moment(fromDate).format('yyyy-MM')}
+          className={classes.inputFieldDate}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          InputProps={{
+            classes: {
+              root: classes.dateRoot,
+              focused: classes.focused,
+              notchedOutline: classes.notchedOutline,
+            },
+          }}
+          onChange={(event) => {
+            if (event.target.value == "") {
+              setFromDate(`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`)
+            } else {
+              setFromDate(event.target.value);
+            }
+          }}
+        />
+      </Grid>
+      <Grid>
+        <label>to</label>
+      </Grid>
+      <Grid item xs={3} sm={3} md={3} lg={3} xl={3} >
+        <TextField
+          size="small"
+          margin="dense"
+          type="month"
+          variant="outlined"
+          placeholder="to"
+          fullWidth
+          value={moment(toDate).format('yyyy-MM')}
+          className={classes.inputFieldDate}
+          onChange={(event) => {
+            if (event.target.value == "") {
+              setToDate(`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`)
+            } else {
+              setToDate(event.target.value);
+            }
+          }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          InputProps={{
+            classes: {
+              root: classes.dateRoot,
+              focused: classes.focused,
+              notchedOutline: classes.notchedOutline,
+            },
+          }}
+        />
+      </Grid>
+    </Grid>
   );
 }
