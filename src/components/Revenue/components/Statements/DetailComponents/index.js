@@ -335,7 +335,7 @@ export default function DetailComponents(props) {
                 {checksFlatData && (
                   <Typography
                     style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
-                  >{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
+                  >{`${checksFlatData?.checkNumber || ''} - ${checksFlatData?.payor?.name || ''}`}</Typography>
                 )}
                 <div className={classes.tagsContainer}>
                   <div className={classes.highlighter}>

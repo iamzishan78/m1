@@ -9,6 +9,7 @@ import { useMutation } from "@apollo/client";
 import RevenueSearch from "components/Navigation/components/RevenueSearch";
 import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
 import { ADD_PROPERTY } from "graphQL/useMutationAddProperty";
+import { ADD_CHECK_DATA } from "graphQL/useMutationAddCheck";
 
 export default function RevenueAppBar(props) {
   const { classes } = props;
@@ -17,8 +18,16 @@ export default function RevenueAppBar(props) {
 
   const [addProperty] = useMutation(ADD_PROPERTY, {
     onCompleted: (data) => {
-      if(data?.addProperty?.property)
+      if (data?.addProperty?.property)
         history.push(`/revenue/property/details/${data.addProperty.property._id}`)
+    }
+  });
+
+  const [addCheck] = useMutation(ADD_CHECK_DATA, {
+    onCompleted: (data) => {
+      if (data?.addCheck?.newCheck)
+        history.push(`/revenue/statement/details?id=${data.addCheck.newCheck._id}`);
+
     }
   });
 
@@ -49,33 +58,44 @@ export default function RevenueAppBar(props) {
         </Grid>
       </Grid>
       {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title) && (
-          <Grid item>
-            <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-              <Button color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}>
-                Add {activeModule.title}
-              </Button>
-            </div>
-          </Grid>
-        )}
-      {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title) && (
-          <Grid item>
-            <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-              <Button color="primary" variant="contained" startIcon={<Add />} onClick={() => {
-                  addProperty({
-                    variables:{
-                      property: {
-                        source: 'Manual Entry',
-                        status: 'Unapproved'
-                      }
+        <Grid item>
+          <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+            <Button color="primary" variant="contained" startIcon={<Add />} endIcon={<ArrowDropDown />}
+              onClick={() => {
+                addCheck({
+                  variables: {
+                    checkDetail: {
+                      source: 'Manual Entry',
+                      status: 'Unapproved'
                     }
-                  })
-                }}
-              >
-                Add New Property
-              </Button>
-            </div>
-          </Grid>
-        )}
+                  }
+                })
+              }}
+            >
+              Add {activeModule.title}
+            </Button>
+          </div>
+        </Grid>
+      )}
+      {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title) && (
+        <Grid item>
+          <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+            <Button color="primary" variant="contained" startIcon={<Add />} onClick={() => {
+              addProperty({
+                variables: {
+                  property: {
+                    source: 'Manual Entry',
+                    status: 'Unapproved'
+                  }
+                }
+              })
+            }}
+            >
+              Add New Property
+            </Button>
+          </div>
+        </Grid>
+      )}
     </Grid>
   );
 }
