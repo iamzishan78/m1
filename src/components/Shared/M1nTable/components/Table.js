@@ -3341,7 +3341,8 @@ function SubTable(props) {
         if (props.addAble.type && props.addAble.type === "inviteUser")
           handleExpandClick(null, null, null, "inviteUser");
         if (props.addAble.type === "revenueStatementDetails") {
-          routeChange(`/revenue/statement/${window.location.search.replace('?id=', '')}/line-item`);
+          const checkId = window.location.pathname.split("/")[window.location.pathname.split("/").length - 1];
+          routeChange(`/revenue/statement/${checkId}/line-item`);
         }
 
       };
@@ -3575,7 +3576,7 @@ function SubTable(props) {
       }
       // if (props.parent === "RevenueStatementTable") {
       //   if (rows[dataIndex]?._id) {
-      //     history.push(`/revenue/statement/details?id=${rows[dataIndex]?._id}`);
+      //     history.push(`/revenue/statement/details/${rows[dataIndex]?._id}`);
       //   }
       // }
     },

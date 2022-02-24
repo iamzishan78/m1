@@ -194,13 +194,10 @@ export default function DetailComponents(props) {
   const { statements } = useSelector(({ Revenue }) => Revenue);
 
   const [tab, setTab] = useState(0);
-  const [checkId, setCheckId] = useState(null);
   const selectedTabRef = useRef(null);
-  const location = useLocation();
   const [isButtonScroll, setButtonScroll] = useState(false);
   const [collapse, setCollapse] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const { search } = location;
   const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
@@ -209,6 +206,7 @@ export default function DetailComponents(props) {
 
   const history = useHistory();
   const previousRoute = history.pathHistory[1];
+  const checkId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
 
   const classes = useStyles({ ...props, collapse });
   // queries
@@ -265,17 +263,13 @@ export default function DetailComponents(props) {
   }, [tab]);
 
   useEffect(() => {
-    if (search !== "") {
-      const checkId = search.replace("?id=", "");
-      if (checkId) {
-        setCheckId(checkId);
-        getCheck({
-          variables: { id: checkId },
-        });
-        getAllMongoUsers();
-      }
+    if (checkId) {
+      getCheck({
+        variables: { id: checkId },
+      });
+      getAllMongoUsers();
     }
-  }, [search]);
+  }, []);
 
   useEffect(() => {
     if (userLists && userLists.allMongoUsers) {

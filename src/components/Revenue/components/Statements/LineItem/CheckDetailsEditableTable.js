@@ -137,7 +137,7 @@ function CheckDetailsEditableTable(props) {
             let hits = copy(loadMoreData.getESPaginatedList.hits)
             hits = hits.reverse()
             props.setRows(hits.concat(rows));
-            setTimeout(() => document.getElementById(`${hits.length}-0`)?.scrollIntoView(), 0)
+            setTimeout(() => document.getElementById(`${hits.length - 1}-0`)?.scrollIntoView(), 0)
         }
 
     }, [loadMoreData])
@@ -284,6 +284,7 @@ function CheckDetailsEditableTable(props) {
         rows.push({})
         setRows([].concat(rows))
         gridRef.current.focusCell({ x: rows.length - 1, y: 0 })
+        setTimeout(() => document.getElementById(`${rows.length - 1}-0`)?.click(), 0)
     }
 
     const loadMore = () => {

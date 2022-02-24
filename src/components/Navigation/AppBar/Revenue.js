@@ -27,7 +27,7 @@ export default function RevenueAppBar(props) {
   const [addCheck] = useMutation(ADD_CHECK_DATA, {
     onCompleted: (data) => {
       if (data?.addCheck?.newCheck)
-        history.push(`/revenue/statement/details?id=${data.addCheck.newCheck._id}`);
+        history.push(`/revenue/statement/details/${data.addCheck.newCheck._id}`);
 
     }
   });
