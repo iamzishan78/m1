@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect, useCallback, useRef } from "rea
 import { useLazyQuery } from "@apollo/client";
 import { Button, Tooltip, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { useHistory } from "react-router-dom";
 import { isEmpty } from "lodash";
 
 import { AppContext } from "AppContext";
@@ -15,6 +16,7 @@ import { TRACKSBYOBJECTTYPE } from "graphQL/useQueryTracksByObjectType";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { AutoCompleteFilter } from "./AutoCompleteFilter";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
+
 import { get } from "lodash";
 
 import { setColumnsData } from "components/Table/helpers";
@@ -79,6 +81,7 @@ export const TableESHOC = (Component) => {
         const [dependencyUpdate, SetDependencyUpdate] = useState(false);
 
         const [stateApp, setStateApp] = useContext(AppContext);
+        const history = useHistory();
 
         const tableData = elasticData?.getESSimpleSearch
 
@@ -415,15 +418,30 @@ export const TableESHOC = (Component) => {
             customToolbar: () => {
 
                 return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-                    <Button
-                        color="secondary"
-                        className={classes.multiSelectionTopBarButtons}
-                        onClick={() => { setAddToTable('add'); setClickedRow(null) }}
-                    >
-                        {tableMeta.addBtnText ? 
-                            `+ ADD ${tableMeta.addBtnText}` : 
-                            `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
-                    </Button>
+                    {
+                        tableMeta.addWithInput ?
+                        <Button
+                            color="secondary"
+                            className={classes.multiSelectionTopBarButtons}
+                            onClick={() => {
+                                if (tableMeta.inputModeType === "revenueStatementDetails")
+                                    history.push(`/revenue/statement/${window.location.search.replace('?id=', '')}line-item`);
+                            }}
+                        >
+                            INPUT MODE
+                        </Button>
+                        :
+                        <Button
+                            color="secondary"
+                            className={classes.multiSelectionTopBarButtons}
+                            onClick={() => { setAddToTable('add'); setClickedRow(null) }}
+                        >
+                            {tableMeta.addBtnText ? 
+                                `+ ADD ${tableMeta.addBtnText}` : 
+                                `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
+                        </Button>
+                    }
+
                 </div>
             },
             customToolbarSelect: ({ data }) => {
