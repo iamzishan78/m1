@@ -200,6 +200,8 @@ export const CUSTOM_DATES = {
   THIS_MONTH: "This Month",
   LAST_QUARTER: "Last Quarter",
   THIS_QUARTER: "This Quarter",
+  THIS_WEEK: "This Week",
+  LAST_WEEK: "Last Week",
   LAST_YEAR: "Last Year",
   CUSTOM: "Custom",
 };

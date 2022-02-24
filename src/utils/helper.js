@@ -355,6 +355,14 @@ export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFrom
       setFromDate(`${moment(minDate).startOf('month').format("yyyy-MM-DD")}`);
       setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
       break;
+    case CUSTOM_DATES.THIS_WEEK:
+      setFromDate(`${moment().startOf('week').format("yyyy-MM-DD")}`);
+      setToDate(`${moment().format('yyyy-MM-DD')}`);
+      break;
+    case CUSTOM_DATES.LAST_WEEK:
+      setFromDate(`${moment().startOf('week').subtract(7,'days').format("yyyy-MM-DD")}`);
+      setToDate(`${moment().startOf('week').subtract(1,'days').format('yyyy-MM-DD')}`);
+      break;
     default:
       setFromDate(`${moment().startOf('month').format('yyyy-MM-DD')}`);
       setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
