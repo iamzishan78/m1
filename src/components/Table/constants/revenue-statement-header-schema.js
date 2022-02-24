@@ -86,12 +86,12 @@ const RevenueStatementHeadCells = [
     esKey: "sourceId.keyword",
     options: { sort: true, filter: true },
   },
-  {
-    name: "status",
-    label: "Status",
-    esKey: "status.keyword",
-    options: { sort: true, filter: true },
-  },
+  // {
+  //   name: "status",
+  //   label: "Status",
+  //   esKey: "status.keyword",
+  //   options: { sort: true, filter: true },
+  // },
   {
     name: "tags",
     label: "Tags",
