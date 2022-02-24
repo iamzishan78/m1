@@ -181,13 +181,6 @@ const Activities = () => {
     setFilteredEvents(events.filter((e) => getFilterCondition(e, activityFilterByType, activityFilterByTime, activityFilterByOwner)));
   }, [events, activityFilterByType, activityFilterByTime, activityFilterByOwner, view]);
 
-  const onModalClose = () => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      activityDialog: false,
-    }));
-  };
-
   const onModalOpen = () => {
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -240,6 +233,7 @@ const Activities = () => {
               events={filteredEvents}
               onEventClick={onEventClick}
               mongoUsers={userLists?.allMongoUsers}
+              type="activity"
             />
           ) : (
             <div>
@@ -260,6 +254,7 @@ const Activities = () => {
                   events={filteredEvents}
                   onEventClick={onEventClick}
                   mongoUsers={userLists?.allMongoUsers}
+                  type="activity"
                 />
               </div>
               <div className={classes.table}>

@@ -100,6 +100,7 @@ const ActivitiesToolbar = ({
   view,
   setView,
   mongoUsers,
+  type,
   ...toolbar
 }) => {
   const classes = useToolbarStyles();
@@ -147,26 +148,51 @@ const ActivitiesToolbar = ({
     <div className={classes.root}>
       <div className={classes.left}>
         <div className={classes.filterByTypeDisplay}>
-          <Autocomplete
-            id="activityFilterByType"
-            options={activitiesTypesOptions}
-            getOptionLabel={(option) => option.label}
-            style={{ width: 220 }}
-            size="small"
-            defaultValue={activitiesTypesOptions.find(o => o.value === activityFilterByType)}
-            value={activitiesTypesOptions.find(o => o.value === activityFilterByType)}
-            onChange={(_, value) => {
-              setActivityFilterByType(value?.value ?? 'all');
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Activity Type"
-                variant="outlined"
-                value={activityFilterByType}
-              />
-            )}
-          />
+          {type === "activity" && (
+            <Autocomplete
+              id="activityFilterByType"
+              options={activitiesTypesOptions}
+              getOptionLabel={(option) => option.label}
+              style={{ width: 220 }}
+              size="small"
+              defaultValue={activitiesTypesOptions.find(o => o.value === activityFilterByType)}
+              value={activitiesTypesOptions.find(o => o.value === activityFilterByType)}
+              onChange={(_, value) => {
+                setActivityFilterByType(value?.value ?? 'all');
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Activity Type"
+                  variant="outlined"
+                  value={activityFilterByType}
+                />
+              )}
+            />
+          )}
+          {type === "obligation" && (
+            <Autocomplete
+              id="obligationType"
+              options={[]}
+              getOptionLabel={(option) => option.label}
+              style={{ width: 220 }}
+              size="small"
+              // defaultValue={activitiesTypesOptions.find(o => o.value === activityFilterByType)}
+              // value={activitiesTypesOptions.find(o => o.value === activityFilterByType)}
+              onChange={(_, value) => {
+                // setActivityFilterByType(value?.value ?? 'all');
+                console.log(value);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Obligation Type"
+                  variant="outlined"
+                // value={activityFilterByType}
+                />
+              )}
+            />
+          )}
         </div>
         <div className={classes.filterByTypeDisplay}>
           <Autocomplete

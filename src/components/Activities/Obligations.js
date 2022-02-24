@@ -235,6 +235,7 @@ const Activities = () => {
               events={filteredEvents}
               onEventClick={onEventClick}
               mongoUsers={userLists?.allMongoUsers}
+              type="obligation"
             />
           ) : (
             <div>
@@ -255,6 +256,7 @@ const Activities = () => {
                   events={filteredEvents}
                   onEventClick={onEventClick}
                   mongoUsers={userLists?.allMongoUsers}
+                  type="obligation"
                 />
               </div>
               <div className={classes.table}>
