@@ -88,10 +88,10 @@ function CheckDetailsTable(props) {
                         filterOptions: {
                             display: (filterList, onChange, index, column) => {
                                 column.filterKey = headers.find(el => el.name === column.name)?.esKey;
-                                console.log("column.filterKey ", column.filterKey);
+                                column.custom = headers.find(el => el.name === column.name)?.custom;
                                 return (
                                     <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-                                        query={GET_ES_FILTER_LIST} esIndex={esIndex} />
+                                        query={GET_ES_FILTER_LIST} esIndex={esIndex} custom={column.custom} />
                                 );
                             }
                         }
