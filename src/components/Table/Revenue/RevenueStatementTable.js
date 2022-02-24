@@ -163,7 +163,7 @@ function RevenueStatementTable(props) {
             props.onGettingPotentialIssues([]);
             setPotentialIssuesList([]);
         }
-    }, [tableData, props.dependencyUpdate]);
+    }, [tableData, props.dependencyUpdate, filters]);
 
     useEffect(() => {
         if (issues?.hits?.length > 0 && tableData?.hits?.length > 0) {
@@ -200,10 +200,13 @@ function RevenueStatementTable(props) {
         tableState.esIndex = esIndex;
         const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
         switch (action) {
-            case "search":
-            case "sort":
             case "filterChange":
             case "resetFilters":
+                setFilters(tableState.filterList);
+                tableActions.genericESAction();
+                break;
+            case "search":
+            case "sort":
             case "changeRowsPerPage":
                 tableActions.genericESAction();
                 break;
