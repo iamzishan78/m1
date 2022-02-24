@@ -33,7 +33,7 @@ export default function DetailComponents(props) {
   const classes = useStyles(props);
   const { title, onClickFunc } = props;
 
-  const { activeModule } = useSelector(({ Revenue }) => Revenue);
+  const { activeModule } = useSelector(({ common }) => common);
 
   return (
     <div className={classes.root}>

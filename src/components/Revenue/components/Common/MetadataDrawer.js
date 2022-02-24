@@ -124,7 +124,7 @@ export default function MetadataDrawer(props) {
   const classes = useStyles();
 
   // Props
-  const { setCollapse, users, targetSourceId, targetLabel } = props;
+  const { setCollapse, users, targetSourceId, targetLabel, setStateApp } = props;
 
   // States
   const [ownerId, setOwnerId] = useState("");
@@ -198,10 +198,11 @@ export default function MetadataDrawer(props) {
         variables: { fileIds: ID },
       });
 
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        metaDrawerViewFiles: ID
-      }))
+      if (setStateApp)
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          metaDrawerViewFiles: ID
+        }));
       //* Getting most recent uploaded pdf file
       let recentFile = {};
       files.getFileDescriptors
