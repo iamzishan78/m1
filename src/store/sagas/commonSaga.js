@@ -1,4 +1,4 @@
-import { takeLatest, put, select } from "redux-saga/effects";
+import { takeLatest, put } from "redux-saga/effects";
 
 import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
 import { CREATE_JOB } from "graphQL/useMutationCreateJob";
@@ -7,46 +7,31 @@ import { EXEC_COMMON_ASYNC_EXPORT_JOB } from "store/type";
 
 function* execCommonAsyncExportJob(action) {
   try {
-    const { client, currentFeature, userId, exportWells, exportOwners, exportOwnersInterest, setStateApp } = action.payload;
-    debugger
-    // const jobInitialization = yield client.mutate({
-    //   mutation: INITIALIZE_EXPORT_JOB,
-    //   variables: {
-    //     jobName: "Shape Export",
-    //     jobType: "SHAPEEXPORT",
-    //     requestPayload: {
-    //       polygon: currentFeature?.geometry,
-    //       filters: ownerState.filters,
-    //       search: ownerState.search,
-    //       datasets: {
-    //         exportWells,
-    //         exportOwners,
-    //         exportOwnersInterest,
-    //       },
-    //       counts: {
-    //         exportWells: ownerState.wellsCount,
-    //         exportOwners: ownerState.shapeCount,
-    //         exportOwnersInterest: ownerState.shapeInterestCount,
-    //       },
-    //     },
-    //     userId,
-    //   },
-    // });
+    const { jobType, requestPayload, setStateApp, userId, client } = action.payload;
+    const jobInitialization = yield client.mutate({
+      mutation: INITIALIZE_EXPORT_JOB,
+      variables: {
+        jobName: "Export",
+        jobType: jobType,
+        requestPayload,
+        userId,
+      },
+    });
 
-    // yield client.mutate({
-    //   mutation: CREATE_JOB,
-    //   variables: {
-    //     jobId: jobInitialization?.data?.initializeExportJob?.job?._id,
-    //     sendEmail: false,
-    //   },
-    // });
+    yield client.mutate({
+      mutation: CREATE_JOB,
+      variables: {
+        jobId: jobInitialization?.data?.initializeExportJob?.job?._id,
+        sendEmail: true,
+      },
+    });
 
-    // setStateApp((state) => ({
-    //   ...state,
-    //   bulkUpload: !state.bulkUpload,
-    // }));
+    setStateApp((state) => ({
+      ...state,
+      bulkUpload: !state.bulkUpload,
+    }));
 
-    // yield put(execAsyncExportJobAction.FULLFILLED({}));
+    yield put(execCommonAsyncExportJobAction.FULLFILLED({}));
   } catch (error) {
     yield put(execCommonAsyncExportJobAction.REJECTED());
   }
