@@ -44,12 +44,7 @@ const ActivitiesCalendar = (props) => {
         onSelectEvent={(e) => props.onEventClick(e)}
         showMultiDayTimes
         components={{
-          toolbar: (params) => (
-            <ActivitiesToolbar
-              {...params}
-              {...props}
-            />
-          ),
+          toolbar: (params) => <ActivitiesToolbar {...params} {...props} />,
           event: (props) => <ActivitiesEvent {...props} />,
         }}
       />
@@ -139,8 +134,8 @@ const Activities = () => {
   useEffect(() => {
     getAllActivities({
       variables: {
-        category: "activity"
-      }
+        category: "obligation",
+      },
     });
   }, []);
 

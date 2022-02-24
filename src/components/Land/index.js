@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import * as Components from "components/Land/components";
+import { replaceLinkId } from "components/Shared/functions";
 
 //Actions
 import { toggleQuickActionsPanel, setActiveModule } from "store/actions/commonActions";
@@ -51,7 +52,7 @@ export default function Revenue() {
     const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => {
       const path = location.pathname;
       if (item.link.includes(":id")) {
-        return replaceId(item.link, path);
+        return replaceLinkId(item.link, path);
       }
       return path.startsWith(item.link);
     });
@@ -61,17 +62,6 @@ export default function Revenue() {
       dispatch(setActiveModule(option));
     }
   }, [location.pathname, dispatch]);
-
-  const replaceId = (link, path) => {
-    const linkSplitted = link.split("/");
-    const pathSplitted = path.split("/");
-    for (let i = 0; i < linkSplitted.length; i++) {
-      if (linkSplitted[i] !== pathSplitted[i] && linkSplitted[i] !== ":id") {
-        return false;
-      }
-    }
-    return true;
-  };
 
   const handlePanelStateChange = (state) => {
     dispatch(toggleQuickActionsPanel(state));

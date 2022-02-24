@@ -4,6 +4,7 @@ import { Switch, Route, useLocation } from "react-router-dom";
 import RevenueActionsPanel from "./QuickActionsPanel";
 import * as Components from "components/Revenue/components";
 
+import { replaceLinkId } from "components/Shared/functions";
 import { setActiveModule, toggleQuickActionsPanel } from "store/actions/commonActions";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
@@ -50,17 +51,6 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
   },
 };
 
-const replaceId = (link, path) => {
-  const linkSplitted = link.split('/');
-  const pathSplitted = path.split('/');
-  for (let i = 0; i < linkSplitted.length; i++) {
-    if (linkSplitted[i] !== pathSplitted[i] && linkSplitted[i] !== ':id') {
-      return false
-    }
-  }
-  return true
-}
-
 export default function Revenue() {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -69,10 +59,10 @@ export default function Revenue() {
   useEffect(() => {
     const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => {
       const path = location.pathname;
-      if (item.link.includes(':id')) {
-        return replaceId(item.link, path)
+      if (item.link.includes(":id")) {
+        return replaceLinkId(item.link, path);
       }
-      return path.startsWith(item.link)
+      return path.startsWith(item.link);
     });
     if (option?.parent) {
       dispatch(setActiveModule(SIDE_PANEL_MENU_ITEMS_LIST[option.parent]));

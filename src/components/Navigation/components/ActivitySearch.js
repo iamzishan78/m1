@@ -89,7 +89,7 @@ const ActivitySearch = () => {
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [nameAutInputValue, setNameAutInputValue] = useState("");
 
-  const { quickActionsPanelState } = useSelector(({ common }) => common);
+  const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
   const handleSelectActivity = (id) => {
     setStateApp((stateApp) => ({
@@ -102,8 +102,20 @@ const ActivitySearch = () => {
   const [getAllActivitiesForSearch, { data: activitiesData }] = useLazyQuery(GETALLACTIVITIESFORSEARCH);
 
   useEffect(() => {
-    getAllActivitiesForSearch();
-  }, []);
+    let category = null;
+    switch (activeModule.title) {
+      case "Activities":
+        category = "activity";
+        break;
+      case "Obligations":
+        category = "obligation";
+        break;
+      default:
+    }
+    getAllActivitiesForSearch({
+      variables: { category }
+    });
+  }, [activeModule]);
 
   useEffect(() => {
     if (activitiesData) {
@@ -136,7 +148,7 @@ const ActivitySearch = () => {
     >
       <Grid item className={classes.barTitle}>
         <EventIcon />
-        <Typography color="primary">Activities</Typography>
+        <Typography color="primary">{activeModule.title}</Typography>
       </Grid>
       <Grid item>
         <Autocomplete

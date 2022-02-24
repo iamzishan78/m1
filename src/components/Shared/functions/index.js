@@ -1,5 +1,5 @@
 import { BlockBlobClient } from "@azure/storage-blob";
-import { getPolygonString } from './getPolygonString'
+import { getPolygonString } from "./getPolygonString";
 
 export * from "./deepEqual";
 export * from "./setStateIfDeepEqual";
@@ -21,14 +21,14 @@ export function truncate(str, n) {
 }
 
 export function copy(obj) {
-  return JSON.parse(JSON.stringify(obj))
+  return JSON.parse(JSON.stringify(obj));
 }
 
 export function addTrailingZeros(num) {
   return num ? num.toLocaleString("en", { useGrouping: false, minimumFractionDigits: 8, maximumFractionDigits: 20 }) : num;
 }
 
-function capitalizeFirstLetter(string) {
+export function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
@@ -59,4 +59,15 @@ export function uploadFileData(file, fileContent) {
         reject(error);
       });
   });
+}
+
+export function replaceLinkId(link, path) {
+  const linkSplitted = link.split("/");
+  const pathSplitted = path.split("/");
+  for (let i = 0; i < linkSplitted.length; i++) {
+    if (linkSplitted[i] !== pathSplitted[i] && linkSplitted[i] !== ":id") {
+      return false;
+    }
+  }
+  return true;
 }
