@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputFieldDate: {
     "& .MuiOutlinedInput-input": {
-      paddingLeft: "0px",
+      // paddingLeft: "0px",
     },
   },
   label: {
@@ -132,11 +132,11 @@ export default function CustomDatesActivities({
           <TextField
             size="small"
             margin="dense"
-            type="month"
+            type="date"
             variant="outlined"
             placeholder=""
             fullWidth
-            value={moment(fromDate).format("yyyy-MM")}
+            value={moment(fromDate).format("yyyy-MM-DD")}
             className={classes.inputFieldDate}
             InputLabelProps={{
               shrink: true,
@@ -168,11 +168,11 @@ export default function CustomDatesActivities({
           <TextField
             size="small"
             margin="dense"
-            type="month"
+            type="date"
             variant="outlined"
             placeholder="to"
             fullWidth
-            value={moment(toDate).format("yyyy-MM")}
+            value={moment(toDate).format("yyyy-MM-DD")}
             className={classes.inputFieldDate}
             onChange={(event) => {
               if (event.target.value == "") {

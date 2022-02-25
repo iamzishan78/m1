@@ -5,7 +5,7 @@ import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import { Container, Dialog, IconButton } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
-import { useMutation } from "@apollo/client";
+import { useMutation, useApolloClient } from "@apollo/client";
 import { useDispatch } from "react-redux";
 
 import { AppContext } from "AppContext";
@@ -73,7 +73,8 @@ export const getFilters = (appliedFilters) => {
 function ActivitiesTable(props) {
   const classes = usetableStyles();
   const dispatch = useDispatch();
-  const [stateApp] = useContext(AppContext);
+  const client = useApolloClient();
+  const [stateApp, setStateApp] = useContext(AppContext);
   const { appliedFilters, esIndex, searchFields } = props;
   const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
     refetchQueries: ["getESPaginatedList", "getESFilterList"],
@@ -140,7 +141,23 @@ function ActivitiesTable(props) {
   };
 
   const onDownload = (e) => {
-    dispatch(execCommonAsyncExportJobAction.STARTED());
+    dispatch(execCommonAsyncExportJobAction.STARTED({
+      jobType: 'EXPORTCSV',
+      client,
+      setStateApp,
+      userId: stateApp.user.mongoId,
+      requestPayload: {
+        esIndex,
+        filters: getFilters(appliedFilters),
+        search: { query: stateApp.activitySearchQuery, fields: searchFields },
+        datasets: {
+          exportActivities: true
+        },
+        counts: {
+          exportActivities: props.total,
+        },
+      }
+    }));
   };
 
   return (

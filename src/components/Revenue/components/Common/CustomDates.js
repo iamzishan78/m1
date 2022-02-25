@@ -57,7 +57,8 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
     }else{
       handleDateTypeChange(CUSTOM_DATES.LAST_MONTH);
     }
-    
+    delete CUSTOM_DATES.THIS_WEEK
+    delete CUSTOM_DATES.LAST_WEEK
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

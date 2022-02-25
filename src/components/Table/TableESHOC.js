@@ -455,6 +455,7 @@ export const TableESHOC = (Component) => {
                 rows={rows}
                 searchedRows={searchedRows}
                 setSearchedRows={setSearchedRows}
+                total={tableData?.total}
                 loading={loading}
                 dataTracks={dataTracksIds}
                 setRows={setRows}
