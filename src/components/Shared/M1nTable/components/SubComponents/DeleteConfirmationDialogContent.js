@@ -13,17 +13,12 @@ export default function DeleteConfirmationDialogContent(props) {
     <Dialog style={{ zIndex: 9999999999 }} open={true}>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
         {props.header}
-        <HighlightOffIcon
-          fontSize="large"
-          className={modalClass.titleClose}
-          onClick={props.onClose}
-        />
+        <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose} />
       </DialogTitle>
       <DialogContent>
         <h3 className={modalClass.inputLabel}>{props.children}</h3>
       </DialogContent>
       <DialogActions>
-
         <Button
           onClick={() => {
             props.onClose();
@@ -35,10 +30,7 @@ export default function DeleteConfirmationDialogContent(props) {
         <Button
           onClick={() => {
             props.completelyDelete
-              ? props.deleteFunc(
-                props.m1nSelectedRowsIds,
-                props.completelyDelete === "false" ? false : true
-              )
+              ? props.deleteFunc(props.m1nSelectedRowsIds, props.completelyDelete === "false" ? false : true)
               : props.deleteFunc(props.m1nSelectedRowsIds);
             props.onClose();
             props.setM1nSelectedRowsIndexes([]);
