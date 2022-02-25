@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 import { Grid, Typography, Button } from "@material-ui/core";
-import { Add, ArrowDropDown } from "@material-ui/icons";
+import { Add } from "@material-ui/icons";
 import { useMutation } from "@apollo/client";
 
 import RevenueSearch from "components/Navigation/components/RevenueSearch";
@@ -34,8 +34,8 @@ export default function RevenueAppBar(props) {
 
   const RevenueStatementAction = React.useMemo(() => {
     return [{
-      isShow: false, text: `Add ${activeModule.title}`, action: () => {
-        addCheck({ variables: { check: {} } })
+      isShow: false, text: `Add Statement`, action: () => {
+        addCheck({ variables: { check: { source: 'Manual Entry' } } })
       }
     },
     { isShow: true, text: 'Import Statement', action: () => { } },

@@ -194,6 +194,7 @@ export default function DetailComponents(props) {
   const { statements } = useSelector(({ Revenue }) => Revenue);
 
   const [tab, setTab] = useState(0);
+  const [checksFlatData, setChecksFlatData] = useState({});
   const selectedTabRef = useRef(null);
   const [isButtonScroll, setButtonScroll] = useState(false);
   const [collapse, setCollapse] = useState(false);
@@ -223,7 +224,10 @@ export default function DetailComponents(props) {
     awaitRefetchQueries: true,
   });
 
-  const checksFlatData = getCheckResult?.getCheck?.check;
+  useEffect(() => {
+    if (getCheckResult?.getCheck?.check)
+      setChecksFlatData(getCheckResult.getCheck.check)
+  }, [getCheckResult])
 
   const handleDeleteCancel = () => {
     setCheckIdToDelete(null);
@@ -382,7 +386,7 @@ export default function DetailComponents(props) {
             <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
               <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
                 <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-                  <HeaderSection details={checksFlatData} />
+                  <HeaderSection check={checksFlatData} setCheck={setChecksFlatData} />
                 </div>
                 <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
                 <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
