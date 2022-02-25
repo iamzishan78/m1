@@ -216,6 +216,9 @@ body {
   text-align: center !important;
 }
 
+.apexcharts-toolbar {
+  display: none !important;
+}
 /* ::-webkit-calendar-picker-indicator {
   filter: invert(1);
 } */

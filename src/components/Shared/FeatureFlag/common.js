@@ -7,5 +7,5 @@ export const FEATURES = {
     REVENUEMODULE: 'revenueModule',
     LANDPORTFOLIO: 'landPortfolio',
     LANDREPORTINGGROUPS: 'landReportingGroups',
-    CONTACTSUBMENU: 'idiCORE'
+    CONTACTSUBMENU: 'ContactsSubMenu'
 }

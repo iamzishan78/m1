@@ -385,6 +385,11 @@ export const TableESHOC = (Component) => {
             const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch)
             activeSearchRef.current = tableActions.pageESVariables.variables.search;
             activeFiltersRef.current = tableActions.pageESVariables.variables.filters;
+
+            if(action === 'filterChange' && tableMeta.setAppliedFilters){
+                tableMeta.setAppliedFilters(activeFiltersRef.current);
+            }
+
             switch (action) {
                 case "search":
                 case "sort":
@@ -415,7 +420,7 @@ export const TableESHOC = (Component) => {
             filter: true,
             searchText: tableMeta.extendSearchQuery,
             searchFields: tableMeta.searchFields,
-            customToolbar: () => {
+            customToolbar: (tableMeta.addBtnText || tableMeta.addableName) ? () => {
 
                 return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
                     {
@@ -443,7 +448,7 @@ export const TableESHOC = (Component) => {
                     }
 
                 </div>
-            },
+            } : undefined,
             customToolbarSelect: ({ data }) => {
 
                 return props.targetLabel !== "well" && (<div style={{ height: "48px", display: "flex" }}>
@@ -468,6 +473,7 @@ export const TableESHOC = (Component) => {
                 rows={rows}
                 searchedRows={searchedRows}
                 setSearchedRows={setSearchedRows}
+                total={tableData?.total}
                 loading={loading}
                 dataTracks={dataTracksIds}
                 setRows={setRows}
