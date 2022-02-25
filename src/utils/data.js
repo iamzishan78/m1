@@ -135,7 +135,7 @@ export const contactManagementRoutes = {
     featureFlag: "CONTACTSUBMENU",
     title: "Campaign Management",
     link: "/contacts/campaignManagement",
-    component: "ContactsTable",
+    component: "CampaignManagement",
     search: true,
   },
 };
