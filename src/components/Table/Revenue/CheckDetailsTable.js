@@ -23,6 +23,8 @@ function CheckDetailsTable(props) {
 
     useEffect(() => {
         setTableMeta({
+          addableName: "revenueStatementDetails",
+          addBtnText: "INPUT MODE",
           addWithInput: true,
           inputModeType: "revenueStatementDetails",
           filters: [{ field: "check._id.keyword", value: checkId }],
