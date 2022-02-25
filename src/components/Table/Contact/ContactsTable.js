@@ -136,8 +136,7 @@ function ContactsTable(props) {
 
   useEffect(() => {
     console.log("here", Contacts);
-    if(Contacts)
-      setSelectedGridView(Contacts);
+    setSelectedGridView(Contacts || defaultView);
   }, [Contacts]);
 
   useEffect(() => {

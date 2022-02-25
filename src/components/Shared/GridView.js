@@ -143,7 +143,11 @@ function GridView({
   useEffect(() => {
     if (newGridView?.addGridView?.success) {
       setShowSaveAsNew(false);
-      setSelectedGridView(newGridView.addGridView.newGridView);
+      dispatch(setCurrentUserGridViewAction.STARTED({
+        gridViewId: newGridView.addGridView.newGridView._id,
+        userId: stateApp.user.mongoId
+      }))
+      // setSelectedGridView(newGridView.addGridView.newGridView);
       setStateApp((state, props) => {
         return {
           ...state,
@@ -157,7 +161,7 @@ function GridView({
     if (updatedGridView?.updateGridView?.success) {
       setShowSaveAsNew(false);
       setEditGridView(null);
-      setSelectedGridView(updatedGridView.updateGridView.updatedGridView);
+      // setSelectedGridView(updatedGridView.updateGridView.updatedGridView);
       setStateApp((state, props) => {
         return {
           ...state,
@@ -260,6 +264,7 @@ function GridView({
                   return view.type === "Default" ? (
                     <>
                       <View
+                        selectedGridView={selectedGridView}
                         view={view}
                         setEditGridView={setEditGridView}
                         setViewName={setViewName}
@@ -291,6 +296,7 @@ function GridView({
                   return view.type === "Custom" && (
                     view._id === editGridView?._id ? (
                       <InputField
+                        selectedGridView={selectedGridView}
                         editGridViewId={editGridView._id}
                         setEditGridView={setEditGridView}
                         viewName={viewName}
@@ -305,6 +311,7 @@ function GridView({
                       />
                     ) : (
                       <View
+                        selectedGridView={selectedGridView}
                         view={view}
                         setEditGridView={setEditGridView}
                         setViewName={setViewName}
@@ -318,6 +325,7 @@ function GridView({
                 })}
                 {showSaveAsNew && (
                   <InputField
+                    selectedGridView={selectedGridView}
                     setEditGridView={setEditGridView}
                     viewName={viewName}
                     setViewName={setViewName}
@@ -343,6 +351,7 @@ function GridView({
 export default GridView;
 
 const InputField = ({
+  selectedGridView,
   editGridViewId,
   viewName,
   setViewName,
@@ -356,6 +365,7 @@ const InputField = ({
   module,
 }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   return (
     <TextField
       key={"fieldContentInput"}
@@ -386,6 +396,11 @@ const InputField = ({
               },
               refetchQueries: ["getGridViews"],
             });
+            if (selectedGridView._id === editGridViewId)
+              dispatch(setCurrentUserGridViewAction.STARTED({
+                gridViewId: editGridViewId,
+                userId: user
+              }))
           } else {
             addGridView({
               variables: {
@@ -417,8 +432,9 @@ const InputField = ({
   );
 };
 
-const View = ({ onClick, view, setEditGridView, setViewName, updateFavouriteGridView, updateGridView, userId }) => {
+const View = ({ selectedGridView, onClick, view, setEditGridView, setViewName, updateFavouriteGridView, updateGridView, userId }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState(null);
   const [showActions, setShowActions] = useState(false);
 
@@ -513,6 +529,11 @@ const View = ({ onClick, view, setEditGridView, setViewName, updateFavouriteGrid
                 },
                 refetchQueries: ["getGridViews"],
               });
+              if (selectedGridView._id === view._id)
+                dispatch(setCurrentUserGridViewAction.STARTED({
+                  gridViewId: view._id,
+                  userId: userId
+                }))
             }}
           >
             Share with others
@@ -532,6 +553,11 @@ const View = ({ onClick, view, setEditGridView, setViewName, updateFavouriteGrid
                 },
                 refetchQueries: ["getGridViews"],
               });
+              if (selectedGridView._id === view._id)
+                dispatch(setCurrentUserGridViewAction.STARTED({
+                  gridViewId: view._id,
+                  userId: userId
+                }))
             }}
           >
             Delete view

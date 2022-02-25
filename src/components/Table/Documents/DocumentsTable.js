@@ -105,8 +105,7 @@ function DocumentsTable(props) {
 
   useEffect(() => {
     console.log("here", Documents);
-    if(Documents)
-      setSelectedGridView(Documents);
+    setSelectedGridView(Documents || defaultView);
   }, [Documents]);
 
   useEffect(() => {
