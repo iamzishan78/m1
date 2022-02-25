@@ -7,6 +7,7 @@ import { campaignVariables } from "utils/data";
 import { formatTaxOwners, copy } from "utils/helper";
 import { CREATE_JOB } from "graphQL/useMutationCreateJob";
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
+import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { toggleBulkUploadAction } from "store/actions/commonActions";
 import { GET_JOB_UPLOAD_URI } from "graphQL/useQueryGetJobUploadUri";
@@ -61,32 +62,44 @@ function* convertTaxOwnerToContact(action) {
 function* convertMultipleOwnerToContact(action) {
   const bulkUpload = yield select((state) => state.common.bulkUpload);
   try {
-    const { rows, existingContactId, actionType, userId } = action.payload;
-    let owners = [];
-    for(let i = 0; i < rows.length; i++) {
-      owners.push({ node: {...rows[i], OwnerType: rows[i].ownershipType } });
+    const { rows, entitiesIds, existingContactId, actionType, userId } = action.payload;
+    let _id, _res;
+    if (entitiesIds?.length > 0) {
+      const id = yield call(Api.mutate, INITIALIZE_EXPORT_JOB, {
+          entitiesIds
+        },
+      );
+      _id = id;
+    } else {
+      let owners = [];
+      for(let i = 0; i < rows.length; i++) {
+        owners.push({ node: {...rows[i], OwnerType: rows[i].ownershipType } });
+      }
+      owners = formatTaxOwners(copy(owners), action.payload);
+  
+      const uploadUri = yield call(Api.query, GET_JOB_UPLOAD_URI, {
+        jobName: "Contacts",
+        jobType: "CONTACTS",
+        userId,
+        requestPayload: {
+          existingContactId,
+          actionType
+        },
+      });
+  
+      const { uri, id, internalKey } = uploadUri.data.getJobUploadUri.job;
+  
+      yield put(toggleBulkUploadAction(!bulkUpload));
+      const res = yield call(Api.fetchBlob, JSON.stringify(owners), id, internalKey, uri);
+      _id = id;
+      _res = res;
     }
-    owners = formatTaxOwners(copy(owners), action.payload);
 
-    const uploadUri = yield call(Api.query, GET_JOB_UPLOAD_URI, {
-      jobName: "Contacts",
-      jobType: "CONTACTS",
-      userId,
-      requestPayload: {
-        existingContactId,
-        actionType
-      },
-    });
-
-    const { uri, id, internalKey } = uploadUri.data.getJobUploadUri.job;
-
-    yield put(toggleBulkUploadAction(!bulkUpload));
-    const res = yield call(Api.fetchBlob, JSON.stringify(owners), id, internalKey, uri);
-    if (res?._response?.status === 201) {
-      const jobResponse = yield call(Api.mutate, CREATE_JOB, { jobId: id, sendEmail: false });
+    if (_res?._response?.status === 201) {
+      const jobResponse = yield call(Api.mutate, CREATE_JOB, { jobId: _id, sendEmail: false });
       yield call(Api.mutate, UPDATE_JOB, {
         job: {
-          _id: id,
+          _id: _id,
           createJobResponse: get(jobResponse, "data.createJob", null),
         },
       });

@@ -4,6 +4,9 @@ import { makeStyles } from "@material-ui/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import moment from "moment";
 
+import { CUSTOM_DATES } from 'utils/data'
+import { handleCustomDateTypeChange } from 'utils/helper';
+
 const useStyles = makeStyles((theme) => ({
   actionBar: {
     backgroundColor: "#f7f7f7",
@@ -45,19 +48,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CUSTOM_DATES = {
-  ALL_DATES: "All Dates",
-  THIS_YEAR_TO_LAST_MONTH: "This year-to-last-month",
-  THIS_YEAR_TO_DATE: "This year to date",
-  LAST_YEAR_TO_DATE: "Last year to date",
-  LAST_MONTH: "Last Month",
-  THIS_MONTH: "This Month",
-  LAST_QUARTER: "Last Quarter",
-  THIS_QUARTER: "This Quarter",
-  LAST_YEAR: "Last Year",
-  CUSTOM: "Custom",
-};
-
 // fromDate and toDate should be passed from the parent
 export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate, label, isProperties, lastCheckMinDate, onChange }) {
   const classes = useStyles();
@@ -67,7 +57,8 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
     } else {
       handleDateTypeChange(CUSTOM_DATES.LAST_MONTH);
     }
-
+    delete CUSTOM_DATES.THIS_WEEK
+    delete CUSTOM_DATES.LAST_WEEK
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -87,54 +78,8 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
   // }
 
   const handleDateTypeChange = (date) => {
-    if (onChange) {
-      onChange(date)
-    }
-    const currentYear = Math.round(new Date().getFullYear());
-    switch (date) {
-      case CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH:
-        setFromDate(`${currentYear}-01-01`);
-        setToDate(moment().subtract(1, 'months').startOf('month').format('yyyy-MM-DD'));
-        break;
-      case CUSTOM_DATES.THIS_YEAR_TO_DATE:
-        setFromDate(`${currentYear}-01-01`);
-        setToDate(`${moment().format('yyyy-MM-DD')}`);
-        break;
-      case CUSTOM_DATES.LAST_YEAR_TO_DATE:
-        setFromDate(`${currentYear - 1}-01-01`);
-        setToDate(`${moment().format('yyyy-MM-DD')}`);
-        break;
-      case CUSTOM_DATES.LAST_MONTH:
-        setFromDate(`${moment().subtract(1, 'months').startOf('month').format('yyyy-MM-DD')}`);
-        setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
-        break;
-      case CUSTOM_DATES.CUSTOM:
-      case CUSTOM_DATES.THIS_MONTH:
-        setFromDate(`${moment().startOf('month').format('yyyy-MM-DD')}`);
-        setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
-        break;
-      case CUSTOM_DATES.LAST_QUARTER:
-        setFromDate(moment().subtract(1, 'quarter').startOf('quarter').format("yyyy-MM-DD"));
-        setToDate(moment().subtract(1, 'quarter').endOf('quarter').format("yyyy-MM"));
-        break;
-      case CUSTOM_DATES.THIS_QUARTER:
-        setFromDate(`${moment().startOf('quarter').format("yyyy-MM-DD")}`);
-        setToDate(`${moment().endOf('quarter').format("yyyy-MM-DD")}`);
-        break;
-      case CUSTOM_DATES.LAST_YEAR:
-        setFromDate(`${currentYear - 1}-01-01`);
-        setToDate(`${currentYear - 1}-12-31`);
-        break;
-      case CUSTOM_DATES.ALL_DATES:
-        setFromDate(`${moment(lastCheckMinDate).startOf('month').format("yyyy-MM-DD")}`);
-        setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
-        break;
-      default:
-        setFromDate(`${moment().startOf('month').format('yyyy-MM-DD')}`);
-        setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
-    }
-  };
-
+    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate)
+  }
   return (
     <Grid container direction="row" display="flex" alignItems="center" spacing={3}>
       {label && (
