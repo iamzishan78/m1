@@ -144,7 +144,7 @@ const CampaignAnalytics = () => {
             <CardContent className={classes.buttonCardContent}>
               <MyLocationIcon />
               <Typography variant="h6" component="div">
-                Classic Campaign
+                Smart Campaign
               </Typography>
               <Button variant="contained" onClick={() => setDialog(true)}>
                 Create Smart Campaign
