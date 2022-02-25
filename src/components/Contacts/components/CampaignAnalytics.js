@@ -140,15 +140,13 @@ const CampaignAnalytics = () => {
           </Card>
         </Grid>
         <Grid item md={3}>
-          <Card variant="outlined" className={classes.noBorderCard}>
+          <Card variant="outlined" className={classes.noBorderCard} onClick={() => setDialog(true)}>
             <CardContent className={classes.buttonCardContent}>
               <MyLocationIcon />
               <Typography variant="h6" component="div">
                 Smart Campaign
               </Typography>
-              <Button variant="contained" onClick={() => setDialog(true)}>
-                Create Smart Campaign
-              </Button>
+              <Button variant="contained">Create Smart Campaign</Button>
             </CardContent>
           </Card>
         </Grid>
