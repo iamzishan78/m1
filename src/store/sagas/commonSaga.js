@@ -22,7 +22,7 @@ function* execCommonAsyncExportJob(action) {
       mutation: CREATE_JOB,
       variables: {
         jobId: jobInitialization?.data?.initializeExportJob?.job?._id,
-        sendEmail: true,
+        sendEmail: false,
       },
     });
 

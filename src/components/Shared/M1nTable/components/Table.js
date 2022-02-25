@@ -2445,14 +2445,14 @@ function SubTable(props) {
                     );
                   }
 
-                  if (column.name === "isClosed" && props.targetLabel === "activity" && value === true)
+                  if (column.name === "isClosed" && (props.targetLabel === "activity" || props.targetLabel === "activitiesDashboard") && value === true)
                     return (
                       <div style={{ textAlign: "center" }}>
                         <CheckIcon />
                       </div>
                     );
 
-                  if (column.name === "isClosed" && props.targetLabel === "activity" && value === false)
+                  if (column.name === "isClosed" &&  (props.targetLabel === "activity" || props.targetLabel === "activitiesDashboard") && value === false)
                     return <div style={{ textAlign: "center" }}>{/* <CheckBoxOutlineBlankIcon /> */}</div>;
 
                   ////// if non editable column
@@ -3895,8 +3895,8 @@ function SubTable(props) {
 
   if (props.header === "Deals" || props.header === "Activities") {
     // adds the print and export options in the Flow grid and the Activities grid
-    options.print = true;
     if(props.targetLabel !== 'activitiesDashboard'){
+      options.print = true;
       options.download = true;
     }
   }

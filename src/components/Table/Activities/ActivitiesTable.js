@@ -62,7 +62,7 @@ export const getFilters = (appliedFilters) => {
     }
     if (appliedFilters.qualifier) {
       filters.push({
-        field: "owner.email.keyword",
+        field: "ownerName.keyword",
         value: appliedFilters.qualifier,
       });
     }
@@ -222,6 +222,7 @@ function ActivitiesTable(props) {
               </div>
             );
           },
+          customToolbarSelect: () => <div></div>
         }}
         parent={props.parent}
         setColumnsBase={[]}
