@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { useSelector } from "react-redux";
 import moment from "moment";
 
 import { Container, Grid } from "@material-ui/core";
@@ -53,6 +54,8 @@ function DocumentsTable(props) {
     type: "Default",
   };
 
+  const { Documents } = useSelector(({ session }) => session.userGridViewSettings);
+
   const selectedFilters = useRef([]);
   const [stateApp, setStateApp] = useContext(AppContext);
 
@@ -99,6 +102,12 @@ function DocumentsTable(props) {
       }));
     };
   }, []);
+
+  useEffect(() => {
+    console.log("here", Documents);
+    if(Documents)
+      setSelectedGridView(Documents);
+  }, [Documents]);
 
   useEffect(() => {
     getESDocuments({

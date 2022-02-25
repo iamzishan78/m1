@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { useDispatch } from "react-redux";
 import { TextField, InputAdornment, IconButton, Accordion, AccordionSummary, AccordionDetails } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -17,6 +18,8 @@ import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import { UPDATE_FAVOURITE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import { ADD_GRID_VIEW } from "graphQL/useMutationAddGridView";
 import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
+
+import { setCurrentUserGridViewAction } from "store/actions/sessionActions"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -103,6 +106,7 @@ function GridView({
   module,
 }) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const [selectedTab, setSelectedTab] = useState("views");
@@ -192,7 +196,11 @@ function GridView({
     if (data.type === "Default") {
       data = handleDefaultView(data, stateApp.user);
     }
-    setSelectedGridView(data);
+    dispatch(setCurrentUserGridViewAction.STARTED({
+      gridViewId: data._id,
+      userId: stateApp.user.mongoId
+    }))
+    // setSelectedGridView(data);
     setStateApp((state, props) => {
       return {
         ...state,
