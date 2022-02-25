@@ -430,7 +430,7 @@ export const TableESHOC = (Component) => {
                             className={classes.multiSelectionTopBarButtons}
                             onClick={() => {
                                 if (tableMeta.inputModeType === "revenueStatementDetails")
-                                    history.push(`/revenue/statement/${window.location.search.replace('?id=', '')}line-item`);
+                                    history.push(`/revenue/statement/${window.location.search.replace('?id=', '')}/line-item`);
                             }}
                         >
                             INPUT MODE
