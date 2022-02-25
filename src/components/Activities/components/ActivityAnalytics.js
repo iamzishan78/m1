@@ -9,6 +9,7 @@ import { GET_ACTIVITY_ANALYTICS } from "graphQL/useQueryActivityAnalytics";
 import DonutChart from "components/Shared/Charts/DonutChart";
 import StackedBarChart from "components/Shared/Charts/StackedBarChart";
 import { getFilters } from "components/Table/Activities/ActivitiesTable";
+import { round } from "lodash";
 
 const defaultSeriesActivities = [
   {
@@ -46,7 +47,7 @@ const defaultSeriesDeals = [
   },
   {
     key: "won",
-    name: "Close",
+    name: "Closed",
     color: "#FFD78E",
     data: [],
   },
@@ -137,7 +138,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
   }, [analyticsData]);
 
   const formatter = function (val){
-    return parseInt((val/1000)) + "K"
+    return (val/1000000).toFixed(2) +"MM"
   }
   return (
     <Grid
