@@ -16,6 +16,8 @@ class SpreadsheetGrid extends React.PureComponent {
         this.onGlobalKeyDown = this.onGlobalKeyDown.bind(this);
         this.onGlobalClick = this.onGlobalClick.bind(this);
         this.onCellClick = this.onCellClick.bind(this);
+        this.onMouseLeave = this.onMouseLeave.bind(this);
+        this.onMouseEnter = this.onMouseEnter.bind(this);
         this.onCellDoubleClick = this.onCellDoubleClick.bind(this);
         this.getCellClassName = this.getCellClassName.bind(this);
 
@@ -286,6 +288,18 @@ class SpreadsheetGrid extends React.PureComponent {
         this.skipGlobalClick = true;
     }
 
+    onMouseEnter(x) {
+        this.setState({
+            hoveredRow: x
+        });
+    }
+
+    onMouseLeave(x) {
+        this.setState({
+            hoveredRow: null
+        });
+    }
+
     onCellDoubleClick(x, y) {
         if (!find(this.props.disabledCells, { x, y })) {
             this.setState({
@@ -296,6 +310,9 @@ class SpreadsheetGrid extends React.PureComponent {
     }
 
     getCellClassName(column, row, x, y) {
+        console.log(this.state.hoveredRow)
+        if (column.id === 'action') return this.state.hoveredRow === x ? 'SpreadsheetGrid__showAction' : 'SpreadsheetGrid__hideAction'
+
         return 'SpreadsheetGrid__cell' +
             (isEqual(this.state.activeCell, { x, y }) ? ' SpreadsheetGrid__cell_active' : '') +
             (isEqual(this.state.focusedCell, { x, y }) ? ' SpreadsheetGrid__cell_focused' : '') +
@@ -328,7 +345,10 @@ class SpreadsheetGrid extends React.PureComponent {
                             getCellClassName={this.getCellClassName}
                             onCellClick={this.onCellClick}
                             onCellDoubleClick={this.onCellDoubleClick}
+                            onMouseEnter={this.onMouseEnter}
+                            onMouseLeave={this.onMouseLeave}
                             activeCell={this.state.activeCell}
+                            hoveredRow={this.state.hoveredRow}
                             focusedCell={this.state.focusedCell}
                             // Pass disabled cells for this row only.
                             disabledCells={this.props.disabledCells.filter(({ x }) => {

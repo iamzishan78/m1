@@ -9,7 +9,7 @@ export const propTypes = {
                 PropTypes.func
             ]),
             value: PropTypes.func.isRequired,
-            width: PropTypes.number
+            width: PropTypes.string
         })
     ).isRequired,
     rows: PropTypes.arrayOf(PropTypes.any),

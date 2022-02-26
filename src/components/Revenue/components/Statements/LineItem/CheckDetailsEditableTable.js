@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Paper, Button, TableContainer, CircularProgress, IconButton, TextField, InputAdornment } from "@material-ui/core";
+import { Grid, Paper, Button, TableContainer, CircularProgress, IconButton, TextField } from "@material-ui/core";
 import SearchIcon from '@material-ui/icons/Search';
 import CloseIcon from '@material-ui/icons/Close';
 import TableHOC from "components/Table/TableHOC";
@@ -22,6 +22,7 @@ import set from 'lodash/set'
 import { Grid as TableGrid, Input } from 'components/Shared/SpreadsheetGrid'
 import Typography from '@material-ui/core/Typography';
 import { AutoCompleteField } from "./AutoCompleteField";
+import { ActionCell } from "./ActionCell";
 import { UPDATE_CHECK_DETAIL } from "graphQL/useMutationUpdateCheckDetail";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { makeStyles } from "@material-ui/styles";
@@ -74,6 +75,9 @@ const RevenueStatementHeadCells = [
     },
     {
         id: "netOwnerValue", title: "Owner Net Rev", filterKey: 'netOwnerValue', width: '150px'
+    },
+    {
+        id: "action", filterKey: 'action', title: "", type: 'action', width: '100px'
     }
 ];
 
@@ -136,6 +140,7 @@ function CheckDetailsEditableTable(props) {
 
     useEffect(() => {
         if (loadMoreData?.getESPaginatedList?.hits) {
+            debugger;
             let hits = copy(loadMoreData.getESPaginatedList.hits)
             hits = hits.reverse()
             props.setRows(hits.concat(rows));
@@ -178,8 +183,10 @@ function CheckDetailsEditableTable(props) {
                 console.log("Row", row)
             }
         }
-
-        setRows([].concat(rows))
+        if (field === 'IsDeleted') {
+            setRows([].concat(rows.filter((r) => r._id !== rowId)))
+        } else
+            setRows([].concat(rows))
 
         updateCheckDetail({
             variables: { checkDetail: row },
@@ -236,11 +243,12 @@ function CheckDetailsEditableTable(props) {
                                 }}
                             />
 
-                                : <Input
-                                    value={value}
-                                    focus={focus}
-                                    onChange={onFieldChange(row._id, cell.id)}
-                                />
+                                : cell.type === 'action' ? <ActionCell id={cell.id + index} onChange={onFieldChange(row._id, 'IsDeleted')} />
+                                    : <Input
+                                        value={value}
+                                        focus={focus}
+                                        onChange={onFieldChange(row._id, cell.id)}
+                                    />
                     }
                 </>
             );
@@ -248,12 +256,6 @@ function CheckDetailsEditableTable(props) {
         // cell.width = 200
         return cell;
     })
-
-    useEffect(() => {
-        setRows(props.rows)
-    }, [props.rows])
-
-
 
     const [columns, setColumns] = useState(cols());
 
@@ -290,7 +292,7 @@ function CheckDetailsEditableTable(props) {
     useEffect(() => {
         if (tableData?.hits?.length > 0) {
             let hits = copy(tableData?.hits)
-            props.setRows(hits.reverse());
+            setRows(hits.reverse());
             let headers = copy(TableHeader)
 
             headers.forEach((column) => {
@@ -319,7 +321,7 @@ function CheckDetailsEditableTable(props) {
             props.setRows([]);
             props.setLoading(false);
         }
-    }, [tableData, props.dependencyUpdate]);
+    }, [elasticData, props.dependencyUpdate]);
 
     const addNewRow = (e) => {
         e.preventDefault();
@@ -343,7 +345,7 @@ function CheckDetailsEditableTable(props) {
                         sort: { 'createdAt': { order: "desc" } },
                         pagination: {
                             pit: tableData.pit,
-                            after: rows[0].sort,
+                            after: rows[0] ? rows[0].sort : null,
                         },
                     }
                 })
@@ -355,7 +357,7 @@ function CheckDetailsEditableTable(props) {
     const gridRef = React.createRef()
     const tclasses = useStyles();
 
-
+    console.log(rows)
 
     return (
         <Paper elevation={3} >
