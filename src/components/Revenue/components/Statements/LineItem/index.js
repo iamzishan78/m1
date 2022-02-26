@@ -59,7 +59,7 @@ export default function LineItem(props) {
   }, [props.match])
   // const checkId = window.location.search.replace("?id=", '')
   const redirectHandler = () => {
-    history.push(`/revenue/statement/details?id=${activeStatement?._id}`);
+    history.push(`/revenue/statement/details/${activeStatement?._id}`);
   }
 
   return (

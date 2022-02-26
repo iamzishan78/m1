@@ -1,22 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { makeStyles } from "@material-ui/core/styles";
-import { Button, Grid, Container, Box, CircularProgress, Tab, Tabs, IconButton, FormControl, RadioGroup, FormControlLabel, Radio } from "@material-ui/core";
+import { useLazyQuery } from "@apollo/client";
 
+import { AppContext } from "AppContext";
+import { Controller, useForm } from "react-hook-form";
+
+import {
+  CircularProgress, Tab, Tabs,
+  Button, Grid, Container, Box, 
+  RadioGroup, FormControlLabel,
+  IconButton, FormControl, Radio,
+} from "@material-ui/core";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 import CloseSharp from "@material-ui/icons/CloseSharp";
 import DoneSharpIcon from "@material-ui/icons/DoneSharp";
 import RemoveSharpIcon from "@material-ui/icons/RemoveSharp";
-import Typography from "@material-ui/core/Typography";
+
+import Tags from "components/Shared/Tagger";
+import ContactAutoComplete from "components/Shared/ContactAutoComplete";
+import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+
 import AutocompEntityNamesVirtualizeList from "./AutocompEntityNamesVirtualizeList";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
-import { AppContext } from "AppContext";
+
 import { setStateIfDeepEqual } from "../../../functions";
+
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
-import { CONVERT_MULTITPLE_OWNER_TO_CONTACT } from "graphQL/useMutationConvertMultitpleOwnerToContact";
-import ContactAutoComplete from "components/Shared/ContactAutoComplete";
-import Loader from "components/Loaders";
-import Tags from "components/Shared/Tagger";
-// import Typography from '@material-ui/core/Typography';
 
 const styles = () => ({
   topHeading: { fontWeight: "bold" },
@@ -29,6 +41,30 @@ const styles = () => ({
       fill: 'rgb(20, 171, 223) !important'
     }
   },
+  fullWidth: {
+    width: "100%",
+  },
+  title: {
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%",
+    alignItems: "center",
+    padding: "0px 0px",
+    "& svg": {
+      fill: "#757575 !important",
+    },
+  },
+  field: {
+    marginTop: 30,
+    fontSize: "16px",
+  },
+  tags: {
+    marginTop: 20,
+    width: "100%",
+  },
+  bold: {
+    fontWeight: "bold",
+  },  
 });
 
 const useStyles = makeStyles(styles);
@@ -43,14 +79,24 @@ const TAB = Object.freeze({
   EXISTING: 1
 });
 
-export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes, isEntities, onSuccess }) {
+const MultipleOwnerToContactDrawer = ({
+  onClose,
+  rows,
+  setRows,
+  setM1nSelectedRowsIndexes,
+  getContactCampaignAction,
+  convertMultipleOwnerToContactAction,
+  campaignList,
+  isEntities,
+  onSuccess
+}) => {
   const [stateApp] = React.useContext(AppContext);
   const classes = useStyles();
 
   const [primaryOwner, setPrimaryOwner] = useState(rows[0]);
   const [tab, setTab] = useState(TAB.NEW);
   const [actionType, setActionType] = useState('single');
-  const [contactOwner, setContactOwner] = useState('');
+  const [searchCampaign, setSearchCampaign] = useState("");
   const [loading, setLoading] = useState(false);
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
@@ -58,13 +104,24 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   const [newTagsIds, setNewTagsIds] = useState([]);
+  
+  const { control, getValues, watch } = useForm();
 
-  const [convertMultitpleOwnerToContact] = useMutation(CONVERT_MULTITPLE_OWNER_TO_CONTACT);
+  const contactStatus = watch("contactStatus", contactStatusOptions[0].value);
+  const contactOwner = watch("contactOwner", null);
+  const userId = stateApp.user.mongoId;
 
   const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
+
+  useEffect(() => {
+    getContactCampaignAction({
+      search: searchCampaign ? `${searchCampaign}*` : "*",
+    });
+    // eslint-disable-next-line
+  }, [searchCampaign]);
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
@@ -123,28 +180,17 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       existingContactId = nameAutValue._id
       action = ACTION.COMBINE
     }
-    Loader.createToast('contact-creation', 'Contact Creation in Progress')
-    convertMultitpleOwnerToContact({
-      variables: { ownerIds, entitiesIds, existingContactId, contactOwner, action, userId: stateApp.user.mongoId, tagsIds: newTagsIds },
-      refetchQueries: ["checkIfOwnersAreContacts"],
-      awaitRefetchQueries: true
-    }).then(
-      res => {
-        if (res.data && res.data.convertMultitpleOwnerToContact) {
-          const { success, message } = res.data.convertMultitpleOwnerToContact
-          if (success) {
-            if(onSuccess) onSuccess()
-            Loader.successToast('contact-creation', message)
-          } else {
-            Loader.errorToast('contact-creation', message)
-          }
-        } else {
-          Loader.errorToast('contact-creation', "Failed to convert to contact")
-        }
-      },
-      err => { console.log(err); Loader.errorToast('contact-creation', "Failed to convert to contact") }
-    );
 
+    const index = rows.findIndex(row => row.id === primaryOwner.id);
+    if(index > -1){
+      rows[index].isPrimary = true
+    }
+    const values = getValues();
+    if(entitiesIds.length === 0){
+      convertMultipleOwnerToContactAction({ ...values, rows, existingContactId, actionType: action, userId: userId, tags: newTagsIds });
+     } else {
+     convertMultipleOwnerToContactAction({ ...values, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds });
+    }
     setM1nSelectedRowsIndexes([])
     onClose();
     setLoading(false);
@@ -264,24 +310,75 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           </Box>
 
           {tab === TAB.NEW &&
-            <Box p={3} pt={3}>
-              <Grid container direction="column"  >
-                <Grid item>
-                  <Typography style={{ fontWeight: "bold" }}>Contact Owner</Typography>
-                </Grid>
-                <Grid item >
-                  <ContactAutoComplete
-                    value={contactOwner}
-                    onChange={(e, user) => {
-                      setContactOwner(user.value);
-                    }}
-                  />
-                </Grid>
-              </Grid>
-            </Box>
+            <>
+              <div className={classes.field}>
+                <label className={classes.bold}>Contact Stage</label>
+                <Controller
+                  control={control}
+                  name="contactStatus"
+                  defaultValue={contactStatusOptions[0].value}
+                  render={(props) => (
+                    <Select
+                      styles={{
+                        menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                      }}
+                      value={contactStatus}
+                      menuPlacement="auto"
+                      onChange={(e) => {
+                        props.onChange(e.target.value);
+                      }}
+                      className={classes.fullWidth}
+                      isDisabled={stateApp.selectedMeta}
+                    >
+                      <MenuItem value="Lead">  Lead </MenuItem>
+                      <MenuItem value="Prospect"> Prospect </MenuItem>
+                      <MenuItem value="Deal Contact"> Contact </MenuItem>
+                    </Select>
+                  )}
+                />
+              </div>
+              <div className={classes.field}>
+                <label className={classes.bold}>Contact Owner</label>
+                <Controller
+                  control={control}
+                  name="contactOwner"
+                  render={(props) => (
+                    <ContactAutoComplete
+                      value={contactOwner}
+                      contactValue="email"
+                      onChange={(e, user) => {
+                        props.onChange(user.value);
+                      }}
+                    />
+                  )}
+                />
+              </div>
+              <div className={classes.field}>
+                <label className={classes.bold}>Campaign Name</label>
+                <Controller
+                  control={control}
+                  name="campaign"
+                  render={(props) => (
+                    <AutoCompleteWithAddNew
+                      value={searchCampaign}
+                      onSearch={(value) => {
+                        setSearchCampaign(value);
+                      }}
+                      setValue={(value) => {
+                        props.onChange(value);
+                      }}
+                      options={campaignList.map((campaign) => ({
+                        _id: campaign,
+                        name: campaign,
+                      }))}
+                    />
+                  )}
+                />
+              </div>
+            </>
           }
-          <Box p={3} pt={3}>
-            <Tags setTagId={setTagId} targetLabel="contact" targetSourceId="new" />
+          <Box marginTop={3} >
+            <Tags variant="standard" setTagId={setTagId} targetLabel="contact" targetSourceId="new" hidePlusIcon />
           </Box>
 
           {((tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)) &&
@@ -325,3 +422,5 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     </RightDialog>
   );
 }
+
+export default MultipleOwnerToContactDrawer;

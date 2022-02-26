@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { AppContext } from "../../../AppContext";
+import { useDispatch } from "react-redux";
 import { Breadcrumbs, Typography, IconButton } from "@material-ui/core";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Menu, MenuItem } from "@material-ui/core";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
 import get from "lodash/get";
+
+import { setCurrentUserGridViewAction } from "store/actions/sessionActions"
 
 export const handleTagColumn = (TableHeader, cleanAvailableTags) => {
   return cleanAvailableTags.length > 0
@@ -193,6 +197,9 @@ export const HeaderComponent = ({
   updateGridView,
   columns,
 }) => {
+  const dispatch = useDispatch();
+  const [stateApp, setStateApp] = useContext(AppContext);
+
   const [showIcon, setShowIcon] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -274,7 +281,13 @@ export const HeaderComponent = ({
                       columns: columns.map((col) => ({ name: col.name, display: col.options.display })),
                     },
                   },
+                  refetchQueries: ["getGridViews"],
+                  awaitRefetchQueries: true,
                 });
+                dispatch(setCurrentUserGridViewAction.STARTED({
+                  gridViewId: selectedGridView._id,
+                  userId: stateApp.user.mongoId
+                }))
               }}
               disabled={
                 selectedGridView.type === "Default" ||

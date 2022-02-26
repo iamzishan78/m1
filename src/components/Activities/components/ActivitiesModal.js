@@ -600,7 +600,7 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
                     className={clsx(classes.filterDisplay, activityType === "mailer" && classes.active)}
                     onClick={() => setActivityType("mailer")}
                   >
-                    <ContactMailIcon /> <span>Mailer Campaign</span>
+                    <ContactMailIcon /> <span>Mailer</span>
                   </span>
                 </div>
               </div>

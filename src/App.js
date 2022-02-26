@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { AppProvider, AppContext, setApolloHeaders } from "./AppContext";
 import GlobalApolloClientProvider from "./GlobalApolloClientProvider";
@@ -177,6 +178,7 @@ const SetApolloClient = (props) => {
 
 const PrivateRoute = ({ component, ...options }) => {
   const [stateApp] = useContext(AppContext);
+  const userSessionIsLoaded = useSelector(({ session }) => session.isLoaded);
   const apolloClient = useApolloClient();
 
   if (stateApp.user && Date.parse(stateApp.user.authTokenExpires) < Date.now()) {
@@ -187,7 +189,7 @@ const PrivateRoute = ({ component, ...options }) => {
   }
 
   const finalComponent =
-    stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now() && apolloClient
+    stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now() && apolloClient && userSessionIsLoaded
       ? component
       : (() => {
           return Login;
@@ -294,6 +296,8 @@ function App() {
     }
   };
 
+  const userSessionIsLoaded = store.getState().session.isLoaded;
+
   return (
     <ReduxProvider store={store}>
       <Notifications />
@@ -333,7 +337,7 @@ function App() {
                         <PrivateRoute exact path="/title" component={TitleOpinionProvider} />
                         <PrivateRoute exact path="/alerts" component={AlertsProvider} />
                         <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider} />
-                        <PrivateRoute title="Contacts" exact path="/contacts" component={ContactsProvider} />
+                        <PrivateRoute title="Contacts" path="/contacts" component={ContactsProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId" component={ContactDetailsProvider} />
                         <PrivateRoute
                           exact

@@ -17,7 +17,7 @@ const RevenueStatementHeadCells = [
           <p
             onClick={(e) => {
               e.stopPropagation();
-              history.push(`/revenue/statement/details?id=${tableMeta.rowData[0]}`);
+              history.push(`/revenue/statement/details/${tableMeta.rowData[0]}`);
             }}
             style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
           >
@@ -86,12 +86,12 @@ const RevenueStatementHeadCells = [
     esKey: "sourceId.keyword",
     options: { sort: true, filter: true },
   },
-  {
-    name: "status",
-    label: "Status",
-    esKey: "status.keyword",
-    options: { sort: true, filter: true },
-  },
+  // {
+  //   name: "status",
+  //   label: "Status",
+  //   esKey: "status.keyword",
+  //   options: { sort: true, filter: true },
+  // },
   {
     name: "tags",
     label: "Tags",

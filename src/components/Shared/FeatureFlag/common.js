@@ -6,5 +6,6 @@ export const FEATURES = {
     LANDMODULE: 'landModule',
     REVENUEMODULE: 'revenueModule',
     LANDPORTFOLIO: 'landPortfolio',
-    LANDREPORTINGGROUPS: 'landReportingGroups'
+    LANDREPORTINGGROUPS: 'landReportingGroups',
+    CONTACTSUBMENU: 'ContactsSubMenu'
 }

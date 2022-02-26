@@ -7,11 +7,11 @@ import * as Components from "components/Revenue/components";
 import { setActiveModule, toggleActionsPanel } from "actions";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
-  PORTFOLIO: {
-    title: "Portfolio",
-    link: "/revenue/portfolio",
-    component: "Portfolio",
-  },
+  // PORTFOLIO: {
+  //   title: "Portfolio",
+  //   link: "/revenue/portfolio",
+  //   component: "Portfolio",
+  // },
   PROPERTIES: {
     title: "Properties",
     link: "/revenue/properties",
@@ -38,7 +38,7 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     isExcluded: true,
     parent: "REVENUE_STATEMENTS",
     title: "Revenue Statements",
-    link: "/revenue/statement/details",
+    link: "/revenue/statement/details/:id",
     component: "RevenueStatementDetails",
   },
   REVENUE_STATEMENT_LINE_ITEM: {
@@ -53,8 +53,8 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
 const replaceId = (link, path) => {
   const linkSplitted = link.split('/');
   const pathSplitted = path.split('/');
-  for(let i = 0; i < linkSplitted.length; i++){
-    if(linkSplitted[i] !== pathSplitted[i] && linkSplitted[i] !== ':id'){
+  for (let i = 0; i < linkSplitted.length; i++) {
+    if (linkSplitted[i] !== pathSplitted[i] && linkSplitted[i] !== ':id') {
       return false
     }
   }
@@ -69,14 +69,14 @@ export default function Revenue() {
   useEffect(() => {
     const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => {
       const path = location.pathname;
-      if(item.link.includes(':id')){
+      if (item.link.includes(':id')) {
         return replaceId(item.link, path)
       }
       return path.startsWith(item.link)
     });
     if (option?.parent) {
       dispatch(setActiveModule(SIDE_PANEL_MENU_ITEMS_LIST[option.parent]));
-    }else if(option){
+    } else if (option) {
       dispatch(setActiveModule(option));
     }
   }, [location.pathname, dispatch]);

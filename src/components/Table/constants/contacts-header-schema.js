@@ -245,8 +245,8 @@ const ContactsHeadCells = [
     label: "Primary Work Phone",
     esKey: 'AltPhone.keyword',
     options: {
-      // display: true,
-      filter: true,
+      display: false,
+      filter: false,
       searchable: false,
       sort: true,
     },
@@ -443,16 +443,27 @@ const ContactsHeadCells = [
   },
   {
     name: "status",
-    label: "Status",
+    label: "Stage",
     esKey: 'status.keyword',
     options: {
-      display: false,
-      filter: false,
-      searchable: false,
+      display: true,
+      filter: true,
+      searchable: true,
       sort: true,
     },
     custom: {
       formatedFilterOptions: contactStatusOptions,
+    },
+  },
+  {
+    name: "contactStatus",
+    label: "Status",
+    esKey: 'contactStatus.keyword',
+    options: {
+      display: true,
+      filter: true,
+      searchable: true,
+      sort: true,
     },
   },
   {
@@ -634,6 +645,18 @@ const ContactsHeadCells = [
         },
       ]
     }
+  },
+  {
+    name: "actionMenu",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
   },
   // {
   //   name: "isTracked",
