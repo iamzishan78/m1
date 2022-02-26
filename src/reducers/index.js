@@ -13,6 +13,7 @@ import contact from 'store/reducers/contactReducer';
 import common from 'store/reducers/commonReducer';
 import app from 'store/reducers/appReducer';
 import entity from 'store/reducers/entityReducer';
+import session from 'store/reducers/sessionReducer';
 
 const createRootReducer = (history) =>
   combineReducers({
@@ -29,7 +30,8 @@ const createRootReducer = (history) =>
     contact,
     common,
     entity,
-    app
+    app,
+    session
   });
 
 export default createRootReducer;

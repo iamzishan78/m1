@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, TextField, InputAdornment } from "@material-ui/core";
+import { Grid, TextField, InputAdornment, Select, MenuItem } from "@material-ui/core";
 import AutoComplete from "components/Shared/components/Fields/AutoComplete";
 import moment from "moment";
 import { KeyboardDatePicker } from "@material-ui/pickers";
@@ -63,26 +63,27 @@ const useStyles = makeStyles(() => ({
 
 export default function HeaderFunction(props) {
   const classes = useStyles();
-  const [check, setCheck] = useState({});
+  // const [check, setCheck] = useState({});
+  const { check, setCheck } = props
   const [updateCheck] = useMutation(UPDATE_CHECK_DATA);
 
   const { control, reset } = useForm();
 
   const handleUpdateCheck = debounce((checkKey) => {
-    setCheck({ ...props?.details, ...checkKey })
+    setCheck({ ...check, ...checkKey })
     updateCheck({
       variables: {
-        check: { ...props?.details, ...checkKey }
+        check: { ...check, ...checkKey }
       },
     });
   }, 500)
 
   useEffect(() => {
-    if (props?.details) {
-      reset(props?.details)
-      setCheck(props?.details);
+    if (check) {
+      reset(check)
+      setCheck(check);
     }
-  }, [props]);
+  }, [props.check]);
 
   return (
     <div className={classes.root}>
@@ -162,6 +163,7 @@ export default function HeaderFunction(props) {
               <Controller
                 control={control}
                 name="checkDate"
+                defaultValue={null}
                 render={(props) => (
                   <KeyboardDatePicker
                     autoOk
@@ -171,7 +173,7 @@ export default function HeaderFunction(props) {
                     format="MM/DD/YYYY"
                     margin="normal"
                     id="date-picker-inline"
-                    value={moment.utc(props.value).format("MM/DD/YYYY")}
+                    value={props.value ? moment.utc(props.value).format("MM/DD/YYYY") : null}
                     onChange={(date) => {
                       props.onChange(date)
                       handleUpdateCheck({ checkDate: date ? String(date["_d"]) : "" });
@@ -252,6 +254,7 @@ export default function HeaderFunction(props) {
               <Controller
                 control={control}
                 name="depositDate"
+                defaultValue={null}
                 render={(props) => (
                   <KeyboardDatePicker
                     autoOk
@@ -261,7 +264,7 @@ export default function HeaderFunction(props) {
                     format="MM/DD/YYYY"
                     margin="normal"
                     id="date-picker-inline"
-                    value={moment.utc(props.value).format("MM/DD/YYYY") || ""}
+                    value={props.value ? moment.utc(props.value).format("MM/DD/YYYY") : null}
                     onChange={(date) => {
                       props.onChange(date)
                       handleUpdateCheck({ depositDate: date ? String(date["_d"]) : "" });
@@ -318,26 +321,19 @@ export default function HeaderFunction(props) {
                 name="source"
                 defaultValue={''}
                 render={(props) => (
-                  <AutoComplete
-                    options={["Manual Entry", "Imported", "CDEX"]}
+
+                  <Select
+                    fullWidth
+                    variant="outlined"
                     value={props.value || ""}
                     onChange={(value) => {
                       props.onChange(value)
                       handleUpdateCheck({ source: value })
                     }}
-                    fullWidth
-                    renderInput={(params) => (
-                      <TextField
-                        margin="dense"
-                        {...params}
-                        variant="outlined"
-                        InputLabelProps={{
-                          ...params.InputLabelProps,
-                          shrink: true,
-                        }}
-                      />
-                    )}
-                  />
+                  >
+                    <MenuItem value={'Manual Entry'}>Manual Entry</MenuItem>
+                    <MenuItem value={'Imported'}>Imported</MenuItem>
+                  </Select>
                 )}
               />
             </Grid>
