@@ -194,13 +194,11 @@ export default function DetailComponents(props) {
   const { statements } = useSelector(({ Revenue }) => Revenue);
 
   const [tab, setTab] = useState(0);
-  const [checkId, setCheckId] = useState(null);
+  const [checksFlatData, setChecksFlatData] = useState({});
   const selectedTabRef = useRef(null);
-  const location = useLocation();
   const [isButtonScroll, setButtonScroll] = useState(false);
   const [collapse, setCollapse] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const { search } = location;
   const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
@@ -209,6 +207,7 @@ export default function DetailComponents(props) {
 
   const history = useHistory();
   const previousRoute = history.pathHistory[1];
+  const checkId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
 
   const classes = useStyles({ ...props, collapse });
   // queries
@@ -225,7 +224,10 @@ export default function DetailComponents(props) {
     awaitRefetchQueries: true,
   });
 
-  const checksFlatData = getCheckResult?.getCheck?.check;
+  useEffect(() => {
+    if (getCheckResult?.getCheck?.check)
+      setChecksFlatData(getCheckResult.getCheck.check)
+  }, [getCheckResult])
 
   const handleDeleteCancel = () => {
     setCheckIdToDelete(null);
@@ -265,17 +267,13 @@ export default function DetailComponents(props) {
   }, [tab]);
 
   useEffect(() => {
-    if (search !== "") {
-      const checkId = search.replace("?id=", "");
-      if (checkId) {
-        setCheckId(checkId);
-        getCheck({
-          variables: { id: checkId },
-        });
-        getAllMongoUsers();
-      }
+    if (checkId) {
+      getCheck({
+        variables: { id: checkId },
+      });
+      getAllMongoUsers();
     }
-  }, [search]);
+  }, []);
 
   useEffect(() => {
     if (userLists && userLists.allMongoUsers) {
@@ -335,7 +333,7 @@ export default function DetailComponents(props) {
                 {checksFlatData && (
                   <Typography
                     style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
-                  >{`${checksFlatData.checkNumber} - ${checksFlatData.payor["name"]}`}</Typography>
+                  >{`${checksFlatData?.checkNumber || ''} - ${checksFlatData?.payor?.name || ''}`}</Typography>
                 )}
                 <div className={classes.tagsContainer}>
                   <div className={classes.highlighter}>
@@ -388,7 +386,7 @@ export default function DetailComponents(props) {
             <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
               <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
                 <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-                  <HeaderSection details={checksFlatData} />
+                  <HeaderSection check={checksFlatData} setCheck={setChecksFlatData} />
                 </div>
                 <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
                 <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>

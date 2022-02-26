@@ -56,6 +56,8 @@ function RevenueStatementTable(props) {
     const startPaginationAt = 25;
     const esIndex = 'checks_flat';
 
+    const esFilters = props.esFilters ? props.esFilters : []
+
     // get paginated data hits from checks_flat table
     useEffect(() => {
         getESPaginatedList({
@@ -66,9 +68,10 @@ function RevenueStatementTable(props) {
                     keep_alive: "1micros"
                 },
                 search: props.revenueSearchQuery,
+                filters: esFilters,
             }
         });
-    }, [getESPaginatedList, props.parent, props.revenueSearchQuery]);
+    }, [getESPaginatedList, props.parent, props.revenueSearchQuery, props.filterToggle]);
 
     useEffect(() => {
         // Potential Issues
@@ -100,44 +103,44 @@ function RevenueStatementTable(props) {
     }, [potentialIssues]);
 
     useEffect(() => {
-        if(validationData?.getRevenueValidationCheck?.hits){
+        if (validationData?.getRevenueValidationCheck?.hits) {
             const validation = JSON.parse(JSON.stringify(validationData.getRevenueValidationCheck.hits))
             const rows = JSON.parse(JSON.stringify(props.rows))
-            for(let i = 0; i < rows.length; i++){
-                if(validation[rows[i]._id]){
+            for (let i = 0; i < rows.length; i++) {
+                if (validation[rows[i]._id]) {
                     rows[i].validation = !(parseFloat(validation[rows[i]._id].checkDetailAmt.value.toFixed(2)) === rows[i].checkAmount)
-                }else{
+                } else {
                     rows[i].validation = false
                 }
             }
             props.setRows(rows)
         }
-    },[validationData])
+    }, [validationData])
 
     useEffect(() => {
         if (tableData?.hits?.length > 0) {
             const objectsIdsArray = tableData.hits.map((check) => check._id);
             getRevenueValidationCheck({
-              variables: {
-                checkIds: objectsIdsArray,
-              },
+                variables: {
+                    checkIds: objectsIdsArray,
+                },
             });
         }
-    },[tableData])
+    }, [tableData])
 
     useEffect(() => {
         if (tableData?.hits?.length > 0) {
-            
+
             const hits = tableData?.hits.map((hit) => {
                 hit.checkDate = hit.checkDate
-                  ? moment(new Date(hit.checkDate)).format("MM/DD/YYYY")
-                  : null;
+                    ? moment(new Date(hit.checkDate)).format("MM/DD/YYYY")
+                    : null;
                 hit.depositDate = hit.depositDate
-                  ? moment(new Date(hit.depositDate)).format("MM/DD/YYYY")
-                  : null;
+                    ? moment(new Date(hit.depositDate)).format("MM/DD/YYYY")
+                    : null;
                 hit.tags = hit?.tags?.length > 0
-                  ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
-                  : [[], 0];
+                    ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+                    : [[], 0];
                 hit.commentsCounter = hit.comments ? hit.comments.length : 0;
                 return hit;
             });

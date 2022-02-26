@@ -15,6 +15,8 @@ import debounce from "lodash/debounce";
 
 // import value formatters
 import joinAddress from "components/Shared/valueformatters/join-address.js";
+import { AppContext } from "AppContext";
+import { NavigationContext } from "components/Navigation/NavigationContext";
 
 const filter = createFilterOptions();
 
@@ -164,6 +166,8 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   const classes = useStyles();
   let history = useHistory();
 
+  const [_, setStateApp] = React.useContext(AppContext);
+
   const isItemLoaded = (index) => {
     if (!hasNextPage) {
       return true;
@@ -206,6 +210,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   );
 
   const getParams = (params) => {
+
     return props.withContactCard ? {
       InputLabelProps: {
         ...params.InputLabelProps,
@@ -225,15 +230,10 @@ export default function AutocompEntityNamesVirtualizeList(props) {
                 if (nameAutValue?._id) {
                   e.stopPropagation();
                   history.push(`/contact/details/${nameAutValue._id}`);
-                  // setStateNav((stateApp) => ({
-                  //   ...stateApp,
-                  //   contactFromMap: true,
-                  // }));
-                  // setStateApp((stateApp) => ({
-                  //   ...stateApp,
-                  //   selectedContact: true,
-                  //   selectedContact: `${currentParty._id}`,
-                  // }));
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    selectedContact: nameAutValue._id,
+                  }));
                 }
               }}
               aria-label="show contact"

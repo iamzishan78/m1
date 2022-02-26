@@ -67,20 +67,7 @@ function RevenuePropertiesTable(props) {
     serverSide: true,
   };
 
-  const esFilters = props.fromDate || props.toDate ? [
-    {
-      field: "lastCheck.checkDate",
-      value: {
-        range: {
-          "lastCheck.checkDate": {
-            gte: `${props.fromDate}T00:00:00.000Z`,
-            lte: `${props.toDate}T00:00:00.000Z`,
-          },
-        },
-      },
-      includeEmpty: props.selectedFilter === 'All Dates' ? true : undefined
-    },
-  ] : props.esFilters ? props.esFilters : []
+  const esFilters = props.esFilters ? props.esFilters : []
 
   useEffect(() => {
     handleSelectedGridChange(TableHeader, { filters: esFilters }, columns, true)
