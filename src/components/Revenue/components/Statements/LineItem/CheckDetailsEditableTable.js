@@ -50,31 +50,31 @@ const RevenueStatementHeadCells = [
         id: "product", title: "Product", filterKey: 'product.keyword', sort: true, type: 'autocomplete', width: '150px'
     },
     {
-        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement.keyword', width: '150px'
+        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement.keyword', sort: true, width: '150px'
     },
     {
-        id: "interestType", title: "Type", filterKey: 'interestType.keyword', type: 'autocomplete', width: '150px'
+        id: "interestType", title: "Type", filterKey: 'interestType.keyword', sort: true, type: 'autocomplete', width: '150px'
     },
     {
-        id: "price", title: "Avg Price", filterKey: 'price', width: '150px'
+        id: "price", title: "Avg Price", filterKey: 'price', sort: true, width: '150px'
     },
     {
-        id: "grossOwnerVolume", title: "Sales Vol", filterKey: 'grossOwnerVolume', width: '150px'
+        id: "grossOwnerVolume", title: "Sales Vol", filterKey: 'grossOwnerVolume', sort: true, width: '150px'
     },
     {
-        id: "grossOwnerValue", title: "Gross Rev", filterKey: 'grossOwnerValue', width: '150px'
+        id: "grossOwnerValue", title: "Gross Rev", filterKey: 'grossOwnerValue', sort: true, width: '150px'
     },
     {
-        id: "ownerTax", title: "Severence", filterKey: 'ownerTax', width: '150px'
+        id: "ownerTax", title: "Severence", filterKey: 'ownerTax', sort: true, width: '150px'
     },
     {
-        id: "ownerDeducts", title: "Deduct Amt", filterKey: 'ownerDeducts', width: '150px'
+        id: "ownerDeducts", title: "Deduct Amt", filterKey: 'ownerDeducts', sort: true, width: '150px'
     },
     {
-        id: "deductType", title: "Deduct Cd", filterKey: 'deductType.keyword', type: 'autocomplete', width: '150px'
+        id: "deductType", title: "Deduct Cd", filterKey: 'deductType.keyword', sort: true, type: 'autocomplete', width: '150px'
     },
     {
-        id: "netOwnerValue", title: "Owner Net Rev", filterKey: 'netOwnerValue', width: '150px'
+        id: "netOwnerValue", title: "Owner Net Rev", filterKey: 'netOwnerValue', sort: true, width: '150px'
     },
     {
         id: "action", filterKey: 'action', title: "", type: 'action', width: '100px'
