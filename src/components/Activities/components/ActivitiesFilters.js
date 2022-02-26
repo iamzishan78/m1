@@ -303,7 +303,7 @@ const CampaignFilter = ({
       }}
       value={value}
       inputValue={search?.toString()}
-      options={get(filtersData, "getESSimpleFilter.hits", [])}
+      options={get(filtersData, "getESSimpleFilter.hits", []).filter(d => d.key)}
       getOptionSelected={(option, value) => option.key === value}
       getOptionLabel={(option) =>
         option?.key?.toString().replace(/^\,|\,$/gm, "")
@@ -352,7 +352,7 @@ const QualifierFilter = ({
   };
 
   useEffect(() => {
-    const filterKey = "owner.email.keyword";
+    const filterKey = "ownerName.keyword";
     getQualifiers({
       variables: {
         esIndex,
