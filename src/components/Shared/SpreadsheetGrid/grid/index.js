@@ -310,7 +310,6 @@ class SpreadsheetGrid extends React.PureComponent {
     }
 
     getCellClassName(column, row, x, y) {
-        console.log(this.state.hoveredRow)
         if (column.id === 'action') return this.state.hoveredRow === x ? 'SpreadsheetGrid__showAction' : 'SpreadsheetGrid__hideAction'
 
         return 'SpreadsheetGrid__cell' +

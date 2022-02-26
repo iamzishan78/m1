@@ -32,22 +32,22 @@ import { KeyboardDatePicker } from "@material-ui/pickers";
 
 const RevenueStatementHeadCells = [
     {
-        id: "property.number", title: "Property Code", filterKey: 'property.number.keyword', type: 'autocomplete', width: '210px'
+        id: "property.number", title: "Property Code", filterKey: 'property.number.keyword', sort: true, type: 'autocomplete', width: '210px'
     },
     {
-        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', width: '190px'
+        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', sort: true, width: '190px'
     },
     {
-        id: "property.state", title: "State", filterKey: 'property.state.keyword', width: '100px'
+        id: "property.state", title: "State", filterKey: 'property.state.keyword', sort: true, width: '100px'
     },
     {
-        id: "property.county", title: "County", filterKey: 'property.county.keyword', width: '130px'
+        id: "property.county", title: "County", filterKey: 'property.county.keyword', sort: true, width: '130px'
     },
     {
-        id: "date", title: "Sales Date", filterKey: 'date', type: 'date', width: '180px'
+        id: "date", title: "Sales Date", filterKey: 'date', sort: true, type: 'date', width: '180px'
     },
     {
-        id: "product", title: "Product", filterKey: 'product.keyword', type: 'autocomplete', width: '150px'
+        id: "product", title: "Product", filterKey: 'product.keyword', sort: true, type: 'autocomplete', width: '150px'
     },
     {
         id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement.keyword', width: '150px'
@@ -122,6 +122,7 @@ function CheckDetailsEditableTable(props) {
 
     const [rows, setRows] = useState(props.rows);
     const [search, setSearch] = useState({ open: false, text: '' })
+    const [sort, setSort] = useState({ orderBy: 'createdAt', order: 'desc' })
     const client = useApolloClient();
 
 
@@ -278,7 +279,7 @@ function CheckDetailsEditableTable(props) {
                     field: "check._id.keyword",
                     value: props.checkId
                 }],
-                sort: { 'createdAt': { order: "desc" } },
+                sort: { [sort.orderBy]: { order: sort.order } },
                 pagination: {
                     first: startPaginationAt,
                     keep_alive: "1micros"
@@ -286,7 +287,7 @@ function CheckDetailsEditableTable(props) {
                 search: search.text ? `${search.text}*` : ''
             }
         });
-    }, [props.parent, props.checkId, search.text]);
+    }, [props.parent, props.checkId, search.text, sort]);
 
 
     useEffect(() => {
@@ -342,7 +343,7 @@ function CheckDetailsEditableTable(props) {
                             field: "check._id.keyword",
                             value: props.checkId
                         }],
-                        sort: { 'createdAt': { order: "desc" } },
+                        sort: { [sort.orderBy]: { order: sort.order } },
                         pagination: {
                             pit: tableData.pit,
                             after: rows[0] ? rows[0].sort : null,
@@ -354,10 +355,17 @@ function CheckDetailsEditableTable(props) {
         }, 0)
     }
 
+    const createSortHandler = (id) => {
+        if (sort.orderBy === id) {
+            setSort({ orderBy: id, order: sort.order === 'asc' ? 'desc' : 'asc' })
+        } else {
+            setSort({ orderBy: id, order: 'desc' })
+        }
+    }
+
     const gridRef = React.createRef()
     const tclasses = useStyles();
 
-    console.log(rows)
 
     return (
         <Paper elevation={3} >
@@ -429,6 +437,8 @@ function CheckDetailsEditableTable(props) {
                                 isColumnsResizable
                                 focusOnSingleClick
                                 onColumnResize={onColumnResize}
+                                sort={sort}
+                                createSortHandler={createSortHandler}
                                 // focusOnSingleClick={props.focusOnSingleClick}
                                 // disabledCellChecker={(row, columnId) => {
                                 //     return columnId === 'age';
