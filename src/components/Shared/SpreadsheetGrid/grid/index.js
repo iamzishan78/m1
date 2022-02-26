@@ -147,12 +147,14 @@ class SpreadsheetGrid extends React.PureComponent {
             }
 
             function moveLeft({ x, y }) {
+                const currentActiveCell = newActiveCell
                 if (y > 0) {
                     newActiveCell = { x, y: y - 1 };
                 } else if (x > 0) {
                     newActiveCell = { x: x - 1, y: columnsCount - 1 };
                 }
-                newFocusedCell = null;
+                if (currentActiveCell !== newActiveCell)
+                    newFocusedCell = newActiveCell;
 
                 if (find(block.props.disabledCells, newActiveCell)) {
                     moveLeft(newActiveCell);
@@ -205,7 +207,7 @@ class SpreadsheetGrid extends React.PureComponent {
                     moveRight({ x, y });
 
                 // newFocusedCell = this.state.activeCell;
-                // e.preventDefault();
+                e.preventDefault();
                 // e.stopPropagation();
             }
 
@@ -247,6 +249,7 @@ class SpreadsheetGrid extends React.PureComponent {
         allRows.push({})
         setRows([].concat(allRows))
         this.focusCell({ x: allRows.length - 1, y: 0 })
+        setTimeout(() => document.getElementById(`${allRows.length - 1}-0`)?.click(), 0)
     }
 
     deleteEmptyRow(newRowIndex) {
