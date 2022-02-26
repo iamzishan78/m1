@@ -73,6 +73,8 @@ function ContactsTable(props) {
     type: 'Default'
   }
 
+  const { Contacts } = useSelector(({ session }) => session.userGridViewSettings);
+
   // function states
   const selectedFilters = useRef([]);
   const tableRef = useRef();
@@ -131,6 +133,11 @@ function ContactsTable(props) {
     }
     return newFilters;
   }
+
+  useEffect(() => {
+    console.log("here", Contacts);
+    setSelectedGridView(Contacts || defaultView);
+  }, [Contacts]);
 
   useEffect(() => {
     getESContacts({
