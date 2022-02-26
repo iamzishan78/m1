@@ -156,12 +156,13 @@ const mergeDateAndTime = (d, t) => {
 
 function AddActivityDialog(props) {
   const classes = useStyles();
-  const { selectedActivity, onClose, contactData } = props;
+  const { selectedActivity, onClose, contactData, defaultActivityType } = props;
+  
   const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
 
   const [addNew, setAddNew] = useState(true);
-  const [activityType, setActivityType] = useState("call");
+  const [activityType, setActivityType] = useState(defaultActivityType || "call");
   const [activityName, setActivityName] = useState("");
   const [closed, setClosed] = useState(false);
   const [startDate, setStartDate] = useState(getCurrentDate());
@@ -196,6 +197,10 @@ function AddActivityDialog(props) {
   const handleCloseDialog = () => {
     setDeleteDialogOpen(false);
   };
+
+  useEffect(() => {
+    setActivityType(defaultActivityType || "call");
+  }, [defaultActivityType]);
 
   useEffect(() => {
     getAllMongoUsers();
@@ -297,7 +302,7 @@ function AddActivityDialog(props) {
         id: stateApp.user.mongoId,
       });
       setDealId(null);
-      setActivityType("call");
+      setActivityType(defaultActivityType || "call");
       setActivityName("");
       setStartDate(getCurrentDate());
       setEndDate(getCurrentDate());
@@ -314,7 +319,7 @@ function AddActivityDialog(props) {
       id: stateApp.user.mongoId,
     });
     setDealId(null);
-    setActivityType("call");
+    setActivityType(defaultActivityType || "call");
     setActivityName("");
     setClosed(false);
     setStartDate(getCurrentDate());

@@ -18,6 +18,7 @@ import Badge from "@material-ui/core/Badge";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
+import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import { CONTACT_PURCHASE_DATA } from "graphQL/useQueryContactPurchaseData";
@@ -299,6 +300,19 @@ const useStyles = makeStyles((theme) => ({
     background: "white !important",
     color: "black !important",
   },
+
+  emailButton: {
+    backgroundColor: "#011133 !important",
+    '& .MuiButton-label': {
+      color: 'white !important'
+    },
+  },
+  disabledButton: {
+    backgroundColor: "white !important",
+    '& .MuiButton-label': {
+      color: 'grey !important'
+    },
+  }
 }));
 
 export default function ContactDetailCard(props) {
@@ -694,11 +708,25 @@ export default function ContactDetailCard(props) {
               >
                 Buy Contact Info
               </Button> */}
-                {contactData.primaryEmail && (
-                  <a href={"mailto:" + contactData.primaryEmail}>
-                    <Button variant="contained">Email</Button>
-                  </a>
-                )}
+              
+            {contactData.primaryEmail ? (
+                <a href={"mailto:" + contactData.primaryEmail}>
+                  <Button
+                  className={classes.emailButton}
+                    startIcon={<EmailOutlinedIcon />}
+                  >
+                    Email
+                  </Button>
+                </a>
+                ) : 
+                  (<Button
+                    className={classes.disabledButton}
+                    variant="outlined"
+                    startIcon={<EmailOutlinedIcon />}
+                    disabled
+                  >
+                    Email
+                  </Button>)}
 
                 <Button className={classes.menuIcon} onClick={handleClick}>
                   <MoreVertIcon aria-controls="simple-menu" aria-haspopup="true" />

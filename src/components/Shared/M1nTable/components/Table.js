@@ -17,6 +17,14 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
 import ChatIcon from "@material-ui/icons/Chat";
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
+
+import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
+import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
+import MailOutlineOutlinedIcon from '@material-ui/icons/MailOutlineOutlined';
+import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
+import TextSMS from '@material-ui/icons/TextsmsOutlined';
+
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import M1nTable from "../M1nTable";
 import WellIcon from "../../svgIcons/well";
@@ -42,7 +50,7 @@ import { deepEqualObjects, setStateIfDeepEqual } from "../../functions";
 import InviteUserDialog from "./SubComponents/InviteUserDialog";
 import ReinviteUserDialog from "./SubComponents/ReinviteUserDialog";
 import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogContent";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
 import AddParcelToEntityDialogContent from "./SubComponents/AddParcelToEntityDialogContent/AddParcelToEntityDialogContent";
 import Convert_contact from "../../svgIcons/convert_contact";
 import Contact_card from "../../svgIcons/contact_card";
@@ -114,6 +122,10 @@ import CheckIcon from "@material-ui/icons/Check";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import Link from "@material-ui/core/Link";
+import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import { CONTACT } from "graphQL/useQueryContact";
+import ConfirmationDialog from "components/ContactDetailCard/components/ConfirmationDialog";
 
 
 // suppress debug console logs
@@ -328,6 +340,10 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: "#dadbde !important",
     },
+  },
+  menuIcons: {
+    marginRight: "8px",
+    
   },
   colorIcon: {
     backgroundColor: (props) => (props.dense ? "transparent" : "#efefef"),
@@ -559,8 +575,16 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiSvgIcon-root": {
       fill: "#ffa800"
     }
-
-  }
+  },
+actionMenuItem: {
+  padding: 5,
+  paddingLeft: 10,
+  width: "260px",
+  color: "#5a5a5a",
+"&  .MuiSvgIcon-root": {
+    fill: "#5a5a5a"
+}
+}
 }));
 
 function SubTable(props) {
@@ -609,6 +633,9 @@ function SubTable(props) {
   const [handleSearch, setHandleSearch] = useState(() => () => { });
   const [dataWell, setDataWell] = useState();
   const [activeRowIndex, setActiveRowIndex] = useState("null");
+  const [defaultActivityType, setDefaultAcitivityType] = useState("call");
+  const [contact, setContact] = useState(null);
+  const [activityModalOpen, setActivityModalOpen] = useState(false);
 
   // deep state
   const setFirstMount = (newState) => {
@@ -620,6 +647,7 @@ function SubTable(props) {
   const setTrueTargetLabel = (newState) => {
     setStateIfDeepEqual(TrueTargetLabel, newState);
   };
+  
   const setM1nSelectedRowsTracks = (newState) => {
     setStateIfDeepEqual(M1nSelectedRowsTracks, newState);
   };
@@ -691,6 +719,8 @@ function SubTable(props) {
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
+  const [getContact, { data: contactData }] = useLazyQuery(CONTACT);
+  
 
   const [viewFile, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
@@ -841,6 +871,13 @@ function SubTable(props) {
   //   setM1nSelectedRowsIndexes([]);
   //   setM1nSelectedRowsIds([]);
   // }, [rows])
+
+  //// save contact data chosen by action menu
+  useEffect(() => {
+    if (contactData && contactData.contact) {
+      setContact(contactData.contact);
+    }
+  }, [contactData,contact]);
 
   //// opening the well detail card after fetch the extra well data needed
   useEffect(() => {
@@ -1090,6 +1127,26 @@ function SubTable(props) {
     setExpandedObject(idOrValues);
     setOpenDialog(type);
   };
+  
+  // handleActivity if type is 'deleteContact' open delete confirmation dialog otherwise open activiy modal for other types
+  const handleActivity = async (contactId, activityType, type) => {
+    if(type){
+      setM1nSelectedRowsIds([contactId]);
+      setOpenDialog(type);
+      }
+      else
+      {
+        getContact({
+          variables: {
+            contactId: contactId,
+          },
+        });
+    
+       setDefaultAcitivityType(activityType)
+       setActivityModalOpen(true);
+      }
+      setUsermanagementSettings([]);
+  };
 
   ////setting all icons columns/////
   const [selectedUser, setSelectedUser] = useState(null);
@@ -1125,6 +1182,54 @@ function SubTable(props) {
         <Divider />
         <MenuItem className={classes.userMenuItem} onClick={(e) => handleExpandClick(null, null, null, "deleteUser")}>
           Inactivate User
+        </MenuItem>
+      </Menu>
+    );
+  };
+
+  const openActionMenu = (event, rowIndex, user, tableMeta) => {
+    const contactId = user.rowData[0]
+    event.stopPropagation();
+    setUsermanagementSettings(
+      <Menu
+        anchorEl={event.currentTarget}
+        getContentAnchorEl={null}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+        keepMounted
+        id={rowIndex}
+        open={true}
+        onClose={closeMenu}
+      >
+        
+        {/* <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(null, null, null, "")}>
+          <MailOutlineOutlinedIcon className={classes.menuIcons} />
+         Send email
+        </MenuItem>
+        <Divider /> */}
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId,"call", null)}>
+          <CallOutlinedIcon className={classes.menuIcons} />
+          Add call log
+        </MenuItem>
+        <Divider />
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId,"text_message", null)}>
+          <TextSMS className={classes.menuIcons} />
+          Add text exchange
+        </MenuItem>
+        <Divider />
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, "meeting", null)}>
+          <EventOutlinedIcon className={classes.menuIcons} />
+          Add meeting notes
+        </MenuItem>
+        <Divider />
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, "task", null)}>
+          <AssignmentTurnedInOutlinedIcon className={classes.menuIcons} />
+          Add new task
+        </MenuItem>
+        <Divider />
+        <MenuItem className={classes.actionMenuItem} onClick={(e) =>  handleActivity(contactId, null, "deleteContact")}>
+          <DeleteOutlinedIcon className={classes.menuIcons} />
+         Delete contact
         </MenuItem>
       </Menu>
     );
@@ -1204,6 +1309,7 @@ function SubTable(props) {
           };
           return;
         }
+
         switch (column.name) {
           case "detailCard":
             column.options = {
@@ -1311,6 +1417,37 @@ function SubTable(props) {
             }
             break;
           }
+          case "actionMenu" : {
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
+                  return (
+                    <>
+                      <Tooltip title="Actions" placement="top" style={{ marginRight: "10px" }}>
+                        <IconButton
+                          id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                          size={props.dense ? "small" : "medium"}
+                          onClick={(e) => {
+                            openActionMenu(
+                              e,
+                              tableMeta.rowIndex,
+                              tableMeta
+                            
+                            );
+                          }}
+                        >
+                         <MoreVertOutlinedIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </>
+                  );
+                },
+              };
+            }
+            break;
+          }
           case "property": {
             {
               column.options = {
@@ -1401,7 +1538,7 @@ function SubTable(props) {
                             );
                           }}
                         >
-                          <MoreHorizIcon />
+                         <MoreHorizIcon />
                         </IconButton>
                       </Tooltip>
                     </>
@@ -1560,7 +1697,7 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : props.parent === "RevenueStatementTable"
-                            ? tableMeta.rowData[1]?.split("_")[1]
+                            ? tableMeta.rowData[0]
                             : tableMeta.rowData[0];
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
@@ -2445,14 +2582,14 @@ function SubTable(props) {
                     );
                   }
 
-                  if (column.name === "isClosed" && props.targetLabel === "activity" && value === true)
+                  if (column.name === "isClosed" && (props.targetLabel === "activity" || props.targetLabel === "activitiesDashboard") && value === true)
                     return (
                       <div style={{ textAlign: "center" }}>
                         <CheckIcon />
                       </div>
                     );
 
-                  if (column.name === "isClosed" && props.targetLabel === "activity" && value === false)
+                  if (column.name === "isClosed" &&  (props.targetLabel === "activity" || props.targetLabel === "activitiesDashboard") && value === false)
                     return <div style={{ textAlign: "center" }}>{/* <CheckBoxOutlineBlankIcon /> */}</div>;
 
                   ////// if non editable column
@@ -3580,6 +3717,7 @@ function SubTable(props) {
       //   }
       // }
     },
+   
     onChangePage: (pageState) => {
       setPageInd(pageState);
     },
@@ -3896,8 +4034,8 @@ function SubTable(props) {
 
   if (props.header === "Deals" || props.header === "Activities") {
     // adds the print and export options in the Flow grid and the Activities grid
-    options.print = true;
     if(props.targetLabel !== 'activitiesDashboard'){
+      options.print = true;
       options.download = true;
     }
   }
@@ -4134,6 +4272,15 @@ function SubTable(props) {
           </RightDialog>
         )}
 
+<RightDialog open={activityModalOpen} handleClickDialogClose={() => setActivityModalOpen(false)} width="450px">
+         <AddActivityDialog
+           onClose={() => setActivityModalOpen(false)}
+          id={contact?._id}
+          contactData={contact}
+          defaultActivityType= {defaultActivityType}
+        />
+          </RightDialog>
+
         {openDialog && openDialog === "buyContactsInfo" && (
           <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
             <BuyContactsInfoDialogContent
@@ -4362,6 +4509,7 @@ function SubTable(props) {
               {openDialog === "addParcelInterestsToEntity" && (
                 <AddParcelToEntityDialogContent onClose={handleCloseDialog} entityId={props.addAble.entityId} />
               )}
+
               {openDialog === "deleteOwnersFromContact" && (
                 <DeleteConfirmationDialogContent
                   header="Delete Owner(s)"
@@ -4422,6 +4570,7 @@ function SubTable(props) {
                     } from  this parcel?`}
                 </DeleteConfirmationDialogContent>
               )}
+            
               {openDialog === "deleteContact" && (
                 <DeleteConfirmationDialogContent
                   header="Delete Contact(s)"

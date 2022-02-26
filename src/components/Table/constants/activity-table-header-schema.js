@@ -40,6 +40,7 @@ const ActivitiesHeadCells = [
         sort: true,
         filter: true,
       },
+      style: { minWidth: 185 }
     },
     {
       name: "end",
@@ -50,6 +51,7 @@ const ActivitiesHeadCells = [
         sort: true,
         filter: true,
       },
+      style: { minWidth: 185 }
     },
     {
       name: "dealName",
