@@ -1,9 +1,9 @@
 export const campaignVariables = {
-    esIndex: "contacts_flat",
-    filterKey: "campaignName.keyword",
-    search: '',
-    size: 50,
-  }
+  esIndex: "contacts_flat",
+  filterKey: "campaignName.keyword",
+  search: "",
+  size: 50,
+};
 
 export const wellsKeys = [
   "wellName",
@@ -86,5 +86,122 @@ export const wellsKeys = [
   "CurrentOperator",
   "Lease",
   "MaxCompletionRecordDate",
-  "plugDate"
-]
+  "plugDate",
+];
+
+export const contactManagementRoutes = {
+  ALLENTITIES: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "All Entities",
+    link: "/contacts",
+    component: "ContactsTable",
+    search: true,
+  },
+  LEADS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Leads",
+    link: "/contacts/leads",
+    component: "ContactsTable",
+    filterValue: "Lead",
+    showAnalytics: true,
+    search: true,
+  },
+  PROSPECTS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Prospects",
+    link: "/contacts/prospects",
+    component: "ContactsTable",
+    filterValue: "Prospect",
+    showAnalytics: true,
+    search: true,
+  },
+  CONTACTS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Contacts",
+    link: "/contacts/contact",
+    component: "ContactsTable",
+    filterValue: "Contact",
+    showAnalytics: true,
+    search: true,
+  },
+  ACTIVITY: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Activity Dashboard",
+    link: "/contacts/activityDashboard",
+    component: "ActivitiesDashboard",
+    search: false,
+  },
+  CAMPAIGN: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Campaign Management",
+    link: "/contacts/campaignManagement",
+    component: "ContactsTable",
+    search: true,
+  },
+};
+
+export const contactsAnalyticsCards = [
+  {
+    heading: "Total Contacts",
+    points: 0,
+  },
+  {
+    heading: "Recently Added",
+    points: 0,
+  },
+  {
+    heading: "Recently Contacted",
+    points: 0,
+  },
+  {
+    heading: "Missing Contact Info",
+    points: 0,
+    type: "warning",
+  },
+];
+
+export const activityTypes = [
+  {
+    value: "deadline",
+    label: "Deadlines",
+  },
+  {
+    value: "call",
+    label: "Calls",
+  },
+  {
+    value: "text_message",
+    label: "Text Messages",
+  },
+  {
+    value: "email",
+    label: "Emails",
+  },
+  {
+    value: "meeting",
+    label: "Meetings",
+  },
+  {
+    value: "task",
+    label: "Tasks",
+  },
+  {
+    value: "mailer",
+    label: "Mailers",
+  },
+];
+
+export const CUSTOM_DATES = {
+  ALL_DATES: "All Dates",
+  THIS_YEAR_TO_LAST_MONTH: "This year-to-last-month",
+  THIS_YEAR_TO_DATE: "This year to date",
+  LAST_YEAR_TO_DATE: "Last year to date",
+  LAST_MONTH: "Last Month",
+  THIS_MONTH: "This Month",
+  LAST_QUARTER: "Last Quarter",
+  THIS_QUARTER: "This Quarter",
+  THIS_WEEK: "This Week",
+  LAST_WEEK: "Last Week",
+  LAST_YEAR: "Last Year",
+  CUSTOM: "Custom",
+};

@@ -324,6 +324,7 @@ export default function ContactDetailCard(props) {
   const pathName = history.location.pathname;
   const contactId = pathName.split('contact/details/')[1].replace('/', '');
   const shrinkRightColumn = useSelector(({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn);
+  const { statements } = useSelector(({ Revenue }) => Revenue);
   const { selectedPipe } = useSelector(({ Flow }) => Flow);
   const classes = useStyles({ ...props, shrinkRightColumn });
   const [openDialog, setOpenDialog] = useState(false);
@@ -479,6 +480,12 @@ export default function ContactDetailCard(props) {
     return !!stateNav.contactFromMap;
   };
 
+  const checkRevenueStatement = () => {
+    if (history.pathHistory[1]?.includes("/revenue/statement/details")) {
+      return true
+    }
+  };
+
   const getFlowlineReturnUrl = () => {
     const searchParams = new URLSearchParams(window.location.search?.replace("?", ""));
     const returnUrl = searchParams.get("return-url");
@@ -624,6 +631,37 @@ export default function ContactDetailCard(props) {
                 }}
               >
                 Map
+              </Link>
+            )}
+
+            {checkRevenueStatement() && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => {
+                  history.push('/revenue/statements');
+                }}
+              >
+                Revenue Statements
+              </Link>
+            )}
+            {checkRevenueStatement() && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => {
+                  history.push(history.pathHistory[1]);
+                }}
+              >
+                {`${statements?.activeStatement?.checkNumber} - ${statements?.activeStatement?.payor?.["name"]}`}
               </Link>
             )}
 

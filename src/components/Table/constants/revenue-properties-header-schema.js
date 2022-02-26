@@ -19,7 +19,7 @@ const RevenuePropertiesHeadCells = [
   },
   {
     name: "payorName",
-    label: "Payor Name",
+    label: "Operator",
     esKey: "operator.name.keyword",
     options: { sort: true, filter: true },
     style: { minWidth: 150 }
@@ -46,37 +46,37 @@ const RevenuePropertiesHeadCells = [
   {
     name: "wellApiNumber",
     label: "Well API",
-    esKey: "well.apiNumber.keyword",
+    esKey: "wells.apiNumber.keyword",
     options: { sort: true, filter: true },
   },
   {
     name: "wellName",
     label: "Well Name",
-    esKey: "well.wellName.keyword",
+    esKey: "wells.wellName.keyword",
     options: { sort: true, filter: true },
   },
-  {
-    name: "type",
-    label: "Type",
-    esKey: "type.keyword",
-    options: { sort: true, filter: true },
-  },
-  {
-    name: "amount",
-    label: "Decimal",
-    esKey: "amount",
-    options: { sort: true, filter: true },
-  },
+  // {
+  //   name: "type",
+  //   label: "Type",
+  //   esKey: "type.keyword",
+  //   options: { sort: true, filter: true },
+  // },
+  // {
+  //   name: "amount",
+  //   label: "Decimal",
+  //   esKey: "amount",
+  //   options: { sort: true, filter: true },
+  // },
   {
     name: "checkNumber",
-    label: "Check #",
+    label: "Last Check #",
     esKey: "lastCheck.checkNumber.keyword",
     options: { sort: true, filter: true },
     style: { minWidth: 100 }
   },
   {
     name: "lastChecked",
-    label: "Last Check",
+    label: "Last Check Date",
     esKey: "lastCheck.checkDate",
     options: { sort: true, filter: true },
   },

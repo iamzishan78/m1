@@ -23,6 +23,7 @@ import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedI
 import MailOutlineOutlinedIcon from '@material-ui/icons/MailOutlineOutlined';
 import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
+import TextSMS from '@material-ui/icons/TextsmsOutlined';
 
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import M1nTable from "../M1nTable";
@@ -65,7 +66,7 @@ import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
 import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
 import moment from "moment";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
-import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
+import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
 import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
 import Grid from "@material-ui/core/Grid";
@@ -571,7 +572,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "smaller",
   },
   customWarning: {
-    "& .MuiSvgIcon-root":{
+    "& .MuiSvgIcon-root": {
       fill: "#ffa800"
     }
   },
@@ -750,22 +751,21 @@ function SubTable(props) {
 
   // handlers
   const handleWellFlyTo = (value) => {
-    // setting state to fly to the selected well
+    let unitId = history.location.pathname.split("/");
+    history.push(
+      `/map/wells/${value?.wellId.toUpperCase()}`,
+      {
+        fromUnitDetail: true,
+        unitName: stateApp.selectedShape.shapeLabel,
+        unitId: unitId[unitId.length - 1]
+      }
+    );
     setStateApp((stateApp) => ({
       ...stateApp,
-      fitBounds: null,
-      selectedWell: null,
+      selectedShape: null,
       selectedWellId: value.wellId ? value.wellId.toLowerCase() : null,
-      wellSelectedCoordinates: [value.center[0], value.center[1]],
-      wellListFromSearch: [
-        {
-          id: value.wellId,
-          longitude: value.center[0],
-          latitude: value.center[1],
-        },
-      ],
+      wellSelectedCoordinates: [value.center[0], value.center[1]]
     }));
-    stateApp.toggleLayersActivity("Search", true);
   };
 
   const handleLocationFlyTo = (newValue) => {
@@ -1202,24 +1202,29 @@ function SubTable(props) {
         onClose={closeMenu}
       >
         
-        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(null, null, null, "")}>
+        {/* <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(null, null, null, "")}>
           <MailOutlineOutlinedIcon className={classes.menuIcons} />
          Send email
         </MenuItem>
-        <Divider />
+        <Divider /> */}
         <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId,"call", null)}>
           <CallOutlinedIcon className={classes.menuIcons} />
-          Add call logs
+          Add call log
+        </MenuItem>
+        <Divider />
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId,"text_message", null)}>
+          <TextSMS className={classes.menuIcons} />
+          Add text exchange
         </MenuItem>
         <Divider />
         <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, "meeting", null)}>
           <EventOutlinedIcon className={classes.menuIcons} />
-          Add meeting
+          Add meeting notes
         </MenuItem>
         <Divider />
         <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, "task", null)}>
           <AssignmentTurnedInOutlinedIcon className={classes.menuIcons} />
-          Add task
+          Add new task
         </MenuItem>
         <Divider />
         <MenuItem className={classes.actionMenuItem} onClick={(e) =>  handleActivity(contactId, null, "deleteContact")}>
@@ -1612,6 +1617,10 @@ function SubTable(props) {
                         className={`${classes.icons}`}
                         onClick={(e) => {
                           e.stopPropagation();
+                          // for unit wells we need to use globalWell instead of wellId
+                          if (props.targetLabel === "well") {
+                            value.wellId = props.rows[tableMeta.rowIndex].globalWell ?? value.wellId;
+                          }
                           handleClickFlyToIcon(props.targetLabel, value);
                         }}
                         aria-label="fly"
@@ -1688,7 +1697,7 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : props.parent === "RevenueStatementTable"
-                            ? tableMeta.rowData[1]?.split("_")[1]
+                            ? tableMeta.rowData[0]
                             : tableMeta.rowData[0];
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
@@ -1924,7 +1933,7 @@ function SubTable(props) {
                         {!value || value === "false" ? (
                           <Convert_contact style={{ margin: "4px" }} />
                         ) : (
-                          <Link 
+                          <Link
                             href={
                               window.location.origin
                               +
@@ -2635,7 +2644,7 @@ function SubTable(props) {
                           fgColor="#000"
                           name={
                             valueFormatter(column, tableMeta.rowData[8]) ||
-                            valueFormatter(column, 
+                            valueFormatter(column,
                               `${tableMeta.rowData[10]
                                 ? tableMeta.rowData[10]
                                 : tableMeta.rowData[8]
@@ -2718,9 +2727,23 @@ function SubTable(props) {
                       )}
                       {props.targetLabel === "contact" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span>{tableMeta.rowData[50] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span>{tableMeta.rowData[51] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
+
+                      {props.targetLabel === "Unit Ownership" && column.name === "name" && (
+                        <FeatureFlag feature={FEATURES.IDICORE}>
+                          <span> {tableMeta.rowData[17] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                        </FeatureFlag>
+                      )}
+
+                      {props.parent === "ownersPerParcel" && column.name === "name" && (
+                        <FeatureFlag feature={FEATURES.IDICORE}>
+                          <span> {tableMeta.rowData[18] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                        </FeatureFlag>
+                      )}
+
+
 
                       {/* temporarily removing the purchased data icon as we do not have functionality to actually purchase contact data currently - KC 3/17/21 */}
                       {/* {props.targetLabel === "contact" &&
@@ -3067,7 +3090,16 @@ function SubTable(props) {
               </div>
             );
           }
-          if (props.addAble.type === "wellInterest") {
+          if (props.addAble.type === "wellInterest" && props.parent === "ownersPerUnit") {
+
+            const getSelectedRows = () => {
+              const selectedRows = [];
+              for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+                selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+              }
+              return selectedRows;
+            };
+
             return (
               <div
                 style={{
@@ -3082,6 +3114,19 @@ function SubTable(props) {
                     display: "flex",
                   }}
                 >
+
+                  <FeatureFlag feature={FEATURES.IDICORE}>
+                    <Button
+                      color="secondary"
+                      startIcon={<RequestPageIcon color="white" />}
+                      className={classes.multiSelectionTopBarButtons}
+                      disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+                      onClick={() => handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData")}
+                    >
+                      Contact Data
+                    </Button>
+                  </FeatureFlag>
+
                   <Tooltip title={"Delete"}>
                     <IconButton
                       size="medium"
@@ -3098,6 +3143,40 @@ function SubTable(props) {
               </div>
             );
           }
+          if (props.addAble.type === "wellInterest") {
+            return (
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    height: "35px",
+                    display: "flex",
+                  }}
+                >
+                  <h2 style={{ color: "#000000" }}>heelo</h2>
+                  <Tooltip title={"Delete"}>
+                    <IconButton
+                      size="medium"
+                      style={{ margin: "0 5px" }}
+                      onClick={(e) => {
+                        handleExpandClick(null, null, null, "deleteWellInterest");
+                      }}
+                      aria-label="delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              </div>
+            );
+          }
+
+
           if (
             props.header === "Owner's Contacts" ||
             props.header === "Contacts" ||
@@ -3235,19 +3314,56 @@ function SubTable(props) {
 
           //// if Parcel Ownership set the multi selection top bar: ////
           if (props.targetLabel === "Parcel Ownership") {
+            const getSelectedRows = () => {
+              const selectedRows = [];
+              for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+                rows[m1nSelectedRowsIndexes[i]]._id = rows[m1nSelectedRowsIndexes[i]].isContact;
+                console.log("rows m1Selected", rows[m1nSelectedRowsIndexes[i]]);
+                selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+              }
+              return selectedRows;
+            };
+
             return (
-              <Tooltip title={"Delete"}>
-                <IconButton
-                  size="medium"
-                  style={{ margin: "0 5px" }}
-                  onClick={(e) => {
-                    handleExpandClick(null, null, null, "deleteParcelOwnership");
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    height: "35px",
+                    display: "flex",
                   }}
-                  aria-label="delete"
                 >
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
+
+                  <FeatureFlag feature={FEATURES.IDICORE}>
+                    <Button
+                      color="secondary"
+                      startIcon={<RequestPageIcon color="white" />}
+                      className={classes.multiSelectionTopBarButtons}
+                      disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+                      onClick={() => handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData")}
+                    >
+                      Contact Data
+                    </Button>
+                  </FeatureFlag>
+                  <Tooltip title={"Delete"}>
+                    <IconButton
+                      size="medium"
+                      style={{ margin: "0 5px" }}
+                      onClick={(e) => {
+                        handleExpandClick(null, null, null, "deleteParcelOwnership");
+                      }}
+                      aria-label="delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              </div>
             );
           }
 
@@ -3362,7 +3478,8 @@ function SubTable(props) {
         if (props.addAble.type && props.addAble.type === "inviteUser")
           handleExpandClick(null, null, null, "inviteUser");
         if (props.addAble.type === "revenueStatementDetails") {
-          routeChange(`/revenue/statement/${window.location.search.replace('?id=', '')}/line-item`);
+          const checkId = window.location.pathname.split("/")[window.location.pathname.split("/").length - 1];
+          routeChange(`/revenue/statement/${checkId}/line-item`);
         }
 
       };
@@ -3379,12 +3496,16 @@ function SubTable(props) {
       return (
         <>
           <div
-            style={{
-              display: "inline",
-              float: "left",
-              marginRight: "15px",
-              marginTop: "5px",
-            }}
+            style={
+              props.addAble.type === "contact" ? {
+                marginRight: "67px",
+                marginTop: "5px",
+              } : {
+                display: "inline",
+                float: "left",
+                marginRight: "15px",
+                marginTop: "5px",
+              }}
           >
             {props.addAble.type === "parcelInterest" && (
               <Button color="secondary" className={classes.multiSelectionTopBarButtons} disabled={true} onClick={() => { }}>
@@ -3590,11 +3711,11 @@ function SubTable(props) {
         //   history.push(`/revenue/property/details?id=${rows[dataIndex]?._id}`);
         // }
       }
-      if (props.parent === "RevenueStatementTable") {
-        if (rows[dataIndex]?._id) {
-          history.push(`/revenue/statement/details?id=${rows[dataIndex]?._id}`);
-        }
-      }
+      // if (props.parent === "RevenueStatementTable") {
+      //   if (rows[dataIndex]?._id) {
+      //     history.push(`/revenue/statement/details/${rows[dataIndex]?._id}`);
+      //   }
+      // }
     },
    
     onChangePage: (pageState) => {
@@ -3888,7 +4009,7 @@ function SubTable(props) {
         }
       })
       return "\uFEFF" + buildHead(columns) + buildBody(formattedData);
-    } 
+    }
   };
 
   if (props.header === "Well Interests" && props.parent === "owner_WellInterests") {
@@ -3911,11 +4032,12 @@ function SubTable(props) {
   //   //options.export = true;
   // }
 
-  console.log('console log critical', props.header)
   if (props.header === "Deals" || props.header === "Activities") {
     // adds the print and export options in the Flow grid and the Activities grid
     options.print = true;
-    options.download = true;
+    if(props.targetLabel !== 'activitiesDashboard'){
+      options.download = true;
+    }
   }
 
 
@@ -4222,7 +4344,7 @@ function SubTable(props) {
           <ContactDataMissingDialog openDialog={openDialog} onClose={handleCloseDialog} contacts={contactDataMissing} />
         )} */}
         {openDialog === "multipleOwnerToContact" && (
-          <MultipleOwnerToContactDrawer
+          <MultipleOwnerToContactDrawerContainer
             onClose={handleCloseDialog}
             rows={expandedObject}
             setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}

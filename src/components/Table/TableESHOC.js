@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect, useCallback, useRef } from "rea
 import { useLazyQuery } from "@apollo/client";
 import { Button, Tooltip, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { useHistory } from "react-router-dom";
 import { isEmpty } from "lodash";
 
 import { AppContext } from "AppContext";
@@ -15,6 +16,7 @@ import { TRACKSBYOBJECTTYPE } from "graphQL/useQueryTracksByObjectType";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { AutoCompleteFilter } from "./AutoCompleteFilter";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
+
 import { get } from "lodash";
 
 import { setColumnsData } from "components/Table/helpers";
@@ -28,7 +30,7 @@ export const TableESHOC = (Component) => {
         const [columns, Columns] = useState([]);
         const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
-        const [addToTable, setAddToTable] = useState(false)
+        const [addToTable, setAddToTable] = useState('')
         const [openDialog, setOpenDialog] = useState(null);
         const [clickedRow, setClickedRow] = useState();
 
@@ -79,6 +81,7 @@ export const TableESHOC = (Component) => {
         const [dependencyUpdate, SetDependencyUpdate] = useState(false);
 
         const [stateApp, setStateApp] = useContext(AppContext);
+        const history = useHistory();
 
         const tableData = elasticData?.getESSimpleSearch
 
@@ -171,7 +174,7 @@ export const TableESHOC = (Component) => {
                                     return (
                                         <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
                                             extendSearchQuery={extendSearchQuery} searchFields={tableMeta.searchFields} query={GET_ES_SIMPLE_FILTER}
-                                            esIndex={esIndex} filters={activeFiltersRef.current} custom={custom}/>
+                                            esIndex={esIndex} filters={activeFiltersRef.current} custom={custom} />
                                     );
                                 }
                             }
@@ -301,13 +304,13 @@ export const TableESHOC = (Component) => {
                     },
                     ...(!isEmpty(tableState.sortOrder)) && {
                         sort:
-                            {
-                                field: columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
-                                    columns.find(el => el.name === tableState.sortOrder?.name)?.name,
-                                order: tableState.sortOrder?.direction
-                                // unmapped_type: "null",
-                                // missing: "_last"
-                            }
+                        {
+                            field: columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
+                                columns.find(el => el.name === tableState.sortOrder?.name)?.name,
+                            order: tableState.sortOrder?.direction
+                            // unmapped_type: "null",
+                            // missing: "_last"
+                        }
                     },
 
                     filters: tableState.filters ? [...tableState.filters] : []
@@ -315,21 +318,21 @@ export const TableESHOC = (Component) => {
             };
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0) {
-                    if(columns[index].custom?.isDate){
+                    if (columns[index].custom?.isDate) {
                         const filterData = stateApp.filtersData[columns[index].name];
                         const data = filterData.find(f => f.key === val[0])
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
-                    }else if(columns[index].custom?.filterOptions?.length > 0){
+                    } else if (columns[index].custom?.filterOptions?.length > 0) {
                         pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0] })
-                    }else if(columns[index].custom?.formatedFilterOptions?.length > 0){
+                    } else if (columns[index].custom?.formatedFilterOptions?.length > 0) {
                         let value = val[0];
                         const filterData = columns[index].custom?.formatedFilterOptions;
                         const data = filterData.find(f => f.label === value)
-                        if(data){
+                        if (data) {
                             value = data.value
                         }
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value })
-                    }else{
+                    } else {
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
                     }
                 }
@@ -382,6 +385,11 @@ export const TableESHOC = (Component) => {
             const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch)
             activeSearchRef.current = tableActions.pageESVariables.variables.search;
             activeFiltersRef.current = tableActions.pageESVariables.variables.filters;
+
+            if (action === 'filterChange' && tableMeta.setAppliedFilters) {
+                tableMeta.setAppliedFilters(activeFiltersRef.current);
+            }
+
             switch (action) {
                 case "search":
                 case "sort":
@@ -412,22 +420,21 @@ export const TableESHOC = (Component) => {
             filter: true,
             searchText: tableMeta.extendSearchQuery,
             searchFields: tableMeta.searchFields,
-            customToolbar: () => {
-
+            customToolbar: (tableMeta.addBtnText || tableMeta.addableName) ? () => {
                 return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
                     <Button
                         color="secondary"
                         className={classes.multiSelectionTopBarButtons}
-                        onClick={() => { setAddToTable(true); setClickedRow(null) }}
+                        onClick={() => { setAddToTable('add'); setClickedRow(null) }}
                     >
-                        {tableMeta.addBtnText ? 
-                            `+ ADD ${tableMeta.addBtnText}` : 
+                        {tableMeta.addBtnText ?
+                            `+ ADD ${tableMeta.addBtnText}` :
                             `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
                     </Button>
-                </div>
-            },
-            customToolbarSelect: ({ data }) => {
 
+                </div>
+            } : undefined,
+            customToolbarSelect: ({ data }) => {
                 return props.targetLabel !== "well" && (<div style={{ height: "48px", display: "flex" }}>
                     <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
                         <Tooltip title={"Delete"}>
@@ -439,7 +446,7 @@ export const TableESHOC = (Component) => {
                 </div>)
             },
             onRowClick: (rowData, { dataIndex, rowIndex }) => {
-                setAddToTable(true)
+                setAddToTable('update')
                 setClickedRow({ ...rows[dataIndex] })
             }
         }
@@ -450,6 +457,7 @@ export const TableESHOC = (Component) => {
                 rows={rows}
                 searchedRows={searchedRows}
                 setSearchedRows={setSearchedRows}
+                total={tableData?.total}
                 loading={loading}
                 dataTracks={dataTracksIds}
                 setRows={setRows}

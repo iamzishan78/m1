@@ -553,11 +553,14 @@ function AddActivityDialog(props) {
         >
           <option aria-label="None" value="" />
           <option value={"call"}>Call</option>
-          <option value={"meeting"}>Meeting</option>
+          <option value={"text_message"}>Text Message</option>
           <option value={"email"}>Email</option>
+          <option value={"mailer"}>Mailer</option>
+          <option value={"meeting"}>Meeting</option>
           <option value={"task"}>Task</option>
           <option value={"deadline"}>Deadline</option>
-          <option value={"mailer"}>Mailer Campaign</option>
+
+          
         </Select>
       </FormControl>
       <div className={classes.dateTimeRow}>

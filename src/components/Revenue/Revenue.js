@@ -7,40 +7,59 @@ import * as Components from "components/Revenue/components";
 import { setActiveModule, toggleActionsPanel } from "actions";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
-  PORTFOLIO: {
-    title: "Portfolio",
-    link: "/revenue/portfolio",
-    component: "Portfolio",
-  },
+  // PORTFOLIO: {
+  //   title: "Portfolio",
+  //   link: "/revenue/portfolio",
+  //   component: "Portfolio",
+  // },
   PROPERTIES: {
     title: "Properties",
     link: "/revenue/properties",
     component: "Properties",
-  },
-  REVENUE_PROPERTY_DETAILS: {
-    isExcluded: true,
-    title: "Properties",
-    link: "/revenue/property/details/:id",
-    component: "RevenuePropertyDetails",
   },
   REVENUE_STATEMENTS: {
     title: "Revenue Statements",
     link: "/revenue/statements",
     component: "RevenueStatements",
   },
+  REPORTING_GROUPS: {
+    title: "Reporting Groups",
+    link: "/revenue/reporting-groups",
+    component: "ReportingGroups",
+  },
+  REVENUE_PROPERTY_DETAILS: {
+    isExcluded: true,
+    parent: "PROPERTIES",
+    title: "Properties",
+    link: "/revenue/property/details/:id",
+    component: "RevenuePropertyDetails",
+  },
   REVENUE_STATEMENT_DETAILS: {
     isExcluded: true,
+    parent: "REVENUE_STATEMENTS",
     title: "Revenue Statements",
-    link: "/revenue/statement/details",
+    link: "/revenue/statement/details/:id",
     component: "RevenueStatementDetails",
   },
   REVENUE_STATEMENT_LINE_ITEM: {
     isExcluded: true,
+    parent: "REVENUE_STATEMENTS",
     title: "Revenue Statements",
     link: "/revenue/statement/:id/line-item",
     component: "RevenueStatementLineItem",
   },
 };
+
+const replaceId = (link, path) => {
+  const linkSplitted = link.split('/');
+  const pathSplitted = path.split('/');
+  for (let i = 0; i < linkSplitted.length; i++) {
+    if (linkSplitted[i] !== pathSplitted[i] && linkSplitted[i] !== ':id') {
+      return false
+    }
+  }
+  return true
+}
 
 export default function Revenue() {
   const location = useLocation();
@@ -48,8 +67,16 @@ export default function Revenue() {
   const { actionsPanelState, activeModule } = useSelector((state) => state.Revenue);
 
   useEffect(() => {
-    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => location.pathname.startsWith(item.link));
-    if (option) {
+    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => {
+      const path = location.pathname;
+      if (item.link.includes(':id')) {
+        return replaceId(item.link, path)
+      }
+      return path.startsWith(item.link)
+    });
+    if (option?.parent) {
+      dispatch(setActiveModule(SIDE_PANEL_MENU_ITEMS_LIST[option.parent]));
+    } else if (option) {
       dispatch(setActiveModule(option));
     }
   }, [location.pathname, dispatch]);

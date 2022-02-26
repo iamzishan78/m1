@@ -25,6 +25,8 @@ import { AutoCompleteField } from "./AutoCompleteField";
 import { UPDATE_CHECK_DETAIL } from "graphQL/useMutationUpdateCheckDetail";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { makeStyles } from "@material-ui/styles";
+import moment from "moment";
+import { KeyboardDatePicker } from "@material-ui/pickers";
 
 
 const RevenueStatementHeadCells = [
@@ -41,7 +43,7 @@ const RevenueStatementHeadCells = [
         id: "property.county", title: "County", filterKey: 'property.county.keyword', width: '130px'
     },
     {
-        id: "date", title: "Sales Date", filterKey: 'date', width: '150px'
+        id: "date", title: "Sales Date", filterKey: 'date', type: 'date', width: '180px'
     },
     {
         id: "product", title: "Product", filterKey: 'product.keyword', type: 'autocomplete', width: '150px'
@@ -78,7 +80,7 @@ const RevenueStatementHeadCells = [
 
 const useStyles = makeStyles({
     root: {
-        width: '100%',
+        width: '100%'
     },
     container: {
         maxHeight: 440,
@@ -86,7 +88,11 @@ const useStyles = makeStyles({
         flexDirection: "column-reverse",
         "& .MuiTableCell-head": {
             background: "#f2f2f2"
-        }
+        },
+        "&::-webkit-scrollbar": {
+            width: "0.75em",
+            height: "0.75em",
+        },
     },
     infiniteScroll: {
         display: "flex", flexDirection: "column-reverse"
@@ -133,7 +139,7 @@ function CheckDetailsEditableTable(props) {
             let hits = copy(loadMoreData.getESPaginatedList.hits)
             hits = hits.reverse()
             props.setRows(hits.concat(rows));
-            setTimeout(() => document.getElementById(`${hits.length}-0`)?.scrollIntoView(), 0)
+            setTimeout(() => document.getElementById(`${hits.length - 1}-0`)?.scrollIntoView(), 0)
         }
 
     }, [loadMoreData])
@@ -146,10 +152,9 @@ function CheckDetailsEditableTable(props) {
     const esIndex = 'checkdetails_flat';
 
 
-    const onFieldChange = (rowId, field) => (async (value) => {
+    const onFieldChange = (rowId, field, type) => (async (value) => {
         let row = rows.find((r) => r._id === rowId);
-        console.log("onFieldChange", get(row, field), value)
-        if (get(row, field) == value) return;
+        if (get(row, field) == value && type !== 'date') return;
 
         set(row, field, value)
         if (field === 'property.number') {
@@ -166,8 +171,11 @@ function CheckDetailsEditableTable(props) {
             });
             if (checkDetail?.getESPaginatedList?.hits.length > 0) {
                 const newProperty = checkDetail.getESPaginatedList.hits[0].property
-
+                set(row, '', value)
+                set(row, `property.state`, '')
+                set(row, `property.county`, '')
                 Object.keys(newProperty).forEach((key) => { set(row, `property.${key}`, newProperty[key]) })
+                console.log("Row", row)
             }
         }
 
@@ -182,16 +190,57 @@ function CheckDetailsEditableTable(props) {
 
     const cols = () => RevenueStatementHeadCells.map((cell, index) => {
         cell.value = (row, { focus }) => {
+
+            let value = get(row, cell.id)
+            if (cell.type === 'date' && value) {
+                value = moment(value).format('MM/DD/YYYY')
+            }
             return (
                 <>
                     {
                         focus && cell.type === 'autocomplete' ? <AutoCompleteField label={cell.title} value={get(row, cell.id)} column={cell} index={index} onChange={onFieldChange(row._id, cell.id)}
-                            query={GET_ES_FILTER_LIST} esIndex={esIndex} /> :
-                            <Input
-                                value={get(row, cell.id)}
-                                focus={focus}
-                                onChange={onFieldChange(row._id, cell.id)}
+                            query={GET_ES_FILTER_LIST} esIndex={esIndex} />
+
+                            : focus && cell.type === 'date' ? <KeyboardDatePicker
+                                className={classes.maxWidth}
+                                // disableToolbar
+                                variant="inline"
+                                format="MM/DD/YYYY"
+                                margin="normal"
+                                fullWidth
+                                id="date-picker-inline"
+                                value={value}
+                                onKeyDown={(e) => {
+                                    if (e.keyCode === 13) {
+                                        e.stopPropagation();
+                                        let dRow = rows.find((r) => r._id === row._id);
+                                        onFieldChange(dRow._id, cell.id, cell.type)(get(dRow, cell.id))
+                                    }
+                                }}
+                                onBlur={() => {
+                                    setTimeout(() => {
+                                        let dRow = rows.find((r) => r._id === row._id);
+                                        onFieldChange(dRow._id, cell.id)(get(dRow, cell.id))
+                                    }, 100)
+
+                                }}
+                                onChange={(date) => {
+                                    if ((date && date?._d?.toString() !== 'Invalid Date')) {
+                                        let dRow = rows.find((r) => r._id === row._id);
+                                        set(dRow, cell.id, date ? String(date["_d"]) : "")
+
+                                    }
+                                }}
+                                KeyboardButtonProps={{
+                                    "aria-label": "change date",
+                                }}
                             />
+
+                                : <Input
+                                    value={value}
+                                    focus={focus}
+                                    onChange={onFieldChange(row._id, cell.id)}
+                                />
                     }
                 </>
             );
@@ -277,6 +326,7 @@ function CheckDetailsEditableTable(props) {
         rows.push({})
         setRows([].concat(rows))
         gridRef.current.focusCell({ x: rows.length - 1, y: 0 })
+        setTimeout(() => document.getElementById(`${rows.length - 1}-0`)?.click(), 0)
     }
 
     const loadMore = () => {
@@ -311,7 +361,7 @@ function CheckDetailsEditableTable(props) {
         <Paper elevation={3} >
             <Grid container style={{ backgroundColor: "#F2F2F2" }} >
                 <Grid item md={12} style={{ border: '1px solid #c1c1c1', paddingBottom: '10px' }}>
-                    <Grid container direction="row" justifyContent="space-between" alignItems="center" className={{ justifyContent: 'space-between' }}>
+                    <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: "space-between" }}>
                         <Grid item style={{ display: 'flex' }}>
                             {
                                 search.open ?

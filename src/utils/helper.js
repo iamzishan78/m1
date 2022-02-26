@@ -66,6 +66,7 @@ export const formatTaxOwners = (owners, formData) => {
       status: formData.contactStatus,
       contactOwner: formData.contactOwner,
       ownerType: owners[i].OwnerType,
+      isPrimary: owners[i].isPrimary,
       "entityDetail.address1": owners[i].StreetAddress,
       "entityDetail.globalOwner": owners[i].globalOwnerId,
     });
@@ -310,3 +311,60 @@ export const getFilterList = (columns) => {
   })
   return filterList
 }
+
+export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFromDate, setToDate, minDate) => {
+  if(onChange){
+    onChange(date)
+  }
+  const currentYear = Math.round(new Date().getFullYear());
+  switch (date) {
+    case CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH:
+      setFromDate(`${currentYear}-01-01`);
+      setToDate(moment().subtract(1, 'months').startOf('month').format('yyyy-MM-DD'));
+      break;
+    case CUSTOM_DATES.THIS_YEAR_TO_DATE:
+      setFromDate(`${currentYear}-01-01`);
+      setToDate(`${moment().format('yyyy-MM-DD')}`);
+      break;
+    case CUSTOM_DATES.LAST_YEAR_TO_DATE:
+      setFromDate(`${currentYear - 1}-01-01`);
+      setToDate(`${moment().format('yyyy-MM-DD')}`);
+      break;
+    case CUSTOM_DATES.LAST_MONTH:
+      setFromDate(`${moment().subtract(1, 'months').startOf('month').format('yyyy-MM-DD')}`);
+      setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
+      break;
+    case CUSTOM_DATES.CUSTOM:
+    case CUSTOM_DATES.THIS_MONTH:
+      setFromDate(`${moment().startOf('month').format('yyyy-MM-DD')}`);
+      setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
+      break;
+    case CUSTOM_DATES.LAST_QUARTER:
+      setFromDate(moment().subtract(1, 'quarter').startOf('quarter').format("yyyy-MM-DD"));
+      setToDate(moment().subtract(1, 'quarter').endOf('quarter').format("yyyy-MM"));
+      break;
+    case CUSTOM_DATES.THIS_QUARTER:
+      setFromDate(`${moment().startOf('quarter').format("yyyy-MM-DD")}`);
+      setToDate(`${moment().endOf('quarter').format("yyyy-MM-DD")}`);
+      break;
+    case CUSTOM_DATES.LAST_YEAR:
+      setFromDate(`${currentYear - 1}-01-01`);
+      setToDate(`${currentYear - 1}-12-31`);
+      break;
+    case CUSTOM_DATES.ALL_DATES:
+      setFromDate(`${moment(minDate).startOf('month').format("yyyy-MM-DD")}`);
+      setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
+      break;
+    case CUSTOM_DATES.THIS_WEEK:
+      setFromDate(`${moment().startOf('week').format("yyyy-MM-DD")}`);
+      setToDate(`${moment().format('yyyy-MM-DD')}`);
+      break;
+    case CUSTOM_DATES.LAST_WEEK:
+      setFromDate(`${moment().startOf('week').subtract(7,'days').format("yyyy-MM-DD")}`);
+      setToDate(`${moment().startOf('week').subtract(1,'days').format('yyyy-MM-DD')}`);
+      break;
+    default:
+      setFromDate(`${moment().startOf('month').format('yyyy-MM-DD')}`);
+      setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
+  }
+};

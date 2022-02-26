@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, Typography, TextField, IconButton, InputAdornment } from "@material-ui/core";
+import { Grid, TextField, InputAdornment, Select, MenuItem } from "@material-ui/core";
 import AutoComplete from "components/Shared/components/Fields/AutoComplete";
 import moment from "moment";
 import { KeyboardDatePicker } from "@material-ui/pickers";
-import ContactCardIcon from "components/Shared/svgIcons/contact_card";
+import debounce from "lodash/debounce";
+
+import { Controller, useForm } from "react-hook-form";
+import { useMutation } from "@apollo/client";
+import { UPDATE_CHECK_DATA } from "graphQL/useMutationUpdateCheck";
+import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -58,17 +63,27 @@ const useStyles = makeStyles(() => ({
 
 export default function HeaderFunction(props) {
   const classes = useStyles();
-  const [check, updateCheck] = useState({});
+  // const [check, setCheck] = useState({});
+  const { check, setCheck } = props
+  const [updateCheck] = useMutation(UPDATE_CHECK_DATA);
 
-  const handleUpdateCheck = (checkKey) => {
-    updateCheck({ ...check, ...checkKey });
-  };
+  const { control, reset } = useForm();
+
+  const handleUpdateCheck = debounce((checkKey) => {
+    setCheck({ ...check, ...checkKey })
+    updateCheck({
+      variables: {
+        check: { ...check, ...checkKey }
+      },
+    });
+  }, 500)
 
   useEffect(() => {
-    if (props?.details) {
-      updateCheck(props?.details);
+    if (check) {
+      reset(check)
+      setCheck(check);
     }
-  }, [props]);
+  }, [props.check]);
 
   return (
     <div className={classes.root}>
@@ -87,11 +102,24 @@ export default function HeaderFunction(props) {
               <div className={classes.boldLabel}>Check Number</div>
             </Grid>
             <Grid item xs={5}>
-              <TextField
-                margin="dense"
-                type="text"
-                variant="outlined"
-                value={check?.checkNumber || ""}
+
+              <Controller
+                control={control}
+                name="checkNumber"
+                defaultValue={''}
+                render={(props) => (
+                  <TextField
+                    margin="dense"
+                    type="text"
+                    variant="outlined"
+                    onChange={(e) => {
+                      props.onChange(e.target.value)
+                      handleUpdateCheck({ checkNumber: e.target.value })
+                    }
+                    }
+                    value={props.value || ""}
+                  />
+                )}
               />
             </Grid>
           </Grid>
@@ -102,32 +130,24 @@ export default function HeaderFunction(props) {
               <div className={classes.boldLabel}>Purchaser</div>
             </Grid>
             <Grid item xs={9}>
-              <AutoComplete
-                options={[check?.payor?.name]}
-                value={check?.payor?.name || null}
-                fullWidth
-                className={classes.adornmentAutocomplete}
-                renderInput={(params) => (
-                  <TextField
-                    margin="dense"
-                    {...params}
-                    variant="outlined"
-                    InputLabelProps={{
-                      ...params.InputLabelProps,
-                      shrink: true,
-                    }}
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <React.Fragment>
-                          {params.InputProps.endAdornment}
-                          <div className={classes.contactCardIcon}><ContactCardIcon /></div>
-                        </React.Fragment>
-                      ),
-                    }}
-                  />
+              <Controller
+                control={control}
+                name='payor'
+                defaultValue={check?.payor || {}}
+                render={(
+                  { onChange, value, ref },
+                ) => (
+                  <AutocompEntityNamesList variant='outlined' margin='' size='' nameAutValue={value} withContactCard={true}
+                    setNameAutValue={(value) => {
+                      if (value?._id)
+                        onChange({ _id: value._id, name: value.name });
+                      else
+                        onChange({});
+                      handleUpdateCheck({ payor: { ...check.payor, name: value?.name, _id: value?._id } })
+                    }} />
                 )}
               />
+
             </Grid>
           </Grid>
         </Grid>
@@ -139,21 +159,30 @@ export default function HeaderFunction(props) {
               <div className={classes.boldLabel}>Check Date</div>
             </Grid>
             <Grid item xs={6} className={classes.datePicker}>
-              <KeyboardDatePicker
-                autoOk
-                variant="inline"
-                inputVariant="outlined"
-                disableToolbar
-                format="MM/DD/YYYY"
-                margin="normal"
-                id="date-picker-inline"
-                value={moment.utc(check?.checkDate).format("MM/DD/YYYY") || ""}
-                onChange={(date) => {
-                  handleUpdateCheck({ checkDate: date ? String(date["_d"]) : "" });
-                }}
-                KeyboardButtonProps={{ "aria-label": "change date" }}
-                InputAdornmentProps={{ position: "start" }}
-                fullWidth
+
+              <Controller
+                control={control}
+                name="checkDate"
+                defaultValue={null}
+                render={(props) => (
+                  <KeyboardDatePicker
+                    autoOk
+                    variant="inline"
+                    inputVariant="outlined"
+                    disableToolbar
+                    format="MM/DD/YYYY"
+                    margin="normal"
+                    id="date-picker-inline"
+                    value={props.value ? moment.utc(props.value).format("MM/DD/YYYY") : null}
+                    onChange={(date) => {
+                      props.onChange(date)
+                      handleUpdateCheck({ checkDate: date ? String(date["_d"]) : "" });
+                    }}
+                    KeyboardButtonProps={{ "aria-label": "change date" }}
+                    InputAdornmentProps={{ position: "start" }}
+                    fullWidth
+                  />
+                )}
               />
             </Grid>
           </Grid>
@@ -166,7 +195,23 @@ export default function HeaderFunction(props) {
               <div className={classes.boldLabel}>Owner Number</div>
             </Grid>
             <Grid item xs={5}>
-              <TextField margin="dense" type="text" variant="outlined" value={check?.payee?.number || ""} />
+              <Controller
+                control={control}
+                name="payee.number"
+                defaultValue={''}
+                render={(props) => (
+                  <TextField
+                    margin="dense"
+                    type="text"
+                    variant="outlined"
+                    onChange={(e) => {
+                      props.onChange(e.target.value)
+                      handleUpdateCheck({ payee: { ...check.payee, number: e.target.value } })
+                    }}
+                    value={props.value || ""}
+                  />
+                )}
+              />
             </Grid>
           </Grid>
         </Grid>
@@ -178,30 +223,21 @@ export default function HeaderFunction(props) {
               <div className={classes.boldLabel}>Owner</div>
             </Grid>
             <Grid item xs={9}>
-              <AutoComplete
-                options={[check?.payee?.name]}
-                value={check?.payee?.name || null}
-                fullWidth
-                className={classes.adornmentAutocomplete}
-                renderInput={(params) => (
-                  <TextField
-                    margin="dense"
-                    {...params}
-                    variant="outlined"
-                    InputLabelProps={{
-                      ...params.InputLabelProps,
-                      shrink: true,
-                    }}
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <React.Fragment>
-                          {params.InputProps.endAdornment}
-                          <div className={classes.contactCardIcon}><ContactCardIcon /></div>
-                        </React.Fragment>
-                      ),
-                    }}
-                  />
+              <Controller
+                control={control}
+                name='payee'
+                defaultValue={check?.payee || {}}
+                render={(
+                  { onChange, value, ref },
+                ) => (
+                  <AutocompEntityNamesList variant='outlined' margin='' size='' nameAutValue={value} withContactCard={true}
+                    setNameAutValue={(value) => {
+                      if (value?._id)
+                        onChange({ _id: value._id, name: value.name });
+                      else
+                        onChange({});
+                      handleUpdateCheck({ payee: { ...check.payee, name: value?.name, _id: value?._id } })
+                    }} />
                 )}
               />
             </Grid>
@@ -215,21 +251,29 @@ export default function HeaderFunction(props) {
               <div className={classes.boldLabel}>Deposit Date</div>
             </Grid>
             <Grid item xs={6} className={classes.datePicker}>
-              <KeyboardDatePicker
-                autoOk
-                variant="inline"
-                inputVariant="outlined"
-                disableToolbar
-                format="MM/DD/YYYY"
-                margin="normal"
-                id="date-picker-inline"
-                value={moment.utc(check?.depositDate).format("MM/DD/YYYY") || ""}
-                onChange={(date) => {
-                  handleUpdateCheck({ depositDate: date ? String(date["_d"]) : "" });
-                }}
-                KeyboardButtonProps={{ "aria-label": "change date" }}
-                InputAdornmentProps={{ position: "start" }}
-                fullWidth
+              <Controller
+                control={control}
+                name="depositDate"
+                defaultValue={null}
+                render={(props) => (
+                  <KeyboardDatePicker
+                    autoOk
+                    variant="inline"
+                    inputVariant="outlined"
+                    disableToolbar
+                    format="MM/DD/YYYY"
+                    margin="normal"
+                    id="date-picker-inline"
+                    value={props.value ? moment.utc(props.value).format("MM/DD/YYYY") : null}
+                    onChange={(date) => {
+                      props.onChange(date)
+                      handleUpdateCheck({ depositDate: date ? String(date["_d"]) : "" });
+                    }}
+                    KeyboardButtonProps={{ "aria-label": "change date" }}
+                    InputAdornmentProps={{ position: "start" }}
+                    fullWidth
+                  />
+                )}
               />
             </Grid>
           </Grid>
@@ -242,14 +286,25 @@ export default function HeaderFunction(props) {
               <div className={classes.boldLabel}>Check Amount</div>
             </Grid>
             <Grid item xs={5}>
-              <TextField
-                margin="dense"
-                type="text"
-                variant="outlined"
-                value={check?.checkAmount}
-                InputProps={{
-                  startAdornment: (< InputAdornment position="start" > $</InputAdornment>)
-                }}
+              <Controller
+                control={control}
+                name="checkAmount"
+                defaultValue={''}
+                render={(props) => (
+                  <TextField
+                    margin="dense"
+                    type="text"
+                    variant="outlined"
+                    onChange={(e) => {
+                      props.onChange(e.target.value)
+                      handleUpdateCheck({ checkAmount: e.target.value })
+                    }}
+                    InputProps={{
+                      startAdornment: (< InputAdornment position="start" > $</InputAdornment>)
+                    }}
+                    value={props.value || ""}
+                  />
+                )}
               />
             </Grid>
           </Grid>
@@ -261,20 +316,24 @@ export default function HeaderFunction(props) {
               <div className={classes.boldLabel}>Source</div>
             </Grid>
             <Grid item xs={9}>
-              <AutoComplete
-                options={["Manual Entry", "Imported", "CDEX"]}
-                value={check?.source}
-                fullWidth
-                renderInput={(params) => (
-                  <TextField
-                    margin="dense"
-                    {...params}
+              <Controller
+                control={control}
+                name="source"
+                defaultValue={''}
+                render={(props) => (
+
+                  <Select
+                    fullWidth
                     variant="outlined"
-                    InputLabelProps={{
-                      ...params.InputLabelProps,
-                      shrink: true,
+                    value={props.value || ""}
+                    onChange={(value) => {
+                      props.onChange(value)
+                      handleUpdateCheck({ source: value })
                     }}
-                  />
+                  >
+                    <MenuItem value={'Manual Entry'}>Manual Entry</MenuItem>
+                    <MenuItem value={'Imported'}>Imported</MenuItem>
+                  </Select>
                 )}
               />
             </Grid>
@@ -287,12 +346,24 @@ export default function HeaderFunction(props) {
               <div className={classes.boldLabel}>Source ID</div>
             </Grid>
             <Grid item xs={6}>
-              <TextField
-                margin="dense"
-                type="text"
-                variant="outlined"
-                value={check?.sourceId}
-                fullWidth
+
+              <Controller
+                control={control}
+                name="sourceId"
+                defaultValue={''}
+                render={(props) => (
+                  <TextField
+                    margin="dense"
+                    type="text"
+                    variant="outlined"
+                    onChange={(e) => {
+                      props.onChange(e.target.value)
+                      handleUpdateCheck({ sourceId: e.target.value })
+                    }}
+                    value={props.value || ""}
+                    fullWidth
+                  />
+                )}
               />
             </Grid>
           </Grid>
