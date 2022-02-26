@@ -1229,7 +1229,7 @@ function SubTable(props) {
         <Divider />
         <MenuItem className={classes.actionMenuItem} onClick={(e) =>  handleActivity(contactId, null, "deleteContact")}>
           <DeleteOutlinedIcon className={classes.menuIcons} />
-         Delete conctact
+         Delete contact
         </MenuItem>
       </Menu>
     );
