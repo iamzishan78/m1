@@ -60,6 +60,7 @@ const styles = () => ({
   },
   tags: {
     marginTop: 20,
+    width: "100%",
   },
   bold: {
     fontWeight: "bold",
@@ -311,7 +312,7 @@ const MultipleOwnerToContactDrawer = ({
           {tab === TAB.NEW &&
             <>
               <div className={classes.field}>
-                <label className={classes.bold}>Contact Status</label>
+                <label className={classes.bold}>Contact Stage</label>
                 <Controller
                   control={control}
                   name="contactStatus"
@@ -329,9 +330,9 @@ const MultipleOwnerToContactDrawer = ({
                       className={classes.fullWidth}
                       isDisabled={stateApp.selectedMeta}
                     >
-                      <MenuItem value="UnqualLead"> Unqualified Lead </MenuItem>
-                      <MenuItem value="QualLead"> Qualified Lead </MenuItem>
-                      <MenuItem value="Contact"> Contact </MenuItem>
+                      <MenuItem value="Lead">  Lead </MenuItem>
+                      <MenuItem value="Prospect"> Prospect </MenuItem>
+                      <MenuItem value="Deal Contact"> Contact </MenuItem>
                     </Select>
                   )}
                 />
@@ -376,8 +377,8 @@ const MultipleOwnerToContactDrawer = ({
               </div>
             </>
           }
-          <Box p={3} pt={3}>
-            <Tags setTagId={setTagId} targetLabel="contact" targetSourceId="new" />
+          <Box marginTop={3} >
+            <Tags variant="standard" setTagId={setTagId} targetLabel="contact" targetSourceId="new" hidePlusIcon />
           </Box>
 
           {((tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)) &&
