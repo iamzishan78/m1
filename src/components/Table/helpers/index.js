@@ -245,7 +245,9 @@ export const HeaderComponent = ({
             onMouseLeave={() => setShowIcon(false)}
           >
             <Typography>
-              <span>{selectedGridView.name}</span>
+              <span style={ selectedGridView.isModified ? { "font-style": "italic" } : { } }>
+                {selectedGridView.name}
+              </span>
             </Typography>
             <span
               style={{
@@ -278,16 +280,21 @@ export const HeaderComponent = ({
                     gridView: {
                       _id: selectedGridView._id,
                       filters: selectedFilters,
-                      columns: columns.map((col) => ({ name: col.name, display: col.options.display })),
+                      columns: columns.map((col) => ({
+                        name: col.name,
+                        display: col.options.display,
+                      })),
                     },
                   },
                   refetchQueries: ["getGridViews"],
                   awaitRefetchQueries: true,
                 });
-                dispatch(setCurrentUserGridViewAction.STARTED({
-                  gridViewId: selectedGridView._id,
-                  userId: stateApp.user.mongoId
-                }))
+                dispatch(
+                  setCurrentUserGridViewAction.STARTED({
+                    gridViewId: selectedGridView._id,
+                    userId: stateApp.user.mongoId,
+                  })
+                );
               }}
               disabled={
                 selectedGridView.type === "Default" ||

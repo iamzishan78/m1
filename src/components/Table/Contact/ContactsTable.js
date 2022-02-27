@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { useDispatch, useSelector } from "react-redux";
 import { Container } from "@material-ui/core";
-import { useSelector } from "react-redux";
 import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 import moment from "moment";
@@ -30,6 +30,8 @@ import {
   deepEqualObjects,
   setStateIfDeepEqual,
 } from "components/Shared/functions";
+
+import { updateUserGridViewSettingAction } from "store/actions/sessionActions"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -73,6 +75,7 @@ function ContactsTable(props) {
     type: 'Default'
   }
 
+  const dispatch = useDispatch();
   const { Contacts } = useSelector(({ session }) => session.userGridViewSettings);
 
   // function states
@@ -205,6 +208,19 @@ function ContactsTable(props) {
     }
   }, [selectedGridView,  props.customAppliedFilters]);
 
+  // useEffect(() => {
+  //   dispatch(updateUserGridViewSettingAction.STARTED({
+  //     userGridViewSetting: {
+  //       gridView: selectedGridView._id,
+  //       gridViewPatch: {
+  //         filters: selectedFilters,
+  //         columns: columns.map((col) => ({ name: col.name, display: col.options.display })),
+  //       },
+  //       user: props.userId
+  //     }
+  //   }))
+  // }, [columns, filters])
+
   const count = tableData?.total || 0;
   const options = {
     rowsPerPageOptions: [10, 25, 50, 100],
@@ -247,7 +263,29 @@ function ContactsTable(props) {
       case "search":
       case "sort":
       case "filterChange":
+        dispatch(updateUserGridViewSettingAction.STARTED({
+          userGridViewSetting: {
+            gridView: selectedGridView._id,
+            gridViewPatch: {
+              filters: selectedFilters.current,
+              columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
+            },
+            user: props.userId
+          }
+        }))
+        break;
       case "resetFilters":
+        dispatch(updateUserGridViewSettingAction.STARTED({
+          userGridViewSetting: {
+            gridView: selectedGridView._id,
+            gridViewPatch: {
+              filters: selectedFilters.current,
+              columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
+            },
+            user: props.userId
+          }
+        }))
+        break;
       case "changeRowsPerPage":
         tableActions.genericESAction();
         break;
@@ -261,6 +299,16 @@ function ContactsTable(props) {
         }
         break;
       case "viewColumnsChange":
+        dispatch(updateUserGridViewSettingAction.STARTED({
+          userGridViewSetting: {
+            gridView: selectedGridView._id,
+            gridViewPatch: {
+              filters: selectedFilters.current,
+              columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
+            },
+            user: props.userId
+          }
+        }))
         viewColumnsChange(tableState.columns);
         break;
       default:
