@@ -131,13 +131,14 @@ export const contactManagementRoutes = {
     component: "ActivitiesDashboard",
     search: false,
   },
-  CAMPAIGN: {
-    featureFlag: "CONTACTSUBMENU",
-    title: "Campaign Management",
-    link: "/contacts/campaignManagement",
-    component: "CampaignManagement",
-    search: true,
-  },
+  // temporarily hide until campaign management is built
+  // CAMPAIGN: {
+  //   featureFlag: "CONTACTSUBMENU",
+  //   title: "Campaign Management",
+  //   link: "/contacts/campaignManagement",
+  //   component: "ContactsTable",
+  //   search: true,
+  // },
 };
 
 export const contactsAnalyticsCards = [

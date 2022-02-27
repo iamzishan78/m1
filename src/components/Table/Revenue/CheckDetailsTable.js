@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { usetableStyles } from "../Styles";
-import { Container } from "@material-ui/core";
+import { Button, Container } from "@material-ui/core";
 import TableESHOC from "components/Table/TableESHOC";
 import Table from "components/Shared/M1nTable/components/Table";
 import { deepEqualObjects, copy } from "components/Shared/functions";
 import TableHeader from 'components/Table/constants/check-details-header-schema';
+import { history } from "store";
 
 
 function CheckDetailsTable(props) {
@@ -23,19 +24,30 @@ function CheckDetailsTable(props) {
 
     useEffect(() => {
         setTableMeta({
-          addableName: "revenueStatementDetails",
-          addBtnText: "INPUT MODE",
-          addWithInput: true,
-          inputModeType: "revenueStatementDetails",
-          filters: [{ field: "check._id.keyword", value: checkId }],
-          TableHeader: copy(TableHeader),
-          esIndex: "checkdetails_flat",
-          startPaginationAt: 50,
-          formatHits,
+            addWithInput: true,
+            filters: [{ field: "check._id.keyword", value: checkId }],
+            TableHeader: copy(TableHeader),
+            esIndex: "checkdetails_flat",
+            startPaginationAt: 50,
+            formatHits,
         });
 
     }, [checkId, setTableMeta]);
 
+    props.options.customToolbar = () => {
+        return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
+            <Button
+                color="secondary"
+                className={classes.multiSelectionTopBarButtons}
+                onClick={() => {
+                    const checkId = window.location.pathname.split("/")[window.location.pathname.split("/").length - 1];
+                    history.push(`/revenue/statement/${checkId}/line-item`);
+                }}
+            >
+                INPUT MODE
+            </Button>
+        </div>
+    }
     return (
         <Container
             maxWidth={false}
@@ -56,6 +68,7 @@ function CheckDetailsTable(props) {
                 startPaginationAt={null}
                 onTableChange={props.onTableChange}
                 options={props.options}
+                addAble={{ type: 'revenueStatementDetails' }}
                 parent={props.parent}
                 setColumnsBase={[]}
             />

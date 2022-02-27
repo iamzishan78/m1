@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 
 import { Container, Grid } from "@material-ui/core";
@@ -35,6 +36,9 @@ import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 import { AppContext } from "AppContext";
 import { sortColumns, formattingGridView, getAppliedFilters, getFilterList } from "utils/helper";
 
+import { updateUserGridViewSettingAction } from "store/actions/sessionActions"
+import { color } from "@amcharts/amcharts4/core";
+
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
@@ -52,6 +56,9 @@ function DocumentsTable(props) {
     name: "All Documents",
     type: "Default",
   };
+
+  const dispatch = useDispatch();
+  const { Documents } = useSelector(({ session }) => session.userGridViewSettings);
 
   const selectedFilters = useRef([]);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -101,6 +108,11 @@ function DocumentsTable(props) {
   }, []);
 
   useEffect(() => {
+    console.log("here", Documents);
+    setSelectedGridView(Documents || defaultView);
+  }, [Documents]);
+
+  useEffect(() => {
     getESDocuments({
       variables: {
         pagination: {
@@ -120,12 +132,12 @@ function DocumentsTable(props) {
         category: "Docs",
       },
     });
-    getGridViews({
-      variables: {
-        module: "Documents",
-        userId: stateApp.user.mongoId,
-      },
-    });
+    // getGridViews({
+    //   variables: {
+    //     module: "Documents",
+    //     userId: stateApp.user.mongoId,
+    //   },
+    // });
   }, [getMetaData, getGridViews]);
 
   useEffect(() => {
@@ -192,13 +204,8 @@ function DocumentsTable(props) {
   }, [metaDataRes]);
 
   useEffect(() => {
-    if (gridViews && metaDatas) {
-      const data = JSON.parse(JSON.stringify(gridViews));
-      const selectedData = data.find(
-        (d) =>
-          d.type === (selectedGridView?.type || "Default") &&
-          d.name === (selectedGridView?.name || "All Documents")
-      );
+    if (selectedGridView && metaDatas) {
+      const selectedData = JSON.parse(JSON.stringify(selectedGridView));
       setRefetchList(false);
       setStateApp((state, props) => {
         return {
@@ -239,9 +246,9 @@ function DocumentsTable(props) {
         "documents_flat",
         props.documentSearchQuery
       );
-      setSelectedGridView(selectedData);
+      // setSelectedGridView(selectedData);
     }
-  }, [gridViews, metaDatas]);
+  }, [selectedGridView, metaDatas]);
 
   useEffect(() => {
     if (tableData?.hits) {
@@ -254,7 +261,8 @@ function DocumentsTable(props) {
         updatedColumns = handleSelectedGridChange(
           TableHeader,
           view,
-          updatedColumns
+          updatedColumns,
+          true
         );
         updatedColumns = sortColumns(updatedColumns, view);
       }
@@ -271,7 +279,7 @@ function DocumentsTable(props) {
       );
       props.setLoading(false);
     }
-  }, [tableData, props.dependencyUpdate]);
+  }, [selectedGridView, tableData, props.dependencyUpdate]);
 
   useEffect(() => {
     if (!isEmpty(selectedGridView)) {
@@ -366,7 +374,27 @@ function DocumentsTable(props) {
       case "search":
       case "sort":
       case "filterChange":
+        dispatch(updateUserGridViewSettingAction.STARTED({
+          userGridViewSetting: {
+            gridView: selectedGridView._id,
+            gridViewPatch: {
+              filters: selectedFilters.current,
+              columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
+            },
+            user: stateApp.user?.mongoId
+          }
+        }))
       case "resetFilters":
+        dispatch(updateUserGridViewSettingAction.STARTED({
+          userGridViewSetting: {
+            gridView: selectedGridView._id,
+            gridViewPatch: {
+              filters: selectedFilters.current,
+              columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
+            },
+            user: stateApp.user?.mongoId
+          }
+        }))
       case "changeRowsPerPage":
         tableActions.genericESAction();
         break;
@@ -374,6 +402,16 @@ function DocumentsTable(props) {
         tableActions.changeESPage();
         break;
       case "viewColumnsChange":
+        dispatch(updateUserGridViewSettingAction.STARTED({
+          userGridViewSetting: {
+            gridView: selectedGridView._id,
+            gridViewPatch: {
+              filters: selectedFilters.current,
+              columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
+            },
+            user: stateApp.user?.mongoId
+          }
+        }))
         viewColumnsChange(tableState.columns);
         break;
       default:
@@ -412,21 +450,16 @@ function DocumentsTable(props) {
   };
 
   const updateColumnSorting = (value) => {
-    const sortedColumns = value.map((col) => ({
-      name: col.name,
-      display: col.display === "true",
-    }));
-
-    updateGridView({
-      variables: {
-        gridView: {
-          _id: selectedGridView._id,
-          columns: sortedColumns,
+    dispatch(updateUserGridViewSettingAction.STARTED({
+      userGridViewSetting: {
+        gridView: selectedGridView._id,
+        gridViewPatch: {
+          filters: selectedFilters.current,
+          columns: value.map((col) => ({ name: col.name, display: col.display === 'true' })),
         },
-      },
-      refetchQueries: ["getGridViews"],
-      awaitRefetchQueries: true,
-    });
+        user: stateApp.user?.mongoId
+      }
+    }))
     // setStateApp((state, props) => {
     //   return {
     //     ...state,

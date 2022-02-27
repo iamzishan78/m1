@@ -184,9 +184,9 @@ const ConvertTaxOwnerToContact = ({
                 className={classes.fullWidth}
                 isDisabled={stateApp.selectedMeta}
               >
-                <MenuItem value="UnqualLead"> Unqualified Lead </MenuItem>
-                <MenuItem value="QualLead"> Qualified Lead </MenuItem>
-                <MenuItem value="Contact"> Contact </MenuItem>
+                <MenuItem value="Lead"> Lead </MenuItem>
+                <MenuItem value="Prospect"> Prospect</MenuItem>
+                <MenuItem value="Deal Contact"> Contact </MenuItem>
               </Select>
             )}
           />

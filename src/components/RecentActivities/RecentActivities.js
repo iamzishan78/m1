@@ -110,6 +110,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function RecentActivities({
+ 
   header,
   // dataList,
   ...props
@@ -128,6 +129,7 @@ export default function RecentActivities({
     setSelectedActivity(null);
     setActivityModalOpen(true);
   };
+  
   return (
     <div className={classes.root}>
       {/* <AddActivityModal
