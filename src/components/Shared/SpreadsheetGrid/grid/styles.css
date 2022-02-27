@@ -44,6 +44,14 @@
     white-space: nowrap;
 }
 
+.SpreadsheetGrid__showAction{
+    display: block;
+}
+
+.SpreadsheetGrid__hideAction{
+    display: none;
+}
+
 .SpreadsheetGrid__cell {
     display: inline-flex;
     align-items: center;

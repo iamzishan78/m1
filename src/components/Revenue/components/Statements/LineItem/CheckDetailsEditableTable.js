@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Paper, Button, TableContainer, CircularProgress, IconButton, TextField, InputAdornment } from "@material-ui/core";
+import { Grid, Paper, Button, TableContainer, CircularProgress, IconButton, TextField } from "@material-ui/core";
 import SearchIcon from '@material-ui/icons/Search';
 import CloseIcon from '@material-ui/icons/Close';
 import TableHOC from "components/Table/TableHOC";
@@ -22,56 +22,62 @@ import set from 'lodash/set'
 import { Grid as TableGrid, Input } from 'components/Shared/SpreadsheetGrid'
 import Typography from '@material-ui/core/Typography';
 import { AutoCompleteField } from "./AutoCompleteField";
+import { ActionCell } from "./ActionCell";
 import { UPDATE_CHECK_DETAIL } from "graphQL/useMutationUpdateCheckDetail";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { makeStyles } from "@material-ui/styles";
+import moment from "moment";
+import { KeyboardDatePicker } from "@material-ui/pickers";
 
 
 const RevenueStatementHeadCells = [
     {
-        id: "property.number", title: "Property Code", filterKey: 'property.number.keyword', type: 'autocomplete', width: '210px'
+        id: "property.number", title: "Property Code", filterKey: 'property.number.keyword', sort: true, type: 'autocomplete', width: '180px'
     },
     {
-        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', width: '190px'
+        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', sort: true, width: '210px'
     },
     {
-        id: "property.state", title: "State", filterKey: 'property.state.keyword', width: '100px'
+        id: "property.state", title: "State", filterKey: 'property.state.keyword', sort: true, width: '100px'
     },
     {
-        id: "property.county", title: "County", filterKey: 'property.county.keyword', width: '130px'
+        id: "property.county", title: "County", filterKey: 'property.county.keyword', sort: true, width: '130px'
     },
     {
-        id: "date", title: "Sales Date", filterKey: 'date', width: '150px'
+        id: "date", title: "Sales Date", filterKey: 'date', sort: true, type: 'date', width: '180px'
     },
     {
-        id: "product", title: "Product", filterKey: 'product.keyword', type: 'autocomplete', width: '150px'
+        id: "product", title: "Product", filterKey: 'product.keyword', sort: true, type: 'autocomplete', width: '130px'
     },
     {
-        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement.keyword', width: '150px'
+        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement.keyword', sort: true, width: '150px'
     },
     {
-        id: "interestType", title: "Type", filterKey: 'interestType.keyword', type: 'autocomplete', width: '150px'
+        id: "interestType", title: "Type", filterKey: 'interestType.keyword', sort: true, type: 'autocomplete', width: '100px'
     },
     {
-        id: "price", title: "Avg Price", filterKey: 'price', width: '150px'
+        id: "price", title: "Avg Price", filterKey: 'price', sort: true, width: '100px'
     },
     {
-        id: "grossOwnerVolume", title: "Sales Vol", filterKey: 'grossOwnerVolume', width: '150px'
+        id: "grossOwnerVolume", title: "Sales Volume", filterKey: 'grossOwnerVolume', sort: true, width: '125px'
     },
     {
-        id: "grossOwnerValue", title: "Gross Rev", filterKey: 'grossOwnerValue', width: '150px'
+        id: "grossOwnerValue", title: "Gross Revenue", filterKey: 'grossOwnerValue', sort: true, width: '100px'
     },
     {
-        id: "ownerTax", title: "Severence", filterKey: 'ownerTax', width: '150px'
+        id: "ownerTax", title: "Severence Tax", filterKey: 'ownerTax', sort: true, width: '100px'
     },
     {
-        id: "ownerDeducts", title: "Deduct Amt", filterKey: 'ownerDeducts', width: '150px'
+        id: "ownerDeducts", title: "Deduct Amount", filterKey: 'ownerDeducts', sort: true, width: '100px'
     },
     {
-        id: "deductType", title: "Deduct Cd", filterKey: 'deductType.keyword', type: 'autocomplete', width: '150px'
+        id: "deductType", title: "Deduct Code", filterKey: 'deductType.keyword', sort: true, type: 'autocomplete', width: '200px'
     },
     {
-        id: "netOwnerValue", title: "Owner Net Rev", filterKey: 'netOwnerValue', width: '150px'
+        id: "netOwnerValue", title: "Owner Net Revenue", filterKey: 'netOwnerValue', sort: true, width: '150px'
+    },
+    {
+        id: "action", filterKey: 'action', title: "", type: 'action', width: '50px'
     }
 ];
 
@@ -116,6 +122,7 @@ function CheckDetailsEditableTable(props) {
 
     const [rows, setRows] = useState(props.rows);
     const [search, setSearch] = useState({ open: false, text: '' })
+    const [sort, setSort] = useState({ orderBy: 'createdAt', order: 'desc' })
     const client = useApolloClient();
 
 
@@ -134,10 +141,11 @@ function CheckDetailsEditableTable(props) {
 
     useEffect(() => {
         if (loadMoreData?.getESPaginatedList?.hits) {
+            debugger;
             let hits = copy(loadMoreData.getESPaginatedList.hits)
             hits = hits.reverse()
             props.setRows(hits.concat(rows));
-            setTimeout(() => document.getElementById(`${hits.length}-0`)?.scrollIntoView(), 0)
+            setTimeout(() => document.getElementById(`${hits.length - 1}-0`)?.scrollIntoView(), 0)
         }
 
     }, [loadMoreData])
@@ -150,10 +158,9 @@ function CheckDetailsEditableTable(props) {
     const esIndex = 'checkdetails_flat';
 
 
-    const onFieldChange = (rowId, field) => (async (value) => {
+    const onFieldChange = (rowId, field, type) => (async (value) => {
         let row = rows.find((r) => r._id === rowId);
-        console.log("onFieldChange", get(row, field), value)
-        if (get(row, field) == value) return;
+        if (get(row, field) == value && type !== 'date') return;
 
         set(row, field, value)
         if (field === 'property.number') {
@@ -177,8 +184,10 @@ function CheckDetailsEditableTable(props) {
                 console.log("Row", row)
             }
         }
-
-        setRows([].concat(rows))
+        if (field === 'IsDeleted') {
+            setRows([].concat(rows.filter((r) => r._id !== rowId)))
+        } else
+            setRows([].concat(rows))
 
         updateCheckDetail({
             variables: { checkDetail: row },
@@ -189,16 +198,58 @@ function CheckDetailsEditableTable(props) {
 
     const cols = () => RevenueStatementHeadCells.map((cell, index) => {
         cell.value = (row, { focus }) => {
+
+            let value = get(row, cell.id)
+            if (cell.type === 'date' && value) {
+                value = moment(value).format('MM/DD/YYYY')
+            }
             return (
                 <>
                     {
                         focus && cell.type === 'autocomplete' ? <AutoCompleteField label={cell.title} value={get(row, cell.id)} column={cell} index={index} onChange={onFieldChange(row._id, cell.id)}
-                            query={GET_ES_FILTER_LIST} esIndex={esIndex} /> :
-                            <Input
-                                value={get(row, cell.id)}
-                                focus={focus}
-                                onChange={onFieldChange(row._id, cell.id)}
+                            query={GET_ES_FILTER_LIST} esIndex={esIndex} />
+
+                            : focus && cell.type === 'date' ? <KeyboardDatePicker
+                                className={classes.maxWidth}
+                                // disableToolbar
+                                variant="inline"
+                                format="MM/DD/YYYY"
+                                margin="normal"
+                                fullWidth
+                                id="date-picker-inline"
+                                value={value}
+                                onKeyDown={(e) => {
+                                    if (e.keyCode === 13) {
+                                        e.stopPropagation();
+                                        let dRow = rows.find((r) => r._id === row._id);
+                                        onFieldChange(dRow._id, cell.id, cell.type)(get(dRow, cell.id))
+                                    }
+                                }}
+                                onBlur={() => {
+                                    setTimeout(() => {
+                                        let dRow = rows.find((r) => r._id === row._id);
+                                        onFieldChange(dRow._id, cell.id)(get(dRow, cell.id))
+                                    }, 100)
+
+                                }}
+                                onChange={(date) => {
+                                    if ((date && date?._d?.toString() !== 'Invalid Date')) {
+                                        let dRow = rows.find((r) => r._id === row._id);
+                                        set(dRow, cell.id, date ? String(date["_d"]) : "")
+
+                                    }
+                                }}
+                                KeyboardButtonProps={{
+                                    "aria-label": "change date",
+                                }}
                             />
+
+                                : cell.type === 'action' ? <ActionCell id={cell.id + index} onChange={onFieldChange(row._id, 'IsDeleted')} />
+                                    : <Input
+                                        value={value}
+                                        focus={focus}
+                                        onChange={onFieldChange(row._id, cell.id)}
+                                    />
                     }
                 </>
             );
@@ -206,12 +257,6 @@ function CheckDetailsEditableTable(props) {
         // cell.width = 200
         return cell;
     })
-
-    useEffect(() => {
-        setRows(props.rows)
-    }, [props.rows])
-
-
 
     const [columns, setColumns] = useState(cols());
 
@@ -234,7 +279,7 @@ function CheckDetailsEditableTable(props) {
                     field: "check._id.keyword",
                     value: props.checkId
                 }],
-                sort: { 'createdAt': { order: "desc" } },
+                sort: { [sort.orderBy]: { order: sort.order } },
                 pagination: {
                     first: startPaginationAt,
                     keep_alive: "1micros"
@@ -242,13 +287,13 @@ function CheckDetailsEditableTable(props) {
                 search: search.text ? `${search.text}*` : ''
             }
         });
-    }, [props.parent, props.checkId, search.text]);
+    }, [props.parent, props.checkId, search.text, sort]);
 
 
     useEffect(() => {
         if (tableData?.hits?.length > 0) {
             let hits = copy(tableData?.hits)
-            props.setRows(hits.reverse());
+            setRows(hits.reverse());
             let headers = copy(TableHeader)
 
             headers.forEach((column) => {
@@ -277,13 +322,14 @@ function CheckDetailsEditableTable(props) {
             props.setRows([]);
             props.setLoading(false);
         }
-    }, [tableData, props.dependencyUpdate]);
+    }, [elasticData, props.dependencyUpdate]);
 
     const addNewRow = (e) => {
         e.preventDefault();
         rows.push({})
         setRows([].concat(rows))
         gridRef.current.focusCell({ x: rows.length - 1, y: 0 })
+        setTimeout(() => document.getElementById(`${rows.length - 1}-0`)?.click(), 0)
     }
 
     const loadMore = () => {
@@ -297,10 +343,10 @@ function CheckDetailsEditableTable(props) {
                             field: "check._id.keyword",
                             value: props.checkId
                         }],
-                        sort: { 'createdAt': { order: "desc" } },
+                        sort: { [sort.orderBy]: { order: sort.order } },
                         pagination: {
                             pit: tableData.pit,
-                            after: rows[0].sort,
+                            after: rows[0] ? rows[0].sort : null,
                         },
                     }
                 })
@@ -309,9 +355,16 @@ function CheckDetailsEditableTable(props) {
         }, 0)
     }
 
+    const createSortHandler = (id) => {
+        if (sort.orderBy === id) {
+            setSort({ orderBy: id, order: sort.order === 'asc' ? 'desc' : 'asc' })
+        } else {
+            setSort({ orderBy: id, order: 'desc' })
+        }
+    }
+
     const gridRef = React.createRef()
     const tclasses = useStyles();
-
 
 
     return (
@@ -384,6 +437,8 @@ function CheckDetailsEditableTable(props) {
                                 isColumnsResizable
                                 focusOnSingleClick
                                 onColumnResize={onColumnResize}
+                                sort={sort}
+                                createSortHandler={createSortHandler}
                                 // focusOnSingleClick={props.focusOnSingleClick}
                                 // disabledCellChecker={(row, columnId) => {
                                 //     return columnId === 'age';

@@ -27,6 +27,7 @@ class SpreadsheetRow extends React.Component {
 
         return this.props.row !== nextProps.row
             || this.props.x !== nextProps.x
+            || this.props.hoveredRow !== nextProps.hoveredRow
             || JSON.stringify(this.props.disabledCells) !== JSON.stringify(nextProps.disabledCells)
             || this.props.columns !== nextProps.columns
             || this.props.columnWidthValues !== nextProps.columnWidthValues
@@ -46,6 +47,8 @@ class SpreadsheetRow extends React.Component {
             row,
             onCellClick,
             onCellDoubleClick,
+            onMouseEnter,
+            onMouseLeave,
             getCellClassName,
             activeCell,
             focusedCell,
@@ -62,7 +65,7 @@ class SpreadsheetRow extends React.Component {
                         });
 
                         return (
-                            <TableCell style={{ padding: 'inherit' }}>
+                            <TableCell style={{ padding: 'inherit' }} onMouseEnter={() => onMouseEnter(x)} onMouseLeave={() => onMouseLeave(x)}>
                                 <SpreadsheetCell
                                     y={y}
                                     id={`${x}-${y}`}

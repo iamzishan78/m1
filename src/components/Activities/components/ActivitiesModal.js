@@ -365,7 +365,10 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
   }, [dealsData]);
 
   const onModalClose = () => {
-    window.history.pushState("", "", `/activities`);
+    if(history.location.pathname !== '/contacts/activityDashboard'){
+      window.history.pushState("", "", `/activities`);
+    }
+    
     clearFields();
     setSelectedActivityId(null);
     setStateApp((stateApp) => ({
