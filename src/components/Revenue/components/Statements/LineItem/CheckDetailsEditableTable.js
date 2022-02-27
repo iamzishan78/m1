@@ -32,10 +32,10 @@ import { KeyboardDatePicker } from "@material-ui/pickers";
 
 const RevenueStatementHeadCells = [
     {
-        id: "property.number", title: "Property Code", filterKey: 'property.number.keyword', sort: true, type: 'autocomplete', width: '210px'
+        id: "property.number", title: "Property Code", filterKey: 'property.number.keyword', sort: true, type: 'autocomplete', width: '180px'
     },
     {
-        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', sort: true, width: '190px'
+        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', sort: true, width: '210px'
     },
     {
         id: "property.state", title: "State", filterKey: 'property.state.keyword', sort: true, width: '100px'
@@ -47,37 +47,37 @@ const RevenueStatementHeadCells = [
         id: "date", title: "Sales Date", filterKey: 'date', sort: true, type: 'date', width: '180px'
     },
     {
-        id: "product", title: "Product", filterKey: 'product.keyword', sort: true, type: 'autocomplete', width: '150px'
+        id: "product", title: "Product", filterKey: 'product.keyword', sort: true, type: 'autocomplete', width: '130px'
     },
     {
-        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement.keyword', width: '150px'
+        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement.keyword', sort: true, width: '150px'
     },
     {
-        id: "interestType", title: "Type", filterKey: 'interestType.keyword', type: 'autocomplete', width: '150px'
+        id: "interestType", title: "Type", filterKey: 'interestType.keyword', sort: true, type: 'autocomplete', width: '100px'
     },
     {
-        id: "price", title: "Avg Price", filterKey: 'price', width: '150px'
+        id: "price", title: "Avg Price", filterKey: 'price', sort: true, width: '100px'
     },
     {
-        id: "grossOwnerVolume", title: "Sales Vol", filterKey: 'grossOwnerVolume', width: '150px'
+        id: "grossOwnerVolume", title: "Sales Volume", filterKey: 'grossOwnerVolume', sort: true, width: '125px'
     },
     {
-        id: "grossOwnerValue", title: "Gross Rev", filterKey: 'grossOwnerValue', width: '150px'
+        id: "grossOwnerValue", title: "Gross Revenue", filterKey: 'grossOwnerValue', sort: true, width: '100px'
     },
     {
-        id: "ownerTax", title: "Severence", filterKey: 'ownerTax', width: '150px'
+        id: "ownerTax", title: "Severence Tax", filterKey: 'ownerTax', sort: true, width: '100px'
     },
     {
-        id: "ownerDeducts", title: "Deduct Amt", filterKey: 'ownerDeducts', width: '150px'
+        id: "ownerDeducts", title: "Deduct Amount", filterKey: 'ownerDeducts', sort: true, width: '100px'
     },
     {
-        id: "deductType", title: "Deduct Cd", filterKey: 'deductType.keyword', type: 'autocomplete', width: '150px'
+        id: "deductType", title: "Deduct Code", filterKey: 'deductType.keyword', sort: true, type: 'autocomplete', width: '200px'
     },
     {
-        id: "netOwnerValue", title: "Owner Net Rev", filterKey: 'netOwnerValue', width: '150px'
+        id: "netOwnerValue", title: "Owner Net Revenue", filterKey: 'netOwnerValue', sort: true, width: '150px'
     },
     {
-        id: "action", filterKey: 'action', title: "", type: 'action', width: '100px'
+        id: "action", filterKey: 'action', title: "", type: 'action', width: '50px'
     }
 ];
 
