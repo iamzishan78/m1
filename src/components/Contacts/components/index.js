@@ -1,7 +1,3 @@
-import { default as ContactsTable } from "components/Contacts/components/ContactManagement";
-import { default as ActivitiesDashboard } from "components/Activities/components/ActivitiesDashboard";
-
-export {
-    ContactsTable,
-    ActivitiesDashboard
-}
+export { default as ContactsTable } from "components/Contacts/components/ContactManagement";
+export { default as ActivitiesDashboard } from "components/Activities/components/ActivitiesDashboard";
+export { default as CampaignManagement } from "components/Contacts/components/CampaignManagement";
