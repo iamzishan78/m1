@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import get from "lodash/get";
 // context
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
@@ -15,6 +15,7 @@ import { execCommonAsyncExportJobAction } from "store/actions/commonActions";
 // Header Schemas
 import TableHeader from "components/Table/constants/activity-table-header-schema";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import ActivitiesModal from "components/Activities/components/ActivitiesModal";
 
 // Utilities
 import { usetableStyles } from "../Styles";
@@ -62,7 +63,7 @@ export const getFilters = (appliedFilters) => {
     }
     if (appliedFilters.qualifier) {
       filters.push({
-        field: "owner.email.keyword",
+        field: "ownerName.keyword",
         value: appliedFilters.qualifier,
       });
     }
@@ -75,13 +76,18 @@ function ActivitiesTable(props) {
   const dispatch = useDispatch();
   const client = useApolloClient();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const { appliedFilters, esIndex, searchFields } = props;
+  const { appliedFilters, esIndex, searchFields, clickedRow } = props
+  
+  const [selectedActivity, setSelectedActivity] = useState(null);
+  const [events, setEvents] = useState([]);
+
   const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
     refetchQueries: ["getESPaginatedList", "getESFilterList"],
     awaitRefetchQueries: true,
   });
 
   const formatHits = (hits) => {
+    setEvents(hits.map(hit => ({ ...hit, start: new Date(hit.dateTime), end: new Date(hit.endDateTime ? hit.endDateTime : hit.dateTime ) })));
     return hits.map((hit) => {
       hit.type = get(
         activityTypes.find((type) => type.value === hit.type),
@@ -124,6 +130,13 @@ function ActivitiesTable(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.activitySearchQuery, props.filterToggle]);
 
+  useEffect(() => {
+    if(clickedRow){
+      setSelectedActivity({ ...clickedRow, type: get(activityTypes.find((type) => type.label === clickedRow.type),"value","")});
+      onModalOpen()
+    }
+  },[clickedRow]);
+
   const deleteFunc = (ids) => {
     if (ids.length > 0) {
       props.setLoading(true);
@@ -157,6 +170,21 @@ function ActivitiesTable(props) {
           exportActivities: props.total,
         },
       }
+    }));
+  };
+
+  const onModalOpen = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      activityDialog: true,
+    }));
+  };
+
+
+  const setSelectedActivityId = (id) => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedActivityId: id,
     }));
   };
 
@@ -222,10 +250,12 @@ function ActivitiesTable(props) {
               </div>
             );
           },
+          customToolbarSelect: () => <div></div>
         }}
         parent={props.parent}
         setColumnsBase={[]}
       />
+      <ActivitiesModal selectedActivity={selectedActivity} setSelectedActivityId={setSelectedActivityId} events={events} />
     </Container>
   );
 }

@@ -343,7 +343,7 @@ const useStyles = makeStyles((theme) => ({
   },
   menuIcons: {
     marginRight: "8px",
-    
+
   },
   colorIcon: {
     backgroundColor: (props) => (props.dense ? "transparent" : "#efefef"),
@@ -576,15 +576,15 @@ const useStyles = makeStyles((theme) => ({
       fill: "#ffa800"
     }
   },
-actionMenuItem: {
-  padding: 5,
-  paddingLeft: 10,
-  width: "260px",
-  color: "#5a5a5a",
-"&  .MuiSvgIcon-root": {
-    fill: "#5a5a5a"
-}
-}
+  actionMenuItem: {
+    padding: 5,
+    paddingLeft: 10,
+    width: "260px",
+    color: "#5a5a5a",
+    "&  .MuiSvgIcon-root": {
+      fill: "#5a5a5a"
+    }
+  }
 }));
 
 function SubTable(props) {
@@ -647,7 +647,7 @@ function SubTable(props) {
   const setTrueTargetLabel = (newState) => {
     setStateIfDeepEqual(TrueTargetLabel, newState);
   };
-  
+
   const setM1nSelectedRowsTracks = (newState) => {
     setStateIfDeepEqual(M1nSelectedRowsTracks, newState);
   };
@@ -720,7 +720,7 @@ function SubTable(props) {
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getContact, { data: contactData }] = useLazyQuery(CONTACT);
-  
+
 
   const [viewFile, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
@@ -877,7 +877,7 @@ function SubTable(props) {
     if (contactData && contactData.contact) {
       setContact(contactData.contact);
     }
-  }, [contactData,contact]);
+  }, [contactData, contact]);
 
   //// opening the well detail card after fetch the extra well data needed
   useEffect(() => {
@@ -1127,25 +1127,24 @@ function SubTable(props) {
     setExpandedObject(idOrValues);
     setOpenDialog(type);
   };
-  
+
   // handleActivity if type is 'deleteContact' open delete confirmation dialog otherwise open activiy modal for other types
   const handleActivity = async (contactId, activityType, type) => {
-    if(type){
+    if (type) {
       setM1nSelectedRowsIds([contactId]);
       setOpenDialog(type);
-      }
-      else
-      {
-        getContact({
-          variables: {
-            contactId: contactId,
-          },
-        });
-    
-       setDefaultAcitivityType(activityType)
-       setActivityModalOpen(true);
-      }
-      setUsermanagementSettings([]);
+    }
+    else {
+      getContact({
+        variables: {
+          contactId: contactId,
+        },
+      });
+
+      setDefaultAcitivityType(activityType)
+      setActivityModalOpen(true);
+    }
+    setUsermanagementSettings([]);
   };
 
   ////setting all icons columns/////
@@ -1201,18 +1200,18 @@ function SubTable(props) {
         open={true}
         onClose={closeMenu}
       >
-        
+
         {/* <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(null, null, null, "")}>
           <MailOutlineOutlinedIcon className={classes.menuIcons} />
          Send email
         </MenuItem>
         <Divider /> */}
-        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId,"call", null)}>
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, "call", null)}>
           <CallOutlinedIcon className={classes.menuIcons} />
           Add call log
         </MenuItem>
         <Divider />
-        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId,"text_message", null)}>
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, "text_message", null)}>
           <TextSMS className={classes.menuIcons} />
           Add text exchange
         </MenuItem>
@@ -1227,9 +1226,9 @@ function SubTable(props) {
           Add new task
         </MenuItem>
         <Divider />
-        <MenuItem className={classes.actionMenuItem} onClick={(e) =>  handleActivity(contactId, null, "deleteContact")}>
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, null, "deleteContact")}>
           <DeleteOutlinedIcon className={classes.menuIcons} />
-         Delete contact
+          Delete contact
         </MenuItem>
       </Menu>
     );
@@ -1417,7 +1416,7 @@ function SubTable(props) {
             }
             break;
           }
-          case "actionMenu" : {
+          case "actionMenu": {
             {
               column.options = {
                 ...column.options,
@@ -1434,11 +1433,11 @@ function SubTable(props) {
                               e,
                               tableMeta.rowIndex,
                               tableMeta
-                            
+
                             );
                           }}
                         >
-                         <MoreVertOutlinedIcon />
+                          <MoreVertOutlinedIcon />
                         </IconButton>
                       </Tooltip>
                     </>
@@ -1538,7 +1537,7 @@ function SubTable(props) {
                             );
                           }}
                         >
-                         <MoreHorizIcon />
+                          <MoreHorizIcon />
                         </IconButton>
                       </Tooltip>
                     </>
@@ -2466,7 +2465,7 @@ function SubTable(props) {
                         {value}
                       </p>
                     )} */}
-                    {(props.parent === "RevenueStatementTable" || props.parent === "RevenuePropertiesTable") && (
+                    {(props.parent === "RevenueStatementTable" || props.parent === "RevenuePropertiesTable") ? (
                       <div className={classes.flexAlign}>
                         {value?.toLowerCase() === "approved" ? (
                           <div className={classes.activeBadge} />
@@ -2482,7 +2481,7 @@ function SubTable(props) {
                         )}
                         <div>{value}</div>
                       </div>
-                    )}
+                    ) : <div>{value}</div>}
                   </>
                 );
               },
@@ -2582,14 +2581,14 @@ function SubTable(props) {
                     );
                   }
 
-                  if (column.name === "isClosed" && props.targetLabel === "activity" && value === true)
+                  if (column.name === "isClosed" && (props.targetLabel === "activity" || props.targetLabel === "activitiesDashboard") && value === true)
                     return (
                       <div style={{ textAlign: "center" }}>
                         <CheckIcon />
                       </div>
                     );
 
-                  if (column.name === "isClosed" && props.targetLabel === "activity" && value === false)
+                  if (column.name === "isClosed" && (props.targetLabel === "activity" || props.targetLabel === "activitiesDashboard") && value === false)
                     return <div style={{ textAlign: "center" }}>{/* <CheckBoxOutlineBlankIcon /> */}</div>;
 
                   ////// if non editable column
@@ -3717,7 +3716,7 @@ function SubTable(props) {
       //   }
       // }
     },
-   
+
     onChangePage: (pageState) => {
       setPageInd(pageState);
     },
@@ -4034,8 +4033,8 @@ function SubTable(props) {
 
   if (props.header === "Deals" || props.header === "Activities") {
     // adds the print and export options in the Flow grid and the Activities grid
-    options.print = true;
-    if(props.targetLabel !== 'activitiesDashboard'){
+    if (props.targetLabel !== 'activitiesDashboard') {
+      options.print = true;
       options.download = true;
     }
   }
@@ -4272,14 +4271,14 @@ function SubTable(props) {
           </RightDialog>
         )}
 
-<RightDialog open={activityModalOpen} handleClickDialogClose={() => setActivityModalOpen(false)} width="450px">
-         <AddActivityDialog
-           onClose={() => setActivityModalOpen(false)}
-          id={contact?._id}
-          contactData={contact}
-          defaultActivityType= {defaultActivityType}
-        />
-          </RightDialog>
+        <RightDialog open={activityModalOpen} handleClickDialogClose={() => setActivityModalOpen(false)} width="450px">
+          <AddActivityDialog
+            onClose={() => setActivityModalOpen(false)}
+            id={contact?._id}
+            contactData={contact}
+            defaultActivityType={defaultActivityType}
+          />
+        </RightDialog>
 
         {openDialog && openDialog === "buyContactsInfo" && (
           <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
@@ -4570,7 +4569,7 @@ function SubTable(props) {
                     } from  this parcel?`}
                 </DeleteConfirmationDialogContent>
               )}
-            
+
               {openDialog === "deleteContact" && (
                 <DeleteConfirmationDialogContent
                   header="Delete Contact(s)"
