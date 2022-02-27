@@ -32,6 +32,14 @@ function AgreementOwnersTractsTable(props) {
     refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
 
+  const formatHits = (hits) => {
+    return hits.map((hit) => {
+      if (hit?.tract?.tractName)
+        hit.tractName = hit?.tract?.tractName
+      return hit;
+    });
+  };
+
   const formatColumns = (headers, hits) => {
     const isStateTx = !!hits.find((hit) => hit.state === 'TX')
     if (isStateTx) {
@@ -63,10 +71,12 @@ function AgreementOwnersTractsTable(props) {
       TableHeader: copy(TableHeader),
       esIndex: 'shapeowners_flat',
       startPaginationAt: 25,
-
+      formatHits,
       formatColumns,
     })
   }, []);
+
+  console.log(props.rows)
 
   return (
     <Container
