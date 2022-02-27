@@ -16,7 +16,7 @@ const RevenueStatementHeadCells = [
         name: "county", label: "County", esKey: 'property.county.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "date", label: "Sales Date", esKey: 'date', options: { sort: true, filter: true }
+        name: "date", label: "Sales Date", esKey: 'date', custom: { key_as_string: true, isDate: true }, options: { sort: true, filter: true }
     },
     {
         name: "product", label: "Product", esKey: 'product.keyword', options: { sort: true, filter: true }
