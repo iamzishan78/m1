@@ -1,6 +1,7 @@
 import {
   CURRENT_USER_GRID_VIEW_SETTINGS,
-  SET_CURRENT_USER_GRID_VIEW
+  SET_CURRENT_USER_GRID_VIEW,
+  UPDATE_USER_GRID_VIEW_SETTING
 } from "store/type";
 
 export const currentUserGridViewSettingsAction = {
@@ -19,4 +20,13 @@ export const setCurrentUserGridViewAction = {
     payload,
   }),
   REJECTED: () => ({ type: SET_CURRENT_USER_GRID_VIEW.REJECTED }),
+};
+
+export const updateUserGridViewSettingAction = {
+  STARTED: (payload) => ({ type: UPDATE_USER_GRID_VIEW_SETTING.STARTED, payload }),
+  FULLFILLED: (payload) => ({
+    type: UPDATE_USER_GRID_VIEW_SETTING.FULLFILLED,
+    payload,
+  }),
+  REJECTED: () => ({ type: UPDATE_USER_GRID_VIEW_SETTING.REJECTED }),
 };
