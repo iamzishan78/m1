@@ -26,7 +26,7 @@ import { ConvertOwnerToContactContainer } from "store/containers/entity";
 import HeaderSection from "./HeaderSection";
 import NavHeader from "components/Revenue/components/Common/NavHeader";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
-import MultipleOwnerToContactDrawer from "components/Shared/M1nTable/components/SubComponents/MultipleOwnerToContactDrawer";
+import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 const useStyles = makeStyles((theme) => ({
@@ -410,7 +410,7 @@ export default function DetailComponents(props) {
         )}
 
         {entityToConvert && (
-          <MultipleOwnerToContactDrawer
+          <MultipleOwnerToContactDrawerContainer
             onClose={() => setEntityToConvert(null)}
             rows={[entityToConvert]}
             setM1nSelectedRowsIndexes={() => { }}

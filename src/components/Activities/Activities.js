@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { makeStyles } from "@material-ui/core/styles";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
@@ -16,7 +15,6 @@ import M1nTable from "../Shared/M1nTable/M1nTable";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./index.css";
 import ActivitiesAppBar from "./components/ActivitiesAppbar";
-import ActivitiesTable from "./components/ActivitiesTable";
 import ActivitiesModal from "./components/ActivitiesModal";
 import { AppContext } from "../../AppContext";
 

@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import { Modals } from "styles/Modal";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import MultipleOwnerToContactDrawer from "components/Shared/M1nTable/components/SubComponents/MultipleOwnerToContactDrawer";
+import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
 const ConvertOwnerToContact = ({
   getOwnerEntityDetailAction,
@@ -63,7 +63,7 @@ const ConvertOwnerToContact = ({
         </DialogActions>
       </Dialog>
       {showConvertDialog && (
-        <MultipleOwnerToContactDrawer
+        <MultipleOwnerToContactDrawerContainer
           onClose={() => {
             onClose();
             setShowConvertDialog(false);

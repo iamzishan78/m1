@@ -16,6 +16,7 @@ import * as msal from "@azure/msal-browser";
 import { GET_LOGGED_IN_USER } from "graphQL/useMutationLoggedInUser";
 import { USER_MAP_SETTINGS } from "graphQL/useQueryUserMapSettings";
 import { setUserAction } from "store/actions/appActions";
+import { currentUserGridViewSettingsAction } from "store/actions/sessionActions"
 import { saveUserSession } from "utils/user";
 
 // import rock from '../../DFJ.PNG'
@@ -433,6 +434,7 @@ const Login = (props) => {
       defaultMapVars: defaultMapVars,
     }));
     dispatch(setUserAction(user));
+    dispatch(currentUserGridViewSettingsAction.STARTED(user._id))
     saveUserSession(user);
     setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
 

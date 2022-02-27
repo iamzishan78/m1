@@ -365,7 +365,10 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
   }, [dealsData]);
 
   const onModalClose = () => {
-    window.history.pushState("", "", `/calendar/activities`);
+    if (history.location.pathname !== "/contacts/activityDashboard") {
+      window.history.pushState("", "", `/calendar/activities`);
+    }
+
     clearFields();
     setSelectedActivityId(null);
     setStateApp((stateApp) => ({
@@ -510,20 +513,20 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
       open={!!stateApp.activityDialog}
       onClose={
         addLoading && updateLoading
-          ? () => { }
+          ? () => {}
           : () => {
-            onModalClose();
-          }
+              onModalClose();
+            }
       }
     >
       <ExpandableCardProvider
         expanded={true}
         handleCloseExpandableCard={
           addLoading && updateLoading
-            ? () => { }
+            ? () => {}
             : () => {
-              onModalClose();
-            }
+                onModalClose();
+              }
         }
         title={addNew ? "Add Activity" : "Activity Details"}
         subTitle={""}

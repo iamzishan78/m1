@@ -142,6 +142,7 @@ const AppProvider = (props) => {
     multiSelectLandGrids: false,
     isAbstractedLayersPolygon: false,
     contactSearchQuery: "",
+    activitySearchQuery: "",
     documentSearchQuery: "",
     isContactSearching: false,
     landSearchQuery: "",

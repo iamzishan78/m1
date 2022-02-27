@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { useDispatch } from "react-redux";
 import { TextField, InputAdornment, IconButton, Accordion, AccordionSummary, AccordionDetails } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -17,6 +18,8 @@ import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import { UPDATE_FAVOURITE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import { ADD_GRID_VIEW } from "graphQL/useMutationAddGridView";
 import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
+
+import { setCurrentUserGridViewAction } from "store/actions/sessionActions"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -103,6 +106,7 @@ function GridView({
   module,
 }) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const [selectedTab, setSelectedTab] = useState("views");
@@ -139,7 +143,11 @@ function GridView({
   useEffect(() => {
     if (newGridView?.addGridView?.success) {
       setShowSaveAsNew(false);
-      setSelectedGridView(newGridView.addGridView.newGridView);
+      dispatch(setCurrentUserGridViewAction.STARTED({
+        gridViewId: newGridView.addGridView.newGridView._id,
+        userId: stateApp.user.mongoId
+      }))
+      // setSelectedGridView(newGridView.addGridView.newGridView);
       setStateApp((state, props) => {
         return {
           ...state,
@@ -153,7 +161,7 @@ function GridView({
     if (updatedGridView?.updateGridView?.success) {
       setShowSaveAsNew(false);
       setEditGridView(null);
-      setSelectedGridView(updatedGridView.updateGridView.updatedGridView);
+      // setSelectedGridView(updatedGridView.updateGridView.updatedGridView);
       setStateApp((state, props) => {
         return {
           ...state,
@@ -192,7 +200,11 @@ function GridView({
     if (data.type === "Default") {
       data = handleDefaultView(data, stateApp.user);
     }
-    setSelectedGridView(data);
+    dispatch(setCurrentUserGridViewAction.STARTED({
+      gridViewId: data._id,
+      userId: stateApp.user.mongoId
+    }))
+    // setSelectedGridView(data);
     setStateApp((state, props) => {
       return {
         ...state,
@@ -252,6 +264,7 @@ function GridView({
                   return view.type === "Default" ? (
                     <>
                       <View
+                        selectedGridView={selectedGridView}
                         view={view}
                         setEditGridView={setEditGridView}
                         setViewName={setViewName}
@@ -283,6 +296,7 @@ function GridView({
                   return view.type === "Custom" && (
                     view._id === editGridView?._id ? (
                       <InputField
+                        selectedGridView={selectedGridView}
                         editGridViewId={editGridView._id}
                         setEditGridView={setEditGridView}
                         viewName={viewName}
@@ -297,6 +311,7 @@ function GridView({
                       />
                     ) : (
                       <View
+                        selectedGridView={selectedGridView}
                         view={view}
                         setEditGridView={setEditGridView}
                         setViewName={setViewName}
@@ -310,6 +325,7 @@ function GridView({
                 })}
                 {showSaveAsNew && (
                   <InputField
+                    selectedGridView={selectedGridView}
                     setEditGridView={setEditGridView}
                     viewName={viewName}
                     setViewName={setViewName}
@@ -335,6 +351,7 @@ function GridView({
 export default GridView;
 
 const InputField = ({
+  selectedGridView,
   editGridViewId,
   viewName,
   setViewName,
@@ -348,6 +365,7 @@ const InputField = ({
   module,
 }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   return (
     <TextField
       key={"fieldContentInput"}
@@ -378,6 +396,11 @@ const InputField = ({
               },
               refetchQueries: ["getGridViews"],
             });
+            if (selectedGridView._id === editGridViewId)
+              dispatch(setCurrentUserGridViewAction.STARTED({
+                gridViewId: editGridViewId,
+                userId: user
+              }))
           } else {
             addGridView({
               variables: {
@@ -409,8 +432,9 @@ const InputField = ({
   );
 };
 
-const View = ({ onClick, view, setEditGridView, setViewName, updateFavouriteGridView, updateGridView, userId }) => {
+const View = ({ selectedGridView, onClick, view, setEditGridView, setViewName, updateFavouriteGridView, updateGridView, userId }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState(null);
   const [showActions, setShowActions] = useState(false);
 
@@ -505,6 +529,11 @@ const View = ({ onClick, view, setEditGridView, setViewName, updateFavouriteGrid
                 },
                 refetchQueries: ["getGridViews"],
               });
+              if (selectedGridView._id === view._id)
+                dispatch(setCurrentUserGridViewAction.STARTED({
+                  gridViewId: view._id,
+                  userId: userId
+                }))
             }}
           >
             Share with others
@@ -524,6 +553,11 @@ const View = ({ onClick, view, setEditGridView, setViewName, updateFavouriteGrid
                 },
                 refetchQueries: ["getGridViews"],
               });
+              if (selectedGridView._id === view._id)
+                dispatch(setCurrentUserGridViewAction.STARTED({
+                  gridViewId: view._id,
+                  userId: userId
+                }))
             }}
           >
             Delete view
