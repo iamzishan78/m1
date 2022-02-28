@@ -27,7 +27,7 @@ const CampaignsHeadCells = [
           <p
             onClick={(e) => {
               e.stopPropagation();
-              // history.push(`/revenue/statement/details/${tableMeta.rowData[0]}`);
+              history.push(`/contacts/campaignManagement/:id`);
             }}
             style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
           >

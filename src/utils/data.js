@@ -132,12 +132,20 @@ export const contactManagementRoutes = {
     search: false,
   },
   // temporarily hide until campaign management is built
-  CAMPAIGN: {
+  CAMPAIGNS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Campaign Management",
     link: "/contacts/campaignManagement",
     component: "CampaignManagement",
     search: true,
+  },
+  CAMPAIGN_DETAIL: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Campaigns",
+    link: "/contacts/campaignManagement/:id",
+    component: "CampaignDetail",
+    search: true,
+    isExcluded: true,
   },
 };
 
