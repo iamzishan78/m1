@@ -234,7 +234,7 @@ export const TableESHOC = (Component) => {
             })
         };
 
-        const setGenricData = (data, id, actions, genericDataActions) => {
+        const setGenricData = useCallback((data, id, actions, genericDataActions) => {
             if (actions.includes('tracks')) {
                 data.isTracked = false;
                 const tracks = dataTracksRef?.current?.tracksByObjectType || [];
@@ -288,7 +288,7 @@ export const TableESHOC = (Component) => {
                 }
             }
             return data
-        }
+        }, []);
 
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
             let pageESVariables = {

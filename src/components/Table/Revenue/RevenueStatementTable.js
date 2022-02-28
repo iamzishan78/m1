@@ -11,13 +11,15 @@ import { GET_ES_POTENTIAL_ISSUES_SUMMARY } from "graphQL/useQueryESSummary";
 import TableHeader from 'components/Table/constants/revenue-statement-header-schema';
 import { deepEqualObjects, copy } from "components/Shared/functions";
 
+const genericDataActions = ['tags', 'comments']
+
 function RevenueStatementTable(props) {
     const classes = usetableStyles();
 
     const [potentialIssuesList, setPotentialIssuesList] = useState([]);
     const [pIssuesArr, setIssuesArr] = useState([]);
 
-    const { rows, searchedRows, setRows, setTableMeta, onGettingPotentialIssues, onGettingStatements } = props;
+    const { rows, searchedRows, setRows, setTableMeta, onGettingPotentialIssues, onGettingStatements, setGenricData } = props;
 
     const [getRevenueValidationCheck, { data: validationData }] = useLazyQuery(GET_VALIDATION_CHECK, {
         context: { batch: true },
@@ -39,15 +41,12 @@ function RevenueStatementTable(props) {
             hit.depositDate = hit.depositDate
                 ? moment(new Date(hit.depositDate)).format("MM/DD/YYYY")
                 : null;
-            hit.tags = hit?.tags?.length > 0
-                ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
-                : [[], 0];
-            hit.commentsCounter = hit.comments ? hit.comments.length : 0;
+            hit = setGenricData(hit, hit._id, genericDataActions, genericDataActions);
             return hit;
         });
         onGettingStatements(hits);
         return hits;
-    }, [onGettingStatements]);
+    }, [onGettingStatements, setGenricData]);
 
     useEffect(() => {
         setTableMeta({
@@ -56,6 +55,7 @@ function RevenueStatementTable(props) {
           startPaginationAt: 24,
           defaultSort: { field: 'checkDate', order: 'desc' },
           formatHits,
+          initializeGenericData: { key: '_id', actions: genericDataActions }
         });
 
     }, [setTableMeta, formatHits]);
