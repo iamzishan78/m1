@@ -314,7 +314,8 @@ export const TableESHOC = (Component) => {
                         }
                     } : { sort: tableMeta.defaultSort },
 
-                    filters: tableState.filters ? [...tableState.filters] : []
+                    filters: tableState.filters ? [...tableState.filters] : [],
+                    customFilters: []
                 },
             };
             tableState.filterList.forEach((val, index) => {
