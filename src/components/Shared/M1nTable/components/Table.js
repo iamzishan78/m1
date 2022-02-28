@@ -2324,13 +2324,13 @@ function SubTable(props) {
                     {value && (
                       <div
                         className="flex justifyCenter alignCenter warning w-100"
-                        onMouseOver={() => (document.getElementById("alertTootip").style.display = "block")}
-                        onMouseOut={() => (document.getElementById("alertTootip").style.display = "none")}
+                        onMouseOver={() => (document.getElementById(`alertTootip${tableMeta.rowIndex}`).style.display = "block")}
+                        onMouseOut={() => (document.getElementById(`alertTootip${tableMeta.rowIndex}`).style.display = "none")}
                         style={{ marginRight: 6, position: "relative", zIndex: 100 }}
                       >
                         <WarningIcon />
 
-                        <div id="alertTootip" className={classes.tooltip}>
+                        <div id={`alertTootip${tableMeta.rowIndex}`} className={classes.tooltip}>
                           <p style={{ fontSize: 14, lineHeight: "120%", textAlign: "left" }}>Sum of check details does not match check amount</p>
                         </div>
                       </div>
