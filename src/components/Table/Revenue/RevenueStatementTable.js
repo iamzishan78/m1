@@ -1,44 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { Container } from "@material-ui/core";
-import Table from "components/Shared/M1nTable/components/Table";
-import TableHOC from "components/Table/TableHOC";
+import React, { useState, useEffect, useCallback } from "react";
 import moment from "moment";
+import { Container } from "@material-ui/core";
+import TableESHOC from "components/Table/TableESHOC";
+import Table from "components/Shared/M1nTable/components/Table";
 
-// QUERIES 
-import { useLazyQuery } from "@apollo/client";
-
-import { setStateIfDeepEqual, deepEqualObjects } from "components/Shared/functions";
-
-// Header Schemas 
-import TableHeader from 'components/Table/constants/revenue-statement-header-schema';
-
-// Utilities
 import { usetableStyles } from "../Styles";
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
-import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { useLazyQuery } from "@apollo/client";
 import { GET_VALIDATION_CHECK } from "graphQL/useQueryValidationCheck";
 import { GET_ES_POTENTIAL_ISSUES_SUMMARY } from "graphQL/useQueryESSummary";
-import { setColumnsData } from "components/Table/helpers";
+import TableHeader from 'components/Table/constants/revenue-statement-header-schema';
+import { deepEqualObjects, copy } from "components/Shared/functions";
 
+const genericDataActions = ['tags', 'comments']
 
 function RevenueStatementTable(props) {
     const classes = usetableStyles();
 
-    // function states 
-    const [columns, Columns] = useState([]);
-    const [filters, setFilters] = useState([]);
-    const [selectedRows, setSelectedRows] = useState([]);
     const [potentialIssuesList, setPotentialIssuesList] = useState([]);
     const [pIssuesArr, setIssuesArr] = useState([]);
 
-    const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
-
-    // queries 
-
-    const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
-        context: { batch: true },
-        fetchPolicy: "no-cache",
-    });
+    const { rows, searchedRows, setRows, setTableMeta, onGettingPotentialIssues, onGettingStatements, setGenricData } = props;
 
     const [getRevenueValidationCheck, { data: validationData }] = useLazyQuery(GET_VALIDATION_CHECK, {
         context: { batch: true },
@@ -50,28 +31,34 @@ function RevenueStatementTable(props) {
         fetchPolicy: "no-cache",
     });
 
-    const tableData = elasticData?.getESPaginatedList;
     const issues = potentialIssues?.getESPotentialIssuesSummary;
 
-    const startPaginationAt = 25;
-    const esIndex = 'checks_flat';
-
-    const esFilters = props.esFilters ? props.esFilters : []
-
-    // get paginated data hits from checks_flat table
-    useEffect(() => {
-        getESPaginatedList({
-            variables: {
-                esIndex,
-                pagination: {
-                    first: startPaginationAt,
-                    keep_alive: "1micros"
-                },
-                search: props.revenueSearchQuery,
-                filters: esFilters,
-            }
+    const formatHits = useCallback((hits) => {
+        hits = hits.map((hit) => {
+            hit.checkDate = hit.checkDate
+                ? moment(new Date(hit.checkDate)).format("MM/DD/YYYY")
+                : null;
+            hit.depositDate = hit.depositDate
+                ? moment(new Date(hit.depositDate)).format("MM/DD/YYYY")
+                : null;
+            hit = setGenricData(hit, hit._id, genericDataActions, genericDataActions);
+            return hit;
         });
-    }, [getESPaginatedList, props.parent, props.revenueSearchQuery, props.filterToggle]);
+        onGettingStatements(hits);
+        return hits;
+    }, [onGettingStatements, setGenricData]);
+
+    useEffect(() => {
+        setTableMeta({
+          TableHeader: copy(TableHeader),
+          esIndex: "checks_flat",
+          startPaginationAt: 24,
+          defaultSort: { field: 'checkDate', order: 'desc' },
+          formatHits,
+          initializeGenericData: { key: '_id', actions: genericDataActions }
+        });
+
+    }, [setTableMeta, formatHits]);
 
     useEffect(() => {
         // Potential Issues
@@ -82,7 +69,7 @@ function RevenueStatementTable(props) {
                 extendSearchQuery: "potentialIssues"
             },
         });
-    }, []);
+    }, [getPotentialIssues]);
 
 
     //  Potential issues
@@ -100,86 +87,46 @@ function RevenueStatementTable(props) {
         } else {
             setPotentialIssuesList([]);
         }
-    }, [potentialIssues]);
+    }, [potentialIssues, issues]);
 
     useEffect(() => {
         if (validationData?.getRevenueValidationCheck?.hits) {
             const validation = JSON.parse(JSON.stringify(validationData.getRevenueValidationCheck.hits))
-            const rows = JSON.parse(JSON.stringify(props.rows))
-            for (let i = 0; i < rows.length; i++) {
-                if (validation[rows[i]._id]) {
-                    rows[i].validation = !(parseFloat(validation[rows[i]._id].checkDetailAmt.value.toFixed(2)) === rows[i].checkAmount)
+            const newRows = JSON.parse(JSON.stringify(rows))
+            for (let i = 0; i < newRows.length; i++) {
+                if (validation[newRows[i]._id]) {
+                    newRows[i].validation = !(parseFloat(validation[newRows[i]._id].checkDetailAmt.value.toFixed(2)) === newRows[i].checkAmount)
                 } else {
-                    rows[i].validation = false
+                    newRows[i].validation = false
                 }
             }
-            props.setRows(rows)
+            setRows(newRows)
         }
     }, [validationData])
 
     useEffect(() => {
-        if (tableData?.hits?.length > 0) {
-            const objectsIdsArray = tableData.hits.map((check) => check._id);
+        if (searchedRows?.length > 0) {
+            const objectsIdsArray = searchedRows.map((check) => check._id);
             getRevenueValidationCheck({
                 variables: {
                     checkIds: objectsIdsArray,
                 },
             });
         }
-    }, [tableData])
+    },[searchedRows, getRevenueValidationCheck])
 
     useEffect(() => {
-        if (tableData?.hits?.length > 0) {
-
-            const hits = tableData?.hits.map((hit) => {
-                hit.checkDate = hit.checkDate
-                    ? moment(new Date(hit.checkDate)).format("MM/DD/YYYY")
-                    : null;
-                hit.depositDate = hit.depositDate
-                    ? moment(new Date(hit.depositDate)).format("MM/DD/YYYY")
-                    : null;
-                hit.tags = hit?.tags?.length > 0
-                    ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
-                    : [[], 0];
-                hit.commentsCounter = hit.comments ? hit.comments.length : 0;
-                return hit;
-            });
-            props.onGettingStatements(hits);
-            props.setRows(hits);
-
-            setColumnsData(
-                TableHeader,
-                filters,
-                JSON.parse(JSON.stringify(TableHeader)),
-                setColumns,
-                setFilters,
-                GET_ES_FILTER_LIST,
-                esIndex
-            );
-
-            props.setLoading(false);
-        }
-        else if (tableData?.hits?.length === 0) {
-            props.setRows([]);
-            props.setLoading(false);
-            props.onGettingStatements([]);
-            props.onGettingPotentialIssues([]);
-            setPotentialIssuesList([]);
-        }
-    }, [tableData, props.dependencyUpdate, filters]);
-
-    useEffect(() => {
-        if (issues?.hits?.length > 0 && tableData?.hits?.length > 0) {
+        if (issues?.hits?.length > 0 && searchedRows?.length > 0) {
             const issuesArr = issues?.hits.filter((issue) => {
-                for (let i = 0; i < tableData?.hits?.length; i++) {
-                    if (tableData?.hits[i]._id === issue.key) {
+                for (let i = 0; i < searchedRows?.length; i++) {
+                    if (searchedRows[i]._id === issue.key) {
                         return issue;
                     }
                 }
             });
             setIssuesArr(issuesArr);
         }
-    }, [tableData]);
+    }, [issues, searchedRows]);
 
 
     useEffect(() => {
@@ -192,46 +139,12 @@ function RevenueStatementTable(props) {
                 }
             });
             setPotentialIssuesList(allIssues);
-            props.onGettingPotentialIssues(allIssues);
+            onGettingPotentialIssues(allIssues);
         } else {
-            props.onGettingPotentialIssues([]);
+            onGettingPotentialIssues([]);
             setPotentialIssuesList([]);
         }
-    }, [pIssuesArr]);
-
-    const onTableChange = (action, tableState, rows, meta) => {
-        tableState.esIndex = esIndex;
-        const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
-        switch (action) {
-            case "filterChange":
-            case "resetFilters":
-                setFilters(tableState.filterList);
-                tableActions.genericESAction();
-                break;
-            case "search":
-            case "sort":
-            case "changeRowsPerPage":
-                tableActions.genericESAction();
-                break;
-            case "rowSelectionChange":
-                setSelectedRows(tableState.selectedRows.data)
-                break;
-            case "changePage":
-                tableActions.changeESPage();
-                break;
-            default:
-        }
-    }
-
-    const count = tableData?.total || 0
-    const options = {
-        rowsPerPageOptions: [10, 25, 50, 100],
-        count: count,
-        serverSide: true,
-        searchable: true,
-        rowsSelected: selectedRows.map((sR => sR.dataIndex)),
-        filter: true,
-    }
+    }, [pIssuesArr, onGettingPotentialIssues]);
 
     return (
         <Container
@@ -242,19 +155,18 @@ function RevenueStatementTable(props) {
             <Table
                 style={{ backgroundColor: "#fff" }}
                 header={props.header}
-                columns={columns}
+                columns={props.columns}
                 rows={props.rows}
                 total={false}
                 potentialIssues={potentialIssuesList}
-                addAble={{ type: "revenueStatement" }}
                 loading={props.loading}
                 targetLabel={props.targetLabel}
                 uploadIcon={null}
                 dense={props.dense ? props.dense : undefined}
                 orderByTracks={false}
                 startPaginationAt={null}
-                onTableChange={onTableChange}
-                options={options}
+                onTableChange={props.onTableChange}
+                options={props.options}
                 parent={props.parent}
                 setColumnsBase={[]}
             />
@@ -262,4 +174,4 @@ function RevenueStatementTable(props) {
     );
 }
 
-export default React.memo(TableHOC(RevenueStatementTable), deepEqualObjects);
+export default React.memo(TableESHOC(RevenueStatementTable), deepEqualObjects);

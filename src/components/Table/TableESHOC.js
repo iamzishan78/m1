@@ -134,6 +134,7 @@ export const TableESHOC = (Component) => {
                             query: tableMeta.extendSearchQuery,
                             fields: tableMeta.searchFields
                         },
+                        sort: tableMeta.defaultSort,
                         filters: [
                             ...(tableMeta.filters ? tableMeta.filters : []),
                             ...(tableMeta.polygon) ? [tableMeta.polygon] : []
@@ -233,7 +234,7 @@ export const TableESHOC = (Component) => {
             })
         };
 
-        const setGenricData = (data, id, actions, genericDataActions) => {
+        const setGenricData = useCallback((data, id, actions, genericDataActions) => {
             if (actions.includes('tracks')) {
                 data.isTracked = false;
                 const tracks = dataTracksRef?.current?.tracksByObjectType || [];
@@ -287,7 +288,7 @@ export const TableESHOC = (Component) => {
                 }
             }
             return data
-        }
+        }, []);
 
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
             let pageESVariables = {
@@ -302,7 +303,7 @@ export const TableESHOC = (Component) => {
                         first: tableState.rowsPerPage,
                         after: null,
                     },
-                    ...(!isEmpty(tableState.sortOrder)) && {
+                    ...(!isEmpty(tableState.sortOrder)) ? {
                         sort:
                         {
                             field: columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
@@ -311,9 +312,10 @@ export const TableESHOC = (Component) => {
                             // unmapped_type: "null",
                             // missing: "_last"
                         }
-                    },
+                    } : { sort: tableMeta.defaultSort },
 
-                    filters: tableState.filters ? [...tableState.filters] : []
+                    filters: tableState.filters ? [...tableState.filters] : [],
+                    customFilters: []
                 },
             };
             tableState.filterList.forEach((val, index) => {
@@ -422,15 +424,29 @@ export const TableESHOC = (Component) => {
             searchFields: tableMeta.searchFields,
             customToolbar: (tableMeta.addBtnText || tableMeta.addableName) ? () => {
                 return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-                    <Button
-                        color="secondary"
-                        className={classes.multiSelectionTopBarButtons}
-                        onClick={() => { setAddToTable('add'); setClickedRow(null) }}
-                    >
-                        {tableMeta.addBtnText ?
-                            `+ ADD ${tableMeta.addBtnText}` :
-                            `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
-                    </Button>
+                    {
+                        tableMeta.addWithInput ?
+                        <Button
+                            color="secondary"
+                            className={classes.multiSelectionTopBarButtons}
+                            onClick={() => {
+                                if (tableMeta.inputModeType === "revenueStatementDetails")
+                                    history.push(`/revenue/statement/${window.location.search.replace('?id=', '')}/line-item`);
+                            }}
+                        >
+                            {tableMeta.addBtnText}
+                        </Button>
+                        :
+                        <Button
+                            color="secondary"
+                            className={classes.multiSelectionTopBarButtons}
+                            onClick={() => { setAddToTable('add'); setClickedRow(null) }}
+                        >
+                            {tableMeta.addBtnText ? 
+                                `+ ADD ${tableMeta.addBtnText}` : 
+                                `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
+                        </Button>
+                    }
 
                 </div>
             } : undefined,
