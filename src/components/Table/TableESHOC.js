@@ -134,6 +134,7 @@ export const TableESHOC = (Component) => {
                             query: tableMeta.extendSearchQuery,
                             fields: tableMeta.searchFields
                         },
+                        sort: tableMeta.defaultSort,
                         filters: [
                             ...(tableMeta.filters ? tableMeta.filters : []),
                             ...(tableMeta.polygon) ? [tableMeta.polygon] : []
@@ -302,7 +303,7 @@ export const TableESHOC = (Component) => {
                         first: tableState.rowsPerPage,
                         after: null,
                     },
-                    ...(!isEmpty(tableState.sortOrder)) && {
+                    ...(!isEmpty(tableState.sortOrder)) ? {
                         sort:
                         {
                             field: columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
@@ -311,7 +312,7 @@ export const TableESHOC = (Component) => {
                             // unmapped_type: "null",
                             // missing: "_last"
                         }
-                    },
+                    } : { sort: tableMeta.defaultSort },
 
                     filters: tableState.filters ? [...tableState.filters] : []
                 },

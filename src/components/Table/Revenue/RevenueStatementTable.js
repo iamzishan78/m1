@@ -54,6 +54,7 @@ function RevenueStatementTable(props) {
           TableHeader: copy(TableHeader),
           esIndex: "checks_flat",
           startPaginationAt: 24,
+          defaultSort: { field: 'checkDate', order: 'desc' },
           formatHits,
         });
 
