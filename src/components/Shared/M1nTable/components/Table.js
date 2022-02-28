@@ -3157,7 +3157,7 @@ function SubTable(props) {
                     display: "flex",
                   }}
                 >
-                  <h2 style={{ color: "#000000" }}>heelo</h2>
+                  <h2 style={{ color: "#000000" }}></h2>
                   <Tooltip title={"Delete"}>
                     <IconButton
                       size="medium"
