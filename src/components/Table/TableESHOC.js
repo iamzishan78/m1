@@ -422,15 +422,29 @@ export const TableESHOC = (Component) => {
             searchFields: tableMeta.searchFields,
             customToolbar: (tableMeta.addBtnText || tableMeta.addableName) ? () => {
                 return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-                    <Button
-                        color="secondary"
-                        className={classes.multiSelectionTopBarButtons}
-                        onClick={() => { setAddToTable('add'); setClickedRow(null) }}
-                    >
-                        {tableMeta.addBtnText ?
-                            `+ ADD ${tableMeta.addBtnText}` :
-                            `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
-                    </Button>
+                    {
+                        tableMeta.addWithInput ?
+                        <Button
+                            color="secondary"
+                            className={classes.multiSelectionTopBarButtons}
+                            onClick={() => {
+                                if (tableMeta.inputModeType === "revenueStatementDetails")
+                                    history.push(`/revenue/statement/${window.location.search.replace('?id=', '')}/line-item`);
+                            }}
+                        >
+                            {tableMeta.addBtnText}
+                        </Button>
+                        :
+                        <Button
+                            color="secondary"
+                            className={classes.multiSelectionTopBarButtons}
+                            onClick={() => { setAddToTable('add'); setClickedRow(null) }}
+                        >
+                            {tableMeta.addBtnText ? 
+                                `+ ADD ${tableMeta.addBtnText}` : 
+                                `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
+                        </Button>
+                    }
 
                 </div>
             } : undefined,

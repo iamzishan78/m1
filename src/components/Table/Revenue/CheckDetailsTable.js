@@ -24,6 +24,7 @@ function CheckDetailsTable(props) {
 
     useEffect(() => {
         setTableMeta({
+            addBtnText: "INPUT MODE",
             addWithInput: true,
             filters: [{ field: "check._id.keyword", value: checkId }],
             TableHeader: copy(TableHeader),

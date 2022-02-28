@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { AppContext } from "AppContext";
 import AnalyticsCards from "components/Revenue/components/Statements/AnalyticsCards";
 import RevenueStatementTable from "components/Table/Revenue/RevenueStatementTable";
@@ -65,13 +65,13 @@ export default function RevenueStatements() {
     }
   }, [statements]);
 
-  const onGettingStatements = (statementsList) => {
+  const onGettingStatements = useCallback((statementsList) => {
     setStatements(statementsList);
-  };
+  }, []);
 
-  const onGettingPotentialIssues = (issues) => {
+  const onGettingPotentialIssues = useCallback((issues) => {
     setPotentialIssuesList(issues);
-  };
+  }, []);
 
   return (
     <>
