@@ -84,7 +84,7 @@ const RevenueStatementHeadCells = [
 
 const useStyles = makeStyles({
     root: {
-        width: '100%'
+        width: '100%',
     },
     container: {
         maxHeight: 440,
@@ -97,6 +97,26 @@ const useStyles = makeStyles({
             width: "0.75em",
             height: "0.75em",
         },
+        '& .MuiTableRow-root.MuiTableRow-hover:hover': {
+            "& td:nth-child(1)": {
+                position: 'sticky',
+                left: '0',
+                zIndex: 1,
+                background: '#ebebeb',
+            },
+        },
+        "& td:nth-child(1)": {
+            position: 'sticky',
+            left: '0',
+            background: '#ffff',
+            zIndex: 1,
+        },
+        "& th:nth-child(1)": {
+            position: 'sticky',
+            left: '0',
+            zIndex: 3
+        },
+
     },
     infiniteScroll: {
         display: "flex", flexDirection: "column-reverse"

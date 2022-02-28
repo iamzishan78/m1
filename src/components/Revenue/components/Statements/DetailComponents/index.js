@@ -27,6 +27,7 @@ import SummarySection from "./SummarySection";
 import CheckDetailsSection from "./CheckDetailsSection";
 import NavHeader from "components/Revenue/components/Common/NavHeader";
 import DocViewer from "components/Shared/DocViewer";
+import LineItem from ".//LineItem";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
 
 import { setRevenueKey } from "actions";
@@ -207,7 +208,8 @@ export default function DetailComponents(props) {
 
   const history = useHistory();
   const previousRoute = history.pathHistory[1];
-  const checkId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
+  const isLineItem = history.location.pathname.includes('/line-item')
+  const checkId = history.location.pathname.replace('/line-item', '').split("/")[history.location.pathname.replace('/line-item', '').split("/").length - 1];
 
   const classes = useStyles({ ...props, collapse });
   // queries
@@ -257,7 +259,7 @@ export default function DetailComponents(props) {
   }, [getCheckResult, dispatch]);
 
   useEffect(() => {
-    if (selectedTabRef) {
+    if (selectedTabRef?.current?.scrollIntoView) {
       selectedTabRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -319,118 +321,123 @@ export default function DetailComponents(props) {
           <CircularProgress />
         </DialogTitle>
       </Dialog>
+
+
+
       <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor?.["name"]}`}>
-        {/**
-       * Detail title section
-       */}
-        <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
-          <div className="flex column alignStart justifyStart w-100">
-            <div className={classes.title}>
-              <IconButton className={classes.icon}>
-                <CurrencyIcon />
-              </IconButton>
-              <div className={classes.titleText}>
-                {checksFlatData && (
-                  <Typography
-                    style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
-                  >{`${checksFlatData?.checkNumber || ''} - ${checksFlatData?.payor?.name || ''}`}</Typography>
-                )}
-                <div className={classes.tagsContainer}>
-                  <div className={classes.highlighter}>
-                    <Typography className={classes.highlight} variant="highlight">
-                      Revenue Check
-                    </Typography>
+
+        {isLineItem ? <LineItem checkId={checkId} /> :
+          <>
+            <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
+              <div className="flex column alignStart justifyStart w-100">
+                <div className={classes.title}>
+                  <IconButton className={classes.icon}>
+                    <CurrencyIcon />
+                  </IconButton>
+                  <div className={classes.titleText}>
+                    {checksFlatData && (
+                      <Typography
+                        style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
+                      >{`${checksFlatData?.checkNumber || ''} - ${checksFlatData?.payor?.name || ''}`}</Typography>
+                    )}
+                    <div className={classes.tagsContainer}>
+                      <div className={classes.highlighter}>
+                        <Typography className={classes.highlight} variant="highlight">
+                          Revenue Check
+                        </Typography>
+                      </div>
+                      <div className={classes.tags}>
+                        <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom onlyTags />
+                      </div>
+                    </div>
                   </div>
-                  <div className={classes.tags}>
-                    <Tags width="100%" targetSourceId={checkId} targetLabel="check" publicLeftBottom onlyTags />
+                </div>
+
+                <div className={classes.actionsContainer}>
+                  <div className={classes.tabsHeader}>
+                    <StyledTabs
+                      value={tab}
+                      onChange={(event, tab) => {
+                        setButtonScroll(true);
+                        setTab(tab);
+                      }}
+                      aria-label="ant example"
+                    >
+                      <StyledTab label="Header" />
+                      <StyledTab label="Summary" />
+                      <StyledTab label="Check Details" />
+                    </StyledTabs>
+                  </div>
+                  <div className={classes.metaActions}>
+                    <Button startIcon={<InfoOutlinedIcon />} onClick={() => setCollapse(!collapse)}>
+                      Metadata
+                    </Button>
+                    <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
+                      <MoreHorizIcon size="medium" />
+                    </IconButton>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className={classes.actionsContainer}>
-              <div className={classes.tabsHeader}>
-                <StyledTabs
-                  value={tab}
-                  onChange={(event, tab) => {
-                    setButtonScroll(true);
-                    setTab(tab);
-                  }}
-                  aria-label="ant example"
-                >
-                  <StyledTab label="Header" />
-                  <StyledTab label="Summary" />
-                  <StyledTab label="Check Details" />
-                </StyledTabs>
-              </div>
-              <div className={classes.metaActions}>
-                <Button startIcon={<InfoOutlinedIcon />} onClick={() => setCollapse(!collapse)}>
-                  Metadata
-                </Button>
-                <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
-                  <MoreHorizIcon size="medium" />
-                </IconButton>
-              </div>
-            </div>
-          </div>
-        </div>
+            <div className="flex justifyBetween alignStart w-100">
+              <div className={`w-100 ${classes.tabsDetailContainer}`}>
+                {/*** Component for viewing selected pdf file*/}
+                <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
 
-        <div className="flex justifyBetween alignStart w-100">
-          <div className={`w-100 ${classes.tabsDetailContainer}`}>
-            {/*** Component for viewing selected pdf file*/}
-            <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
-
-            {/**
+                {/**
            * Detail tabs section
            */}
-            <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
-              <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
-                <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-                  <HeaderSection check={checksFlatData} setCheck={setChecksFlatData} />
-                </div>
-                <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
-                <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
-                  <SummarySection checkId={checkId} />
-                </div>
-                <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
-                <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
-                  <CheckDetailsSection checkId={checkId} />
+                <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
+                  <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
+                    <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
+                      <HeaderSection check={checksFlatData} setCheck={setChecksFlatData} />
+                    </div>
+                    <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
+                    <div className={classes.summarySection} ref={tab === 1 ? selectedTabRef : null}>
+                      <SummarySection checkId={checkId} />
+                    </div>
+                    <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
+                    <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
+                      <CheckDetailsSection checkId={checkId} />
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {!collapse && <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={checkId} setStateApp={setStateApp} />}
             </div>
-          </div>
 
-          {!collapse && <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={checkId} setStateApp={setStateApp} />}
-        </div>
+            {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
 
-        {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
-
-        {/**
+            {/**
        * Menu for meta data
        */}
-        <Menu
-          id="revStatementMenu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={() => setAnchorEl(null)}
-          className={classes.menu}
-          getContentAnchorEl={null}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-          transformOrigin={{ vertical: "top", horizontal: "center" }}
-        >
-          <MenuItem
-            onClick={() => {
-              setOpenDeleteConfirmDialog(true);
-              setCheckIdToDelete(checkId);
-            }}
-          >
-            <ListItemIcon>
-              <DeleteIcon size="medium" />
-            </ListItemIcon>
-            <ListItemText>Delete</ListItemText>
-          </MenuItem>
-        </Menu>
+            <Menu
+              id="revStatementMenu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={() => setAnchorEl(null)}
+              className={classes.menu}
+              getContentAnchorEl={null}
+              anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+              transformOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+              <MenuItem
+                onClick={() => {
+                  setOpenDeleteConfirmDialog(true);
+                  setCheckIdToDelete(checkId);
+                }}
+              >
+                <ListItemIcon>
+                  <DeleteIcon size="medium" />
+                </ListItemIcon>
+                <ListItemText>Delete</ListItemText>
+              </MenuItem>
+            </Menu>
+          </>
+        }
       </NavHeader>
     </>
   );
