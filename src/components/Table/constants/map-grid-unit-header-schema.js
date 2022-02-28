@@ -76,6 +76,7 @@ const unitsColumnHeaders = [
       label: "Owners",
       esKey: "ownerCount.keyword",
       options: {
+        customRender: (value) => value.toString(),
         sort: true,
         filter: false,
       },

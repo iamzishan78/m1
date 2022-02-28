@@ -25,6 +25,7 @@ import { addTrailingZeros } from "components/Shared/functions";
 import { Controller, useForm } from "react-hook-form";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
+import ContactStatus from 'components/ContactDetailCard/components/ContactStatus';
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -93,6 +94,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         customLayer,
         name,
         ownerEntity,
+        contactStatus,
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
 
@@ -105,6 +107,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         seller_asking_price: seller_asking_price || null,
         competitor_offer_price: competitor_offer_price || null,
         offer_price: offer_price || null,
+        contactStatus: contactStatus || null,
         customLayer,
       });
     }
@@ -152,6 +155,15 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     }
   }, [mutationData, updateData]);
 
+  useEffect(() => {
+    if(nameAutValue){
+      if(nameAutValue.contactStatus){
+        setValue('contactStatus', nameAutValue.contactStatus)
+      }
+    }
+  },[nameAutValue])
+
+  console.log('values', getValues());
   const emptyStates = () => {
     setNewOwner({
       working_interest: null,
@@ -163,6 +175,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       competitor_offer_price: null,
       offer_price: null,
       customLayer: props.customLayerId,
+      contactStatus: ''
     });
     setNameAutValue(null);
     // setSelectedRow(null);
@@ -522,6 +535,25 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       }}
                       fullWidth
                       defaultValue=""
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Status</h3>
+
+                <Controller
+                  control={control}
+                  defaultValue={''}
+                  name="contactStatus"
+                  render={(props) => (
+                    <ContactStatus
+                      className={classes.maxWidth}
+                      setValue={(value) => {
+                        let val = value.name
+                        props.onChange(val);
+                      }}
+                      value={props.value ? props.value: ""}
                     />
                   )}
                 />

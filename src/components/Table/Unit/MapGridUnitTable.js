@@ -44,7 +44,11 @@ function MapGridUnitTable(props) {
           objectName: hit.Operator,
         },
       };
-      hit = props.setGenricData(hit, hit.id, [], []);
+      hit = props.setGenricData(hit, hit._id, [], []);
+      hit.tags = hit?.tags?.length > 0
+        ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+        : [[], 0];
+      hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       return hit;
     });
     return hits
@@ -53,16 +57,21 @@ function MapGridUnitTable(props) {
   useEffect(() => {
     setTableMeta({
       addableName: "Unit",
-      extendSearchQuery: `layer:unit AND (name:${searchInput}* OR shapeJson.properties.uNumber:${searchInput}*)`,
+      extendSearchQuery: searchInput,
+      searchFields: ["name", "_all"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
       startPaginationAt: 25,
+      filters: [{
+        field: "layer.keyword",
+        value: 'unit',
+      }],
       formatHits,
     });
     // eslint-disable-next-line
-  }, [
-    searchInput,
-  ]);
+  }, [searchInput]);
+
+  console.log('searchInput',searchInput)
 
   useEffect(() => {
     if(owners?.getShapeOwnerDataById){
