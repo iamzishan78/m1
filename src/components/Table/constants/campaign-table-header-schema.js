@@ -1,4 +1,5 @@
 import { history } from "store";
+import CampaignStatus from "components/Table/Contact/CampaignStatus";
 
 const CampaignsHeadCells = [
   {
@@ -86,6 +87,9 @@ const CampaignsHeadCells = [
       display: true,
       sort: true,
       filter: true,
+      customRender: (value, tableMeta) => {
+        return <CampaignStatus status={value} />;
+      },
     },
   },
 ];
