@@ -161,7 +161,6 @@ function CheckDetailsEditableTable(props) {
 
     useEffect(() => {
         if (loadMoreData?.getESPaginatedList?.hits) {
-            debugger;
             let hits = copy(loadMoreData.getESPaginatedList.hits)
             hits = hits.reverse()
             props.setRows(hits.concat(rows));
@@ -209,6 +208,7 @@ function CheckDetailsEditableTable(props) {
         } else
             setRows([].concat(rows))
 
+        row.check = props.checkId
         updateCheckDetail({
             variables: { checkDetail: row },
             refetchQueries: [],
