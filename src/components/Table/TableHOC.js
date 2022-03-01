@@ -269,11 +269,11 @@ export const TableHOC = (Component) => {
 
                 }
             })
-            if (selectedGridView?.filters /* && selectedGridView.type === 'Default' */) {
-                selectedGridView.filters.forEach(filter => {
-                    pageESVariables.variables.filters.push(filter)
-                })
-            }
+            // if (selectedGridView?.filters /* && selectedGridView.type === 'Default' */) {
+            //     selectedGridView.filters.forEach(filter => {
+            //         pageESVariables.variables.filters.push(filter)
+            //     })
+            // }
             return {
                 pageESVariables,
                 genericESAction: () => {
