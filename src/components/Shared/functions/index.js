@@ -1,5 +1,6 @@
 import { BlockBlobClient } from "@azure/storage-blob";
-import { getPolygonString } from "./getPolygonString";
+import { getPolygonString } from './getPolygonString';
+import { cloneDeep } from "lodash";
 
 export * from "./deepEqual";
 export * from "./setStateIfDeepEqual";
@@ -21,7 +22,7 @@ export function truncate(str, n) {
 }
 
 export function copy(obj) {
-  return JSON.parse(JSON.stringify(obj));
+  return cloneDeep(obj)
 }
 
 export function addTrailingZeros(num) {

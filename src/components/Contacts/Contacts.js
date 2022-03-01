@@ -3,10 +3,7 @@ import { Switch, Route, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 
-import {
-  toggleContactActionsPanel,
-  setActiveModuleContact,
-} from "store/actions/contactActions";
+import { toggleContactActionsPanel, setActiveModuleContact } from "store/actions/contactActions";
 import { AppContext } from "AppContext";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
@@ -15,7 +12,7 @@ import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import ContactsTable from "components/Table/Contact/ContactsTable";
 import * as Components from "components/Contacts/components";
 
-import { contactManagementRoutes } from 'utils/data';
+import { contactManagementRoutes } from "utils/data";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,9 +49,7 @@ export default function Contacts() {
   );
 
   useEffect(() => {
-    const option = Object.values(contactManagementRoutes).find(
-      (item) => item.link === location.pathname
-    );
+    const option = Object.values(contactManagementRoutes).find((item) => item.link === location.pathname);
     if (option) {
       dispatch(setActiveModuleContact(option));
     }
@@ -64,6 +59,16 @@ export default function Contacts() {
     dispatch(toggleContactActionsPanel(state));
   };
 
+  const sidePanelOptions = React.useMemo(() => {
+    const options = {};
+    Object.keys(contactManagementRoutes).forEach((key) => {
+      if (!contactManagementRoutes[key].isExcluded) {
+        options[key] = contactManagementRoutes[key];
+      }
+    });
+    return options;
+  }, []);
+
   return (
     <>
       <FeatureFlag feature={FEATURES.CONTACTSUBMENU}>
@@ -72,17 +77,11 @@ export default function Contacts() {
           handlePanelStateChange={handlePanelStateChange}
           quickActionsPanelState={quickActionsPanelState}
           activeModule={activeModule}
-          actions={contactManagementRoutes}
+          actions={sidePanelOptions}
         >
           {Object.keys(contactManagementRoutes).map((option) => (
             <Switch>
-              <Route
-                exact
-                path={contactManagementRoutes[option].link}
-                component={
-                  Components[contactManagementRoutes[option].component]
-                }
-              />
+              <Route exact path={contactManagementRoutes[option].link} component={Components[contactManagementRoutes[option].component]} />
             </Switch>
           ))}
         </QuickActionPanel>

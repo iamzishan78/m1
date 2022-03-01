@@ -415,7 +415,7 @@ export default function DetailComponents(props) {
                 <StyledTab label="Legal Description" />
                 <StyledTab label="Wells" />
                 <StyledTab label="Documents" />
-                <StyledTab label="Related Info" />
+                {/* <StyledTab label="Related Info" /> */}
               </StyledTabs>
             </div>
             <div className={classes.metaActions}>

@@ -92,7 +92,9 @@ const useStyles = makeStyles(() => ({
     textAlign: "center",
     fontSize: "1.3rem",
     zIndex: 9999999999,
-    borderRadius: "20px",
+    "& .MuiDialog-paper": {
+      borderRadius: "20px",
+    },
   },
 }));
 

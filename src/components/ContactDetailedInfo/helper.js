@@ -15,16 +15,16 @@ export const entityTypeOptions = [
 ];
 
 export const contactStatusOptions = [
-  {
-    label: "Unqualified Lead",
-    value: "UnqualLead",
-    notInclude: true
-  },
-  {
-    label: "Qualified Lead",
-    value: "QualLead",
-    notInclude: true
-  },
+  // {
+  //   label: "Unqualified Lead",
+  //   value: "UnqualLead",
+  //   notInclude: true
+  // },
+  // {
+  //   label: "Qualified Lead",
+  //   value: "QualLead",
+  //   notInclude: true
+  // },
   {
     label: "Lead",
     value: "Lead",

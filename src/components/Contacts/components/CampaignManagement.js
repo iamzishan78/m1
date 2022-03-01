@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useSelector } from "react-redux";
-import ContactsTable from "components/Table/Contact/ContactsTable";
+import CampaignsTable from "components/Table/Contact/CampaignsTable";
 import { makeStyles } from "@material-ui/core/styles";
 
 import { AppContext } from "AppContext";
@@ -38,6 +38,15 @@ const CampaignManagement = () => {
   const [stateApp] = useContext(AppContext);
   const { activeModule } = useSelector(({ contact }) => contact);
 
+  const esIndex = "activities_flat";
+  const searchFields = ["name", "_all"];
+  const [filterToggle, setFilterToggle] = useState(false);
+  const [tableFilters, setTableFilters] = useState([]);
+  const [appliedFilters, setAppliedFilters] = useState({
+    toDate: null,
+    fromDate: null,
+  });
+
   const getCustomAppliedFilters = () => {
     if (activeModule?.filterValue) {
       return [
@@ -49,18 +58,21 @@ const CampaignManagement = () => {
     }
   };
 
+  const filtersChange = (filters) => {
+    setTableFilters(filters);
+  };
+
   return (
     <div className={classes.root}>
-      {/* {activeModule.showAnalytics &&(
-        <ContactsAnalyticsCards />
-      )} */}
       <CampaignAnalytics />
-      <ContactsTable
-        parent="Campaign"
-        headerLabel="Contact Management"
-        contactSearchQuery={stateApp.contactSearchQuery}
-        userId={stateApp.user.mongoId}
-        customAppliedFilters={getCustomAppliedFilters()}
+      <CampaignsTable
+        esIndex={esIndex}
+        searchFields={searchFields}
+        filtersChange={filtersChange}
+        appliedFilters={appliedFilters}
+        filterToggle={filterToggle}
+        targetLabel="campaignManagement"
+        header="Campaigns"
       />
     </div>
   );

@@ -365,8 +365,9 @@ function ContactsTable(props) {
   }
 
   const getSelectedView = () => {
-    const view = copy(selectedGridView);
-    if(selectedGridView.type === 'Default') {
+    const isAllModule = get(activeModule, 'title','').includes('All')
+    const view = copy(isAllModule ? selectedGridView : defaultView);
+    if(view.type === 'Default') {
       if(get(activeModule, 'title','').includes('All')){
         view.name = view.name.replace('Contacts', get(activeModule, 'title','').replace('All ', ''))
       }else{

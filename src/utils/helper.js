@@ -41,10 +41,10 @@ export const formatTaxOwners = (owners, formData) => {
     let lastName = "";
     let firstName = "";
     let middleName = "";
-    let newFullName = owners[i].name;
+    let newFullName = owners[i].name || owners[i].OwnerName;
     if (owners[i].OwnerType === "INDIVIDUAL") {
-      lastName = owners[i].name.split(" ")[0].trim();
-      const remainingName = owners[i].name.replace(lastName, "").trim();
+      lastName = newFullName?.split(" ")[0].trim();
+      const remainingName = newFullName?.replace(lastName, "").trim();
       firstName = remainingName.split(" ")[0].trim();
       middleName = remainingName.replace(firstName, "").trim();
       newFullName = [firstName, middleName, lastName]
