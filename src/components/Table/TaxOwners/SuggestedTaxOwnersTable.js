@@ -248,6 +248,7 @@ function SuggestedOwnerTable(props) {
         variables: {
           ownerIds: globalOwnerIds,
           existingContactId: null,
+          status: "Lead",
           contactOwner: null,
           action: "single",
           userId: stateApp.user.mongoId,
