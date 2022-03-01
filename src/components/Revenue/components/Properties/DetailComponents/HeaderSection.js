@@ -18,6 +18,7 @@ import { AppContext } from "AppContext";
 
 import { CONTACT_ENTITY } from "graphQL/useQueryContactEntity";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
+import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -304,6 +305,25 @@ export default function HeaderSection(props) {
                 <div className={classes.label}>Owner</div>
               </Grid>
               <Grid item xs={9}>
+                {/* 
+                <Controller
+                  control={control}
+                  name='owner'
+                  defaultValue={{ _id: propertyDetails?.owner } || {}}
+                  render={(
+                    { onChange, value, ref },
+                  ) => (
+                    <AutocompEntityNamesList variant='outlined' margin='' size='' nameAutValue={value} withContactCard={true}
+                      setNameAutValue={(value) => {
+                        if (value?._id)
+                          onChange({ _id: value._id, name: value.name });
+                        else
+                          onChange({});
+                        handleUpdate('owner', { name: value?.name, _id: value?._id })
+                      }} />
+                  )}
+                /> */}
+
                 <Controller
                   control={control}
                   name="owner"
@@ -314,7 +334,9 @@ export default function HeaderSection(props) {
                       }
                       className={classes.field}
                       setNameAutValue={(value) => {
-                        contactEntity(value?._id, "owner");
+                        if (value)
+                          contactEntity(value?._id, "owner");
+                        else handleUpdate("owner", null)
                       }}
                       renderInput={(params2) => (
                         <TextField
@@ -341,7 +363,7 @@ export default function HeaderSection(props) {
                                         selectedContact: `${params?.value?._id}`,
                                       }));
                                     }
-                                    // setEntity(propertyDetails?.owner)
+                                    setEntity(propertyDetails?.owner)
                                   }}
                                 >
                                   <ContactCardIcon
