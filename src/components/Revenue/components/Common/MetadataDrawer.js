@@ -392,7 +392,7 @@ export default function MetadataDrawer(props) {
         />
 
         <div className={classes.commentsContainer}>
-          <CommentComponent targetLabel={"check"} targetSourceId={targetSourceId} />
+          <CommentComponent targetLabel={props.targetLabel} targetSourceId={targetSourceId} />
         </div>
       </div>
     </div>

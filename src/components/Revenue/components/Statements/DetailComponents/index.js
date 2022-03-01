@@ -405,7 +405,7 @@ export default function DetailComponents(props) {
                 </div>
               </div>
 
-              {!collapse && <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={checkId} setStateApp={setStateApp} />}
+              {!collapse && <MetadataDrawer targetLabel='CHECK' setCollapse={setCollapse} users={users} targetSourceId={checkId} setStateApp={setStateApp} />}
             </div>
 
             {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}

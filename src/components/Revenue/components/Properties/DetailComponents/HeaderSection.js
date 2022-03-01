@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { get } from "lodash";
+import { get, debounce } from "lodash";
 import moment from "moment";
 import { useHistory } from "react-router-dom";
 
@@ -201,6 +201,11 @@ export default function HeaderSection(props) {
     }
   };
 
+
+  const handleUpdate = debounce((key, value) => {
+    updatePropertyData(key, value);
+  }, 500)
+
   return (
     <Grid container direction="row" justify="space-between" alignItems="center">
       <Grid item className={classes.infoSection}>
@@ -230,8 +235,8 @@ export default function HeaderSection(props) {
                       margin="dense"
                       type="text"
                       fullWidth
-                      onKeyDown={(e) => onKeyDown(e, "number", params.value)}
-                      onBlur={(e) => updatePropertyData("number", params.value)}
+                      onChange={(e) => { params.onChange(e.target.value); handleUpdate("number", e.target.value) }}
+                    // onBlur={(e) => updatePropertyData("number", params.value)}
                     />
                   )}
                 />
@@ -256,8 +261,9 @@ export default function HeaderSection(props) {
                       margin="dense"
                       type="text"
                       fullWidth
-                      onKeyDown={(e) => onKeyDown(e, "name", params.value)}
-                      onBlur={(e) => updatePropertyData("name", params.value)}
+                      onChange={(e) => { params.onChange(e.target.value); handleUpdate("name", e.target.value) }}
+                    // onKeyDown={(e) => onKeyDown(e, "name", params.value)}
+                    // onBlur={(e) => updatePropertyData("name", params.value)}
                     />
                   )}
                 />
@@ -282,8 +288,9 @@ export default function HeaderSection(props) {
                       margin="dense"
                       placeholder=""
                       fullWidth
-                      onKeyDown={(e) => onKeyDown(e, "ownerNumber", params.value)}
-                      onBlur={() => setValue("ownerNumber", propertyDetails.ownerNumber)}
+                      onChange={(e) => { params.onChange(e.target.value); handleUpdate("ownerNumber", e.target.value) }}
+                    // onKeyDown={(e) => onKeyDown(e, "ownerNumber", params.value)}
+                    // onBlur={() => setValue("ownerNumber", propertyDetails.ownerNumber)}
                     />
                   )}
                 />
@@ -325,14 +332,14 @@ export default function HeaderSection(props) {
                                 {params2.InputProps.endAdornment}
                                 <div
                                   className={classes.contactCardIcon}
-                                  onClick={(e) =>{
+                                  onClick={(e) => {
                                     e.stopPropagation();
-                                    if(params?.value?._id){
+                                    if (params?.value?._id) {
                                       history.push(`/contact/details/${params?.value?._id}`);
                                       setStateApp((stateApp) => ({
                                         ...stateApp,
                                         selectedContact: `${params?.value?._id}`,
-                                    }));
+                                      }));
                                     }
                                     // setEntity(propertyDetails?.owner)
                                   }}
@@ -426,15 +433,15 @@ export default function HeaderSection(props) {
                                 {params2.InputProps.endAdornment}
                                 <div
                                   className={classes.contactCardIcon}
-                                  onClick={(e) =>{
+                                  onClick={(e) => {
                                     e.stopPropagation();
-                                    if(params?.value?._id) {
+                                    if (params?.value?._id) {
                                       history.push(`/contact/details/${params?.value?._id}`);
                                       setStateApp((stateApp) => ({
                                         ...stateApp,
                                         selectedContact: `${params?.value?._id}`,
-                                    }));
-                                    // setEntity(propertyDetails?.owner)
+                                      }));
+                                      // setEntity(propertyDetails?.owner)
                                     }
                                   }}
                                 >
