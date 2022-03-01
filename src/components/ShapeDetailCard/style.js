@@ -148,6 +148,7 @@ export const summaryStyles = makeStyles((theme) => ({
   },
   descriptionInput: {
     width: "100%",
+    padding: "8px 0px !important",
     "& .MuiTextField-root": {
       backgroundColor: "#fffcdc",
     },
@@ -155,8 +156,11 @@ export const summaryStyles = makeStyles((theme) => ({
       border: "none",
     },
     "& textarea": {
-      maxHeight: "150px",
+      maxHeight: "130px",
     },
+  },
+  commentSection: {
+    padding: "0px !important"
   },
   icon: {
     color: "#757575",

@@ -149,7 +149,7 @@ export default function AgreementSummary(props) {
               }}
             />
           </Grid>
-          <Grid item md={12}>
+          <Grid item md={12} className={classes.commentSection}>
             <CommentComponent targetLabel={"agreement"} targetSourceId={props.id} />
           </Grid>
         </Grid>

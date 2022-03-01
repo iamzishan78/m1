@@ -7,6 +7,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import CloseIcon2 from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import DeleteIcon from "@material-ui/icons/Delete";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import SearchIcon from '@material-ui/icons/Search';
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 import Grid from "@material-ui/core/Grid";
@@ -14,6 +15,7 @@ import { Box, CircularProgress, Dialog, FormControl, FormControlLabel, InputLabe
 import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useForm, Controller } from "react-hook-form";
+import { copy } from "utils/helper";
 
 // contexts 
 import { getParcelOriginalProperties } from "components/ParcelsDetailCard/utils/GetParcelOriginalProps";
@@ -74,6 +76,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const qtrOptions = ["E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
+
 function AddAgreementOwnerAndTractDialog(props) {
   const classes = useStyles();
   const { control, reset, register, getValues, watch, setValue } = useForm();
@@ -120,6 +124,14 @@ function AddAgreementOwnerAndTractDialog(props) {
     onError: (err) => { },
     refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
+
+  // const setShapeLayer = (layer) => {
+  //   const _layer = copy(layer);
+  //   if (_layer) {
+  //     _layer.qtr1 = _layer.
+  //   }
+  //   setSelectedShapeLayer(layer);
+  // }
 
   useEffect(() => {
     if (props.seletedOwner) {
@@ -526,6 +538,98 @@ function AddAgreementOwnerAndTractDialog(props) {
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='depthTo' inputRef={register()} label={"Depth To"}
               InputLabelProps={{ shrink: true }} fullWidth onWheel={(e) => e.target.blur()} />
+          </Grid>
+
+          <Grid container direction="row">
+            <Grid item xs={3}>
+
+              <Autocomplete
+                options={qtrOptions}
+                getOptionLabel={(option) => option}
+                value={selectedShapeLayer?.qtrQtrSelection?.selectedQtr?.[0] ?? ""}
+                // onChange={(e, newInputValue) => {
+                //   const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
+                //   qtr[0] = newInputValue ? newInputValue : "";
+                //   setNewOwner({
+                //     ...newOwner,
+                //     qtr,
+                //   });
+                // }}
+                renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 1" size="small" className={classes.maxWidth} />}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <Controller
+                control={control}
+                variant="outlined"
+                name={`qtrQtrSelection.selectedQtr.${1}`}
+                label="QTR 2"
+                render={(params1) => (
+                  <Autocomplete
+                    options={qtrOptions}
+                    getOptionLabel={(option) => option}
+                    value={selectedShapeLayer?.qtrQtrSelection?.selectedQtr?.[1] ?? ""}
+                    // onChange={(e, newInputValue) => {
+                    //   const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
+                    //   qtr[0] = newInputValue ? newInputValue : "";
+                    //   setNewOwner({
+                    //     ...newOwner,
+                    //     qtr,
+                    //   });
+                    // }}
+                    renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 2" size="small" className={classes.maxWidth} />}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <Controller
+                control={control}
+                variant="outlined"
+                name={`qtrQtrSelection.selectedQtr.${2}`}
+                label="QTR 3"
+                render={(params1) => (
+                  <Autocomplete
+                    options={qtrOptions}
+                    getOptionLabel={(option) => option}
+                    value={selectedShapeLayer?.qtrQtrSelection?.selectedQtr?.[2] ?? ""}
+                    // onChange={(e, newInputValue) => {
+                    //   const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
+                    //   qtr[0] = newInputValue ? newInputValue : "";
+                    //   setNewOwner({
+                    //     ...newOwner,
+                    //     qtr,
+                    //   });
+                    // }}
+                    renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 3" size="small" className={classes.maxWidth} />}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <Controller
+                control={control}
+                variant="outlined"
+                name={`qtrQtrSelection.selectedQtr.${3}`}
+                label="QTR 4"
+                render={(params1) => (
+                  <Autocomplete
+                    options={qtrOptions}
+                    getOptionLabel={(option) => option}
+                    value={selectedShapeLayer?.qtrQtrSelection?.selectedQtr?.[3] ?? ""}
+                    // onChange={(e, newInputValue) => {
+                    //   const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
+                    //   qtr[0] = newInputValue ? newInputValue : "";
+                    //   setNewOwner({
+                    //     ...newOwner,
+                    //     qtr,
+                    //   });
+                    // }}
+                    renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 4" size="small" className={classes.maxWidth} />}
+                  />
+                )}
+              />
+            </Grid>
           </Grid>
 
           <Grid container direction="row" spacing={2} >
