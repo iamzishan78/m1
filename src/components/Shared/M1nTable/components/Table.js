@@ -3156,6 +3156,7 @@ function SubTable(props) {
                     height: "35px",
                     display: "flex",
                   }}
+                >
                   <Tooltip title={"Delete"}>
                     <IconButton
                       size="medium"
