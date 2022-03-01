@@ -50,7 +50,7 @@ const RevenueStatementHeadCells = [
         id: "product", title: "Product", filterKey: 'product.keyword', sort: true, type: 'autocomplete', width: '130px'
     },
     {
-        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement.keyword', sort: true, width: '150px'
+        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement', sort: true, width: '150px'
     },
     {
         id: "interestType", title: "Type", filterKey: 'interestType.keyword', sort: true, type: 'autocomplete', width: '100px'
