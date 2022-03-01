@@ -137,7 +137,7 @@ const Activities = () => {
   useEffect(() => {
     getAllActivities({
       variables: {
-        category: "activity"
+        category: "CRM"
       }
     });
   }, []);
