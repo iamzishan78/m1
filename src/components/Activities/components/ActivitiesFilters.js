@@ -266,7 +266,12 @@ const CampaignFilter = ({
     if (!tableFilters.find((filter) => filter.type === "range")) {
       rangeFilters = getFilters(appliedFilters);
     }
-    return [...rangeFilters, ...tableFilters];
+    const filters = [...rangeFilters, ...tableFilters]
+    const index = filters.findIndex(f => f.field === 'contact.campaignName.keyword')
+    if(index > -1){
+      filters.splice(index, 1);
+    }
+    return filters;
   };
 
   useEffect(() => {
@@ -292,7 +297,6 @@ const CampaignFilter = ({
     <Autocomplete
       size="small"
       onChange={(e, selectedValue, reason) => {
-        console.log(value);
         if (reason === "clear" || !selectedValue?.key) {
           setSearch("");
           setValue("");
@@ -348,7 +352,12 @@ const QualifierFilter = ({
     if (!tableFilters.find((filter) => filter.type === "range")) {
       rangeFilters = getFilters(appliedFilters);
     }
-    return [...rangeFilters, ...tableFilters];
+    const filters = [...rangeFilters, ...tableFilters]
+    const index = filters.findIndex(f => f.field === 'ownerName.keyword')
+    if(index > -1){
+      filters.splice(index, 1);
+    }
+    return filters;
   };
 
   useEffect(() => {

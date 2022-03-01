@@ -270,7 +270,7 @@ function AssociatedWellsShapeTable(props) {
 
     const addWellInterestToShape = () => {
         const { rows } = props;
-        const selectedWells = selectedRows.map((sR => rows[sR.dataIndex]))
+        const selectedWells = selectedRows.map(sR => ({ ...rows[sR.dataIndex], globalWell: rows[sR.dataIndex].wellId }))
         // const selectedWells = tableData.filter((t, index) => rows.data.find((row) => row.dataIndex === index))
         props.setLoading(true);
         addMultiWellInterestToShape({

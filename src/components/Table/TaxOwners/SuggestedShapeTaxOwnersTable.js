@@ -343,6 +343,7 @@ function SuggestedShapeTaxOwnersTable(props) {
         shapeId: props.customLayer._id,
         entity: "",
         globalOwnerId: selectedRows[i].globalOwnerId,
+        working_interest: selectedRows[i].interestType === 'WORKING INTEREST' ? ownershipPercentage : "",
         royalty_interest: selectedRows[i].interestType === 'ROYALTY INTEREST' ? ownershipPercentage : "",
         orri: selectedRows[i].interestType === 'OVERRIDING ROYALTY' ? ownershipPercentage : "",
         nra: addTrailingZeros(nra.toFixed(8)),
