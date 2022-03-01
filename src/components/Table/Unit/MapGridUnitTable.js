@@ -1,15 +1,17 @@
-
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { Container } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import debounce from "lodash/debounce";
+import get from "lodash/get";
 import { useLazyQuery } from "@apollo/client";
 
 // context
+import { AppContext } from "AppContext";
 import TableESHOC from "components/Table/TableESHOC";
 import Table from "components/Shared/M1nTable/components/Table";
 
 // QUERIES
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { GET_SHAPE_OWNERS_DATA_BY_ID } from "graphQL/useQueryShapeOwnersDataById";
 import { deepEqualObjects, copy } from "components/Shared/functions";
 
@@ -21,11 +23,19 @@ import { usetableStyles } from "../Styles";
 
 function MapGridUnitTable(props) {
   const classes = usetableStyles();
+  const [stateApp] = useContext(AppContext);
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
   );
 
-  const [getShapeOwnerDataById, { data: owners }] = useLazyQuery(GET_SHAPE_OWNERS_DATA_BY_ID, { fetchPolicy: "no-cache" });
+  const [getShapeOwnerDataById, { data: owners }] = useLazyQuery(
+    GET_SHAPE_OWNERS_DATA_BY_ID,
+    { fetchPolicy: "no-cache" }
+  );
+  const [getStatus, { data: status }] = useLazyQuery(
+    GET_ES_FILTER_LIST,
+    { fetchPolicy: "no-cache" }
+  );
 
   const setTableMeta = React.useMemo(
     () =>
@@ -44,15 +54,17 @@ function MapGridUnitTable(props) {
           objectName: hit.Operator,
         },
       };
+      hit.qualifier = get(hit, "qualifier.name", "");
       hit = props.setGenricData(hit, hit._id, [], []);
-      hit.tags = hit?.tags?.length > 0
-        ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
-        : [[], 0];
+      hit.tags =
+        hit?.tags?.length > 0
+          ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+          : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       return hit;
     });
-    return hits
-  }
+    return hits;
+  };
 
   useEffect(() => {
     setTableMeta({
@@ -62,39 +74,63 @@ function MapGridUnitTable(props) {
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
       startPaginationAt: 25,
-      filters: [{
-        field: "layer.keyword",
-        value: 'unit',
-      }],
+      filters: [
+        {
+          field: "layer.keyword",
+          value: "unit",
+        },
+      ],
+      polygon: stateApp?.currentFeature?.geometry && {
+        type: "geo_intersects",
+        field: "geoJSON",
+        value: stateApp?.currentFeature?.geometry
+      },
       formatHits,
     });
     // eslint-disable-next-line
   }, [searchInput]);
 
-  console.log('searchInput',searchInput)
+  useEffect(() => {
+    if (owners?.getShapeOwnerDataById && get(status, "getESFilterList.hits", [])) {
+      const rows = JSON.parse(JSON.stringify(props.rows));
+      const contactStatuses = get(status, "getESFilterList.hits", []).map(s => ({ name:s.key, data:[] }));
+
+      for (let i = 0; i < rows.length; i++) {
+        rows[i].ownersCount = owners?.getShapeOwnerDataById[rows[i]._id].total;
+        for(let j=0; j<contactStatuses.length; j++){
+          const data = owners?.getShapeOwnerDataById[rows[i]._id].status[contactStatuses[j].name]
+          contactStatuses[j].data = data ?[data] : [0]
+        }
+        rows[i].unitStatus = {series: contactStatuses, xaxis:['']}
+      }
+      props.setRows(rows);
+    }
+  }, [owners]);
 
   useEffect(() => {
-    if(owners?.getShapeOwnerDataById){
-      const rows = JSON.parse(JSON.stringify(props.rows))
-      for(let i=0; i<rows.length; i++){
-        rows[i].ownersCount = owners?.getShapeOwnerDataById[rows[i]._id].total
+    if (props.rows.length > 0) {
+      const ids = props.rows
+        .filter((row) => typeof row.ownersCount !== "number")
+        .map((row) => row._id);
+      if (ids.length > 0) {
+        getShapeOwnerDataById({
+          variables: {
+            ids,
+          },
+        });
       }
-      props.setRows(rows)
     }
-  },[owners])
+  }, [props.rows]);
   
   useEffect(() => {
-      if(props.rows.length > 0) {
-        const ids = props.rows.filter(row => typeof row.ownersCount !== 'number').map(row => row._id)
-        if(ids.length > 0){
-          getShapeOwnerDataById({
-            variables: {
-                ids
-            }
-        })
-        }
+    getStatus({
+      variables: {
+        esIndex: "contacts_flat",
+        filterKey: "contactStatus.keyword",
+        size: 50,
       }
-  },[props.rows])
+    });
+  },[]);
 
   return (
     <Container

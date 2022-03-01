@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import ReactApexChart from "react-apexcharts";
 
-const StackedBarChart = ({ data, toolTipFormatter, xAxisFormatter, xAxisLabel }) => {
+const StackedBarChart = ({ data, toolTipFormatter, xAxisFormatter, xAxisLabel, hideLegends }) => {
 
   const [series, setSeries] = useState([])
   const [options, setOptions] = useState({
@@ -26,6 +26,7 @@ const StackedBarChart = ({ data, toolTipFormatter, xAxisFormatter, xAxisLabel })
       opacity: 1,
     },
     legend: {
+      show: !hideLegends,
       position: "bottom",
     },
     dataLabels: {

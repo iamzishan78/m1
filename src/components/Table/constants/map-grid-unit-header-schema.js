@@ -76,7 +76,6 @@ const unitsColumnHeaders = [
       label: "Owners",
       esKey: "ownerCount.keyword",
       options: {
-        customRender: (value) => value.toString(),
         sort: true,
         filter: false,
       },
@@ -84,25 +83,25 @@ const unitsColumnHeaders = [
     {
       name: "campaignName",
       label: "Campaign Name",
-      esKey: "ownerCount.keyword",
+      esKey: "shapeJson.properties.campaignName",
       options: {
+        customRender: (value) => value?.map(v => `${v}, `),
         sort: true,
-        filter: false,
+        filter: true,
       },
     },
     {
       name: "qualifier",
       label: "Qualifier",
-      esKey: "qualifier.keyword",
+      esKey: "shapeJson.properties.qualifier.name.keyword",
       options: {
         sort: true,
-        filter: false,
+        filter: true,
       },
     },
     {
       name: "unitStatus",
       label: "Unit Status",
-      esKey: "unitStatus.keyword",
       options: {
         sort: true,
         filter: false,
@@ -116,6 +115,7 @@ const unitsColumnHeaders = [
         sort: true,
         filter: false,
       },
+      style: { minWidth: 250 }
     },
     {
       name: "tags",

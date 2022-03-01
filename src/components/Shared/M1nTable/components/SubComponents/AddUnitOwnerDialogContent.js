@@ -10,6 +10,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 import { Grid } from "@material-ui/core";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
+import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 
 import { AppContext } from "AppContext";
 import { Modals } from "styles/Modal";
@@ -125,6 +126,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   const [updateShapeOwners, { data: updateData }] = useMutation(UPDATE_SHAPE_OWNERS);
 
+  const [updateContact] = useMutation(UPDATECONTACT);
+
   useEffect(() => {
     let type = null;
     if (mutationData && mutationData.addOwnerToAShape) {
@@ -186,6 +189,46 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     emptyStates();
   };
 
+  const handleAddUpdate = (ownerToAdd) => {
+
+    if (selectedRow) {
+      ownerToAdd._id = selectedRow._id;
+      updateShapeOwners({
+        variables: {
+          shapeType: props.shapeType,
+          shapeOwners: [
+            {
+              shapeId: props.shapeId,
+              relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
+              ...ownerToAdd,
+              createBy: stateApp.user.mongoId,
+              lastUpdateBy: stateApp.user.mongoId,
+            },
+          ],
+        },
+        refetchQueries: ["getESPaginatedList", "getESFilterList"],
+        awaitRefetchQueries: true,
+      });
+    } else {
+      addOwnerToAShape({
+        variables: {
+          shapeType: props.shapeType,
+          shapeOwner: {
+            shapeId: props.shapeId,
+            relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
+            ...ownerToAdd,
+            createBy: stateApp.user.mongoId,
+            lastUpdateBy: stateApp.user.mongoId,
+          },
+        },
+        refetchQueries: ["getESPaginatedList", "getESFilterList"],
+        awaitRefetchQueries: true,
+      });
+    }
+
+    setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
+  }
+
   const handleClickAdd = (e) => {
     e.preventDefault();
     if (nameAutValue) {
@@ -203,42 +246,22 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerToAdd.name = nameAutValue.name;
       }
 
-      if (selectedRow) {
-        ownerToAdd._id = selectedRow._id;
-        updateShapeOwners({
+      if(ownerToAdd.contactStatus){
+        updateContact({
           variables: {
-            shapeType: props.shapeType,
-            shapeOwners: [
-              {
-                shapeId: props.shapeId,
-                relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
-                ...ownerToAdd,
-                createBy: stateApp.user.mongoId,
-                lastUpdateBy: stateApp.user.mongoId,
-              },
-            ],
-          },
-          refetchQueries: ["getESPaginatedList", "getESFilterList"],
-          awaitRefetchQueries: true,
-        });
-      } else {
-        addOwnerToAShape({
-          variables: {
-            shapeType: props.shapeType,
-            shapeOwner: {
-              shapeId: props.shapeId,
-              relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
-              ...ownerToAdd,
-              createBy: stateApp.user.mongoId,
+            contact: {
+              _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
+              contactStatus: ownerToAdd.contactStatus,
               lastUpdateBy: stateApp.user.mongoId,
-            },
-          },
-          refetchQueries: ["getESPaginatedList", "getESFilterList"],
-          awaitRefetchQueries: true,
+            }
+          }
+        }).then(res => {
+          handleAddUpdate(ownerToAdd)  
         });
+      }else{
+        handleAddUpdate(ownerToAdd)
       }
-
-      setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
+      
     }
   };
 

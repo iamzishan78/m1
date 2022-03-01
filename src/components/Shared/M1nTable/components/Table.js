@@ -71,7 +71,7 @@ import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDraw
 import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
 import Grid from "@material-ui/core/Grid";
 import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
-
+import StackedBarChart from "components/Shared/Charts/StackedBarChart";
 import ButtonDropDown from "./ButtonGroup";
 // auto complete for well API#
 import SearchWells from "components/Shared/Wells/WellsAutoCompleteFilter";
@@ -126,7 +126,7 @@ import AddActivityDialog from "components/ContactDetailCard/components/AddActivi
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
 import ConfirmationDialog from "components/ContactDetailCard/components/ConfirmationDialog";
-
+import { copy } from "utils/helper";
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -2533,6 +2533,34 @@ function SubTable(props) {
                   <>
                     <p className={classes.propertyName}>{value}</p>
                   </>
+                );
+              },
+            };
+            break;
+          case "ownersCount":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                return (
+                  <>
+                    <p>{value}</p>
+                  </>
+                );
+              },
+            };
+            break;
+          case "unitStatus":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                return (
+                  <div style={{ width: 250}}>
+                  {value ? (
+                    <StackedBarChart data={value} hideLegends />
+                  ):(
+                    <p>N/A</p>
+                  )}
+                  </div>
                 );
               },
             };

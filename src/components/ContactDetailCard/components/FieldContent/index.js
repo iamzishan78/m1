@@ -81,23 +81,15 @@ export default function FieldContent({
   const ignorableFieldsInCount = ['contactOwnerId'];
 
   const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
-  const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  // const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   const [statusOptions, setStatusOptions] = useState([])
-  const [campaignNameOptions, setCampaignNameOptions] = useState([])
 
   useEffect(() => {
     getFilters({
       variables: {
           esIndex:'contacts_flat',
           filterKey: 'status.keyword',
-          size: 50,
-      },
-    });
-    getCampaignFilters({
-      variables: {
-          esIndex:'contacts_flat',
-          filterKey: 'campaignName.keyword',
           size: 50,
       },
     });
@@ -118,13 +110,6 @@ export default function FieldContent({
       setStatusOptions(filterData)
     }
   },[filtersData])
-
-  useEffect(() => {
-    if(campaignfiltersData?.getESFilterList?.hits){
-      const allFiltersData = campaignfiltersData.getESFilterList.hits.map(hit => hit.key)
-      setCampaignNameOptions(allFiltersData.filter(d=> d))
-    }
-  },[campaignfiltersData]);
 
   useEffect(() => {
     if (content) {
@@ -491,7 +476,6 @@ export default function FieldContent({
   const renderOutput = campaignName ? 
     <CampaignNameField
       className={classes.maxWidth}
-      options={campaignNameOptions}
       onChange={(value) => {
         setEditContent((editContent) => ({
           ...editContent,
