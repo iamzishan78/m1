@@ -103,6 +103,7 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
             renderInput={(params) => (
                 <TextField
                     {...params}
+                    autoFocus={true}
                     label={label}
                     onChange={(e) => { handleChange(e.target.value) }}
                     onKeyDown={(e) => {
