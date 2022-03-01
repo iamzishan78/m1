@@ -39,11 +39,13 @@ function* convertTaxOwnerToContact(action) {
       jobName: "Contacts",
       jobType: "CONTACTS",
       userId,
+    },
+    {
+      fetchPolicy: "no-cache",
     });
 
     const { uri, id, internalKey } = uploadUri.data.getJobUploadUri.job;
 
-    yield put(toggleBulkUploadAction(!bulkUpload));
     const res = yield call(Api.fetchBlob, JSON.stringify(owners), id, internalKey, uri);
     if (res?._response?.status === 201) {
       const jobResponse = yield call(Api.mutate, CREATE_JOB, { jobId: id, sendEmail: false });
@@ -54,6 +56,8 @@ function* convertTaxOwnerToContact(action) {
         },
       });
     }
+
+    yield put(toggleBulkUploadAction(!bulkUpload));
   } catch (error) {
     yield put(convertTaxOwnerToContactAction.REJECTED());
   }
@@ -85,11 +89,14 @@ function* convertMultipleOwnerToContact(action) {
           existingContactId,
           actionType
         },
-      });
+      },
+      {
+        fetchPolicy: "no-cache",
+      }
+      );
   
       const { uri, id, internalKey } = uploadUri.data.getJobUploadUri.job;
   
-      yield put(toggleBulkUploadAction(!bulkUpload));
       const res = yield call(Api.fetchBlob, JSON.stringify(owners), id, internalKey, uri);
       _id = id;
       _res = res;
@@ -104,6 +111,8 @@ function* convertMultipleOwnerToContact(action) {
         },
       });
     }
+
+    yield put(toggleBulkUploadAction(!bulkUpload));
   } catch (error) {
     yield put(convertTaxOwnerToContactAction.REJECTED());
   }
