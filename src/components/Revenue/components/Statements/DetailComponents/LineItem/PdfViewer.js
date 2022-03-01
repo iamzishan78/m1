@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     position: "absolute !important",
-    top: "55% !important",
+    top: "50% !important",
     bottom: "0 !important",
     // left: "15px",
     width: "3.875rem",
