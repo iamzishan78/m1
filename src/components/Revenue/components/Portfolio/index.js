@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Grid, Button, Divider } from "@material-ui/core";
+import { Grid, Button, Divider, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
@@ -79,7 +80,7 @@ export default function Portfolio() {
           <Grid item xs={8} md={8} style={{ marginTop: "4px" }}>
             <CustomDates onChangeDates={onChangeDates} fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} />
           </Grid>
-          <Grid item xs={5} md={4}>
+          <Grid item xs={4} md={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
               <Grid item>
                 <Button variant="contained" color="secondary">
@@ -90,6 +91,19 @@ export default function Portfolio() {
                 <Button variant="contained">Run Report</Button>
               </Grid>
             </Grid>
+          </Grid>
+          <Grid item xs={3}>
+            <Autocomplete
+              size="small"
+              onChange={(event, newValue) => { }}
+              options={["Last Month"]}
+              renderInput={(params) => (
+                <TextField {...params} label="Reporting Groups" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
+              )}
+              defaultValue={"Last Month"}
+              disableListWrap
+              style={{ maxWidth: "400px", marginTop: "15px" }}
+            />
           </Grid>
         </Grid>
       </div>
