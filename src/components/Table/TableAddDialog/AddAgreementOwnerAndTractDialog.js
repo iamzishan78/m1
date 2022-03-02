@@ -91,6 +91,10 @@ function AddAgreementOwnerAndTractDialog(props) {
 
   const tract = watch('tract', {});
 
+  useEffect(() => {
+    register('tract.qtrQtrSelection');
+  }, [tract]);
+
   const parcelOwnersRadioBValue = watch('parcelOwnersRadioBValue', 'true')
 
   const [addOwnerToAShape, { data: mutationData }] = useMutation(ADD_OWNER_TOA_SHAPE, {
@@ -171,7 +175,7 @@ function AddAgreementOwnerAndTractDialog(props) {
         ...getValues(),
         depthTo: getValues().depthTo || "All depths",
         depthFrom: getValues().depthFrom || "All depths",
-        tract: { tractId: selectedShapeLayer._id, tractName: selectedShapeLayer.name, sdGrossAcres, legalDescription, ...originalProperties }
+        tract: { tractId: selectedShapeLayer._id, tractName: selectedShapeLayer.name, sdGrossAcres, legalDescription, ...originalProperties, qtrQtrSelection: selectedShapeLayer.qtrQtrSelection }
       }
       reset({ ...form })
 
@@ -190,13 +194,13 @@ function AddAgreementOwnerAndTractDialog(props) {
   }
 
   const handleSave = () => {
-    const ownerToAdd = getValues()
+    const ownerToAdd = getValues();
     ownerToAdd.isTractOwner = isTractOwner
-    ownerToAdd.tract.qtrQtrSelection = selectedShapeLayer?.qtrQtrSelection;
+    ownerToAdd.tract = tract;
     Object.keys(ownerToAdd).forEach((key) => {
       if (['mineral_interest', 'royalty_interest', 'orri', 'net_acres'].includes(key))
         ownerToAdd[key] = addTrailingZeros(ownerToAdd[key])
-    })
+    });
 
     if (ownerToAdd.parcelOwnersRadioBValue === "true") {
       ownerToAdd.depthFrom = 'All depths';
@@ -213,7 +217,9 @@ function AddAgreementOwnerAndTractDialog(props) {
             ...ownerToAdd,
           }],
           shapeType: props.shapeType,
-        }
+        },
+        refetchQueries: ["getESSimpleSearch"],
+        awaitRefetchQueries: true
       });
     } else {
       addOwnerToAShape({
@@ -294,6 +300,14 @@ function AddAgreementOwnerAndTractDialog(props) {
     const acres = calculateNetAcres()
     if (!value || !acres) return false
     return value && Number(value) !== Number(acres)
+  }
+
+  const handleChangeQtr = (value, index) => {
+    const qtr = JSON.parse(JSON.stringify(tract?.qtrQtrSelection?.selectedQtr));
+    qtr[index] = value ?? "";
+    const newTract = { ...tract, qtrQtrSelection: { ...tract.qtrQtrSelection, selectedQtr: qtr } };
+    reset({ ...getValues(), tract: newTract });
+
   }
 
   const autoCompleteList = dataAutoCompleteList?.autoCompleteList || []
@@ -540,94 +554,50 @@ function AddAgreementOwnerAndTractDialog(props) {
               InputLabelProps={{ shrink: true }} fullWidth onWheel={(e) => e.target.blur()} />
           </Grid>
 
-          <Grid container direction="row">
+          <Grid container direction="row" spacing={2}>
             <Grid item xs={3}>
-
               <Autocomplete
                 options={qtrOptions}
                 getOptionLabel={(option) => option}
-                value={selectedShapeLayer?.qtrQtrSelection?.selectedQtr?.[0] ?? ""}
-                // onChange={(e, newInputValue) => {
-                //   const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                //   qtr[0] = newInputValue ? newInputValue : "";
-                //   setNewOwner({
-                //     ...newOwner,
-                //     qtr,
-                //   });
-                // }}
+                value={tract?.qtrQtrSelection?.selectedQtr?.[0] ?? ""}
+
+                onChange={(e, newInputValue) => {
+                  handleChangeQtr(newInputValue, 0);
+                }}
                 renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 1" size="small" className={classes.maxWidth} />}
               />
             </Grid>
             <Grid item xs={3}>
-              <Controller
-                control={control}
-                variant="outlined"
-                name={`qtrQtrSelection.selectedQtr.${1}`}
-                label="QTR 2"
-                render={(params1) => (
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={(option) => option}
-                    value={selectedShapeLayer?.qtrQtrSelection?.selectedQtr?.[1] ?? ""}
-                    // onChange={(e, newInputValue) => {
-                    //   const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                    //   qtr[0] = newInputValue ? newInputValue : "";
-                    //   setNewOwner({
-                    //     ...newOwner,
-                    //     qtr,
-                    //   });
-                    // }}
-                    renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 2" size="small" className={classes.maxWidth} />}
-                  />
-                )}
+              <Autocomplete
+                options={qtrOptions}
+                getOptionLabel={(option) => option}
+                value={tract?.qtrQtrSelection?.selectedQtr?.[1] ?? ""}
+                onChange={(e, newInputValue) => {
+                  handleChangeQtr(newInputValue, 1);
+                }}
+                renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 2" size="small" className={classes.maxWidth} />}
               />
             </Grid>
             <Grid item xs={3}>
-              <Controller
-                control={control}
-                variant="outlined"
-                name={`qtrQtrSelection.selectedQtr.${2}`}
-                label="QTR 3"
-                render={(params1) => (
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={(option) => option}
-                    value={selectedShapeLayer?.qtrQtrSelection?.selectedQtr?.[2] ?? ""}
-                    // onChange={(e, newInputValue) => {
-                    //   const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                    //   qtr[0] = newInputValue ? newInputValue : "";
-                    //   setNewOwner({
-                    //     ...newOwner,
-                    //     qtr,
-                    //   });
-                    // }}
-                    renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 3" size="small" className={classes.maxWidth} />}
-                  />
-                )}
+              <Autocomplete
+                options={qtrOptions}
+                getOptionLabel={(option) => option}
+                value={tract?.qtrQtrSelection?.selectedQtr?.[2] ?? ""}
+                onChange={(e, newInputValue) => {
+                  handleChangeQtr(newInputValue, 2);
+                }}
+                renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 3" size="small" className={classes.maxWidth} />}
               />
             </Grid>
             <Grid item xs={3}>
-              <Controller
-                control={control}
-                variant="outlined"
-                name={`qtrQtrSelection.selectedQtr.${3}`}
-                label="QTR 4"
-                render={(params1) => (
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={(option) => option}
-                    value={selectedShapeLayer?.qtrQtrSelection?.selectedQtr?.[3] ?? ""}
-                    // onChange={(e, newInputValue) => {
-                    //   const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                    //   qtr[0] = newInputValue ? newInputValue : "";
-                    //   setNewOwner({
-                    //     ...newOwner,
-                    //     qtr,
-                    //   });
-                    // }}
-                    renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 4" size="small" className={classes.maxWidth} />}
-                  />
-                )}
+              <Autocomplete
+                options={qtrOptions}
+                getOptionLabel={(option) => option}
+                value={tract?.qtrQtrSelection?.selectedQtr?.[3] ?? ""}
+                onChange={(e, newInputValue) => {
+                  handleChangeQtr(newInputValue, 3);
+                }}
+                renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 4" size="small" className={classes.maxWidth} />}
               />
             </Grid>
           </Grid>
