@@ -125,6 +125,7 @@ function ActivitiesTable(props) {
       esIndex,
       startPaginationAt: 25,
       formatHits,
+      defaultSort: { field: 'lastUpdateAt', order: 'desc' },
       setAppliedFilters: props.filtersChange,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
