@@ -258,7 +258,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                                     }
                                 </> :
                                 <div style={{ minWidth: '30px', cursor: "pointer" }} >
-                                    <Grid container direction="row" justifyContent="space-between" alignItems="center">
+                                    <Grid style={data.key === 'campaignName'? { display: 'block'}: { display: 'flex'}} container direction="row" justifyContent="space-between" alignItems="center">
                                         {data.formatValue ?
                                             <Grid item>
                                                 {data.formatValue(data.value || properties[data.key]) || '-'}

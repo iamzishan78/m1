@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import ReactApexChart from "react-apexcharts";
 
-const StackedBarChart = ({ data, toolTipFormatter, xAxisFormatter, xAxisLabel, hideLegends }) => {
+const StackedBarChart = ({ data, toolTipFormatter, xAxisFormatter, xAxisLabel, hideLegends, eachBarHeight }) => {
 
   const [series, setSeries] = useState([])
   const [options, setOptions] = useState({
@@ -52,7 +52,7 @@ const StackedBarChart = ({ data, toolTipFormatter, xAxisFormatter, xAxisLabel, h
       options={options}
       series={series}
       type="bar"
-      height={100 + data.xaxis.length * 20}
+      height={100 + data.xaxis.length * (eachBarHeight ? eachBarHeight : 20)}
       className="apex-charts"
     />
   );

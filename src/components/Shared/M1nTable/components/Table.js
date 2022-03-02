@@ -2555,7 +2555,7 @@ function SubTable(props) {
                 return (
                   <div style={{ width: 250}}>
                   {value ? (
-                    <StackedBarChart data={value} hideLegends />
+                    <StackedBarChart data={value} hideLegends eachBarHeight={5} />
                   ):(
                     <p>N/A</p>
                   )}

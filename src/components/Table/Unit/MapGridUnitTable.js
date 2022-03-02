@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import get from "lodash/get";
 import { useLazyQuery } from "@apollo/client";
+import moment from "moment";
 
 // context
 import { AppContext } from "AppContext";
@@ -55,6 +56,7 @@ function MapGridUnitTable(props) {
         },
       };
       hit.qualifier = get(hit, "qualifier.name", "");
+      hit.lastUpdated = moment(hit._ts).format('MM/DD/YYYY');
       hit = props.setGenricData(hit, hit._id, [], []);
       hit.tags =
         hit?.tags?.length > 0
@@ -80,6 +82,7 @@ function MapGridUnitTable(props) {
           value: "unit",
         },
       ],
+      defaultSort: { field: '_ts', order: 'desc' },
       polygon: stateApp?.currentFeature?.geometry && {
         type: "geo_intersects",
         field: "geoJSON",

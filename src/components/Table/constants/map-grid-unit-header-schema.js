@@ -110,12 +110,11 @@ const unitsColumnHeaders = [
     {
       name: "lastUpdated",
       label: "Last Updated",
-      esKey: "lastUpdated.keyword",
+      esKey: "_ts",
       options: {
         sort: true,
         filter: false,
-      },
-      style: { minWidth: 250 }
+      }
     },
     {
       name: "tags",
