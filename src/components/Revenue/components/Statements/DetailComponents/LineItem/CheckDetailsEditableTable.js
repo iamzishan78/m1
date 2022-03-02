@@ -213,6 +213,9 @@ function CheckDetailsEditableTable(props) {
             variables: { checkDetail: row },
             refetchQueries: [],
             awaitRefetchQueries: true
+        }).then((resp) => {
+            if (!row._id && resp?.data?.updateCheckDetail?.updatedCheckDetail?._id)
+                set(row, `_id`, resp.data.updateCheckDetail.updatedCheckDetail._id)
         })
     })
 
