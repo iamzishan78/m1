@@ -102,7 +102,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
             else return true;
           })}
           renderInput={(params) => (
-            <TextField {...params} variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
+            <TextField {...params} label="Date Range" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
           )}
           defaultValue={isProperties ? CUSTOM_DATES.ALL_DATES : CUSTOM_DATES.LAST_MONTH}
           disableListWrap

@@ -93,7 +93,7 @@ export default function Portfolio() {
           </Grid>
         </Grid>
       </div>
-      <AnalyticsCards cards={cards} />
+      {/* <AnalyticsCards cards={cards} /> */}
       <Divider className={classes.divider} />
       <DetailTabsSection monthsInterval={monthsInterval} />
     </>
