@@ -14,6 +14,11 @@ const useStyles = makeStyles(() => ({
     position: "relative",
     alignItems: "center",
   },
+  heading: {
+    padding : '10px 20px 20px 30px',
+    fontWeight: '600',
+    fontSize: '20px'
+  }
 }));
 
 const CampaignDetail = () => {
@@ -50,6 +55,7 @@ const CampaignDetail = () => {
           </Breadcrumbs>
         </div>
       </div>
+      <div className={classes.heading}>{campaignName}</div>
     </div>
   );
 };
