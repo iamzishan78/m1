@@ -437,7 +437,9 @@ export default function HeaderSection(props) {
                         params.value ? params.value : { _id: "", name: "" }
                       }
                       setNameAutValue={(value) => {
-                        contactEntity(value?._id, "operator");
+                        if (value)
+                          contactEntity(value?._id, "operator");
+                        else handleUpdate("operator", null)
                       }}
                       renderInput={(params2) => (
                         <TextField
