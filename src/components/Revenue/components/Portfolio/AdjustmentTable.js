@@ -87,7 +87,7 @@ export default function AdjustmentTable({ monthsInterval }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow key="side-headers">
+                <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
                     Severence Tax
                   </TableCell>
@@ -95,7 +95,7 @@ export default function AdjustmentTable({ monthsInterval }) {
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
                     Transportation - Oil
                   </TableCell>
@@ -103,7 +103,7 @@ export default function AdjustmentTable({ monthsInterval }) {
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
                     Compression
                   </TableCell>
@@ -111,7 +111,7 @@ export default function AdjustmentTable({ monthsInterval }) {
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
                     Transportation - Gas
                   </TableCell>
@@ -119,7 +119,7 @@ export default function AdjustmentTable({ monthsInterval }) {
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
                     Processing
                   </TableCell>
@@ -127,7 +127,7 @@ export default function AdjustmentTable({ monthsInterval }) {
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
                     Lease Use
                   </TableCell>
@@ -135,7 +135,7 @@ export default function AdjustmentTable({ monthsInterval }) {
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
                     Others
                   </TableCell>
@@ -143,7 +143,7 @@ export default function AdjustmentTable({ monthsInterval }) {
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers" className={`${classes.highlightedRows}`}>
+                <TableRow className={`${classes.highlightedRows}`}>
                   <TableCell scope="row" className={classes.leftCells}>
                     Total Adjustments
                   </TableCell>
@@ -154,7 +154,7 @@ export default function AdjustmentTable({ monthsInterval }) {
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers"></TableRow>
+                <TableRow></TableRow>
               </TableBody>
             </Table>
           </Grid>
@@ -170,42 +170,42 @@ export default function AdjustmentTable({ monthsInterval }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow key="side-headers">
+                <TableRow>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-                <TableRow key="side-headers" className={classes.highlightedRows}>
+                <TableRow className={classes.highlightedRows}>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}

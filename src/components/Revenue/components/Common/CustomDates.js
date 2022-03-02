@@ -4,8 +4,8 @@ import { makeStyles } from "@material-ui/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import moment from "moment";
 
-import { CUSTOM_DATES } from 'utils/data'
-import { handleCustomDateTypeChange } from 'utils/helper';
+import { CUSTOM_DATES } from "utils/data";
+import { handleCustomDateTypeChange } from "utils/helper";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -39,8 +39,8 @@ const useStyles = makeStyles((theme) => ({
   },
   inputFieldDate: {
     "& .MuiOutlinedInput-input": {
-      paddingLeft: '0px'
-    }
+      paddingLeft: "0px",
+    },
   },
   label: {
     fontSize: 16,
@@ -49,7 +49,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // fromDate and toDate should be passed from the parent
-export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate, setToDate, label, isProperties, lastCheckMinDate, onChange }) {
+export default function Portfolio({
+  onChangeDates,
+  fromDate,
+  setFromDate,
+  toDate,
+  setToDate,
+  label,
+  isProperties,
+  lastCheckMinDate,
+  onChange,
+}) {
   const classes = useStyles();
   useEffect(() => {
     if (isProperties) {
@@ -57,14 +67,15 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
     } else {
       handleDateTypeChange(CUSTOM_DATES.LAST_MONTH);
     }
-    delete CUSTOM_DATES.THIS_WEEK
-    delete CUSTOM_DATES.LAST_WEEK
+    delete CUSTOM_DATES.THIS_WEEK;
+    delete CUSTOM_DATES.LAST_WEEK;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (onChangeDates) onChangeDates(fromDate, toDate);
-  }, [onChangeDates, fromDate, toDate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromDate, toDate]);
 
   const getFlaggedMoment = (moment) => {
     return moment >= 10 ? moment : `0${moment}`;
@@ -78,8 +89,8 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
   // }
 
   const handleDateTypeChange = (date) => {
-    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate)
-  }
+    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate);
+  };
   return (
     <Grid container direction="row" display="flex" alignItems="center" spacing={3}>
       {label && (
@@ -97,8 +108,8 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
               handleDateTypeChange(newValue);
             }
           }}
-          options={Object.values(CUSTOM_DATES).filter(value => {
-            if (!isProperties && value === 'All Dates') return false;
+          options={Object.values(CUSTOM_DATES).filter((value) => {
+            if (!isProperties && value === "All Dates") return false;
             else return true;
           })}
           renderInput={(params) => (
@@ -109,7 +120,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
           id="custom-date-dropdown"
         />
       </Grid>
-      <Grid item xs={3} sm={3} md={3} lg={3} xl={3} >
+      <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
         <TextField
           size="small"
           margin="dense"
@@ -117,7 +128,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
           variant="outlined"
           placeholder=""
           fullWidth
-          value={moment(fromDate).format('yyyy-MM')}
+          value={moment(fromDate).format("yyyy-MM")}
           className={classes.inputFieldDate}
           InputLabelProps={{
             shrink: true,
@@ -131,7 +142,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
           }}
           onChange={(event) => {
             if (event.target.value == "") {
-              setFromDate(`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`)
+              setFromDate(`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`);
             } else {
               setFromDate(event.target.value);
             }
@@ -141,7 +152,7 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
       <Grid>
         <label>to</label>
       </Grid>
-      <Grid item xs={3} sm={3} md={3} lg={3} xl={3} >
+      <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
         <TextField
           size="small"
           margin="dense"
@@ -149,11 +160,11 @@ export default function Portfolio({ onChangeDates, fromDate, setFromDate, toDate
           variant="outlined"
           placeholder="to"
           fullWidth
-          value={moment(toDate).format('yyyy-MM')}
+          value={moment(toDate).format("yyyy-MM")}
           className={classes.inputFieldDate}
           onChange={(event) => {
             if (event.target.value == "") {
-              setToDate(`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`)
+              setToDate(`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`);
             } else {
               setToDate(event.target.value);
             }

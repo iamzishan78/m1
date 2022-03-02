@@ -6,6 +6,7 @@ import { Typography, Tabs, Tab } from "@material-ui/core";
 // Components
 import RevenueTable from "./RevenueTable";
 import AdjustmentTable from "./AdjustmentTable";
+import ProductsSection from "./Products";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,7 +56,6 @@ const useStyles = makeStyles((theme) => ({
     padding: "20px 38px",
     backgroundColor: "#fff",
     marginBottom: "10px",
-    height: "400px",
   },
   propertiesSection: {
     padding: "20px 38px",
@@ -136,7 +136,7 @@ export default function DetailTabsSection({ monthsInterval }) {
           <StyledTab label="Properties" />
         </StyledTabs>
       </div>
-      <div style={{ maxHeight: "calc(100vh - 475px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+      <div style={{ maxHeight: "calc(100vh - 282px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
         <div className={classes.revenueSection} ref={tab === 0 ? selectedTabRef : null}>
           <Typography varient="h6" className={classes.sectionTitle}>
             Revenue & Income
@@ -153,6 +153,7 @@ export default function DetailTabsSection({ monthsInterval }) {
           <Typography varient="h6" className={classes.sectionTitle}>
             Products
           </Typography>
+          <ProductsSection monthsInterval={monthsInterval} />
         </div>
         <div className={classes.propertiesSection} ref={tab === 3 ? selectedTabRef : null}>
           <Typography varient="h6" className={classes.sectionTitle}>

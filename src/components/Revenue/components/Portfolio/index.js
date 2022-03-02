@@ -78,7 +78,13 @@ export default function Portfolio() {
       <div className={classes.actionBar}>
         <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 36px" }}>
           <Grid item xs={8} md={8} style={{ marginTop: "4px" }}>
-            <CustomDates onChangeDates={onChangeDates} fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} />
+            <CustomDates
+              onChangeDates={onChangeDates}
+              fromDate={fromDate}
+              setFromDate={setFromDate}
+              toDate={toDate}
+              setToDate={setToDate}
+            />
           </Grid>
           <Grid item xs={4} md={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
@@ -95,7 +101,7 @@ export default function Portfolio() {
           <Grid item xs={3}>
             <Autocomplete
               size="small"
-              onChange={(event, newValue) => { }}
+              onChange={(event, newValue) => {}}
               options={["Last Month"]}
               renderInput={(params) => (
                 <TextField {...params} label="Reporting Groups" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
