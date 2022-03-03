@@ -170,10 +170,17 @@ export default function M1neralHeaders(props) {
               return null
         }
       }
-      if (['CONTACTS','PARCELINTERESTS'].includes(stateApp.jobType)) {
+      if (['SHAPEOWNER'].includes(stateApp.jobType)) {
+        if (!return_obj["shape._id"] ||
+            !return_obj["shape.name"]) {
+              return null
+        }
+      }
+      if (['CONTACTS','PARCELINTERESTS','SHAPEOWNER'].includes(stateApp.jobType)) {
         if (
           return_obj === {} ||
           !(
+            return_obj["_id"] ||
             return_obj["entityDetail.firstName"] ||
             return_obj["entityDetail.lastName"] ||
             return_obj["entityDetail.name"]
@@ -187,7 +194,6 @@ export default function M1neralHeaders(props) {
           return_obj["leadSource"] = createLeadSource();
 
         if (!return_obj["entityDetail.name"]) {
-          return_obj["entityDetail.name"] = "";
           if (return_obj["entityDetail.firstName"] && return_obj["entityDetail.lastName"]) {
             return_obj["entityDetail.name"] =
               return_obj["entityDetail.firstName"] + " " + return_obj["entityDetail.lastName"];

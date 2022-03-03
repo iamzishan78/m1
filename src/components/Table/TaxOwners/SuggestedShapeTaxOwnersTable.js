@@ -31,6 +31,7 @@ import isEmpty from "lodash/isEmpty";
 import { getPolygonString } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 
+import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
 function SuggestedShapeTaxOwnersTable(props) {
   const classes = usetableStyles();
@@ -43,6 +44,7 @@ function SuggestedShapeTaxOwnersTable(props) {
   // function states
   const [columns, Columns] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [showConvertDialog, setShowConvertDialog] = useState(false)
 
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
@@ -253,7 +255,8 @@ function SuggestedShapeTaxOwnersTable(props) {
             className={classes.multiSelectionTopBarButtons}
             disabled={data.length < 1}
             onClick={() => {
-              suggestedOwnerToShape();
+              // suggestedOwnerToShape();
+              setShowConvertDialog(true);
             }}
           >
             + ADD TO {props.shapeType?.toUpperCase()}
@@ -268,6 +271,7 @@ function SuggestedShapeTaxOwnersTable(props) {
   };
 
   const suggestedOwnerToShape = async () => {
+    
     const { rows } = props;
     const selectedOwners = selectedRows.map((sR => rows[sR.dataIndex]))
     const globalOwnerIds = [];
@@ -395,6 +399,18 @@ function SuggestedShapeTaxOwnersTable(props) {
         setColumnsBase={[]}
         getWellOwnersByYear={getWellOwnersByYear}
       />
+      {showConvertDialog && (
+        <MultipleOwnerToContactDrawerContainer
+          onClose={() => {
+            // onClose();
+            setShowConvertDialog(false);
+          }}
+          rows={selectedRows}
+          setM1nSelectedRowsIndexes={() => {}}
+          onSuccess={() => {}}
+          setRows={() => {}}
+        />
+      )}
     </Container>
   );
 }

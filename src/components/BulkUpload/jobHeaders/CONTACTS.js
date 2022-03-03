@@ -3,7 +3,7 @@ export default [
         label: "Contact Id",
         mapped_key: "",
         required: false,
-        actual_key: "contactId",
+        actual_key: "_id",
     },
     {
         label: "Full Name",
@@ -82,6 +82,12 @@ export default [
         mapped_key: "",
         required: false,
         actual_key: "entityDetail.country",
+    },
+    {
+      label: "Global Owner",
+      mapped_key: "",
+      required: false,
+      actual_key: "entityDetail.globalOwner",
     },
     {
         label: "Primary Email",
@@ -250,12 +256,6 @@ export default [
     //   mapped_key: "",
     //   required: false,
     //   actual_key: "entityDetail.title",
-    // },
-    // {
-    //   label: "Global Owner",
-    //   mapped_key: "",
-    //   required: false,
-    //   actual_key: "entityDetail.globalOwner",
     // },
     // {
     //   label: "Created By",

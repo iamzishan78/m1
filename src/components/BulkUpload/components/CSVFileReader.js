@@ -266,6 +266,8 @@ export default function CSVFileReader(props) {
               removeButtonColor="#659cef"
               config={{
                 header: true,
+                transform: (value, header) => { return value === "" ? undefined : value},
+                dynamicTyping: true
               }}
               onRemoveFile={handleOnRemoveFile}
               style={upload_box}

@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 // context
+import { NavigationContext } from "../../Navigation/NavigationContext";
 
 import { Container, Button, Dialog, Tooltip, IconButton } from "@material-ui/core";
+import ButtonDropDown from "components/Shared/M1nTable/components/ButtonGroup";
 import Table from "components/Shared/M1nTable/components/Table";
 import DeleteIcon from "@material-ui/icons/Delete";
 import TableHOC from "components/Table/TableHOC";
@@ -33,6 +36,9 @@ import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 function UnitOwnersTable(props) {
   const classes = usetableStyles();
+  const [stateNav, setStateNav] = useContext(NavigationContext);
+  const history = useHistory();
+
   const [addToTable, setAddToTable] = useState(false)
   const [openDialog, setOpenDialog] = useState(null);
   const [expandedObject, ExpandedObject] = useState();
@@ -195,61 +201,100 @@ function UnitOwnersTable(props) {
     }
   }
 
+//   const ButtonActions = React.useMemo(() => {
+//     return [{
+//         isShow: false, text: 'Update Group', action: () => {
+//             handleAddUpdateDelete({ type: 'update', name: reportingGroup })
+//         }
+//     },
+//     { isShow: true, text: 'Save as New Report Group', action: () => setConfig({ show: true, type: 'new', name: reportingGroup + " - Copy" }) },
+//     { isShow: true, text: 'Edit Report Group Name', action: () => setConfig({ show: true, type: 'update', name: reportingGroup }) },
+//     { isShow: true, text: 'Delete Report Group', action: () => setDeleteDialogOpen(true) }
+//     ]
+//     // eslint-disable-next-line react-hooks/exhaustive-deps
+// }, [reportingGroup, handleAddUpdateDelete]);
+
   const count = tableData?.total || 0
   const options = {
     rowsPerPageOptions: [10, 25, 50, 100],
     count: count,
     serverSide: true,
     searchable: true,
-    rowsSelected: selectedRows.map((sR => sR.dataIndex)),
+    rowsSelected: selectedRows.map((sR) => sR.dataIndex),
     filter: true,
     customToolbar: () => {
-      return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-        <Button
-          color="secondary"
-          className={classes.multiSelectionTopBarButtons}
-          onClick={() => { setAddToTable(true); selectRow(null) }}
-        >
-          + ADD OWNER TO {props.shapeType?.toUpperCase()}
-        </Button>
-      </div>
+      return (
+        <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }} >
+          <ButtonDropDown variant="contained" /*color="secondary" className={classes.multiSelectionTopBarButtons}*/ options={[
+            {
+              text: `+ ADD OWNER TO ${props.shapeType?.toUpperCase()}`,
+              isShow: false,
+              action: () => {
+                setAddToTable(true);
+                selectRow(null);
+              },
+            },
+            {
+              text: "Import Interest Owners",
+              isShow: true,
+              action: () => {
+                setStateNav((stateNav) => ({
+                  ...stateNav,
+                  bulkUploadFromMap: true,
+                  bulkUploadShape: props.customLayer._id,
+                }));
+                history.push("/bulkupload");
+              },
+            },
+          ]} />
+        </div>
+      );
     },
     customToolbarSelect: ({ data }) => {
-      return <div style={{ height: "48px", display: "flex" }}>
-        <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
-          <FeatureFlag feature={FEATURES.IDICORE}>
-            <Button
-              color="secondary"
-              startIcon={<RequestPageIcon color="white" />}
-              className={classes.multiSelectionTopBarButtons}
-              onClick={() => {
-                let contacts = [];
-                for (let i in selectedRows) {
-                  console.log(selectedRows[i]);
-                  props.rows[selectedRows[i].dataIndex]._id = props.rows[selectedRows[i].dataIndex].contactId;
-                  contacts.push(props.rows[selectedRows[i].dataIndex]);
-                }
-                selectRow(contacts);
-                handleExpandClick(contacts, "buyContactsInfoData")
-              }}
-            >
-              Contact Data
-            </Button>
-          </FeatureFlag>
-          <Tooltip title={"Delete"}>
-            <IconButton size="medium" style={{ margin: "0 5px" }} aria-label="delete"
-              onClick={(e) => { setOpenDialog("delete"); }}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+      return (
+        <div style={{ height: "48px", display: "flex" }}>
+          <div style={{ marginTop: "6px", height: "35px", display: "flex" }}>
+            <FeatureFlag feature={FEATURES.IDICORE}>
+              <Button
+                color="secondary"
+                startIcon={<RequestPageIcon color="white" />}
+                className={classes.multiSelectionTopBarButtons}
+                onClick={() => {
+                  let contacts = [];
+                  for (let i in selectedRows) {
+                    console.log(selectedRows[i]);
+                    props.rows[selectedRows[i].dataIndex]._id =
+                      props.rows[selectedRows[i].dataIndex].contactId;
+                    contacts.push(props.rows[selectedRows[i].dataIndex]);
+                  }
+                  selectRow(contacts);
+                  handleExpandClick(contacts, "buyContactsInfoData");
+                }}
+              >
+                Contact Data
+              </Button>
+            </FeatureFlag>
+            <Tooltip title={"Delete"}>
+              <IconButton
+                size="medium"
+                style={{ margin: "0 5px" }}
+                aria-label="delete"
+                onClick={(e) => {
+                  setOpenDialog("delete");
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
         </div>
-      </div>
+      );
     },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
       setAddToTable(true);
       selectRow({ ...props.rows[dataIndex] });
-    }
-  }
+    },
+  };
 
   const handleExpandClick = async (idOrValues, type) => {
     setExpandedObject(idOrValues);

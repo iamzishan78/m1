@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 const rawJobs = [
   { name: 'Import Contacts', type: 'CONTACTS' },
   { name: 'Interest Owner Upload', type: 'PARCELINTERESTS' },
+  { name: 'Shape Owner Upload', type: 'SHAPEOWNER' },
   { name: 'Check Detail Upload', type: 'CHECKDETAILS' }
 ]
 
@@ -46,7 +47,7 @@ export default function BulkUpload(props) {
     return !!stateNav.bulkUploadFromMap && 'Map' || !!stateNav.bulkUploadFromContacts && 'Contacts';
   };
 
-  const jobs = rawJobs.filter((job) => ( stateNav.bulkUploadFromMap ? 'CONTACTS' : 'PARCELINTERESTS' ) !== job.type)
+  const jobs = rawJobs//.filter((job) => ( stateNav.bulkUploadFromMap ? 'CONTACTS' : 'PARCELINTERESTS' ) !== job.type)
   const [selectedJob, setSelectedJob] = useState(jobs[0]);
   const [showIcon, setShowIcon] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
