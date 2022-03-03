@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Breadcrumbs } from "@material-ui/core";
 import { NavigateNext as NavigateNextIcon } from "@material-ui/icons";
@@ -14,11 +14,18 @@ const useStyles = makeStyles(() => ({
     position: "relative",
     alignItems: "center",
   },
+  heading: {
+    padding : '10px 20px 20px 30px',
+    fontWeight: '600',
+    fontSize: '20px'
+  }
 }));
 
 const CampaignDetail = () => {
   const classes = useStyles();
   const history = useHistory();
+  const location = useLocation();
+  const campaignName = location.state.campaignName
 
   return (
     <div style={{}}>
@@ -44,10 +51,11 @@ const CampaignDetail = () => {
               Campaign
             </Link>
 
-            <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>Campaign Name Here</Typography>
+            <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{campaignName}</Typography>
           </Breadcrumbs>
         </div>
       </div>
+      <div className={classes.heading}>{campaignName}</div>
     </div>
   );
 };

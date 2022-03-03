@@ -22,12 +22,18 @@ const CampaignsHeadCells = [
       display: true,
       sort: true,
       filter: true,
-      customRender: (value) => {
+      customRender: (value, tableMeta) => {
         return value ? (
           <p
             onClick={(e) => {
               e.stopPropagation();
-              history.push(`/contacts/campaignManagement/:id`);
+              
+              history.push(
+                {
+                  pathname: `/contacts/campaignManagement/:id`,
+                  state: { campaignName: value }
+                }
+              );
             }}
             style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
           >
