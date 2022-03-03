@@ -35,13 +35,13 @@ const RevenueStatementHeadCells = [
         id: "property.number", title: "Property Code", filterKey: 'property.number.keyword', sort: true, type: 'autocomplete', width: '180px'
     },
     {
-        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', sort: true, width: '210px'
+        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', sort: true, width: '210px', disabled: true
     },
     {
-        id: "property.state", title: "State", filterKey: 'property.state.keyword', sort: true, width: '100px'
+        id: "property.state", title: "State", filterKey: 'property.state.keyword', sort: true, width: '100px', disabled: true
     },
     {
-        id: "property.county", title: "County", filterKey: 'property.county.keyword', sort: true, width: '130px'
+        id: "property.county", title: "County", filterKey: 'property.county.keyword', sort: true, width: '130px', disabled: true
     },
     {
         id: "date", title: "Sales Date", filterKey: 'date', sort: true, type: 'date', width: '180px'
@@ -463,9 +463,9 @@ function CheckDetailsEditableTable(props) {
                                 sort={sort}
                                 createSortHandler={createSortHandler}
                                 // focusOnSingleClick={props.focusOnSingleClick}
-                                // disabledCellChecker={(row, columnId) => {
-                                //     return columnId === 'age';
-                                // }}
+                                disabledCellChecker={(row, column) => {
+                                    return column.disabled;
+                                }}
                                 isScrollable
                             />
                         </TableContainer>
