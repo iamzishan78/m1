@@ -192,7 +192,7 @@ export default function DealComment({
               </Grid>
               <Grid container item xs={11} alignItems="center">
                 <Grid item xs>
-                  <span style={{ fontWeight: 400 }}>{option.name}</span>
+                  <span style={{ fontWeight: 400, paddingLeft: 20 }}>{option.name}</span>
                   {option.type}
                 </Grid>
               </Grid>

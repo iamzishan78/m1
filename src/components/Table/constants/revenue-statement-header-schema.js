@@ -13,19 +13,15 @@ const RevenueStatementHeadCells = [
       sort: true,
       filter: true,
       customRender: (value, tableMeta, updateValue) => {
-        return value ? (
-          <p
-            onClick={(e) => {
-              e.stopPropagation();
-              history.push(`/revenue/statement/details/${tableMeta.rowData[0]}`);
-            }}
-            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-          >
-            {value}
-          </p>
-        ) : (
-          <p style={{ color: "#898989b0" }}>N/A</p>
-        );
+        return <p
+          onClick={(e) => {
+            e.stopPropagation();
+            history.push(`/revenue/statement/details/${tableMeta.rowData[0]}`);
+          }}
+          style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+        >
+          {value || 'N/A'}
+        </p>
       },
     },
   },

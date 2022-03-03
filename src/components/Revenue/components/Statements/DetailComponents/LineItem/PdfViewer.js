@@ -10,6 +10,7 @@ import ZoomOutIcon from "@material-ui/icons/ZoomOut";
 import { Document, Page } from "react-pdf";
 
 import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
+import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -39,14 +40,14 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     position: "absolute !important",
-    top: "85% !important",
+    top: "50% !important",
     bottom: "0 !important",
-    left: "15px",
+    // left: "15px",
     width: "3.875rem",
   },
 }));
 
-export default function PdfViewer({ togglePdfViewState }) {
+export default function PdfViewer({ togglePdfViewState, checkId }) {
   const classes = useStyles();
   const [pdfFile, setFile] = useState({});
   const [pdfState, setpdfState] = useState([]);
@@ -55,19 +56,33 @@ export default function PdfViewer({ togglePdfViewState }) {
 
   const recentFile = useSelector(({ Revenue }) => Revenue?.statements?.recentFile);
 
-  const [stateApp] = useContext(AppContext);
+  const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
+    fetchPolicy: "cache-and-network",
+  });
+
+  useEffect(() => {
+    if (checkId) {
+      getRecentFiles({
+        variables: {
+          relatedObjectId: checkId,
+          relatedObjectType: "Check",
+        },
+      });
+    }
+  }, [getRecentFiles, checkId]);
 
   const [viewFile, { data: viewFileResult, loading: fileLoading }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
 
+  const fileId = files?.getFileDescriptors && files?.getFileDescriptors[0]?.fileId ? files?.getFileDescriptors && files?.getFileDescriptors[0]?.fileId : ''
   useEffect(() => {
-    if (recentFile || (stateApp.metaDrawerViewFiles && stateApp.metaDrawerViewFiles[0])) {
+    if (recentFile || fileId) {
       viewFile({
-        variables: { fileId: recentFile?.fileId || stateApp.metaDrawerViewFiles[0] },
+        variables: { fileId: recentFile?.fileId || fileId },
       });
     }
-  }, [recentFile, viewFile]);
+  }, [recentFile, viewFile, files?.getFileDescriptors]);
 
   useEffect(() => {
     if (viewFileResult?.viewFile) {
@@ -146,7 +161,7 @@ export default function PdfViewer({ togglePdfViewState }) {
               );
             })}
           </Document>
-          {recentFile && (
+          {(recentFile || (files?.getFileDescriptors)) && (
             <div className={classes.ZoomIcons}>
               {" "}
               <IconButton
