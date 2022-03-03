@@ -1,8 +1,8 @@
 import {
   CURRENT_USER_GRID_VIEW_SETTINGS,
-  SET_CURRENT_USER_GRID_VIEW
+  SET_CURRENT_USER_GRID_VIEW,
+  UPDATE_USER_GRID_VIEW_SETTING
 } from "store/type";
-import { currentUserGridViewSettingsAction } from "store/actions/sessionActions"
 
 const INIT_STATE = {
   isLoaded: null,
@@ -16,7 +16,16 @@ const sessionReducer = (state = INIT_STATE, action) => {
       return { ...state, ...action.payload, isLoaded: true };
     }
     case SET_CURRENT_USER_GRID_VIEW.FULLFILLED: {
-      return state;
+      return { ...state, userGridViewSettings: {
+        ...state.userGridViewSettings,
+        ...action.payload
+      } }
+    }
+    case UPDATE_USER_GRID_VIEW_SETTING.FULLFILLED: {
+      return { ...state, userGridViewSettings: {
+        ...state.userGridViewSettings,
+        ...action.payload
+      } }
     }
 
     default:

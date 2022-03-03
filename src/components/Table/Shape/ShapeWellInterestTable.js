@@ -8,6 +8,7 @@ import TableHOC from "components/Table/TableHOC";
 // QUERIES 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
+import { UPDATE_SHAPE_WELL_INTEREST } from "graphQL/useMutationUpdateShapeWellInterest";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 
@@ -40,7 +41,7 @@ function ShapeWellInterestTable(props) {
     }
   });
 
-  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, {
+  const [updateShapeWellInterests] = useMutation(UPDATE_SHAPE_WELL_INTEREST, {
     refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
   const tableData = elasticData?.getESPaginatedList
@@ -168,20 +169,18 @@ function ShapeWellInterestTable(props) {
 
 
   const deleteFunc = (ids) => {
-    for (let i = 0; i < ids.length; i++) {
-      updateWellInterest({
-        variables: {
-          wellInterest: {
-            id: ids[i],
-            isDeleted: true
-          },
-        },
-        refetchQueries: [
-          "getESPaginatedList", "getESFilterList"
-        ],
-        awaitRefetchQueries: true,
-      });
-    }
+    updateShapeWellInterests({
+      variables: {
+        wellInterests: ids?.map(id => ({
+          id,
+          isDeleted: true
+        }))
+      },
+      refetchQueries: [
+        "getESPaginatedList", "getESFilterList"
+      ],
+      awaitRefetchQueries: true,
+    });
   }
 
 
