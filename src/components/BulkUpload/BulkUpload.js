@@ -47,7 +47,23 @@ export default function BulkUpload(props) {
     return !!stateNav.bulkUploadFromMap && 'Map' || !!stateNav.bulkUploadFromContacts && 'Contacts';
   };
 
-  const jobs = rawJobs//.filter((job) => ( stateNav.bulkUploadFromMap ? 'CONTACTS' : 'PARCELINTERESTS' ) !== job.type)
+  const jobs = rawJobs.filter((job) => {
+    let filter = true;
+    switch (job.type) {
+      case 'CONTACTS':
+        filter = stateNav.bulkUploadFromMap ? false : true;
+        break;
+      case 'PARCELINTERESTS':
+        filter = stateNav.bulkUploadParcel ? true : false;
+        break;
+      case 'SHAPEOWNER':
+        filter = stateNav.bulkUploadShape ? true : false;
+        break;
+      default:
+        break;
+    }
+    return filter
+  })
   const [selectedJob, setSelectedJob] = useState(jobs[0]);
   const [showIcon, setShowIcon] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -137,6 +153,25 @@ export default function BulkUpload(props) {
             }}
           >
             {stateNav.bulkUploadParcel?.shapeLabel}
+          </Link>
+          }
+          {stateNav.bulkUploadShape?.shapeLabel && <Link
+            style={{
+              marginLeft: "5px",
+              fontSize: "16px",
+              cursor: "pointer",
+            }}
+            color="inherit"
+            onClick={() => {
+              setStateNav((stateApp) => ({
+                ...stateApp,
+                bulkUploadFromMap: false,
+              }));
+
+              history.push(previousRoute[0]?.match?.url);
+            }}
+          >
+            {stateNav.bulkUploadShape?.shapeLabel}
           </Link>
           }
           <div>

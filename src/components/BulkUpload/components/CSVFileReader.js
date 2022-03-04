@@ -192,10 +192,17 @@ export default function CSVFileReader(props) {
   let handleOnDrop = (data) => {
     if (!unmounted.current) {
       if (data && data.length <= 10001) {
-        stateNav.bulkUploadFromMap && data.forEach((data) => {
+        stateNav.bulkUploadFromMap && stateNav.bulkUploadParcel && data.forEach((data) => {
           Object.assign(data.data, {
           ...(stateNav.bulkUploadParcel?.id) && { 'Parcel Id': stateNav.bulkUploadParcel?.id },
           ...(stateNav.bulkUploadParcel?.shapeLabel) && { 'Parcel Name': stateNav.bulkUploadParcel?.shapeLabel }
+          })
+        })
+        stateNav.bulkUploadFromMap && stateNav.bulkUploadShape && data.forEach((data) => {
+          Object.assign(data.data, {
+          ...(stateNav.bulkUploadShape?.id) && { 'Shape Id': stateNav.bulkUploadShape?.id },
+          ...(stateNav.bulkUploadShape?.shapeLabel) && { 'Shape Name': stateNav.bulkUploadShape?.shapeLabel },
+          ...(stateNav.bulkUploadShape?.shapeType) && { 'Shape Type': stateNav.bulkUploadShape?.shapeType }
           })
         })
         mapped_headers_from_CSV(data);
