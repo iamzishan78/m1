@@ -257,12 +257,16 @@ const Notifications = () => {
                         refetchQueries: ["getNotifications"],
                         awaitRefetchQueries: false,
                       });
-                      if(parentType === "DEAL"){
+                      if (parentType === "DEAL") {
                         history.push(`/flow/${pipelineId}/lane/${stageId}/card/${parent._id}/`);
-                      }else if(parentType === "PARCEL" || parentType === "UNIT"){
+                      } else if (parentType === "PARCEL" || parentType === "UNIT") {
                         history.push(`/map/${parentType.toLowerCase()}s/${parent._id}`);
-                      }else if(parentType === "AGREEMENT"){
+                      } else if (parentType === "AGREEMENT") {
                         history.push(`/map/${parent.layer}s/${parent._id}`);
+                      } else if (parentType === "CHECK") {
+                        history.push(`/revenue/statement/details/${parent._id}`);
+                      } else if (parentType === "PROPERTY") {
+                        history.push(`/revenue/property/details/${parent._id}`);
                       }
 
                     }}
@@ -270,6 +274,12 @@ const Notifications = () => {
                     <Grid item xs={10} zeroMinWidth>
                       {parent && (parentType === "DEAL" || parentType === "PARCEL" || parentType === "UNIT" || parentType === "AGREEMENT") && (
                         <span className={classes.title}>{parent.name}</span>
+                      )}
+                      {parent && parentType === "CHECK" && (
+                        <span className={classes.title}>{parent.checkNumber}-{parent?.payor?.name}</span>
+                      )}
+                      {parent && parentType === "PROPERTY" && (
+                        <span className={classes.title}>{parent.number}-{parent.name}</span>
                       )}
                       {notificationType === "MENTION" && (
                         <Grid container className={classes.gridStyle}>
