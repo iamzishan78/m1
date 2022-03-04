@@ -15,6 +15,7 @@ import TableHeader from 'components/Table/constants/check-details-header-schema'
 // Utilities
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { ADD_PROPERTY } from "graphQL/useMutationAddProperty";
 import { usetableStyles } from "components/Table/Styles";
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import get from 'lodash/get'
@@ -27,7 +28,10 @@ import { UPDATE_CHECK_DETAIL } from "graphQL/useMutationUpdateCheckDetail";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { makeStyles } from "@material-ui/styles";
 import moment from "moment";
+
+
 import { KeyboardDatePicker } from "@material-ui/pickers";
+import { PopoverProperty } from "./PopoverProperty";
 
 
 const RevenueStatementHeadCells = [
@@ -87,7 +91,8 @@ const useStyles = makeStyles({
         width: '100%',
     },
     container: {
-        maxHeight: 440,
+        // maxHeight: 440,
+        maxHeight: (p) => p.showPdfSection ? 'calc(49vh)' : 'calc(99vh)',
         backgroundColor: "#fff", display: "flex",
         flexDirection: "column-reverse",
         "& .MuiTableCell-head": {
@@ -122,7 +127,9 @@ const useStyles = makeStyles({
         display: "flex", flexDirection: "column-reverse"
     },
     tableGrid: {
-        backgroundColor: "#fff", overflow: "scroll", maxHeight: "500px",
+        backgroundColor: "#fff", overflow: "scroll",
+        maxHeight: (p) => p.showPdfSection ? 'calc(50vh)' : 'calc(100vh)',
+        // maxHeight: "500px",
     },
     tableHeaderLabel: { marginLeft: "15px", paddingRight: '10px', marginTop: "5px" },
     loader: { color: '#12abe0', top: '10px', display: 'flex', marginTop: '3px' },
@@ -141,10 +148,21 @@ const useStyles = makeStyles({
 function CheckDetailsEditableTable(props) {
 
     const [rows, setRows] = useState(props.rows);
+    const [currentRow, setCurrentRow] = useState(null);
+    const [newProperty, setNewProperty] = useState(null);
     const [search, setSearch] = useState({ open: false, text: '' })
     const [sort, setSort] = useState({ orderBy: 'createdAt', order: 'desc' })
     const client = useApolloClient();
 
+    const [anchorEl, AnchorEl] = useState(null);
+
+    const setAnchorEl = () => {
+        // AnchorEl(document.getElementById(`${currentRow}-0`));
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     const classes = usetableStyles();
 
@@ -178,11 +196,15 @@ function CheckDetailsEditableTable(props) {
 
 
     const onFieldChange = (rowId, field, type) => (async (value) => {
+        const cRow = currentRow
         let row = rows.find((r) => r._id === rowId);
         if (get(row, field) == value && type !== 'date') return;
 
         set(row, field, value)
         if (field === 'property.number') {
+            set(row, `property.name`, '')
+            set(row, `property.state`, '')
+            set(row, `property.county`, '')
             const { data: checkDetail } = await client.query({
                 query: GET_ES_PAGINATED_LIST,
                 variables: {
@@ -194,14 +216,26 @@ function CheckDetailsEditableTable(props) {
                     },
                 },
             });
+            let newProperty = {}
             if (checkDetail?.getESPaginatedList?.hits.length > 0) {
-                const newProperty = checkDetail.getESPaginatedList.hits[0].property
-                set(row, '', value)
-                set(row, `property.state`, '')
-                set(row, `property.county`, '')
-                Object.keys(newProperty).forEach((key) => { set(row, `property.${key}`, newProperty[key]) })
-                console.log("Row", row)
+                newProperty = checkDetail.getESPaginatedList.hits[0].property
+                setNewProperty(null)
+            } else {
+                const { data: property } = await client.mutate({
+                    mutation: ADD_PROPERTY,
+                    variables: {
+                        property: {
+                            source: 'Manual Entry',
+                            status: 'Unapproved',
+                            number: value
+                        }
+                    },
+                });
+                newProperty = property.addProperty.property
+                setNewProperty(newProperty)
+                AnchorEl(document.getElementById(`${cRow}-0`));
             }
+            Object.keys(newProperty).forEach((key) => { set(row, `property.${key}`, newProperty[key]) })
         }
         if (field === 'IsDeleted') {
             setRows([].concat(rows.filter((r) => r._id !== rowId)))
@@ -226,10 +260,12 @@ function CheckDetailsEditableTable(props) {
             if (cell.type === 'date' && value) {
                 value = moment(value).format('MM/DD/YYYY')
             }
+
             return (
                 <>
+                    <div id={`id-${cell.id}`}></div>
                     {
-                        focus && cell.type === 'autocomplete' ? <AutoCompleteField label={cell.title} value={get(row, cell.id)} column={cell} index={index} onChange={onFieldChange(row._id, cell.id)}
+                        focus && cell.type === 'autocomplete' ? <AutoCompleteField setAnchorEl={setAnchorEl} label={cell.title} value={get(row, cell.id)} column={cell} index={index} onChange={onFieldChange(row._id, cell.id)}
                             query={GET_ES_FILTER_LIST} esIndex={esIndex} />
 
                             : focus && cell.type === 'date' ? <KeyboardDatePicker
@@ -387,8 +423,7 @@ function CheckDetailsEditableTable(props) {
     }
 
     const gridRef = React.createRef()
-    const tclasses = useStyles();
-
+    const tclasses = useStyles({ showPdfSection: props.showPdfSection });
 
     return (
         <Paper elevation={3} >
@@ -461,6 +496,7 @@ function CheckDetailsEditableTable(props) {
                                 focusOnSingleClick
                                 onColumnResize={onColumnResize}
                                 sort={sort}
+                                setCurrentRow={setCurrentRow}
                                 createSortHandler={createSortHandler}
                                 // focusOnSingleClick={props.focusOnSingleClick}
                                 disabledCellChecker={(row, column) => {
@@ -468,10 +504,15 @@ function CheckDetailsEditableTable(props) {
                                 }}
                                 isScrollable
                             />
+                            {newProperty?._id && <PopoverProperty property={newProperty} anchorEl={anchorEl} onClose={handleClose} />}
+
+
                         </TableContainer>
                     </InfiniteScroll>
                 </Grid>
             </Grid>
+
+
 
         </Paper >
     );

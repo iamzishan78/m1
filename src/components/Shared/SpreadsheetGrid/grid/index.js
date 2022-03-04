@@ -289,12 +289,14 @@ class SpreadsheetGrid extends React.PureComponent {
     }
 
     onMouseEnter(x) {
+        this.props.setCurrentRow(x)
         this.setState({
             hoveredRow: x
         });
     }
 
     onMouseLeave(x) {
+        this.props.setCurrentRow(null)
         this.setState({
             hoveredRow: null
         });

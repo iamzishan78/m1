@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
+import loadashFilter from "lodash/filter";
 
 import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
-import { Popper } from "@material-ui/core";
+import { Popover, Popper, Typography } from "@material-ui/core";
 
 const styles = (theme) => ({
     popper: {
@@ -22,7 +23,7 @@ const PopperMy = function (props) {
 
 
 
-export function AutoCompleteField({ value, onChange, index, column, query, extendSearchQuery, esIndex, filters }) {
+export function AutoCompleteField({ value, onChange, index, column, query, extendSearchQuery, esIndex, filters, setAnchorEl }) {
     const [open, setOpen] = useState(false);
     const [options, setOptions] = useState([]);
     // const [value, setValue] = useState({ key: value });
@@ -30,12 +31,18 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
     const { label, filterKey, type } = column
     const [getFilters, { data: filtersData, loading }] = useLazyQuery(query, { fetchPolicy: "no-cache" });
 
+    const handleClick = (event) => {
+        const element = document.getElementById(`id-${column.id}`)
+        setAnchorEl(element);
+    };
+
     // useEffect(() => {
     //     setSearch(filterList[index][0])
     //     if (!filterList[index][0]) {
     //         setValue(null)
     //     }
     // }, [filterList[index][0]]);
+    const filter = createFilterOptions();
 
     useEffect(() => {
         getFiltersAction("");
@@ -94,6 +101,7 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
             options={options}
             loading={loading}
             renderOption={(props, value) => {
+                if (props?.id === "newEntity") return <Typography style={{ color: "midnightblue" }} onClick={handleClick}>Add '{props.key}'</Typography>;
                 const matches = match(props.key, value?.inputValue);
                 const parts = parse(props.key, matches);
 
@@ -113,6 +121,22 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
                         </div>
                     </li>
                 );
+            }}
+            filterOptions={(options, params) => {
+                let inputValue = params.inputValue;
+                const filtered = filter(options, { ...params, inputValue });
+
+                const isExist = loadashFilter(filtered, (f) => {
+                    return f.key === inputValue;
+                });
+                // Suggest the creation of a new value
+                if (inputValue !== "" && (!isExist || isExist.length === 0)) {
+                    filtered.unshift({
+                        id: "newEntity",
+                        key: inputValue,
+                    });
+                }
+                return filtered;
             }}
             renderInput={(params) => (
                 <TextField
