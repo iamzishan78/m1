@@ -141,6 +141,12 @@ export default [
         actual_key: "shape.globalOwnerId"
     },
     {
+        label: "Suggested",
+        mapped_key: "",
+        required: false,
+        actual_key: "shape.isSuggested"
+    },
+    {
         label: "Notes/Comments",
         mapped_key: "",
         required: false,

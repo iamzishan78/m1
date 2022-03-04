@@ -84,10 +84,16 @@ export default [
         actual_key: "entityDetail.country",
     },
     {
-      label: "Global Owner",
-      mapped_key: "",
-      required: false,
-      actual_key: "entityDetail.globalOwner",
+        label: "Owner Type",
+        mapped_key: "",
+        required: false,
+        actual_key: "ownerType",
+    },
+    {
+        label: "Global Owner",
+        mapped_key: "",
+        required: false,
+        actual_key: "entityDetail.globalOwner",
     },
     {
         label: "Primary Email",
@@ -202,6 +208,12 @@ export default [
         mapped_key: "",
         required: false,
         actual_key: "leadSource",
+    },
+    {
+        label: "Stage",
+        mapped_key: "",
+        required: false,
+        actual_key: "status",
     },
     {
         label: "Territory",

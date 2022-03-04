@@ -125,7 +125,7 @@ function SuggestedShapeTaxOwnersTable(props) {
       owners = owners.map((o) => {
         let owner = { ...o };
         owner.isContact = false;
-        owner.ownershipType = owner.OwnerType
+        owner.ownershipType = owner.OwnerType || owner.ownershipType;
         owner = props.setGenricData(owner, owner.globalOwnerId, ['comments', 'tracks', 'tags', 'ifAreContacts']);
 
         return owner;
@@ -270,6 +270,10 @@ function SuggestedShapeTaxOwnersTable(props) {
     setSelectedYear(selectedYear);
   };
 
+  const pickSelectedRows = async (rows) => {
+    
+  }
+
   const suggestedOwnerToShape = async () => {
     
     const { rows } = props;
@@ -338,6 +342,25 @@ function SuggestedShapeTaxOwnersTable(props) {
 
   };
 
+  const formatInterestForImport = () => {
+    const uAcres = props.customLayer?.shapeJson?.properties?.uAcres || 0
+    return selectedRows.map((sR => {
+      const rec = props.rows?.[sR.dataIndex];
+      const ownershipPercentage = addTrailingZeros(rec.ownershipPercentage.toFixed(8))
+      rec.shape = {
+        _id: props.customLayer._id,
+        shapeType: props.shapeType,
+        working_interest: rec.interestType === 'WORKING INTEREST' ? ownershipPercentage : "",
+        royalty_interest: rec.interestType === 'ROYALTY INTEREST' ? ownershipPercentage : "",
+        orri: rec.interestType === 'OVERRIDING ROYALTY' ? ownershipPercentage : "",
+        nra: addTrailingZeros((uAcres * ownershipPercentage).toFixed(8)),
+        globalOwnerId: rec.globalOwnerId,
+        isSuggested: true
+      }
+      return rec;
+    }))
+  }
+
   const addShape = (selectedRows) => {
     const uAcres = props.customLayer?.shapeJson?.properties?.uAcres || 0
     for (let i = 0; i < selectedRows.length; i++) {
@@ -405,7 +428,7 @@ function SuggestedShapeTaxOwnersTable(props) {
             // onClose();
             setShowConvertDialog(false);
           }}
-          rows={selectedRows}
+          rows={formatInterestForImport()}
           setM1nSelectedRowsIndexes={() => {}}
           onSuccess={() => {}}
           setRows={() => {}}

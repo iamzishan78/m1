@@ -31,6 +31,7 @@ const OwnersPerUnitHeadCells = [
     esKey: 'contact.entityDetail.name.keyword',
     options: { filter: true, setCellProps: () => ({ style: { minWidth: "270px" } }) }
   },
+  { name: "ownerType", esKey: 'contact.ownerType', label: "Entity Type", options: { filter: true } },
   { name: "working_interest", esKey: 'working_interest', type: "number", label: "Working Interest", options: { filter: true } },
   { name: "royalty_interest", esKey: 'royalty_interest', type: "number", label: "Royalty Interest", options: { filter: true } },
   { name: "orri", esKey: 'orri', label: "ORRI", type: "number", options: { filter: true } },

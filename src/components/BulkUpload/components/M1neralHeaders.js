@@ -192,6 +192,8 @@ export default function M1neralHeaders(props) {
 
         if (!return_obj["leadSource"])
           return_obj["leadSource"] = createLeadSource();
+        if (!return_obj["status"])
+          return_obj["status"] = "Lead";
 
         if (!return_obj["entityDetail.name"]) {
           if (return_obj["entityDetail.firstName"] && return_obj["entityDetail.lastName"]) {
