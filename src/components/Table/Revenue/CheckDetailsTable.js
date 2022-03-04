@@ -42,7 +42,7 @@ function CheckDetailsTable(props) {
                 className={classes.multiSelectionTopBarButtons}
                 onClick={() => {
                     const checkId = window.location.pathname.split("/")[window.location.pathname.split("/").length - 1];
-                    history.push(`/revenue/statement/${checkId}/line-item`);
+                    history.push(`/revenue/statement/details/${checkId}/line-item`);
                 }}
             >
                 INPUT MODE
