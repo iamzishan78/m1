@@ -71,7 +71,7 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
         if (disabledCellChecker) {
             rows.forEach((row, x) => {
                 this.props.columns.forEach((column, y) => {
-                    if (disabledCellChecker(row, column.id)) {
+                    if (disabledCellChecker(row, column)) {
                         disabledCells.push({ x: startIndex + x, y });
                     }
                 });
