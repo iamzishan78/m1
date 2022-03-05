@@ -120,7 +120,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function MetadataDrawer(props) {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   // States
   const [ownerId, setOwnerId] = useState("");
@@ -130,7 +129,7 @@ export default function MetadataDrawer(props) {
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
   // Props
-  const { setCollapse, users, targetSourceId, setStateApp } = props;
+  const { setCollapse, users, targetSourceId } = props;
 
   // Queries and Mutations
   const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
@@ -192,11 +191,6 @@ export default function MetadataDrawer(props) {
       viewFiles({
         variables: { fileIds: ID },
       });
-
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        metaDrawerViewFiles: ID
-      }))
       //* Getting most recent uploaded pdf file
       let recentFile = {};
       files.getFileDescriptors
@@ -398,7 +392,7 @@ export default function MetadataDrawer(props) {
         />
 
         <div className={classes.commentsContainer}>
-          <CommentComponent targetLabel={"check"} targetSourceId={targetSourceId} />
+          <CommentComponent targetLabel={props.targetLabel} targetSourceId={targetSourceId} />
         </div>
       </div>
     </div>

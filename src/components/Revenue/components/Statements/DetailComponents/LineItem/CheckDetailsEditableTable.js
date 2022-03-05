@@ -35,13 +35,13 @@ const RevenueStatementHeadCells = [
         id: "property.number", title: "Property Code", filterKey: 'property.number.keyword', sort: true, type: 'autocomplete', width: '180px'
     },
     {
-        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', sort: true, width: '210px'
+        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', sort: true, width: '210px', disabled: true
     },
     {
-        id: "property.state", title: "State", filterKey: 'property.state.keyword', sort: true, width: '100px'
+        id: "property.state", title: "State", filterKey: 'property.state.keyword', sort: true, width: '100px', disabled: true
     },
     {
-        id: "property.county", title: "County", filterKey: 'property.county.keyword', sort: true, width: '130px'
+        id: "property.county", title: "County", filterKey: 'property.county.keyword', sort: true, width: '130px', disabled: true
     },
     {
         id: "date", title: "Sales Date", filterKey: 'date', sort: true, type: 'date', width: '180px'
@@ -50,7 +50,7 @@ const RevenueStatementHeadCells = [
         id: "product", title: "Product", filterKey: 'product.keyword', sort: true, type: 'autocomplete', width: '130px'
     },
     {
-        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement.keyword', sort: true, width: '150px'
+        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement', sort: true, width: '150px'
     },
     {
         id: "interestType", title: "Type", filterKey: 'interestType.keyword', sort: true, type: 'autocomplete', width: '100px'
@@ -84,7 +84,7 @@ const RevenueStatementHeadCells = [
 
 const useStyles = makeStyles({
     root: {
-        width: '100%'
+        width: '100%',
     },
     container: {
         maxHeight: 440,
@@ -97,6 +97,26 @@ const useStyles = makeStyles({
             width: "0.75em",
             height: "0.75em",
         },
+        '& .MuiTableRow-root.MuiTableRow-hover:hover': {
+            "& td:nth-child(1)": {
+                position: 'sticky',
+                left: '0',
+                zIndex: 1,
+                background: '#ebebeb',
+            },
+        },
+        "& td:nth-child(1)": {
+            position: 'sticky',
+            left: '0',
+            background: '#ffff',
+            zIndex: 1,
+        },
+        "& th:nth-child(1)": {
+            position: 'sticky',
+            left: '0',
+            zIndex: 3
+        },
+
     },
     infiniteScroll: {
         display: "flex", flexDirection: "column-reverse"
@@ -141,7 +161,6 @@ function CheckDetailsEditableTable(props) {
 
     useEffect(() => {
         if (loadMoreData?.getESPaginatedList?.hits) {
-            debugger;
             let hits = copy(loadMoreData.getESPaginatedList.hits)
             hits = hits.reverse()
             props.setRows(hits.concat(rows));
@@ -189,10 +208,14 @@ function CheckDetailsEditableTable(props) {
         } else
             setRows([].concat(rows))
 
+        row.check = props.checkId
         updateCheckDetail({
             variables: { checkDetail: row },
             refetchQueries: [],
             awaitRefetchQueries: true
+        }).then((resp) => {
+            if (!row._id && resp?.data?.updateCheckDetail?.updatedCheckDetail?._id)
+                set(row, `_id`, resp.data.updateCheckDetail.updatedCheckDetail._id)
         })
     })
 
@@ -440,9 +463,9 @@ function CheckDetailsEditableTable(props) {
                                 sort={sort}
                                 createSortHandler={createSortHandler}
                                 // focusOnSingleClick={props.focusOnSingleClick}
-                                // disabledCellChecker={(row, columnId) => {
-                                //     return columnId === 'age';
-                                // }}
+                                disabledCellChecker={(row, column) => {
+                                    return column.disabled;
+                                }}
                                 isScrollable
                             />
                         </TableContainer>
