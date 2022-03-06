@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { get } from "lodash";
+import { get, debounce } from "lodash";
 import moment from "moment";
 import { useHistory } from "react-router-dom";
 
@@ -18,6 +18,7 @@ import { AppContext } from "AppContext";
 
 import { CONTACT_ENTITY } from "graphQL/useQueryContactEntity";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
+import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -145,7 +146,7 @@ export default function HeaderSection(props) {
           (owner) => owner.entityId === propertyDetails?.operator?._id
         );
       }
-      reset({ ...data, owner, operator });
+      reset({ ...data, owner: { ...owner, number: data.ownerNumber }, operator });
     }
   }, [propertyDetails, propertyOwnerContact]);
 
@@ -201,6 +202,11 @@ export default function HeaderSection(props) {
     }
   };
 
+
+  const handleUpdate = debounce((key, value) => {
+    updatePropertyData(key, value);
+  }, 500)
+
   return (
     <Grid container direction="row" justify="space-between" alignItems="center">
       <Grid item className={classes.infoSection}>
@@ -230,8 +236,8 @@ export default function HeaderSection(props) {
                       margin="dense"
                       type="text"
                       fullWidth
-                      onKeyDown={(e) => onKeyDown(e, "number", params.value)}
-                      onBlur={(e) => updatePropertyData("number", params.value)}
+                      onChange={(e) => { params.onChange(e.target.value); handleUpdate("number", e.target.value) }}
+                    // onBlur={(e) => updatePropertyData("number", params.value)}
                     />
                   )}
                 />
@@ -256,8 +262,9 @@ export default function HeaderSection(props) {
                       margin="dense"
                       type="text"
                       fullWidth
-                      onKeyDown={(e) => onKeyDown(e, "name", params.value)}
-                      onBlur={(e) => updatePropertyData("name", params.value)}
+                      onChange={(e) => { params.onChange(e.target.value); handleUpdate("name", e.target.value) }}
+                    // onKeyDown={(e) => onKeyDown(e, "name", params.value)}
+                    // onBlur={(e) => updatePropertyData("name", params.value)}
                     />
                   )}
                 />
@@ -282,8 +289,9 @@ export default function HeaderSection(props) {
                       margin="dense"
                       placeholder=""
                       fullWidth
-                      // onKeyDown={(e) => onKeyDown(e, "ownerNumber", params.value)}
-                      // onBlur={() => setValue("ownerNumber", propertyDetails.ownerNumber)}
+                      onChange={(e) => { params.onChange(e.target.value); handleUpdate("ownerNumber", e.target.value) }}
+                    // onKeyDown={(e) => onKeyDown(e, "ownerNumber", params.value)}
+                    // onBlur={() => setValue("ownerNumber", propertyDetails.ownerNumber)}
                     />
                   )}
                 />
@@ -297,6 +305,25 @@ export default function HeaderSection(props) {
                 <div className={classes.label}>Owner</div>
               </Grid>
               <Grid item xs={9}>
+                {/* 
+                <Controller
+                  control={control}
+                  name='owner'
+                  defaultValue={{ _id: propertyDetails?.owner } || {}}
+                  render={(
+                    { onChange, value, ref },
+                  ) => (
+                    <AutocompEntityNamesList variant='outlined' margin='' size='' nameAutValue={value} withContactCard={true}
+                      setNameAutValue={(value) => {
+                        if (value?._id)
+                          onChange({ _id: value._id, name: value.name });
+                        else
+                          onChange({});
+                        handleUpdate('owner', { name: value?.name, _id: value?._id })
+                      }} />
+                  )}
+                /> */}
+
                 <Controller
                   control={control}
                   name="owner"
@@ -307,7 +334,9 @@ export default function HeaderSection(props) {
                       }
                       className={classes.field}
                       setNameAutValue={(value) => {
-                        contactEntity(value?._id, "owner");
+                        if (value)
+                          contactEntity(value?._id, "owner");
+                        else handleUpdate("owner", null)
                       }}
                       renderInput={(params2) => (
                         <TextField
@@ -325,16 +354,16 @@ export default function HeaderSection(props) {
                                 {params2.InputProps.endAdornment}
                                 <div
                                   className={classes.contactCardIcon}
-                                  onClick={(e) =>{
+                                  onClick={(e) => {
                                     e.stopPropagation();
-                                    if(params?.value?._id){
+                                    if (params?.value?._id) {
                                       history.push(`/contact/details/${params?.value?._id}`);
                                       setStateApp((stateApp) => ({
                                         ...stateApp,
                                         selectedContact: `${params?.value?._id}`,
-                                    }));
+                                      }));
                                     }
-                                    // setEntity(propertyDetails?.owner)
+                                    setEntity(propertyDetails?.owner)
                                   }}
                                 >
                                   <ContactCardIcon
@@ -408,7 +437,9 @@ export default function HeaderSection(props) {
                         params.value ? params.value : { _id: "", name: "" }
                       }
                       setNameAutValue={(value) => {
-                        contactEntity(value?._id, "operator");
+                        if (value)
+                          contactEntity(value?._id, "operator");
+                        else handleUpdate("operator", null)
                       }}
                       renderInput={(params2) => (
                         <TextField
@@ -426,15 +457,15 @@ export default function HeaderSection(props) {
                                 {params2.InputProps.endAdornment}
                                 <div
                                   className={classes.contactCardIcon}
-                                  onClick={(e) =>{
+                                  onClick={(e) => {
                                     e.stopPropagation();
-                                    if(params?.value?._id) {
+                                    if (params?.value?._id) {
                                       history.push(`/contact/details/${params?.value?._id}`);
                                       setStateApp((stateApp) => ({
                                         ...stateApp,
                                         selectedContact: `${params?.value?._id}`,
-                                    }));
-                                    // setEntity(propertyDetails?.owner)
+                                      }));
+                                      // setEntity(propertyDetails?.owner)
                                     }
                                   }}
                                 >

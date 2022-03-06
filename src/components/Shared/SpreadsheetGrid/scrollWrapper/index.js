@@ -4,7 +4,19 @@ import Grid from '../grid';
 import slice from 'lodash/slice';
 import throttleWithRAF from './../kit/throttleWithRAF';
 import tablePropTypes from './../kit/tablePropTypes';
-import { Table, TableHead, TableRow, TableCell, TableBody } from "@material-ui/core";
+import { Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel } from "@material-ui/core";
+
+const visuallyHidden = {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+}
 
 class SpreadsheetGridScrollWrapper extends React.PureComponent {
     constructor(props) {
@@ -59,7 +71,7 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
         if (disabledCellChecker) {
             rows.forEach((row, x) => {
                 this.props.columns.forEach((column, y) => {
-                    if (disabledCellChecker(row, column.id)) {
+                    if (disabledCellChecker(row, column)) {
                         disabledCells.push({ x: startIndex + x, y });
                     }
                 });
@@ -138,8 +150,22 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
                                     key={column.id}
                                     align={column.align}
                                     style={{ minWidth: column.width }}
+                                    sortDirection={this.props.sort.orderBy === column.filterKey ? this.props.sort.order : 'desc'}
                                 >
-                                    {column.title}
+                                    {column.sort ? <TableSortLabel
+                                        active={this.props.sort.orderBy === column.filterKey}
+                                        direction={this.props.sort.orderBy === column.filterKey ? this.props.sort.order : 'desc'}
+                                        onClick={() => this.props.createSortHandler(column.filterKey)}
+                                    >
+                                        {column.title}
+                                        {this.props.sort.orderBy === column.filterKey ? (
+                                            <span style={visuallyHidden}>
+                                                {this.props.sort.order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                            </span>
+                                        ) : null}
+                                    </TableSortLabel>
+                                        : column.title
+                                    }
                                 </TableCell>
                             ))}
                         </TableRow>

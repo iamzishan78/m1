@@ -42,7 +42,7 @@ SpreadsheetCell.propTypes = {
     className: PropTypes.string,
     onClick: PropTypes.func,
     onDoubleClick: PropTypes.func,
-    width: PropTypes.number
+    width: PropTypes.string
 };
 
 export default SpreadsheetCell;

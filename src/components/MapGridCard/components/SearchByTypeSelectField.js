@@ -168,7 +168,6 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
             </StyledMenuItem>
           })}
 
-          {!mapGridCardActivated && <>
             <Grid container className={classes.underlinedHeader} direction="row" justifyContent="space-between" alignItems="center" >
               <Grid item>
                 <Typography variant="h6">
@@ -178,6 +177,7 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
             </Grid>
 
             {userDefinedData.map((icon) => {
+              if(mapGridCardActivated && !icon.mapGrid) return false
               const Icon = icon.Icon
               return <StyledMenuItem key={icon.index} selected={icon.value === value.value} onClick={() => { handleChange(icon); handleClose() }}>
                 <ListItemIcon>
@@ -187,7 +187,6 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
                 <ListItemText primary={icon.label} />
               </StyledMenuItem>
             })}
-          </>}
         </Grid>
       </StyledMenu>
     </>

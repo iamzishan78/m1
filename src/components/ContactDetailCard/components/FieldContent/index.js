@@ -21,9 +21,10 @@ import { useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
-import { contactStatusOptions, contactNewStatusOptions } from "components/ContactDetailedInfo/helper";
+import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import EntityType from "./EntityType";
 import CampaignNameField from './CampaignNameField';
+import ContactStatus from 'components/ContactDetailCard/components/ContactStatus'
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -80,32 +81,15 @@ export default function FieldContent({
   const ignorableFieldsInCount = ['contactOwnerId'];
 
   const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
-  const [getContactStatusFilters, { data: contactStatusFiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
-  const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  // const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   const [statusOptions, setStatusOptions] = useState([])
-  const [newStatusOptions, setNewStatusOptions] = useState([])
-  const [campaignNameOptions, setCampaignNameOptions] = useState([])
 
   useEffect(() => {
     getFilters({
       variables: {
           esIndex:'contacts_flat',
           filterKey: 'status.keyword',
-          size: 50,
-      },
-    });
-    getContactStatusFilters({
-      variables: {
-          esIndex:'contacts_flat',
-          filterKey: 'contactStatus.keyword',
-          size: 50,
-      },
-    });
-    getCampaignFilters({
-      variables: {
-          esIndex:'contacts_flat',
-          filterKey: 'campaignName.keyword',
           size: 50,
       },
     });
@@ -126,26 +110,6 @@ export default function FieldContent({
       setStatusOptions(filterData)
     }
   },[filtersData])
- 
-  useEffect(() => {
-    if(contactStatusFiltersData?.getESFilterList?.hits){
-      let filterData = contactStatusFiltersData.getESFilterList.hits.map(hit => hit.key)
-      for(let i = 0; i < contactNewStatusOptions.length; i++){
-        filterData = filterData.filter(d => d !== contactNewStatusOptions[i].value && d !== contactNewStatusOptions[i].label)
-      }
-      for(let i = 0; i < contactNewStatusOptions.length; i++){
-          filterData.push(contactNewStatusOptions[i].label)
-      }
-      setNewStatusOptions(filterData)
-    }
-  },[contactStatusFiltersData])
-
-  useEffect(() => {
-    if(campaignfiltersData?.getESFilterList?.hits){
-      const allFiltersData = campaignfiltersData.getESFilterList.hits.map(hit => hit.key)
-      setCampaignNameOptions(allFiltersData.filter(d=> d))
-    }
-  },[campaignfiltersData]);
 
   useEffect(() => {
     if (content) {
@@ -311,10 +275,9 @@ export default function FieldContent({
       else if (editContent.hasOwnProperty(fieldName)) {
         inputsArray.push(
           fieldName === 'contactStatus' ? 
-          <Status
+          <ContactStatus
             className={classes.maxWidth}
-            options={newStatusOptions}
-            setDocumentType={(value) => {
+            setValue={(value) => {
               let val = value.name
               const data = contactStatusOptions.find(s => s.label === val)
               if(data){
@@ -513,7 +476,6 @@ export default function FieldContent({
   const renderOutput = campaignName ? 
     <CampaignNameField
       className={classes.maxWidth}
-      options={campaignNameOptions}
       onChange={(value) => {
         setEditContent((editContent) => ({
           ...editContent,
@@ -557,8 +519,8 @@ export default function FieldContent({
   return (
     <React.Fragment>
       <p
-        className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP
-          }`}
+        className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP}`}
+        style={campaignName ? { width: '100%'} : {}}
       >
         {(linkType == LinkTypes.Mail || linkType == LinkTypes.Simple) &&
           textArray.length > 0 ? (

@@ -120,7 +120,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function MetadataDrawer(props) {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   // States
   const [ownerId, setOwnerId] = useState("");
@@ -130,7 +129,7 @@ export default function MetadataDrawer(props) {
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
   // Props
-  const { setCollapse, users, targetSourceId, setStateApp } = props;
+  const { setCollapse, users, targetSourceId } = props;
 
   // Queries and Mutations
   const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
@@ -347,7 +346,7 @@ export default function MetadataDrawer(props) {
           />
         </Grid>
 
-      {/* hiding for now until we get custom metadata added to statements and properties - kc 20220123 */}
+        {/* hiding for now until we get custom metadata added to statements and properties - kc 20220123 */}
         {/* <div
           onClick={() => {
             setStateApp((stateApp) => ({
@@ -393,7 +392,7 @@ export default function MetadataDrawer(props) {
         />
 
         <div className={classes.commentsContainer}>
-          <CommentComponent targetLabel={"check"} targetSourceId={targetSourceId} />
+          <CommentComponent targetLabel={props.targetLabel} targetSourceId={targetSourceId} />
         </div>
       </div>
     </div>

@@ -646,6 +646,18 @@ const ContactsHeadCells = [
       ]
     }
   },
+  {
+    name: "actionMenu",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
   // {
   //   name: "isTracked",
   //   label: "Track",

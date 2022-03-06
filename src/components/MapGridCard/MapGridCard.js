@@ -23,6 +23,7 @@ import MapGridWellsTable from "components/Table/Wells/MapGridWellsTable";
 import MapGridTaxOwnersTable from "components/Table/TaxOwners/MapGridTaxOwnersTable";
 import MapGridOperatorTable from "components/Table/Operator/MapGridOperatorTable";
 import MapGridContactTable from "components/Table/Contact/MapGridContactTable";
+import MapGridUnitTable from "components/Table/Unit/MapGridUnitTable";
 
 import SearchPanel from "./components/SearchPanel";
 import { platformDataInitialData } from "./components/data";
@@ -391,102 +392,115 @@ function MapGridCard(props) {
               style={{ position: "absolute", width: "100%" }}
             >
               <div style={{ position: "relative" }} classes={classes.gridTables}>
-                <TabPanels
+                {/* <TabPanels
                   value={searchTapValue.index}
                   panels={getTaps.map((tab, index) => {
-                    return (
-                      <Fragment key={index}>
-                        {tab.label === 'well' && (
-                          <MapGridWellsTable
-                            dense
-                            parent="search"
-                            customOptions={options}
-                            targetLabel={tab.label}
-                            header={
-                              <SearchPanel
-                                {...commonProps}
-                              />
-                            }
-                            showTags={tab.showTags}
-                            showComments={tab.showComments}
-                            showTracks={tab.showTracks}
-                          />
-                        )}
-                        {tab.label === 'owner' && stateApp.gridPolygonString && (
-                          <ShapeGridTaxOwnersTable
-                            parent="boundary_grid_owners"
-                            header={
-                              <SearchPanel
-                                {...commonProps}
-                              />
-                            }
-                            customOptions={options}
-                            targetLabel="owner"
-                            showTracks
-                          />
-                        )}
-                        {tab.label === 'owner' && !stateApp.gridPolygonString && (
-                          <MapGridTaxOwnersTable
-                            dense
-                            parent="search"
-                            customOptions={options}
-                            targetLabel={tab.label}
-                            header={
-                              <SearchPanel
-                                {...commonProps}
-                              />
-                            }
-                            showTags={tab.showTags}
-                            showComments={tab.showComments}
-                            showTracks={tab.showTracks}
-                          />
-                        )}
-                        {tab.label === 'operator' && (
-                          <MapGridOperatorTable
-                            dense
-                            parent="search"
-                            customOptions={options}
-                            targetLabel={tab.label}
-                            header={
-                              <SearchPanel
-                                {...commonProps}
-                              />
-                            }
-                            showTags={tab.showTags}
-                            showComments={tab.showComments}
-                            showTracks={tab.showTracks}
-                          />
-                        )}
-                        {tab.label === 'layer' && (
-                          <MapGridLayersTable
-                            dense
-                            parent="search"
-                            customOptions={options}
-                            targetLabel={'operator'}
-                            header={
-                              <SearchPanel
-                                {...commonProps}
-                              />
-                            }
-                          />
-                        )}
-                        {tab.label === 'contacts' && (
-                          <MapGridContactTable
-                            dense
-                            parent="search"
-                            customOptions={options}
-                            targetLabel={tab.label}
-                            header={
-                              <SearchPanel
-                                {...commonProps}
-                              />
-                            }
-                            showTags={tab.showTags}
-                            showComments={tab.showComments}
-                            showTracks={tab.showTracks}
-                          />
-                        )}
-                        {/* <M1nTable
+                    return ( */}
+                <Fragment>
+                  {searchTapValue.value === 'well' && (
+                    <MapGridWellsTable
+                      dense
+                      parent="search"
+                      customOptions={options}
+                      targetLabel={searchTapValue.value}
+                      header={
+                        <SearchPanel
+                          {...commonProps}
+                        />
+                      }
+                      showTags
+                      showComments
+                      showTracks
+                    />
+                  )}
+                  {searchTapValue.value === 'owner' && stateApp.gridPolygonString && (
+                    <ShapeGridTaxOwnersTable
+                      parent="boundary_grid_owners"
+                      header={
+                        <SearchPanel
+                          {...commonProps}
+                        />
+                      }
+                      customOptions={options}
+                      targetLabel="owner"
+                      showTracks
+                    />
+                  )}
+                  {searchTapValue.value === 'owner' && !stateApp.gridPolygonString && (
+                    <MapGridTaxOwnersTable
+                      dense
+                      parent="search"
+                      customOptions={options}
+                      targetLabel={searchTapValue.value}
+                      header={
+                        <SearchPanel
+                          {...commonProps}
+                        />
+                      }
+                      showTags
+                      showComments
+                      showTracks
+                    />
+                  )}
+                  {searchTapValue.value === 'operator' && (
+                    <MapGridOperatorTable
+                      dense
+                      parent="search"
+                      customOptions={options}
+                      targetLabel={searchTapValue.value}
+                      header={
+                        <SearchPanel
+                          {...commonProps}
+                        />
+                      }
+                      showTags
+                      showComments
+                      showTracks
+                    />
+                  )}
+                  {searchTapValue.value === 'layer' && (
+                    <MapGridLayersTable
+                      dense
+                      parent="search"
+                      customOptions={options}
+                      targetLabel={'operator'}
+                      header={
+                        <SearchPanel
+                          {...commonProps}
+                        />
+                      }
+                    />
+                  )}
+                  {searchTapValue.value === 'contacts' && (
+                    <MapGridContactTable
+                      dense
+                      parent="search"
+                      customOptions={options}
+                      targetLabel={searchTapValue.value}
+                      header={
+                        <SearchPanel
+                          isShapeGridOnly={stateApp.gridPolygonString}
+                          handleChange={handleSearchPanelChange}
+                          value={searchTapValue}
+                          ativateSearchPanel={ativateSearchPanel}
+                        />
+                      }
+                    />
+                  )}
+                  {searchTapValue.value === 'unit' && (
+                    <MapGridUnitTable
+                      dense
+                      parent="search"
+                      customOptions={options}
+                      targetLabel={searchTapValue.value}
+                      header={
+                        <SearchPanel
+                          {...commonProps}
+                        />
+                      }
+                    />
+                  )}
+                  {/* <M1nTable
                             dense
                             options={options}
                             parent="search"
@@ -503,10 +517,10 @@ function MapGridCard(props) {
                             showComments={tab.showComments}
                             showTracks={tab.showTracks}
                           /> */}
-                      </Fragment>
-                    )
+                </Fragment>
+                {/* )
                   })}
-                />
+                /> */}
               </div>
             </TabPanel>
 

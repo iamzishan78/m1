@@ -5,11 +5,13 @@ import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 import TableHeader from "components/Table/constants/revenue-properties-header-schema";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { setColumnsData } from "components/Table/helpers";
 import { useLazyQuery } from "@apollo/client";
 import { handleSelectedGridChange } from 'components/Table/helpers'
 
 // QUERIES
-import { deepEqualObjects } from "components/Shared/functions";
+import { setStateIfDeepEqual, deepEqualObjects } from "components/Shared/functions";
 // Utilities
 import { usetableStyles } from "../Styles";
 // actions
@@ -48,9 +50,13 @@ function RevenuePropertiesTable(props) {
   const tableData = elasticData?.getESPaginatedList;
   const count = tableData?.total || 0;
   // function states
-  const [columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
+  // const [columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
+  const [columns, Columns] = useState([]);
+  const [filters, setFilters] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [potentialIssuesList] = useState([]);
+
+  const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
   const options = {
     rowsPerPageOptions: [10, 25, 50, 100],
@@ -61,20 +67,7 @@ function RevenuePropertiesTable(props) {
     serverSide: true,
   };
 
-  const esFilters = props.fromDate || props.toDate ? [
-    {
-      field: "lastCheck.checkDate",
-      value: {
-        range: {
-          "lastCheck.checkDate": {
-            gte: `${props.fromDate}T00:00:00.000Z`,
-            lte: `${props.toDate}T00:00:00.000Z`,
-          },
-        },
-        includeEmpty: props.selectedFilter === 'All Dates' ? true : undefined
-      },
-    },
-  ] : props.esFilters ? props.esFilters : []
+  const esFilters = props.esFilters ? props.esFilters : []
 
   useEffect(() => {
     handleSelectedGridChange(TableHeader, { filters: esFilters }, columns, true)
@@ -99,6 +92,17 @@ function RevenuePropertiesTable(props) {
         return hit;
       });
       props.setRows(JSON.parse(JSON.stringify(hits)));
+
+      setColumnsData(
+        TableHeader,
+        filters,
+        JSON.parse(JSON.stringify(TableHeader)),
+        setColumns,
+        setFilters,
+        GET_ES_FILTER_LIST,
+        esIndex
+      );
+
       props.setLoading(false);
     }
   }, [tableData, props.dependencyUpdate]);
@@ -137,6 +141,7 @@ function RevenuePropertiesTable(props) {
 
   const onTableChange = (action, tableState, rows, meta) => {
     tableState.esIndex = esIndex;
+    tableState.esFilters = esFilters;
     // tableState.sort = [];
 
     const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList);

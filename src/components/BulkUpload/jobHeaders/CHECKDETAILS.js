@@ -69,7 +69,7 @@ export default [
         label: "OwnDec",
         mapped_key: "",
         required: false,
-        actual_key: "entitlement",
+        actual_key: "disbursement",
     },
     {
         label: "NetVal",

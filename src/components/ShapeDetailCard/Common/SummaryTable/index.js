@@ -12,6 +12,8 @@ import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import { summaryTableStyles } from "components/ShapeDetailCard/style";
+import UserList from 'components/Shared/UserList'
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField'
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
     const classes = summaryTableStyles();
@@ -245,16 +247,40 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                                                 }} />
                                         </>
                                     }
+                                    {data.type === 'custom' &&
+                                        <>
+                                            {data.key === 'qualifier' && (
+                                                <UserList value={properties[data.key]} setValue={(user) => {
+                                                    updateProperties(null, data.key, user);
+                                                }} />
+                                            )}
+                                        </>
+                                    }
                                 </> :
                                 <div style={{ minWidth: '30px', cursor: "pointer" }} >
-                                    <Grid container direction="row" justifyContent="space-between" alignItems="center">
+                                    <Grid style={data.key === 'campaignName'? { display: 'block'}: { display: 'flex'}} container direction="row" justifyContent="space-between" alignItems="center">
                                         {data.formatValue ?
                                             <Grid item>
                                                 {data.formatValue(data.value || properties[data.key]) || '-'}
                                             </Grid> :
                                             <Grid item>
                                                 {(data.type === 'date') && (properties[data.key] ? moment.parseZone(new Date(properties[data.key])).format("MM/DD/yyyy") : '-')}
-                                                {data.type !== 'date' && ((data.value || properties[data.key]) || '-')}
+                                                {data.type === 'custom' && (
+                                                    <>
+                                                        {data.key ==='qualifier' && ( properties[data.key]?.name || '-' )}
+                                                        {data.key === 'campaignName' && (
+                                                            <CampaignNameField
+                                                                className={classes.maxWidth}
+                                                                onChange={(value) => {
+                                                                    updateProperties(null, data.key, value);
+                                                                }}
+                                                                value={properties[data.key] ? properties[data.key] : []}
+                                                                fullWidth
+                                                            />
+                                                        )}
+                                                    </>
+                                                )}
+                                                {(data.type !== 'date' && data.type !== 'custom') && ((data.value || properties[data.key]) || '-')}
                                             </Grid>
                                         }
                                         {!data.nonEditable && (

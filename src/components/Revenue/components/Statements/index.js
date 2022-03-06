@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { AppContext } from "AppContext";
 import AnalyticsCards from "components/Revenue/components/Statements/AnalyticsCards";
 import RevenueStatementTable from "components/Table/Revenue/RevenueStatementTable";
 import { ADD_CHECK_DATA } from "graphQL/useMutationAddCheck";
+import LastCheckDateFilter from "../Common/LastCheckDateFilter";
 import { useMutation } from "@apollo/client";
 
 export default function RevenueStatements() {
@@ -12,6 +13,8 @@ export default function RevenueStatements() {
   const [approvedCount, setApprovedCount] = useState(0);
   const [unapprovedCount, setUnapprovedCount] = useState(0);
   const [potentialIssuesList, setPotentialIssuesList] = useState([]);
+  const [esFilters, ESFilters] = useState([]);
+  const [filterToggle, setFilterToggle] = React.useState(false);
 
   const [addCheck] = useMutation(ADD_CHECK_DATA);
 
@@ -62,33 +65,40 @@ export default function RevenueStatements() {
     }
   }, [statements]);
 
-  const onGettingStatements = (statementsList) => {
+  const onGettingStatements = useCallback((statementsList) => {
     setStatements(statementsList);
-  };
+  }, []);
 
-  const onGettingPotentialIssues = (issues) => {
+  const onGettingPotentialIssues = useCallback((issues) => {
     setPotentialIssuesList(issues);
-  };
+  }, []);
 
   return (
-    <div style={{ padding: "75px 56px", marginTop: 56 }}>
-      <AnalyticsCards
-        checks={statements?.length || 0}
-        approvedCount={approvedCount}
-        unapprovedCount={unapprovedCount}
-        potentialIssues={potentialIssuesList}
-        revenueSearchQuery={stateApp.revenueSearchQuery}
-      />
-      <div style={{ marginTop: 40 }}>
-        <RevenueStatementTable
-          header="Revenue Statements"
-          targetLabel="check"
-          onGettingPotentialIssues={onGettingPotentialIssues}
-          onGettingStatements={onGettingStatements}
-          parent="RevenueStatementTable"
+    <>
+      <LastCheckDateFilter field={"checkDate"} esIndex={'checks_flat'} setESFilters={ESFilters} setFilterToggle={setFilterToggle} filterToggle={filterToggle} />
+
+      <div style={{ padding: 40 }}>
+        <AnalyticsCards
+          checks={statements?.length || 0}
+          approvedCount={approvedCount}
+          unapprovedCount={unapprovedCount}
+          potentialIssues={potentialIssuesList}
           revenueSearchQuery={stateApp.revenueSearchQuery}
         />
+
+        <div style={{ marginTop: 40 }}>
+          <RevenueStatementTable
+            header="Revenue Statements"
+            targetLabel="check"
+            onGettingPotentialIssues={onGettingPotentialIssues}
+            onGettingStatements={onGettingStatements}
+            esFilters={esFilters}
+            filterToggle={filterToggle}
+            parent="RevenueStatementTable"
+            revenueSearchQuery={stateApp.revenueSearchQuery}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

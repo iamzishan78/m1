@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "AppContext";
-import { useQuery } from "@apollo/client";
+import { useQuery, useApolloClient } from "@apollo/client";
 import { useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_JOBS_STATUS } from "graphQL/useQueryGetJobStatus";
+import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import Loader from "components/Loaders/serverLoader";
 
 const ContactBulkProgress = () => {
@@ -14,7 +15,9 @@ const ContactBulkProgress = () => {
 
   const [pollingStarted, setPollingStarted] = useState(false);
 
-  const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB);
+  const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB, {
+    refetchQueries: [ GET_JOBS_STATUS ]
+  });
 
   const {
     data: dataJobs,
@@ -25,6 +28,22 @@ const ContactBulkProgress = () => {
     variables: { userId: stateApp.user?.mongoId, showProgress: true },
     skip: stateApp.user?.mongoId ? false : true,
   });
+
+  const client = useApolloClient();
+
+  const findQueries = (manager, name) => {
+    const matching = []
+    manager.queries.forEach((q) => {
+      if (q.observableQuery && (q.observableQuery.queryName === name)) {
+        matching.push(q)
+      }
+    })
+    return matching
+  }
+  
+  const refetchQueryByName = (name) => {
+    return Promise.all(findQueries(client.queryManager, name).map(q => q.observableQuery.refetch()))
+  }
 
   useEffect(() => {
     if (stateApp.user) {
@@ -108,6 +127,8 @@ const ContactBulkProgress = () => {
         if (dataJobs.getJobsStatus.jobs[i].status === "Completed") {
           Loader.successToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
           downloadResults(dataJobs.getJobsStatus.jobs[i], onCloseToast);
+          if ( dataJobs.getJobsStatus.jobs[i].type === "contacts")
+            refetchQueryByName("checkIfOwnersAreContacts");
         } else if (dataJobs.getJobsStatus.jobs[i].status === "Failed") {
           Loader.errorToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
         } else {

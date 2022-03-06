@@ -50,6 +50,15 @@ const tableData = [
         label: 'Unit Pricing (per NRA)',
         type: 'number',
         key: 'uUnitPricing'
+    }, {
+        label: 'Qualifier',
+        type: 'custom',
+        key: 'qualifier'
+    }, {
+        label: 'Campaign Name',
+        type: 'custom',
+        key: 'campaignName',
+        nonEditable: true
     }
 ]
 export default tableData

@@ -16,6 +16,8 @@ class SpreadsheetGrid extends React.PureComponent {
         this.onGlobalKeyDown = this.onGlobalKeyDown.bind(this);
         this.onGlobalClick = this.onGlobalClick.bind(this);
         this.onCellClick = this.onCellClick.bind(this);
+        this.onMouseLeave = this.onMouseLeave.bind(this);
+        this.onMouseEnter = this.onMouseEnter.bind(this);
         this.onCellDoubleClick = this.onCellDoubleClick.bind(this);
         this.getCellClassName = this.getCellClassName.bind(this);
 
@@ -147,12 +149,14 @@ class SpreadsheetGrid extends React.PureComponent {
             }
 
             function moveLeft({ x, y }) {
+                const currentActiveCell = newActiveCell
                 if (y > 0) {
                     newActiveCell = { x, y: y - 1 };
                 } else if (x > 0) {
                     newActiveCell = { x: x - 1, y: columnsCount - 1 };
                 }
-                newFocusedCell = null;
+                if (currentActiveCell !== newActiveCell)
+                    newFocusedCell = newActiveCell;
 
                 if (find(block.props.disabledCells, newActiveCell)) {
                     moveLeft(newActiveCell);
@@ -205,7 +209,7 @@ class SpreadsheetGrid extends React.PureComponent {
                     moveRight({ x, y });
 
                 // newFocusedCell = this.state.activeCell;
-                // e.preventDefault();
+                e.preventDefault();
                 // e.stopPropagation();
             }
 
@@ -247,6 +251,7 @@ class SpreadsheetGrid extends React.PureComponent {
         allRows.push({})
         setRows([].concat(allRows))
         this.focusCell({ x: allRows.length - 1, y: 0 })
+        setTimeout(() => document.getElementById(`${allRows.length - 1}-0`)?.click(), 0)
     }
 
     deleteEmptyRow(newRowIndex) {
@@ -283,6 +288,18 @@ class SpreadsheetGrid extends React.PureComponent {
         this.skipGlobalClick = true;
     }
 
+    onMouseEnter(x) {
+        this.setState({
+            hoveredRow: x
+        });
+    }
+
+    onMouseLeave(x) {
+        this.setState({
+            hoveredRow: null
+        });
+    }
+
     onCellDoubleClick(x, y) {
         if (!find(this.props.disabledCells, { x, y })) {
             this.setState({
@@ -293,6 +310,8 @@ class SpreadsheetGrid extends React.PureComponent {
     }
 
     getCellClassName(column, row, x, y) {
+        if (column.id === 'action') return this.state.hoveredRow === x ? 'SpreadsheetGrid__showAction' : 'SpreadsheetGrid__hideAction'
+
         return 'SpreadsheetGrid__cell' +
             (isEqual(this.state.activeCell, { x, y }) ? ' SpreadsheetGrid__cell_active' : '') +
             (isEqual(this.state.focusedCell, { x, y }) ? ' SpreadsheetGrid__cell_focused' : '') +
@@ -325,7 +344,10 @@ class SpreadsheetGrid extends React.PureComponent {
                             getCellClassName={this.getCellClassName}
                             onCellClick={this.onCellClick}
                             onCellDoubleClick={this.onCellDoubleClick}
+                            onMouseEnter={this.onMouseEnter}
+                            onMouseLeave={this.onMouseLeave}
                             activeCell={this.state.activeCell}
+                            hoveredRow={this.state.hoveredRow}
                             focusedCell={this.state.focusedCell}
                             // Pass disabled cells for this row only.
                             disabledCells={this.props.disabledCells.filter(({ x }) => {

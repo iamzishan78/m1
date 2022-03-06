@@ -18,6 +18,7 @@ import Badge from "@material-ui/core/Badge";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
+import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import { CONTACT_PURCHASE_DATA } from "graphQL/useQueryContactPurchaseData";
@@ -299,6 +300,19 @@ const useStyles = makeStyles((theme) => ({
     background: "white !important",
     color: "black !important",
   },
+
+  emailButton: {
+    backgroundColor: "#011133 !important",
+    '& .MuiButton-label': {
+      color: 'white !important'
+    },
+  },
+  disabledButton: {
+    backgroundColor: "white !important",
+    '& .MuiButton-label': {
+      color: 'grey !important'
+    },
+  }
 }));
 
 export default function ContactDetailCard(props) {
@@ -310,6 +324,7 @@ export default function ContactDetailCard(props) {
   const pathName = history.location.pathname;
   const contactId = pathName.split('contact/details/')[1].replace('/', '');
   const shrinkRightColumn = useSelector(({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn);
+  const { statements } = useSelector(({ Revenue }) => Revenue);
   const { selectedPipe } = useSelector(({ Flow }) => Flow);
   const classes = useStyles({ ...props, shrinkRightColumn });
   const [openDialog, setOpenDialog] = useState(false);
@@ -465,6 +480,18 @@ export default function ContactDetailCard(props) {
     return !!stateNav.contactFromMap;
   };
 
+  const checkRevenueStatement = () => {
+    if (history.pathHistory[1]?.includes("/revenue/statement/details")) {
+      return true
+    }
+  };
+
+  const checkRevenueProperty = () => {
+    if (history.pathHistory[1]?.includes("/revenue/property/details")) {
+      return true
+    }
+  };
+
   const getFlowlineReturnUrl = () => {
     const searchParams = new URLSearchParams(window.location.search?.replace("?", ""));
     const returnUrl = searchParams.get("return-url");
@@ -613,6 +640,68 @@ export default function ContactDetailCard(props) {
               </Link>
             )}
 
+            {checkRevenueStatement() && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => {
+                  history.push('/revenue/statements');
+                }}
+              >
+                Revenue Statements
+              </Link>
+            )}
+            {checkRevenueStatement() && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => {
+                  history.push(history.pathHistory[1]);
+                }}
+              >
+                {`${statements?.activeStatement?.checkNumber} - ${statements?.activeStatement?.payor?.["name"]}`}
+              </Link>
+            )}
+
+            {checkRevenueProperty() && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => {
+                  history.push('/revenue/properties');
+                }}
+              >
+                Revenue Properties
+              </Link>
+            )}
+            {checkRevenueProperty() && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => {
+                  history.push(history.pathHistory[1]);
+                }}
+              >
+                {get(stateApp.selectedRevenueProperty, 'number', '')}-{get(stateApp.selectedRevenueProperty, 'name', '')}
+              </Link>
+            )}
+
             <Link
               style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer" }}
               color="inherit"
@@ -656,11 +745,25 @@ export default function ContactDetailCard(props) {
               >
                 Buy Contact Info
               </Button> */}
-                {contactData.primaryEmail && (
+
+                {contactData.primaryEmail ? (
                   <a href={"mailto:" + contactData.primaryEmail}>
-                    <Button variant="contained">Email</Button>
+                    <Button
+                      className={classes.emailButton}
+                      startIcon={<EmailOutlinedIcon />}
+                    >
+                      Email
+                    </Button>
                   </a>
-                )}
+                ) :
+                  (<Button
+                    className={classes.disabledButton}
+                    variant="outlined"
+                    startIcon={<EmailOutlinedIcon />}
+                    disabled
+                  >
+                    Email
+                  </Button>)}
 
                 <Button className={classes.menuIcon} onClick={handleClick}>
                   <MoreVertIcon aria-controls="simple-menu" aria-haspopup="true" />
