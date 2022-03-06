@@ -12,6 +12,9 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { AppContext } from "AppContext";
 
+import { useLazyQuery } from "@apollo/client";
+import { GET_ACTIVITY_TYPES } from "graphQL/useQueryActivityTypes";
+
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
     padding: "16px",
@@ -105,6 +108,26 @@ const ActivitiesToolbar = ({
 }) => {
   const classes = useToolbarStyles();
   const [stateApp] = useContext(AppContext);
+  const [obligationOptions, setObligationOptions] = React.useState([]);
+
+  const [getActivityTypes, { data: obligationTypes }] = useLazyQuery(GET_ACTIVITY_TYPES);
+
+  React.useEffect(() => {
+    if (type === "Obligation") {
+      getActivityTypes({
+        variables: { category: "Obligaiton" }
+      });
+    }
+  }, [type, getActivityTypes]);
+
+  React.useEffect(() => {
+    if (obligationTypes?.obligationTypes) {
+      setObligationOptions(obligationTypes?.obligationTypes?.map(type => ({
+        label: type,
+        value: type
+      })));
+    }
+  }, [obligationTypes]);
 
   const goToBack = () => {
     toolbar.onNavigate("PREV");
@@ -170,7 +193,7 @@ const ActivitiesToolbar = ({
           {type === "Obligation" && (
             <Autocomplete
               id="obligationType"
-              options={[]}
+              options={obligationOptions}
               getOptionLabel={(option) => option.label}
               style={{ width: 220 }}
               size="small"
@@ -185,7 +208,7 @@ const ActivitiesToolbar = ({
                   {...params}
                   label="Obligation Type"
                   variant="outlined"
-                  // value={activityFilterByType}
+                // value={activityFilterByType}
                 />
               )}
             />
