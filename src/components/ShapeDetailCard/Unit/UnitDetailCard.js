@@ -93,8 +93,8 @@ export default function UnitDetailCard(props) {
   }, [updatedUnit]);
 
   const updateProperties = (e, field, value) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e?.preventDefault();
+    e?.stopPropagation();
     const shape = uniObj.shape;
     set(shape.properties, field, value)
     shape.properties[field] = value;

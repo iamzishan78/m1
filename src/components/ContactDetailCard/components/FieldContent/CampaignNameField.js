@@ -6,6 +6,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import ClearIcon from "@material-ui/icons/Clear";
+import { useLazyQuery } from "@apollo/client";
+
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import "components/Shared/Tagger.css";
 import { copy } from 'utils/helper';
 
@@ -81,6 +84,9 @@ export default function CampaignNameField(props) {
   const [textValue, setTextValue] = useState("");
   const [loadingTags, setLoadingTags] = useState(true);
   const [addInDropDown, setAddInDropDown] = useState(false);
+  const [options, setOptions] = useState([]);
+
+  const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   const showPlusAddIcon = () => {
     if (tFActive || textValue ) return false;
@@ -90,11 +96,27 @@ export default function CampaignNameField(props) {
   const classes = useStyles({ ...props, showPlusAddIcon: showPlusAddIcon() });
 
   useEffect(() => {
-    if(props.options.length > 0) {
+    if(options.length > 0) {
       setLoadingTags(false);
     }
-  }, [props.options]);
+  }, [options]);
 
+  useEffect(() => {
+    if(campaignfiltersData?.getESFilterList?.hits){
+      const allFiltersData = campaignfiltersData.getESFilterList.hits.map(hit => hit.key)
+      setOptions(allFiltersData.filter(d=> d))
+    }
+  },[campaignfiltersData]);
+
+  useEffect(() => {
+    getCampaignFilters({
+      variables: {
+          esIndex:'contacts_flat',
+          filterKey: 'campaignName.keyword',
+          size: 50,
+      },
+    });
+  },[])
 
   const UpperAndCleanTagText = (tagText) => {
     return tagText
@@ -149,14 +171,14 @@ export default function CampaignNameField(props) {
   };
 
   const cleanDropDownArray = () => {
-    let cleanArray = props.options.filter((tag) => props.value.indexOf(tag) === -1);
+    let cleanArray = options.filter((tag) => props.value.indexOf(tag) === -1);
     cleanArray = [...new Set(cleanArray)];
     cleanArray.sort();
     return { cleanArray };
   };
 
   useEffect(() => {
-    if(textValue && props.option && props.value){
+    if(textValue && options && props.value){
       const { cleanArray } = cleanDropDownArray();
       if (
         cleanArray.indexOf(UpperAndCleanTagText(textValue)) === -1 &&

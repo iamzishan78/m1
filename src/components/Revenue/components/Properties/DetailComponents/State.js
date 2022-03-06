@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function FilterStateName({ value, onStateChange }) {
+export default function FilterStateName({ value, onStateChange, label, variant }) {
   const classes = useStyles();
 
   const handleStateNameChange = (event, newValue) => {
@@ -34,16 +34,17 @@ export default function FilterStateName({ value, onStateChange }) {
       <Autocomplete
         className={classes.autoC}
         options={statesNames}
-        value={value ? statesNames[statesAbbNames.indexOf(value)]: ''}
+        value={value ? statesNames[statesAbbNames.indexOf(value)] : ''}
         getOptionLabel={(option) => option}
         autoSelect
+
         disableListWrap
         includeInputInList
         onChange={(event, newValue) => {
           handleStateNameChange(event, newValue);
         }}
         onKeyDown={(event) => onEnterKey(event)}
-        renderInput={(params) => <TextField {...params} variant="outlined" fullWidth />}
+        renderInput={(params) => <TextField {...params} label={label} variant={variant ? variant : 'outlined'} fullWidth />}
       />
     </FormControl>
   );

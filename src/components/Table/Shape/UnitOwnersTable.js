@@ -133,6 +133,7 @@ function UnitOwnersTable(props) {
           if (['working_interest', 'royalty_interest', 'orri', 'nri', 'nra'].includes(key))
             hit[key] = addTrailingZeros(hit[key])
         })
+        hit.contactStatus = hit?.contact?.contactStatus;
         hit = props.setGenricData(hit, hit.ownerEntity, ['comments', 'tracks', 'tags', 'ifAreContacts']);
         return hit;
       });
