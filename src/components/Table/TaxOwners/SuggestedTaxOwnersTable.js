@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SuggestedOwnerTable(props) {
+  
   const classes = useStyles();
 
   // contexts

@@ -2987,7 +2987,9 @@ function SubTable(props) {
                     className={classes.multiSelectionTopBarButtons}
                     disabled={props.addAble.type === "suggestedOwnerToParcel" && m1nSelectedRowsIndexes.length === 0}
                     onClick={() => {
-                      props.suggestedOwnerToParcel(m1nSelectedRowsIndexes, setSelectedRow);
+                      const parcelInterests = m1nSelectedRowsIndexes.map((index) => rows[index])
+                      return handleExpandClick(null, null, parcelInterests, "multipleOwnerToContact");
+                      // props.suggestedOwnerToParcel(m1nSelectedRowsIndexes, setSelectedRow);
                     }}
                   >
                     + ADD TO PARCEL

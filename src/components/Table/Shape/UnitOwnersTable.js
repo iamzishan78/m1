@@ -105,9 +105,9 @@ function UnitOwnersTable(props) {
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
       const objectsIdsArray = tableData?.hits?.map((hit) => hit.ownerEntity);
-      const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
+      const globalOwnerIds = tableData?.hits?.map((hit) => hit.ownerEntity || hit.globalOwnerId);
       props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
-      props.ifAreContacts(globalOwnerIds);
+      props.ifAreContacts([ ...globalOwnerIds]);
     }
   }, [tableData, elasticData]);
 
