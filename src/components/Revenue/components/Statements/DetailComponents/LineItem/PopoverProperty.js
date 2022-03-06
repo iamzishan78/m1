@@ -12,7 +12,7 @@ import { useMutation } from "@apollo/client";
 
 
 
-export function PopoverProperty({ anchorEl, handleClose, property }) {
+export function PopoverProperty({ anchorEl, onClose, property }) {
 
     const openPopover = Boolean(anchorEl);
     const [selectedState, setState] = useState('')
@@ -45,7 +45,7 @@ export function PopoverProperty({ anchorEl, handleClose, property }) {
             id={'editable-popover-check'}
             open={openPopover}
             anchorEl={anchorEl}
-            onClose={handleClose}
+            onClose={onClose}
             anchorOrigin={{
                 vertical: 'bottom',
                 horizontal: 'right',
