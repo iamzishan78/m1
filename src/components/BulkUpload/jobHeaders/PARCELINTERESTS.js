@@ -123,6 +123,12 @@ export default [
         actual_key: "parcel.cost_bearing_high_value"
     },
     {
+        label: "Suggested",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.isSuggested"
+    },
+    {
         label: "Notes/Comments",
         mapped_key: "",
         required: false,

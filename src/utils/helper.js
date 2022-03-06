@@ -71,7 +71,10 @@ export const formatTaxOwners = (owners, formData) => {
         },
 
       // parcel interests
-
+      ...(owners[i].parcel) && {
+        "parcel._id": owners[i].parcel._id,
+        "parcel.isSuggested": owners[i].parcel.isSuggested
+      },
 
       // unit interests
       ...(owners[i].shape) && {
