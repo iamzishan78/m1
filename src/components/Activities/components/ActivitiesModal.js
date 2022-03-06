@@ -235,7 +235,7 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
     onCompleted: () => {
       onModalClose();
     },
-    refetchQueries: ["getAllActivities"],
+    refetchQueries: ["getAllActivities", "getESSimpleSearch"],
     awaitRefetchQueries: true,
   });
 
@@ -243,7 +243,7 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
     onCompleted: () => {
       onModalClose();
     },
-    refetchQueries: ["getAllActivities"],
+    refetchQueries: ["getAllActivities", "getESSimpleSearch"],
     awaitRefetchQueries: true,
   });
 
@@ -251,7 +251,7 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
     onCompleted: () => {
       onModalClose();
     },
-    refetchQueries: ["getAllActivities"],
+    refetchQueries: ["getAllActivities", "getESSimpleSearch"],
     awaitRefetchQueries: true,
   });
 

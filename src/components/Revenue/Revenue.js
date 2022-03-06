@@ -46,8 +46,8 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     isExcluded: true,
     parent: "REVENUE_STATEMENTS",
     title: "Revenue Statements",
-    link: "/revenue/statement/:id/line-item",
-    component: "RevenueStatementLineItem",
+    link: "/revenue/statement/details/:id/line-item",
+    component: "RevenueStatementDetails",
   },
 };
 

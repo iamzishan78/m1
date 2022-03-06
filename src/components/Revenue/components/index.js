@@ -4,4 +4,4 @@ export { default as Properties } from "./Properties";
 export { default as ReportingGroups } from "./ReportingGroups";
 export { default as RevenueStatementDetails } from "./Statements/DetailComponents";
 export { default as RevenuePropertyDetails } from "./Properties/DetailComponents";
-export { default as RevenueStatementLineItem } from "./Statements/LineItem";
+export { default as RevenueStatementLineItem } from "./Statements/DetailComponents/LineItem";

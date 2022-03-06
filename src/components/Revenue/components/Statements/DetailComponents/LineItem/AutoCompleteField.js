@@ -8,6 +8,19 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
+import { Popper } from "@material-ui/core";
+
+const styles = (theme) => ({
+    popper: {
+        maxWidth: "fit-content"
+    }
+});
+
+const PopperMy = function (props) {
+    return <Popper {...props} style={styles.popper} placement="bottom-start" />;
+};
+
+
 
 export function AutoCompleteField({ value, onChange, index, column, query, extendSearchQuery, esIndex, filters }) {
     const [open, setOpen] = useState(false);
@@ -61,6 +74,7 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
     return (
         <Autocomplete
             id={`filter-autocomplete-${label}`}
+            PopperComponent={PopperMy}
             open={open}
             onOpen={() => { setOpen(true) }}
             onClose={() => { setOpen(false) }}
@@ -103,6 +117,7 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
             renderInput={(params) => (
                 <TextField
                     {...params}
+                    autoFocus={true}
                     label={label}
                     onChange={(e) => { handleChange(e.target.value) }}
                     onKeyDown={(e) => {

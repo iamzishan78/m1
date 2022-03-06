@@ -486,6 +486,12 @@ export default function ContactDetailCard(props) {
     }
   };
 
+  const checkRevenueProperty = () => {
+    if (history.pathHistory[1]?.includes("/revenue/property/details")) {
+      return true
+    }
+  };
+
   const getFlowlineReturnUrl = () => {
     const searchParams = new URLSearchParams(window.location.search?.replace("?", ""));
     const returnUrl = searchParams.get("return-url");
@@ -695,6 +701,37 @@ export default function ContactDetailCard(props) {
               </Link>
             )}
 
+            {checkRevenueProperty() && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => {
+                  history.push('/revenue/properties');
+                }}
+              >
+                Revenue Properties
+              </Link>
+            )}
+            {checkRevenueProperty() && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => {
+                  history.push(history.pathHistory[1]);
+                }}
+              >
+                {get(stateApp.selectedRevenueProperty, 'number', '')}-{get(stateApp.selectedRevenueProperty, 'name', '')}
+              </Link>
+            )}
+
             <Link
               style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer" }}
               color="inherit"
@@ -738,17 +775,17 @@ export default function ContactDetailCard(props) {
               >
                 Buy Contact Info
               </Button> */}
-              
-            {contactData.primaryEmail ? (
-                <a href={"mailto:" + contactData.primaryEmail}>
-                  <Button
-                  className={classes.emailButton}
-                    startIcon={<EmailOutlinedIcon />}
-                  >
-                    Email
-                  </Button>
-                </a>
-                ) : 
+
+                {contactData.primaryEmail ? (
+                  <a href={"mailto:" + contactData.primaryEmail}>
+                    <Button
+                      className={classes.emailButton}
+                      startIcon={<EmailOutlinedIcon />}
+                    >
+                      Email
+                    </Button>
+                  </a>
+                ) :
                   (<Button
                     className={classes.disabledButton}
                     variant="outlined"

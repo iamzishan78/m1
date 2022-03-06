@@ -223,7 +223,7 @@ export default function DetailComponents(props) {
   const [entityToConvert, setEntityToConvert] = useState(null);
 
   const classes = useStyles({ ...props, showInterestDetails, collapse });
-  
+
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
@@ -246,6 +246,11 @@ export default function DetailComponents(props) {
 
   useEffect(() => {
     if (getPropertyResult) setProperty(getPropertyResult?.getProperty.property);
+    setStateApp((state) => ({
+      ...state,
+      selectedRevenueProperty: getPropertyResult?.getProperty.property
+    }
+    ))
   }, [getPropertyResult]);
 
   useEffect(() => {
@@ -300,7 +305,7 @@ export default function DetailComponents(props) {
 
   const deleteFunc = (ids) => {
     if (ids.length > 0) {
-      for(let i=0; i<ids.length; i++) {
+      for (let i = 0; i < ids.length; i++) {
         updateProperty({
           variables: {
             property: {
@@ -318,7 +323,7 @@ export default function DetailComponents(props) {
   const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
 
   return (
-    <NavHeader title={`${get(propertyDetails,'number','')}-${get(propertyDetails,'name', '')}`}>
+    <NavHeader title={`${get(propertyDetails, 'number', '')}-${get(propertyDetails, 'name', '')}`}>
       {/**
        * Detail title section
        */}
@@ -420,7 +425,7 @@ export default function DetailComponents(props) {
         )}
 
         {!collapse && !showInterestDetails && !showOwnerDialog && (
-          <MetadataDrawer setCollapse={setCollapse} users={users} targetSourceId={propertyId} setStateApp={setStateApp} targetLabel="Property" />
+          <MetadataDrawer setCollapse={setCollapse} users={users} targetLabel='PROPERTY' targetSourceId={propertyId} setStateApp={setStateApp} />
         )}
       </div>
       <Dialog
@@ -429,15 +434,15 @@ export default function DetailComponents(props) {
         fullWidth={true}
         maxWidth={"sm"}
       >
-          <DeleteConfirmationDialogContent
-            header={`Delete Property`}
-            onClose={() => setOpenDeleteDialog(false)}
-            deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={[propertyDetails?._id]}
-            setM1nSelectedRowsIndexes={() => {}}
-          >
-            {`Do you want to delete this property?`}
-          </DeleteConfirmationDialogContent>
+        <DeleteConfirmationDialogContent
+          header={`Delete Property`}
+          onClose={() => setOpenDeleteDialog(false)}
+          deleteFunc={deleteFunc}
+          m1nSelectedRowsIds={[propertyDetails?._id]}
+          setM1nSelectedRowsIndexes={() => { }}
+        >
+          {`Do you want to delete this property?`}
+        </DeleteConfirmationDialogContent>
       </Dialog>
       {/**
        * Menu for meta data

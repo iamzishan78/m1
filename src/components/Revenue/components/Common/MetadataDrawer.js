@@ -13,7 +13,6 @@ import moment from "moment";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
 
-
 const useStyles = makeStyles((theme) => ({
   titleText: {
     marginLeft: 16,
@@ -123,9 +122,6 @@ const useStyles = makeStyles((theme) => ({
 export default function MetadataDrawer(props) {
   const classes = useStyles();
 
-  // Props
-  const { setCollapse, users, targetSourceId, targetLabel, setStateApp } = props;
-
   // States
   const [ownerId, setOwnerId] = useState("");
   const [description, setDescription] = useState(props.description ?? "");
@@ -133,9 +129,8 @@ export default function MetadataDrawer(props) {
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
-  useEffect(() => {
-    setDescription(props.description);
-  }, [props.description]);
+  // Props
+  const { setCollapse, users, targetSourceId, targetLabel } = props;
 
   // Queries and Mutations
   const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
@@ -175,6 +170,10 @@ export default function MetadataDrawer(props) {
   });
 
   useEffect(() => {
+    setDescription(props.description);
+  }, [props.description]);
+
+  useEffect(() => {
     if (targetSourceId) {
       getRecentFiles({
         variables: {
@@ -197,12 +196,6 @@ export default function MetadataDrawer(props) {
       viewFiles({
         variables: { fileIds: ID },
       });
-
-      if (setStateApp)
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          metaDrawerViewFiles: ID
-        }));
       //* Getting most recent uploaded pdf file
       let recentFile = {};
       files.getFileDescriptors

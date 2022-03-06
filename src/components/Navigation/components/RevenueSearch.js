@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo } from "react";
+import React, { useContext, useState, useMemo, useEffect } from "react";
 import { InputAdornment, TextField, IconButton, Tooltip } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
@@ -73,6 +73,15 @@ const LandSearch = ({ activeModule }) => {
         return "";
     }
   }, [activeModule]);
+
+  useEffect(() => {
+    return () => {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        revenueSearchQuery: '',
+      }));
+    }
+  }, [])
 
   return (
     <div className={classes.search}>
