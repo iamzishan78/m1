@@ -51,6 +51,7 @@ const SuggestedOwnersHeadCells = [
     name: "name", label: "Owner Name",
     options: { setCellProps: () => ({ style: { minWidth: "200px" } }) }
   },
+  { name: "ownershipType", label: "Entity Type" },
   { name: "interestType", label: "Type" },
   {
     name: "ownershipPercentage",

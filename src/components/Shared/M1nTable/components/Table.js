@@ -3007,31 +3007,33 @@ function SubTable(props) {
         : (selectedRows, displayData, setSelectedRow) => {
           //// if contacts set the multi selection top bar: ////
 
-          if (props.addAble.type === "suggestedOwnerToParcel") {
-            return (
-              <div style={{ height: "48px", display: "flex" }}>
-                <div
-                  style={{
-                    marginTop: "6px",
-                    height: "35px",
-                    display: "flex",
-                    marginRight: "20px",
-                  }}
-                >
-                  <Button
-                    color="secondary"
-                    className={classes.multiSelectionTopBarButtons}
-                    disabled={props.addAble.type === "suggestedOwnerToParcel" && m1nSelectedRowsIndexes.length === 0}
-                    onClick={() => {
-                      props.suggestedOwnerToParcel(m1nSelectedRowsIndexes, setSelectedRow);
-                    }}
-                  >
-                    + ADD TO PARCEL
-                  </Button>
-                </div>
-              </div>
-            );
-          }
+          // if (props.addAble.type === "suggestedOwnerToParcel") {
+          //   return (
+          //     <div style={{ height: "48px", display: "flex" }}>
+          //       <div
+          //         style={{
+          //           marginTop: "6px",
+          //           height: "35px",
+          //           display: "flex",
+          //           marginRight: "20px",
+          //         }}
+          //       >
+          //         <Button
+          //           color="secondary"
+          //           className={classes.multiSelectionTopBarButtons}
+          //           disabled={props.addAble.type === "suggestedOwnerToParcel" && m1nSelectedRowsIndexes.length === 0}
+          //           onClick={() => {
+          //             const parcelInterests = m1nSelectedRowsIndexes.map((index) => rows[index])
+          //             return handleExpandClick(null, null, parcelInterests, "multipleOwnerToContact");
+          //             // props.suggestedOwnerToParcel(m1nSelectedRowsIndexes, setSelectedRow);
+          //           }}
+          //         >
+          //           + ADD TO PARCEL
+          //         </Button>
+          //       </div>
+          //     </div>
+          //   );
+          // }
           if (props.addAble.type === "parcelDocument") {
             return (
               <div

@@ -64,6 +64,7 @@ function* convertTaxOwnerToContact(action) {
 }
 
 function* convertMultipleOwnerToContact(action) {
+  
   const bulkUpload = yield select((state) => state.common.bulkUpload);
   try {
     const { rows, entitiesIds, existingContactId, actionType, userId } = action.payload;
