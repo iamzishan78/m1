@@ -135,7 +135,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
   const { control, register, reset, getValues } = useForm();
 
   const [getProvisionAutoCompleteList, { data: dataProvisionAutoCompleteList }] = useLazyQuery(GET_PROVISION_AUTOCOMPLETE_LIST);
-  const [createAgreementProvision] = useMutation(CREATE_AGREEMENT_PROVISION);
+  const [upsertAgreementProvision] = useMutation(CREATE_AGREEMENT_PROVISION);
 
   const { fields, append } = useFieldArray({
     control, // control props comes from useForm (optional: if you are using FormContext)
@@ -171,7 +171,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
       let addProvision = { agreement: id, type: provision.type, isDeleted: false, startDate: undefined, endDate: undefined };
       if (provision._id) {
         addProvision = { ...addProvision, isTemplate: false, applicable: true, templateRef: provision._id };
-        createAgreementProvision({
+        upsertAgreementProvision({
           variables: { provision: addProvision },
           refetchQueries: ["getAgreementProvisions", "provisionAutoCompleteList"],
         });
@@ -179,7 +179,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
         append({ startDate: undefined, endDate: undefined });
       }
     } else {
-      createAgreementProvision({
+      upsertAgreementProvision({
         variables: { provision: { agreement: id, type: provision.type, isDeleted: true } },
         refetchQueries: ["getAgreementProvisions", "provisionAutoCompleteList"],
       });
@@ -192,7 +192,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
     if (formValues?.provisions && formValues?.provisions[index]) {
       const provision = formValues.provisions[index];
       if (provision.type)
-        createAgreementProvision({
+        upsertAgreementProvision({
           variables: {
             provision: { agreement: id, ...formValues.provisions[index] },
           },

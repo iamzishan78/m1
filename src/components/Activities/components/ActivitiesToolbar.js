@@ -28,7 +28,7 @@ const useToolbarStyles = makeStyles((theme) => ({
     borderRadius: 3,
     display: "flex",
     alignItems: "center",
-    marginRight: "10px"
+    marginRight: "10px",
   },
   filterDisplay: {
     color: "#d9d9d9",
@@ -80,15 +80,15 @@ const useToolbarStyles = makeStyles((theme) => ({
 }));
 
 const activitiesTypesOptions = [
-  { label: 'All', value: 'all' },
-  { label: 'Call', value: 'call' },
-  { label: 'Meeting', value: 'meeting' },
-  { label: 'Task', value: 'task' },
-  { label: 'Deadline', value: 'deadline' },
-  { label: 'Email', value: 'email' },
-  { label: 'Text Message', value: "text_message" },
-  { label: 'Mailer', value: 'mailer' }
-]
+  { label: "All", value: "all" },
+  { label: "Call", value: "call" },
+  { label: "Meeting", value: "meeting" },
+  { label: "Task", value: "task" },
+  { label: "Deadline", value: "deadline" },
+  { label: "Email", value: "email" },
+  { label: "Text Message", value: "text_message" },
+  { label: "Mailer", value: "mailer" },
+];
 
 const ActivitiesToolbar = ({
   activityFilterByType,
@@ -137,9 +137,13 @@ const ActivitiesToolbar = ({
   };
 
   const acitvityOwnerOptions = React.useMemo(() => {
-    let ownerOptions = [{ label: 'All', value: 'all' }];
+    let ownerOptions = [{ label: "All", value: "all" }];
     if (mongoUsers) {
-      mongoUsers.filter(u => u.name).forEach(u => { ownerOptions.push({ ...u, label: u.displayName, value: u._id }) });
+      mongoUsers
+        .filter((u) => u.name)
+        .forEach((u) => {
+          ownerOptions.push({ ...u, label: u.displayName, value: u._id });
+        });
     }
     return ownerOptions;
   }, [mongoUsers]);
@@ -148,29 +152,22 @@ const ActivitiesToolbar = ({
     <div className={classes.root}>
       <div className={classes.left}>
         <div className={classes.filterByTypeDisplay}>
-          {type === "activity" && (
+          {type === "Activity" && (
             <Autocomplete
               id="activityFilterByType"
               options={activitiesTypesOptions}
               getOptionLabel={(option) => option.label}
               style={{ width: 220 }}
               size="small"
-              defaultValue={activitiesTypesOptions.find(o => o.value === activityFilterByType)}
-              value={activitiesTypesOptions.find(o => o.value === activityFilterByType)}
+              defaultValue={activitiesTypesOptions.find((o) => o.value === activityFilterByType)}
+              value={activitiesTypesOptions.find((o) => o.value === activityFilterByType)}
               onChange={(_, value) => {
-                setActivityFilterByType(value?.value ?? 'all');
+                setActivityFilterByType(value?.value ?? "all");
               }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Activity Type"
-                  variant="outlined"
-                  value={activityFilterByType}
-                />
-              )}
+              renderInput={(params) => <TextField {...params} label="Activity Type" variant="outlined" value={activityFilterByType} />}
             />
           )}
-          {type === "obligation" && (
+          {type === "Obligation" && (
             <Autocomplete
               id="obligationType"
               options={[]}
@@ -188,7 +185,7 @@ const ActivitiesToolbar = ({
                   {...params}
                   label="Obligation Type"
                   variant="outlined"
-                // value={activityFilterByType}
+                  // value={activityFilterByType}
                 />
               )}
             />
@@ -201,95 +198,67 @@ const ActivitiesToolbar = ({
             getOptionLabel={(option) => option.label}
             style={{ width: 220 }}
             size="small"
-            defaultValue={acitvityOwnerOptions.find(u => u.value === activityFilterByOwner)}
-            value={acitvityOwnerOptions.find(u => u.value === activityFilterByOwner)}
+            defaultValue={acitvityOwnerOptions.find((u) => u.value === activityFilterByOwner)}
+            value={acitvityOwnerOptions.find((u) => u.value === activityFilterByOwner)}
             onChange={(_, value) => {
-              setActivityFilterByOwner(value?.value ?? 'all');
+              setActivityFilterByOwner(value?.value ?? "all");
             }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Activity Owner"
-                variant="outlined"
-                value={activityFilterByOwner}
-              />
-            )}
+            renderInput={(params) => <TextField {...params} label="Activity Owner" variant="outlined" value={activityFilterByOwner} />}
           />
         </div>
       </div>
       {stateApp.activityDisplayType === "calendar" && (
         <div className={classes.centerNav}>
-          <IconButton
-            size="small"
-            className={classes.marginLeft}
-            onClick={() => goToBack()}
-          >
+          <IconButton size="small" className={classes.marginLeft} onClick={() => goToBack()}>
             <NavigateBeforeIcon />
           </IconButton>
           <p className={classes.marginLeft}>{toolbar.label}</p>
-          <IconButton
-            size="small"
-            className={classes.marginLeft}
-            onClick={() => goToNext()}
-          >
+          <IconButton size="small" className={classes.marginLeft} onClick={() => goToNext()}>
             <NavigateNextIcon />
           </IconButton>
         </div>
       )}
       <div className={classes.right}>
-
         {stateApp.activityDisplayType === "calendar" ? (
-
-          <Select
-            className={classes.viewSwitcher}
-            variant="outlined"
-            value={view}
-            onChange={handleViewChange}
-          >
+          <Select className={classes.viewSwitcher} variant="outlined" value={view} onChange={handleViewChange}>
             <MenuItem value={Views.WEEK}>Week</MenuItem>
             <MenuItem value={Views.MONTH}>Month</MenuItem>
           </Select>
-
         ) : null}
 
         <div>
           <ButtonGroup>
             <Button
               size="small"
-              className={`${classes.filterToggleBtn} ${activityFilterByTime === "all" && classes.activeBtn
-                }`}
+              className={`${classes.filterToggleBtn} ${activityFilterByTime === "all" && classes.activeBtn}`}
               onClick={() => setActivityFilterByTime("all")}
             >
               All
             </Button>
             <Button
               size="small"
-              className={`${classes.filterToggleBtn} ${activityFilterByTime === "upcoming" && classes.activeBtn
-                }`}
+              className={`${classes.filterToggleBtn} ${activityFilterByTime === "upcoming" && classes.activeBtn}`}
               onClick={() => setActivityFilterByTime("upcoming")}
             >
               Upcoming
             </Button>
             <Button
               size="small"
-              className={`${classes.filterToggleBtn} ${activityFilterByTime === "overdue" && classes.activeBtn
-                }`}
+              className={`${classes.filterToggleBtn} ${activityFilterByTime === "overdue" && classes.activeBtn}`}
               onClick={() => setActivityFilterByTime("overdue")}
             >
               Overdue
             </Button>
             <Button
               size="small"
-              className={`${classes.filterToggleBtn} ${activityFilterByTime === "open" && classes.activeBtn
-                }`}
+              className={`${classes.filterToggleBtn} ${activityFilterByTime === "open" && classes.activeBtn}`}
               onClick={() => setActivityFilterByTime("open")}
             >
               Open
             </Button>
             <Button
               size="small"
-              className={`${classes.filterToggleBtn} ${activityFilterByTime === "closed" && classes.activeBtn
-                }`}
+              className={`${classes.filterToggleBtn} ${activityFilterByTime === "closed" && classes.activeBtn}`}
               onClick={() => setActivityFilterByTime("closed")}
             >
               Closed

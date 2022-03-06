@@ -105,15 +105,15 @@ const ActivitySearch = () => {
     let category = null;
     switch (activeModule.title) {
       case "Activities":
-        category = "activity";
+        category = "Activity";
         break;
       case "Obligations":
-        category = "obligation";
+        category = "Obligation";
         break;
       default:
     }
     getAllActivitiesForSearch({
-      variables: { category }
+      variables: { category },
     });
   }, [activeModule]);
 

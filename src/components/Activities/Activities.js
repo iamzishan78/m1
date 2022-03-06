@@ -42,12 +42,7 @@ const ActivitiesCalendar = (props) => {
         onSelectEvent={(e) => props.onEventClick(e)}
         showMultiDayTimes
         components={{
-          toolbar: (params) => (
-            <ActivitiesToolbar
-              {...params}
-              {...props}
-            />
-          ),
+          toolbar: (params) => <ActivitiesToolbar {...params} {...props} />,
           event: (props) => <ActivitiesEvent {...props} />,
         }}
       />
@@ -137,8 +132,8 @@ const Activities = () => {
   useEffect(() => {
     getAllActivities({
       variables: {
-        category: "CRM"
-      }
+        category: "CRM",
+      },
     });
   }, []);
 
@@ -231,7 +226,7 @@ const Activities = () => {
               events={filteredEvents}
               onEventClick={onEventClick}
               mongoUsers={userLists?.allMongoUsers}
-              type="activity"
+              type="Activity"
             />
           ) : (
             <div>
@@ -252,7 +247,7 @@ const Activities = () => {
                   events={filteredEvents}
                   onEventClick={onEventClick}
                   mongoUsers={userLists?.allMongoUsers}
-                  type="activity"
+                  type="Activity"
                 />
               </div>
               <div className={classes.table}>
