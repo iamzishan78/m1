@@ -23,18 +23,13 @@ const PopperMy = function (props) {
 
 
 
-export function AutoCompleteField({ value, onChange, index, column, query, extendSearchQuery, esIndex, filters, setAnchorEl }) {
+export function AutoCompleteField({ value, onChange, index, column, query, extendSearchQuery, esIndex, filters }) {
     const [open, setOpen] = useState(false);
     const [options, setOptions] = useState([]);
     // const [value, setValue] = useState({ key: value });
     const [search, setSearch] = useState(value);
     const { label, filterKey, type } = column
     const [getFilters, { data: filtersData, loading }] = useLazyQuery(query, { fetchPolicy: "no-cache" });
-
-    const handleClick = (event) => {
-        const element = document.getElementById(`id-${column.id}`)
-        setAnchorEl(element);
-    };
 
     // useEffect(() => {
     //     setSearch(filterList[index][0])
@@ -101,7 +96,7 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
             options={options}
             loading={loading}
             renderOption={(props, value) => {
-                if (props?.id === "newEntity") return <Typography style={{ color: "midnightblue" }} onClick={handleClick}>Add '{props.key}'</Typography>;
+                if (props?.id === "newEntity") return <Typography style={{ color: "midnightblue" }} >Add '{props.key}'</Typography>;
                 const matches = match(props.key, value?.inputValue);
                 const parts = parse(props.key, matches);
 

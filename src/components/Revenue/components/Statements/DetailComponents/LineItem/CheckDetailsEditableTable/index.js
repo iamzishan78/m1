@@ -31,62 +31,8 @@ import { makeStyles } from "@material-ui/styles";
 import moment from "moment";
 import $ from "jquery";
 
-
-import { KeyboardDatePicker } from "@material-ui/pickers";
 import { PopoverProperty } from "./PopoverProperty";
-
-
-const RevenueStatementHeadCells = [
-    {
-        id: "property.number", title: "Property Code", filterKey: 'property.number.keyword', sort: true, type: 'autocomplete', width: '180px'
-    },
-    {
-        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', sort: true, width: '210px', disabled: true
-    },
-    {
-        id: "property.state", title: "State", filterKey: 'property.state.keyword', sort: true, width: '100px', disabled: true
-    },
-    {
-        id: "property.county", title: "County", filterKey: 'property.county.keyword', sort: true, width: '130px', disabled: true
-    },
-    {
-        id: "date", title: "Sales Date", filterKey: 'date', sort: true, type: 'date', width: '180px'
-    },
-    {
-        id: "product", title: "Product", filterKey: 'product.keyword', sort: true, type: 'autocomplete', width: '130px'
-    },
-    {
-        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement', sort: true, width: '150px'
-    },
-    {
-        id: "interestType", title: "Type", filterKey: 'interestType.keyword', sort: true, type: 'autocomplete', width: '100px'
-    },
-    {
-        id: "price", title: "Avg Price", filterKey: 'price', sort: true, width: '100px'
-    },
-    {
-        id: "grossOwnerVolume", title: "Sales Volume", filterKey: 'grossOwnerVolume', sort: true, width: '125px'
-    },
-    {
-        id: "grossOwnerValue", title: "Gross Revenue", filterKey: 'grossOwnerValue', sort: true, width: '100px'
-    },
-    {
-        id: "ownerTax", title: "Severence Tax", filterKey: 'ownerTax', sort: true, width: '100px'
-    },
-    {
-        id: "ownerDeducts", title: "Deduct Amount", filterKey: 'ownerDeducts', sort: true, width: '100px'
-    },
-    {
-        id: "deductType", title: "Deduct Code", filterKey: 'deductType.keyword', sort: true, type: 'autocomplete', width: '200px'
-    },
-    {
-        id: "netOwnerValue", title: "Owner Net Revenue", filterKey: 'netOwnerValue', sort: true, width: '150px'
-    },
-    {
-        id: "action", filterKey: 'action', title: "", type: 'action', width: '50px'
-    }
-];
-
+import { RevenueStatementHeadCells } from "./data";
 
 const useStyles = makeStyles({
     root: {
@@ -164,22 +110,16 @@ function CheckDetailsEditableTable(props) {
     const client = useApolloClient();
 
     const [anchorEl, AnchorEl] = useState(null);
-
-    const setAnchorEl = () => {
-        // AnchorEl(document.getElementById(`${currentRow}-0`));
-    };
+    const gridRef = React.createRef()
 
     const handleClose = () => {
         setNewProperty(null)
-        setAnchorEl(null);
+        AnchorEl(null);
     };
 
     const classes = usetableStyles();
     const tclasses = useStyles({ showPdfSection: props.showPdfSection });
 
-    // const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
-
-    // queries 
     const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
         fetchPolicy: "no-cache", onCompleted: () => {
             props.setLoading(false);
@@ -187,16 +127,6 @@ function CheckDetailsEditableTable(props) {
     });
     const [loadMoreList, { data: loadMoreData, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
     });
-
-    useEffect(() => {
-        $("#dateType").on("change", function () {
-            this.setAttribute(
-                "data-date",
-                moment(this.value, "YYYY-MM-DD")
-                    .format(this.getAttribute("data-date-format"))
-            )
-        }).trigger("change")
-    }, [])
 
     useEffect(() => {
         if (loadMoreData?.getESPaginatedList?.hits) {
@@ -287,7 +217,7 @@ function CheckDetailsEditableTable(props) {
                 <>
                     <div id={`id-${cell.id}`}></div>
                     {
-                        focus && cell.type === 'autocomplete' ? <AutoCompleteField setAnchorEl={setAnchorEl} label={cell.title} value={get(row, cell.id)} column={cell} index={index} onChange={onFieldChange(row._id, cell.id)}
+                        focus && cell.type === 'autocomplete' ? <AutoCompleteField label={cell.title} value={get(row, cell.id)} column={cell} index={index} onChange={onFieldChange(row._id, cell.id)}
                             query={GET_ES_FILTER_LIST} esIndex={esIndex} />
 
                             : focus && cell.type === 'date' ? <>
@@ -336,43 +266,6 @@ function CheckDetailsEditableTable(props) {
                                         ),
                                     }}
                                 />
-
-
-                                {/* <KeyboardDatePicker
-                                    className={classes.maxWidth}
-                                    // disableToolbar
-                                    variant="inline"
-                                    format="MM/DD/YYYY"
-                                    margin="normal"
-                                    fullWidth
-                                    id="date-picker-inline"
-                                    value={value}
-                                    onKeyDown={(e) => {
-                                        if (e.keyCode === 13) {
-                                            e.stopPropagation();
-                                            let dRow = rows.find((r) => r._id === row._id);
-                                            onFieldChange(dRow._id, cell.id, cell.type)(get(dRow, cell.id))
-                                        }
-                                    }}
-                                    onBlur={() => {
-                                        setTimeout(() => {
-                                            let dRow = rows.find((r) => r._id === row._id);
-                                            onFieldChange(dRow._id, cell.id)(get(dRow, cell.id))
-                                        }, 100)
-
-                                    }}
-                                    onChange={(date) => {
-                                        if ((date && date?._d?.toString() !== 'Invalid Date')) {
-                                            let dRow = rows.find((r) => r._id === row._id);
-                                            set(dRow, cell.id, date ? String(date["_d"]) : "")
-
-                                        }
-                                    }}
-                                    KeyboardButtonProps={{
-                                        "aria-label": "change date",
-                                    }}
-                                /> */}
-
                             </>
 
                                 : cell.type === 'action' ? <ActionCell id={cell.id + index} onChange={onFieldChange(row._id, 'IsDeleted')} />
@@ -385,7 +278,6 @@ function CheckDetailsEditableTable(props) {
                 </>
             );
         }
-        // cell.width = 200
         return cell;
     })
 
@@ -493,9 +385,6 @@ function CheckDetailsEditableTable(props) {
             setSort({ orderBy: id, order: 'desc' })
         }
     }
-
-    const gridRef = React.createRef()
-
 
     return (
         <Paper elevation={3} >
