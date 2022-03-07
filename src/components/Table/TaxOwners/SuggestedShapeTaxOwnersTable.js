@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 
 // context
 import { AppContext } from "AppContext";
@@ -52,6 +52,8 @@ function SuggestedShapeTaxOwnersTable(props) {
   const [selectedYear, setSelectedYear] = useState(2020); // production selected year state
   const [count, setCount] = useState()  // local state for async count query
   const [suggestedOwnersCount, setSuggestedOwnersCount] = useState()  // local state for async count query
+
+  const setM1nSelectedRowsIndexesRef = useRef();
 
   // queries
   const [getPaginatedShapeWellOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(
@@ -421,15 +423,20 @@ function SuggestedShapeTaxOwnersTable(props) {
         parent={props.parent}
         setColumnsBase={[]}
         getWellOwnersByYear={getWellOwnersByYear}
+        setM1nSelectedRowsIndexesRef={setM1nSelectedRowsIndexesRef}
       />
       {showConvertDialog && (
         <MultipleOwnerToContactDrawerContainer
           onClose={() => {
-            // onClose();
             setShowConvertDialog(false);
           }}
           rows={formatInterestForImport()}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={(m1nSelectedRowsIndexes) => {
+            console.log("here");
+            if (typeof setM1nSelectedRowsIndexesRef.current === "function") {
+              setM1nSelectedRowsIndexesRef.current(m1nSelectedRowsIndexes);
+            }
+          }}
           onSuccess={() => {}}
           setRows={() => {}}
         />
