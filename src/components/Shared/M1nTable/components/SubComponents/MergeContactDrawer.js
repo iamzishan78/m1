@@ -33,7 +33,7 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
     mergeContacts({
       variables: { primary: primaryContact._id, secondary: secondaryContacts, mergedBy: stateApp.user.mongoId, },
       refetchQueries: [
-        "getPaginatedContacts",
+        "getESContacts",
       ],
       awaitRefetchQueries: true
     }).then(
