@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import PropertyInterestDetailsTable from "components/Table/Revenue/PropertyInterestDetailsTable";
+import PropertyRevenueDetailsTable from "components/Table/Revenue/PropertyRevenueDetailsTable";
+import TabButtons from "components/Shared/TabPanels/TabButtons"
 
 const useStyles = makeStyles(() => ({
   sectionCard: {
@@ -23,17 +25,46 @@ const useStyles = makeStyles(() => ({
 
 const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDetails, setSelectedInterest }) => {
   const classes = useStyles();
+  const [selectedTab, setSelectedTab] = useState(0)
+
+  const Header = () => (
+    <TabButtons
+      labels={[
+        "Interest Details",
+        "Revenue Details",
+      ]}
+      value={selectedTab}
+      setValue={(n) => {
+        setSelectedTab(n);
+      }}
+    />
+  );
+
+
   return (
     <div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
-      <PropertyInterestDetailsTable
-        onClickAdd={onClickAdd}
-        setSelectedInterest={setSelectedInterest}
-        showInterestDetails={showInterestDetails}
-        targetLabel="propertyInterest"
-        parent="PropertyInterestTable"
-        header="Interest Details"
-        propertyId={propertyId}
-      />
+      {selectedTab === 0 && (
+        <PropertyInterestDetailsTable
+          onClickAdd={onClickAdd}
+          setSelectedInterest={setSelectedInterest}
+          showInterestDetails={showInterestDetails}
+          targetLabel="propertyInterest"
+          parent="PropertyInterestTable"
+          header={<Header />}
+          propertyId={propertyId}
+        />
+      )}
+      {selectedTab === 1 && (
+        <PropertyRevenueDetailsTable
+          onClickAdd={onClickAdd}
+          setSelectedInterest={setSelectedInterest}
+          showInterestDetails={showInterestDetails}
+          targetLabel="propertyInterest"
+          parent="PropertyInterestTable"
+          header={<Header />}
+          propertyId={propertyId}
+        />
+      )}
     </div>
   );
 };
