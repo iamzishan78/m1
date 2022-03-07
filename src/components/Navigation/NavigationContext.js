@@ -146,6 +146,7 @@ const initialValue = {
   contactFromMap: false,
   bulkUploadFromMap: false,
   bulkUploadParcel: null,
+  bulkUploadShape: null,
   filterIntersectingWellLines: [],
 };
 

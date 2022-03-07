@@ -30,16 +30,17 @@ export default function RevenueAppBar(props) {
   });
 
   const RevenueStatementAction = React.useMemo(() => {
-    return [
-      {
-        isShow: false,
-        text: `Add Statement`,
-        action: () => {
-          addCheck({ variables: { check: { source: "Manual Entry" } } });
-        },
-      },
-      { isShow: true, text: "Import Statement", action: () => {} },
-    ];
+    return [{
+      isShow: false, text: `Add Statement`, action: () => {
+        addCheck({ variables: { check: { source: 'Manual Entry' } } })
+      }
+    },
+    {
+      isShow: true, text: 'Import Statement', action: () => {
+        history.push("/bulkupload");
+      }
+    },
+    ]
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeModule]);
 
@@ -61,10 +62,10 @@ export default function RevenueAppBar(props) {
           </Grid>
           {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title ||
             activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title) && (
-            <Grid item md={5} style={{ marginLeft: "20px" }}>
-              <RevenueSearch activeModule={activeModule} />
-            </Grid>
-          )}
+              <Grid item md={5} style={{ marginLeft: "20px" }}>
+                <RevenueSearch activeModule={activeModule} />
+              </Grid>
+            )}
         </Grid>
       </Grid>
       {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title && (

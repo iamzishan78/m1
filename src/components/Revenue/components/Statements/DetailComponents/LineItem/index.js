@@ -39,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "4px",
     alignItems: "center",
   },
+  tableRoot: {
+    marginTop: "22px",
+  }
 }));
 
 export default function LineItem(props) {
@@ -81,8 +84,9 @@ export default function LineItem(props) {
           <PdfViewer togglePdfViewState={togglePdfViewState} checkId={props.checkId} />
         </div>
       )}
-
-      <CheckDetailsEditableTable parent="CheckDetailsTable" header="Check Details" checkId={props.checkId} />
+      <div className={classes.tableRoot}>
+        <CheckDetailsEditableTable parent="CheckDetailsTable" header="Check Details" showPdfSection={showPdfSection} checkId={props.checkId} />
+      </div>
     </div>
     // </NavHeader>
   );
