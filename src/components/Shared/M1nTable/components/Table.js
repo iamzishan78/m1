@@ -657,6 +657,9 @@ function SubTable(props) {
   const setM1nSelectedRowsIndexes = (newState) => {
     setStateIfDeepEqual(M1nSelectedRowsIndexes, newState);
   };
+  if (props.setM1nSelectedRowsIndexesRef) {
+    props.setM1nSelectedRowsIndexesRef.current = setM1nSelectedRowsIndexes;
+  }
   const setSubTitle = (newState) => {
     setStateIfDeepEqual(SubTitle, newState);
   };
@@ -2743,13 +2746,13 @@ function SubTable(props) {
 
                       {props.targetLabel === "Unit Ownership" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span> {tableMeta.rowData[17] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span> {tableMeta.rowData[18] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 
                       {props.parent === "ownersPerParcel" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span> {tableMeta.rowData[18] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span> {tableMeta.rowData[19] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 
