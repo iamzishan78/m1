@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 // context
@@ -59,6 +59,8 @@ function SuggestedOwnerTable(props) {
   const [suggestedOwnersCount, setSuggestedOwnersCount] = useState()  // local state for async count query
 
   const [showConvertDialog, setShowConvertDialog] = useState(false)
+
+  const setM1nSelectedRowsIndexesRef = useRef();
 
   // queries
   const [getPaginatedShapeOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(
@@ -242,7 +244,7 @@ function SuggestedOwnerTable(props) {
           disabled={true}
         // onClick={addAction}
         >
-          + ADD TO {props.shapeType?.toUpperCase()}
+          + ADD TO PARCEL
         </Button>
       </div>
     },
@@ -258,7 +260,7 @@ function SuggestedOwnerTable(props) {
               setShowConvertDialog(true);
             }}
           >
-            + ADD TO {props.shapeType?.toUpperCase()}
+            + ADD TO PARCEL
           </Button>
         </div>
       </div>
@@ -392,15 +394,20 @@ function SuggestedOwnerTable(props) {
         parent={props.parent}
         setColumnsBase={[]}
         getWellOwnersByYear={getWellOwnersByYear}
+        setM1nSelectedRowsIndexesRef={setM1nSelectedRowsIndexesRef}
       />
       {showConvertDialog && (
         <MultipleOwnerToContactDrawerContainer
           onClose={() => {
-            // onClose();
             setShowConvertDialog(false);
           }}
           rows={formatInterestForImport()}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={(m1nSelectedRowsIndexes) => {
+            console.log("here");
+            if (typeof setM1nSelectedRowsIndexesRef.current === "function") {
+              setM1nSelectedRowsIndexesRef.current(m1nSelectedRowsIndexes);
+            }
+          }}
           onSuccess={() => {}}
           setRows={() => {}}
         />
