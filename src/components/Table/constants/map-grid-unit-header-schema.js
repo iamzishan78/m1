@@ -85,7 +85,7 @@ const unitsColumnHeaders = [
       label: "Campaign Name",
       esKey: "shapeJson.properties.campaignName",
       options: {
-        customRender: (value) => value?.map(v => `${v}, `),
+        customRender: (value) => value?.map((v, index) => `${v}${index < value?.length - 1 ? ',' : ''}`),
         sort: true,
         filter: true,
       },
