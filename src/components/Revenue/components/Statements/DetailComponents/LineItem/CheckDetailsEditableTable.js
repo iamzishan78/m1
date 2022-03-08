@@ -65,7 +65,7 @@ const RevenueStatementHeadCells = [
         id: "grossOwnerValue", title: "Gross Revenue", filterKey: 'grossOwnerValue', sort: true, width: '100px'
     },
     {
-        id: "ownerTax", title: "Severence Tax", filterKey: 'ownerTax', sort: true, width: '100px'
+        id: "ownerTax", title: "Severance Tax", filterKey: 'ownerTax', sort: true, width: '100px'
     },
     {
         id: "ownerDeducts", title: "Deduct Amount", filterKey: 'ownerDeducts', sort: true, width: '100px'

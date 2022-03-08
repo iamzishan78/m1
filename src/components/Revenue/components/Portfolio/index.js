@@ -93,13 +93,13 @@ export default function Portfolio() {
           </Grid>
           <Grid item xs={4} md={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
-              <Grid item>
+              {/* <Grid item>
                 <Button variant="contained" color="secondary">
                   Save View
                 </Button>
-              </Grid>
+              </Grid> */}
               <Grid item>
-                <Button variant="contained">Run Report</Button>
+                <Button variant="contained" color="secondary">Run Report</Button>
               </Grid>
             </Grid>
           </Grid>

@@ -101,7 +101,7 @@ export default function OilTable({ monthsInterval, title }) {
               <TableBody>
                 <TableRow className={classes.highlightedRows}>
                   <TableCell scope="row" className={classes.leftCells}>
-                    Gross Volums (BBL)
+                    Gross Volume (BBL)
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
                     190,325

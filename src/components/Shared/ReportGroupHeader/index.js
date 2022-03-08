@@ -177,7 +177,7 @@ export default function ReportGroupHeader({ type, esFilters, setESFilters, setFi
               <Select
                 labelId="select-outlined-label"
                 id="select-outlined"
-                label="Reporting Groups"
+                label="Reporting Group"
                 value={reportingGroup}
                 fullWidth
                 className={classes.viewSwitcher}
