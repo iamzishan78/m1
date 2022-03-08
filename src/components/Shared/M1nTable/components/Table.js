@@ -657,6 +657,9 @@ function SubTable(props) {
   const setM1nSelectedRowsIndexes = (newState) => {
     setStateIfDeepEqual(M1nSelectedRowsIndexes, newState);
   };
+  if (props.setM1nSelectedRowsIndexesRef) {
+    props.setM1nSelectedRowsIndexesRef.current = setM1nSelectedRowsIndexes;
+  }
   const setSubTitle = (newState) => {
     setStateIfDeepEqual(SubTitle, newState);
   };
@@ -2768,13 +2771,13 @@ function SubTable(props) {
 
                       {props.targetLabel === "Unit Ownership" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span> {tableMeta.rowData[17] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span> {tableMeta.rowData[18] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 
                       {props.parent === "ownersPerParcel" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span> {tableMeta.rowData[18] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span> {tableMeta.rowData[19] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 
@@ -3007,31 +3010,33 @@ function SubTable(props) {
         : (selectedRows, displayData, setSelectedRow) => {
           //// if contacts set the multi selection top bar: ////
 
-          if (props.addAble.type === "suggestedOwnerToParcel") {
-            return (
-              <div style={{ height: "48px", display: "flex" }}>
-                <div
-                  style={{
-                    marginTop: "6px",
-                    height: "35px",
-                    display: "flex",
-                    marginRight: "20px",
-                  }}
-                >
-                  <Button
-                    color="secondary"
-                    className={classes.multiSelectionTopBarButtons}
-                    disabled={props.addAble.type === "suggestedOwnerToParcel" && m1nSelectedRowsIndexes.length === 0}
-                    onClick={() => {
-                      props.suggestedOwnerToParcel(m1nSelectedRowsIndexes, setSelectedRow);
-                    }}
-                  >
-                    + ADD TO PARCEL
-                  </Button>
-                </div>
-              </div>
-            );
-          }
+          // if (props.addAble.type === "suggestedOwnerToParcel") {
+          //   return (
+          //     <div style={{ height: "48px", display: "flex" }}>
+          //       <div
+          //         style={{
+          //           marginTop: "6px",
+          //           height: "35px",
+          //           display: "flex",
+          //           marginRight: "20px",
+          //         }}
+          //       >
+          //         <Button
+          //           color="secondary"
+          //           className={classes.multiSelectionTopBarButtons}
+          //           disabled={props.addAble.type === "suggestedOwnerToParcel" && m1nSelectedRowsIndexes.length === 0}
+          //           onClick={() => {
+          //             const parcelInterests = m1nSelectedRowsIndexes.map((index) => rows[index])
+          //             return handleExpandClick(null, null, parcelInterests, "multipleOwnerToContact");
+          //             // props.suggestedOwnerToParcel(m1nSelectedRowsIndexes, setSelectedRow);
+          //           }}
+          //         >
+          //           + ADD TO PARCEL
+          //         </Button>
+          //       </div>
+          //     </div>
+          //   );
+          // }
           if (props.addAble.type === "parcelDocument") {
             return (
               <div

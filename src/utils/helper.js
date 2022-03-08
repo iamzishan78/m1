@@ -35,6 +35,7 @@ export const API_TYPE = (action) => ({
 });
 
 export const formatTaxOwners = (owners, formData) => {
+  const changeDate = new Date()
   owners = owners.map((owner) => owner.node);
   const updateOwners = [];
   for (let i = 0; i < owners.length; i++) {
@@ -52,23 +53,52 @@ export const formatTaxOwners = (owners, formData) => {
         .join(" ");
     }
     updateOwners.push({
-      "entityDetail.lastName": lastName,
-      "entityDetail.firstName": firstName,
-      "entityDetail.middleName": middleName,
-      createBy: formData.userId,
-      tags: formData.tags,
-      "entityDetail.name": newFullName,
-      lastUpdateBy: formData.userId,
-      campaignName: formData.campaign?.name,
-      "entityDetail.zip": owners[i].Zip,
-      "entityDetail.city": owners[i].City,
-      "entityDetail.state": owners[i].State,
+      // contact
+      ...(owners[i].isContact)
+        ? { _id: owners[i].isContact }
+        : { 
+          isPrimary: owners[i].isPrimary,
+          "entityDetail.name": newFullName,
+          "entityDetail.firstName": firstName,
+          "entityDetail.lastName": lastName,
+          "entityDetail.middleName": middleName,
+          "entityDetail.address1": owners[i].StreetAddress,
+          "entityDetail.city": owners[i].City,
+          "entityDetail.state": owners[i].State,
+          "entityDetail.zip": owners[i].Zip,
+          ownerType: owners[i].OwnerType,
+          "entityDetail.globalOwner": owners[i].globalOwnerId,
+        },
+
+      // parcel interests
+      ...(owners[i].parcel) && {
+        "parcel._id": owners[i].parcel._id,
+        "parcel.isSuggested": owners[i].parcel.isSuggested
+      },
+
+      // unit interests
+      ...(owners[i].shape) && {
+        "shape._id": owners[i].shape._id,
+        "shape.shapeType": owners[i].shape.shapeType,
+        "shape.working_interest": owners[i].shape.working_interest,
+        "shape.royalty_interest": owners[i].shape.royalty_interest,
+        "shape.orri": owners[i].shape.orri,
+        "shape.nra": owners[i].shape.nra,
+        "shape.globalOwnerId": owners[i].shape.globalOwnerId,
+        "shape.isSuggested": owners[i].shape.isSuggested
+      },
+
+      // convert extras
       status: formData.contactStatus,
       contactOwner: formData.contactOwner,
-      ownerType: owners[i].OwnerType,
-      isPrimary: owners[i].isPrimary,
-      "entityDetail.address1": owners[i].StreetAddress,
-      "entityDetail.globalOwner": owners[i].globalOwnerId,
+      campaignName: formData.campaign?.name,
+      tags: formData.tags,
+
+      // default
+      createBy: formData.userId,
+      createAt: changeDate,
+      lastUpdateBy: formData.userId,
+      lastUpdateAt: changeDate
     });
   }
   return updateOwners;

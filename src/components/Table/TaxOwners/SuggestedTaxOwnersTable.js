@@ -1,10 +1,10 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 // context
 import { AppContext } from "AppContext";
 
-import { Container } from "@material-ui/core";
+import { Container, Button } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 
@@ -21,6 +21,8 @@ import {
   setStateIfDeepEqual,
 } from "components/Shared/functions";
 
+import { addTrailingZeros } from "components/Shared/functions";
+
 // Header Schemas
 import TableHeader from "components/Table/constants/potential-parcel-owners-header-schema";
 import { handleTagColumn } from "../helpers";
@@ -28,6 +30,9 @@ import { handleTagColumn } from "../helpers";
 // Utilities
 import isEmpty from "lodash/isEmpty";
 import { getPolygonString } from "components/Shared/functions";
+import { usetableStyles } from "../Styles";
+
+import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -36,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SuggestedOwnerTable(props) {
-  const classes = useStyles();
+  const classes = usetableStyles();
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -45,12 +50,17 @@ function SuggestedOwnerTable(props) {
 
   // function states
   const [columns, Columns] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
   const [selectedYear, setSelectedYear] = useState(2021); // production selected year state
   const [count, setCount] = useState()  // local state for async count query
   const [suggestedOwnersCount, setSuggestedOwnersCount] = useState()  // local state for async count query
+
+  const [showConvertDialog, setShowConvertDialog] = useState(false)
+
+  const setM1nSelectedRowsIndexesRef = useRef();
 
   // queries
   const [getPaginatedShapeOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(
@@ -212,6 +222,9 @@ function SuggestedOwnerTable(props) {
         break;
       case "resetFilters":
         break;
+      case "rowSelectionChange":
+        setSelectedRows(tableState.selectedRows.data)
+        break;
       default:
     }
   };
@@ -222,6 +235,36 @@ function SuggestedOwnerTable(props) {
     count: suggestedOwnersCount || count || 0,
     serverSide: true,
     filter: false,
+    customToolbar: () => {
+
+      return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
+        <Button
+          color="secondary"
+          className={classes.multiSelectionTopBarButtons}
+          disabled={true}
+        // onClick={addAction}
+        >
+          + ADD TO PARCEL
+        </Button>
+      </div>
+    },
+    customToolbarSelect: ({ data }) => {
+
+      return <div style={{ height: "48px", display: "flex" }}>
+        <div style={{ marginTop: "6px", height: "35px", display: "flex", marginRight: "20px" }}>
+          <Button
+            color="secondary"
+            className={classes.multiSelectionTopBarButtons}
+            disabled={data.length < 1}
+            onClick={() => {
+              setShowConvertDialog(true);
+            }}
+          >
+            + ADD TO PARCEL
+          </Button>
+        </div>
+      </div>
+    }
   };
   ////////////-----Add your code section here-----///////////////////////
   const getWellOwnersByYear = (selectedYear) => {
@@ -286,6 +329,17 @@ function SuggestedOwnerTable(props) {
     // props.setSelectedTab(0)
   };
 
+  const formatInterestForImport = () => {
+    return selectedRows.map((sR => {
+      const rec = props.rows?.[sR.dataIndex];
+      rec.parcel = {
+        _id: props.customLayer._id,
+        isSuggested: true
+      }
+      return rec;
+    }))
+  }
+
   const addParcel = (selectedRows) => {
     for (let i = 0; i < selectedRows.length; i++) {
       const ownerToAdd = {
@@ -335,12 +389,29 @@ function SuggestedOwnerTable(props) {
         orderByTracks={orderByTracks}
         startPaginationAt={null}
         onTableChange={onTableChange}
-        suggestedOwnerToParcel={suggestedOwnerToParcel}
+        // suggestedOwnerToParcel={suggestedOwnerToParcel}
         options={options}
         parent={props.parent}
         setColumnsBase={[]}
         getWellOwnersByYear={getWellOwnersByYear}
+        setM1nSelectedRowsIndexesRef={setM1nSelectedRowsIndexesRef}
       />
+      {showConvertDialog && (
+        <MultipleOwnerToContactDrawerContainer
+          onClose={() => {
+            setShowConvertDialog(false);
+          }}
+          rows={formatInterestForImport()}
+          setM1nSelectedRowsIndexes={(m1nSelectedRowsIndexes) => {
+            console.log("here");
+            if (typeof setM1nSelectedRowsIndexesRef.current === "function") {
+              setM1nSelectedRowsIndexesRef.current(m1nSelectedRowsIndexes);
+            }
+          }}
+          onSuccess={() => {}}
+          setRows={() => {}}
+        />
+      )}
     </Container>
   );
 }

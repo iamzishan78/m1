@@ -38,7 +38,9 @@ export default function RevenueAppBar(props) {
         addCheck({ variables: { check: { source: 'Manual Entry' } } })
       }
     },
-    { isShow: true, text: 'Import Statement', action: () => { } },
+    { isShow: true, text: 'Import Statement', action: () => { 
+      history.push("/bulkupload");
+    } },
     ]
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeModule]);
