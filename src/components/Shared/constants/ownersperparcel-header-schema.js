@@ -29,6 +29,7 @@ const OwnersPerParcelHeadCells = [
     label: "Owner Name",
     options: { setCellProps: () => ({ style: { minWidth: "270px" } }) }
   },
+  { name: "ownershipType", label: "Entity Type" },
   { name: "surface_interest", label: "Surface Interest" },
   { name: "mineral_interest", label: "Mineral Interest" },
   { name: "royalty_interest", label: "Royalty Interest" },

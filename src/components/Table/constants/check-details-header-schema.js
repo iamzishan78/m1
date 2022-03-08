@@ -22,7 +22,7 @@ const RevenueStatementHeadCells = [
         name: "product", label: "Product", esKey: 'product.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "disbursement", label: "Decimal Interest", esKey: 'disbursement.keyword', options: { sort: true, filter: true }
+        name: "disbursement", label: "Decimal Interest", esKey: 'disbursement', options: { sort: true, filter: true }
     },
     {
         name: "interestType", label: "Type", esKey: 'interestType.keyword', options: { sort: true, filter: true }

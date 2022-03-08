@@ -62,6 +62,7 @@ export const PAGINATEDCONTACTSQUERY = gql`
           website
           industryType
           campaignName
+          contactStatus
         }
         cursor
       }

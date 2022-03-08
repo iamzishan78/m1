@@ -101,7 +101,7 @@ const RevenuePropertiesHeadCells = [
   },
   {
     name: "status",
-    label: " ",
+    label: "Status",
     esKey: "status.keyword",
     options: { sort: true, filter: true },
   },

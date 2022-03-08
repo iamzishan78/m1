@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/styles";
 import { Grid, Button } from "@material-ui/core";
 
 import NavHeader from "components/Revenue/components/Common/NavHeader";
-import PdfViewer from "components/Revenue/components/Statements/LineItem/PdfViewer";
+import PdfViewer from "components/Revenue/components/Statements/DetailComponents/LineItem/PdfViewer";
 import CheckDetailsEditableTable from "./CheckDetailsEditableTable";
 
 const useStyles = makeStyles((theme) => ({
@@ -39,13 +39,15 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "4px",
     alignItems: "center",
   },
+  tableRoot: {
+    marginTop: "22px",
+  }
 }));
 
 export default function LineItem(props) {
   const classes = useStyles();
   const history = useHistory();
-  const location = useLocation();
-  const [checkId, setCheckId] = useState();
+  // const [checkId, setCheckId] = useState();
   const [showPdfSection, setSectionState] = useState(true);
   const Revenue = useSelector(({ Revenue }) => Revenue.statements);
   const activeStatement = Revenue?.activeStatement
@@ -54,37 +56,38 @@ export default function LineItem(props) {
     setSectionState(!showPdfSection);
   };
 
-  useEffect(() => {
-    setCheckId(props.match.params.id)
-  }, [props.match])
+  // useEffect(() => {
+  //   setCheckId(props.match.params.id)
+  // }, [props.match])
   // const checkId = window.location.search.replace("?id=", '')
   const redirectHandler = () => {
     history.push(`/revenue/statement/details/${activeStatement?._id}`);
   }
 
   return (
-    <NavHeader title={`${activeStatement?.checkNumber} - ${activeStatement?.payor["name"]}`} onClickFunc={redirectHandler}>
-      <div className={classes.root}>
-        <Grid container display="flex" direction="row" alignItems="center" justify="space-between">
-          <Grid item>
-            <Button variant="outlined" className={classes.inputModeButton} onClick={togglePdfViewState}>
-              Input Mode
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button variant="contained" className={classes.exitButton} onClick={redirectHandler}>
-              Exit
-            </Button>
-          </Grid>
+    // <NavHeader title={`${activeStatement?.checkNumber} - ${activeStatement?.payor["name"]}`} onClickFunc={redirectHandler}>
+    <div className={classes.root}>
+      <Grid container display="flex" direction="row" alignItems="center" justify="space-between">
+        <Grid item>
+          <Button variant="outlined" className={classes.inputModeButton} onClick={togglePdfViewState}>
+            Input Mode
+          </Button>
         </Grid>
-        {showPdfSection && (
-          <div className={classes.pdfViewerRoot}>
-            <PdfViewer togglePdfViewState={togglePdfViewState} />
-          </div>
-        )}
-
-        <CheckDetailsEditableTable parent="CheckDetailsTable" header="Check Details" checkId={checkId} />
+        <Grid item>
+          <Button variant="contained" className={classes.exitButton} onClick={redirectHandler}>
+            Exit
+          </Button>
+        </Grid>
+      </Grid>
+      {showPdfSection && (
+        <div className={classes.pdfViewerRoot}>
+          <PdfViewer togglePdfViewState={togglePdfViewState} checkId={props.checkId} />
+        </div>
+      )}
+      <div className={classes.tableRoot}>
+        <CheckDetailsEditableTable parent="CheckDetailsTable" header="Check Details" showPdfSection={showPdfSection} checkId={props.checkId} />
       </div>
-    </NavHeader>
+    </div>
+    // </NavHeader>
   );
 }

@@ -186,6 +186,7 @@ const MultipleOwnerToContactDrawer = ({
       rows[index].isPrimary = true
     }
     const values = getValues();
+    
     if(entitiesIds.length === 0){
       convertMultipleOwnerToContactAction({ ...values, rows, existingContactId, actionType: action, userId: userId, tags: newTagsIds });
      } else {

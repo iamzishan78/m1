@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Grid, Breadcrumbs } from "@material-ui/core";
 import { NavigateNext as NavigateNextIcon } from "@material-ui/icons";
+import queryString from "query-string";
 import Link from "@material-ui/core/Link";
 
 // Components
@@ -33,7 +34,10 @@ export default function DetailComponents(props) {
   const classes = useStyles(props);
   const { title, onClickFunc } = props;
 
-  const { activeModule } = useSelector(({ Revenue }) => Revenue);
+  const search = queryString.parse(window.location.search);
+
+  const { activeModule, statements } = useSelector(({ Revenue }) => Revenue);
+
 
   return (
     <div className={classes.root}>
@@ -44,6 +48,30 @@ export default function DetailComponents(props) {
         <Grid container alignItems="center" direction="row" display="flex" justify="space-between">
           <Grid item>
             <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+              {search.from === 'revenue' &&
+                <Link
+                  style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer", fontWeight: "bold" }}
+                  color="inherit"
+                  onClick={() => history.push('/revenue/statements')}
+                >
+                  Revenue Statements
+                </Link>
+              }
+              {search.from === 'revenue' &&
+                <Link
+                  style={{
+                    marginLeft: "5px",
+                    fontSize: "16px",
+                    cursor: "pointer",
+                  }}
+                  color="inherit"
+                  onClick={() => {
+                    history.push(history.pathHistory[1]);
+                  }}
+                >
+                  {`${statements?.activeStatement?.checkNumber} - ${statements?.activeStatement?.payor?.["name"]}`}
+                </Link>
+              }
               <Link
                 style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer", fontWeight: "bold" }}
                 color="inherit"
