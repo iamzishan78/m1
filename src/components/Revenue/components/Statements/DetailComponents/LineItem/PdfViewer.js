@@ -19,6 +19,12 @@ const useStyles = makeStyles((theme) => ({
     height: "570px",
     boxShadow: theme.shadows[5],
     overflow: "none",
+
+    "& .react-pdf__Document": {
+      height: '520px',
+      overflow: 'scroll',
+      width: '100%'
+    },
     "&::-webkit-scrollbar": {
       width: "0.75em",
       height: "0.75em",
@@ -31,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     inset: "unset",
   },
   pdfContainer: {
-    overflow: "scroll",
+    overflow: "none",
     width: "100%",
     height: "520px",
   },
@@ -39,8 +45,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "1",
     display: "flex",
     flexDirection: "column",
-    position: "absolute !important",
-    top: "50% !important",
+    position: "sticky !important",
     bottom: "0 !important",
     // left: "15px",
     width: "3.875rem",
@@ -160,26 +165,27 @@ export default function PdfViewer({ togglePdfViewState, checkId }) {
                 <Page key={key} pageNumber={value} scale={zoom} style={{ display: "grid", justifyContent: "center", width: "100%" }} />
               );
             })}
+            {(recentFile || (files?.getFileDescriptors)) && (
+              <div className={classes.ZoomIcons}>
+                {" "}
+                <IconButton
+                  onClick={() => {
+                    setzoom(zoom + 0.25);
+                  }}
+                >
+                  <ZoomInIcon fontSize={"large"} />
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    setzoom(zoom - 0.25);
+                  }}
+                >
+                  <ZoomOutIcon fontSize={"large"} />
+                </IconButton>
+              </div>
+            )}
           </Document>
-          {(recentFile || (files?.getFileDescriptors)) && (
-            <div className={classes.ZoomIcons}>
-              {" "}
-              <IconButton
-                onClick={() => {
-                  setzoom(zoom + 0.25);
-                }}
-              >
-                <ZoomInIcon fontSize={"large"} />
-              </IconButton>
-              <IconButton
-                onClick={() => {
-                  setzoom(zoom - 0.25);
-                }}
-              >
-                <ZoomOutIcon fontSize={"large"} />
-              </IconButton>
-            </div>
-          )}
+
         </div>
       </div>
     </>

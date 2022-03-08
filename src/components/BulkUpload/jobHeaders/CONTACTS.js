@@ -3,7 +3,7 @@ export default [
         label: "Contact Id",
         mapped_key: "",
         required: false,
-        actual_key: "contactId",
+        actual_key: "_id",
     },
     {
         label: "Full Name",
@@ -82,6 +82,18 @@ export default [
         mapped_key: "",
         required: false,
         actual_key: "entityDetail.country",
+    },
+    {
+        label: "Owner Type",
+        mapped_key: "",
+        required: false,
+        actual_key: "ownerType",
+    },
+    {
+        label: "Global Owner",
+        mapped_key: "",
+        required: false,
+        actual_key: "entityDetail.globalOwner",
     },
     {
         label: "Primary Email",
@@ -198,6 +210,12 @@ export default [
         actual_key: "leadSource",
     },
     {
+        label: "Stage",
+        mapped_key: "",
+        required: false,
+        actual_key: "status",
+    },
+    {
         label: "Territory",
         mapped_key: "",
         required: false,
@@ -250,12 +268,6 @@ export default [
     //   mapped_key: "",
     //   required: false,
     //   actual_key: "entityDetail.title",
-    // },
-    // {
-    //   label: "Global Owner",
-    //   mapped_key: "",
-    //   required: false,
-    //   actual_key: "entityDetail.globalOwner",
     // },
     // {
     //   label: "Created By",

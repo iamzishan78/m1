@@ -103,6 +103,9 @@ export const detailCardStyles = makeStyles((theme) => ({
       },
     },
   },
+  maxWidth: {
+    width: "100%",
+  }
 }));
 
 export const summaryStyles = makeStyles((theme) => ({

@@ -23,6 +23,7 @@ import MapGridWellsTable from "components/Table/Wells/MapGridWellsTable";
 import MapGridTaxOwnersTable from "components/Table/TaxOwners/MapGridTaxOwnersTable";
 import MapGridOperatorTable from "components/Table/Operator/MapGridOperatorTable";
 import MapGridContactTable from "components/Table/Contact/MapGridContactTable";
+import MapGridUnitTable from "components/Table/Unit/MapGridUnitTable";
 
 import SearchPanel from "./components/SearchPanel";
 import { platformDataInitialData } from "./components/data";
@@ -378,17 +379,17 @@ function MapGridCard(props) {
               style={{ position: "absolute", width: "100%" }}
             >
               <div style={{ position: "relative" }} classes={classes.gridTables}>
-                <TabPanels
+                {/* <TabPanels
                   value={searchTapValue.index}
                   panels={getTaps.map((tab, index) => {
-                    return (
-                      <Fragment key={index}>
-                        {tab.label === 'well' && (
+                    return ( */}
+                      <Fragment>
+                        {searchTapValue.value === 'well' && (
                           <MapGridWellsTable
                             dense
                             parent="search"
                             customOptions={options}
-                            targetLabel={tab.label}
+                            targetLabel={searchTapValue.value}
                             header={
                               <SearchPanel
                                 isShapeGridOnly={stateApp.gridPolygonString}
@@ -397,12 +398,12 @@ function MapGridCard(props) {
                                 ativateSearchPanel={ativateSearchPanel}
                               />
                             }
-                            showTags={tab.showTags}
-                            showComments={tab.showComments}
-                            showTracks={tab.showTracks}
+                            showTags
+                            showComments
+                            showTracks
                           />
                         )}
-                        {tab.label === 'owner' && stateApp.gridPolygonString && (
+                        {searchTapValue.value === 'owner' && stateApp.gridPolygonString && (
                           <ShapeGridTaxOwnersTable
                             parent="boundary_grid_owners"
                             header={
@@ -418,12 +419,12 @@ function MapGridCard(props) {
                             showTracks
                           />
                         )}
-                        {tab.label === 'owner' && !stateApp.gridPolygonString && (
+                        {searchTapValue.value === 'owner' && !stateApp.gridPolygonString && (
                           <MapGridTaxOwnersTable
                             dense
                             parent="search"
                             customOptions={options}
-                            targetLabel={tab.label}
+                            targetLabel={searchTapValue.value}
                             header={
                               <SearchPanel
                                 isShapeGridOnly={stateApp.gridPolygonString}
@@ -432,17 +433,17 @@ function MapGridCard(props) {
                                 ativateSearchPanel={ativateSearchPanel}
                               />
                             }
-                            showTags={tab.showTags}
-                            showComments={tab.showComments}
-                            showTracks={tab.showTracks}
+                            showTags
+                            showComments
+                            showTracks
                           />
                         )}
-                        {tab.label === 'operator' && (
+                        {searchTapValue.value === 'operator' && (
                           <MapGridOperatorTable
                             dense
                             parent="search"
                             customOptions={options}
-                            targetLabel={tab.label}
+                            targetLabel={searchTapValue.value}
                             header={
                               <SearchPanel
                                 isShapeGridOnly={stateApp.gridPolygonString}
@@ -451,17 +452,17 @@ function MapGridCard(props) {
                                 ativateSearchPanel={ativateSearchPanel}
                               />
                             }
-                            showTags={tab.showTags}
-                            showComments={tab.showComments}
-                            showTracks={tab.showTracks}
+                            showTags
+                            showComments
+                            showTracks
                           />
                         )}
-                        {tab.label === 'contacts' && (
+                        {searchTapValue.value === 'contacts' && (
                           <MapGridContactTable
                             dense
                             parent="search"
                             customOptions={options}
-                            targetLabel={tab.label}
+                            targetLabel={searchTapValue.value}
                             header={
                               <SearchPanel
                                 isShapeGridOnly={stateApp.gridPolygonString}
@@ -470,9 +471,22 @@ function MapGridCard(props) {
                                 ativateSearchPanel={ativateSearchPanel}
                               />
                             }
-                            showTags={tab.showTags}
-                            showComments={tab.showComments}
-                            showTracks={tab.showTracks}
+                          />
+                        )}
+                        {searchTapValue.value === 'unit' && (
+                          <MapGridUnitTable
+                            dense
+                            parent="search"
+                            customOptions={options}
+                            targetLabel={searchTapValue.value}
+                            header={
+                              <SearchPanel
+                                isShapeGridOnly={stateApp.gridPolygonString}
+                                handleChange={handleSearchPanelChange}
+                                value={searchTapValue}
+                                ativateSearchPanel={ativateSearchPanel}
+                              />
+                            }
                           />
                         )}
                         {/* <M1nTable
@@ -493,9 +507,9 @@ function MapGridCard(props) {
                             showTracks={tab.showTracks}
                           /> */}
                       </Fragment>
-                    )
+                    {/* )
                   })}
-                />
+                /> */}
               </div>
             </TabPanel>
 

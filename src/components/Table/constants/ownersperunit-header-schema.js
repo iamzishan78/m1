@@ -28,20 +28,85 @@ const OwnersPerUnitHeadCells = [
   {
     name: "name",
     label: "Owner Name",
-    esKey: 'contact.entityDetail.name.keyword',
-    options: { filter: true, setCellProps: () => ({ style: { minWidth: "270px" } }) }
+    esKey: "contact.entityDetail.name.keyword",
+    options: {
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "270px" } }),
+    },
   },
-  { name: "working_interest", esKey: 'working_interest', type: "number", label: "Working Interest", options: { filter: true } },
-  { name: "royalty_interest", esKey: 'royalty_interest', type: "number", label: "Royalty Interest", options: { filter: true } },
-  { name: "orri", esKey: 'orri', label: "ORRI", type: "number", options: { filter: true } },
-  { name: "nri", esKey: 'nri', label: "NRI", type: "number", options: { filter: true } },
-  { name: "nra", esKey: 'nra', label: "NRA", type: "number", editable: true, options: { filter: true } },
-  { name: "seller_asking_price", esKey: 'seller_asking_price', type: "number", label: "Seller Asking Price", options: { filter: true, customRender: (value) => vf_currency(value) } },
-  { name: "competitor_offer_price", esKey: 'competitor_offer_price', type: "number", label: "Competitor Offer Price", options: { filter: true, customRender: (value) => vf_currency(value) } },
+  { 
+    name: "ownerType",
+    esKey: 'contact.ownerType',
+    label: "Entity Type",
+    options: { filter: true }
+  },
   {
-    name: "offer_price", esKey: 'offer_price', label: "Offer Price", type: "number", options: {
-      filter: true, customRender: (value) => vf_currency(value),
-    }
+    name: "working_interest",
+    esKey: "working_interest",
+    type: "number",
+    label: "Working Interest",
+    options: { filter: true },
+  },
+  {
+    name: "royalty_interest",
+    esKey: "royalty_interest",
+    type: "number",
+    label: "Royalty Interest",
+    options: { filter: true },
+  },
+  {
+    name: "orri",
+    esKey: "orri",
+    label: "ORRI",
+    type: "number",
+    options: { filter: true },
+  },
+  {
+    name: "nri",
+    esKey: "nri",
+    label: "NRI",
+    type: "number",
+    options: { filter: true },
+  },
+  {
+    name: "nra",
+    esKey: "nra",
+    label: "NRA",
+    type: "number",
+    editable: true,
+    options: { filter: true },
+  },
+  {
+    name: "seller_asking_price",
+    esKey: "seller_asking_price",
+    type: "number",
+    label: "Seller Asking Price",
+    options: { filter: true, customRender: (value) => vf_currency(value) },
+  },
+  {
+    name: "competitor_offer_price",
+    esKey: "competitor_offer_price",
+    type: "number",
+    label: "Competitor Offer Price",
+    options: { filter: true, customRender: (value) => vf_currency(value) },
+  },
+  {
+    name: "offer_price",
+    esKey: "offer_price",
+    label: "Offer Price",
+    type: "number",
+    options: {
+      filter: true,
+      customRender: (value) => vf_currency(value),
+    },
+  },
+  {
+    name: "contactStatus",
+    esKey: "contact.contactStatus.keyword",
+    label: "Status",
+    options: {
+      filter: true,
+    },
   },
   {
     name: "tags",
@@ -91,26 +156,6 @@ const OwnersPerUnitHeadCells = [
     },
   },
   {
-    name: "isTracked",
-    label: "Track",
-    options: {
-      filter: false,
-      searchable: false,
-      download: false,
-      print: false,
-      filterOptions: {
-        names: ["Tracked", "Untracked"],
-        logic(tracked, filterVal) {
-          return !(
-            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
-            (filterVal.indexOf("Untracked") >= 0 && !tracked)
-          );
-        },
-      },
-      filterType: "dropdown",
-    },
-  },
-  {
     name: "isSuggested",
     label: " ",
     options: {
@@ -140,7 +185,7 @@ const OwnersPerUnitHeadCells = [
   {
     name: "isPurchased",
     label: "Purchased Data Exists",
-    esKey: 'isPurchased',
+    esKey: "isPurchased",
     options: {
       display: false,
       filter: false,
@@ -157,17 +202,15 @@ const OwnersPerUnitHeadCells = [
       formatedFilterOptions: [
         {
           label: "Yes",
-          value: 'true',
+          value: "true",
         },
         {
           label: "No",
-          value: 'false'
+          value: "false",
         },
-      ]
-    }
+      ],
+    },
   },
-
 ];
 
 export default OwnersPerUnitHeadCells;
-

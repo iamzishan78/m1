@@ -20,8 +20,8 @@ export const platformDataInitialData = [
 
 
 export const userDefinedInitialData = [
-  { index: 0, value: "agreement", Icon: FolderIcon, label: "Agreements" },
-  { index: 1, value: "tract", Icon: TractIcon, label: "Tracts" },
-  { index: 2, value: "unit", Icon: UnitIcon, label: "Units" },
+  { index: 7, value: "agreement", Icon: FolderIcon, label: "Agreements", mapGrid: false },
+  { index: 8, value: "tract", Icon: TractIcon, label: "Tracts", mapGrid: false },
+  { index: 9, value: "unit", Icon: UnitIcon, label: "Units", mapGrid: true },
  // { index: 4, value: "contacts", Icon: ContactIcon, label: "Contacts" },
 ];

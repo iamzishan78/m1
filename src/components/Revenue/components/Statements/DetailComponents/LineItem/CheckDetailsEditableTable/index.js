@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Paper, Button, TableContainer, CircularProgress, IconButton, TextField } from "@material-ui/core";
 import SearchIcon from '@material-ui/icons/Search';
+import { Clear } from "@material-ui/icons";
 import CloseIcon from '@material-ui/icons/Close';
 import TableHOC from "components/Table/TableHOC";
 
@@ -15,6 +16,7 @@ import TableHeader from 'components/Table/constants/check-details-header-schema'
 // Utilities
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { ADD_PROPERTY } from "graphQL/useMutationAddProperty";
 import { usetableStyles } from "components/Table/Styles";
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import get from 'lodash/get'
@@ -27,67 +29,18 @@ import { UPDATE_CHECK_DETAIL } from "graphQL/useMutationUpdateCheckDetail";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { makeStyles } from "@material-ui/styles";
 import moment from "moment";
-import { KeyboardDatePicker } from "@material-ui/pickers";
+import $ from "jquery";
 
-
-const RevenueStatementHeadCells = [
-    {
-        id: "property.number", title: "Property Code", filterKey: 'property.number.keyword', sort: true, type: 'autocomplete', width: '180px'
-    },
-    {
-        id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', sort: true, width: '210px', disabled: true
-    },
-    {
-        id: "property.state", title: "State", filterKey: 'property.state.keyword', sort: true, width: '100px', disabled: true
-    },
-    {
-        id: "property.county", title: "County", filterKey: 'property.county.keyword', sort: true, width: '130px', disabled: true
-    },
-    {
-        id: "date", title: "Sales Date", filterKey: 'date', sort: true, type: 'date', width: '180px'
-    },
-    {
-        id: "product", title: "Product", filterKey: 'product.keyword', sort: true, type: 'autocomplete', width: '130px'
-    },
-    {
-        id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement', sort: true, width: '150px'
-    },
-    {
-        id: "interestType", title: "Type", filterKey: 'interestType.keyword', sort: true, type: 'autocomplete', width: '100px'
-    },
-    {
-        id: "price", title: "Avg Price", filterKey: 'price', sort: true, width: '100px'
-    },
-    {
-        id: "grossOwnerVolume", title: "Sales Volume", filterKey: 'grossOwnerVolume', sort: true, width: '125px'
-    },
-    {
-        id: "grossOwnerValue", title: "Gross Revenue", filterKey: 'grossOwnerValue', sort: true, width: '100px'
-    },
-    {
-        id: "ownerTax", title: "Severence Tax", filterKey: 'ownerTax', sort: true, width: '100px'
-    },
-    {
-        id: "ownerDeducts", title: "Deduct Amount", filterKey: 'ownerDeducts', sort: true, width: '100px'
-    },
-    {
-        id: "deductType", title: "Deduct Code", filterKey: 'deductType.keyword', sort: true, type: 'autocomplete', width: '200px'
-    },
-    {
-        id: "netOwnerValue", title: "Owner Net Revenue", filterKey: 'netOwnerValue', sort: true, width: '150px'
-    },
-    {
-        id: "action", filterKey: 'action', title: "", type: 'action', width: '50px'
-    }
-];
-
+import { PopoverProperty } from "./PopoverProperty";
+import { RevenueStatementHeadCells } from "./data";
 
 const useStyles = makeStyles({
     root: {
         width: '100%',
     },
     container: {
-        maxHeight: 440,
+        // maxHeight: 440,
+        maxHeight: (p) => p.showPdfSection ? 'calc(49vh)' : 'calc(99vh)',
         backgroundColor: "#fff", display: "flex",
         flexDirection: "column-reverse",
         "& .MuiTableCell-head": {
@@ -122,7 +75,9 @@ const useStyles = makeStyles({
         display: "flex", flexDirection: "column-reverse"
     },
     tableGrid: {
-        backgroundColor: "#fff", overflow: "scroll", maxHeight: "500px",
+        backgroundColor: "#fff", overflow: "scroll",
+        maxHeight: (p) => p.showPdfSection ? 'calc(50vh)' : 'calc(100vh)',
+        // maxHeight: "500px",
     },
     tableHeaderLabel: { marginLeft: "15px", paddingRight: '10px', marginTop: "5px" },
     loader: { color: '#12abe0', top: '10px', display: 'flex', marginTop: '3px' },
@@ -134,23 +89,37 @@ const useStyles = makeStyles({
         '& .MuiIconButton-root:hover': {
             backgroundColor: 'inherit'
         }
-    }
+    },
+
+    dateRoot: {
+        color: "#ffffff",
+        "& .MuiInputBase-inputMarginDense": {
+            marginLeft: 12,
+        },
+    },
 });
 
 
 function CheckDetailsEditableTable(props) {
 
     const [rows, setRows] = useState(props.rows);
+    const [currentRow, setCurrentRow] = useState(null);
+    const [newProperty, setNewProperty] = useState(null);
     const [search, setSearch] = useState({ open: false, text: '' })
     const [sort, setSort] = useState({ orderBy: 'createdAt', order: 'desc' })
     const client = useApolloClient();
 
+    const [anchorEl, AnchorEl] = useState(null);
+    const gridRef = React.createRef()
+
+    const handleClose = () => {
+        setNewProperty(null)
+        AnchorEl(null);
+    };
 
     const classes = usetableStyles();
+    const tclasses = useStyles({ showPdfSection: props.showPdfSection });
 
-    // const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
-
-    // queries 
     const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
         fetchPolicy: "no-cache", onCompleted: () => {
             props.setLoading(false);
@@ -178,30 +147,46 @@ function CheckDetailsEditableTable(props) {
 
 
     const onFieldChange = (rowId, field, type) => (async (value) => {
+        const cRow = currentRow
         let row = rows.find((r) => r._id === rowId);
         if (get(row, field) == value && type !== 'date') return;
 
         set(row, field, value)
         if (field === 'property.number') {
+            set(row, `property.name`, '')
+            set(row, `property.state`, '')
+            set(row, `property.county`, '')
             const { data: checkDetail } = await client.query({
                 query: GET_ES_PAGINATED_LIST,
                 variables: {
                     esIndex,
-                    search: `property.number.keyword:${value}`,
+                    search: `property.number:"${value}"`,
                     pagination: {
                         first: 1,
                         keep_alive: "1micros"
                     },
                 },
             });
+            let newProperty = {}
             if (checkDetail?.getESPaginatedList?.hits.length > 0) {
-                const newProperty = checkDetail.getESPaginatedList.hits[0].property
-                set(row, '', value)
-                set(row, `property.state`, '')
-                set(row, `property.county`, '')
-                Object.keys(newProperty).forEach((key) => { set(row, `property.${key}`, newProperty[key]) })
-                console.log("Row", row)
+                newProperty = checkDetail.getESPaginatedList.hits[0].property
+                setNewProperty(null)
+            } else {
+                const { data: property } = await client.mutate({
+                    mutation: ADD_PROPERTY,
+                    variables: {
+                        property: {
+                            source: 'Manual Entry',
+                            status: 'Unapproved',
+                            number: value
+                        }
+                    },
+                });
+                newProperty = property.addProperty.property
+                setNewProperty(newProperty)
+                AnchorEl(document.getElementById(`${cRow}-0`));
             }
+            Object.keys(newProperty).forEach((key) => { set(row, `property.${key}`, newProperty[key]) })
         }
         if (field === 'IsDeleted') {
             setRows([].concat(rows.filter((r) => r._id !== rowId)))
@@ -223,49 +208,65 @@ function CheckDetailsEditableTable(props) {
         cell.value = (row, { focus }) => {
 
             let value = get(row, cell.id)
+            let date = get(row, cell.id)
             if (cell.type === 'date' && value) {
                 value = moment(value).format('MM/DD/YYYY')
             }
+
             return (
                 <>
+                    <div id={`id-${cell.id}`}></div>
                     {
                         focus && cell.type === 'autocomplete' ? <AutoCompleteField label={cell.title} value={get(row, cell.id)} column={cell} index={index} onChange={onFieldChange(row._id, cell.id)}
                             query={GET_ES_FILTER_LIST} esIndex={esIndex} />
 
-                            : focus && cell.type === 'date' ? <KeyboardDatePicker
-                                className={classes.maxWidth}
-                                // disableToolbar
-                                variant="inline"
-                                format="MM/DD/YYYY"
-                                margin="normal"
-                                fullWidth
-                                id="date-picker-inline"
-                                value={value}
-                                onKeyDown={(e) => {
-                                    if (e.keyCode === 13) {
-                                        e.stopPropagation();
-                                        let dRow = rows.find((r) => r._id === row._id);
-                                        onFieldChange(dRow._id, cell.id, cell.type)(get(dRow, cell.id))
-                                    }
-                                }}
-                                onBlur={() => {
-                                    setTimeout(() => {
-                                        let dRow = rows.find((r) => r._id === row._id);
-                                        onFieldChange(dRow._id, cell.id)(get(dRow, cell.id))
-                                    }, 100)
+                            : focus && cell.type === 'date' ? <>
+                                <TextField
+                                    id='dateType'
+                                    type="date"
+                                    className={tclasses.dateRoot}
+                                    margin="dense"
+                                    fullWidth
+                                    dataDateFormat="MM/DD/YYYY"
+                                    dataDate={moment(date).format('MM/DD/YYYY')}
+                                    defaultValue={moment(date).format('YYYY-MM-DD')}
 
-                                }}
-                                onChange={(date) => {
-                                    if ((date && date?._d?.toString() !== 'Invalid Date')) {
-                                        let dRow = rows.find((r) => r._id === row._id);
-                                        set(dRow, cell.id, date ? String(date["_d"]) : "")
+                                    onKeyDown={(e) => {
+                                        if (e.keyCode === 13) {
+                                            e.stopPropagation();
+                                            let dRow = rows.find((r) => r._id === row._id);
+                                            onFieldChange(dRow._id, cell.id, cell.type)(get(dRow, cell.id))
+                                        }
+                                    }}
+                                    onBlur={() => {
+                                        setTimeout(() => {
+                                            let dRow = rows.find((r) => r._id === row._id);
+                                            onFieldChange(dRow._id, cell.id)(get(dRow, cell.id))
+                                        }, 100)
 
-                                    }
-                                }}
-                                KeyboardButtonProps={{
-                                    "aria-label": "change date",
-                                }}
-                            />
+                                    }}
+                                    onChange={(date) => {
+                                        if (date.target.value) {
+                                            let dRow = rows.find((r) => r._id === row._id);
+                                            set(dRow, cell.id, new Date(date.target.value))
+                                        }
+                                    }}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <IconButton
+                                                onClick={(event) => {
+                                                    props.onChange(event);
+                                                }}
+                                            >
+                                                <Clear style={{ height: 22, width: 22 }} />
+                                            </IconButton>
+                                        ),
+                                    }}
+                                />
+                            </>
 
                                 : cell.type === 'action' ? <ActionCell id={cell.id + index} onChange={onFieldChange(row._id, 'IsDeleted')} />
                                     : <Input
@@ -277,7 +278,6 @@ function CheckDetailsEditableTable(props) {
                 </>
             );
         }
-        // cell.width = 200
         return cell;
     })
 
@@ -386,10 +386,6 @@ function CheckDetailsEditableTable(props) {
         }
     }
 
-    const gridRef = React.createRef()
-    const tclasses = useStyles();
-
-
     return (
         <Paper elevation={3} >
             <Grid container style={{ backgroundColor: "#F2F2F2" }} >
@@ -461,6 +457,7 @@ function CheckDetailsEditableTable(props) {
                                 focusOnSingleClick
                                 onColumnResize={onColumnResize}
                                 sort={sort}
+                                setCurrentRow={setCurrentRow}
                                 createSortHandler={createSortHandler}
                                 // focusOnSingleClick={props.focusOnSingleClick}
                                 disabledCellChecker={(row, column) => {
@@ -468,10 +465,15 @@ function CheckDetailsEditableTable(props) {
                                 }}
                                 isScrollable
                             />
+                            {newProperty?._id && <PopoverProperty property={newProperty} anchorEl={anchorEl} handleClose={handleClose} onClose={handleClose} />}
+
+
                         </TableContainer>
                     </InfiniteScroll>
                 </Grid>
             </Grid>
+
+
 
         </Paper >
     );

@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   loader: {},
 }));
 
-export default function FilterCountyName({ value, state, onCountyChange }) {
+export default function FilterCountyName({ value, state, onCountyChange, label, variant }) {
   const classes = useStyles();
 
   const [countyList, setCountyList] = useState([]);
@@ -65,7 +65,7 @@ export default function FilterCountyName({ value, state, onCountyChange }) {
         <Autocomplete
           className={classes.autoC}
           options={countyList}
-          value={value ? {county: value}: ''}
+          value={value ? { county: value } : ''}
           getOptionLabel={(option) => (option && option.county ? option.county : option ? option : "")}
           autoComplete
           autoSelect
@@ -80,7 +80,8 @@ export default function FilterCountyName({ value, state, onCountyChange }) {
               <TextField
                 {...params}
                 fullWidth
-                variant="outlined"
+                label={label}
+                variant={variant ? variant : 'outlined'}
                 startAdornment={
                   <InputAdornment>{loading && <CircularProgress color="secondary" className={classes.loader} size={10} />}</InputAdornment>
                 }

@@ -27,7 +27,7 @@ const PotentialParcelOwnersHeadCells = [
   { name: "name", label: "Name" },
   {
     name: "ownershipType",
-    label: "Owner Type",
+    label: "Entity Type",
   },
   {
     name: "StreetAddress",

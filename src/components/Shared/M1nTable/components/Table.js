@@ -71,7 +71,7 @@ import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDraw
 import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
 import Grid from "@material-ui/core/Grid";
 import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
-
+import StackedBarChart from "components/Shared/Charts/StackedBarChart";
 import ButtonDropDown from "./ButtonGroup";
 // auto complete for well API#
 import SearchWells from "components/Shared/Wells/WellsAutoCompleteFilter";
@@ -126,7 +126,7 @@ import AddActivityDialog from "components/ContactDetailCard/components/AddActivi
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
 import ConfirmationDialog from "components/ContactDetailCard/components/ConfirmationDialog";
-
+import { copy } from "utils/helper";
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -657,6 +657,9 @@ function SubTable(props) {
   const setM1nSelectedRowsIndexes = (newState) => {
     setStateIfDeepEqual(M1nSelectedRowsIndexes, newState);
   };
+  if (props.setM1nSelectedRowsIndexesRef) {
+    props.setM1nSelectedRowsIndexesRef.current = setM1nSelectedRowsIndexes;
+  }
   const setSubTitle = (newState) => {
     setStateIfDeepEqual(SubTitle, newState);
   };
@@ -791,6 +794,11 @@ function SubTable(props) {
     }
   };
 
+  const handleUnitFlyTo = (newValue) => {
+    const data = props.rows.find(row => row.Id === newValue.objToPopulateSearchLayer.objectId)
+    history.push(`/map/units/${data._id}`)
+  };
+
   const handleOperatorFlyTo = (value) => {
     getOperatorWells({
       variables: {
@@ -842,6 +850,9 @@ function SubTable(props) {
     }
     if (entityType === "location") {
       handleLocationFlyTo(searchTarget);
+    }
+    if (entityType === "unit") {
+      handleUnitFlyTo(searchTarget);
     }
   };
 
@@ -2528,6 +2539,34 @@ function SubTable(props) {
               },
             };
             break;
+          case "ownersCount":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                return (
+                  <>
+                    <p>{value}</p>
+                  </>
+                );
+              },
+            };
+            break;
+          case "unitStatus":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value) => {
+                return (
+                  <div style={{ width: 250}}>
+                  {value ? (
+                    <StackedBarChart data={value} hideLegends eachBarHeight={5} />
+                  ):(
+                    <p>N/A</p>
+                  )}
+                  </div>
+                );
+              },
+            };
+            break;
           default:
             //// this is where the column names get mapped
             {
@@ -2732,13 +2771,13 @@ function SubTable(props) {
 
                       {props.targetLabel === "Unit Ownership" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span> {tableMeta.rowData[17] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span> {tableMeta.rowData[18] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 
                       {props.parent === "ownersPerParcel" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span> {tableMeta.rowData[18] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span> {tableMeta.rowData[19] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 
@@ -2971,31 +3010,33 @@ function SubTable(props) {
         : (selectedRows, displayData, setSelectedRow) => {
           //// if contacts set the multi selection top bar: ////
 
-          if (props.addAble.type === "suggestedOwnerToParcel") {
-            return (
-              <div style={{ height: "48px", display: "flex" }}>
-                <div
-                  style={{
-                    marginTop: "6px",
-                    height: "35px",
-                    display: "flex",
-                    marginRight: "20px",
-                  }}
-                >
-                  <Button
-                    color="secondary"
-                    className={classes.multiSelectionTopBarButtons}
-                    disabled={props.addAble.type === "suggestedOwnerToParcel" && m1nSelectedRowsIndexes.length === 0}
-                    onClick={() => {
-                      props.suggestedOwnerToParcel(m1nSelectedRowsIndexes, setSelectedRow);
-                    }}
-                  >
-                    + ADD TO PARCEL
-                  </Button>
-                </div>
-              </div>
-            );
-          }
+          // if (props.addAble.type === "suggestedOwnerToParcel") {
+          //   return (
+          //     <div style={{ height: "48px", display: "flex" }}>
+          //       <div
+          //         style={{
+          //           marginTop: "6px",
+          //           height: "35px",
+          //           display: "flex",
+          //           marginRight: "20px",
+          //         }}
+          //       >
+          //         <Button
+          //           color="secondary"
+          //           className={classes.multiSelectionTopBarButtons}
+          //           disabled={props.addAble.type === "suggestedOwnerToParcel" && m1nSelectedRowsIndexes.length === 0}
+          //           onClick={() => {
+          //             const parcelInterests = m1nSelectedRowsIndexes.map((index) => rows[index])
+          //             return handleExpandClick(null, null, parcelInterests, "multipleOwnerToContact");
+          //             // props.suggestedOwnerToParcel(m1nSelectedRowsIndexes, setSelectedRow);
+          //           }}
+          //         >
+          //           + ADD TO PARCEL
+          //         </Button>
+          //       </div>
+          //     </div>
+          //   );
+          // }
           if (props.addAble.type === "parcelDocument") {
             return (
               <div
