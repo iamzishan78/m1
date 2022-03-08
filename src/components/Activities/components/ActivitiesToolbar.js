@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Views } from "react-big-calendar";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
@@ -108,26 +108,17 @@ const ActivitiesToolbar = ({
 }) => {
   const classes = useToolbarStyles();
   const [stateApp] = useContext(AppContext);
-  const [obligationOptions, setObligationOptions] = React.useState([]);
+  const [selectedObligationType, setObligationType] = useState({ label: "All", value: "all" });
 
   const [getActivityTypes, { data: obligationTypes }] = useLazyQuery(GET_ACTIVITY_TYPES);
 
   React.useEffect(() => {
     if (type === "Obligation") {
       getActivityTypes({
-        variables: { category: "Obligaiton" }
+        variables: { category: "Obligaiton" },
       });
     }
   }, [type, getActivityTypes]);
-
-  React.useEffect(() => {
-    if (obligationTypes?.obligationTypes) {
-      setObligationOptions(obligationTypes?.obligationTypes?.map(type => ({
-        label: type,
-        value: type
-      })));
-    }
-  }, [obligationTypes]);
 
   const goToBack = () => {
     toolbar.onNavigate("PREV");
@@ -171,6 +162,17 @@ const ActivitiesToolbar = ({
     return ownerOptions;
   }, [mongoUsers]);
 
+  const obligationOptions = React.useMemo(() => {
+    if (obligationTypes?.activityTypes) {
+      let obligations = obligationTypes?.activityTypes?.map((type) => ({
+        label: type,
+        value: type,
+      }));
+      obligations.unshift({ label: "All", value: "all" });
+      return obligations;
+    } else return [];
+  }, [obligationTypes]);
+
   return (
     <div className={classes.root}>
       <div className={classes.left}>
@@ -197,20 +199,12 @@ const ActivitiesToolbar = ({
               getOptionLabel={(option) => option.label}
               style={{ width: 220 }}
               size="small"
-              // defaultValue={activitiesTypesOptions.find(o => o.value === activityFilterByType)}
-              // value={activitiesTypesOptions.find(o => o.value === activityFilterByType)}
+              defaultValue={selectedObligationType}
+              value={selectedObligationType}
               onChange={(_, value) => {
-                // setActivityFilterByType(value?.value ?? 'all');
-                console.log(value);
+                setObligationType(value?.value ?? "");
               }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Obligation Type"
-                  variant="outlined"
-                // value={activityFilterByType}
-                />
-              )}
+              renderInput={(params) => <TextField {...params} label="Obligation Type" variant="outlined" />}
             />
           )}
         </div>
