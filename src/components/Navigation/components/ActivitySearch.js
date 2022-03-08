@@ -13,8 +13,8 @@ import List from "@material-ui/icons/List";
 import EventIcon from "@material-ui/icons/Event";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 
-import { GETALLACTIVITIESFORSEARCH } from "../../../graphQL/useQueryGetAllActivities";
-import { AppContext } from "../../../AppContext";
+import { GETALLACTIVITIESFORSEARCH } from "graphQL/useQueryGetAllActivities";
+import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
   barTitle: {
@@ -192,7 +192,7 @@ const ActivitySearch = () => {
                 margin: 0,
               }}
               className={classes.activitySearchField}
-              placeholder="Search for activities"
+              placeholder={`Search for ${activeModule?.title?.toLowerCase()}`}
               variant="outlined"
               InputProps={{
                 ...params.InputProps,
