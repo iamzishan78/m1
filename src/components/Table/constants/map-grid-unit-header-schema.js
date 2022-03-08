@@ -36,6 +36,50 @@ const unitsColumnHeaders = [
       },
     },
     {
+      name: "SurveyMeridian", label: "Survey/ Meridian", esKey: [
+          'shapeJson.properties.originalProperties.Survey.keyword',
+          'shapeJson.properties.originalProperties.PrincipalMeridian.keyword'
+      ], 
+      options: { 
+          dbName: "shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
+          sort: true, 
+          filter: true 
+      }
+    },
+    {
+      name: "BlockTownship", label: "Block/ Township", esKey: [
+          'shapeJson.properties.originalProperties.Block.keyword',
+          'shapeJson.properties.originalProperties.Township.keyword'
+      ], 
+      options: { 
+          dbName: "shapeJson.properties.originalProperties.0?.Block?.Township?",
+          sort: true, 
+          filter: true 
+      }
+    },
+    {
+      name: "SectionRange", label: "Section/ Range", esKey: [
+          'shapeJson.properties.originalProperties.Section.keyword',
+          'shapeJson.properties.originalProperties.Range.keyword'
+      ], 
+      options: { 
+          dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
+          sort: true, 
+          filter: true 
+      }
+    },
+    {
+      name: "AbstractSection", label: "Abstract/ Section", esKey: [
+          'shapeJson.properties.originalProperties.AbstractName.keyword',
+          'shapeJson.properties.originalProperties.ShortName.keyword'
+      ], 
+      options: { 
+          dbName: "shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
+          sort: true, 
+          filter: true 
+      }
+    },
+    {
       name: "Block",
       label: "Block",
       esKey: "shapeJson.properties.originalProperties.Block.keyword",
