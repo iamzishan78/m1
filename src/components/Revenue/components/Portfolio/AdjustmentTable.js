@@ -89,7 +89,7 @@ export default function AdjustmentTable({ monthsInterval }) {
               <TableBody>
                 <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
-                    Severence Tax
+                    Severance Tax
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
                     10,000,000
@@ -105,7 +105,7 @@ export default function AdjustmentTable({ monthsInterval }) {
                 </TableRow>
                 <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
-                    Compression
+                    Transportation - Gas
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
                     10,000,000
@@ -113,12 +113,13 @@ export default function AdjustmentTable({ monthsInterval }) {
                 </TableRow>
                 <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
-                    Transportation - Gas
+                    Compression
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
                     10,000,000
                   </TableCell>
                 </TableRow>
+
                 <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
                     Processing
@@ -137,7 +138,7 @@ export default function AdjustmentTable({ monthsInterval }) {
                 </TableRow>
                 <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
-                    Others
+                    Other
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
                     10,000,000

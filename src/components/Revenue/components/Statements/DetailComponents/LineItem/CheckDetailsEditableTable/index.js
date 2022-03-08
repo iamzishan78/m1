@@ -29,7 +29,6 @@ import { UPDATE_CHECK_DETAIL } from "graphQL/useMutationUpdateCheckDetail";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { makeStyles } from "@material-ui/styles";
 import moment from "moment";
-import $ from "jquery";
 
 import { PopoverProperty } from "./PopoverProperty";
 import { RevenueStatementHeadCells } from "./data";

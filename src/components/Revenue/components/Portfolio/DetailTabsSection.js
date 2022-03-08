@@ -133,33 +133,34 @@ export default function DetailTabsSection({ monthsInterval }) {
           <StyledTab label="Revenue" />
           <StyledTab label="Adjustments" />
           <StyledTab label="Products" />
-          <StyledTab label="Properties" />
+          {/* <StyledTab label="Properties" /> */}
         </StyledTabs>
       </div>
       <div style={{ maxHeight: "calc(100vh - 282px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
         <div className={classes.revenueSection} ref={tab === 0 ? selectedTabRef : null}>
-          <Typography varient="h6" className={classes.sectionTitle}>
+          <Typography variant="h6" className={classes.sectionTitle}>
             Revenue & Income
           </Typography>
           <RevenueTable monthsInterval={monthsInterval} />
         </div>
         <div className={classes.adjustmentSection} ref={tab === 1 ? selectedTabRef : null}>
-          <Typography varient="h6" className={classes.sectionTitle}>
+          <Typography variant="h6" className={classes.sectionTitle}>
             Adjustments
           </Typography>
           <AdjustmentTable monthsInterval={monthsInterval} />
         </div>
         <div className={classes.productSection} ref={tab === 2 ? selectedTabRef : null}>
-          <Typography varient="h6" className={classes.sectionTitle}>
+          <Typography variant="h6" className={classes.sectionTitle}>
             Products
           </Typography>
           <ProductsSection monthsInterval={monthsInterval} />
         </div>
-        <div className={classes.propertiesSection} ref={tab === 3 ? selectedTabRef : null}>
+        {/* temp hide until we get properties section designed --kc 20220307 */}
+        {/* <div className={classes.propertiesSection} ref={tab === 3 ? selectedTabRef : null}>
           <Typography varient="h6" className={classes.sectionTitle}>
             Properties
           </Typography>
-        </div>
+        </div> */}
       </div>
     </div>
   );
