@@ -67,7 +67,9 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: "2px solid #34b4e3 !important",
   },
   totalColCell: {
-    width: "160px",
+    fontWeight: "bolder",
+    fontSize: "16px",
+    fontFamily: "sans-serif"
   },
 }));
 
@@ -135,12 +137,13 @@ export default function AcccessibleTable({ monthsInterval }) {
                   </TableCell>
                 </TableRow>
                 <TableRow className={classes.highlightedLessBordered}>
-                  <TableCell scope="row" className={classes.leftCells}>
+                  <TableCell scope="row" className={`${classes.leftCells} ${classes.totalColCell}`}>
                     Total Income
                   </TableCell>
                   <TableCell
                     scope="row"
                     className={`${classes.leftRightColoredBorderCell} ${classes.bottomColoredBorderCell} ${classes.totalColCell}`}
+                    style={{ width: "160px" }}
                   >
                     87,000,000
                   </TableCell>
@@ -188,7 +191,7 @@ export default function AcccessibleTable({ monthsInterval }) {
                 </TableRow>
                 <TableRow className={classes.highlightedRows}>
                   {monthsInterval.map((month) => (
-                    <TableCell scope="row">10,000,000</TableCell>
+                    <TableCell className={classes.totalColCell} scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
 
