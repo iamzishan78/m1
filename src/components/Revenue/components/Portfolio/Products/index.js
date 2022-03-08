@@ -10,10 +10,10 @@ export default function Products({ monthsInterval }) {
         <Table monthsInterval={monthsInterval} title="OIL" />
       </Grid>
       <Grid item xs={12}>
-        <Table monthsInterval={monthsInterval} title="GAS" />
+        <Table monthsInterval={monthsInterval} title="GAS" grossVolumeType="MCF" />
       </Grid>
       <Grid item xs={12}>
-        <Table monthsInterval={monthsInterval} title="NGL" />
+        <Table monthsInterval={monthsInterval} title="NGL" grossVolumeType="GAL" />
       </Grid>
       <Grid item xs={12}>
         <Table monthsInterval={monthsInterval} title="OTHER" />

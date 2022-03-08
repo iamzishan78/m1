@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function OilTable({ monthsInterval, title }) {
+export default function OilTable({ monthsInterval, title, grossVolumeType = "BBL" }) {
   const classes = useStyles();
 
   return (
@@ -82,10 +82,7 @@ export default function OilTable({ monthsInterval, title }) {
             <Table className={classes.table} aria-label="caption table">
               <TableHead>
                 <TableRow>
-                  <TableCell
-                    className={`${classes.headerCell}`}
-                    style={{ color: "#12abe0", textAlign: "left" }}
-                  >
+                  <TableCell className={`${classes.headerCell}`} style={{ color: "#12abe0", textAlign: "left" }}>
                     {title}
                   </TableCell>
                   <TableCell
@@ -101,7 +98,7 @@ export default function OilTable({ monthsInterval, title }) {
               <TableBody>
                 <TableRow className={classes.highlightedRows}>
                   <TableCell scope="row" className={classes.leftCells}>
-                    Gross Volume (BBL)
+                    Gross Volume ({grossVolumeType})
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
                     190,325
