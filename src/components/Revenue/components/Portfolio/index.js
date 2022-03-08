@@ -5,7 +5,6 @@ import { makeStyles } from "@material-ui/styles";
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import DetailTabsSection from "components/Revenue/components/Portfolio/DetailTabsSection";
-import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -104,7 +103,6 @@ export default function Portfolio() {
             </Grid>
           </Grid>
         </Grid>
-        <ReportGroupHeader type={"Portfolios"} esFilters={esFilters} setESFilters={setESFilters} setFilterToggle={setFilterToggle} />
       </div>
       {/* <AnalyticsCards cards={cards} /> */}
       <Divider className={classes.divider} />

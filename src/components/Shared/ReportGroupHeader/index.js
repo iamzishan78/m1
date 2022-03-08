@@ -11,11 +11,11 @@ import ButtonDropDown from "components/Shared/M1nTable/components/ButtonGroup";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 const useStyles = makeStyles((theme) => ({
-  actionBar: {
+  actionBar: ({ isBackground }) => ({
     padding: "10px 40px",
     display: "flex",
     alignItems: "center",
-    backgroundColor: "#f7f7f7",
+    backgroundColor: isBackground ? "#f7f7f7" : "transparent",
     width: "100%",
     minHeight: "65px",
 
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiButtonGroup-groupedContainedSecondary:not(:last-child)": {
       borderColor: "#ffff",
     },
-  },
+  }),
   textField: {
     height: "100%",
     width: "100%",
@@ -34,15 +34,23 @@ const useStyles = makeStyles((theme) => ({
       display: "flex",
     },
   },
-  viewSwitcher: {
+  viewSwitcher: ({ isShrink }) => ({
     // margin: theme.spacing(1),
-  },
+    height: isShrink ? "40px" : "100%",
+  }),
 }));
 
-export default function ReportGroupHeader({ type, esFilters, setESFilters, setFilterToggle }) {
-  const classes = useStyles();
+export default function ReportGroupHeader({
+  type,
+  esFilters,
+  setESFilters,
+  setFilterToggle,
+  isBackground = true,
+  fullWidth = false,
+  isShrink = false,
+}) {
+  const classes = useStyles({ isBackground, isShrink });
   const [stateApp] = useContext(AppContext);
-  // redux
 
   const [getGridViews, { data: gridViews }] = useLazyQuery(GET_GRID_VIEWS);
   const [addGridView] = useMutation(ADD_GRID_VIEW);
@@ -52,8 +60,6 @@ export default function ReportGroupHeader({ type, esFilters, setESFilters, setFi
 
   const All_TYPE = `All ${type}`;
   const [reportingGroup, setReportingGroup] = React.useState(All_TYPE);
-
-  // props to pass in tabl
 
   useEffect(() => {
     getGridViews({
@@ -145,7 +151,7 @@ export default function ReportGroupHeader({ type, esFilters, setESFilters, setFi
   return (
     <>
       <Grid container direction="row" display="flex" justify="space-between" className={classes.actionBar}>
-        <Grid item xs={3} md={3}>
+        <Grid item xs={fullWidth ? 12 : 3} md={fullWidth ? 12 : 3}>
           {config.show ? (
             <TextField
               fullWidth={true}
