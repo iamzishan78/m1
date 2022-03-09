@@ -11,6 +11,7 @@ import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
 import { ADD_PROPERTY } from "graphQL/useMutationAddProperty";
 import { ADD_CHECK_DATA } from "graphQL/useMutationAddCheck";
 import ButtonDropDown from "components/Shared/M1nTable/components/ButtonGroup";
+import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 
 export default function RevenueAppBar(props) {
   const { classes } = props;
@@ -38,9 +39,11 @@ export default function RevenueAppBar(props) {
         addCheck({ variables: { check: { source: 'Manual Entry' } } })
       }
     },
-    { isShow: true, text: 'Import Statement', action: () => { 
-      history.push("/bulkupload");
-    } },
+    {
+      isShow: true, text: 'Import Statement', action: () => {
+        history.push("/bulkupload");
+      }
+    },
     ]
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeModule]);
@@ -56,7 +59,7 @@ export default function RevenueAppBar(props) {
     >
       <Grid item md={8}>
         <Grid container direction="row" display="flex" justify="flex-start" alignItems="center">
-          <Grid item md={2.5}>
+          <Grid item xs={2.5}>
             <Typography variant="h5" style={{ color: "black", fontWeight: "bold" }}>
               {activeModule.title}
             </Typography>
@@ -65,8 +68,14 @@ export default function RevenueAppBar(props) {
             activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title ||
             activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title
           ) && (
-              <Grid item md={5} style={{ marginLeft: "20px" }}>
+              <Grid item xs={5} style={{ marginLeft: "20px" }}>
                 <RevenueSearch activeModule={activeModule} />
+              </Grid>
+            )}
+          {
+            activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PORTFOLIO.title && (
+              <Grid item xs={8} style={{ marginLeft: "20px" }}>
+                <ReportGroupHeader type="Properties" esFilters={[]} setESFilters={() => { }} setFilterToggle={() => { }} isBackground={false} fullWidth isShrink />
               </Grid>
             )}
         </Grid>
