@@ -65,14 +65,12 @@ function AddUnitInterestDialog(props) {
       setLoading(false);
       handleClose();
     },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
   const [updateShapeWellInterests] = useMutation(UPDATE_SHAPE_WELL_INTEREST, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
     },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
 
   useEffect(() => {
@@ -157,7 +155,7 @@ function AddUnitInterestDialog(props) {
             ...getValues(),
           }
         },
-        refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+        refetchQueries: ["getESPaginatedList", "getESFilterList", "getShapeSummaryDetails"], awaitRefetchQueries: true
       });
     }
   }
@@ -182,7 +180,7 @@ function AddUnitInterestDialog(props) {
           }],
         },
         refetchQueries: [
-          "getESPaginatedList", "getESFilterList"
+          "getESPaginatedList", "getESFilterList", "getShapeSummaryDetails"
         ],
         awaitRefetchQueries: true,
       });
