@@ -2357,8 +2357,7 @@ function SubTable(props) {
               customBodyRender: (value) => {
                 const splitNumber = value?.split("_");
                 let styles = { ...column.style };
-                if (props.parent === "RevenuePropertiesTable" ||
-                  props.parent === "CheckDetailsTable") {
+                if (props.parent === "CheckDetailsTable") {
                   styles = { ...styles, fontWeight: 600, color: "#17aadd", cursor: "pointer" };
                 }
                 return <p style={styles}>{splitNumber?.[0]}</p>;
@@ -2502,14 +2501,20 @@ function SubTable(props) {
             column.options = {
               ...column.options,
               customBodyRender: (value, tableMeta) => {
+                const row = props.rows[tableMeta.rowIndex];
                 return (
                   <>
-                    <SearchWells
-                      contactId={"props.contactData._id"}
-                      value={value}
-                      rowData={tableMeta.rowData}
-                      rowIndex={tableMeta.rowIndex}
-                    />
+                    {row.wellApiNumber && row.wellName ? (
+                        <div>{value}</div>
+                      ):(
+                        <SearchWells
+                          contactId={"props.contactData._id"}
+                          relatedObject={row._id}
+                          relatedObjectType="Property"
+                          rowData={tableMeta.rowData}
+                          rowIndex={tableMeta.rowIndex}
+                        />
+                    )}
                   </>
                 );
               },
@@ -2666,6 +2671,11 @@ function SubTable(props) {
                       </div>
                     );
                   }
+
+                  if(props.targetLabel === 'Revenue Properties') {
+                    return value? <p>{value}</p> : null
+                  }
+
                   return (
                     <div
                       style={{ display: "flex", alignItems: "center", justifyContent: "left", ...column.style }}
@@ -3743,13 +3753,6 @@ function SubTable(props) {
       //   }
       // }
 
-      if (props.targetLabel === "Revenue Properties") {
-        // need stopPropagation
-        history.push(`/revenue/property/details/${rows[dataIndex]?._id}`);
-        // if (rows[dataIndex]?._id) {
-        //   history.push(`/revenue/property/details?id=${rows[dataIndex]?._id}`);
-        // }
-      }
       // if (props.parent === "RevenueStatementTable") {
       //   if (rows[dataIndex]?._id) {
       //     history.push(`/revenue/statement/details/${rows[dataIndex]?._id}`);
