@@ -60,6 +60,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
 
+const landGridIndexName = "landgrid-index";
 const leaseIndexName = "lease-index-v2";
 const operatorIndexName = "operator-index";
 const wellCogIndexName = "wellheader-index";
@@ -207,6 +208,7 @@ function Search() {
   const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS);
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
+  const [getLandGridGeom, { data: dataLandGridGeom }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });;
   const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getSearchHistory, { data: searchHistoryData }] = useLazyQuery(USERSEARCHHISTORY);
   let location = useLocation();
@@ -356,6 +358,27 @@ function Search() {
           }
         }
       },
+      "land grid": {
+        esIndex: "platformData:landgrid",
+        search: (request) => `${request.input}`,
+        searchFields: ["_all"],
+        filter: [
+          {field: "level7Id.keyword", value: undefined},
+          {field: "level8Id.keyword", value: undefined},
+          {field: "level9Id.keyword", value: undefined},
+          {field: "level10Id.keyword", value: undefined}
+        ],
+        formatOptions: (data) => {
+          return { ...data, Source: landGridIndexName, 
+            Primary: [`${ data.level1Type ? `${data.level1Type}: ${data.level1Name}` : '' }`, 
+              `${ data.level2Type ? `${data.level2Type}: ${data.level2Name}` : '' }`].join(' '),
+            Secondary: [`${ data.level3Type ? `${data.level3Type}: ${data.level3Name}` : '' }`,
+              `${ data.level4Type ? `${data.level4Type}: ${data.level4Name}` : '' }`,
+              `${ data.level5Type ? `${data.level5Type}: ${data.level5Name}` : '' }`,
+              `${ data.level6Type ? `${data.level6Type}: ${data.level6Name}` : '' }`].join(' ')
+          }
+        }
+      },
       "units": {
         esIndex: "shapes_flat",
         search: (request) => `${request.input}`,
@@ -419,7 +442,7 @@ function Search() {
               query: search(request),
               fields: searchFields
             },
-            ...(filter) && { filters: [ filter ] },
+            ...(filter) && { filters: !Array.isArray(filter) ? [ filter ] : filter },
             sort: [],
           }
         })
@@ -447,7 +470,8 @@ function Search() {
       if (searchInputValue === "") {
         setOptions(value ? [value] : []);
         setValue(null);
-        setStateApp((state) => ({ ...state, wellListFromSearch: [] }));
+        setStateApp((state) => ({ ...state, wellListFromSearch: [], landGridListFromSearch: [] }));
+        setLoading(false);
         return undefined;
       }
       if (searchOption === "location") {
@@ -601,6 +625,33 @@ function Search() {
     }
   }, [dataLeaseWells]);
 
+  //// getting land grid geom ////
+  useEffect(() => {
+    if (dataLandGridGeom && dataLandGridGeom?.getESSimpleSearch?.hits) {
+      if (dataLandGridGeom?.getESSimpleSearch?.hits?.length !== 0) {
+        setStateApp((stateApp) =>
+          dataLandGridGeom?.getESSimpleSearch?.hits?.length === 1
+            ? {
+              ...stateApp,
+              selectedWell: null,
+              fitBounds: true,
+              searchLoader: false,
+              landGridListFromSearch: [...dataLandGridGeom?.getESSimpleSearch?.hits?.map(hit => ({ ...hit, shape: JSON.stringify({ geometry: hit?.geoJSON, properties: {} }) }))],
+            }
+            : stateApp
+        );
+        stateApp.toggleLayersActivity("Search", true);
+      } else {
+        stateApp.toggleLayersActivity("Search", false);
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          searchLoader: false,
+          wellListFromSearch: [],
+        }));
+      }
+    }
+  }, [dataLandGridGeom]);
+
   //// getting wells data from contacts ////
   useEffect(() => {
     if (dataContactWells && dataContactWells.contactWells) {
@@ -753,6 +804,17 @@ function Search() {
         }
       }
 
+      //// if land grid
+      if (newValue && newValue.Source === landGridIndexName && newValue._id) {
+        getLandGridGeom({
+          variables: {
+            index: "platformData:landgridgeom",
+            filters: [{ field: "_id", value: newValue._id }],
+            sort: [],
+          }
+        })
+      }
+
       // if contact
       if (newValue && newValue.Source === contactIndexName && newValue._id) {
         getContactsWells({
@@ -852,6 +914,7 @@ function Search() {
           if (option.Source === wellCogIndexName) return "Wells";
           if (option.Source === operatorIndexName) return "Operators";
           if (option.Source === leaseIndexName) return "Leases";
+          if (option.Source === landGridIndexName) return "Land Grid";
           if (option.Source === contactIndexName) return "Contacts";
           if (option.Source === "mapboxSearch") return "Locations";
           if (option.layer === "unit") return "Units";

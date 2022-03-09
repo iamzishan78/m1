@@ -1,6 +1,6 @@
 // import PersonIcon from "@material-ui/icons/Person";
 // import OwnershipIcon from "components/Shared/svgIcons/ownership";
-// import LeaseIcon from "components/Shared/svgIcons/lease";
+import LeaseIcon from "components/Shared/svgIcons/lease";
 import WellIcon from "components/Shared/svgIcons/well";
 import TractIcon from "components/Shared/svgIcons/tract";
 import UnitIcon from "components/Shared/svgIcons/unit";
@@ -13,8 +13,9 @@ import ContactIcon from "@material-ui/icons/Group";
 export const platformDataInitialData = [
   { index: 0, value: "well", Icon: WellIcon, label: "Wells", shapeGrid: true },
   { index: 1, value: "owner", Icon: TaxOwnerIcon, label: "Tax Owners", shapeGrid: true },
-  { index: 2, value: "operator", Icon: OperatorIcon, label: "Operators", shapeGrid: false },
+  { index: 2, value: "operator", Icon: OperatorIcon, label: "Operators", shapeGrid: true },
   // { index: 3, value: "lease", Icon: LeaseIcon, label: "Leases" },
+  { index: 4, value: "landgrid", Icon: LeaseIcon, label: "Land Grid", shapeGrid: false },
   // { index: 4, value: "contacts", Icon: ContactIcon, label: "Contacts", shapeGrid: false },
 ];
 

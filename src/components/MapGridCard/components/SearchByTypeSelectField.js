@@ -152,6 +152,7 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
           </Grid>
 
           {platformData.map((icon) => {
+            if(mapGridCardActivated && !icon.shapeGrid) return false
             const Icon = icon.Icon
             return <StyledMenuItem key={icon.index} selected={icon.value === value.value} onClick={() => { handleChange(icon); handleClose(); }}>
               <ListItemIcon>
