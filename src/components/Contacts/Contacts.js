@@ -44,7 +44,9 @@ export default function Contacts() {
   const location = useLocation();
   const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
-  const { quickActionsPanelState, activeModule } = useSelector(({ contact }) => contact);
+  const { quickActionsPanelState, activeModule } = useSelector(
+    ({ common }) => common
+  );
 
   useEffect(() => {
     const option = Object.values(contactManagementRoutes).find((item) => item.link === location.pathname);

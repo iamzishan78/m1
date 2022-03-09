@@ -67,8 +67,8 @@ export default function AnalyticsCards({
       if (aggsData?.getESAggsList?.aggregations?.aggs?.buckets) {
         const buckets = aggsData.getESAggsList.aggregations.aggs?.buckets;
         const activeBucket = buckets[0];
-        cards[1].points = activeBucket['doc_count'];
-        cards[2].points = totalCount - activeBucket['doc_count'];
+        cards[1].points = activeBucket?.['doc_count'];
+        cards[2].points = totalCount - activeBucket?.['doc_count'];
         setCards(cards);
       }
     },

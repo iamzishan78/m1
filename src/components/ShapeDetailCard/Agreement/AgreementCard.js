@@ -9,7 +9,6 @@ import AgreementDetailCard from "./AgreementDetailCard";
 import { AppContext } from "AppContext";
 import { ExpandableCardContext } from "components/ExpandableCard/ExpandableCardContext";
 
-
 const useStyles = makeStyles((theme) => ({
   card: {
     borderStyle: "none",
