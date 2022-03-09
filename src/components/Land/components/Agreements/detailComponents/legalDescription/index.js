@@ -6,7 +6,6 @@ import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, 
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import { useStyles as customStyles } from "../style";
 
-import { copy } from "components/Shared/functions";
 import AgreementOwnersTractsTable from "components/Table/Agreement/AgreementOwnersTractsTable";
 
 // Components
