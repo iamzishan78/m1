@@ -209,13 +209,13 @@ function WellCard() {
   }, [stateApp.selectedWell]);
 
   // console.log('selectedWell', stateApp.selectedWell);
-  
+
   useEffect(() => {
     if (dataWellSummary) {
       setWellData(dataWellSummary.wellSummaryDetail[0]);
       setStateWellCard((state) => ({
         ...state,
-        selectedWell: {...dataWellSummary.wellSummaryDetail[0], tenantWellId : stateApp.selectedWell?.tenantWellId }
+        selectedWell: { ...dataWellSummary.wellSummaryDetail[0], tenantWellId: stateApp.selectedWell?.tenantWellId }
       }));
     } else {
       setWellData(null);

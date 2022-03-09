@@ -34,7 +34,6 @@ import LeadStage from "../Shared/LeadStage";
 import Divider from "@material-ui/core/Divider";
 import RightDialog from "./components/RightDialog";
 import Dialog from "@material-ui/core/Dialog";
-import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import ArrowForwardIosRoundedIcon from "@material-ui/icons/ArrowForwardIosRounded";
@@ -868,9 +867,8 @@ export default function ContactDetailCard(props) {
                         <span className={classes.socialMediaSection}>
                           {contactData.facebook && (
                             <a
-                              href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${
-                                contactData.facebook
-                              }`}
+                              href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${contactData.facebook
+                                }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -879,9 +877,8 @@ export default function ContactDetailCard(props) {
                           )}
                           {contactData.twitter && (
                             <a
-                              href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${
-                                contactData.twitter
-                              }`}
+                              href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${contactData.twitter
+                                }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -890,9 +887,8 @@ export default function ContactDetailCard(props) {
                           )}
                           {contactData.linkedIn && (
                             <a
-                              href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${
-                                contactData.linkedIn
-                              }`}
+                              href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${contactData.linkedIn
+                                }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -1111,7 +1107,7 @@ export default function ContactDetailCard(props) {
               header="Contact Data Integration"
               onClose={handleCloseDialog}
               rows={[contactData]}
-              setRows={() => {}}
+              setRows={() => { }}
               updateMelissaTable={() => {
                 getLastMelissaRecord({
                   variables: {

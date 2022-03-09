@@ -213,7 +213,7 @@ export default function DetailComponents(props) {
   const dispatch = useDispatch();
   const agreementDetails = useSelector(({ Land }) => Land.agreement?.activeAgreement?.shape)?.properties;
   const activeAgreement = useSelector(({ Land }) => Land.agreement?.activeAgreement);
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
@@ -278,6 +278,14 @@ export default function DetailComponents(props) {
     if (dataCustomLayer && dataCustomLayer.customLayer) {
       let shape = JSON.parse(dataCustomLayer.customLayer.shape);
       if (dataCustomLayer.customLayer.shapeJson) shape = copy(dataCustomLayer.customLayer.shapeJson);
+
+      shape.id = dataCustomLayer.customLayer._id;
+      shape.properties.id = dataCustomLayer.customLayer._id;
+      shape.layer = { id: "unit" };
+      setStateApp((state) => ({
+        ...state,
+        selectedShape: { ...shape.properties, shape },
+      }));
       dispatch(
         setLandReduxKey("agreement", {
           activeAgreement: {
