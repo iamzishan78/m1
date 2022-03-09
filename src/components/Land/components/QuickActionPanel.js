@@ -14,14 +14,7 @@ import { useStyles, StyledMenu, StyledMenuItem } from "components/Land/style";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
-export default function QuickActionsPanel({
-  children,
-  title,
-  actions,
-  handlePanelStateChange,
-  quickActionsPanelState,
-  activeModule,
-}) {
+export default function QuickActionsPanel({ children, title, actions, handlePanelStateChange, quickActionsPanelState, activeModule }) {
   const classes = useStyles();
   const history = useHistory();
 
@@ -39,24 +32,14 @@ export default function QuickActionsPanel({
           paper: classes.drawerPaper,
         }}
       >
-        <Grid
-          container
-          direction="row"
-          justify="space-between"
-          display="flex"
-          className={classes.header}
-        >
+        <Grid container direction="row" justify="space-between" display="flex" className={classes.header}>
           <Grid item style={{ alignItems: "center" }}>
             <Typography variant="h5" style={{ fontWeight: "normal" }}>
               {title}
             </Typography>
           </Grid>
           <Grid item>
-            <IconButton
-              className={classes.iconArrow}
-              color="secondary"
-              onClick={() => handlePanelStateChange(false)}
-            >
+            <IconButton className={classes.iconArrow} color="secondary" onClick={() => handlePanelStateChange(false)}>
               <>
                 <ChevronLeftIcon />
                 <MenuIcon className={classes.menuIcon} />
@@ -71,27 +54,23 @@ export default function QuickActionsPanel({
         <StyledMenu>
           {Object.keys(actions)
             .filter((key) => !actions[key].isExcluded)
-            .map((key, index) => (
-              actions[key].featureFlag && <FeatureFlag feature={FEATURES[actions[key].featureFlag]}>
-              <StyledMenuItem
-                onClick={() =>
-                  handleMenuItemClick(actions[key].link)
-                }
-                key={index}
-                isSelected
-                style={{
-                  backgroundColor:
-                    activeModule.title === actions[key].title
-                      ? "#4B618F"
-                      : "",
-                }}
-              >
-                <ListItemText>
-                  {actions[key].title}
-                </ListItemText>
-              </StyledMenuItem>
-              </FeatureFlag>
-            ))}
+            .map(
+              (key, index) =>
+                actions[key].featureFlag && (
+                  <FeatureFlag feature={FEATURES[actions[key].featureFlag]}>
+                    <StyledMenuItem
+                      onClick={() => handleMenuItemClick(actions[key].link)}
+                      key={index}
+                      isSelected
+                      style={{
+                        backgroundColor: activeModule.title === actions[key].title ? "#4B618F" : "",
+                      }}
+                    >
+                      <ListItemText>{actions[key].title}</ListItemText>
+                    </StyledMenuItem>
+                  </FeatureFlag>
+                )
+            )}
         </StyledMenu>
       </Drawer>
       <div
@@ -99,26 +78,11 @@ export default function QuickActionsPanel({
           [classes.landRootExpanded]: quickActionsPanelState,
           [classes.landRootCollapsed]: !quickActionsPanelState,
         })}
-        style={{
-          position: "relative",
-          top: "65px",
-          display: "flex",
-          flexDirection: "column",
-          // height: "calc(100vh - 65px)",
-          alignItems: "stretch",
-        }}
       >
         {children}
       </div>
-      <div
-        className={classes.pulloutBox}
-        onClick={() => handlePanelStateChange(!quickActionsPanelState)}
-      >
-        {quickActionsPanelState ? (
-          <ArrowBackIosIcon />
-        ) : (
-          <ArrowForwardIosIcon />
-        )}
+      <div className={classes.pulloutBox} onClick={() => handlePanelStateChange(!quickActionsPanelState)}>
+        {quickActionsPanelState ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
       </div>
     </>
   );

@@ -4,8 +4,6 @@ import { useForm, Controller } from "react-hook-form";
 import { withStyles } from "@material-ui/styles";
 import { Grid, Typography, FormControl, InputLabel, InputBase, Button } from "@material-ui/core";
 import { useStyles } from "./style";
-import Divider from '@material-ui/core/Divider';
-
 
 const BootstrapInput = withStyles((theme) => ({
   root: {
@@ -36,8 +34,6 @@ const BootstrapInput = withStyles((theme) => ({
     },
   },
 }))(InputBase);
-
-
 
 const StyledTextField = (props) => (
   <FormControl variant="standard">
@@ -95,9 +91,7 @@ export default function MapPositions(props) {
 
   return (
     <div className={classes.mapPositionSection}>
-      
-      <hr style={{border: '1px solid #263451', borderRadius: '5px', marginTop: '20px', marginBottom: '20px'}}/>
-
+      <hr style={{ border: "1px solid #263451", borderRadius: "5px", marginTop: "20px", marginBottom: "20px" }} />
       <Typography variant="subtitle1">Default Map Position</Typography>
       <Grid
         container

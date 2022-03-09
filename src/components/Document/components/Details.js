@@ -231,8 +231,8 @@ export default function DocumentDetails(props) {
   }, [getMetaData]);
 
   useEffect(() => {
-    if (metaDataRes?.getMetaData?.gridViews) {
-      sortFields(metaDataRes.getMetaData.gridViews)
+    if (metaDataRes?.getMetaData?.metaData) {
+      sortFields(metaDataRes.getMetaData.metaData)
     }
   }, [metaDataRes]);
 
@@ -263,19 +263,19 @@ export default function DocumentDetails(props) {
   const sortFields = (gridViews) => {
     const metaData = []
     console.log(stateApp.selectedView)
-    if(stateApp.selectedView.columns?.length > 0){
-      for(let i = 0; i < stateApp.selectedView.columns?.length; i++) {
+    if (stateApp.selectedView.columns?.length > 0) {
+      for (let i = 0; i < stateApp.selectedView.columns?.length; i++) {
         const data = gridViews.find(view => view.name === stateApp.selectedView.columns[i].name)
-        if(data){
+        if (data) {
           metaData.push(data);
         }
       }
       setMetaData(metaData);
-    }else{
+    } else {
       setMetaData(gridViews);
     }
 
-    
+
   };
 
   const UpDatefileFN = () => {
@@ -655,11 +655,11 @@ export default function DocumentDetails(props) {
                             <IconButton
                               disabled={false}
                               size="small"
-                              // onClick={() =>
-                              //   handleViewFile(
-                              //     files?.getFileDescriptors[key].fileId
-                              //   )
-                              // }
+                            // onClick={() =>
+                            //   handleViewFile(
+                            //     files?.getFileDescriptors[key].fileId
+                            //   )
+                            // }
                             >
                               <GetAppIcon />
                             </IconButton>
@@ -713,11 +713,11 @@ export default function DocumentDetails(props) {
               }}
               userId={stateApp.user.mongoId}
               setFileData={setFileData}
-              // relatedObjectId={props.id}
-              // userId={userId}
-              // relatedObjectType={relatedObjectType} //Contact or Deal
-              // loading={props.loading}
-              // disabled={props.disabled}
+            // relatedObjectId={props.id}
+            // userId={userId}
+            // relatedObjectType={relatedObjectType} //Contact or Deal
+            // loading={props.loading}
+            // disabled={props.disabled}
             />
           </div>
         ) : null}

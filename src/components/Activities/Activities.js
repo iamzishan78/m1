@@ -8,6 +8,7 @@ import { useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 
 import { GETALLACTIVITIES } from "../../graphQL/useQueryGetAllActivities";
+import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import ActivitiesToolbar from "./components/ActivitiesToolbar";
 import ActivitiesEvent from "./components/ActivitiesEvent";
 import M1nTable from "../Shared/M1nTable/M1nTable";
@@ -24,43 +25,24 @@ Date.prototype.addHours = function (h) {
   return this;
 };
 
-const ActivitiesCalendar = ({
-  events,
-  activityFilterByType,
-  setActivityFilterByType,
-  activityFilterByTime,
-  setActivityFilterByTime,
-  view,
-  setView,
-  onEventClick,
-}) => {
+const ActivitiesCalendar = (props) => {
   return (
     <div>
       <Calendar
         drilldownView="month"
         popup={true}
         localizer={localizer}
-        events={events}
+        events={props.events}
         endAccessor={"end"}
         startAccessor={"start"}
-        view={view}
+        view={props.view}
         defaultDate={new Date()}
-        style={{ height: "calc(100vh - 65px)", position: "relative" }}
+        style={{ height: "calc(100vh - 67px)", position: "relative" }}
         step={60}
-        onSelectEvent={(e) => onEventClick(e)}
+        onSelectEvent={(e) => props.onEventClick(e)}
         showMultiDayTimes
         components={{
-          toolbar: (props) => (
-            <ActivitiesToolbar
-              {...props}
-              activityFilterByType={activityFilterByType}
-              setActivityFilterByType={setActivityFilterByType}
-              activityFilterByTime={activityFilterByTime}
-              setActivityFilterByTime={setActivityFilterByTime}
-              view={view}
-              setView={setView}
-            />
-          ),
+          toolbar: (params) => <ActivitiesToolbar {...params} {...props} />,
           event: (props) => <ActivitiesEvent {...props} />,
         }}
       />
@@ -96,8 +78,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
+const getFilterCondition = (e, activityFilterByType, activityFilterByTime, activityFilterByOwner) => {
   const filterByTypeCondition = e.type === activityFilterByType || activityFilterByType === "all";
+  const filterByOwnerCondition = e.ownerId === activityFilterByOwner || activityFilterByOwner === "all";
   let filterByTimeCondition;
   const today = new Date();
   // const tomorrow = moment().add(1, "d");
@@ -123,13 +106,16 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
       filterByTimeCondition = true;
   }
 
-  return filterByTypeCondition && filterByTimeCondition;
+  return filterByTypeCondition && filterByTimeCondition && filterByOwnerCondition;
 };
 
 const Activities = () => {
   const classes = useStyles();
   let history = useHistory();
-  const [getAllActivities, { data: activitiesData, loading: activitiesLoading, error: activitiesError }] = useLazyQuery(GETALLACTIVITIES, {
+  const [getAllActivities, { data: activitiesData, loading: activitiesLoading }] = useLazyQuery(GETALLACTIVITIES, {
+    fetchPolicy: `network-only`,
+  });
+  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: `network-only`,
   });
 
@@ -138,23 +124,29 @@ const Activities = () => {
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [activityFilterByType, setActivityFilterByType] = useState("all");
+  const [activityFilterByOwner, setActivityFilterByOwner] = useState("all");
   const [activityFilterByTime, setActivityFilterByTime] = useState("all");
   const [view, setView] = React.useState(Views.MONTH);
   const [selectedActivity, setSelectedActivity] = useState(null);
 
   useEffect(() => {
-    getAllActivities();
+    getAllActivities({
+      variables: {
+        category: "CRM",
+      },
+    });
   }, []);
 
   useEffect(() => {
     if (events.length > 0) {
-      const eventId = history.location.pathname.split("/")[2];
+      const eventId = history.location.pathname.split("/")[3];
       if (eventId) {
         setSelectedActivityId(eventId);
         onModalOpen();
       }
     }
   }, [events]);
+
   useEffect(() => {
     if (activitiesData) {
       setEvents(
@@ -179,15 +171,8 @@ const Activities = () => {
   }, [activitiesData]);
 
   useEffect(() => {
-    setFilteredEvents(events.filter((e) => getFilterCondition(e, activityFilterByType, activityFilterByTime)));
-  }, [events, activityFilterByType, activityFilterByTime, view]);
-
-  const onModalClose = () => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      activityDialog: false,
-    }));
-  };
+    setFilteredEvents(events.filter((e) => getFilterCondition(e, activityFilterByType, activityFilterByTime, activityFilterByOwner)));
+  }, [events, activityFilterByType, activityFilterByTime, activityFilterByOwner, view]);
 
   const onModalOpen = () => {
     setStateApp((stateApp) => ({
@@ -211,8 +196,12 @@ const Activities = () => {
     }
   }, [stateApp.selectedActivityId]);
 
+  React.useEffect(() => {
+    getAllMongoUsers();
+  }, []);
+
   const onEventClick = (event) => {
-    window.history.pushState("", "", `/activities/${event._id}`);
+    window.history.pushState("", "", `/calendar/activities/${event._id}`);
     setSelectedActivityId(event._id);
     onModalOpen();
   };
@@ -230,10 +219,14 @@ const Activities = () => {
               setActivityFilterByType={setActivityFilterByType}
               activityFilterByTime={activityFilterByTime}
               setActivityFilterByTime={setActivityFilterByTime}
+              activityFilterByOwner={activityFilterByOwner}
+              setActivityFilterByOwner={setActivityFilterByOwner}
               view={view}
               setView={setView}
               events={filteredEvents}
               onEventClick={onEventClick}
+              mongoUsers={userLists?.allMongoUsers}
+              type="Activity"
             />
           ) : (
             <div>
@@ -247,10 +240,14 @@ const Activities = () => {
                   setActivityFilterByType={setActivityFilterByType}
                   activityFilterByTime={activityFilterByTime}
                   setActivityFilterByTime={setActivityFilterByTime}
+                  activityFilterByOwner={activityFilterByOwner}
+                  setActivityFilterByOwner={setActivityFilterByOwner}
                   view={view}
                   setView={setView}
                   events={filteredEvents}
                   onEventClick={onEventClick}
+                  mongoUsers={userLists?.allMongoUsers}
+                  type="Activity"
                 />
               </div>
               <div className={classes.table}>

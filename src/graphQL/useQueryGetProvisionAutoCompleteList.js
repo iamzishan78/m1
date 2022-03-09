@@ -1,9 +1,9 @@
 import gql from "graphql-tag";
 
 export const GET_PROVISION_AUTOCOMPLETE_LIST = gql`
-  query provisionAutoCompleteList($key: String, $agreementId: ID) {
+  query provisionAutoCompleteList($keys: [String], $agreementId: ID) {
     provisionAutoCompleteList(
-      key: $key,
+      keys: $keys,
       agreementId: $agreementId
     )
   }

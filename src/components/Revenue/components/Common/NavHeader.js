@@ -34,9 +34,9 @@ export default function DetailComponents(props) {
   const classes = useStyles(props);
   const { title, onClickFunc } = props;
 
+  const { activeModule } = useSelector(({ common }) => common);
+  const { statements } = useSelector(({ Revenue }) => Revenue);
   const search = queryString.parse(window.location.search);
-
-  const { activeModule, statements } = useSelector(({ Revenue }) => Revenue);
 
 
   return (

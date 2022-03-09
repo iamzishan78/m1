@@ -21,6 +21,7 @@ import AssociatedTractsShapeTable from "components/Table/Wells/AssociatedTractsS
 import Tags from "components/Shared/Tagger";
 import { showSuccessMessage, showErrorMessage, showInfoMessage } from "actions";
 import { AppContext } from "AppContext";
+import AgreementLegalDescriptionFields from "components/Land/components/Agreements/detailComponents/legalDescription/FieldsSection";
 
 import { copy } from "components/Shared/functions";
 import { detailCardStyles } from "../style";
@@ -48,16 +49,16 @@ export default function AgreementDetailCard(props) {
 
   useEffect(() => {
     return history.listen((location) => {
-      console.log(`You changed the page to: ${location.pathname}`)
+      console.log(`You changed the page to: ${location.pathname}`);
       if (!properties?.agreementNumber && !location.pathname.includes(uniObj._id)) {
         setStateApp((state) => ({
           ...state,
           selectedShape: null,
         }));
-        history.goBack()
+        history.goBack();
       }
-    })
-  }, [history, uniObj])
+    });
+  }, [history, uniObj]);
 
   useEffect(() => {
     if (props.id) {
@@ -84,7 +85,7 @@ export default function AgreementDetailCard(props) {
 
       if (!shape.properties.agreementNumber && !infoMessage) {
         dispatch(showInfoMessage("Agreement Number is required"));
-        setInfoMessage(true)
+        setInfoMessage(true);
       }
       setProperties(shape.properties);
     }
@@ -154,12 +155,13 @@ export default function AgreementDetailCard(props) {
 
   const updateCustomProperties = (type, value, id) => {
     const shape = uniObj.shape;
-    const customRow = properties.custom_data_arr.find((p) => p.id === id);
-    if (type === "key") {
-      customRow.key = value;
-    } else {
-      customRow.value = value;
-    }
+    // const customRow = properties.custom_data_arr.find((p) => p.id === id);
+    // if (type === "key") {
+    //   customRow.key = value;
+    // } else {
+    //   customRow.value = value;
+    // }
+    properties[type] = value;
     properties.custom_data = {};
     properties.custom_data_arr.forEach((data) => {
       properties.custom_data[data.key] = data.value;
@@ -234,29 +236,37 @@ export default function AgreementDetailCard(props) {
               standardProvisions={dataStandardProvisions?.getStandardProvisions || []}
               id={props.id}
             />,
-
-            <TabPanels
-              value={selectedTractTab}
-              panels={[
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <AgreementOwnersTractsTable
-                    customLayer={uniObj}
-                    shapeType="Agreement"
-                    header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                    dense
+            <Grid container direction="column" alignItems="center" style={{ display: "block", padding: "20px 20px 0px 20px" }}>
+              <Grid item xs={12} style={{ padding: "15px 5px 25px 0px" }}>
+                <AgreementLegalDescriptionFields agreementDetails={uniObj?.shape?.properties} updateAgreement={updateCustomProperties} />
+              </Grid>
+              {uniObj && (
+                <Grid item xs={12}>
+                  <TabPanels
+                    value={selectedTractTab}
+                    panels={[
+                      <div className={showSummary ? classes.subContent : classes.subContent2}>
+                        <AgreementOwnersTractsTable
+                          customLayer={uniObj}
+                          shapeType="Agreement"
+                          header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                          dense
+                        />
+                      </div>,
+                      <div className={showSummary ? classes.subContent : classes.subContent2}>
+                        <AssociatedTractsShapeTable
+                          customLayer={uniObj}
+                          shapeType="Agreement"
+                          header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                          setSelectedTab={setTractSelectedTab}
+                          dense
+                        />
+                      </div>,
+                    ]}
                   />
-                </div>,
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <AssociatedTractsShapeTable
-                    customLayer={uniObj}
-                    shapeType="Agreement"
-                    header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                    setSelectedTab={setTractSelectedTab}
-                    dense
-                  />
-                </div>,
-              ]}
-            />,
+                </Grid>
+              )}
+            </Grid>,
             <TabPanels
               value={selectedWellTab}
               panels={[
