@@ -86,6 +86,7 @@ export const useStyles = makeStyles((theme) => ({
   mapSection: {
     height: "382px",
     width: "45%",
+    margin: "10px 10px 0px 0px"
   },
   adornmentAutocomplete: {
     "& .MuiAutocomplete-endAdornment": {

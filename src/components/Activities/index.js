@@ -9,31 +9,32 @@ import { replaceLinkId } from "components/Shared/functions";
 
 const SIDE_PANEL_MENU_ITEMS_LIST = {
   ACTIVITIES: {
-    featureFlag: "LANDMODULE",
+    featureFlag: "CALENDAR_ACTIVITIES",
     title: "Activities",
     link: "/calendar/activities",
     component: "Activities",
+    noCheck: true
   },
   OBLIGATIONS: {
-    featureFlag: "LANDMODULE",
+    featureFlag: "CALENDAR_OBLIGATIONS",
     title: "Obligations",
     link: "/calendar/obligations",
     component: "Obligations",
   },
   PAYMENTS: {
-    featureFlag: "LANDMODULE",
+    featureFlag: "CALENDAR_PAYMENTS",
     title: "Payments",
     link: "/calendar/payments",
     component: "Payments",
   },
   EXPIRATIONS: {
-    featureFlag: "LANDMODULE",
+    featureFlag: "CALENDAR_EXPIRATIONS",
     title: "Expirations",
     link: "/calendar/expirations",
     component: "Expirations",
   },
   APPROVAL_MANAGEMENT: {
-    featureFlag: "LANDMODULE",
+    featureFlag: "CALENDAR_APPROVAL_MANAGEMENT",
     title: "Approval Management",
     link: "/calendar/approval-management",
     component: "ApprovalManagement",
@@ -65,7 +66,6 @@ const Calendar = () => {
   };
 
   return (
-    // <FeatureFlag feature={FEATURES.CONTACTSUBMENU}>
     <QuickActionPanel
       title="Calendar"
       handlePanelStateChange={handlePanelStateChange}
@@ -79,7 +79,6 @@ const Calendar = () => {
         </Switch>
       ))}
     </QuickActionPanel>
-    // </FeatureFlag>
   );
 };
 

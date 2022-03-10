@@ -10,22 +10,23 @@ import CampaignAnalytics from "components/Contacts/components/CampaignAnalytics"
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "0px 30px",
+    marginTop: "90px",
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
-          maxHeight: "78vh",
-          minHeight: "78vh",
+          maxHeight: "59vh",
+          minHeight: "59vh",
           "@media (max-height:900px)": {
-            maxHeight: "72vh",
-            minHeight: "72vh",
+            maxHeight: "53vh",
+            minHeight: "53vh",
           },
           "@media (max-height:800px)": {
-            maxHeight: "70vh",
-            minHeight: "70vh",
+            maxHeight: "51vh",
+            minHeight: "51vh",
           },
           "@media (max-height:768px)": {
-            maxHeight: "70vh",
-            minHeight: "70vh",
+            maxHeight: "51vh",
+            minHeight: "51vh",
           },
         },
       },
@@ -35,8 +36,7 @@ const useStyles = makeStyles((theme) => ({
 
 const CampaignManagement = () => {
   const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
-  const { activeModule } = useSelector(({ contact }) => contact);
+  const { activeModule } = useSelector(({ common }) => common);
 
   const esIndex = "activities_flat";
   const searchFields = ["name", "_all"];

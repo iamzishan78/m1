@@ -16,7 +16,6 @@ import { copy, deepEqualObjects, setStateIfDeepEqual } from "components/Shared/f
 import TableHeader from 'components/Table/constants/unit-tracts-header-schema.js'
 
 // Utilities
-import { ADD_MULTI_WELLINTEREST_TO_SHAPE } from "graphQL/useMutationAddMultiWellInterestToShape.js";
 import { useDispatch } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "actions/Notifications.js";
 import { usetableStyles } from "../Styles/index.js";
@@ -42,7 +41,6 @@ function AssociatedTractsShapeTable(props) {
         ],
         awaitRefetchQueries: true,
     });
-    const [addMultiWellInterestToShape] = useMutation(ADD_MULTI_WELLINTEREST_TO_SHAPE);
 
     // queries 
     // i have no idea why skip works, but if we dont use it, a query variable change during pagination will
