@@ -73,7 +73,7 @@ export default function Summary({
             </Grid>
           </AccordionSummary>
           <AccordionDetails className={classes.accordionDetails}>
-            <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "10px 0px" }}>
+            <Grid container direction="row" justify="space-between" style={{ padding: "10px 0px" }}>
               <Grid item className={classes.infoSection}>
                 <FieldsSection
                   agreementDetails={{ ...agreementDetails, _id: activeAgreement?._id }}
