@@ -258,14 +258,14 @@ export default function DetailComponents(props) {
   }, [getStandardProvisions]);
 
   useEffect(() => {
-    if (selectedTabRef?.current) {
+    if (selectedTabRef?.current && isButtonScroll) {
       selectedTabRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
         inline: "start",
       });
     }
-  }, [tab]);
+  }, [tab, isButtonScroll]);
 
   useEffect(() => {
     if (agreementId) {
@@ -363,12 +363,29 @@ export default function DetailComponents(props) {
     });
   };
 
+  const getRelativePosition = (childDivId) => {
+    const parentPos = document.getElementById('parent-div').getBoundingClientRect();
+    const childPos = document.getElementById(childDivId).getBoundingClientRect();
+    const relativePos = {};
+
+    relativePos.top = childPos.top - parentPos.top;
+    relativePos.right = childPos.right - parentPos.right;
+    relativePos.bottom = childPos.bottom - parentPos.bottom;
+    relativePos.left = childPos.left - parentPos.left;
+    return relativePos.top;
+  }
+
   const handleScroll = (e) => {
     if (!isButtonScroll) {
-      const { scrollTop } = e.target;
-      if (scrollTop <= 270 && tab !== 0) setTab(0);
-      else if (scrollTop > 270 && scrollTop <= 470 && tab !== 1) setTab(1);
-      else if (scrollTop > 470 && tab !== 2) setTab(2);
+      let activeTab = 0;
+      if (getRelativePosition("summary-div") < 5) activeTab = 0;
+      if (getRelativePosition("related-parties-div") < 30) activeTab = 1;
+      if (getRelativePosition("provisions-div") < 30) activeTab = 2;
+      if (getRelativePosition("legal-description-div") < 30) activeTab = 3;
+      if (getRelativePosition("related-wells-div") < 30) activeTab = 4;
+      if (getRelativePosition("related-docs-div") < 300) activeTab = 5;
+
+      if (tab !== activeTab) setTab(activeTab);
     }
     handleEndScroll();
   };
@@ -457,8 +474,8 @@ export default function DetailComponents(props) {
            */}
 
           <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
-            <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
-              <div className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null} style={{ backgroundColor: "#fff" }}>
+            <div id="parent-div" className={classes.tabsSectionDetails} onScroll={handleScroll}>
+              <div id="summary-div" className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null} style={{ backgroundColor: "#fff" }}>
                 <Summary
                   agreementDetails={agreementDetails}
                   activeAgreement={activeAgreement}
@@ -469,11 +486,11 @@ export default function DetailComponents(props) {
                 />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div className={classes.tabDetailSection} ref={tab === 1 ? selectedTabRef : null}>
+              <div id="related-parties-div" className={classes.tabDetailSection} ref={tab === 1 ? selectedTabRef : null}>
                 <RelatedParties agreementDetails={agreementDetails} agreementId={agreementId} />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
+              <div id="provisions-div" className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
                 <Provisions
                   agreementDetails={agreementDetails}
                   agreementId={agreementId}
@@ -482,7 +499,7 @@ export default function DetailComponents(props) {
                 />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
+              <div id="legal-description-div" className={classes.tabDetailSection} ref={tab === 3 ? selectedTabRef : null}>
                 <LegalDescription
                   agreementDetails={agreementDetails}
                   uniObj={uniObj}
@@ -491,11 +508,11 @@ export default function DetailComponents(props) {
                 />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
+              <div id="related-wells-div" className={classes.tabDetailSection} ref={tab === 4 ? selectedTabRef : null}>
                 <RelatedWells uniObj={uniObj} shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails} />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
+              <div id="related-docs-div" className={classes.tabDetailSection} ref={tab === 5 ? selectedTabRef : null}>
                 <Documents uniObj={uniObj} />
               </div>
             </div>
