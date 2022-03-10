@@ -118,7 +118,6 @@ export default function Drawer(props) {
           horizontal: "right",
         }}
         color="primary"
-        badgeContent={dealSettingsNumber}
       >
         <PanoramaIcon {...props} />
       </Badge>
