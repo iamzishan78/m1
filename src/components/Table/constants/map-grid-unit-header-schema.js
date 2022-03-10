@@ -79,24 +79,24 @@ const unitsColumnHeaders = [
           filter: true 
       }
     },
-    {
-      name: "Block",
-      label: "Block",
-      esKey: "shapeJson.properties.originalProperties.Block.keyword",
-      options: {
-        sort: true,
-        filter: true,
-      },
-    },
-    {
-      name: "Section",
-      label: "Section",
-      esKey: "shapeJson.properties.originalProperties.Section.keyword",
-      options: {
-        sort: true,
-        filter: true,
-      },
-    },
+    // {
+    //   name: "Block",
+    //   label: "Block",
+    //   esKey: "shapeJson.properties.originalProperties.Block.keyword",
+    //   options: {
+    //     sort: true,
+    //     filter: true,
+    //   },
+    // },
+    // {
+    //   name: "Section",
+    //   label: "Section",
+    //   esKey: "shapeJson.properties.originalProperties.Section.keyword",
+    //   options: {
+    //     sort: true,
+    //     filter: true,
+    //   },
+    // },
     {
       name: "shapeArea",
       label: "Gross Acres",
