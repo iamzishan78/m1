@@ -9,6 +9,7 @@ import HomeIcon from "@material-ui/icons/HomeOutlined";
 import IdentityIcon from "@material-ui/icons/PermIdentity";
 import FlowIcon from "@material-ui/icons/Repeat";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import PanoramaIcon from "@material-ui/icons/Panorama";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
 import { AppContext } from "../../../AppContext";
@@ -108,6 +109,18 @@ export default function Drawer(props) {
         badgeContent={dealSettingsNumber}
       >
         <CheckBoxIcon {...props} />
+      </Badge>
+    ),
+    "Map": (props) => (
+      <Badge
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        color="primary"
+        badgeContent={dealSettingsNumber}
+      >
+        <PanoramaIcon {...props} />
       </Badge>
     ),
     // reserve this for automations potentially
