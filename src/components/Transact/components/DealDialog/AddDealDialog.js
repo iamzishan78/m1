@@ -652,6 +652,7 @@ function AddDealDialog(props) {
       setReceivedDate(card.receivedDate ? moment.parseZone(card.receivedDate).format("yyyy-MM-DD") : "");
       setBidDate(card.bidDate ? moment.parseZone(card.bidDate).format("yyyy-MM-DD") : "");
       setCloseDate(card.closeDate ? moment.parseZone(card.closeDate).format("yyyy-MM-DD") : "");
+      setMapSettings(card.mapSettings ? card.mapSettings : null);
       setDealPosition(card.position ? card.position : null);
       // setColaborators(card.colaborators ? card.colaborators : []);
       setOriginationDate(card.ts ? card.ts : null);
@@ -691,6 +692,7 @@ function AddDealDialog(props) {
     setReceivedDate("");
     setBidDate("");
     setCloseDate("");
+    setMapSettings(null);
     setColaborators([]);
     setOriginationDate(null);
     setTarget({});
@@ -713,11 +715,11 @@ function AddDealDialog(props) {
     }
   }, [addContactData]);
 
-  useEffect(() => {
-    if (mapSettings) {
-      addUpdateDeal();
-    }
-  }, [mapSettings]);
+  // useEffect(() => {
+  //   if (mapSettings) {
+  //     addUpdateDeal();
+  //   }
+  // }, [mapSettings]);
 
   const deleteDeal = async () => {
     const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
