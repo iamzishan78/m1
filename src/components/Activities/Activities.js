@@ -83,8 +83,6 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime, activ
   const filterByOwnerCondition = e.ownerId === activityFilterByOwner || activityFilterByOwner === "all";
   let filterByTimeCondition;
   const today = new Date();
-  // const tomorrow = moment().add(1, "d");
-  // const nextWeekDay = moment().add(7, "d");
 
   switch (activityFilterByTime) {
     case "all":

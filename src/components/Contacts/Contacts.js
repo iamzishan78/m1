@@ -3,7 +3,8 @@ import { Switch, Route, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { toggleContactActionsPanel, setActiveModuleContact } from "store/actions/contactActions";
+// import { toggleQuickActionsPanel, setActiveModule } from "store/actions/contactActions";
+import { setActiveModule, toggleQuickActionsPanel } from "store/actions/commonActions";
 import { AppContext } from "AppContext";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
@@ -44,19 +45,17 @@ export default function Contacts() {
   const location = useLocation();
   const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
-  const { quickActionsPanelState, activeModule } = useSelector(
-    ({ common }) => common
-  );
+  const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
   useEffect(() => {
     const option = Object.values(contactManagementRoutes).find((item) => item.link === location.pathname);
     if (option) {
-      dispatch(setActiveModuleContact(option));
+      dispatch(setActiveModule(option));
     }
   }, [location.pathname]);
 
   const handlePanelStateChange = (state) => {
-    dispatch(toggleContactActionsPanel(state));
+    dispatch(toggleQuickActionsPanel(state));
   };
 
   const sidePanelOptions = React.useMemo(() => {

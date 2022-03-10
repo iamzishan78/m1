@@ -15,20 +15,20 @@ const useStyles = makeStyles(() => ({
     alignItems: "center",
   },
   heading: {
-    padding : '10px 20px 20px 30px',
-    fontWeight: '600',
-    fontSize: '20px'
-  }
+    padding: "10px 20px 20px 30px",
+    fontWeight: "600",
+    fontSize: "20px",
+  },
 }));
 
 const CampaignDetail = () => {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
-  const campaignName = location.state.campaignName
+  const campaignName = location.state.campaignName;
 
   return (
-    <div style={{}}>
+    <div style={{ marginTop: "90px" }}>
       <div className={classes.header}>
         <div
           style={{

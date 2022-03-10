@@ -36,18 +36,18 @@ import { updateUserGridViewSettingAction } from "store/actions/sessionActions"
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
-    "& .MuiToolbar-regular > div:nth-child(2)":{
+    "& .MuiToolbar-regular > div:nth-child(2)": {
       overflow: "auto",
       display: "flex",
       flexDirection: "row-reverse"
     },
-    "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(1)":{
+    "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(1)": {
       marginRight: '52px'
     },
-    "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(2)":{
+    "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(2)": {
       marginRight: '-104px'
     },
-    "& .MuiToolbar-regular > div:nth-child(1)":{
+    "& .MuiToolbar-regular > div:nth-child(1)": {
       minWidth: "400px"
     }
   },
@@ -86,7 +86,7 @@ function ContactsTable(props) {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState(defaultView);
-  const { activeModule } = useSelector(({ contact }) => contact);
+  const { activeModule } = useSelector(({ common }) => common);
 
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
@@ -128,10 +128,10 @@ function ContactsTable(props) {
 
   const getFilters = () => {
     let newFilters = []
-    if(selectedGridView?.filters){
+    if (selectedGridView?.filters) {
       newFilters = selectedGridView.filters
     }
-    if(props.customAppliedFilters){
+    if (props.customAppliedFilters) {
       newFilters = [...newFilters, ...props.customAppliedFilters]
     }
     return newFilters;
@@ -200,13 +200,13 @@ function ContactsTable(props) {
     tableRef.current.isFetching = false;
     if (!isEmpty(selectedGridView)) {
       const view = copy(selectedGridView);
-      if(view){
+      if (view) {
         view.filters = getFilters();
       }
       const updatedColumns = handleSelectedGridChange(TableHeader, view, columns, true);
       setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
     }
-  }, [selectedGridView,  props.customAppliedFilters]);
+  }, [selectedGridView, props.customAppliedFilters]);
 
   // useEffect(() => {
   //   dispatch(updateUserGridViewSettingAction.STARTED({
@@ -365,15 +365,15 @@ function ContactsTable(props) {
   }
 
   const getSelectedView = () => {
-    const isAllModule = get(activeModule, 'title','').includes('All')
+    const isAllModule = get(activeModule, 'title', '').includes('All')
     const view = copy(isAllModule ? selectedGridView : defaultView);
-    if(view.type === 'Default') {
-      if(get(activeModule, 'title','').includes('All')){
-        view.name = view.name.replace('Contacts', get(activeModule, 'title','').replace('All ', ''))
-      }else{
-        view.name = view.name.replace('Contacts', get(activeModule, 'title',''))
+    if (view.type === 'Default') {
+      if (get(activeModule, 'title', '').includes('All')) {
+        view.name = view.name.replace('Contacts', get(activeModule, 'title', '').replace('All ', ''))
+      } else {
+        view.name = view.name.replace('Contacts', get(activeModule, 'title', ''))
       }
-      
+
     }
     return view;
   }
@@ -385,7 +385,7 @@ function ContactsTable(props) {
     showViewModal,
     setShowSaveAsNew,
     setShowViewModal,
-    selectedGridView : getSelectedView(),
+    selectedGridView: getSelectedView(),
     updateGridView,
     selectedFilters: selectedFilters.current,
   };
