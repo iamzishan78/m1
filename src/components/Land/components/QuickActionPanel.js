@@ -57,7 +57,7 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
             .map(
               (key, index) =>
                 actions[key].featureFlag && (
-                  <FeatureFlag feature={FEATURES[actions[key].featureFlag]}>
+                  <FeatureFlag feature={FEATURES[actions[key].featureFlag]} noCheck={actions[key].noCheck}>
                     <StyledMenuItem
                       onClick={() => handleMenuItemClick(actions[key].link)}
                       key={index}
@@ -73,17 +73,19 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
             )}
         </StyledMenu>
       </Drawer>
-      <div
-        className={clsx({
-          [classes.landRootExpanded]: quickActionsPanelState,
-          [classes.landRootCollapsed]: !quickActionsPanelState,
-        })}
-      >
-        {children}
-      </div>
-      <div className={classes.pulloutBox} onClick={() => handlePanelStateChange(!quickActionsPanelState)}>
-        {quickActionsPanelState ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
-      </div>
+      <FeatureFlag feature={FEATURES[activeModule.featureFlag]} noCheck={activeModule.noCheck}>
+        <div
+          className={clsx({
+            [classes.landRootExpanded]: quickActionsPanelState,
+            [classes.landRootCollapsed]: !quickActionsPanelState,
+          })}
+        >
+          {children}
+        </div>
+        <div className={classes.pulloutBox} onClick={() => handlePanelStateChange(!quickActionsPanelState)}>
+          {quickActionsPanelState ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
+        </div>
+      </FeatureFlag>
     </>
   );
 }
