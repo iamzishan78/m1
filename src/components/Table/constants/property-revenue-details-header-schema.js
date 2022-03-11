@@ -21,6 +21,7 @@ const RevenueStatementHeadCells = [
               fontWeight: 600,
               color: "#17aadd",
               cursor: "pointer",
+              minWidth: "100px",
             }}
             onClick={(e) => {
                 e.stopPropagation();
