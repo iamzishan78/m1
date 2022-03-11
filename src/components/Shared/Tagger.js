@@ -338,7 +338,7 @@ export default function Tags(props) {
   const removeTagFromList = (id) => {
     const tags = JSON.parse(JSON.stringify(tagsArray));
     const index = tags.findIndex(tag => tag._id === id);
-    if( index > -1) {
+    if (index > -1) {
       tags.splice(index, 1);
     }
     setTagsArray(tags);
@@ -348,7 +348,7 @@ export default function Tags(props) {
   }
 
   const DeleteTag = (TagIdOIds) => {
-    if (!props.multipleIds){
+    if (!props.multipleIds) {
       removeTagFromList(TagIdOIds)
       removeTag({
         variables: {
@@ -526,7 +526,7 @@ export default function Tags(props) {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  variant={props.variant ? props.variant :"outlined"}
+                  variant={props.variant ? props.variant : "outlined"}
                   className={classes.input}
                   placeholder={!showPlusAddIcon() ? "" : "+"}
                   fullWidth

@@ -1,19 +1,19 @@
 import React, { useEffect } from "react";
 // context
 
-import { Container, Dialog, } from "@material-ui/core";
+import { Container, Dialog } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 
-// QUERIES 
+// QUERIES
 import { useMutation } from "@apollo/client";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 
-import { deepEqualObjects, copy } from "components/Shared/functions";
+import { deepEqualObjects } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
-// Header Schemas 
-import TableHeader from 'components/Table/constants/unit-owners-tracts-header-schema.js'
+// Header Schemas
+import TableHeader from "components/Table/constants/unit-owners-tracts-header-schema.js";
 
 // Utilities
 import { usetableStyles } from "../Styles";
@@ -25,31 +25,31 @@ function AgreementOwnersTractsTable(props) {
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
       props.setLoading(false);
-      props.setSelectedRows([])
+      props.setSelectedRows([]);
     },
 
-    onError: (err) => { },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+    onError: (err) => {},
+    refetchQueries: ["getESPaginatedList", "getESFilterList"],
+    awaitRefetchQueries: true,
   });
 
   const formatHits = (hits) => {
     return hits.map((hit) => {
-      if (hit?.tract?.tractName)
-        hit.tractName = hit?.tract?.tractName
+      if (hit?.tract?.tractName) hit.tractName = hit?.tract?.tractName;
       return hit;
     });
   };
 
   const formatColumns = (headers, hits) => {
-    const isStateTx = !!hits.find((hit) => hit.state === 'TX')
+    const isStateTx = !!hits.find((hit) => hit.state === "TX");
     if (isStateTx) {
-      headers[4] = { ...headers[4], name: 'survey', label: 'Survey', esKey: 'tract.survey.keyword' }
-      headers[5] = { ...headers[5], name: 'block', label: 'Block', esKey: 'tract.block.keyword' }
-      headers[6] = { ...headers[6], name: 'abstract', label: 'Abstract', esKey: 'tract.abstract.keyword' }
-      headers[7] = { ...headers[7], name: 'section', label: 'Section', esKey: 'tract.section.keyword' }
+      headers[4] = { ...headers[4], name: "survey", label: "Survey", esKey: "tract.survey.keyword" };
+      headers[5] = { ...headers[5], name: "block", label: "Block", esKey: "tract.block.keyword" };
+      headers[6] = { ...headers[6], name: "abstract", label: "Abstract", esKey: "tract.abstract.keyword" };
+      headers[7] = { ...headers[7], name: "section", label: "Section", esKey: "tract.section.keyword" };
     }
-    return headers
-  }
+    return headers;
+  };
 
   const deleteFunc = (ids) => {
     if (ids.length > 0) {
@@ -57,64 +57,59 @@ function AgreementOwnersTractsTable(props) {
       updateShapeOwners({
         variables: {
           shapeOwners: ids.map((_id) => ({ _id, isDeleted: true })),
-        }
+        },
       });
     }
-  }
+  };
 
   useEffect(() => {
-    props.setTableMeta({
-      shapeType: props.shapeType,
-      addableName: "Tract",
-      searchFields: ["contact.entityDetail.name", "_all"],
-      filters: [{ field: "shape._id", value: props.customLayer._id }],
-      TableHeader: copy(TableHeader),
-      esIndex: 'shapeowners_flat',
-      startPaginationAt: 25,
-      formatHits,
-      formatColumns,
-    })
-  }, []);
+    if (props.customLayer?._id)
+      props.setTableMeta({
+        shapeType: props.shapeType,
+        addableName: "Tract",
+        searchFields: ["contact.entityDetail.name", "_all"],
+        filters: [{ field: "shape._id", value: props.customLayer._id }],
+        TableHeader: TableHeader,
+        esIndex: "shapeowners_flat",
+        startPaginationAt: 25,
+        formatHits,
+        formatColumns,
+      });
+  }, [props.customLayer]);
 
-  console.log(props.rows)
+  useEffect(() => {
+    if (props.setTractsNumber) props.setTractsNumber(props.rows.length);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.rows]);
 
   return (
-    <Container
-      maxWidth={false}
-      className={classes.container}
-      id={props.id ? props.id : props.parent}
-    >
-
-      {props.addToTable && <AddAgreementOwnerAndTractDialog
-        open={props.addToTable}
-        width="450px"
-        shapeId={props.customLayer._id}
-        shapeType={props.shapeType}
-        seletedOwner={props.clickedRow}
-        onClose={() =>
-          props.setAddToTable(false)
-        }
-      />}
+    <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
+      {props.addToTable && (
+        <AddAgreementOwnerAndTractDialog
+          open={props.addToTable}
+          width="450px"
+          shapeId={props.customLayer._id}
+          shapeType={props.shapeType}
+          seletedOwner={props.clickedRow}
+          onClose={() => props.setAddToTable(false)}
+        />
+      )}
 
       <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
-        {
-          props.openDialog === "delete" && <DeleteConfirmationDialogContent
+        {props.openDialog === "delete" && (
+          <DeleteConfirmationDialogContent
             header={`Delete Tract(s)`}
             onClose={() => props.setOpenDialog(null)}
             deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={props.selectedRows.map((sR => props.rows[sR.dataIndex]._id))}
+            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
-            {`Do you want to delete the selected tract${props.selectedRows &&
-              props.selectedRows.length > 1 &&
-              props.selectedRows.length > 1
-              ? "s"
-              : ""
-              } from  this ${props.shapeType}?`}
+            {`Do you want to delete the selected tract${
+              props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+            } from  this ${props.shapeType}?`}
           </DeleteConfirmationDialogContent>
-        }
+        )}
       </Dialog>
-
 
       <Table
         style={{ backgroundColor: "#fff" }}

@@ -34,7 +34,6 @@ import LeadStage from "../Shared/LeadStage";
 import Divider from "@material-ui/core/Divider";
 import RightDialog from "./components/RightDialog";
 import Dialog from "@material-ui/core/Dialog";
-import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import ArrowForwardIosRoundedIcon from "@material-ui/icons/ArrowForwardIosRounded";
@@ -322,7 +321,7 @@ export default function ContactDetailCard(props) {
 
   let history = useHistory();
   const pathName = history.location.pathname;
-  const contactId = pathName.split('contact/details/')[1].replace('/', '');
+  const contactId = pathName.split("contact/details/")[1].replace("/", "");
   const shrinkRightColumn = useSelector(({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn);
   const { statements } = useSelector(({ Revenue }) => Revenue);
   const { selectedPipe } = useSelector(({ Flow }) => Flow);
@@ -499,6 +498,23 @@ export default function ContactDetailCard(props) {
   };
   const isPrevUrlFlowline = getFlowlineReturnUrl() && stateApp.activeDeal?._id;
 
+  const agreementBreadcrumbsParams = React.useMemo(() => {
+    const { state } = history.location;
+    const params = [];
+    if (state) {
+      const { showAgreementBreadcrumb, agreementBreadcrumbsParams: breadcrumbParams } = state;
+      if (showAgreementBreadcrumb && breadcrumbParams) {
+        Object.keys(breadcrumbParams).forEach((key) => {
+          params.push({
+            text: key,
+            url: breadcrumbParams[key],
+          });
+        });
+      }
+    }
+    return params;
+  }, [history.location]);
+
   const ExtenstionGetter = (name) => {
     let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
 
@@ -520,7 +536,20 @@ export default function ContactDetailCard(props) {
           }}
         >
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-
+            {agreementBreadcrumbsParams.map((item, index) => (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => history.push(item.url)}
+                key={index}
+              >
+                {item.text}
+              </Link>
+            ))}
             {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
               <Link
                 style={{

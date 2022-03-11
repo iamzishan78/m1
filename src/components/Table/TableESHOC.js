@@ -19,8 +19,6 @@ import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 
 import { get } from "lodash";
 
-import { setColumnsData } from "components/Table/helpers";
-
 import { usetableStyles } from "./Styles";
 
 export const TableESHOC = (Component) => {

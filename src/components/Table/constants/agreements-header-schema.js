@@ -1,5 +1,7 @@
+import { IconButton } from "@material-ui/core";
 import WarningIcon from "@material-ui/icons/Warning";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import MapFilledIcon from "components/Shared/svgIcons/MapFilled"
 import { history } from "store";
 
 const AgreementsHeadCells = [
@@ -21,8 +23,7 @@ const AgreementsHeadCells = [
           <p
             onClick={(e) => {
               e.stopPropagation();
-              history.push(
-                `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
+              history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
                 { showAgreementBreadcrumb: true }
               );
             }}
@@ -211,6 +212,33 @@ const AgreementsHeadCells = [
     label: "Tags",
     esKey: "tags.tag.keyword",
     options: { sort: true, filter: true },
+  },
+  {
+    name: "mapFlyTo",
+    label: " ",
+    options: {
+      sort: true,
+      filter: true,
+      viewColumns: false,
+      customRender: (value, tableMeta) => {
+        return (
+          <IconButton
+            size="small"
+            color="primary"
+            style={{ backgroundColor: "#efefef" }}
+            onClick={(e) => {
+              history.push(
+                `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
+                { showAgreementBreadcrumb: true }
+              );
+              e.stopPropagation();
+            }}
+          >
+            <MapFilledIcon />
+          </IconButton>
+        );
+      },
+    },
   },
   {
     name: "commentsCounter",

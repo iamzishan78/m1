@@ -7,6 +7,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import CloseIcon2 from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import DeleteIcon from "@material-ui/icons/Delete";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import SearchIcon from '@material-ui/icons/Search';
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 import Grid from "@material-ui/core/Grid";
@@ -14,6 +15,7 @@ import { Box, CircularProgress, Dialog, FormControl, FormControlLabel, InputLabe
 import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useForm, Controller } from "react-hook-form";
+import { copy } from "utils/helper";
 
 // contexts 
 import { getParcelOriginalProperties } from "components/ParcelsDetailCard/utils/GetParcelOriginalProps";
@@ -74,6 +76,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const qtrOptions = ["E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
+
 function AddAgreementOwnerAndTractDialog(props) {
   const classes = useStyles();
   const { control, reset, register, getValues, watch, setValue } = useForm();
@@ -85,7 +89,11 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
   const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
 
-  const tract = watch('tract', {})
+  const tract = watch('tract', {});
+
+  useEffect(() => {
+    register('tract.qtrQtrSelection');
+  }, [tract]);
 
   const parcelOwnersRadioBValue = watch('parcelOwnersRadioBValue', 'true')
 
@@ -120,6 +128,14 @@ function AddAgreementOwnerAndTractDialog(props) {
     onError: (err) => { },
     refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
   });
+
+  // const setShapeLayer = (layer) => {
+  //   const _layer = copy(layer);
+  //   if (_layer) {
+  //     _layer.qtr1 = _layer.
+  //   }
+  //   setSelectedShapeLayer(layer);
+  // }
 
   useEffect(() => {
     if (props.seletedOwner) {
@@ -159,7 +175,7 @@ function AddAgreementOwnerAndTractDialog(props) {
         ...getValues(),
         depthTo: getValues().depthTo || "All depths",
         depthFrom: getValues().depthFrom || "All depths",
-        tract: { tractId: selectedShapeLayer._id, tractName: selectedShapeLayer.name, sdGrossAcres, legalDescription, ...originalProperties }
+        tract: { tractId: selectedShapeLayer._id, tractName: selectedShapeLayer.name, sdGrossAcres, legalDescription, ...originalProperties, qtrQtrSelection: selectedShapeLayer.qtrQtrSelection }
       }
       reset({ ...form })
 
@@ -178,12 +194,13 @@ function AddAgreementOwnerAndTractDialog(props) {
   }
 
   const handleSave = () => {
-    const ownerToAdd = getValues()
+    const ownerToAdd = getValues();
     ownerToAdd.isTractOwner = isTractOwner
+    ownerToAdd.tract = tract;
     Object.keys(ownerToAdd).forEach((key) => {
       if (['mineral_interest', 'royalty_interest', 'orri', 'net_acres'].includes(key))
         ownerToAdd[key] = addTrailingZeros(ownerToAdd[key])
-    })
+    });
 
     if (ownerToAdd.parcelOwnersRadioBValue === "true") {
       ownerToAdd.depthFrom = 'All depths';
@@ -200,7 +217,9 @@ function AddAgreementOwnerAndTractDialog(props) {
             ...ownerToAdd,
           }],
           shapeType: props.shapeType,
-        }
+        },
+        refetchQueries: ["getESSimpleSearch"],
+        awaitRefetchQueries: true
       });
     } else {
       addOwnerToAShape({
@@ -210,7 +229,9 @@ function AddAgreementOwnerAndTractDialog(props) {
             shapeId: props.shapeId,
             ...ownerToAdd,
           },
-        }
+        },
+        refetchQueries: ["getESSimpleSearch"],
+        awaitRefetchQueries: true
       });
     }
   }
@@ -279,6 +300,14 @@ function AddAgreementOwnerAndTractDialog(props) {
     const acres = calculateNetAcres()
     if (!value || !acres) return false
     return value && Number(value) !== Number(acres)
+  }
+
+  const handleChangeQtr = (value, index) => {
+    const qtr = JSON.parse(JSON.stringify(tract?.qtrQtrSelection?.selectedQtr));
+    qtr[index] = value ?? "";
+    const newTract = { ...tract, qtrQtrSelection: { ...tract.qtrQtrSelection, selectedQtr: qtr } };
+    reset({ ...getValues(), tract: newTract });
+
   }
 
   const autoCompleteList = dataAutoCompleteList?.autoCompleteList || []
@@ -523,6 +552,54 @@ function AddAgreementOwnerAndTractDialog(props) {
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='depthTo' inputRef={register()} label={"Depth To"}
               InputLabelProps={{ shrink: true }} fullWidth onWheel={(e) => e.target.blur()} />
+          </Grid>
+
+          <Grid container direction="row" spacing={2}>
+            <Grid item xs={3}>
+              <Autocomplete
+                options={qtrOptions}
+                getOptionLabel={(option) => option}
+                value={tract?.qtrQtrSelection?.selectedQtr?.[0] ?? ""}
+
+                onChange={(e, newInputValue) => {
+                  handleChangeQtr(newInputValue, 0);
+                }}
+                renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 1" size="small" className={classes.maxWidth} />}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <Autocomplete
+                options={qtrOptions}
+                getOptionLabel={(option) => option}
+                value={tract?.qtrQtrSelection?.selectedQtr?.[1] ?? ""}
+                onChange={(e, newInputValue) => {
+                  handleChangeQtr(newInputValue, 1);
+                }}
+                renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 2" size="small" className={classes.maxWidth} />}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <Autocomplete
+                options={qtrOptions}
+                getOptionLabel={(option) => option}
+                value={tract?.qtrQtrSelection?.selectedQtr?.[2] ?? ""}
+                onChange={(e, newInputValue) => {
+                  handleChangeQtr(newInputValue, 2);
+                }}
+                renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 3" size="small" className={classes.maxWidth} />}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <Autocomplete
+                options={qtrOptions}
+                getOptionLabel={(option) => option}
+                value={tract?.qtrQtrSelection?.selectedQtr?.[3] ?? ""}
+                onChange={(e, newInputValue) => {
+                  handleChangeQtr(newInputValue, 3);
+                }}
+                renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 4" size="small" className={classes.maxWidth} />}
+              />
+            </Grid>
           </Grid>
 
           <Grid container direction="row" spacing={2} >

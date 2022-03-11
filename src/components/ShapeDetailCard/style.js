@@ -22,8 +22,8 @@ export const detailCardStyles = makeStyles((theme) => ({
   },
   documentHeader: {
     "& svg": {
-      transform: "translate(-4%, 22%)"
-    }
+      transform: "translate(-4%, 22%)",
+    },
   },
   descriptionInput: {
     width: "100%",
@@ -151,12 +151,19 @@ export const summaryStyles = makeStyles((theme) => ({
   },
   descriptionInput: {
     width: "100%",
+    padding: "8px 0px !important",
     "& .MuiTextField-root": {
       backgroundColor: "#fffcdc",
     },
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
     },
+    "& textarea": {
+      maxHeight: "130px",
+    },
+  },
+  commentSection: {
+    padding: "0px !important"
   },
   icon: {
     color: "#757575",

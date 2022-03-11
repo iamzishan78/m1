@@ -165,6 +165,7 @@ const StyledTabs = withStyles({
   },
   indicator: {
     backgroundColor: "#12abe0",
+    height: "5px",
   },
 })(Tabs);
 
