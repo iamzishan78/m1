@@ -57,17 +57,18 @@ function ShapeWellInterestTable(props) {
 
   ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
-    getESPaginatedList({
-      variables: {
-        esIndex,
-        pagination: {
-          first: startPaginationAt,
-          keep_alive: "1micros"
-        },
-        search: `shape._id:${props.customLayer._id}`
-      }
-    });
-  }, [props.parent]);
+    if (props.customLayer?._id)
+      getESPaginatedList({
+        variables: {
+          esIndex,
+          pagination: {
+            first: startPaginationAt,
+            keep_alive: "1micros"
+          },
+          search: `shape._id:${props.customLayer._id}`
+        }
+      });
+  }, [props.customLayer]);
 
   useEffect(() => {
     if (tableData?.hits?.length > 0) {

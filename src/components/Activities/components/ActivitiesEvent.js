@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
       borderRadius: 10,
-  },
+    },
     // "&:hover::-webkit-scrollbar": {
     //     width: "1.0em",
     // },
@@ -58,16 +58,14 @@ const useStyles = makeStyles((theme) => ({
 const ActivitiesEvent = ({ event }) => {
   const classes = useStyles();
 
-  const startTime = `${event.start.getHours()}:${
-    event.start.getMinutes() < 10
+  const startTime = `${event.start.getHours()}:${event.start.getMinutes() < 10
       ? `0${event.start.getMinutes()}`
       : event.start.getMinutes()
-  }`;
-  const endTime = `${event.end.getHours()}:${
-    event.end.getMinutes() < 10
+    }`;
+  const endTime = `${event.end.getHours()}:${event.end.getMinutes() < 10
       ? `0${event.end.getMinutes()}`
       : event.end.getMinutes()
-  }`;
+    }`;
 
   let icon = <DefaultIcon />;
 
@@ -90,6 +88,7 @@ const ActivitiesEvent = ({ event }) => {
     case "mailer":
       icon = <ContactMailIcon />;
       break;
+    default:
   }
 
   return (

@@ -7,7 +7,7 @@ export const SHAPEWELLS = gql`
     $sort: WellSortInput = {}
     $filters: [FilterInput] = []
     $search: String = ""
-    $userId: ID
+    $shapeId: ID
   ) {
     paginatedShapeWells(
       polygon: $polygon
@@ -15,7 +15,7 @@ export const SHAPEWELLS = gql`
       sort: $sort
       filters: $filters
       search: $search
-      userId: $userId
+      shapeId: $shapeId
     ) {
       edges {
         node {

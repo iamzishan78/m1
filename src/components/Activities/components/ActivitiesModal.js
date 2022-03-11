@@ -365,10 +365,10 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
   }, [dealsData]);
 
   const onModalClose = () => {
-    if(history.location.pathname !== '/contacts/activityDashboard'){
-      window.history.pushState("", "", `/activities`);
+    if (history.location.pathname !== "/contacts/activityDashboard") {
+      window.history.pushState("", "", `/calendar/activities`);
     }
-    
+
     clearFields();
     setSelectedActivityId(null);
     setStateApp((stateApp) => ({
@@ -510,7 +510,7 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
       className={classes.dialogExpCard}
       fullWidth
       maxWidth="xl"
-      open={stateApp.activityDialog ? true : false}
+      open={!!stateApp.activityDialog}
       onClose={
         addLoading && updateLoading
           ? () => {}

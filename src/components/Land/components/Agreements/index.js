@@ -40,7 +40,7 @@ function Agreements(props) {
   ];
 
   return (
-    <>
+    <div style={{ marginTop: 56, padding: "75px 56px" }}>
       <AnalyticsCards
         parent={"Agreements"}
         esIndex={esIndex}
@@ -50,7 +50,7 @@ function Agreements(props) {
         setESFilters={setESFilters}
         landSearchQuery={stateApp.landSearchQuery}
       />
-      <div style={{ padding: 30, paddingTop: 0 }}>
+      <div style={{ marginTop: "40px" }}>
         <AgreementsTable
           esIndex={esIndex}
           header="Agreements"
@@ -62,7 +62,7 @@ function Agreements(props) {
           landSearchQuery={stateApp.landSearchQuery}
         />
       </div>
-    </>
+    </div>
   );
 }
 

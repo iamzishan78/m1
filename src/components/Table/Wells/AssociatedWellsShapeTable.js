@@ -77,10 +77,13 @@ function AssociatedWellsShapeTable(props) {
 
     ////////////Contact Wells begin///////////////////////////////////////////////
     useEffect(() => {
+        // if (props.customLayer?.shape) {
+        //     props.customLayer.shape = {};   // this will make it like it doesn't have boundary
+        // }
         getPaginatedShapeWells({
             variables: {
                 polygon: getPolygonString(props.customLayer?.shape),
-                userId: stateApp.user.mongoId,
+                shapeId: props.customLayer?._id
             },
         });
         getShapeWellsCount({
@@ -96,7 +99,6 @@ function AssociatedWellsShapeTable(props) {
             const objectsIdsArray = wells.map((well) => well.id);
             props.initializeGenericData(objectsIdsArray, ['comments', 'tags'])
         }
-
     }, [tableData])
 
     useEffect(() => {
@@ -276,7 +278,7 @@ function AssociatedWellsShapeTable(props) {
         addMultiWellInterestToShape({
             variables: { wells: selectedWells, shapeId: props.customLayer._id, shapeType: props.shapeType, userId: stateApp.user.mongoId, },
             refetchQueries: [
-                "getESPaginatedList", "getESFilterList"
+                "getESPaginatedList", "getESFilterList", "getShapeSummaryDetails"
             ],
             awaitRefetchQueries: true
         }).then(

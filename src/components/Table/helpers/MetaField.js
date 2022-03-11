@@ -123,7 +123,11 @@ const categoryOptions = [
     value: "Check",
   },
   {
-    label: "All (contacts, docs, flow, etc.)",
+    label: "Agreement",
+    value: "Agreement",
+  },
+  {
+    label: "All (contacts, docs, flow, agreement, etc.)",
     value: "All",
   },
 ];
@@ -138,7 +142,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
   );
   const [filter, setFilter] = useState("");
   const [showAddDescription, setShowAddDescription] = useState(false);
-  const { control, reset, setValue, register, getValues, watch } = useForm();
+  const { control, setValue, getValues, watch } = useForm();
   const [stateApp, setStateApp] = useContext(AppContext);
   const type = watch(
     "type",
@@ -168,17 +172,15 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
 
   const [addMetaData, { }] = useMutation(ADD_META_DATA);
   const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
-  const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(
-    GET_ALL_LIBRARY_META_DATA
-  );
+  const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(GET_ALL_LIBRARY_META_DATA);
 
   useEffect(() => {
     getAllLibraryMetaData();
   }, [getAllLibraryMetaData]);
 
   useEffect(() => {
-    if (metaDataRes?.getAllLibraryMetaData?.gridViews) {
-      let data = metaDataRes.getAllLibraryMetaData.gridViews;
+    if (metaDataRes?.getAllLibraryMetaData?.metaData) {
+      let data = metaDataRes.getAllLibraryMetaData.metaData;
       for (let i = 0; i < columns.length; i++) {
         data = data.filter((d) => d.name !== columns[i].name);
       }
@@ -242,7 +244,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
             type: values.type,
             category: values.category,
             user: stateApp.user.mongoId,
-            dropdownOptions: items,
+            dropdownOptions: type !== "text" ? items : [],
             isAddedToLibrary: values.isAddedToLibrary,
             isCustom: true,
           },
@@ -250,11 +252,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
         refetchQueries: ["getMetaData"],
         awaitRefetchQueries: true,
       });
-      if(updateColumnSorting){
-        const columnData = JSON.parse(JSON.stringify(columns));
-        columnData.push({ name, options: { display: true }})
-        updateColumnSorting(columnData.map(col => ({ name: col.name, display: col.options.display ? "true" : "false" })));
-      }
+      rippleEffectCall({ name });
     }
     handleClose();
   };
@@ -267,6 +265,40 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
       selectedMeta: null,
     }));
   };
+
+  const rippleEffectCall = (data) => {
+    if (updateColumnSorting) {
+      const columnData = JSON.parse(JSON.stringify(columns));
+      columnData.push({ name: data.name, options: { display: true } })
+      updateColumnSorting(columnData.map(col => ({ name: col.name, display: col.options.display ? "true" : "false" })));
+    }
+  }
+
+  const onSelectLibraryItem = (data) => {
+    if (data.category !== category) {
+      const meta = omit(data, [
+        "_id",
+        "lastUpdateAt",
+        "createAt",
+        "_ts",
+        "__v",
+      ]);
+      addMetaData({
+        variables: {
+          metaData: {
+            ...meta,
+            category: category,
+            user: stateApp.user.mongoId,
+            isAddedToLibrary: false,
+            isCustom: true,
+          },
+        },
+        refetchQueries: ["getMetaData"],
+        awaitRefetchQueries: true,
+      });
+    }
+    rippleEffectCall(data);
+  }
 
   return (
     <Dialog
@@ -407,14 +439,14 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
                     <Controller
                       control={control}
                       name="category"
-                      defaultValue={categoryOptions[0].value}
-                      render={(props) => (
+                      defaultValue={category ?? categoryOptions[0].value}
+                      render={(params) => (
                         <Select
                           styles={{
                             menu: (provided) => ({ ...provided, zIndex: 9999 }),
                           }}
                           value={categoryOptions.find(
-                            (op) => op.value === props.category
+                            (op) => op.value === params.value
                           )}
                           menuPlacement="auto"
                           options={categoryOptions}
@@ -426,7 +458,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
                   </Grid>
                 </Grid>
               </div>
-              {(type === "dropdown" || type === "multiselect" ) && (
+              {(type === "dropdown" || type === "multiselect") && (
                 <div style={{ padding: "0px 35px" }}>
                   <SortableComponent setItems={setItems} items={items} />
                 </div>
@@ -529,33 +561,12 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
                 </Grid>
               </Grid>
               <div style={{ marginBottom: "10px" }}>
-                {filteredMetaData.map((data) => {
+                {filteredMetaData?.map((data) => {
                   return data.isAddedToLibrary ? (
                     <div
                       className={classes.fields}
                       onClick={() => {
-                        const meta = omit(data, [
-                          "_id",
-                          "lastUpdateAt",
-                          "createAt",
-                          "_ts",
-                          "__v",
-                        ]);
-                        addMetaData({
-                          variables: {
-                            metaData: {
-                              ...meta,
-                              category: category,
-                              user: stateApp.user.mongoId,
-                              isAddedToLibrary: false,
-                              isCustom: true,
-                            },
-                          },
-                          refetchQueries: ["getMetaData"],
-                          awaitRefetchQueries: true,
-                        });
-
-                        handleClose();
+                        onSelectLibraryItem(data);
                       }}
                     >
                       <div style={{ padding: "0px 50px" }}>
@@ -571,7 +582,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
                             <div>{data.label}</div>
                             {data.type === "dropdown" && (
                               <div style={{ width: "100%", color: "#B4B9BF" }}>
-                                {data.dropdownOptions.map((option, index) => {
+                                {data.dropdownOptions?.map((option, index) => {
                                   return (
                                     <span>
                                       {option.value}
@@ -677,7 +688,7 @@ const SortableList = SortableContainer(({ items, setItems }) => {
 
   return (
     <List style={{ margin: 0, padding: 0 }} component="div">
-      {items.map((item, index) => (
+      {items?.map((item, index) => (
         <SortableItem
           key={`item-${item.value}`}
           index={index}
@@ -754,7 +765,7 @@ const SortableItem = SortableElement(
               }}
             >
               <div style={{ width: "220px", padding: "0px 10px" }}>
-                {colorPallete.map((pallet) => {
+                {colorPallete?.map((pallet) => {
                   return (
                     <div
                       style={{ display: "inline-block" }}

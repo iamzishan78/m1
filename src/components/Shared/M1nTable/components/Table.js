@@ -45,7 +45,7 @@ import CellContentEdition from "./SubComponents/CellContentEdition";
 import Avatar from "react-avatar";
 import RoomIcon from "@material-ui/icons/Room";
 import { useDispatch } from "react-redux";
-import { setMapGridCardState, setRevenueKey } from "actions";
+import { setMapGridCardState } from "actions";
 import { deepEqualObjects, setStateIfDeepEqual } from "../../functions";
 import InviteUserDialog from "./SubComponents/InviteUserDialog";
 import ReinviteUserDialog from "./SubComponents/ReinviteUserDialog";
@@ -1691,7 +1691,6 @@ function SubTable(props) {
                 },
               };
             }
-
             break;
           case "commentsCounter":
             {
@@ -2433,30 +2432,6 @@ function SubTable(props) {
               },
             };
             break;
-          case "agreementNumber":
-            column.options = {
-              ...column.options,
-              customBodyRender: (value, tableMeta, updateValue) => {
-                return (
-                  <>
-                    {props.parent === "AgreementsTable" && (
-                      <p
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (tableMeta.rowData[0]) {
-                            history.push(`/agreement/details/${tableMeta.rowData[0]}`);
-                          }
-                        }}
-                        style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-                      >
-                        {value}
-                      </p>
-                    )}
-                  </>
-                );
-              },
-            };
-            break;
           case "tractName":
             column.options = {
               ...column.options,
@@ -2556,12 +2531,12 @@ function SubTable(props) {
               ...column.options,
               customBodyRender: (value) => {
                 return (
-                  <div style={{ width: 250}}>
-                  {value ? (
-                    <StackedBarChart data={value} hideLegends eachBarHeight={5} />
-                  ):(
-                    <p>N/A</p>
-                  )}
+                  <div style={{ width: 250 }}>
+                    {value ? (
+                      <StackedBarChart data={value} hideLegends eachBarHeight={5} />
+                    ) : (
+                      <p>N/A</p>
+                    )}
                   </div>
                 );
               },
@@ -3670,7 +3645,7 @@ function SubTable(props) {
 
       if (props.targetLabel === "activity") {
         if (rows[dataIndex]?._id) {
-          window.history.pushState("", "", `/activities/${rows[dataIndex]._id}`);
+          window.history.pushState("", "", `/calendar/activities/${rows[dataIndex]._id}`);
           setStateApp((stateApp) => ({
             ...stateApp,
             selectedActivityId: rows[dataIndex]._id,
@@ -3737,18 +3712,10 @@ function SubTable(props) {
           handleExpandClick(null, null, null, "inviteUser");
         }
       }
-      // if (props.targetLabel === "agreement") {
-      //   if (rows[dataIndex]?._id) {
-      //     history.push(`/agreement/details/${rows[dataIndex]?._id}`)
-      //   }
-      // }
 
       if (props.targetLabel === "Revenue Properties") {
         // need stopPropagation
         history.push(`/revenue/property/details/${rows[dataIndex]?._id}`);
-        // if (rows[dataIndex]?._id) {
-        //   history.push(`/revenue/property/details?id=${rows[dataIndex]?._id}`);
-        // }
       }
       // if (props.parent === "RevenueStatementTable") {
       //   if (rows[dataIndex]?._id) {
