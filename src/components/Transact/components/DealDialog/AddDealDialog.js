@@ -399,7 +399,8 @@ function AddDealDialog(props) {
   }, [getDeal]);
 
   // For creating a deal
-  useEffect(() => {
+  // useEffect(() => {
+  const finishCreatingDeal = async (dealData) => {
     if (dealData?.addDeal?.deal) {
       const {
         addDeal: { deal },
@@ -449,7 +450,8 @@ function AddDealDialog(props) {
         }));
       }
     }
-  }, [dealData]);
+  }
+  // }, [dealData]);
 
   useEffect(() => {
     if (stateApp.activeDeal && pipelineId) {
@@ -677,9 +679,9 @@ function AddDealDialog(props) {
     }
   }, [stateApp.activeDeal, props.contact, stateApp.dealDialog, stateApp.user]);
 
-  const handleClose = () => {
+  const handleClose = async () => {
     // handleValidate();
-    handleUpdate();
+    await handleUpdate();
     setTitle("");
     setLabel("");
     setDescription("");
@@ -720,6 +722,15 @@ function AddDealDialog(props) {
   //     addUpdateDeal();
   //   }
   // }, [mapSettings]);
+
+  useEffect(() => {
+    if (stateApp?.activeDeal?.mapSettings?.mapDefaultPosition != null &&
+        stateApp?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition) {
+      setStateApp((state) => {
+        return { ...state, mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition }
+      })
+    }
+  }, [mapSettings]);
 
   const deleteDeal = async () => {
     const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
@@ -1006,6 +1017,8 @@ function AddDealDialog(props) {
             "openDeals",
           ],
           awaitRefetchQueries: true,
+        }).then((result) => {
+          finishCreatingDeal(result?.data)
         });
       }
     }
@@ -1174,6 +1187,38 @@ function AddDealDialog(props) {
     });
   }, [files, uploadedFiles]);
 
+  // useEffect(() => {
+  //   if (stateApp?.activeDeal && mapSettings && stateApp?.activeDeal?.mapSettings != mapSettings)
+  //     setStateApp((state) => ({
+  //       ...state,
+  //       activeDeal: {
+  //         ...state.activeDeal,
+  //         mapSettings
+  //       }
+  //     }))
+  // }, [mapSettings])
+
+  // useEffect(() => {
+  //   if (stateApp?.activeDeal && mapSettings && stateApp?.activeDeal?.mapSettings != mapSettings)
+  //     setStateApp((state) => {
+  //       state.activeDeal.mapSettings = mapSettings;
+  //       return state;
+  //     })
+  // }, [mapSettings])
+
+  const saveViewport = useCallback(() => {
+    console.log(stateApp.mapVars)
+    setMapSettings({
+      activeBaseMap : stateApp?.mapVars?.styleId, 
+      mapDefaultPosition : {
+        zoom: stateApp?.mapVars?.zoom, 
+        bearing: stateApp?.mapVars?.bearing, 
+        pitch: stateApp?.mapVars?.pitch, 
+        center: stateApp?.mapVars?.center
+      }
+    })
+  }, [stateApp.mapVars]);
+
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
   const [showExpandableCard, setShowExpandableCard] = useState(false);
@@ -1282,7 +1327,7 @@ function AddDealDialog(props) {
             </div>
           ) : (
             <div className={classes.contentRoot}>
-              <Drawer dealSettingsNumber={getSubtaskNumber()} />
+              <Drawer dealSettingsNumber={getSubtaskNumber()} mapSettings={mapSettings} />
               { !["Deal", "Map"].includes(stateApp.transactBarView) &&
                 (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>
@@ -1614,12 +1659,7 @@ function AddDealDialog(props) {
             </div>
           )}
         </RightDialog>
-        {stateApp.transactBarView === "Map" && (
-          stateApp?.activeDeal?.mapSettings?.mapDefaultPosition &&
-          stateApp.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition &&
-          setStateApp((state) => {
-            return { ...state, mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition }
-          }) || true) &&  (
+        {stateApp.transactBarView === "Map" &&  (
           <Container
             maxWidth={true}
             style={{ position: "relative", "z-index": "9999" }}
@@ -1645,18 +1685,7 @@ function AddDealDialog(props) {
               }}
               className={classes.inputFieldDealName}
             >
-              <Button color="secondary" variant="outlined" onClick={() => {
-                console.log(stateApp.mapVars)
-                setMapSettings({
-                  activeBaseMap : stateApp?.mapVars?.styleId, 
-                  mapDefaultPosition : {
-                    zoom: stateApp?.mapVars?.zoom, 
-                    bearing: stateApp?.mapVars?.bearing, 
-                    pitch: stateApp?.mapVars?.pitch, 
-                    center: stateApp?.mapVars?.center
-                  }
-                })
-              }}>
+              <Button color="secondary" variant="outlined" onClick={saveViewport}>
                 Save Viewport
               </Button>
             </div>
