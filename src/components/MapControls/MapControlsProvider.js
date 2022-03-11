@@ -4,7 +4,7 @@ import { MapControlsContextProvider } from "./MapControlsContext";
 import MapControls from "./MapControls";
 
 function MapControlsProvider(props) {
-  const { changeBaseMap, changeLayers, changeHeatmaps } = props;
+  const { changeBaseMap, changeLayers, changeHeatmaps, ...other } = props;
 
   return (
     <MapControlsContextProvider>
@@ -12,6 +12,7 @@ function MapControlsProvider(props) {
         changeHeatmaps={changeHeatmaps}
         changeLayers={changeLayers}
         changeBaseMap={changeBaseMap}
+        {...other}
       />
     </MapControlsContextProvider>
   );
