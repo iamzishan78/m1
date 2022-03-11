@@ -9,6 +9,8 @@ import HomeIcon from "@material-ui/icons/HomeOutlined";
 import IdentityIcon from "@material-ui/icons/PermIdentity";
 import FlowIcon from "@material-ui/icons/Repeat";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import PanoramaIcon from "@material-ui/icons/Panorama";
+import RoomIcon from "@material-ui/icons/Room";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
 import { AppContext } from "../../../AppContext";
@@ -51,6 +53,9 @@ const useStyles = makeStyles((theme) => ({
       fill: "rgba(146, 158, 170, 1) !important",
     },
   },
+  customMapBadgeIcon: {
+    fill: "lightgreen !important",
+  }
 }));
 
 export default function Drawer(props) {
@@ -108,6 +113,25 @@ export default function Drawer(props) {
         badgeContent={dealSettingsNumber}
       >
         <CheckBoxIcon {...props} />
+      </Badge>
+    ),
+    "Map": (props) => (
+      <Badge
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        color="primary"
+        badgeContent={
+          stateApp?.activeDeal?.mapSettings == null ? null : 1
+          // (
+          //   <RoomIcon
+          //     className={classes.customMapBadgeIcon}
+          //   />
+          // )
+        }
+      >
+        <PanoramaIcon {...props} />
       </Badge>
     ),
     // reserve this for automations potentially

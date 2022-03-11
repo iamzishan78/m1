@@ -12,7 +12,7 @@ import { useMutation } from "@apollo/client";
 
 
 
-export function PopoverProperty({ anchorEl, onClose, property }) {
+export function PopoverProperty({ anchorEl, onClose, property, onFieldChange, data }) {
 
     const openPopover = Boolean(anchorEl);
     const [selectedState, setState] = useState('')
@@ -20,6 +20,8 @@ export function PopoverProperty({ anchorEl, onClose, property }) {
     const [updateProperty] = useMutation(UPDATE_PROPERTY);
 
     const updatePropertyData = (key, value) => {
+        const d = data.find((r) => r?.property?._id === property._id)
+        onFieldChange(d._id, `property.${key}`)(value)
         updateProperty({
             variables: {
                 property: {
