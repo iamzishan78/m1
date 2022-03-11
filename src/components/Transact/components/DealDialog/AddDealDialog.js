@@ -717,11 +717,6 @@ function AddDealDialog(props) {
     }
   }, [addContactData]);
 
-  // useEffect(() => {
-  //   if (mapSettings) {
-  //     addUpdateDeal();
-  //   }
-  // }, [mapSettings]);
 
   useEffect(() => {
     if (stateApp?.activeDeal?.mapSettings?.mapDefaultPosition != null &&
@@ -1186,25 +1181,6 @@ function AddDealDialog(props) {
       variables: { fileIds: ID },
     });
   }, [files, uploadedFiles]);
-
-  // useEffect(() => {
-  //   if (stateApp?.activeDeal && mapSettings && stateApp?.activeDeal?.mapSettings != mapSettings)
-  //     setStateApp((state) => ({
-  //       ...state,
-  //       activeDeal: {
-  //         ...state.activeDeal,
-  //         mapSettings
-  //       }
-  //     }))
-  // }, [mapSettings])
-
-  // useEffect(() => {
-  //   if (stateApp?.activeDeal && mapSettings && stateApp?.activeDeal?.mapSettings != mapSettings)
-  //     setStateApp((state) => {
-  //       state.activeDeal.mapSettings = mapSettings;
-  //       return state;
-  //     })
-  // }, [mapSettings])
 
   const saveViewport = useCallback(() => {
     console.log(stateApp.mapVars)
