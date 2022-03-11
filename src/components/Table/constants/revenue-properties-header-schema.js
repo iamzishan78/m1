@@ -70,13 +70,13 @@ const RevenuePropertiesHeadCells = [
     name: "wellApiNumber",
     label: "Well API",
     esKey: "wells.apiNumber.keyword",
-    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "180px", maxWidth: "180px" } }) },
+    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "55px", maxWidth: "80px" } }) },
   },
   {
     name: "wellName",
     label: "Well Name",
     esKey: "wells.wellName.keyword",
-    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "180px", maxWidth: "180px" } }) },
+    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "180px", maxWidth: "200px" } }) },
   },
   // {
   //   name: "type",

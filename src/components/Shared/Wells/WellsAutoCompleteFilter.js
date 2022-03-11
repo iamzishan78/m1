@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiAutocomplete-inputRoot": {
       color: "#c99229",
-      fontWeight: "bold",
+      fontWeight: "regular",
       cursor: "pointer",
       textAlign: "center",
       minWidth: "150px",
