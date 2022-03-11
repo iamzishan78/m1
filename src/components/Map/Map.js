@@ -414,6 +414,7 @@ function Map({ type, paramId, lati, longi }) {
           keep_alive: "1micros"
         },
         search: `_id:${paramId.toLowerCase()}`,
+        filters: [],
         sort: [],
       },
     });
