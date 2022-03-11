@@ -147,6 +147,7 @@ function CheckDetailsEditableTable(props) {
 
     const onFieldChange = (rowId, field, type) => (async (value) => {
         const cRow = currentRow
+        let newPropertyAdded = false
         let row = rows.find((r) => r._id === rowId);
         if (get(row, field) == value && type !== 'date') return;
 
@@ -183,7 +184,7 @@ function CheckDetailsEditableTable(props) {
                 });
                 newProperty = property.addProperty.property
                 setNewProperty(newProperty)
-                AnchorEl(document.getElementById(`${cRow}-0`));
+                newPropertyAdded = true
             }
             Object.keys(newProperty).forEach((key) => { set(row, `property.${key}`, newProperty[key]) })
         }
@@ -198,8 +199,12 @@ function CheckDetailsEditableTable(props) {
             refetchQueries: [],
             awaitRefetchQueries: true
         }).then((resp) => {
-            if (!row._id && resp?.data?.updateCheckDetail?.updatedCheckDetail?._id)
+            if (!row._id && resp?.data?.updateCheckDetail?.updatedCheckDetail?._id){
                 set(row, `_id`, resp.data.updateCheckDetail.updatedCheckDetail._id)
+                if(newPropertyAdded){
+                    AnchorEl(document.getElementById(`${cRow}-0`));
+                }
+            }
         })
     })
 
@@ -464,7 +469,7 @@ function CheckDetailsEditableTable(props) {
                                 }}
                                 isScrollable
                             />
-                            {newProperty?._id && <PopoverProperty property={newProperty} anchorEl={anchorEl} handleClose={handleClose} onClose={handleClose} />}
+                            {newProperty?._id && <PopoverProperty onFieldChange={onFieldChange} data={rows} property={newProperty} anchorEl={anchorEl} handleClose={handleClose} onClose={handleClose} />}
 
 
                         </TableContainer>
