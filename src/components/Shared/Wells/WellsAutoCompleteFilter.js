@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Grid from "@material-ui/core/Grid";
+import { Popper } from '@material-ui/core';
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import parse from "autosuggest-highlight/parse";
@@ -76,11 +77,11 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
   },
   root: {
-    maxHeight: "40px",
+    // maxHeight: "40px",
     width: "100%",
     display: "flex",
     alignItems: "center",
-    "& .MuiAutocomplete-inputRoot": { maxHeight: "42px" },
+    // "& .MuiAutocomplete-inputRoot": { maxHeight: "42px" },
   },
   autoCompleteInput: {
     width: "355px !important",
@@ -169,6 +170,12 @@ const useStyles = makeStyles((theme) => ({
   closeIcon: {
     cursor: "pointer",
   },
+  popperClass: {
+    "& .MuiAutocomplete-listbox": {
+      maxHeight: '300px',
+      height: '300px',
+    }
+  }
 }));
 
 function Search(props) {
@@ -300,7 +307,10 @@ function Search(props) {
         relatedObject: props.relatedObject,
         relatedObjectType: props.relatedObjectType
       },
-      refetchQueries: ["getWellsDescriptors","getESPaginatedList"],
+      refetchQueries: ["getWellsDescriptors"],
+    }).then((res) => {
+      if(props.setRefetchData)
+        props.setRefetchData(!props.refetchData);
     });
     handleClose();
   };
@@ -335,7 +345,7 @@ function Search(props) {
           className={classes.autoCompleteInput}
           id="cognitive-search-autocomplete"
           getOptionLabel={(option, value) => option.Primary || value}
-          forcePopupIcon
+          // forcePopupIcon
           onBlur={() => {
             setSearchText('')
             setOptions([]);
@@ -363,47 +373,6 @@ function Search(props) {
               (searchOption === "all" ||
                 searchOption === option.group.toLowerCase()) && (
                 <Grid key={option.group}>
-                  <Grid
-                    container
-                    spacing={2}
-                    className={classes.groupsHeaders}
-                    justifyContent="center"
-                  >
-                    <Grid item xs={6}>
-                      <Button
-                        size="small"
-                        className={classes.myWellBtn}
-                        onClick={() => null}
-                        type="primary"
-                      >
-                        My Wells
-                      </Button>
-                    </Grid>
-                    <Grid item xs={6}>
-                      {searchTop === 5 ? (
-                        <Button
-                          size="small"
-                          className={classes.allWellBtn}
-                          onClick={() => {
-                            setSearchTop(200);
-                            setSearchOption("wells");
-                          }}
-                        >
-                          All WELLS
-                        </Button>
-                      ) : (
-                        <Button
-                          size="small"
-                          className={classes.allWellBtn}
-                          onClick={() => {
-                            setSearchTop(5);
-                          }}
-                        >
-                          See Less
-                        </Button>
-                      )}
-                    </Grid>
-                  </Grid>
                   <Grid item xs={12}>
                     {option.children}
                   </Grid>
@@ -411,9 +380,9 @@ function Search(props) {
               )
             );
           }}
-          freeSolo
+          // freeSolo
           // autoComplete
-          includeInputInList
+          // includeInputInList
           // value={searchText}
           // handle change also acts like onClick here
           onChange={(event, newValue) => {
@@ -431,6 +400,9 @@ function Search(props) {
               }
             }
           }}
+          PopperComponent={(props) => {
+            return <Popper {...props} style={{ height: '2px' }} className={classes.popperClass} placement='bottom-start' />
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -444,180 +416,6 @@ function Search(props) {
               placeholder="Search by well name or API"
               InputProps={{
                 ...params.InputProps,
-
-                // endAdornment: (
-                //   <InputAdornment className={classes.endAdornmentIcon}>
-                //     <div>
-                //       {((searchInputValue && searchInputValue !== "") ||
-                //         (stateApp.wellListFromSearch &&
-                //           stateApp.wellListFromSearch.length > 0)) && (
-                //         <Tooltip title="Clear" placement="top">
-                //           <IconButton
-                //             size="small"
-                //             onClick={() => {
-                //               debugger
-                //               setValue("");
-                //             }}
-                //           >
-                //             <ClearIcon htmlColor="#fff" />
-                //           </IconButton>
-                //         </Tooltip>
-                //       )}
-                //       <Tooltip title="Search History" placement="top">
-                //         <IconButton
-                //           size="small"
-                //           onClick={(event) => {
-                //             setAnchorEl(event.currentTarget);
-                //           }}
-                //         >
-                //           <ArrowDropDownIcon htmlColor="#fff" />
-                //         </IconButton>
-                //       </Tooltip>
-
-                //       <Popover
-                //         onBlur={() => {
-                //           setAnchorEl(null);
-                //         }}
-                //         open={Boolean(anchorEl)}
-                //         anchorEl={anchorEl}
-                //         onClose={() => {
-                //           setAnchorEl(null);
-                //         }}
-                //         anchorOrigin={{
-                //           vertical: "bottom",
-                //           horizontal: "right",
-                //         }}
-                //         transformOrigin={{
-                //           vertical: "top",
-                //           horizontal: "right",
-                //         }}
-                //         style={{
-                //           width: document.getElementById("searchBarDivParent")
-                //             ? document.getElementById("searchBarDivParent")
-                //                 .offsetWidth
-                //             : "400px",
-                //         }}
-                //         className={classes.historyPopover}
-                //       >
-                //         {searchHistoryList && searchHistoryList.length > 0 ? (
-                //           searchHistoryList.map((search, i) => {
-                //             let option = search.searchData;
-                //             // eslint-disable-next-line no-array-constructor
-                //             const parts = parse(option.Primary, Array());
-
-                //             /// THIS IS THEI LIST FOR THE SEARCH HISTORY
-                //             return (
-                //               <div>
-                //                 <Box
-                //                   p={1}
-                //                   key={i}
-                //                   className={classes.historyRow}
-                //                   onClick={() => {
-                //                     setSearchTop(5);
-                //                     setSearchOption(
-                //                       option.Source === ownerCogIndexName
-                //                         ? "owners"
-                //                         : "all"
-                //                     );
-
-                //                     dispatch(
-                //                       setMapGridCardState({
-                //                         mapGridCardActiveTap: 0,
-                //                         searchInputValue: option.Primary
-                //                           ? option.Primary
-                //                           : option.Secondary,
-                //                       })
-                //                     );
-                //                     handleChange({
-                //                       ...option,
-                //                       searchId: search._id,
-                //                     });
-                //                   }}
-                //                 >
-                //                   <Grid container spacing={0}>
-                //                     <Grid
-                //                       container
-                //                       item
-                //                       xs={9}
-                //                       alignItems="center"
-                //                     >
-                //                       <Grid item>
-                //                         {option.Source === wellCogIndexName && (
-                //                           <WellIcon
-                //                             className={classes.icon}
-                //                             color={"#757575"}
-                //                             opacity="1.0"
-                //                             small
-                //                           />
-                //                         )}
-
-                //                         {option.Source === "mapboxSearch" && (
-                //                           <LocationOnIcon
-                //                             className={classes.icon}
-                //                           />
-                //                         )}
-                //                       </Grid>
-                //                       <Grid item xs>
-                //                         {parts.map((part, index) => (
-                //                           <span
-                //                             key={index}
-                //                             style={{
-                //                               fontWeight: part.highlight
-                //                                 ? 700
-                //                                 : 400,
-                //                             }}
-                //                           >
-                //                             {part.text}
-                //                           </span>
-                //                         ))}
-
-                //                         {option && option.Secondary && (
-                //                           <Typography
-                //                             variant="body2"
-                //                             color="textSecondary"
-                //                           >
-                //                             {option.Secondary}
-                //                           </Typography>
-                //                         )}
-                //                       </Grid>
-                //                     </Grid>
-                //                     <Grid
-                //                       container
-                //                       item
-                //                       xs={3}
-                //                       alignItems="center"
-                //                     >
-                //                       <Grid item>
-                //                         <Typography
-                //                           variant="body2"
-                //                           style={{
-                //                             color: "rgb(80, 187, 223)",
-                //                           }}
-                //                         >
-                //                           {new Intl.DateTimeFormat("en-US", {
-                //                             year: "2-digit",
-                //                             month: "2-digit",
-                //                             day: "2-digit",
-                //                             hour: "2-digit",
-                //                             minute: "2-digit",
-                //                           }).format(search.ts)}
-                //                         </Typography>
-                //                       </Grid>
-                //                     </Grid>
-                //                   </Grid>
-                //                 </Box>
-                //               </div>
-                //             );
-                //           })
-                //         ) : (
-                //           <Box p={1}>
-                //             <Typography>There is no history yet.</Typography>
-                //           </Box>
-                //         )}
-                //       </Popover>
-                //     </div>
-                //   </InputAdornment>
-                // ),
               }}
             />
           )}

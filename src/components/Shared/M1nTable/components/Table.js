@@ -2508,11 +2508,12 @@ function SubTable(props) {
                         <div>{value}</div>
                       ):(
                         <SearchWells
-                          contactId={"props.contactData._id"}
+                          setRefetchData={props.setRefetchData}
+                          // contactId={"props.contactData._id"}
                           relatedObject={row._id}
                           relatedObjectType="Property"
-                          rowData={tableMeta.rowData}
-                          rowIndex={tableMeta.rowIndex}
+                          // rowData={tableMeta.rowData}
+                          // rowIndex={tableMeta.rowIndex}
                         />
                     )}
                   </>
