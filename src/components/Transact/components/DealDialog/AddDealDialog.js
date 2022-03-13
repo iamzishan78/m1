@@ -15,7 +15,7 @@ import { ADDCONTACT } from "graphQL/useMutationAddContact";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Dialog, Avatar, CircularProgress } from "@material-ui/core";
+import { Dialog, Avatar, CircularProgress, Container, Button } from "@material-ui/core";
 import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import DealDialogHeader from "components/Transact/components/DealDialog/DealDialogHeader";
 import Drawer from "components/Transact/components/Drawer";
@@ -50,6 +50,8 @@ import Contacts from "components/FlowDrawer/Contacts";
 import "./dialog.css";
 
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
+
+import MapProvider from "components/Map/MapProvider";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -326,6 +328,8 @@ function AddDealDialog(props) {
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   let [transactData, setTransactData] = useState(props.transactData ? { ...props.transactData } : null);
 
+  const [mapSettings, setMapSettings] = useState(null);
+  
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
   const [getDeal, { data: getDealResult }] = useLazyQuery(GETDEAL, {
@@ -395,7 +399,8 @@ function AddDealDialog(props) {
   }, [getDeal]);
 
   // For creating a deal
-  useEffect(() => {
+  // useEffect(() => {
+  const finishCreatingDeal = async (dealData) => {
     if (dealData?.addDeal?.deal) {
       const {
         addDeal: { deal },
@@ -445,7 +450,8 @@ function AddDealDialog(props) {
         }));
       }
     }
-  }, [dealData]);
+  }
+  // }, [dealData]);
 
   useEffect(() => {
     if (stateApp.activeDeal && pipelineId) {
@@ -648,6 +654,7 @@ function AddDealDialog(props) {
       setReceivedDate(card.receivedDate ? moment.parseZone(card.receivedDate).format("yyyy-MM-DD") : "");
       setBidDate(card.bidDate ? moment.parseZone(card.bidDate).format("yyyy-MM-DD") : "");
       setCloseDate(card.closeDate ? moment.parseZone(card.closeDate).format("yyyy-MM-DD") : "");
+      setMapSettings(card.mapSettings ? card.mapSettings : null);
       setDealPosition(card.position ? card.position : null);
       // setColaborators(card.colaborators ? card.colaborators : []);
       setOriginationDate(card.ts ? card.ts : null);
@@ -672,9 +679,9 @@ function AddDealDialog(props) {
     }
   }, [stateApp.activeDeal, props.contact, stateApp.dealDialog, stateApp.user]);
 
-  const handleClose = () => {
+  const handleClose = async () => {
     // handleValidate();
-    handleUpdate();
+    await handleUpdate();
     setTitle("");
     setLabel("");
     setDescription("");
@@ -687,6 +694,7 @@ function AddDealDialog(props) {
     setReceivedDate("");
     setBidDate("");
     setCloseDate("");
+    setMapSettings(null);
     setColaborators([]);
     setOriginationDate(null);
     setTarget({});
@@ -708,6 +716,16 @@ function AddDealDialog(props) {
       addUpdateDeal(addContactData);
     }
   }, [addContactData]);
+
+
+  useEffect(() => {
+    if (stateApp?.activeDeal?.mapSettings?.mapDefaultPosition != null &&
+        stateApp?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition) {
+      setStateApp((state) => {
+        return { ...state, mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition }
+      })
+    }
+  }, [mapSettings]);
 
   const deleteDeal = async () => {
     const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
@@ -759,6 +777,7 @@ function AddDealDialog(props) {
         receivedDate: selectedReceivedDate && selectedReceivedDate !== "" ? new Date(`${selectedReceivedDate}T08:00`).toUTCString() : null,
         bidDate: selectedBidDate && selectedBidDate !== "" ? new Date(`${selectedBidDate}T08:00`).toUTCString() : null,
         closeDate: selectedCloseDate && selectedCloseDate !== "" ? new Date(`${selectedCloseDate}T08:00`).toUTCString() : null,
+        mapSettings: mapSettings
       };
 
       if (cardId) {
@@ -993,6 +1012,8 @@ function AddDealDialog(props) {
             "openDeals",
           ],
           awaitRefetchQueries: true,
+        }).then((result) => {
+          finishCreatingDeal(result?.data)
         });
       }
     }
@@ -1161,6 +1182,19 @@ function AddDealDialog(props) {
     });
   }, [files, uploadedFiles]);
 
+  const saveViewport = useCallback(() => {
+    console.log(stateApp.mapVars)
+    setMapSettings({
+      activeBaseMap : stateApp?.mapVars?.styleId, 
+      mapDefaultPosition : {
+        zoom: stateApp?.mapVars?.zoom, 
+        bearing: stateApp?.mapVars?.bearing, 
+        pitch: stateApp?.mapVars?.pitch, 
+        center: stateApp?.mapVars?.center
+      }
+    })
+  }, [stateApp.mapVars]);
+
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
   const [showExpandableCard, setShowExpandableCard] = useState(false);
@@ -1197,6 +1231,14 @@ function AddDealDialog(props) {
   }, [dealSettings]);
 
   const handleClickDialogClose = () => {
+    if(stateApp.transactBarView === "Map") {
+      setStateApp((state) => ({
+        ...state,
+        transactBarView: "Deal",
+      }));
+      return;
+    }
+
     if (!updateDealLoading && !addContactLoading) {
       if (history.location.pathname.includes("lane")) {
         history.push(`${history.location.pathname.split("/lane")[0]}`);
@@ -1261,8 +1303,8 @@ function AddDealDialog(props) {
             </div>
           ) : (
             <div className={classes.contentRoot}>
-              <Drawer dealSettingsNumber={getSubtaskNumber()} />
-              {stateApp.transactBarView !== "Deal" &&
+              <Drawer dealSettingsNumber={getSubtaskNumber()} mapSettings={mapSettings} />
+              { !["Deal", "Map"].includes(stateApp.transactBarView) &&
                 (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>
               ) : (
@@ -1587,12 +1629,44 @@ function AddDealDialog(props) {
               )}
             </div>
           )}
-          {stateApp.transactBarView === "Deal" && (
+          {["Deal", "Map"].includes(stateApp.transactBarView) && (
             <div style={{ marginTop: 2 }}>
               <DealComments setNewCommentId={setNewCommentId} targetLabel='deal' targetSourceId={stateApp.activeDeal?.cardId} />
             </div>
           )}
         </RightDialog>
+        {stateApp.transactBarView === "Map" &&  (
+          <Container
+            maxWidth={true}
+            style={{ position: "relative", "z-index": "9999" }}
+          >
+              <MapProvider match={{ params: { 
+                expandedPanel: false, 
+                openSpeedDial: false, 
+                viewPortCallback: (mapSettings) => { 
+                  console.log("here")
+                  setMapSettings(mapSettings)
+                },
+                width: "calc(100% - 650px)"
+              }}} >
+              </MapProvider>
+            <div 
+              style={{ 
+                position: "relative", 
+                float: "right",
+                "margin-right": "650px",
+                width: "fit-content",
+                "background-color": "#fff",
+                padding: "10px"
+              }}
+              className={classes.inputFieldDealName}
+            >
+              <Button color="secondary" variant="outlined" onClick={saveViewport}>
+                Save Viewport
+              </Button>
+            </div>
+          </Container>
+          )}
       </div>
     </>
   );

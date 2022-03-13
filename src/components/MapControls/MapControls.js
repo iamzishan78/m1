@@ -108,6 +108,12 @@ export default function MapControls(props) {
   const classes = useStyles();
 
   useEffect(() => {
+    if (stateMapControls.expandedPanel !== props.expandedPanel || stateMapControls.openSpeedDial !== props.openSpeedDial) {
+      setStateMapControls((state) => ({ ...state, expandedPanel: props.expandedPanel, openSpeedDial: props.openSpeedDial }));
+    }
+  }, []);
+
+  useEffect(() => {
     if (stateApp.selectedUserDefinedLayer) {
       setStateMapControls((state) => ({ ...state, selectedMapControl: "draw", selectedControl: "layer" }));
     }
@@ -334,18 +340,20 @@ export default function MapControls(props) {
 
   return (
     <div>
-      <SpeedDial
-        id="speed"
-        ariaLabel="SpeedDial"
-        className={classes.speedDial}
-        icon={<MenuIcon fontSize="small" onClick={toggleSpeedDial} className={classes.menuIcon} />}
-        onOpen={handleOpen}
-        open={stateMapControls.openSpeedDial}
-        direction="down"
-        FabProps={{ size: "medium" }}
-      >
-        {createSpeedDialActions()}
-      </SpeedDial>
+      { props.openSpeedDial !== false && (
+        <SpeedDial
+          id="speed"
+          ariaLabel="SpeedDial"
+          className={classes.speedDial}
+          icon={<MenuIcon fontSize="small" onClick={toggleSpeedDial} className={classes.menuIcon} />}
+          onOpen={handleOpen}
+          open={stateMapControls.openSpeedDial}
+          direction="down"
+          FabProps={{ size: "medium" }}
+        >
+          {createSpeedDialActions()}
+        </SpeedDial>
+      )}
       <SidePanel />
 
       {stateMapControls.selectedMapControl === "draw" ? <DrawShapes /> : null}

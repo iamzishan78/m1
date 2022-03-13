@@ -26,6 +26,11 @@ export default function CommentsWithIcon(props) {
         backgroundColor:
           props.targetLabel === "deal" ? "#dadbde88 !important" : "#031d40",
       },
+      "& .MuiIconButton-label": {
+        "& .MuiSvgIcon-root": {
+          fill: ({ commentsCounter }) => (commentsCounter && commentsCounter > 0) ? "rgba(1, 17, 51, 1) !important" : "darkgrey !important"
+        }
+      }
     },
     iconSelected: {
       color: theme.palette.secondary.main,
@@ -42,7 +47,7 @@ export default function CommentsWithIcon(props) {
       },
     },
   }));
-  const classes = useStyles();
+  const classes = useStyles({ commentsCounter });
 
   const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(
     COMMENTSCOUNTER
@@ -80,17 +85,13 @@ export default function CommentsWithIcon(props) {
         placement="top"
       >
         <Badge
-          badgeContent={props.iconZiseSmall ? null : commentsCounter}
+          badgeContent={commentsCounter}
           color="secondary"
-        // variant={props.iconZiseSmall ? "dot" : "standard"}s
         >
           <IconButton
             size={props.iconZiseSmall ? "small" : "medium"}
             color="primary"
-            className={`${classes.icons}  ${openDialog || (commentsCounter && commentsCounter > 0)
-                ? classes.iconSelected
-                : ""
-              }`}
+            className={`${classes.icons} ${openDialog ? classes.iconSelected : ""}`}
             onClick={() => {
               setOpenDialog(true);
             }}

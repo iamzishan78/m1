@@ -1,7 +1,5 @@
-import React, { useContext } from "react";
-import { Views, Navigate } from "react-big-calendar";
-import moment from "moment";
-import clsx from "clsx";
+import React, { useContext, useState } from "react";
+import { Views } from "react-big-calendar";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
@@ -10,15 +8,12 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
-import CallIcon from "@material-ui/icons/Call";
-import MeetingIcon from "@material-ui/icons/Group";
-import TaskIcon from "@material-ui/icons/WatchLater";
-import DeadlineIcon from "@material-ui/icons/Flag";
-import EmailIcon from "@material-ui/icons/Email";
-import DefaultIcon from "@material-ui/icons/Event";
-import ContactMailIcon from "@material-ui/icons/ContactMail";
-import TextMessageIcon from '@material-ui/icons/QuestionAnswerOutlined';
-import { AppContext } from "../../../AppContext";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { AppContext } from "AppContext";
+
+import { useLazyQuery } from "@apollo/client";
+import { GET_ACTIVITY_TYPES } from "graphQL/useQueryActivityTypes";
 
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
@@ -36,6 +31,7 @@ const useToolbarStyles = makeStyles((theme) => ({
     borderRadius: 3,
     display: "flex",
     alignItems: "center",
+    marginRight: "10px",
   },
   filterDisplay: {
     color: "#d9d9d9",
@@ -86,17 +82,43 @@ const useToolbarStyles = makeStyles((theme) => ({
   },
 }));
 
+const activitiesTypesOptions = [
+  { label: "All", value: "all" },
+  { label: "Call", value: "call" },
+  { label: "Meeting", value: "meeting" },
+  { label: "Task", value: "task" },
+  { label: "Deadline", value: "deadline" },
+  { label: "Email", value: "email" },
+  { label: "Text Message", value: "text_message" },
+  { label: "Mailer", value: "mailer" },
+];
+
 const ActivitiesToolbar = ({
   activityFilterByType,
   setActivityFilterByType,
   activityFilterByTime,
   setActivityFilterByTime,
+  activityFilterByOwner,
+  setActivityFilterByOwner,
   view,
   setView,
+  mongoUsers,
+  type,
   ...toolbar
 }) => {
   const classes = useToolbarStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
+  const [selectedObligationType, setObligationType] = useState({ label: "All", value: "all" });
+
+  const [getActivityTypes, { data: obligationTypes }] = useLazyQuery(GET_ACTIVITY_TYPES);
+
+  React.useEffect(() => {
+    if (type === "Obligation") {
+      getActivityTypes({
+        variables: { category: "Obligaiton" },
+      });
+    }
+  }, [type, getActivityTypes]);
 
   const goToBack = () => {
     toolbar.onNavigate("PREV");
@@ -104,23 +126,23 @@ const ActivitiesToolbar = ({
   const goToNext = () => {
     toolbar.onNavigate("NEXT");
   };
-  const goToCurrent = () => {
-    toolbar.onNavigate("TODAY");
-  };
-  const goToNextWeek = () => {
-    var today = new Date();
-    toolbar.onNavigate(
-      "DATE",
-      new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
-    );
-  };
-  const goToTomorrow = () => {
-    var today = new Date();
-    toolbar.onNavigate(
-      "DATE",
-      new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000)
-    );
-  };
+  // const goToCurrent = () => {
+  //   toolbar.onNavigate("TODAY");
+  // };
+  // const goToNextWeek = () => {
+  //   var today = new Date();
+  //   toolbar.onNavigate(
+  //     "DATE",
+  //     new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
+  //   );
+  // };
+  // const goToTomorrow = () => {
+  //   var today = new Date();
+  //   toolbar.onNavigate(
+  //     "DATE",
+  //     new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000)
+  //   );
+  // };
 
   const handleViewChange = (event) => {
     const view = event.target.value;
@@ -128,257 +150,136 @@ const ActivitiesToolbar = ({
     toolbar.onView(view);
   };
 
+  const acitvityOwnerOptions = React.useMemo(() => {
+    let ownerOptions = [{ label: "All", value: "all" }];
+    if (mongoUsers) {
+      mongoUsers
+        .filter((u) => u.name)
+        .forEach((u) => {
+          ownerOptions.push({ ...u, label: u.displayName, value: u._id });
+        });
+    }
+    return ownerOptions;
+  }, [mongoUsers]);
+
+  const obligationOptions = React.useMemo(() => {
+    if (obligationTypes?.activityTypes) {
+      let obligations = obligationTypes?.activityTypes?.map((type) => ({
+        label: type,
+        value: type,
+      }));
+      obligations.unshift({ label: "All", value: "all" });
+      return obligations;
+    } else return [];
+  }, [obligationTypes]);
+
   return (
     <div className={classes.root}>
       <div className={classes.left}>
         <div className={classes.filterByTypeDisplay}>
-          <span
-            style={{
-              color: activityFilterByType === "all" ? "#15a9d7" : "#d9d9d9",
-              padding: "2px 8px",
-              cursor: "pointer",
+          {type === "Activity" && (
+            <Autocomplete
+              id="activityFilterByType"
+              options={activitiesTypesOptions}
+              getOptionLabel={(option) => option.label}
+              style={{ width: 220 }}
+              size="small"
+              defaultValue={activitiesTypesOptions.find((o) => o.value === activityFilterByType)}
+              value={activitiesTypesOptions.find((o) => o.value === activityFilterByType)}
+              onChange={(_, value) => {
+                setActivityFilterByType(value?.value ?? "all");
+              }}
+              renderInput={(params) => <TextField {...params} label="Activity Type" variant="outlined" value={activityFilterByType} />}
+            />
+          )}
+          {type === "Obligation" && (
+            <Autocomplete
+              id="obligationType"
+              options={obligationOptions}
+              getOptionLabel={(option) => option.label}
+              style={{ width: 220 }}
+              size="small"
+              defaultValue={selectedObligationType}
+              value={selectedObligationType}
+              onChange={(_, value) => {
+                setObligationType(value?.value ?? "");
+              }}
+              renderInput={(params) => <TextField {...params} label="Obligation Type" variant="outlined" />}
+            />
+          )}
+        </div>
+        <div className={classes.filterByTypeDisplay}>
+          <Autocomplete
+            id="activityFilterByOwner"
+            options={acitvityOwnerOptions}
+            getOptionLabel={(option) => option.label}
+            style={{ width: 220 }}
+            size="small"
+            defaultValue={acitvityOwnerOptions.find((u) => u.value === activityFilterByOwner)}
+            value={acitvityOwnerOptions.find((u) => u.value === activityFilterByOwner)}
+            onChange={(_, value) => {
+              setActivityFilterByOwner(value?.value ?? "all");
             }}
-            onClick={() => setActivityFilterByType("all")}
-          >
-            All
-          </span>
-          <span
-            className={clsx(
-              classes.filterDisplay,
-              (activityFilterByType === "all" ||
-                activityFilterByType === "call") &&
-                classes.active
-            )}
-            onClick={() => setActivityFilterByType("call")}
-          >
-            <CallIcon /> <span>Call</span>
-          </span>
-          <span
-            className={clsx(
-              classes.filterDisplay,
-
-              (activityFilterByType === "all" ||
-                activityFilterByType === "meeting") &&
-                classes.active
-            )}
-            onClick={() => setActivityFilterByType("meeting")}
-          >
-            <MeetingIcon /> <span>Meeting</span>
-          </span>
-          <span
-            className={clsx(
-              classes.filterDisplay,
-              (activityFilterByType === "all" ||
-                activityFilterByType === "task") &&
-                classes.active
-            )}
-            onClick={() => setActivityFilterByType("task")}
-          >
-            <TaskIcon /> <span>Task</span>
-          </span>
-          <span
-            className={clsx(
-              classes.filterDisplay,
-              (activityFilterByType === "all" ||
-                activityFilterByType === "deadline") &&
-                classes.active
-            )}
-            onClick={() => setActivityFilterByType("deadline")}
-          >
-            <DeadlineIcon /> <span>Deadline</span>
-          </span>
-          <span
-            className={clsx(
-              classes.filterDisplay,
-              (activityFilterByType === "all" ||
-                activityFilterByType === "email") &&
-                classes.active
-            )}
-            onClick={() => setActivityFilterByType("email")}
-          >
-            <EmailIcon /> <span>Email</span>
-          </span>
-          <span
-            className={clsx(
-              classes.filterDisplay,
-              (activityFilterByType === "all" ||
-                activityFilterByType === "text_message") &&
-                classes.active
-            )}
-            onClick={() => setActivityFilterByType("text_message")}
-          >
-            <TextMessageIcon /> <span>Text Message</span>
-          </span>
-          <span
-            className={clsx(
-              classes.filterDisplay,
-              (activityFilterByType === "all" ||
-                activityFilterByType === "mailer") &&
-                classes.active
-            )}
-            onClick={() => setActivityFilterByType("mailer")}
-          >
-            <ContactMailIcon /> <span>Mailer</span>
-          </span>
+            renderInput={(params) => <TextField {...params} label="Activity Owner" variant="outlined" value={activityFilterByOwner} />}
+          />
         </div>
       </div>
       {stateApp.activityDisplayType === "calendar" && (
         <div className={classes.centerNav}>
-          <IconButton
-            size="small"
-            className={classes.marginLeft}
-            onClick={() => goToBack()}
-          >
+          <IconButton size="small" className={classes.marginLeft} onClick={() => goToBack()}>
             <NavigateBeforeIcon />
           </IconButton>
           <p className={classes.marginLeft}>{toolbar.label}</p>
-          <IconButton
-            size="small"
-            className={classes.marginLeft}
-            onClick={() => goToNext()}
-          >
+          <IconButton size="small" className={classes.marginLeft} onClick={() => goToNext()}>
             <NavigateNextIcon />
           </IconButton>
         </div>
       )}
       <div className={classes.right}>
-
-      {stateApp.activityDisplayType === "calendar" ? (
-
-        <Select
-          className={classes.viewSwitcher}
-          variant="outlined"
-          value={view}
-          onChange={handleViewChange}
-        >
-          <MenuItem value={Views.WEEK}>Week</MenuItem>
-          <MenuItem value={Views.MONTH}>Month</MenuItem>
-        </Select>
-        
-      ):null}
+        {stateApp.activityDisplayType === "calendar" ? (
+          <Select className={classes.viewSwitcher} variant="outlined" value={view} onChange={handleViewChange}>
+            <MenuItem value={Views.WEEK}>Week</MenuItem>
+            <MenuItem value={Views.MONTH}>Month</MenuItem>
+          </Select>
+        ) : null}
 
         <div>
           <ButtonGroup>
             <Button
               size="small"
-              className={`${classes.filterToggleBtn} ${
-                activityFilterByTime === "all" && classes.activeBtn
-              }`}
+              className={`${classes.filterToggleBtn} ${activityFilterByTime === "all" && classes.activeBtn}`}
               onClick={() => setActivityFilterByTime("all")}
             >
               All
             </Button>
             <Button
               size="small"
-              className={`${classes.filterToggleBtn} ${
-                activityFilterByTime === "upcoming" && classes.activeBtn
-              }`}
+              className={`${classes.filterToggleBtn} ${activityFilterByTime === "upcoming" && classes.activeBtn}`}
               onClick={() => setActivityFilterByTime("upcoming")}
             >
               Upcoming
             </Button>
             <Button
               size="small"
-              className={`${classes.filterToggleBtn} ${
-                activityFilterByTime === "overdue" && classes.activeBtn
-              }`}
+              className={`${classes.filterToggleBtn} ${activityFilterByTime === "overdue" && classes.activeBtn}`}
               onClick={() => setActivityFilterByTime("overdue")}
             >
               Overdue
             </Button>
             <Button
               size="small"
-              className={`${classes.filterToggleBtn} ${
-                activityFilterByTime === "open" && classes.activeBtn
-              }`}
+              className={`${classes.filterToggleBtn} ${activityFilterByTime === "open" && classes.activeBtn}`}
               onClick={() => setActivityFilterByTime("open")}
             >
               Open
             </Button>
             <Button
               size="small"
-              className={`${classes.filterToggleBtn} ${
-                activityFilterByTime === "closed" && classes.activeBtn
-              }`}
+              className={`${classes.filterToggleBtn} ${activityFilterByTime === "closed" && classes.activeBtn}`}
               onClick={() => setActivityFilterByTime("closed")}
             >
               Closed
             </Button>
-            {/* <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                activityFilterByTime === "todo" && classes.activeBtn
-              }`}
-              onClick={() => setActivityFilterByTime("todo")}
-            >
-              To-do
-            </Button>
-            <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                activityFilterByTime === "overdue" && classes.activeBtn
-              }`}
-              onClick={() => setActivityFilterByTime("overdue")}
-            >
-              Overdue
-            </Button>
-            <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                activityFilterByTime === "today" && classes.activeBtn
-              }`}
-              onClick={() => {
-                setActivityFilterByTime("today");
-                goToCurrent();
-              }}
-            >
-              Today
-            </Button>
-            <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                activityFilterByTime === "tomorrow" && classes.activeBtn
-              }`}
-              onClick={() => {
-                setActivityFilterByTime("tomorrow");
-                goToTomorrow();
-              }}
-            >
-              Tomorrow
-            </Button>
-            <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                activityFilterByTime === "this-week" && classes.activeBtn
-              }`}
-              onClick={() => {
-                setActivityFilterByTime("this-week");
-                goToCurrent();
-              }}
-            >
-              This week
-            </Button>
-            <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                activityFilterByTime === "next-week" && classes.activeBtn
-              }`}
-              onClick={() => {
-                setActivityFilterByTime("next-week");
-                goToNextWeek();
-              }}
-            >
-              Next week
-            </Button> */}
-            {/* <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                activityFilterByTime === "custom" && classes.activeBtn
-              }`}
-              onClick={() => setActivityFilterByTime("custom")}
-            >
-              Custom
-            </Button> */}
           </ButtonGroup>
         </div>
       </div>

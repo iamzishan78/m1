@@ -101,7 +101,7 @@ const ContactSearch = () => {
                 variant="h5"
                 style={{ color: "black", fontWeight: "bold", marginRight: "20px" }}
               >
-                {activeModule.title ? activeModule.title: 'Contacts' }
+                {activeModule.title ? activeModule.title : 'Contacts'}
               </Typography>
             </Grid>
           )}
@@ -125,7 +125,7 @@ const ContactSearch = () => {
               className={classes.contactSearchField}
               margin="dense"
               variant="outlined"
-              placeholder={`Search for ${activeModule.title ? 'lead, contact or prospect': 'contact'}` }
+              placeholder={`Search for ${activeModule.title ? 'lead, contact or prospect' : 'contact'}`}
               InputProps={{
                 startAdornment: (
                   <InputAdornment>
@@ -140,10 +140,9 @@ const ContactSearch = () => {
                       <IconButton
                         size="small"
                         htmlColor="#fff"
-                        className={`${classes.toggleBtn} ${
-                          stateApp.activityDisplayType === "table" &&
+                        className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" &&
                           classes.activeBtn
-                        }`}
+                          }`}
                         onClick={() => {
                           setSearch("");
                           setStateApp((stateApp) => ({

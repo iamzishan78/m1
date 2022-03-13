@@ -13,8 +13,6 @@ import moment from "moment";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
 
-// import { setRevenueKey } from "actions";
-
 const useStyles = makeStyles((theme) => ({
   titleText: {
     marginLeft: 16,
@@ -86,6 +84,9 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
     },
+    "& textarea": {
+      height: "323px",
+    },
   },
   foodText: {
     position: "absolute",
@@ -123,13 +124,13 @@ export default function MetadataDrawer(props) {
 
   // States
   const [ownerId, setOwnerId] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(props.description ?? "");
   const [onFocusDescription, setFocusSate] = useState(false);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
   // Props
-  const { setCollapse, users, targetSourceId } = props;
+  const { setCollapse, users, targetSourceId, targetLabel } = props;
 
   // Queries and Mutations
   const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
@@ -152,7 +153,7 @@ export default function MetadataDrawer(props) {
             getRecentFiles({
               variables: {
                 relatedObjectId: targetSourceId,
-                relatedObjectType: "Check",
+                relatedObjectType: targetLabel,
               },
             });
             clearTimeout(waitBeforeRequestAgain);
@@ -169,11 +170,15 @@ export default function MetadataDrawer(props) {
   });
 
   useEffect(() => {
+    setDescription(props.description);
+  }, [props.description]);
+
+  useEffect(() => {
     if (targetSourceId) {
       getRecentFiles({
         variables: {
           relatedObjectId: targetSourceId,
-          relatedObjectType: "Check",
+          relatedObjectType: targetLabel,
         },
       });
     }
@@ -205,7 +210,6 @@ export default function MetadataDrawer(props) {
             }
           }
         });
-      //   dispatch(setRevenueKey("statements", { ...statements, recentFile }));
     }
   }, [files, uploadedFiles, viewFiles]);
 
@@ -336,6 +340,7 @@ export default function MetadataDrawer(props) {
               }
             }}
             onFocus={() => setFocusSate(true)}
+            onBlur={() => setFocusSate(false)}
             InputProps={{
               endAdornment: onFocusDescription === true && (
                 <p className={classes.foodText}>
@@ -373,26 +378,19 @@ export default function MetadataDrawer(props) {
 
         <div className="flex justifyBetween alignCenter" style={{ padding: "20px 16px", marginBottom: -56 }}>
           <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents</h4>
-          <h4
-            className={classes.viewAll}
-            onClick={() => {
-              console.log("navigate to view all page for documents");
-            }}
-          >
-            View All
-          </h4>
+          <h4 className={classes.viewAll}>View All</h4>
         </div>
 
         <AddDialogeUploadZone
           filesData={viewFileResult}
           id={targetSourceId}
           loading={viewFileLoading}
-          isRevenueDetailPage="Check"
+          targetLabel={targetLabel}
           setUploadedFileData={setUploadedFileData}
         />
 
         <div className={classes.commentsContainer}>
-          <CommentComponent targetLabel={props.targetLabel} targetSourceId={targetSourceId} />
+          <CommentComponent targetLabel={targetLabel} targetSourceId={targetSourceId} />
         </div>
       </div>
     </div>

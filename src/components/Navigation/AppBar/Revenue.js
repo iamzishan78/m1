@@ -16,35 +16,37 @@ import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 export default function RevenueAppBar(props) {
   const { classes } = props;
   let history = useHistory();
-  const { activeModule, actionsPanelState } = useSelector((state) => state.Revenue);
+  const { activeModule, quickActionsPanelState } = useSelector(({ common }) => common);
 
   const [addProperty] = useMutation(ADD_PROPERTY, {
     onCompleted: (data) => {
-      if (data?.addProperty?.property)
-        history.push(`/revenue/property/details/${data.addProperty.property._id}`)
-    }
+      if (data?.addProperty?.property) history.push(`/revenue/property/details/${data.addProperty.property._id}`);
+    },
   });
 
   const [addCheck] = useMutation(ADD_CHECK_DATA, {
     onCompleted: (data) => {
-      if (data?.addCheck?.newCheck)
-        history.push(`/revenue/statement/details/${data.addCheck.newCheck._id}`);
-
-    }
+      if (data?.addCheck?.newCheck) history.push(`/revenue/statement/details/${data.addCheck.newCheck._id}`);
+    },
   });
 
   const RevenueStatementAction = React.useMemo(() => {
-    return [{
-      isShow: false, text: `Add Statement`, action: () => {
-        addCheck({ variables: { check: { source: 'Manual Entry' } } })
-      }
-    },
-    {
-      isShow: true, text: 'Import Statement', action: () => {
-        history.push("/bulkupload");
-      }
-    },
-    ]
+    return [
+      {
+        isShow: false,
+        text: `Add Statement`,
+        action: () => {
+          addCheck({ variables: { check: { source: "Manual Entry" } } });
+        },
+      },
+      {
+        isShow: true,
+        text: "Import Statement",
+        action: () => {
+          history.push("/bulkupload");
+        },
+      },
+    ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeModule]);
 
@@ -55,7 +57,7 @@ export default function RevenueAppBar(props) {
       display="flex"
       justify="space-between"
       alignItems="center"
-      style={{ marginLeft: actionsPanelState ? "433px" : "7px" }}
+      style={{ marginLeft: quickActionsPanelState ? "433px" : "7px" }}
     >
       <Grid item md={8}>
         <Grid container direction="row" display="flex" justify="flex-start" alignItems="center">
@@ -64,43 +66,51 @@ export default function RevenueAppBar(props) {
               {activeModule.title}
             </Typography>
           </Grid>
-          {(
-            activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title ||
-            activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title
-          ) && (
-              <Grid item xs={5} style={{ marginLeft: "20px" }}>
-                <RevenueSearch activeModule={activeModule} />
-              </Grid>
-            )}
-          {
-            activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PORTFOLIO.title && (
-              <Grid item xs={8} style={{ marginLeft: "20px" }}>
-                <ReportGroupHeader type="Properties" esFilters={[]} setESFilters={() => { }} setFilterToggle={() => { }} isBackground={false} fullWidth isShrink />
-              </Grid>
-            )}
+          {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title ||
+            activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title) && (
+            <Grid item xs={5} style={{ marginLeft: "20px" }}>
+              <RevenueSearch activeModule={activeModule} />
+            </Grid>
+          )}
+          {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PORTFOLIO.title && (
+            <Grid item xs={8} style={{ marginLeft: "20px" }}>
+              <ReportGroupHeader
+                type="Properties"
+                esFilters={[]}
+                setESFilters={() => {}}
+                setFilterToggle={() => {}}
+                isBackground={false}
+                fullWidth
+                isShrink
+              />
+            </Grid>
+          )}
         </Grid>
       </Grid>
-      {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title) && (
+      {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title && (
         <Grid item>
           <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-
             <ButtonDropDown variant="contained" color="primary" options={RevenueStatementAction} />
           </div>
         </Grid>
       )}
-      {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title) && (
+      {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title && (
         <Grid item>
           <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-            <Button color="primary" variant="contained" startIcon={<Add />} onClick={() => {
-              addProperty({
-                variables: {
-                  property: {
-                    source: 'Manual Entry',
-                    status: 'Unapproved'
-                  }
-                }
-              })
-            }}
+            <Button
+              color="primary"
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => {
+                addProperty({
+                  variables: {
+                    property: {
+                      source: "Manual Entry",
+                      status: "Unapproved",
+                    },
+                  },
+                });
+              }}
             >
               Add New Property
             </Button>

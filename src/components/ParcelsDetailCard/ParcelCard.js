@@ -10,29 +10,26 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import LayerIcon from "@material-ui/icons/Layers";
-import Button from '@material-ui/core/Button';
-
+import Button from "@material-ui/core/Button";
 
 import WellIcon from "../WellCard/components/svgIcons/WellIcon";
 import OwnershipIcon from "../WellCard/components/svgIcons/OwnershipIcon";
 import DescriptionIcon from "../WellCard/components/svgIcons/DescriptionIcon";
 // import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 
-
 import ParcelsDetailCard from "./ParcelsDetailCard";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 
-// QUERIES 
+// QUERIES
 import { useLazyQuery } from "@apollo/client";
 import { GET_PARCELS_FILES_COUNT } from "graphQL/useQueryGetParcelFiles";
 import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 
-// contexts 
+// contexts
 import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "../ExpandableCard/ExpandableCardContext";
 import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
 import { getPolygonString } from "components/Shared/functions";
-
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -112,26 +109,30 @@ const useStyles = makeStyles((theme) => ({
 export default function ParcelCard(props) {
   const parcelPLSS = useRef(false);
 
-  // contexts 
+  // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
-  const [wellNumber, setWellNumber] = useState()
+  const [wellNumber, setWellNumber] = useState();
 
   const [parcelObj, setParcelObj] = useState();
   const [parcelProperties, setProperties] = useState();
   const classes = useStyles();
 
-  // queries 
-  const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", skip: true });
+  // queries
+  const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, {
+    fetchPolicy: "cache-and-network",
+    skip: true,
+  });
   const [getParcelFilesCount, { data: dataParcelFiles }] = useLazyQuery(GET_PARCELS_FILES_COUNT, { fetchPolicy: "cache-and-network" });
   const documentCount = dataParcelFiles?.getParcelFilesCount || 0;
-  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER,);
+  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
   useEffect(() => {
     if (dataShapeWellsCount) {
-      setWellNumber(dataShapeWellsCount?.shapeWellsCount)
+      setWellNumber(dataShapeWellsCount?.shapeWellsCount);
     }
-  }, [dataShapeWellsCount])
+  }, [dataShapeWellsCount]);
+
   useEffect(() => {
     if (stateApp.selectedParcel) {
       getCustomLayer({
@@ -146,7 +147,7 @@ export default function ParcelCard(props) {
     if (parcelObj) {
       getShapeWellsCount({
         variables: {
-          polygon: getPolygonString(parcelObj.shape)
+          polygon: getPolygonString(parcelObj.shape),
         },
       });
     }
@@ -161,7 +162,6 @@ export default function ParcelCard(props) {
         },
       });
   }, [parcelObj]);
-
 
   useEffect(() => {
     if (dataCustomLayer && dataCustomLayer.customLayer) {
@@ -195,120 +195,53 @@ export default function ParcelCard(props) {
       <div style={{ height: "100%", padding: "9px" }}>
         <Card>
           <CardActions classes={{ root: classes.cardAction }}>
-            <Button
-              className={classes.button}
-              onClick={() => handleOpenDetails(3)}
-            >
+            <Button className={classes.button} onClick={() => handleOpenDetails(3)}>
               <div className={classes.iconContainer}>
-                <WellIcon
-                  htmlColor="black"
-                  viewBox="0 0 36 31"
-                  fontSize="large"
-                />
-                <Typography
-                  align="center"
-                  className={classes.text1}
-                  variant="subtitle2"
-                >
+                <WellIcon htmlColor="black" viewBox="0 0 36 31" fontSize="large" />
+                <Typography align="center" className={classes.text1} variant="subtitle2">
                   Wells
                 </Typography>
-                <Typography
-                  align="center"
-                  className={classes.text2}
-                  variant="caption"
-                >
+                <Typography align="center" className={classes.text2} variant="caption">
                   {wellNumber || "0"}
-
                 </Typography>
               </div>
             </Button>
-            <Button
-              className={classes.button}
-              onClick={() => handleOpenDetails(1)}
-            >
+            <Button className={classes.button} onClick={() => handleOpenDetails(1)}>
               <div className={classes.iconContainer}>
-                <OwnershipIcon
-                  htmlColor="black"
-                  viewBox="0 0 45 31"
-                  fontSize="large"
-                />
-                <Typography
-                  align="center"
-                  className={classes.text1}
-                  variant="subtitle2"
-                >
+                <OwnershipIcon htmlColor="black" viewBox="0 0 45 31" fontSize="large" />
+                <Typography align="center" className={classes.text1} variant="subtitle2">
                   Owners
                 </Typography>
-                <Typography
-                  align="center"
-                  className={classes.text2}
-                  variant="caption"
-                >
+                <Typography align="center" className={classes.text2} variant="caption">
                   {parcelObj?.ownerCount || "0"}
                 </Typography>
               </div>
             </Button>
-            <Button
-              className={classes.button}
-              onClick={() => handleOpenDetails(4)}
-            >
+            <Button className={classes.button} onClick={() => handleOpenDetails(4)}>
               <div className={classes.iconContainer}>
-                <DescriptionIcon
-                  htmlColor="black"
-                  viewBox="5 0 17 26"
-                  fontSize="large"
-                />
-                <Typography
-                  align="center"
-                  className={classes.text1}
-                  variant="subtitle2"
-                >
+                <DescriptionIcon htmlColor="black" viewBox="5 0 17 26" fontSize="large" />
+                <Typography align="center" className={classes.text1} variant="subtitle2">
                   Documents
                 </Typography>
-                <Typography
-                  align="center"
-                  className={classes.text2}
-                  variant="caption"
-                >
+                <Typography align="center" className={classes.text2} variant="caption">
                   {documentCount}
-
                 </Typography>
               </div>
             </Button>
-            <Button
-              className={classes.button}
-              onClick={() => handleOpenDetails(0)}
-            >
+            <Button className={classes.button} onClick={() => handleOpenDetails(0)}>
               <div className={classes.iconContainer}>
-                <LayerIcon
-                  htmlColor="black"
-                  viewBox="5 0 17 26"
-                  fontSize="large"
-                />
-                <Typography
-                  align="center"
-                  className={classes.text1}
-                  variant="subtitle2"
-                >
+                <LayerIcon htmlColor="black" viewBox="5 0 17 26" fontSize="large" />
+                <Typography align="center" className={classes.text1} variant="subtitle2">
                   Acres
                 </Typography>
-                <Typography
-                  align="center"
-                  className={classes.text2}
-                  variant="caption"
-                >
+                <Typography align="center" className={classes.text2} variant="caption">
                   {stateApp.selectedParcel.sdGrossAcres || stateApp.selectedParcel.shapeArea}
                 </Typography>
               </div>
             </Button>
-
           </CardActions>
           <CardContent className={classes.content}>
-            <Table
-              className={classes.table}
-              size="small"
-              aria-label="well table"
-            >
+            <Table className={classes.table} size="small" aria-label="well table">
               <TableBody>
                 <TableRow className={classes.rowGrey}>
                   <TableCell className={classes.cell1} align="left">
@@ -384,5 +317,5 @@ export default function ParcelCard(props) {
     )
   ) : (
     <CircularProgress color="secondary" />
-  )
+  );
 }

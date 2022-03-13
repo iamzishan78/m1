@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const GETALLACTIVITIES = gql`
-  query getAllActivities {
-    activities {
+  query getAllActivities($category: String) {
+    activities(category: $category) {
       _id
       dateTime
       endDateTime
@@ -21,8 +21,8 @@ export const GETALLACTIVITIES = gql`
 `;
 
 export const GETALLACTIVITIESFORSEARCH = gql`
-  query getAllActivitiesForSearch {
-    activities {
+  query getAllActivitiesForSearch($category: String) {
+    activities(category: $category) {
       _id
       name
       type
