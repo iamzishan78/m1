@@ -234,7 +234,7 @@ const useStyles = makeStyles((theme) => ({
       height: "50px",
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
-      paddingLeft: "11px !important",
+      padding: "5px 11px 5px 0px !important",
     },
     "& .MUIDataTableToolbar": {
       zIndex: "999999 !important",
@@ -2481,7 +2481,7 @@ function SubTable(props) {
                 const row = props.rows[tableMeta.rowIndex];
                 return (
                   <>
-                    {row.wellApiNumber && row.wellName ? (
+                    {row.wellApiNumber || row.wellName ? (
                         <div>{value}</div>
                       ):(
                         <SearchWells
@@ -4813,6 +4813,7 @@ function SubTable(props) {
             top: "95px",
             left: "30px",
             zIndex: "150",
+            height: "fit-content"
           }}
         >
           <CircularProgress size={80} disableShrink color="secondary" />
