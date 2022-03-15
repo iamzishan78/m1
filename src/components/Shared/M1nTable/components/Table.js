@@ -3726,10 +3726,10 @@ function SubTable(props) {
         }
       }
 
-      if (props.targetLabel === "Revenue Properties") {
-        // need stopPropagation
-        history.push(`/revenue/property/details/${rows[dataIndex]?._id}`);
-      }
+      // if (props.targetLabel === "Revenue Properties") {
+      //   // need stopPropagation
+      //   history.push(`/revenue/property/details/${rows[dataIndex]?._id}`);
+      // }
       // if (props.parent === "RevenueStatementTable") {
       //   if (rows[dataIndex]?._id) {
       //     history.push(`/revenue/statement/details/${rows[dataIndex]?._id}`);
