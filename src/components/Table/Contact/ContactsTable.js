@@ -66,9 +66,9 @@ const useStyles = makeStyles((theme) => ({
       "&>:nth-child(3)": {
         height: "inherit !important"
       },
-      // "&>:nth-child(4)": {
-      //   bottom: 0
-      // }
+      "&>:nth-child(4)": {
+        bottom: 0
+      }
     }
   },
   details: {
