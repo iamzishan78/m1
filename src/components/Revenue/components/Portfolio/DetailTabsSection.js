@@ -4,7 +4,7 @@ import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, Tabs, Tab } from "@material-ui/core";
 
 // Components
-import RevenueTable from "./RevenueTable";
+import RevenueSection from "./RevenueSection";
 import AdjustmentTable from "./AdjustmentTable";
 import ProductsSection from "./Products";
 
@@ -138,10 +138,7 @@ export default function DetailTabsSection({ monthsInterval }) {
       </div>
       <div style={{ maxHeight: "calc(100vh - 282px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
         <div className={classes.revenueSection} ref={tab === 0 ? selectedTabRef : null}>
-          <Typography variant="h6" className={classes.sectionTitle}>
-            Revenue & Income
-          </Typography>
-          <RevenueTable monthsInterval={monthsInterval} />
+          <RevenueSection monthsInterval={monthsInterval} />
         </div>
         <div className={classes.adjustmentSection} ref={tab === 1 ? selectedTabRef : null}>
           <Typography variant="h6" className={classes.sectionTitle}>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AcccessibleTable({ monthsInterval }) {
+export default function AcccessibleTable({ monthsInterval, items, total }) {
   const classes = useStyles();
 
   return (
@@ -96,46 +96,16 @@ export default function AcccessibleTable({ monthsInterval }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow className={classes.highlightedRows}>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Gross Revenue
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    3,000
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Adjustments
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    900,000,00
-                  </TableCell>
-                </TableRow>
-                <TableRow className={classes.highlightedRows}>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Net Revenue
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    2,000,000
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Lease Payments
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    44,000,000
-                  </TableCell>
-                </TableRow>
-                <TableRow className={classes.highlightedRows}>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Other
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    13,000,000
-                  </TableCell>
-                </TableRow>
+                {items.map((item, index) => (
+                  <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
+                    <TableCell scope="row" className={classes.leftCells}>
+                      {item.name}
+                    </TableCell>
+                    <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
+                      {item.total}
+                    </TableCell>
+                  </TableRow>
+                ))}
                 <TableRow className={classes.highlightedLessBordered}>
                   <TableCell scope="row" className={`${classes.leftCells} ${classes.totalColCell}`}>
                     Total Income
@@ -145,10 +115,9 @@ export default function AcccessibleTable({ monthsInterval }) {
                     className={`${classes.leftRightColoredBorderCell} ${classes.bottomColoredBorderCell} ${classes.totalColCell}`}
                     style={{ width: "160px" }}
                   >
-                    87,000,000
+                    {total}
                   </TableCell>
                 </TableRow>
-                <TableRow></TableRow>
               </TableBody>
             </Table>
           </Grid>
@@ -201,6 +170,6 @@ export default function AcccessibleTable({ monthsInterval }) {
           </Grid>
         </Grid>
       </TableContainer>
-    </div>
+    </div >
   );
 }
