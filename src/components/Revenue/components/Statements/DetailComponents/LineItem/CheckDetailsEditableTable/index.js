@@ -15,6 +15,7 @@ import TableHeader from 'components/Table/constants/check-details-header-schema'
 
 // Utilities
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_COUNT } from "graphQL/useQueryESCount";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { ADD_PROPERTY } from "graphQL/useMutationAddProperty";
 import { usetableStyles } from "components/Table/Styles";
@@ -104,6 +105,7 @@ function CheckDetailsEditableTable(props) {
     const [rows, setRows] = useState(props.rows);
     const [currentRow, setCurrentRow] = useState(null);
     const [newProperty, setNewProperty] = useState(null);
+    const [startPaginationAt, setStartPaginationAt] = useState(0);
     const [search, setSearch] = useState({ open: false, text: '' })
     const [sort, setSort] = useState({ orderBy: 'createdAt', order: 'desc' })
     const client = useApolloClient();
@@ -124,6 +126,7 @@ function CheckDetailsEditableTable(props) {
             props.setLoading(false);
         }
     });
+    const [getESCount, { data: eSCount }] = useLazyQuery(GET_ES_COUNT, {fetchPolicy: "no-cache"});
     const [loadMoreList, { data: loadMoreData, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
     });
 
@@ -137,11 +140,30 @@ function CheckDetailsEditableTable(props) {
 
     }, [loadMoreData])
 
+    useEffect(() => {
+        getESCount({
+            variables: {
+                esIndex,
+                filters: [{
+                    field: "check._id.keyword",
+                    value: props.checkId
+                }],
+                search: search.text ? `${search.text}*` : ''
+            }
+        });
+    }, [props.parent, props.checkId, search.text]);
+
+    useEffect(() => {
+        if(eSCount?.getESCount){
+            setStartPaginationAt(eSCount.getESCount.total)
+        }
+    },[eSCount])
+
     const [updateCheckDetail] = useMutation(UPDATE_CHECK_DETAIL);
 
     const tableData = elasticData?.getESPaginatedList;
 
-    const startPaginationAt = 10;
+    // const startPaginationAt = 10;
     const esIndex = 'checkdetails_flat';
 
 
@@ -299,22 +321,24 @@ function CheckDetailsEditableTable(props) {
 
     // get paginated data hits from checkdetails_flat table
     useEffect(() => {
-        getESPaginatedList({
-            variables: {
-                esIndex,
-                filters: [{
-                    field: "check._id.keyword",
-                    value: props.checkId
-                }],
-                sort: { [sort.orderBy]: { order: sort.order } },
-                pagination: {
-                    first: startPaginationAt,
-                    keep_alive: "1micros"
-                },
-                search: search.text ? `${search.text}*` : ''
-            }
-        });
-    }, [props.parent, props.checkId, search.text, sort]);
+        if(startPaginationAt > 0) {
+            getESPaginatedList({
+                variables: {
+                    esIndex,
+                    filters: [{
+                        field: "check._id.keyword",
+                        value: props.checkId
+                    }],
+                    sort: { [sort.orderBy]: { order: sort.order } },
+                    pagination: {
+                        first: startPaginationAt,
+                        keep_alive: "1micros"
+                    },
+                    search: search.text ? `${search.text}*` : ''
+                }
+            });
+        }
+    }, [props.parent, props.checkId, search.text, sort, startPaginationAt]);
 
 
     useEffect(() => {
