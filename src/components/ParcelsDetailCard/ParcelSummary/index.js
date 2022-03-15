@@ -364,7 +364,7 @@ export default function ParcelSummary(props) {
                             setProperties({ ...parcelProperties, legalDescription: e.target.value });
                         }}
                         onKeyDown={(e) => {
-                            if (e.keyCode === 13)
+                            if (e.keyCode === 13 && !e.shiftKey)
                                 props.updateProperties(e, 'legalDescription', parcelProperties.legalDescription);
                         }}
                         onFocus={() => { setTableDataState({ legalDescription: true }) }}
