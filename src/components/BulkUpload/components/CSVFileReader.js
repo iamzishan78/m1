@@ -205,6 +205,11 @@ export default function CSVFileReader(props) {
           ...(stateNav.bulkUploadShape?.shapeType) && { 'Shape Type': stateNav.bulkUploadShape?.shapeType }
           })
         })
+        stateApp.jobType === "TRACTS" && data.forEach((data) => {
+          Object.assign(data.data, {
+          ...(data.data["PLSS Township"] || data.data["PLSS Range"]) && { "PLSS Township/Range": [data.data["PLSS Township"], data.data["PLSS Range"]].join(" ") }
+          })
+        })
         mapped_headers_from_CSV(data);
         setStateApp((state) => ({
           ...state,
@@ -267,7 +272,7 @@ export default function CSVFileReader(props) {
         <Grid item xs={12}>
           <div className={classes.csvReader}>
             <CSVReader
-              onDrop={handleOnDrop}
+              onDrop={(data) => handleOnDrop(data.filter(el => el.errors.length === 0))}
               onError={handleOnError}
               addRemoveButton
               removeButtonColor="#659cef"
