@@ -2479,7 +2479,7 @@ function SubTable(props) {
                 const row = props.rows[tableMeta.rowIndex];
                 return (
                   <>
-                    {row.wellApiNumber && row.wellName ? (
+                    {row.wellApiNumber || row.wellName ? (
                         <div>{value}</div>
                       ):(
                         <SearchWells
