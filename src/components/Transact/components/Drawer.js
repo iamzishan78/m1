@@ -115,7 +115,7 @@ export default function Drawer(props) {
         <CheckBoxIcon {...props} />
       </Badge>
     ),
-    "Map": (props) => (
+    Map: (props) => (
       <Badge
         anchorOrigin={{
           vertical: "top",
@@ -123,7 +123,7 @@ export default function Drawer(props) {
         }}
         color="primary"
         badgeContent={
-          stateApp?.activeDeal?.mapSettings == null ? null : 1
+          (props?.mapSettings == null && stateApp?.activeDeal?.mapSettings == null) ? null : 1
           // (
           //   <RoomIcon
           //     className={classes.customMapBadgeIcon}
@@ -156,8 +156,9 @@ export default function Drawer(props) {
             onClick={() => setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))}
           >
             {drawerIcons[key]({
+              ...props,
               opacity: "1",
-              height: "30",
+              height: "30"
             })}
           </div>
         </Tooltip>
