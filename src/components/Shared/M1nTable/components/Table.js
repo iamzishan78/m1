@@ -1619,19 +1619,21 @@ function SubTable(props) {
                     // this whole implementation is a mesteban patch
                     // it is all kinds of fucked up
 
-                    <Tooltip title={"Fly To Map"} placement="top" style={{ marginRight: "10px" }}>
+                    <Tooltip title="Fly To Map" placement="top" style={{ marginRight: "10px" }}>
                       <IconButton
                         id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                         size={props.dense ? "small" : "medium"}
                         color="secondary"
                         className={`${classes.icons}`}
+                        disabled={props.targetLabel === "well" && !props.rows[tableMeta.rowIndex]?.globalWell}
                         onClick={(e) => {
                           e.stopPropagation();
                           // for unit wells we need to use globalWell instead of wellId
                           if (props.targetLabel === "well") {
-                            value.wellId = props.rows[tableMeta.rowIndex].globalWell ?? value.wellId;
+                            value.wellId = props.rows[tableMeta.rowIndex].globalWell;
                           }
-                          handleClickFlyToIcon(props.targetLabel, value);
+                          if (props.rows[tableMeta.rowIndex].globalWell)
+                            handleClickFlyToIcon(props.targetLabel, value);
                         }}
                         aria-label="fly"
                       >

@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 export const usetableStyles = makeStyles((theme) => ({
   container: {
-    padding: "0px 30px !important",
+    padding: "0 !important",
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
