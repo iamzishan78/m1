@@ -141,9 +141,6 @@ export default function DetailTabsSection({ monthsInterval }) {
           <RevenueSection monthsInterval={monthsInterval} />
         </div>
         <div className={classes.adjustmentSection} ref={tab === 1 ? selectedTabRef : null}>
-          <Typography variant="h6" className={classes.sectionTitle}>
-            Adjustments
-          </Typography>
           <AdjustmentSection monthsInterval={monthsInterval} />
         </div>
         <div className={classes.productSection} ref={tab === 2 ? selectedTabRef : null}>

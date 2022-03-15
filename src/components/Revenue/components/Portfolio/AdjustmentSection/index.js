@@ -55,7 +55,7 @@ const AdjustmentSection = ({ monthsInterval }) => {
     return (
         <>
             <Typography variant="h6" className={classes.sectionTitle}>
-                Revenue & Income
+                Adjustments
             </Typography>
             <Charts items={items} total={total} id="adjustment-chart" />
             <AdjustmentTable monthsInterval={monthsInterval} items={items} total={total} />
