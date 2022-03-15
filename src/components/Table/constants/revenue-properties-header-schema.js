@@ -70,7 +70,7 @@ const RevenuePropertiesHeadCells = [
     name: "wellApiNumber",
     label: "Well API",
     esKey: "wells.apiNumber.keyword",
-    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "55px", maxWidth: "80px" } }) },
+    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "180px", maxWidth: "200px" } }) },
   },
   {
     name: "wellName",
