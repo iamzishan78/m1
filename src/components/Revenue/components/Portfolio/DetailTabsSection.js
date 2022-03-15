@@ -5,7 +5,7 @@ import { Typography, Tabs, Tab } from "@material-ui/core";
 
 // Components
 import RevenueSection from "./RevenueSection";
-import AdjustmentTable from "./AdjustmentTable";
+import AdjustmentSection from "./AdjustmentSection";
 import ProductsSection from "./Products";
 
 const useStyles = makeStyles((theme) => ({
@@ -144,7 +144,7 @@ export default function DetailTabsSection({ monthsInterval }) {
           <Typography variant="h6" className={classes.sectionTitle}>
             Adjustments
           </Typography>
-          <AdjustmentTable monthsInterval={monthsInterval} />
+          <AdjustmentSection monthsInterval={monthsInterval} />
         </div>
         <div className={classes.productSection} ref={tab === 2 ? selectedTabRef : null}>
           <Typography variant="h6" className={classes.sectionTitle}>

@@ -16,7 +16,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const Charts = ({ items, total }) => {
+const Charts = ({ items, total, id = "pie-chart" }) => {
     const [data, setData] = useState();
     const classes = useStyles();
 
@@ -31,7 +31,7 @@ const Charts = ({ items, total }) => {
 
     useEffect(() => {
         if (data?.length === 0) return;
-        var chart = am4core.create("pie-chart", am4charts.PieChart);
+        var chart = am4core.create(id, am4charts.PieChart);
 
         // setting data
         chart.data = data;
@@ -82,7 +82,7 @@ const Charts = ({ items, total }) => {
         <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3} className={classes.root}>
             <Grid item xs={6}>
                 <div className={classes.graphCard}>
-                    <div id="pie-chart" style={{ height: "100%" }} />
+                    <div id={id} style={{ height: "100%" }} />
                 </div>
             </Grid>
             <Grid item xs={5}>

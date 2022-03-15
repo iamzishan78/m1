@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AdjustmentTable({ monthsInterval }) {
+export default function AdjustmentTable({ monthsInterval, items, total }) {
   const classes = useStyles();
 
   return (
@@ -89,63 +89,16 @@ export default function AdjustmentTable({ monthsInterval }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Severance Tax
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    10,000,000
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Transportation - Oil
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    10,000,000
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Transportation - Gas
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    10,000,000
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Compression
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    10,000,000
-                  </TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Processing
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    10,000,000
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Lease Use
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    10,000,000
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Other
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    10,000,000
-                  </TableCell>
-                </TableRow>
+                {items.map((item, index) => (
+                  <TableRow>
+                    <TableCell scope="row" className={classes.leftCells}>
+                      {item.name}
+                    </TableCell>
+                    <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
+                      {item.total}
+                    </TableCell>
+                  </TableRow>
+                ))}
                 <TableRow className={`${classes.highlightedRows}`}>
                   <TableCell scope="row" className={`${classes.leftCells} ${classes.totalColCell}`}>
                     Total Adjustments
@@ -155,7 +108,7 @@ export default function AdjustmentTable({ monthsInterval }) {
                     className={`${classes.leftRightColoredBorderCell} ${classes.bottomColoredBorderCell} ${classes.totalColCell}`}
                     style={{ width: "160px" }}
                   >
-                    10,000,000
+                    {total}
                   </TableCell>
                 </TableRow>
                 <TableRow></TableRow>
