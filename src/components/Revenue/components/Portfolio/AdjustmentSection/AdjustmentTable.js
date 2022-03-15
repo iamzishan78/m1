@@ -96,7 +96,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
                       {item.name}
                     </TableCell>
                     <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                      {item.value}
+                      {item.total}
                     </TableCell>
                   </TableRow>
                 ))}
