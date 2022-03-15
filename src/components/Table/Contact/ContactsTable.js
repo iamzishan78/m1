@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Container } from "@material-ui/core";
 import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
@@ -9,7 +9,7 @@ import moment from "moment";
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
 import Contact from "components/Shared/svgIcons/contact";
 import Table from "components/Shared/M1nTable/components/Table";
-import TableHOC from "components/Table/TableHOC";
+import TableESHOC from "../TableESHOC";
 
 import Loader from "components/Loaders";
 import GridView from "components/Shared/GridView";
@@ -20,7 +20,6 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { REMOVE_CONTACTS } from "graphQL/useMutationRemoveContact";
-import { GET_ES_CONTACTS } from "graphQL/useQueryESContacts";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 
 import { getContactsAddress } from 'utils/helper';
@@ -31,7 +30,6 @@ import {
   setStateIfDeepEqual,
 } from "components/Shared/functions";
 
-import { updateUserGridViewSettingAction } from "store/actions/sessionActions"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -75,11 +73,10 @@ function ContactsTable(props) {
     type: 'Default'
   }
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const { Contacts } = useSelector(({ session }) => session.userGridViewSettings);
 
   // function states
-  const selectedFilters = useRef([]);
   const tableRef = useRef();
   const [filters, setFilters] = useState([]);
   const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
@@ -104,18 +101,12 @@ function ContactsTable(props) {
   })();
 
   // queries
-  const [getESContacts, { data: ContactsData, loading }] = useLazyQuery(
-    GET_ES_CONTACTS,
-    { fetchPolicy: "no-cache" }
-  );
   const [getCheckPurchaseData, { data: ContactPurchaseData }] = useLazyQuery(
     GET_CHECK_PURCHASE_DATA
   );
   const [updateGridView, { data: updatedGridView }] =
     useMutation(UPDATE_GRID_VIEW);
   const [removeContact] = useMutation(REMOVE_CONTACTS);
-
-  const tableData = ContactsData?.getESContacts;
 
   const addAble = { parent: false, type: "contact" };
   const targetLabel = "contact";
@@ -125,6 +116,8 @@ function ContactsTable(props) {
   const total = false;
   const orderByTracks = false;
   const startPaginationAt = 25;
+
+  const genericDataActions = ['tracks']
 
   const getFilters = () => {
     let newFilters = []
@@ -137,34 +130,55 @@ function ContactsTable(props) {
     return newFilters;
   }
 
+  const formatHits = (hits) => {
+    hits = hits.map((hit) => {
+      hit = getContactsAddress(props.setGenricData(hit, hit._id, ["tracks"]));
+      hit.tags = hit?.tags?.length > 0
+        ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+        : [[], 0];
+      hit.commentsCounter = hit.comments ? hit.comments.length : 0;
+      return hit;
+    });
+    return hits
+  }
+
   useEffect(() => {
-    console.log("here", Contacts);
+    props.setTableMeta({
+      addableName: "Contact",
+      extendSearchQuery: esSearch,
+      searchFields: ["_all"],
+      TableHeader: copy(TableHeader),
+      esIndex: "contacts_flat",
+      // filters: getFilters(),
+      startPaginationAt: 25,
+      defaultSort: { field: 'lastUpdateAt', order: 'desc' },
+      formatHits,
+      initializeGenericData: { key: 'id', actions: genericDataActions }
+    });
+    // eslint-disable-next-line
+  }, [props.contactSearchQuery, props.customAppliedFilters]);
+
+  useEffect(() => {
+    props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView: Contacts || defaultView, filters: getFilters() }));
+    // eslint-disable-next-line
+  }, [selectedGridView]);
+
+  useEffect(() => {
     setSelectedGridView(Contacts || defaultView);
+    // eslint-disable-next-line
   }, [Contacts]);
 
   useEffect(() => {
-    getESContacts({
-      variables: {
-        pagination: {
-          first: startPaginationAt,
-          keep_alive: "1micros",
-        },
-        search: esSearch,
-        filters: getFilters(),
-      },
-    });
-  }, [getESContacts, props.parent, props.contactSearchQuery, selectedGridView, props.customAppliedFilters]);
-
-  useEffect(() => {
-    if (tableData?.hits) {
-      const objectsIdsArray = tableData.hits.map((contact) => contact._id);
+    if (props?.rows?.length > 0) {
+      const objectsIdsArray = props.rows.map((contact) => contact._id);
       getCheckPurchaseData({
         variables: {
           contactIds: objectsIdsArray,
         },
       });
     }
-  }, [tableData]);
+    // eslint-disable-next-line
+  }, [props.rows]);
 
   useEffect(() => {
     if (ContactPurchaseData?.getCheckPurchaseData) {
@@ -176,24 +190,6 @@ function ContactsTable(props) {
       props.setRows(rows);
     }
   }, [ContactPurchaseData]);
-
-  useEffect(() => {
-    if (tableData?.hits) {
-      const hits = tableData.hits.map((hit) => {
-        hit = getContactsAddress(props.setGenricData(hit, hit._id, ["tracks"]));
-        hit.tags = hit?.tags?.length > 0
-          ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
-          : [[], 0];
-        hit.commentsCounter = hit.comments ? hit.comments.length : 0;
-        return hit;
-      });
-      props.setRows(JSON.parse(JSON.stringify(hits)));
-      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
-      props.setLoading(false);
-    } else if (tableData?.length === 0) {
-      props.setLoading(false);
-    }
-  }, [ContactsData, tableData, props.dependencyUpdate]);
 
   useEffect(() => {
     tableRef.current.changePage(0)
@@ -208,113 +204,6 @@ function ContactsTable(props) {
     }
   }, [selectedGridView, props.customAppliedFilters]);
 
-  // useEffect(() => {
-  //   dispatch(updateUserGridViewSettingAction.STARTED({
-  //     userGridViewSetting: {
-  //       gridView: selectedGridView._id,
-  //       gridViewPatch: {
-  //         filters: selectedFilters,
-  //         columns: columns.map((col) => ({ name: col.name, display: col.options.display })),
-  //       },
-  //       user: props.userId
-  //     }
-  //   }))
-  // }, [columns, filters])
-
-  const count = tableData?.total || 0;
-  const options = {
-    rowsPerPageOptions: [10, 25, 50, 100],
-    count: count,
-    serverSide: true,
-    search: false,
-    filter: true,
-    searchText: props.contactSearchQuery,
-  };
-
-
-  const viewColumnsChange = (tableColumns) => {
-    for (let i = 0; i < tableColumns.length; i++) {
-      if (tableColumns[i].display === "true") {
-        columns[i].options.display = true;
-        if (columns[i].esKey && !columns[i].noFilter) {
-          columns[i].options.filter = true;
-        }
-      } else {
-        columns[i].options.display = false;
-      }
-    }
-    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
-  };
-  ////////////-----Add your code section here-----///////////////////////
-  const onTableChange = (action, tableState, rows, meta) => {
-    const tableActions = props.initializeTableActions(
-      tableState,
-      meta,
-      tableData,
-      columns,
-      getESContacts,
-      selectedGridView
-    );
-    selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
-    if (action === 'filterChange') {
-      setFilters(tableState.filterList)
-    }
-    switch (action) {
-      case "search":
-      case "sort":
-      case "filterChange":
-        dispatch(updateUserGridViewSettingAction.STARTED({
-          userGridViewSetting: {
-            gridView: selectedGridView._id,
-            gridViewPatch: {
-              filters: selectedFilters.current,
-              columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
-            },
-            user: props.userId
-          }
-        }))
-        break;
-      case "resetFilters":
-        dispatch(updateUserGridViewSettingAction.STARTED({
-          userGridViewSetting: {
-            gridView: selectedGridView._id,
-            gridViewPatch: {
-              filters: selectedFilters.current,
-              columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
-            },
-            user: props.userId
-          }
-        }))
-        break;
-      case "changeRowsPerPage":
-        tableActions.genericESAction();
-        break;
-      case "changePage":
-        if (tableRef.current.isFetching === false) {
-          tableRef.current.isFetching = true
-          return;
-        }
-        if (tableData) {
-          tableActions.changeESPage();
-        }
-        break;
-      case "viewColumnsChange":
-        dispatch(updateUserGridViewSettingAction.STARTED({
-          userGridViewSetting: {
-            gridView: selectedGridView._id,
-            gridViewPatch: {
-              filters: selectedFilters.current,
-              columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
-            },
-            user: props.userId
-          }
-        }))
-        viewColumnsChange(tableState.columns);
-        break;
-      default:
-    }
-  };
-
   const deleteFunc = (contactsIdsToDelete) => {
     if (contactsIdsToDelete) {
       Loader.createToast("contact-deletion", "Contact Deletion in Progress");
@@ -324,7 +213,7 @@ function ContactsTable(props) {
           userId: props.userId,
         },
         refetchQueries: [
-          "getESContacts",
+          "getESSimpleSearch",
           "getContact",
           "checkIfOwnersAreContacts",
         ],
@@ -379,7 +268,7 @@ function ContactsTable(props) {
   }
 
   const headerProps = {
-    columns,
+    columns: props.columns,
     Icon: Contact,
     label: props.headerLabel,
     showViewModal,
@@ -387,8 +276,13 @@ function ContactsTable(props) {
     setShowViewModal,
     selectedGridView: getSelectedView(),
     updateGridView,
-    selectedFilters: selectedFilters.current,
+    selectedFilters: props.activeFiltersRef.current,
   };
+
+  delete props.options.customToolbar;
+  delete props.options.customToolbarSelect;
+  delete props.options.onRowClick;
+  props.options.search = false
 
   return (
     <>
@@ -400,7 +294,7 @@ function ContactsTable(props) {
         {showViewModal && (
           <GridView
             module="Contacts"
-            columns={columns}
+            columns={props.columns}
             handleDefaultView={handleDefaultView}
             handleClose={() => setShowViewModal(false)}
             setSelectedGridView={setSelectedGridView}
@@ -408,7 +302,7 @@ function ContactsTable(props) {
             setShowViewModal={setShowViewModal}
             setShowSaveAsNew={setShowSaveAsNew}
             showSaveAsNew={showSaveAsNew}
-            selectedFilters={selectedFilters.current}
+            selectedFilters={props.activeFiltersRef.current}
           />
         )}
         <Table
@@ -417,10 +311,10 @@ function ContactsTable(props) {
           header={header}
           headerComponent={HeaderComponent}
           headerProps={headerProps}
-          columns={columns}
-          rows={props.searchedRows}
+          columns={props.columns}
+          rows={props.rows}
           total={total}
-          loading={loading}
+          loading={props.loading}
           addAble={addAble}
           targetLabel={targetLabel}
           uploadIcon={uploadIcon}
@@ -428,15 +322,18 @@ function ContactsTable(props) {
           orderByTracks={orderByTracks}
           startPaginationAt={startPaginationAt}
           contactId={props.contactId}
-          options={options}
+          options={{
+            ...props.options,
+            ...props.customOptions,
+          }}
           parent={props.parent}
           setColumnsBase={[]}
           deleteFunc={deleteFunc}
-          onTableChange={onTableChange}
+          onTableChange={props.onTableChange}
         />
       </Container>
     </>
   );
 }
 
-export default React.memo(TableHOC(ContactsTable), deepEqualObjects);
+export default React.memo(TableESHOC(ContactsTable), deepEqualObjects);
