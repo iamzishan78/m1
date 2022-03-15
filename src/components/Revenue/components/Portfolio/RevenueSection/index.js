@@ -11,6 +11,9 @@ import { copy } from "utils/helper";
 const { useState } = React;
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    padding: "25px 50px 25px 0px",
+  },
   sectionTitle: {
     textTransform: "uppercase",
     fontWeight: theme.typography.fontWeightBold,
@@ -77,7 +80,7 @@ const RevenueSection = ({ monthsInterval }) => {
         <Grid item xs={5}>
           <DonutChart items={items} total={total} />
         </Grid>
-        <Grid item xs={7}>
+        <Grid item xs={5}>
           <StackedChart items={items} total={total} monthsInterval={monthsInterval} />
         </Grid>
       </Grid>

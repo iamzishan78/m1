@@ -15,6 +15,9 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "uppercase",
     fontWeight: theme.typography.fontWeightBold,
   },
+  root: {
+    padding: "25px 50px 25px 0px",
+  },
 }));
 
 const AdjustmentSection = ({ monthsInterval }) => {
@@ -87,7 +90,7 @@ const AdjustmentSection = ({ monthsInterval }) => {
         <Grid item xs={5}>
           <DonutChart items={items} total={total} id="adjustment-chart" />
         </Grid>
-        <Grid item xs={7}>
+        <Grid item xs={5}>
           <StackedChart items={items} total={total} monthsInterval={monthsInterval} id="adjustment-chart-stacked" />
         </Grid>
       </Grid>
