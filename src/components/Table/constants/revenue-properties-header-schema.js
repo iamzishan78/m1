@@ -63,20 +63,20 @@ const RevenuePropertiesHeadCells = [
     name: "source",
     label: "Source",
     esKey: "source.keyword",
-    options: { sort: true, filter: true },
+    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }) },
   },
 
   {
     name: "wellApiNumber",
     label: "Well API",
     esKey: "wells.apiNumber.keyword",
-    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "180px", maxWidth: "200px" } }) },
+    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "110px", maxWidth: "110px" } }) },
   },
   {
     name: "wellName",
     label: "Well Name",
     esKey: "wells.wellName.keyword",
-    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "180px", maxWidth: "200px" } }) },
+    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "230px", maxWidth: "230px" } }) },
   },
   // {
   //   name: "type",
