@@ -7,6 +7,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import { Grid } from "@material-ui/core";
+import vf_number from "components/Shared/valueformatters/vf_number";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
   totalColCell: {
     fontWeight: "bolder",
     fontSize: "16px",
-    fontFamily: "sans-serif"
+    fontFamily: "sans-serif",
   },
 }));
 
@@ -129,15 +130,21 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
               <TableBody>
                 {items.map((item, index) => (
                   <TableRow key={index}>
-                    {monthsInterval.map((month) => (
-                      <TableCell scope="row">{item.value}</TableCell>
-                    ))}
+                    {item.data && Object.values(item.data).map((value) => <TableCell scope="row">{value}</TableCell>)}
                   </TableRow>
                 ))}
                 <TableRow className={classes.highlightedRows}>
-                  {monthsInterval.map((month) => (
-                    <TableCell className={classes.totalColCell} scope="row">10,000,000</TableCell>
-                  ))}
+                  {monthsInterval.map((month) => {
+                    let total = 0;
+                    items.forEach((item) => {
+                      total += Number(item.value.replace(/,/g, ""));
+                    });
+                    return (
+                      <TableCell className={classes.totalColCell} scope="row">
+                        {vf_number(total)}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               </TableBody>
             </Table>
