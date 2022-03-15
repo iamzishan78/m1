@@ -9,8 +9,8 @@ export const usetableStyles = makeStyles((theme) => ({
           maxHeight: "48vh",
           minHeight: "48vh",
           "@media (max-height:1200px)": {
-            maxHeight: "55vh",
-            minHeight: "55vh",
+            maxHeight: "48vh",
+            minHeight: "48vh",
           },
           "@media (max-height:1300px)": {
             maxHeight: "56vh",
@@ -20,13 +20,25 @@ export const usetableStyles = makeStyles((theme) => ({
             maxHeight: "57vh",
             minHeight: "57vh",
           },
+          "@media (max-height:1100px)": {
+            maxHeight: "48vh",
+            minHeight: "48vh",
+          },
+          "@media (max-height:1000px)": {
+            maxHeight: "46vh",
+            minHeight: "46vh",
+          },
           "@media (max-height:900px)": {
-            maxHeight: "53vh",
-            minHeight: "53vh",
+            maxHeight: "44vh",
+            minHeight: "44vh",
+          },
+          "@media (max-height:850px)": {
+            maxHeight: "42vh",
+            minHeight: "42vh",
           },
           "@media (max-height:800px)": {
-            maxHeight: "41vh",
-            minHeight: "41vh",
+            maxHeight: "40vh",
+            minHeight: "40vh",
           },
           "@media (max-height:768px)": {
             maxHeight: "37vh",
