@@ -89,16 +89,6 @@ function ContactsTable(props) {
     setStateIfDeepEqual(Columns, newState);
   };
 
-  const esSearch = (() => {
-    let searchString = ""
-    if (props.contactSearchQuery) {
-      searchString = props.contactSearchQuery.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
-    }
-
-    return searchString
-      ? `(name:(${searchString.join('* AND ')}*))^4 OR (name:(${searchString.join('* ')}*))^2 OR (_all:(${searchString.join('* ')}*))`
-      : ""
-  })();
 
   // queries
   const [getCheckPurchaseData, { data: ContactPurchaseData }] = useLazyQuery(
@@ -145,8 +135,8 @@ function ContactsTable(props) {
   useEffect(() => {
     props.setTableMeta({
       addableName: "Contact",
-      extendSearchQuery: esSearch,
-      searchFields: ["_all"],
+      extendSearchQuery: props.contactSearchQuery,
+      searchFields: ["name^4","_all"],
       TableHeader: copy(TableHeader),
       esIndex: "contacts_flat",
       // filters: getFilters(),
