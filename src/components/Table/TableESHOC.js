@@ -42,6 +42,7 @@ export const TableESHOC = (Component) => {
         const [searchedRows, setSearchedRows] = useState([])
 
         const [selectedRows, setSelectedRows] = useState([]);
+        const [tableFilters, setTableFilters] = useState([]);
 
         const [loading, Loading] = useState(true);
         const setLoading = (newState) => { setStateIfDeepEqual(Loading, newState) };
@@ -173,7 +174,7 @@ export const TableESHOC = (Component) => {
                                     return (
                                         <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
                                             extendSearchQuery={extendSearchQuery} searchFields={tableMeta.searchFields} query={GET_ES_SIMPLE_FILTER}
-                                            esIndex={esIndex} filters={activeFiltersRef.current} custom={custom} />
+                                            esIndex={esIndex} filters={tableFilters} custom={custom} />
                                     );
                                 }
                             }
@@ -388,6 +389,9 @@ export const TableESHOC = (Component) => {
 
             if (action === 'filterChange' && tableMeta.setAppliedFilters) {
                 tableMeta.setAppliedFilters(activeFiltersRef.current);
+            }
+            if (action === 'filterChange') {
+                setTableFilters(activeFiltersRef.current);
             }
 
             switch (action) {
