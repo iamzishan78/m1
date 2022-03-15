@@ -16,7 +16,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const Charts = ({ items, total, id = "pie-chart" }) => {
+const DonutChart = ({ items, total, id = "pie-chart" }) => {
     const [data, setData] = useState();
     const classes = useStyles();
 
@@ -79,18 +79,10 @@ const Charts = ({ items, total, id = "pie-chart" }) => {
     }, [data]);
 
     return (
-        <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3} className={classes.root}>
-            <Grid item xs={6}>
-                <div className={classes.graphCard}>
-                    <div id={id} style={{ height: "100%" }} />
-                </div>
-            </Grid>
-            <Grid item xs={5}>
-                <div className={classes.analyticTable}>
-                </div>
-            </Grid>
-        </Grid>
+        <div className={classes.graphCard}>
+            <div id={id} style={{ height: "100%" }} />
+        </div>
     )
 }
 
-export default Charts;
+export default DonutChart;

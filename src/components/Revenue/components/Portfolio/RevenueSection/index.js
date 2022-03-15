@@ -1,8 +1,9 @@
 import React from 'react';
-import { Typography } from "@material-ui/core";
+import { Typography, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
-import RevenueCharts from "./Charts";
+import DonutChart from "./DonutChart";
+import StackedChart from "./StackedChart";
 import RevenueTable from "./RevenueTable";
 import vf_number from "components/Shared/valueformatters/vf_number";
 
@@ -51,7 +52,14 @@ const RevenueSection = ({ monthsInterval }) => {
             <Typography variant="h6" className={classes.sectionTitle}>
                 Revenue & Income
             </Typography>
-            <RevenueCharts items={items} total={total} />
+            <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3} className={classes.root}>
+                <Grid item xs={5}>
+                    <DonutChart items={items} total={total} />
+                </Grid>
+                <Grid item xs={7}>
+                    <StackedChart items={items} total={total} />
+                </Grid>
+            </Grid>
             <RevenueTable monthsInterval={monthsInterval} items={items} total={total} />
         </>
     )
