@@ -192,16 +192,18 @@ function ShapeWellInterestTable(props) {
       id={props.id ? props.id : props.parent}
     >
 
-      <AddUnitInterestDialog
-        open={addToTable}
-        width="450px"
-        shapeId={props.customLayer._id}
-        shapeType={props.shapeType}
-        wellInterest={selectedRow}
-        onClose={() =>
-          setAddToTable(false)
-        }
-      />
+      {addToTable && (
+        <AddUnitInterestDialog
+          open={addToTable}
+          width="450px"
+          shapeId={props.customLayer._id}
+          shapeType={props.shapeType}
+          wellInterest={selectedRow}
+          onClose={() =>
+            setAddToTable(false)
+          }
+        />
+      )}
 
       <Table
         style={{ backgroundColor: "#fff" }}
