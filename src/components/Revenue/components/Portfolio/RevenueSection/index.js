@@ -21,19 +21,19 @@ const RevenueSection = ({ monthsInterval }) => {
     const [items, setItems] = useState([
         {
             name: 'Gross Revenue',
-            total: "3,000"
+            value: "3,000"
         }, {
             name: "Adjustments",
-            total: "900,000"
+            value: "900,000"
         }, {
             name: "Net Revenue",
-            total: "2,000"
+            value: "2,000"
         }, {
             name: "Lease Payments",
-            total: "44,000"
+            value: "44,000"
         }, {
             name: "Other",
-            total: "13,000"
+            value: "13,000"
         }
     ]);
 
@@ -42,7 +42,7 @@ const RevenueSection = ({ monthsInterval }) => {
 
         let _total = 0;
         items.forEach(item => {
-            _total += Number(item.total.replace(/,/g, ""));
+            _total += Number(item.value.replace(/,/g, ""));
         });
         return vf_number(_total);
     }, [items]);

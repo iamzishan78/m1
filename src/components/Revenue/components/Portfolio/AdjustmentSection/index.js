@@ -21,25 +21,25 @@ const AdjustmentSection = ({ monthsInterval }) => {
     const [items, setItems] = useState([
         {
             name: 'Severance Tax',
-            total: "10,000,000"
+            value: "10,000,000"
         }, {
             name: "Transportation - Oil",
-            total: "900,000"
+            value: "900,000"
         }, {
             name: "Transportation - Gas",
-            total: "2,000"
+            value: "2,000"
         }, {
             name: "Compression",
-            total: "13,000"
+            value: "13,000"
         }, {
             name: "Processing",
-            total: "13,000"
+            value: "13,000"
         }, {
             name: "Lease Use",
-            total: "13,000"
+            value: "13,000"
         }, {
             name: "Other",
-            total: "13,000"
+            value: "13,000"
         }
     ]);
 
@@ -48,7 +48,7 @@ const AdjustmentSection = ({ monthsInterval }) => {
 
         let _total = 0;
         items.forEach(item => {
-            _total += Number(item.total.replace(/,/g, ""));
+            _total += Number(item.value.replace(/,/g, ""));
         });
         return vf_number(_total);
     }, [items]);

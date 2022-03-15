@@ -95,7 +95,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
                       {item.name}
                     </TableCell>
                     <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                      {item.total}
+                      {item.value}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -127,41 +127,13 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow>
-                  {monthsInterval.map((month) => (
-                    <TableCell scope="row">10,000,000</TableCell>
-                  ))}
-                </TableRow>
-                <TableRow>
-                  {monthsInterval.map((month) => (
-                    <TableCell scope="row">10,000,000</TableCell>
-                  ))}
-                </TableRow>
-                <TableRow>
-                  {monthsInterval.map((month) => (
-                    <TableCell scope="row">10,000,000</TableCell>
-                  ))}
-                </TableRow>
-                <TableRow>
-                  {monthsInterval.map((month) => (
-                    <TableCell scope="row">10,000,000</TableCell>
-                  ))}
-                </TableRow>
-                <TableRow>
-                  {monthsInterval.map((month) => (
-                    <TableCell scope="row">10,000,000</TableCell>
-                  ))}
-                </TableRow>
-                <TableRow>
-                  {monthsInterval.map((month) => (
-                    <TableCell scope="row">10,000,000</TableCell>
-                  ))}
-                </TableRow>
-                <TableRow>
-                  {monthsInterval.map((month) => (
-                    <TableCell scope="row">10,000,000</TableCell>
-                  ))}
-                </TableRow>
+                {items.map((item, index) => (
+                  <TableRow key={index}>
+                    {monthsInterval.map((month) => (
+                      <TableCell scope="row">{item.value}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
                 <TableRow className={classes.highlightedRows}>
                   {monthsInterval.map((month) => (
                     <TableCell className={classes.totalColCell} scope="row">10,000,000</TableCell>

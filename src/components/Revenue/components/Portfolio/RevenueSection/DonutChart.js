@@ -24,7 +24,7 @@ const DonutChart = ({ items, total, id = "pie-chart" }) => {
         if (items?.length === 0) return;
         const _data = items.map(item => ({
             category: item.name,
-            value: Number(item.total.replace(/,/g, ""))
+            value: Number(item.value.replace(/,/g, ""))
         }));
         setData(_data);
     }, [items]);

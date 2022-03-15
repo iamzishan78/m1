@@ -186,31 +186,31 @@ const StackedAreaChart = ({ id = "chartDiv2" }) => {
         // chart.legend = new am4charts.Legend();
         // chart.legend.position = "top";
 
-        // axis ranges
-        let range = dateAxis.axisRanges.create();
-        range.date = new Date(2001, 0, 1);
-        range.endDate = new Date(2003, 0, 1);
-        range.axisFill.fill = chart.colors.getIndex(7);
-        range.axisFill.fillOpacity = 0.2;
+        // // axis ranges
+        // let range = dateAxis.axisRanges.create();
+        // range.date = new Date(2001, 0, 1);
+        // range.endDate = new Date(2003, 0, 1);
+        // range.axisFill.fill = chart.colors.getIndex(7);
+        // range.axisFill.fillOpacity = 0.2;
 
-        range.label.text = "Fines for speeding increased";
-        range.label.inside = true;
-        range.label.rotation = 90;
-        range.label.horizontalCenter = "right";
-        range.label.verticalCenter = "bottom";
+        // range.label.text = "Fines for speeding increased";
+        // range.label.inside = true;
+        // range.label.rotation = 90;
+        // range.label.horizontalCenter = "right";
+        // range.label.verticalCenter = "bottom";
 
-        let range2 = dateAxis.axisRanges.create();
-        range2.date = new Date(2007, 0, 1);
-        range2.grid.stroke = chart.colors.getIndex(7);
-        range2.grid.strokeOpacity = 0.6;
-        range2.grid.strokeDasharray = "5,2";
+        // let range2 = dateAxis.axisRanges.create();
+        // range2.date = new Date(2007, 0, 1);
+        // range2.grid.stroke = chart.colors.getIndex(7);
+        // range2.grid.strokeOpacity = 0.6;
+        // range2.grid.strokeDasharray = "5,2";
 
 
-        range2.label.text = "Motorcycle fee introduced";
-        range2.label.inside = true;
-        range2.label.rotation = 90;
-        range2.label.horizontalCenter = "right";
-        range2.label.verticalCenter = "bottom";
+        // range2.label.text = "Motorcycle fee introduced";
+        // range2.label.inside = true;
+        // range2.label.rotation = 90;
+        // range2.label.horizontalCenter = "right";
+        // range2.label.verticalCenter = "bottom";
     }, []);
     return (
         <div className={classes.graphCard}>
