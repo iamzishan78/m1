@@ -139,14 +139,17 @@ function RevenueStatementTable(props) {
 
   useEffect(() => {
     if (searchedRows?.length > 0) {
-      const objectsIdsArray = searchedRows.map((check) => check._id);
-      getRevenueValidationCheck({
-        variables: {
-          checkIds: objectsIdsArray,
-        },
-      });
+      const validationRows = searchedRows.filter(r => typeof r.validation === 'undefined')
+      const objectsIdsArray = validationRows.map((check) => check._id);
+      if(objectsIdsArray.length > 0){
+        getRevenueValidationCheck({
+          variables: {
+            checkIds: objectsIdsArray,
+          },
+        });
+      }
     }
-  }, [searchedRows, getRevenueValidationCheck]);
+  }, [searchedRows]);
 
   useEffect(() => {
     if (issues?.hits?.length > 0 && searchedRows?.length > 0) {
