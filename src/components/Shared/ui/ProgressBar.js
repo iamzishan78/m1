@@ -4,12 +4,12 @@ import Grid from "@material-ui/core/Grid";
 import LinearProgress from "@material-ui/core/LinearProgress";
 
 const BorderLinearProgress = withStyles((theme) => ({
-  root: {
-    height: 10,
+  root: (props) => ({
+    height: props.height ?? 10,
     width: "100%",
     borderRadius: 5,
     direction: "row",
-  },
+  }),
   colorPrimary: {
     backgroundColor: theme.palette.grey[theme.palette.type === "light" ? 200 : 700],
   },
@@ -31,12 +31,12 @@ export default function CustomizedProgressBars(props) {
       marginRight: "5px",
     },
   });
-  const classes = useStyles();
+  const classes = useStyles(props);
 
   return (
     <Grid container direction="row" alignItems="center" justify="flex-start" className={classes.root}>
       <Grid item className={classes.progressBarGrid}>
-        <BorderLinearProgress variant="determinate" value={value} />
+        <BorderLinearProgress variant="determinate" value={value} {...props} />
       </Grid>
       <Grid item>{isNumeric && <span>{value}%</span>}</Grid>
     </Grid>

@@ -9,23 +9,23 @@ import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: "0px 30px",
+    marginTop: "90px",
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
-          maxHeight: "78vh",
-          minHeight: "78vh",
+          maxHeight: "53vh",
+          minHeight: "53vh",
           "@media (max-height:900px)": {
-            maxHeight: "72vh",
-            minHeight: "72vh",
+            maxHeight: "47vh",
+            minHeight: "47vh",
           },
           "@media (max-height:800px)": {
-            maxHeight: "70vh",
-            minHeight: "70vh",
+            maxHeight: "45vh",
+            minHeight: "45vh",
           },
           "@media (max-height:768px)": {
-            maxHeight: "70vh",
-            minHeight: "70vh",
+            maxHeight: "45vh",
+            minHeight: "45vh",
           },
         },
       },
@@ -70,7 +70,7 @@ const ActivitiesDashboard = () => {
   };
 
   return (
-    <>
+    <div className={classes.root}>
       <ActivitiesDashboardFilter
         esIndex={esIndex}
         searchFields={searchFields}
@@ -87,18 +87,16 @@ const ActivitiesDashboard = () => {
         appliedFilters={appliedFilters}
         setAppliedFilters={setAppliedFilters}
       />
-      <div className={classes.root}>
-        <ActivitiesTable
-          esIndex={esIndex}
-          searchFields={searchFields}
-          filtersChange={filtersChange}
-          appliedFilters={appliedFilters}
-          filterToggle={filterToggle}
-          targetLabel={'activitiesDashboard'}
-          header="Activities"
-        />
-      </div>
-    </>
+      <ActivitiesTable
+        esIndex={esIndex}
+        searchFields={searchFields}
+        filtersChange={filtersChange}
+        appliedFilters={appliedFilters}
+        filterToggle={filterToggle}
+        targetLabel={"activitiesDashboard"}
+        header="Activities"
+      />
+    </div>
   );
 };
 

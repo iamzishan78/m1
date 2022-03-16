@@ -248,9 +248,12 @@ export default function CustomizedSteppers(props) {
 
   const handleNext = () => {
     if (stateApp.activeStepNumber === steps.length - 2) {
+      const changeDate = new Date()
       data_to_send.forEach((element) => {
         element.createBy = userID;
+        element.createAt = changeDate;
         element.lastUpdateBy = userID;
+        element.lastUpdateAt = changeDate;
         delete element.tableData;
       });
       getJobUploadUri({

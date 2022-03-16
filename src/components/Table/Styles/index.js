@@ -8,9 +8,21 @@ export const usetableStyles = makeStyles((theme) => ({
         "&>:nth-child(3)": {
           maxHeight: "48vh",
           minHeight: "48vh",
-          "@media (max-height:900px)": {
+          "@media (max-height:1200px)": {
             maxHeight: "55vh",
             minHeight: "55vh",
+          },
+          "@media (max-height:1300px)": {
+            maxHeight: "56vh",
+            minHeight: "56vh",
+          },
+          "@media (max-height:1400px)": {
+            maxHeight: "57vh",
+            minHeight: "57vh",
+          },
+          "@media (max-height:900px)": {
+            maxHeight: "53vh",
+            minHeight: "53vh",
           },
           "@media (max-height:800px)": {
             maxHeight: "41vh",

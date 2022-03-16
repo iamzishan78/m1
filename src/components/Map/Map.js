@@ -100,6 +100,7 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     top: "0px",
     bottom: "0",
+    left: "0",
     width: "100%",
     height: "100vh",
     overflow: "hidden !important",
@@ -138,7 +139,7 @@ const random_hex_color_code = () => {
 };
 let hoveredAbstractId = null;
 
-function Map({ type, paramId, lati, longi }) {
+function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial = true, width }) {
   // context states
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -414,6 +415,7 @@ function Map({ type, paramId, lati, longi }) {
           keep_alive: "1micros"
         },
         search: `_id:${paramId.toLowerCase()}`,
+        filters: [],
         sort: [],
       },
     });
@@ -6111,13 +6113,13 @@ function Map({ type, paramId, lati, longi }) {
 
   return (
     <div className={classes.mapWrapper}>
-      <div className={classes.map} ref={mapEl} id="map">
+      <div className={classes.map} style={{ width: width }} ref={mapEl} id="map">
         {map ? <DefaultFiltersTest /> : null}
         <div className={classes.footerLeftLogo}>
           <img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="150" />
         </div>
       </div>
-      <MapControlsProvider />
+      <MapControlsProvider {...{ expandedPanel: expandedPanel, openSpeedDial: openSpeedDial }} />
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <HugeRequest />
       {/* <Coordinates long={lng} lat={lat} zoom={zoom} /> */}

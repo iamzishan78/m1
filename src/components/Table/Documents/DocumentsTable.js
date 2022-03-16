@@ -160,11 +160,11 @@ function DocumentsTable(props) {
   }, [gridViewsData]);
 
   useEffect(() => {
-    if (metaDataRes?.getMetaData?.gridViews) {
-      setMetaDatas(metaDataRes?.getMetaData?.gridViews);
+    if (metaDataRes?.getMetaData?.metaData) {
+      setMetaDatas(metaDataRes?.getMetaData?.metaData);
       // let filterColumns = columns.filter(
       //   (col) =>
-      //     !metaDataRes.getMetaData.gridViews.find(
+      //     !metaDataRes.getMetaData.metaData.find(
       //       (meta) => meta.name === col.name
       //     )
       // );
@@ -172,11 +172,11 @@ function DocumentsTable(props) {
       // // filterColumns = filterColumns.filter((col) => col.name !== " ");
       // let columnsData = JSON.parse(JSON.stringify([
       //   ...filterColumns,
-      //   ...metaDataRes.getMetaData.gridViews,
+      //   ...metaDataRes.getMetaData.metaData,
       //   // ...lastColumn,
       // ]));
-      // for (let i = 0; i < metaDataRes.getMetaData.gridViews.length; i++) {
-      //   TableHeader.push(metaDataRes.getMetaData.gridViews[i]);
+      // for (let i = 0; i < metaDataRes.getMetaData.metaData.length; i++) {
+      //   TableHeader.push(metaDataRes.getMetaData.metaData[i]);
       // }
 
       // let view = JSON.parse(JSON.stringify(selectedGridView))

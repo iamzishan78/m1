@@ -60,7 +60,9 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: "2px solid #34b4e3 !important",
   },
   totalColCell: {
-    width: "160px",
+    fontWeight: "bolder",
+    fontSize: "16px",
+    fontFamily: "sans-serif"
   },
 }));
 
@@ -87,15 +89,15 @@ export default function AdjustmentTable({ monthsInterval }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow key="side-headers">
+                <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
-                    Severence Tax
+                    Severance Tax
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
                     Transportation - Oil
                   </TableCell>
@@ -103,15 +105,7 @@ export default function AdjustmentTable({ monthsInterval }) {
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers">
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Compression
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    10,000,000
-                  </TableCell>
-                </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
                     Transportation - Gas
                   </TableCell>
@@ -119,7 +113,16 @@ export default function AdjustmentTable({ monthsInterval }) {
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
+                  <TableCell scope="row" className={classes.leftCells}>
+                    Compression
+                  </TableCell>
+                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
+                    10,000,000
+                  </TableCell>
+                </TableRow>
+
+                <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
                     Processing
                   </TableCell>
@@ -127,7 +130,7 @@ export default function AdjustmentTable({ monthsInterval }) {
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
                     Lease Use
                   </TableCell>
@@ -135,26 +138,27 @@ export default function AdjustmentTable({ monthsInterval }) {
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   <TableCell scope="row" className={classes.leftCells}>
-                    Others
+                    Other
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers" className={`${classes.highlightedRows}`}>
-                  <TableCell scope="row" className={classes.leftCells}>
+                <TableRow className={`${classes.highlightedRows}`}>
+                  <TableCell scope="row" className={`${classes.leftCells} ${classes.totalColCell}`}>
                     Total Adjustments
                   </TableCell>
                   <TableCell
                     scope="row"
                     className={`${classes.leftRightColoredBorderCell} ${classes.bottomColoredBorderCell} ${classes.totalColCell}`}
+                    style={{ width: "160px" }}
                   >
                     10,000,000
                   </TableCell>
                 </TableRow>
-                <TableRow key="side-headers"></TableRow>
+                <TableRow></TableRow>
               </TableBody>
             </Table>
           </Grid>
@@ -170,44 +174,44 @@ export default function AdjustmentTable({ monthsInterval }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow key="side-headers">
+                <TableRow>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-                <TableRow key="side-headers">
+                <TableRow>
                   {monthsInterval.map((month) => (
                     <TableCell scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
-                <TableRow key="side-headers" className={classes.highlightedRows}>
+                <TableRow className={classes.highlightedRows}>
                   {monthsInterval.map((month) => (
-                    <TableCell scope="row">10,000,000</TableCell>
+                    <TableCell className={classes.totalColCell} scope="row">10,000,000</TableCell>
                   ))}
                 </TableRow>
               </TableBody>

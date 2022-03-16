@@ -57,17 +57,18 @@ function ShapeWellInterestTable(props) {
 
   ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
-    getESPaginatedList({
-      variables: {
-        esIndex,
-        pagination: {
-          first: startPaginationAt,
-          keep_alive: "1micros"
-        },
-        search: `shape._id:${props.customLayer._id}`
-      }
-    });
-  }, [props.parent]);
+    if (props.customLayer?._id)
+      getESPaginatedList({
+        variables: {
+          esIndex,
+          pagination: {
+            first: startPaginationAt,
+            keep_alive: "1micros"
+          },
+          search: `shape._id:${props.customLayer._id}`
+        }
+      });
+  }, [props.customLayer]);
 
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
@@ -191,16 +192,18 @@ function ShapeWellInterestTable(props) {
       id={props.id ? props.id : props.parent}
     >
 
-      <AddUnitInterestDialog
-        open={addToTable}
-        width="450px"
-        shapeId={props.customLayer._id}
-        shapeType={props.shapeType}
-        wellInterest={selectedRow}
-        onClose={() =>
-          setAddToTable(false)
-        }
-      />
+      {addToTable && (
+        <AddUnitInterestDialog
+          open={addToTable}
+          width="450px"
+          shapeId={props.customLayer._id}
+          shapeType={props.shapeType}
+          wellInterest={selectedRow}
+          onClose={() =>
+            setAddToTable(false)
+          }
+        />
+      )}
 
       <Table
         style={{ backgroundColor: "#fff" }}

@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
+import loadashFilter from "lodash/filter";
 
 import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
-import { Popper } from "@material-ui/core";
+import { Popover, Popper, Typography } from "@material-ui/core";
 
 const styles = (theme) => ({
     popper: {
@@ -36,6 +37,7 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
     //         setValue(null)
     //     }
     // }, [filterList[index][0]]);
+    const filter = createFilterOptions();
 
     useEffect(() => {
         getFiltersAction("");
@@ -94,6 +96,7 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
             options={options}
             loading={loading}
             renderOption={(props, value) => {
+                if (props?.id === "newEntity") return <Typography style={{ color: "midnightblue" }} >Add '{props.key}'</Typography>;
                 const matches = match(props.key, value?.inputValue);
                 const parts = parse(props.key, matches);
 
@@ -113,6 +116,22 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
                         </div>
                     </li>
                 );
+            }}
+            filterOptions={(options, params) => {
+                let inputValue = params.inputValue;
+                const filtered = filter(options, { ...params, inputValue });
+
+                const isExist = loadashFilter(filtered, (f) => {
+                    return f.key === inputValue;
+                });
+                // Suggest the creation of a new value
+                if (inputValue !== "" && (!isExist || isExist.length === 0)) {
+                    filtered.unshift({
+                        id: "newEntity",
+                        key: inputValue,
+                    });
+                }
+                return filtered;
             }}
             renderInput={(params) => (
                 <TextField

@@ -54,6 +54,11 @@ export default function Portfolio() {
   const [toDate, setToDate] = React.useState(null);
   const [monthsInterval, setMonths] = useState([]);
 
+  const [filterToggle, setFilterToggle] = React.useState(false);
+  // props to pass in table
+  // const esIndex = "shapes_flat";
+  const [esFilters, setESFilters] = useState([]);
+
   const onChangeDates = (fromDate, toDate) => {
     const months = [];
     if (fromDate && toDate) {
@@ -77,23 +82,29 @@ export default function Portfolio() {
       <div className={classes.actionBar}>
         <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 36px" }}>
           <Grid item xs={8} md={8} style={{ marginTop: "4px" }}>
-            <CustomDates onChangeDates={onChangeDates} fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} />
+            <CustomDates
+              onChangeDates={onChangeDates}
+              fromDate={fromDate}
+              setFromDate={setFromDate}
+              toDate={toDate}
+              setToDate={setToDate}
+            />
           </Grid>
-          <Grid item xs={5} md={4}>
+          <Grid item xs={4} md={4}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
-              <Grid item>
+              {/* <Grid item>
                 <Button variant="contained" color="secondary">
                   Save View
                 </Button>
-              </Grid>
+              </Grid> */}
               <Grid item>
-                <Button variant="contained">Run Report</Button>
+                <Button variant="contained" color="secondary">Run Report</Button>
               </Grid>
             </Grid>
           </Grid>
         </Grid>
       </div>
-      <AnalyticsCards cards={cards} />
+      {/* <AnalyticsCards cards={cards} /> */}
       <Divider className={classes.divider} />
       <DetailTabsSection monthsInterval={monthsInterval} />
     </>

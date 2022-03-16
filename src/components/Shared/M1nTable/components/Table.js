@@ -45,7 +45,7 @@ import CellContentEdition from "./SubComponents/CellContentEdition";
 import Avatar from "react-avatar";
 import RoomIcon from "@material-ui/icons/Room";
 import { useDispatch } from "react-redux";
-import { setMapGridCardState, setRevenueKey } from "actions";
+import { setMapGridCardState } from "actions";
 import { deepEqualObjects, setStateIfDeepEqual } from "../../functions";
 import InviteUserDialog from "./SubComponents/InviteUserDialog";
 import ReinviteUserDialog from "./SubComponents/ReinviteUserDialog";
@@ -234,7 +234,7 @@ const useStyles = makeStyles((theme) => ({
       height: "50px",
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
-      paddingLeft: "11px !important",
+      padding: "5px 11px 5px 0px !important",
     },
     "& .MUIDataTableToolbar": {
       zIndex: "999999 !important",
@@ -657,6 +657,9 @@ function SubTable(props) {
   const setM1nSelectedRowsIndexes = (newState) => {
     setStateIfDeepEqual(M1nSelectedRowsIndexes, newState);
   };
+  if (props.setM1nSelectedRowsIndexesRef) {
+    props.setM1nSelectedRowsIndexesRef.current = setM1nSelectedRowsIndexes;
+  }
   const setSubTitle = (newState) => {
     setStateIfDeepEqual(SubTitle, newState);
   };
@@ -1616,19 +1619,21 @@ function SubTable(props) {
                     // this whole implementation is a mesteban patch
                     // it is all kinds of fucked up
 
-                    <Tooltip title={"Fly To Map"} placement="top" style={{ marginRight: "10px" }}>
+                    <Tooltip title="Fly To Map" placement="top" style={{ marginRight: "10px" }}>
                       <IconButton
                         id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                         size={props.dense ? "small" : "medium"}
                         color="secondary"
                         className={`${classes.icons}`}
+                        disabled={props.targetLabel === "well" && !props.rows[tableMeta.rowIndex]?.globalWell}
                         onClick={(e) => {
                           e.stopPropagation();
                           // for unit wells we need to use globalWell instead of wellId
                           if (props.targetLabel === "well") {
-                            value.wellId = props.rows[tableMeta.rowIndex].globalWell ?? value.wellId;
+                            value.wellId = props.rows[tableMeta.rowIndex].globalWell;
                           }
-                          handleClickFlyToIcon(props.targetLabel, value);
+                          if (props.rows[tableMeta.rowIndex].globalWell)
+                            handleClickFlyToIcon(props.targetLabel, value);
                         }}
                         aria-label="fly"
                       >
@@ -1688,7 +1693,6 @@ function SubTable(props) {
                 },
               };
             }
-
             break;
           case "commentsCounter":
             {
@@ -2354,8 +2358,7 @@ function SubTable(props) {
               customBodyRender: (value) => {
                 const splitNumber = value?.split("_");
                 let styles = { ...column.style };
-                if (props.parent === "RevenuePropertiesTable" ||
-                  props.parent === "CheckDetailsTable") {
+                if (props.parent === "CheckDetailsTable") {
                   styles = { ...styles, fontWeight: 600, color: "#17aadd", cursor: "pointer" };
                 }
                 return <p style={styles}>{splitNumber?.[0]}</p>;
@@ -2430,30 +2433,6 @@ function SubTable(props) {
               },
             };
             break;
-          case "agreementNumber":
-            column.options = {
-              ...column.options,
-              customBodyRender: (value, tableMeta, updateValue) => {
-                return (
-                  <>
-                    {props.parent === "AgreementsTable" && (
-                      <p
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (tableMeta.rowData[0]) {
-                            history.push(`/agreement/details/${tableMeta.rowData[0]}`);
-                          }
-                        }}
-                        style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-                      >
-                        {value}
-                      </p>
-                    )}
-                  </>
-                );
-              },
-            };
-            break;
           case "tractName":
             column.options = {
               ...column.options,
@@ -2499,14 +2478,21 @@ function SubTable(props) {
             column.options = {
               ...column.options,
               customBodyRender: (value, tableMeta) => {
+                const row = props.rows[tableMeta.rowIndex];
                 return (
                   <>
-                    <SearchWells
-                      contactId={"props.contactData._id"}
-                      value={value}
-                      rowData={tableMeta.rowData}
-                      rowIndex={tableMeta.rowIndex}
-                    />
+                    {row.wellApiNumber || row.wellName ? (
+                        <div>{value}</div>
+                      ):(
+                        <SearchWells
+                          setRefetchData={props.setRefetchData}
+                          // contactId={"props.contactData._id"}
+                          relatedObject={row._id}
+                          relatedObjectType="Property"
+                          // rowData={tableMeta.rowData}
+                          // rowIndex={tableMeta.rowIndex}
+                        />
+                    )}
                   </>
                 );
               },
@@ -2553,12 +2539,12 @@ function SubTable(props) {
               ...column.options,
               customBodyRender: (value) => {
                 return (
-                  <div style={{ width: 250}}>
-                  {value ? (
-                    <StackedBarChart data={value} hideLegends eachBarHeight={5} />
-                  ):(
-                    <p>N/A</p>
-                  )}
+                  <div style={{ width: 250 }}>
+                    {value ? (
+                      <StackedBarChart data={value} hideLegends eachBarHeight={5} />
+                    ) : (
+                      <p>N/A</p>
+                    )}
                   </div>
                 );
               },
@@ -2663,6 +2649,11 @@ function SubTable(props) {
                       </div>
                     );
                   }
+
+                  if(props.targetLabel === 'Revenue Properties') {
+                    return value? <p>{value}</p> : null
+                  }
+
                   return (
                     <div
                       style={{ display: "flex", alignItems: "center", justifyContent: "left", ...column.style }}
@@ -2768,13 +2759,13 @@ function SubTable(props) {
 
                       {props.targetLabel === "Unit Ownership" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span> {tableMeta.rowData[17] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span> {tableMeta.rowData[18] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 
                       {props.parent === "ownersPerParcel" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span> {tableMeta.rowData[18] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span> {tableMeta.rowData[19] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 
@@ -3007,31 +2998,33 @@ function SubTable(props) {
         : (selectedRows, displayData, setSelectedRow) => {
           //// if contacts set the multi selection top bar: ////
 
-          if (props.addAble.type === "suggestedOwnerToParcel") {
-            return (
-              <div style={{ height: "48px", display: "flex" }}>
-                <div
-                  style={{
-                    marginTop: "6px",
-                    height: "35px",
-                    display: "flex",
-                    marginRight: "20px",
-                  }}
-                >
-                  <Button
-                    color="secondary"
-                    className={classes.multiSelectionTopBarButtons}
-                    disabled={props.addAble.type === "suggestedOwnerToParcel" && m1nSelectedRowsIndexes.length === 0}
-                    onClick={() => {
-                      props.suggestedOwnerToParcel(m1nSelectedRowsIndexes, setSelectedRow);
-                    }}
-                  >
-                    + ADD TO PARCEL
-                  </Button>
-                </div>
-              </div>
-            );
-          }
+          // if (props.addAble.type === "suggestedOwnerToParcel") {
+          //   return (
+          //     <div style={{ height: "48px", display: "flex" }}>
+          //       <div
+          //         style={{
+          //           marginTop: "6px",
+          //           height: "35px",
+          //           display: "flex",
+          //           marginRight: "20px",
+          //         }}
+          //       >
+          //         <Button
+          //           color="secondary"
+          //           className={classes.multiSelectionTopBarButtons}
+          //           disabled={props.addAble.type === "suggestedOwnerToParcel" && m1nSelectedRowsIndexes.length === 0}
+          //           onClick={() => {
+          //             const parcelInterests = m1nSelectedRowsIndexes.map((index) => rows[index])
+          //             return handleExpandClick(null, null, parcelInterests, "multipleOwnerToContact");
+          //             // props.suggestedOwnerToParcel(m1nSelectedRowsIndexes, setSelectedRow);
+          //           }}
+          //         >
+          //           + ADD TO PARCEL
+          //         </Button>
+          //       </div>
+          //     </div>
+          //   );
+          // }
           if (props.addAble.type === "parcelDocument") {
             return (
               <div
@@ -3665,7 +3658,7 @@ function SubTable(props) {
 
       if (props.targetLabel === "activity") {
         if (rows[dataIndex]?._id) {
-          window.history.pushState("", "", `/activities/${rows[dataIndex]._id}`);
+          window.history.pushState("", "", `/calendar/activities/${rows[dataIndex]._id}`);
           setStateApp((stateApp) => ({
             ...stateApp,
             selectedActivityId: rows[dataIndex]._id,
@@ -3732,19 +3725,11 @@ function SubTable(props) {
           handleExpandClick(null, null, null, "inviteUser");
         }
       }
-      // if (props.targetLabel === "agreement") {
-      //   if (rows[dataIndex]?._id) {
-      //     history.push(`/agreement/details/${rows[dataIndex]?._id}`)
-      //   }
-      // }
 
-      if (props.targetLabel === "Revenue Properties") {
-        // need stopPropagation
-        history.push(`/revenue/property/details/${rows[dataIndex]?._id}`);
-        // if (rows[dataIndex]?._id) {
-        //   history.push(`/revenue/property/details?id=${rows[dataIndex]?._id}`);
-        // }
-      }
+      // if (props.targetLabel === "Revenue Properties") {
+      //   // need stopPropagation
+      //   history.push(`/revenue/property/details/${rows[dataIndex]?._id}`);
+      // }
       // if (props.parent === "RevenueStatementTable") {
       //   if (rows[dataIndex]?._id) {
       //     history.push(`/revenue/statement/details/${rows[dataIndex]?._id}`);
@@ -4828,6 +4813,7 @@ function SubTable(props) {
             top: "95px",
             left: "30px",
             zIndex: "150",
+            height: "fit-content"
           }}
         >
           <CircularProgress size={80} disableShrink color="secondary" />

@@ -1,3 +1,4 @@
+import { history } from "store";
 const RevenuePropertiesHeadCells = [
   {
     name: "_id",
@@ -8,8 +9,30 @@ const RevenuePropertiesHeadCells = [
     name: "number",
     label: "Property#",
     esKey: "number.keyword",
-    options: { sort: true, filter: true },
-    style: { minWidth: 150 }
+    options: {
+      customRender: (value, tableMeta) => {
+        const splitNumber = value?.split("_");
+        const styles = {
+          minWidth: 150,
+          fontWeight: 600,
+          color: "#17aadd",
+          cursor: "pointer",
+        };
+        return (
+          <p
+            onClick={(e) => {
+              e.stopPropagation();
+              history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
+            }}
+            style={styles}
+          >
+            {splitNumber?.[0]}
+          </p>
+        );
+      },
+      sort: true,
+      filter: true,
+    },
   },
   {
     name: "name",
@@ -40,20 +63,20 @@ const RevenuePropertiesHeadCells = [
     name: "source",
     label: "Source",
     esKey: "source.keyword",
-    options: { sort: true, filter: true },
+    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }) },
   },
 
   {
     name: "wellApiNumber",
     label: "Well API",
     esKey: "wells.apiNumber.keyword",
-    options: { sort: true, filter: true },
+    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "110px", maxWidth: "110px" } }) },
   },
   {
     name: "wellName",
     label: "Well Name",
     esKey: "wells.wellName.keyword",
-    options: { sort: true, filter: true },
+    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "230px", maxWidth: "230px" } }) },
   },
   // {
   //   name: "type",
@@ -79,6 +102,7 @@ const RevenuePropertiesHeadCells = [
     label: "Last Check Date",
     esKey: "lastCheck.checkDate",
     options: { sort: true, filter: true },
+    style: { minWidth: 100 }
   },
   {
     name: "tags",

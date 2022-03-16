@@ -262,9 +262,9 @@ export default function HeaderSection(props) {
                       margin="dense"
                       type="text"
                       fullWidth
-                      onChange={(e) => { params.onChange(e.target.value); handleUpdate("name", e.target.value) }}
+                      onChange={(e) => { params.onChange(e.target.value);}}
                     // onKeyDown={(e) => onKeyDown(e, "name", params.value)}
-                    // onBlur={(e) => updatePropertyData("name", params.value)}
+                      onBlur={(e) =>handleUpdate("name", e.target.value) }
                     />
                   )}
                 />

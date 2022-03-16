@@ -1,17 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
 import Grid from "@material-ui/core/Grid";
+import { Popper } from '@material-ui/core';
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import parse from "autosuggest-highlight/parse";
 import debounce from "lodash/debounce";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import CloseRoundedIcon from "@material-ui/icons/CloseRounded";
 // contexts
 import { AppContext } from "AppContext";
 // queries
@@ -19,21 +15,15 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { USERSEARCHHISTORY } from "graphQL/useQueryUserSearchHistory";
 import { REMOVESEARCHHISTORY } from "graphQL/useMutationRemoveSearchHistory";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
-import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
+import { UPSERT_WELL_DESCRIPTOR } from "graphQL/useMutationWellDescriptor";
 // custom components
-import { setMapGridCardState, setRevenueKey } from "actions";
 import { deepEqualObjects } from "../../Shared/functions";
 import WellIcon from "../../Shared/svgIcons/well";
 // 3rd party components
-import Popover from "@material-ui/core/Popover";
-import Tooltip from "@material-ui/core/Tooltip";
-import Box from "@material-ui/core/Box";
 import { CircularProgress } from "@material-ui/core";
-import ClearIcon from "@material-ui/icons/Clear";
-import { useDispatch, useSelector } from "react-redux";
+
 
 const wellCogIndexName = "wellheader-index";
-const ownerCogIndexName = "globalowner-index";
 
 const calcScoreOpacity = (maxMin, score) => {
   if (maxMin[0] === maxMin[1]) return 0;
@@ -87,14 +77,32 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
   },
   root: {
-    maxHeight: "40px",
+    // maxHeight: "40px",
     width: "100%",
     display: "flex",
     alignItems: "center",
-    "& .MuiAutocomplete-inputRoot": { maxHeight: "42px" },
+    // "& .MuiAutocomplete-inputRoot": { maxHeight: "42px" },
   },
   autoCompleteInput: {
-    minWidth: "250px",
+    width: "355px !important",
+    position: "absolute",
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "none"
+    },
+    "& .MuiAutocomplete-input": {
+      padding: "0px !important"
+    },
+    "& .MuiAutocomplete-inputRoot": {
+      color: "#c99229",
+      fontWeight: "regular",
+      cursor: "pointer",
+      textAlign: "center",
+      minWidth: "150px",
+      border: "2px solid #c99229",
+      padding: theme.spacing(1),
+      borderRadius: "5px",
+      marginRight: theme.spacing(2),
+    }
   },
   textF: {
     "& input": {
@@ -148,30 +156,31 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     height: "23px",
   },
-  placeholderDiv: ({ wellValue }) => ({
+  placeholderDiv: {
     color: "#c99229",
     fontWeight: "bold",
     cursor: "pointer",
     textAlign: "center",
     minWidth: "150px",
-    border: wellValue ? "1px solid #c99229" : "",
+    border: "1px solid #c99229",
     padding: theme.spacing(1),
     borderRadius: "5px",
     marginRight: theme.spacing(2),
-  }),
+  },
   closeIcon: {
     cursor: "pointer",
   },
+  popperClass: {
+    "& .MuiAutocomplete-listbox": {
+      maxHeight: '300px',
+      height: '300px',
+    }
+  }
 }));
 
 function Search(props) {
-  const dispatch = useDispatch();
-  const { mapGridCardActivated, mapGridCardActiveTap, searchInputValue } = useSelector(({ MapGridCard }) => MapGridCard);
-  const { wellApiDropdownIndex } = useSelector(({ Revenue }) => Revenue);
-  const [enableSearch, setEnableSearch] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [stateApp, setStateApp] = React.useContext(AppContext);
-  const [value, setValue] = React.useState(null);
+  const [stateApp] = React.useContext(AppContext);
+  const [searchText, setSearchText] = useState("");
   const [searchOption, setSearchOption] = React.useState("wells");
   const [options, setOptions] = React.useState([]);
   const [searchTop, setSearchTop] = React.useState(5);
@@ -182,15 +191,16 @@ function Search(props) {
   // loaders
   const [loadingWells, setLoadingWells] = React.useState(false);
 
-  const classes = useStyles({ mapGridCardActivated, wellValue: props.value });
+  const classes = useStyles();
 
-  const [getSearchHistory, { data: searchHistoryData }] = useLazyQuery(USERSEARCHHISTORY);
+  const [getSearchHistory, { data: searchHistoryData }] =
+    useLazyQuery(USERSEARCHHISTORY);
 
   //////////// Search History Begin//////////////////
 
   // Search History Queries and Mutations
   const [removeSearchHistory] = useMutation(REMOVESEARCHHISTORY);
-  const [updateProperty] = useMutation(UPDATE_PROPERTY);
+  const [upsertWellDescriptor] = useMutation(UPSERT_WELL_DESCRIPTOR);
 
   useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.mongoId) {
@@ -204,14 +214,10 @@ function Search(props) {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (!value && searchInputValue && value !== searchInputValue) {
-      setValue(searchInputValue);
-    }
-  }, [searchInputValue, value]);
-
-  useEffect(() => {
     if (searchHistoryData && searchHistoryData.getSearchHistory) {
-      let list = [...searchHistoryData.getSearchHistory].sort((a, b) => b.ts - a.ts);
+      let list = [...searchHistoryData.getSearchHistory].sort(
+        (a, b) => b.ts - a.ts
+      );
 
       setSearchHistoryList(list);
     }
@@ -231,7 +237,10 @@ function Search(props) {
   }, [removeSearchHistory, searchHistoryList]);
 
   // const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(PAGINATEDWELLSQUERY, { fetchPolicy: "network-only", skip: true });
-  const [getESWellsPaginatedList, { data: constDataWells }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
+  const [getESWellsPaginatedList, { data: constDataWells }] = useLazyQuery(
+    GET_ES_PAGINATED_LIST,
+    { fetchPolicy: "no-cache" }
+  );
 
   //////////// Search History End//////////////////
   const startPaginationAt = 25;
@@ -246,7 +255,9 @@ function Search(props) {
               first: startPaginationAt,
               keep_alive: "1micros",
             },
-            search: request.input ? `wellName:*${request.input}*` : "",
+            search: request.input
+              ? `wellName:*${request.input}* OR wellApi:*${request.input}*`
+              : "",
             sort: [],
           },
         });
@@ -274,58 +285,32 @@ function Search(props) {
     }
   }, [constDataWells]);
 
-  const callMapboxSearch = React.useMemo(
-    () =>
-      debounce((request, top, callback) => {
-        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${request.input}.json?access_token=${stateApp.mapboxglAccessToken
-          }&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
-
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-
-        const options = {
-          method: "GET",
-          headers,
-        };
-
-        fetch(endpoint, options)
-          .then((response) => response.json())
-          .then((response) => {
-            callback(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }, 500),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
-
   React.useEffect(() => {
-    if (!mapGridCardActivated) {
-      if (searchInputValue === "") {
-        setOptions(value ? [value] : []);
-        setValue(null);
-        setStateApp((state) => ({ ...state, wellListFromSearch: [] }));
-        return undefined;
-      }
-      (async () => {
-        Promise.all([searchOption === "all" || searchOption === "wells" ? callWellSearch({ input: searchInputValue }, searchTop) : null]);
-      })();
+    if (searchText === "") {
+      setOptions([]);
+      return undefined;
     }
+    (async () => {
+      Promise.all([callWellSearch({ input: searchText }, searchTop)]);
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchInputValue, callWellSearch, callMapboxSearch, searchOption, searchTop]);
+  }, [searchText, callWellSearch, searchTop]);
 
   const handleChange = (newValue) => {
-    updateProperty({
+    let wellData = {
+      ...newValue,
+      createdBy: stateApp?.user?._id,
+    };
+    upsertWellDescriptor({
       variables: {
-        property: {
-          _id: props.rowData[0],
-          well: newValue,
-        },
+        well: wellData,
+        relatedObject: props.relatedObject,
+        relatedObjectType: props.relatedObjectType
       },
-      refetchQueries: ["getESPaginatedList"],
-      awaitRefetchQueries: true,
+      refetchQueries: ["getWellsDescriptors"],
+    }).then((res) => {
+      if(props.setRefetchData)
+        props.setRefetchData(!props.refetchData);
     });
     handleClose();
   };
@@ -341,335 +326,163 @@ function Search(props) {
 
   let optionsWithHeader = [header, ...options];
   //// adding loader ////
-  if ((searchOption === "all" && loadingWells) || (searchOption === "wells" && loadingWells)) {
+  if (
+    (searchOption === "all" && loadingWells) ||
+    (searchOption === "wells" && loadingWells)
+  ) {
     optionsWithHeader = [header, { ...header, Source: "loader" }];
   }
 
   const handleClose = () => {
-    setEnableSearch(false);
-    dispatch(setRevenueKey("wellApiDropdownIndex", -1));
+    setSearchText('')
+    setOptions([]);
   };
 
   return (
     <div className={classes.root}>
-      {!enableSearch && wellApiDropdownIndex !== props.rowIndex ? (
-        <div className={classes.placeholderDiv} onClick={() => setEnableSearch(!enableSearch)}>
-          {props.value}
-        </div>
-      ) : (
-        <>
-          <Autocomplete
-            className={classes.autoCompleteInput}
-            id="cognitive-search-autocomplete"
-            getOptionLabel={(option, value) => option.Primary || searchInputValue}
-            forcePopupIcon
-            onBlur={() => {
-              setValue(null)
-              dispatch(
-                setMapGridCardState({
-                  searchInputValue: "",
-                  searchResultData: [],
-                })
-              );
-            }} // for clearing the value
-            filterOptions={(x) => x}
-            options={optionsWithHeader}
-            style={{ width: "100%" }}
-            groupBy={(option) => {
-              if (option.Source === wellCogIndexName) return "Wells";
-              return "header";
-            }}
-            // leftIconButton={<SearchIcon />}
-            renderGroup={(option) => {
-              if (option.group === "loader")
-                return <CircularProgress key="loader" style={{ margin: "10px 0 0 48%" }} size={28} color="secondary" />;
-
+      <>
+        <Autocomplete
+          className={classes.autoCompleteInput}
+          id="cognitive-search-autocomplete"
+          getOptionLabel={(option, value) => option.Primary || value}
+          // forcePopupIcon
+          onBlur={() => {
+            setSearchText('')
+            setOptions([]);
+          }} // for clearing the value
+          filterOptions={(x) => x}
+          options={optionsWithHeader}
+          style={{ width: "100%" }}
+          groupBy={(option) => {
+            if (option.Source === wellCogIndexName) return "Wells";
+            return "header";
+          }}
+          // leftIconButton={<SearchIcon />}
+          renderGroup={(option) => {
+            if (option.group === "loader")
               return (
-                (searchOption === "all" || searchOption === option.group.toLowerCase()) && (
-                  <Grid key={option.group}>
-                    <Grid container spacing={2} className={classes.groupsHeaders} justifyContent="center">
-                      <Grid item xs={6}>
-                        <Button size="small" className={classes.myWellBtn} onClick={() => null} type="primary">
-                          My Wells
-                        </Button>
-                      </Grid>
-                      <Grid item xs={6}>
-                        {searchTop === 5 ? (
-                          <Button
-                            size="small"
-                            className={classes.allWellBtn}
-                            onClick={() => {
-                              setSearchTop(200);
-                              setSearchOption("wells");
-                            }}
-                          >
-                            All WELLS
-                          </Button>
-                        ) : (
-                          <Button
-                            size="small"
-                            className={classes.allWellBtn}
-                            onClick={() => {
-                              setSearchTop(5);
-                            }}
-                          >
-                            See Less
-                          </Button>
-                        )}
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={12}>
-                      {option.children}
-                    </Grid>
-                  </Grid>
-                )
+                <CircularProgress
+                  key="loader"
+                  style={{ margin: "10px 0 0 48%" }}
+                  size={28}
+                  color="secondary"
+                />
               );
-            }}
-            freeSolo
-            // autoComplete
-            includeInputInList
-            value={value}
-            // handle change also acts like onClick here
-            onChange={(event, newValue) => {
-              if (event.key === "Enter") handleChange(options[0]);
-              else handleChange(newValue);
-            }}
-            onInputChange={(event, newInputValue, reason) => {
-              if (reason === "input") {
-                dispatch(
-                  setMapGridCardState({
-                    mapGridCardActiveTap: newInputValue === "" ? (mapGridCardActiveTap === 0 ? 1 : mapGridCardActiveTap) : 0,
-                    searchInputValue: newInputValue,
-                  })
-                );
 
-                if (newInputValue !== "") {
-                  //// setting loader
-                  setLoadingWells(true);
-                } else {
-                  // setValue(null);
-                  setOptions([]);
-                  setLoadingWells(false);
-                }
-              }
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                fullWidth
-                autoFocus={true}
-                style={{ width: "100%" }}
-                onBlur={() => setEnableSearch(!enableSearch)}
-                placeholder="Search by well name, API, owner, operator or a location"
-                InputProps={{
-                  ...params.InputProps,
-
-                  endAdornment: (
-                    <InputAdornment className={classes.endAdornmentIcon}>
-                      <div>
-                        {((searchInputValue && searchInputValue !== "") ||
-                          (stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0)) && (
-                            <Tooltip title="Clear" placement="top">
-                              <IconButton
-                                size="small"
-                                onClick={() => {
-                                  setValue("");
-                                  dispatch(
-                                    setMapGridCardState({
-                                      searchInputValue: "",
-                                      searchResultData: [],
-                                    })
-                                  );
-                                  setStateApp((state) => ({
-                                    ...state,
-                                    wellListFromSearch: [],
-                                  }));
-                                }}
-                              >
-                                <ClearIcon htmlColor="#fff" />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                        <Tooltip title="Search History" placement="top">
-                          <IconButton
-                            size="small"
-                            onClick={(event) => {
-                              setAnchorEl(event.currentTarget);
-                            }}
-                          >
-                            <ArrowDropDownIcon htmlColor="#fff" />
-                          </IconButton>
-                        </Tooltip>
-
-                        <Popover
-                          onBlur={() => {
-                            setAnchorEl(null);
-                          }}
-                          open={Boolean(anchorEl)}
-                          anchorEl={anchorEl}
-                          onClose={() => {
-                            setAnchorEl(null);
-                          }}
-                          anchorOrigin={{
-                            vertical: "bottom",
-                            horizontal: "right",
-                          }}
-                          transformOrigin={{
-                            vertical: "top",
-                            horizontal: "right",
-                          }}
-                          style={{
-                            width: document.getElementById("searchBarDivParent")
-                              ? document.getElementById("searchBarDivParent").offsetWidth
-                              : "400px",
-                          }}
-                          className={classes.historyPopover}
-                        >
-                          {searchHistoryList && searchHistoryList.length > 0 ? (
-                            searchHistoryList.map((search, i) => {
-                              let option = search.searchData;
-                              // eslint-disable-next-line no-array-constructor
-                              const parts = parse(option.Primary, Array());
-
-                              /// THIS IS THEI LIST FOR THE SEARCH HISTORY
-                              return (
-                                <div>
-                                  <Box
-                                    p={1}
-                                    key={i}
-                                    className={classes.historyRow}
-                                    onClick={() => {
-                                      setSearchTop(5);
-                                      setSearchOption(option.Source === ownerCogIndexName ? "owners" : "all");
-
-                                      dispatch(
-                                        setMapGridCardState({
-                                          mapGridCardActiveTap: 0,
-                                          searchInputValue: option.Primary ? option.Primary : option.Secondary,
-                                        })
-                                      );
-                                      handleChange({
-                                        ...option,
-                                        searchId: search._id,
-                                      });
-                                    }}
-                                  >
-                                    <Grid container spacing={0}>
-                                      <Grid container item xs={9} alignItems="center">
-                                        <Grid item>
-                                          {option.Source === wellCogIndexName && (
-                                            <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
-                                          )}
-
-                                          {option.Source === "mapboxSearch" && <LocationOnIcon className={classes.icon} />}
-                                        </Grid>
-                                        <Grid item xs>
-                                          {parts.map((part, index) => (
-                                            <span
-                                              key={index}
-                                              style={{
-                                                fontWeight: part.highlight ? 700 : 400,
-                                              }}
-                                            >
-                                              {part.text}
-                                            </span>
-                                          ))}
-
-                                          {option && option.Secondary && (
-                                            <Typography variant="body2" color="textSecondary">
-                                              {option.Secondary}
-                                            </Typography>
-                                          )}
-                                        </Grid>
-                                      </Grid>
-                                      <Grid container item xs={3} alignItems="center">
-                                        <Grid item>
-                                          <Typography
-                                            variant="body2"
-                                            style={{
-                                              color: "rgb(80, 187, 223)",
-                                            }}
-                                          >
-                                            {new Intl.DateTimeFormat("en-US", {
-                                              year: "2-digit",
-                                              month: "2-digit",
-                                              day: "2-digit",
-                                              hour: "2-digit",
-                                              minute: "2-digit",
-                                            }).format(search.ts)}
-                                          </Typography>
-                                        </Grid>
-                                      </Grid>
-                                    </Grid>
-                                  </Box>
-                                </div>
-                              );
-                            })
-                          ) : (
-                            <Box p={1}>
-                              <Typography>There is no history yet.</Typography>
-                            </Box>
-                          )}
-                        </Popover>
-                      </div>
-                    </InputAdornment>
-                  ),
-                }}
-                className={classes.textF}
-              />
-            )}
-            renderOption={(option) => {
-              if (option.Source === "header" || option.group === "loader") return null;
-              // eslint-disable-next-line no-array-constructor
-              const parts = parse(option.Primary, Array());
-
-              return (
-                <Grid container spacing={0}>
-                  <Grid container item xs={11} alignItems="center">
-                    <Grid item>
-                      {option.Source === wellCogIndexName && <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />}
-                    </Grid>
-                    <Grid item xs>
-                      {parts.map((part, index) => (
-                        <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-                          {part.text}
-                        </span>
-                      ))}
-
-                      {option && option.Secondary && (
-                        <Typography variant="body2" color="textSecondary">
-                          {option.Secondary}
-                        </Typography>
-                      )}
-                    </Grid>
-                  </Grid>
-                  <Grid container item xs={1} alignItems="center">
-                    <Grid item style={{ position: "relative" }}>
-                      <div
-                        className={classes.score}
-                        style={{
-                          zIndex: "1300",
-                          backgroundColor: "#12ABE0",
-                        }}
-                      />
-                      <div
-                        className={classes.score}
-                        style={{
-                          zIndex: "1301",
-                          backgroundImage: "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
-                          opacity: calcScoreOpacity(maxMinMapboxSearchScore, option.Score).toString(),
-                        }}
-                      />
-                    </Grid>
+            return (
+              (searchOption === "all" ||
+                searchOption === option.group.toLowerCase()) && (
+                <Grid key={option.group}>
+                  <Grid item xs={12}>
+                    {option.children}
                   </Grid>
                 </Grid>
-              );
-            }}
+              )
+            );
+          }}
+          // freeSolo
+          // autoComplete
+          // includeInputInList
+          // value={searchText}
+          // handle change also acts like onClick here
+          onChange={(event, newValue) => {
+            if (event.key === "Enter") handleChange(options[0]);
+            else handleChange(newValue);
+          }}
+          onInputChange={(event, newInputValue, reason) => {
+            if (reason === "input") {
+              if (newInputValue !== "") {
+                //// setting loader
+                setLoadingWells(true);
+              } else {
+                setOptions([]);
+                setLoadingWells(false);
+              }
+            }
+          }}
+          PopperComponent={(props) => {
+            return <Popper {...props} style={{ height: '2px' }} className={classes.popperClass} placement='bottom-start' />
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              fullWidth
+              style={{ width: "100%" }}
+              value={searchText}
+              onChange={(e) => {
+                setSearchText(e.target.value)
+              }}
+              placeholder="Search by well name or API"
+              InputProps={{
+                ...params.InputProps,
+              }}
             />
-            &nbsp; <CloseRoundedIcon onClick={handleClose} className={classes.closeIcon} />
-          </>
-      )}
+          )}
+          renderOption={(option) => {
+            if (option.Source === "header" || option.group === "loader")
+              return null;
+            // eslint-disable-next-line no-array-constructor
+            const parts = parse(option.Primary, Array());
+
+            return (
+              <Grid container spacing={0}>
+                <Grid container item xs={11} alignItems="center">
+                  <Grid item>
+                    {option.Source === wellCogIndexName && (
+                      <WellIcon
+                        className={classes.icon}
+                        color={"#757575"}
+                        opacity="1.0"
+                        small
+                      />
+                    )}
+                  </Grid>
+                  <Grid item xs>
+                    {parts.map((part, index) => (
+                      <span
+                        key={index}
+                        style={{ fontWeight: part.highlight ? 700 : 400 }}
+                      >
+                        {part.text}
+                      </span>
+                    ))}
+
+                    {option && option.Secondary && (
+                      <Typography variant="body2" color="textSecondary">
+                        {option.Secondary}
+                      </Typography>
+                    )}
+                  </Grid>
+                </Grid>
+                <Grid container item xs={1} alignItems="center">
+                  <Grid item style={{ position: "relative" }}>
+                    <div
+                      className={classes.score}
+                      style={{
+                        zIndex: "1300",
+                        backgroundColor: "#12ABE0",
+                      }}
+                    />
+                    <div
+                      className={classes.score}
+                      style={{
+                        zIndex: "1301",
+                        backgroundImage:
+                          "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
+                        opacity: calcScoreOpacity(
+                          maxMinMapboxSearchScore,
+                          option.Score
+                        ).toString(),
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            );
+          }}
+        />
+      </>
     </div>
   );
 }

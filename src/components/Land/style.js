@@ -61,9 +61,12 @@ export const useStyles = makeStyles((theme) => ({
   },
   landRootExpanded: {
     marginLeft: "425px !important",
+    width: "calc(100% - 425px)",
   },
   landRootCollapsed: {
     marginLeft: "0px !important",
+    width: "100%",
+    transition: "all 0.3s ease-in-out",
   },
   header: {
     padding: "10px 5px 15px 10px",

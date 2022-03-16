@@ -4,9 +4,10 @@ import { useSelector, useDispatch } from "react-redux";
 
 import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import * as Components from "components/Land/components";
+import { replaceLinkId } from "components/Shared/functions";
 
 //Actions
-import { toggleLandActionsPanel, setActiveModuleLand } from "actions";
+import { toggleQuickActionsPanel, setActiveModule } from "store/actions/commonActions";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
   // PORTFOLIO: {
@@ -20,6 +21,13 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     title: "Agreements",
     link: "/land/agreements",
     component: "Agreements",
+  },
+  AGREEMENT_DETAIL: {
+    isExcluded: true,
+    parent: "AGREEMENTS",
+    title: "Agreements",
+    link: "/land/agreement/details/:id",
+    component: "AgreementDetails",
   },
   TRACTS: {
     featureFlag: "LANDMODULE",
@@ -38,34 +46,25 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
 export default function Revenue() {
   const location = useLocation();
   const dispatch = useDispatch();
-  const { quickActionsPanelState, activeModule } = useSelector(
-    ({ Land }) => Land
-  );
-
-  //   useEffect(() => {
-  //     const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => item.link === location.pathname);
-  //     if (option) {
-  //       setStateApp((stateApp) => ({
-  //         ...stateApp,
-  //         revenueDetails: {
-  //           ...stateApp.revenueDetails,
-  //           title: option.title,
-  //         },
-  //       }));
-  //     }
-  //   }, [location.pathname]);
+  const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
   useEffect(() => {
-    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find(
-      (item) => item.link === location.pathname
-    );
-    if (option) {
-      dispatch(setActiveModuleLand(option));
+    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => {
+      const path = location.pathname;
+      if (item.link.includes(":id")) {
+        return replaceLinkId(item.link, path);
+      }
+      return path.startsWith(item.link);
+    });
+    if (option?.parent) {
+      dispatch(setActiveModule(SIDE_PANEL_MENU_ITEMS_LIST[option.parent]));
+    } else if (option) {
+      dispatch(setActiveModule(option));
     }
-  }, [location.pathname]);
+  }, [location.pathname, dispatch]);
 
   const handlePanelStateChange = (state) => {
-    dispatch(toggleLandActionsPanel(state));
+    dispatch(toggleQuickActionsPanel(state));
   };
 
   return (
@@ -78,11 +77,7 @@ export default function Revenue() {
     >
       {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
         <Switch>
-          <Route
-            exact
-            path={SIDE_PANEL_MENU_ITEMS_LIST[option].link}
-            component={Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component]}
-          />
+          <Route path={SIDE_PANEL_MENU_ITEMS_LIST[option].link} component={Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component]} />
         </Switch>
       ))}
     </QuickActionPanel>

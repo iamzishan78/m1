@@ -41,7 +41,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     Loader.createToast('contact-creation', 'Contact owner assignment in progress')
     assignOwnerToContact({
       variables: { contactIds, contactOwner, userId: stateApp.user.mongoId },
-      refetchQueries: ["getPaginatedContacts"],
+      refetchQueries: ["getESContacts"],
       awaitRefetchQueries: true
     }).then(
       res => {

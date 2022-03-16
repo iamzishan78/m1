@@ -131,21 +131,21 @@ const useStyles = makeStyles((theme) => {
               mapGridCardActiveTap === 0
                 ? mapGridCardActivated === "exp"
                   ? "calc(91vh - 233px)"
-                  : "calc(58.75vh - 221px)"
+                  : "calc(58.75vh - 235px)"
                 : mapGridCardActivated === "exp"
                   ? "calc(91vh - 183px)"
                   : "calc(58.75vh - 183px)",
             "@media (max-height:930px)": {
               maxHeight: ({ dockMenu }) => {
                 if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 590px)"
-                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 216px)"
+                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 204px)"
                 else if (dockMenu === "full") return "calc(100vh - 153px)"
               }
             },
             "@media (max-height:1600px)": {
               maxHeight: ({ dockMenu }) => {
                 if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 640px)"
-                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 216px)"
+                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 204px)"
                 else if (dockMenu === "full") return "calc(100vh - 183px)"
               }
             },
