@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 const AdjustmentSection = ({ monthsInterval, adjustmentTotals }) => {
   const classes = useStyles();
-  const [items, setItems] = useState([
+  const constItems = [
     {
       name: "Severance Tax",
       value: 0.15,
@@ -72,11 +72,12 @@ const AdjustmentSection = ({ monthsInterval, adjustmentTotals }) => {
       data: {},
       total: 0
     },
-  ]);
+  ];
+  const [items, setItems] = useState(constItems);
 
   useEffect(() => {
     if (monthsInterval.length > 0 && adjustmentTotals.length > 0) {
-      const _items = copy(items);
+      const _items = copy(constItems);
       let total = 0;
       _items.forEach((item) => {
         monthsInterval.forEach((month, index) => {

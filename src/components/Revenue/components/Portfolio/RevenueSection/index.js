@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 const RevenueSection = ({ monthsInterval, adjustmentsRef, netRevenueRef }) => {
   const classes = useStyles();
-  const [items, setItems] = useState([
+  const constItems =[
     {
       name: "Gross Revenue",
       value: 500000,
@@ -60,11 +60,12 @@ const RevenueSection = ({ monthsInterval, adjustmentsRef, netRevenueRef }) => {
       data: {},
       total: 0
     },
-  ]);
+  ];
+  const [items, setItems] = useState(constItems);
 
   useEffect(() => {
     if (monthsInterval.length > 0) {
-      const _items = copy(items);
+      const _items = copy(constItems);
       const adjustmentTotals = [];
       const netRevenueTotals = [];
       monthsInterval.forEach((month) => {
