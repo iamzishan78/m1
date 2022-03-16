@@ -7,6 +7,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import { Grid } from "@material-ui/core";
+import vf_number from "components/Shared/valueformatters/vf_number";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,8 +72,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function OilTable({ monthsInterval, title, grossVolumeType = "BBL" }) {
+export default function OilTable({ monthsInterval, netRevenueTotals, item, title, grossVolumeType = "BBL", price }) {
   const classes = useStyles();
+
+  const totalGrossVolume = item.data && Math.round(Object.values(item.data).reduce((prev, curr) => curr += prev, 0) / price / 0.375, 0);
+  const totalOwnerVolume = item.data && Math.round(Object.values(item.data).reduce((prev, curr) => curr += prev, 0) / price, 0);
+  const totalOwnerNetRevenue = item.data && Object.values(item.data).reduce((prev, curr) => curr += prev, 0);
 
   return (
     <div className={classes.root}>
@@ -101,7 +106,7 @@ export default function OilTable({ monthsInterval, title, grossVolumeType = "BBL
                     Gross Volume ({grossVolumeType})
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    190,325
+                  { vf_number(totalGrossVolume) }
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -109,7 +114,7 @@ export default function OilTable({ monthsInterval, title, grossVolumeType = "BBL
                     Owner Volume
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    900,000,00
+                   { vf_number(totalOwnerVolume) }
                   </TableCell>
                 </TableRow>
                 <TableRow className={classes.highlightedRows}>
@@ -117,7 +122,7 @@ export default function OilTable({ monthsInterval, title, grossVolumeType = "BBL
                     Average Price
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    2,000,000
+                    {price}
                   </TableCell>
                 </TableRow>
                 <TableRow className={classes.highlightedLessBordered}>
@@ -128,7 +133,7 @@ export default function OilTable({ monthsInterval, title, grossVolumeType = "BBL
                     scope="row"
                     className={`${classes.leftRightColoredBorderCell} ${classes.bottomColoredBorderCell} ${classes.totalColCell}`}
                   >
-                    87,000,000
+                    { vf_number(totalOwnerNetRevenue) }
                   </TableCell>
                 </TableRow>
                 <TableRow></TableRow>
@@ -149,22 +154,22 @@ export default function OilTable({ monthsInterval, title, grossVolumeType = "BBL
               <TableBody>
                 <TableRow className={classes.highlightedRows}>
                   {monthsInterval.map((month) => (
-                    <TableCell scope="row">02,000,000</TableCell>
+                    <TableCell scope="row">{vf_number(Math.round(totalGrossVolume / monthsInterval.length, 0))}</TableCell>
                   ))}
                 </TableRow>
                 <TableRow>
                   {monthsInterval.map((month) => (
-                    <TableCell scope="row">10,000,000</TableCell>
+                    <TableCell scope="row">{vf_number(Math.round(totalOwnerVolume / monthsInterval.length, 0))}</TableCell>
                   ))}
                 </TableRow>
                 <TableRow className={classes.highlightedRows}>
                   {monthsInterval.map((month) => (
-                    <TableCell scope="row">3,000,000</TableCell>
+                    <TableCell scope="row">{price}</TableCell>
                   ))}
                 </TableRow>
                 <TableRow className={classes.highlightedLessBordered}>
                   {monthsInterval.map((month) => (
-                    <TableCell scope="row">5,000,00</TableCell>
+                    <TableCell scope="row">{vf_number(Math.round(totalOwnerNetRevenue / monthsInterval.length, 0))}</TableCell>
                   ))}
                 </TableRow>
 
