@@ -78,7 +78,7 @@ const RevenueSection = ({ monthsInterval, adjustmentsRef }) => {
         });
       });
       _items.forEach((item) => {item.total = vf_number(item.total)})
-      adjustmentsRef.current = adjustmentTotals
+      adjustmentsRef(adjustmentTotals)
       setItems(_items);
     }
   }, [monthsInterval]);

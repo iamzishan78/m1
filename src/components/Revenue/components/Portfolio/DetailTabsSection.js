@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, Tabs, Tab } from "@material-ui/core";
@@ -116,7 +116,7 @@ export default function DetailTabsSection({ monthsInterval }) {
   const classes = useStyles();
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
-  const adjustmentsRef = useRef([]);
+  const [adjustmentTotals, setAdjustmentTotals] = useState([]);
 
   useEffect(() => {
     selectedTabRef.current &&
@@ -126,6 +126,12 @@ export default function DetailTabsSection({ monthsInterval }) {
         inline: "start",
       });
   }, [tab]);
+
+  const adjustmentsRef = useCallback(obj => {
+    if (obj != null) {
+      setAdjustmentTotals(obj);
+    }
+  }, []);
 
   return (
     <div className={classes.tabsSection}>
@@ -142,7 +148,7 @@ export default function DetailTabsSection({ monthsInterval }) {
           <RevenueSection monthsInterval={monthsInterval} adjustmentsRef={adjustmentsRef}/>
         </div>
         <div className={classes.adjustmentSection} ref={tab === 1 ? selectedTabRef : null}>
-          <AdjustmentSection monthsInterval={monthsInterval} adjustmentTotals={[...adjustmentsRef.current]}/>
+          <AdjustmentSection monthsInterval={monthsInterval} adjustmentTotals={adjustmentTotals}/>
         </div>
         <div className={classes.productSection} ref={tab === 2 ? selectedTabRef : null}>
           <Typography variant="h6" className={classes.sectionTitle}>
