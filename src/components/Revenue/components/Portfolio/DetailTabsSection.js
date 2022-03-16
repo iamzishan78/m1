@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, Tabs, Tab } from "@material-ui/core";
 
 // Components
-import RevenueTable from "./RevenueTable";
-import AdjustmentTable from "./AdjustmentTable";
+import RevenueSection from "./RevenueSection";
+import AdjustmentSection from "./AdjustmentSection";
 import ProductsSection from "./Products";
 
 const useStyles = makeStyles((theme) => ({
@@ -43,19 +43,19 @@ const useStyles = makeStyles((theme) => ({
   revenueSection: {
     padding: "20px 38px",
     backgroundColor: "#fff",
-    marginBottom: "10px",
+    marginBottom: "20px",
     height: "auto",
   },
   adjustmentSection: {
     padding: "20px 38px",
     backgroundColor: "#fff",
-    marginBottom: "10px",
+    marginBottom: "20px",
     height: "auto",
   },
   productSection: {
     padding: "20px 38px",
     backgroundColor: "#fff",
-    marginBottom: "10px",
+    marginBottom: "20px",
   },
   propertiesSection: {
     padding: "20px 38px",
@@ -116,6 +116,8 @@ export default function DetailTabsSection({ monthsInterval }) {
   const classes = useStyles();
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
+  const [adjustmentTotals, setAdjustmentTotals] = useState([]);
+  const [netRevenueTotals, setNetRevenueTotals] = useState([]);
 
   useEffect(() => {
     selectedTabRef.current &&
@@ -125,6 +127,18 @@ export default function DetailTabsSection({ monthsInterval }) {
         inline: "start",
       });
   }, [tab]);
+
+  const adjustmentsRef = useCallback(obj => {
+    if (obj != null) {
+      setAdjustmentTotals(obj);
+    }
+  }, []);
+
+  const netRevenueRef = useCallback(obj => {
+    if (obj != null) {
+      setNetRevenueTotals(obj);
+    }
+  }, []);
 
   return (
     <div className={classes.tabsSection}>
@@ -138,22 +152,16 @@ export default function DetailTabsSection({ monthsInterval }) {
       </div>
       <div style={{ maxHeight: "calc(100vh - 282px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
         <div className={classes.revenueSection} ref={tab === 0 ? selectedTabRef : null}>
-          <Typography variant="h6" className={classes.sectionTitle}>
-            Revenue & Income
-          </Typography>
-          <RevenueTable monthsInterval={monthsInterval} />
+          <RevenueSection monthsInterval={monthsInterval} adjustmentsRef={adjustmentsRef} netRevenueRef={netRevenueRef}/>
         </div>
         <div className={classes.adjustmentSection} ref={tab === 1 ? selectedTabRef : null}>
-          <Typography variant="h6" className={classes.sectionTitle}>
-            Adjustments
-          </Typography>
-          <AdjustmentTable monthsInterval={monthsInterval} />
+          <AdjustmentSection monthsInterval={monthsInterval} adjustmentTotals={adjustmentTotals}/>
         </div>
         <div className={classes.productSection} ref={tab === 2 ? selectedTabRef : null}>
           <Typography variant="h6" className={classes.sectionTitle}>
             Products
           </Typography>
-          <ProductsSection monthsInterval={monthsInterval} />
+          <ProductsSection monthsInterval={monthsInterval} netRevenueTotals={netRevenueTotals}/>
         </div>
         {/* temp hide until we get properties section designed --kc 20220307 */}
         {/* <div className={classes.propertiesSection} ref={tab === 3 ? selectedTabRef : null}>
