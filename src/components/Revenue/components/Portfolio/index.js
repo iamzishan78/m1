@@ -75,6 +75,7 @@ export default function Portfolio() {
       }
     }
     setMonths(months);
+    
   };
 
   return (

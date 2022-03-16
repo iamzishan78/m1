@@ -10,7 +10,7 @@ import { Grid } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: "20px 0px",
+    // margin: "20px 0px",
   },
   table: {
     textTransform: "uppercase !important",

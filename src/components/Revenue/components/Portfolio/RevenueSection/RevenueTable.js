@@ -11,7 +11,7 @@ import vf_number from "components/Shared/valueformatters/vf_number";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: "20px 0px",
+    // margin: "20px 0px",
   },
   table: {
     textTransform: "uppercase !important",
@@ -136,14 +136,14 @@ export default function AcccessibleTable({ monthsInterval, items, total }) {
               <TableBody>
                 {items.map((item, index) => (
                   <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
-                    {item.data && Object.values(item.data).map((value) => <TableCell scope="row">{value}</TableCell>)}
+                    {item.data && Object.values(item.data).map((value) => <TableCell scope="row">{vf_number(value)}</TableCell>)}
                   </TableRow>
                 ))}
                 <TableRow className={classes.highlightedRows}>
                   {monthsInterval.map((month) => {
                     let total = 0;
-                    items.forEach((item) => {
-                      total += Number(item.value.replace(/,/g, ""));
+                    items.filter((item) => ["Net Revenue", "Lease Payments", "Other"].includes(item.name)).forEach((item) => {
+                      item.data && (total += item.data[month]);
                     });
                     return (
                       <TableCell className={classes.totalColCell} scope="row">

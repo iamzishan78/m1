@@ -26,7 +26,7 @@ const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
     monthsInterval?.forEach((month, index) => {
       _data.push({ month });
       items.forEach((item) => {
-        _data[index][item.name] = Number(item.value.replace(/,/g, ""));
+        _data[index][item.name] = item.data[month];
       });
     });
     setData(_data);
@@ -41,7 +41,7 @@ const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
 
     chart.data = data;
 
-    chart.dateFormatter.inputDateFormat = "MM/yyyy";
+    chart.dateFormatter.inputDateFormat = "M/yyyy";
     let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
     dateAxis.renderer.minGridDistance = 60;
     dateAxis.startLocation = 0.5;
@@ -50,6 +50,7 @@ const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
       timeUnit: "month",
       count: 1,
     };
+    dateAxis.skipEmptyPeriods = true;
 
     let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
     valueAxis.tooltip.disabled = true;

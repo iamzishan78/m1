@@ -16,7 +16,14 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: theme.typography.fontWeightBold,
   },
   root: {
-    padding: "25px 50px 25px 0px",
+    padding: "25px 0px 25px 0px",
+    width: "inherit",
+    display: "flex",
+    "flex-direction": "row",
+    "align-items": "stretch",
+    "&>div": {
+      flex: 1
+    }
   },
 }));
 
@@ -87,10 +94,10 @@ const AdjustmentSection = ({ monthsInterval }) => {
         Adjustments
       </Typography>
       <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3} className={classes.root}>
-        <Grid item xs={5}>
+        <Grid item >
           <DonutChart items={items} total={total} id="adjustment-chart" />
         </Grid>
-        <Grid item xs={5}>
+        <Grid item >
           <StackedChart items={items} total={total} monthsInterval={monthsInterval} id="adjustment-chart-stacked" />
         </Grid>
       </Grid>

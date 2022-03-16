@@ -43,19 +43,19 @@ const useStyles = makeStyles((theme) => ({
   revenueSection: {
     padding: "20px 38px",
     backgroundColor: "#fff",
-    marginBottom: "10px",
+    marginBottom: "20px",
     height: "auto",
   },
   adjustmentSection: {
     padding: "20px 38px",
     backgroundColor: "#fff",
-    marginBottom: "10px",
+    marginBottom: "20px",
     height: "auto",
   },
   productSection: {
     padding: "20px 38px",
     backgroundColor: "#fff",
-    marginBottom: "10px",
+    marginBottom: "20px",
   },
   propertiesSection: {
     padding: "20px 38px",

@@ -11,7 +11,7 @@ import vf_number from "components/Shared/valueformatters/vf_number";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: "20px 0px",
+    // margin: "20px 0px",
   },
   table: {
     textTransform: "uppercase !important",

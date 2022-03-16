@@ -12,7 +12,14 @@ const { useState } = React;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: "25px 50px 25px 0px",
+    padding: "25px 0px 25px 0px",
+    width: "inherit",
+    display: "flex",
+    "flex-direction": "row",
+    "align-items": "stretch",
+    "&>div": {
+      flex: 1
+    }
   },
   sectionTitle: {
     textTransform: "uppercase",
@@ -25,49 +32,59 @@ const RevenueSection = ({ monthsInterval }) => {
   const [items, setItems] = useState([
     {
       name: "Gross Revenue",
-      value: "3,000",
+      value: 500000,
+      data: {},
+      total: 0
     },
     {
       name: "Adjustments",
-      value: "900,000",
+      value: 95000,
+      data: {},
+      total: 0
     },
     {
       name: "Net Revenue",
-      value: "2,000",
+      value: 405000,
+      data: {},
+      total: 0
     },
     {
       name: "Lease Payments",
-      value: "44,000",
+      value: 44000,
+      data: {},
+      total: 0
     },
     {
       name: "Other",
-      value: "13,000",
+      value: 13000,
+      data: {},
+      total: 0
     },
   ]);
 
   useEffect(() => {
     if (monthsInterval.length > 0) {
       const _items = copy(items);
-      let total = 0;
-      _items.forEach((item, index) => {
-        item.data = {};
-        monthsInterval.forEach((month) => {
+      monthsInterval.forEach((month) => {
+        const rand = Math.floor(Math.random() * (125 - 80 + 1) + 80) / 100
+        _items.forEach((item, index) => {
+          item.value = Math.round(item.value * rand, 0);
           item.data[`${month}`] = item.value;
-          total += Number(item.value.replace(/,/g, ""));
+          item.total += item.value;
         });
-        item.total = vf_number(total);
-        total = 0;
       });
+      _items.forEach((item) => {item.total = vf_number(item.total)})
       setItems(_items);
     }
   }, [monthsInterval]);
 
   const total = React.useMemo(() => {
     let _total = 0;
-    if (items.length > 0) {
-      items.forEach((item) => (_total += Number(item.value.replace(/,/g, ""))));
-    }
-    _total = _total * monthsInterval.length;
+    monthsInterval.forEach((month) => {
+      items.filter((item) => ["Net Revenue", "Lease Payments", "Other"].includes(item.name)).forEach((item) => {
+        item.data && (_total += item.data[month]);
+      });
+    })
     return vf_number(_total);
   }, [items, monthsInterval]);
 
@@ -77,10 +94,10 @@ const RevenueSection = ({ monthsInterval }) => {
         Revenue & Income
       </Typography>
       <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3} className={classes.root}>
-        <Grid item xs={5}>
+        <Grid item>
           <DonutChart items={items} total={total} />
         </Grid>
-        <Grid item xs={5}>
+        <Grid item>
           <StackedChart items={items} total={total} monthsInterval={monthsInterval} />
         </Grid>
       </Grid>

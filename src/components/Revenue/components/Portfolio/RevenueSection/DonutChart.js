@@ -11,7 +11,7 @@ const useStyles = makeStyles(() => ({
     graphCard: {
         border: "2px solid #959595",
         borderRadius: 8,
-        maxWidth: "550px",
+        // maxWidth: "550px",
         height: "430px",
     },
 }));
@@ -24,7 +24,7 @@ const DonutChart = ({ items, total, id = "pie-chart" }) => {
         if (items?.length === 0) return;
         const _data = items.map(item => ({
             category: item.name,
-            value: Number(item.value.replace(/,/g, ""))
+            value: item.value
         }));
         setData(_data);
     }, [items]);
