@@ -130,14 +130,14 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
               <TableBody>
                 {items.map((item, index) => (
                   <TableRow key={index}>
-                    {item.data && Object.values(item.data).map((value) => <TableCell scope="row">{value}</TableCell>)}
+                    {item.data && Object.values(item.data).map((value) => <TableCell scope="row">{vf_number(value)}</TableCell>)}
                   </TableRow>
                 ))}
                 <TableRow className={classes.highlightedRows}>
                   {monthsInterval.map((month) => {
                     let total = 0;
                     items.forEach((item) => {
-                      total += Number(item.value.replace(/,/g, ""));
+                      total += item.data[month];
                     });
                     return (
                       <TableCell className={classes.totalColCell} scope="row">

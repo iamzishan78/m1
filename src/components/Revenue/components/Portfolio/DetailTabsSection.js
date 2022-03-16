@@ -116,6 +116,7 @@ export default function DetailTabsSection({ monthsInterval }) {
   const classes = useStyles();
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
+  const adjustmentsRef = useRef([]);
 
   useEffect(() => {
     selectedTabRef.current &&
@@ -138,10 +139,10 @@ export default function DetailTabsSection({ monthsInterval }) {
       </div>
       <div style={{ maxHeight: "calc(100vh - 282px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
         <div className={classes.revenueSection} ref={tab === 0 ? selectedTabRef : null}>
-          <RevenueSection monthsInterval={monthsInterval} />
+          <RevenueSection monthsInterval={monthsInterval} adjustmentsRef={adjustmentsRef}/>
         </div>
         <div className={classes.adjustmentSection} ref={tab === 1 ? selectedTabRef : null}>
-          <AdjustmentSection monthsInterval={monthsInterval} />
+          <AdjustmentSection monthsInterval={monthsInterval} adjustmentTotals={[...adjustmentsRef.current]}/>
         </div>
         <div className={classes.productSection} ref={tab === 2 ? selectedTabRef : null}>
           <Typography variant="h6" className={classes.sectionTitle}>
