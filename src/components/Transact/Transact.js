@@ -559,6 +559,14 @@ export default function Transact() {
     return cardColor;
   };
 
+  const getCardBorder = (cardId, cardColor) => ({
+    borderLeft: `4px solid ${cardColor}`,
+    borderTop: cardId === stateApp.activeDeal._id ? "2px solid #17aae0" : "",
+    borderRight: cardId === stateApp.activeDeal._id ? "2px solid #17aae0" : "",
+    borderBottom: cardId === stateApp.activeDeal._id ? "2px solid #17aae0" : "",
+    backgroundColor: cardId === stateApp.activeDeal._id ? "#d8f5ff" : "",
+  })
+
   const GetCard = React.memo((cardProps) => {
     const CardClasses = useStyles(cardProps);
     const { metadata, title, description, id, laneId } = cardProps;
@@ -597,7 +605,7 @@ export default function Transact() {
       <article
         className={CardClasses.cardStyle}
         onClick={() => handleCardClick(id, metadata, laneId)}
-        style={{ borderLeft: `4px solid ${cardColor}` }}
+        style={getCardBorder(id, cardColor)}
       >
         <header className={CardClasses.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -679,7 +687,7 @@ export default function Transact() {
       <DocViewer />
       {stateApp.dealDialog && (
         <AddDealDialog
-          open={stateApp.dealDialog ? true : false}
+          open={true}
           width="450px"
           isTransactPage
           onClose={() =>
