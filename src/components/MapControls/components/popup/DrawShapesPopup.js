@@ -130,6 +130,7 @@ const DrawShapesPopup = (props) => {
     // adding new polygon into map instance
     draw.add(newFeature);
 
+    
     setStateApp((state) => ({
       ...state,
       selectedAbstracts: [],
