@@ -82,7 +82,7 @@ function ContactsTable(props) {
   const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
-  const [selectedGridView, setSelectedGridView] = useState(defaultView);
+  const [selectedGridView, setSelectedGridView] = useState(Contacts || defaultView);
   const { activeModule } = useSelector(({ common }) => common);
 
   const setColumns = (newState) => {
@@ -136,10 +136,11 @@ function ContactsTable(props) {
     props.setTableMeta({
       addableName: "Contact",
       extendSearchQuery: props.contactSearchQuery,
-      searchFields: ["name^4","_all"],
+      searchFields: ["name^4", "_all"],
       TableHeader: copy(TableHeader),
       esIndex: "contacts_flat",
-      // filters: getFilters(),
+      filters: Contacts ? getFilters() : [],
+      selectedGridView: Contacts || defaultView,
       startPaginationAt: 25,
       defaultSort: { field: 'lastUpdateAt', order: 'desc' },
       formatHits,
@@ -181,18 +182,18 @@ function ContactsTable(props) {
     }
   }, [ContactPurchaseData]);
 
-  useEffect(() => {
-    tableRef.current.changePage(0)
-    tableRef.current.isFetching = false;
-    if (!isEmpty(selectedGridView)) {
-      const view = copy(selectedGridView);
-      if (view) {
-        view.filters = getFilters();
-      }
-      const updatedColumns = handleSelectedGridChange(TableHeader, view, columns, true);
-      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
-    }
-  }, [selectedGridView, props.customAppliedFilters]);
+  // useEffect(() => {
+  //   tableRef.current.changePage(0)
+  //   tableRef.current.isFetching = false;
+  //   if (!isEmpty(selectedGridView)) {
+  //     const view = copy(selectedGridView);
+  //     if (view) {
+  //       view.filters = getFilters();
+  //     }
+  //     const updatedColumns = handleSelectedGridChange(TableHeader, view, columns, true);
+  //     setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_FILTER_LIST, 'contacts_flat');
+  //   }
+  // }, [selectedGridView, props.customAppliedFilters]);
 
   const deleteFunc = (contactsIdsToDelete) => {
     if (contactsIdsToDelete) {
