@@ -125,7 +125,6 @@ const useStyles = makeStyles((theme) => ({
   contentRoot: {
     overflowY: "overlay",
     overflowX: "hidden",
-    maxHeight: "90vh",
     marginRight: "60px",
   },
   inputFieldRoot: {
@@ -329,7 +328,7 @@ function AddDealDialog(props) {
   let [transactData, setTransactData] = useState(props.transactData ? { ...props.transactData } : null);
 
   const [mapSettings, setMapSettings] = useState(null);
-  
+
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
   const [getDeal, { data: getDealResult }] = useLazyQuery(GETDEAL, {
@@ -720,7 +719,7 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     if (stateApp?.activeDeal?.mapSettings?.mapDefaultPosition != null &&
-        stateApp?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition) {
+      stateApp?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition) {
       setStateApp((state) => {
         return { ...state, mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition }
       })
@@ -1185,11 +1184,11 @@ function AddDealDialog(props) {
   const saveViewport = useCallback(() => {
     console.log(stateApp.mapVars)
     setMapSettings({
-      activeBaseMap : stateApp?.mapVars?.styleId, 
-      mapDefaultPosition : {
-        zoom: stateApp?.mapVars?.zoom, 
-        bearing: stateApp?.mapVars?.bearing, 
-        pitch: stateApp?.mapVars?.pitch, 
+      activeBaseMap: stateApp?.mapVars?.styleId,
+      mapDefaultPosition: {
+        zoom: stateApp?.mapVars?.zoom,
+        bearing: stateApp?.mapVars?.bearing,
+        pitch: stateApp?.mapVars?.pitch,
         center: stateApp?.mapVars?.center
       }
     })
@@ -1231,7 +1230,7 @@ function AddDealDialog(props) {
   }, [dealSettings]);
 
   const handleClickDialogClose = () => {
-    if(stateApp.transactBarView === "Map") {
+    if (stateApp.transactBarView === "Map") {
       setStateApp((state) => ({
         ...state,
         transactBarView: "Deal",
@@ -1278,8 +1277,11 @@ function AddDealDialog(props) {
           open={props.open}
           handleClickDialogClose={handleClickDialogClose}
           width="650px"
+          height="calc(100vh - 135px)"
+          top="135px"
           isTransactPage={props.isTransactPage}
           hiddenOverflow
+          noBorder
         >
           <DealDialogHeader
             titleFocus={titleFocus}
@@ -1304,7 +1306,7 @@ function AddDealDialog(props) {
           ) : (
             <div className={classes.contentRoot}>
               <Drawer dealSettingsNumber={getSubtaskNumber()} mapSettings={mapSettings} />
-              { !["Deal", "Map"].includes(stateApp.transactBarView) &&
+              {!["Deal", "Map"].includes(stateApp.transactBarView) &&
                 (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>
               ) : (
@@ -1393,7 +1395,7 @@ function AddDealDialog(props) {
                           value={receivedDate}
                           placeholder=""
                           fullWidth
-                          className={classes.dateRoot, classes.inputFieldDate}
+                          className={`${classes.dateRoot} ${classes.inputFieldDate}`}
                           onChange={(e) => {
                             setReceivedDate(e.target.value);
                           }}
@@ -1635,24 +1637,26 @@ function AddDealDialog(props) {
             </div>
           )}
         </RightDialog>
-        {stateApp.transactBarView === "Map" &&  (
+        {stateApp.transactBarView === "Map" && (
           <Container
             maxWidth={true}
             style={{ position: "relative", "z-index": "9999" }}
           >
-              <MapProvider match={{ params: { 
-                expandedPanel: false, 
-                openSpeedDial: false, 
-                viewPortCallback: (mapSettings) => { 
+            <MapProvider match={{
+              params: {
+                expandedPanel: false,
+                openSpeedDial: false,
+                viewPortCallback: (mapSettings) => {
                   console.log("here")
                   setMapSettings(mapSettings)
                 },
                 width: "calc(100% - 650px)"
-              }}} >
-              </MapProvider>
-            <div 
-              style={{ 
-                position: "relative", 
+              }
+            }} >
+            </MapProvider>
+            <div
+              style={{
+                position: "relative",
                 float: "right",
                 "margin-right": "650px",
                 width: "fit-content",
@@ -1666,7 +1670,7 @@ function AddDealDialog(props) {
               </Button>
             </div>
           </Container>
-          )}
+        )}
       </div>
     </>
   );

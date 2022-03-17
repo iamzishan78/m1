@@ -1,12 +1,8 @@
-import React, { useContext, useEffect } from "react";
-import Button from "@material-ui/core/Button";
+import React from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
-import Avatar, { ConfigProvider } from "react-avatar";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import { makeStyles } from "@material-ui/core/styles";
-import M1nTable from "../../Shared/M1nTable/M1nTable";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="left" ref={ref} {...props} />;
@@ -17,16 +13,20 @@ export default function AlertDialogSlide(props) {
     dialog: {
       "& .MuiDialog-paper": {
         position: "fixed",
-        top: "0 !important",
+        top: props.top ?? "0 !important",
         right: "0px !important",
         width: props.width ? String(props.width) : null,
         maxWidth: "100% !important",
-        minHeight: "100vh !important",
+        minHeight: props.height ?? "100vh !important",
+        height: props.height ?? "100vh !important",
         margin: "0 !important",
         borderTopRightRadius: "0 !important",
         overflowX: "hidden",
         overflowY: props.hiddenOverflow ? "hidden" : "auto",
         transition: "width 0.5s",
+      },
+      "& .MuiBackdrop-root": {
+        backgroundColor: props.noBorder ? "transparent !important" : "",
       },
       "& .MuiListItem-container": {
         borderBottom: "1px solid #c7c7c7",
