@@ -13,6 +13,8 @@ import { Typography } from "@material-ui/core";
 import { platformDataInitialData, userDefinedInitialData } from "./data";
 
 import { useSelector } from "react-redux";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const StyledMenu = withStyles({
   paper: {
@@ -152,13 +154,16 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
           </Grid>
 
           {platformData.map((icon) => {
+            if(mapGridCardActivated && !icon.shapeGrid) return false
             const Icon = icon.Icon
-            return <StyledMenuItem key={icon.index} selected={icon.value === value.value} onClick={() => { handleChange(icon); handleClose(); }}>
-              <ListItemIcon>
-                <Icon className={classes.icon} fontSize="small" color="#bdc7d1" opacity="1" />
-              </ListItemIcon>
-              <ListItemText primary={icon.label} />
-            </StyledMenuItem>
+            return <FeatureFlag feature={FEATURES[icon.featureFlag]} noCheck={!FEATURES[icon.featureFlag]}>
+              <StyledMenuItem key={icon.index} selected={icon.value === value.value} onClick={() => { handleChange(icon); handleClose(); }}>
+                <ListItemIcon>
+                  <Icon className={classes.icon} fontSize="small" color="#bdc7d1" opacity="1" />
+                </ListItemIcon>
+                <ListItemText primary={icon.label} />
+              </StyledMenuItem>
+            </FeatureFlag>
           })}
 
             <Grid container className={classes.underlinedHeader} direction="row" justifyContent="space-between" alignItems="center" >
