@@ -361,7 +361,21 @@ function Search() {
       "land grid": {
         esIndex: "platformData:landgrid",
         search: (request) => `${request.input}`,
-        searchFields: ["_all"],
+        searchFields: [
+          "_all"
+          // "level1Type",
+          // "level1Name",
+          // "level2Type",
+          // "level2Name",
+          // "level3Type",
+          // "level3Name",
+          // "level4Type",
+          // "level4Name",
+          // "level5Type",
+          // "level5Name",
+          // "level6Type",
+          // "level6Name"
+        ],
         filter: [
           {field: "level7Id.keyword", value: undefined},
           {field: "level8Id.keyword", value: undefined},

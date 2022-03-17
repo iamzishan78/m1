@@ -13,6 +13,8 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Stepper from "./components/stepper";
 import { Menu, MenuItem } from "@material-ui/core";
 import M1neral_headers from "./jobHeaders"
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 const rawJobs = [
   { name: 'Import Contacts', type: 'CONTACTS' },
-  { name: 'Import Tracts', type: 'TRACTS' },
+  { name: 'Import Tracts', type: 'TRACTS', featureFlag: "TRACTIMPORT" },
   { name: 'Interest Owner Upload', type: 'PARCELINTERESTS' },
   { name: 'Shape Owner Upload', type: 'SHAPEOWNER' },
   { name: 'Check Detail Upload', type: 'CHECKDETAILS' }
@@ -220,15 +222,17 @@ export default function BulkUpload(props) {
                 transformOrigin={{ vertical: "top", horizontal: "center" }}
               >
                 { jobs.map((job) =>
-                  < MenuItem
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleClose();
-                      setSelectedJob(job)
-                    }}
-                  >
-                    { job.name }
-                  </MenuItem>
+                  <FeatureFlag feature={FEATURES[job.featureFlag]} noCheck={!FEATURES[job.featureFlag]}>
+                    < MenuItem
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleClose();
+                        setSelectedJob(job)
+                      }}
+                    >
+                      { job.name }
+                    </MenuItem>
+                  </FeatureFlag>
                 )}
               </Menu>
             </div>
