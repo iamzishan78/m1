@@ -22,6 +22,7 @@ function RevenuePropertiesTable(props) {
   const { esIndex, setESFilters } = props;
   // redux
   const dispatch = useDispatch();
+  const [refetchData, setRefetchData] = useState(false)
 
   // query for Properties Table
   const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
@@ -110,6 +111,8 @@ function RevenuePropertiesTable(props) {
 
   // fetaching data
   useEffect(() => {
+    props.setLoading(true);
+    setColumns([])
     getESPaginatedList({
       variables: {
         esIndex: esIndex,
@@ -123,7 +126,7 @@ function RevenuePropertiesTable(props) {
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getESPaginatedList, props.parent, props.revenueSearchQuery, props.filterToggle]);
+  }, [getESPaginatedList, props.parent, props.revenueSearchQuery, props.filterToggle, refetchData]);
 
 
   useEffect(() => {
@@ -187,6 +190,7 @@ function RevenuePropertiesTable(props) {
         options={options}
         parent={props.parent}
         setColumnsBase={[]}
+        setRefetchData={setRefetchData}
       />
     </Container>
   );
