@@ -1276,7 +1276,7 @@ function AddDealDialog(props) {
         <RightDialog
           open={props.open}
           handleClickDialogClose={handleClickDialogClose}
-          width="650px"
+          width="28vw"
           height="calc(100vh - 135px)"
           top="135px"
           isTransactPage={props.isTransactPage}
