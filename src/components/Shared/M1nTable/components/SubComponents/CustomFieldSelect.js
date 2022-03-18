@@ -2,11 +2,11 @@ import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { Grid, InputAdornment, Paper } from "@material-ui/core";
 import CheckIcon from "@material-ui/icons/Check";
-import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 import ArrowDropDownIcon from "@material-ui/lab/es/internal/svg-icons/ArrowDropDown";
 import { colorPallete } from "components/Table/helpers";
 import EditIcon from "@material-ui/icons/Edit";
+import isEmpty from 'lodash/isEmpty';
 import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -45,6 +45,7 @@ const CustomFieldSelect = ({
   dropdownOptions,
   column,
   fullWidth,
+  variant
 }) => {
   const classes = useStyles();
   const [options, setOptions] = useState([]);
@@ -106,6 +107,8 @@ const CustomFieldSelect = ({
         height: "50px",
         width: "100%",
         borderBottom: fullWidth ? "1px solid" : "none",
+        borderRadius: 5,
+        border: variant === 'outlined' ? "1px solid rgba(0, 0, 0, 0.23)" : "none",
       }}
       onClick={(e) => e.stopPropagation()}
       onMouseLeave={(e) => {
@@ -167,7 +170,7 @@ const CustomFieldSelect = ({
                 setShowOptions(false);
                 setStateApp((stateApp) => ({
                   ...stateApp,
-                  selectedMeta: column,
+                  selectedMeta: isEmpty(column) ? null : column,
                   showFieldModal: true,
                 }));
               }}>
@@ -175,7 +178,7 @@ const CustomFieldSelect = ({
                 <EditIcon style={{ alignSelf: "center", fontSize: 18, marginRight: 5 }} />
               </Grid>
               <Grid
-                style={{ "flex-grow": 1, width: "fit-content", /*"max-width": "max-content"*/ }}
+                style={{ "flex-grow": 1, width: "fit-content" }}
                 container
                 item
                 xs={10}
