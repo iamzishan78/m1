@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
     // "& .MuiAutocomplete-inputRoot": { maxHeight: "42px" },
   },
   autoCompleteInput: {
-    width: "355px !important",
+    width: "336px !important",
     position: "absolute",
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none"
