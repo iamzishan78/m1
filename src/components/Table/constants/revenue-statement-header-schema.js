@@ -108,25 +108,28 @@ const RevenueStatementHeadCells = [
     },
   },
   {
-    name: "validation",
+    name: "isAmountValidated",
     label: " ",
-    esKey: "validation.keyword",
+    esKey: "isAmountValidated",
     options: { sort: false, filter: false, viewColumns: false },
   },
   {
-    name: "validation",
+    name: "isAmountValidated",
     label: "Validation",
-    esKey: "validation.keyword",
+    esKey: "isAmountValidated",
     options: { display: false, sort: false, filter: true, viewColumns: false },
     custom: {
-      filterOptions: [
+      key_as_string: true,
+      formatedFilterOptions: [
         {
-          key: "Validated",
+          label: "Validated",
+          value: 'true',
         },
         {
-          key: "Potential Issues",
+          label: "Potential Issues",
+          value: 'false'
         },
-      ],
+      ]
     },
   },
 ];

@@ -122,6 +122,7 @@ const AppProvider = (props) => {
     hugeRequest: null,
     currentFeature: undefined,
     wellListFromSearch: [],
+    landGridListFromSearch: [],
     wellListFromTagsFilter: [],
     jobType: null,
     m1neralHeaders: [],

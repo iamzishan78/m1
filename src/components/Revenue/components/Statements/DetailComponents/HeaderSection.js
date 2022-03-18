@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, TextField, InputAdornment, Select, MenuItem } from "@material-ui/core";
-import AutoComplete from "components/Shared/components/Fields/AutoComplete";
 import moment from "moment";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import debounce from "lodash/debounce";
@@ -46,19 +45,6 @@ const useStyles = makeStyles(() => ({
       padding: "12px 0px"
     }
   },
-  adornmentAutocomplete: {
-    "& .MuiAutocomplete-endAdornment": {
-      right: "50px !important",
-      "& .MuiAutocomplete-clearIndicator": {
-        display: "none"
-      }
-    },
-  },
-  contactCardIcon: {
-    position: "absolute",
-    right: "6px !important",
-    marginTop: "4px !important"
-  }
 }));
 
 export default function HeaderFunction(props) {
