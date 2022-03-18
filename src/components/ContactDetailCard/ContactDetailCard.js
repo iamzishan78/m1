@@ -30,6 +30,7 @@ import ConfirmationDialog from "./components/ConfirmationDialog";
 import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 import Documents from "../Shared/Documents";
 import ParcelsCard from "./components/ParcelsCard";
+import ShapeOwnershipCard from "./components/ShapeOwnershipCard";
 import LeadStage from "../Shared/LeadStage";
 import Divider from "@material-ui/core/Divider";
 import RightDialog from "./components/RightDialog";
@@ -978,18 +979,23 @@ export default function ContactDetailCard(props) {
 
               <Grid item xs={12}>
                 <Grid container spacing={2}>
-                  <Grid item xs={4}>
+                  <Grid item xs={3} style={{ minWidth: "250px" }}>
                     <Card raised style={{ minHeight: "165px", height: "100%" }}>
                       <WellsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
                     </Card>
                   </Grid>
                   {/* TEMP DELETION UNTIL CODE COMES */}
-                  <Grid item xs={4}>
+                  <Grid item xs={3} style={{ minWidth: "250px" }}>
+                    <Card raised style={{ minHeight: "35px", height: "100%" }}>
+                      <ShapeOwnershipCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
+                    </Card>
+                  </Grid>
+                  <Grid item xs={3} style={{ minWidth: "250px" }}>
                     <Card raised style={{ minHeight: "35px", height: "100%" }}>
                       <ParcelsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
                     </Card>
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={3} style={{ minWidth: "250px" }}>
                     <Card raised style={{ minHeight: "165px", height: "100%" }}>
                       <DealsNew
                         handleOpenExpandableCard={handleOpenExpandableCard}

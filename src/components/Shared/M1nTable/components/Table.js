@@ -1348,6 +1348,11 @@ function SubTable(props) {
                             getWell({
                               variables: { wellId: value },
                             });
+                          } else if (props.parent === "assocTaxRollInterests" && props.targetLabel === "unit") {
+                            let selectedUnit = props.rows.find((row) => {
+                              return row.shape._id === tableMeta.rowData[2];
+                            })?.shape;
+                            props.showUnitDetails(selectedUnit);
                           } else if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                             let selectedParcel = props.rows.find((row) => {
                               return row._id === tableMeta.rowData[0];
@@ -1713,6 +1718,9 @@ function SubTable(props) {
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
+                  if (props.parent === "assocTaxRollInterests" && props.targetLabel === "unit") {
+                    targetSourceId = tableMeta.rowData[2];
+                  }
                   if (props.parent === "TractInterestsTable" && props.targetLabel === "tractInterest") {
                     targetSourceId = tableMeta.rowData[1];
                   }
@@ -2038,6 +2046,9 @@ function SubTable(props) {
 
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
+                  }
+                  if (props.parent === "assocTaxRollInterests" && props.targetLabel === "unit") {
+                    targetSourceId = tableMeta.rowData[2];
                   }
                   if (props.parent === "TractInterestsTable" && props.targetLabel === "tractInterest") {
                     targetSourceId = tableMeta.rowData[1];
