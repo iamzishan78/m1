@@ -35,9 +35,8 @@ import { UPSERTDEALDESCRIPTOR } from "graphQL/useMutationUpsertDealDescriptor";
 import { REMOVEDEALDESCRIPTOR } from "graphQL/useMutationRemoveDealDescriptor";
 import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
 import { UPDATESTAGEDEALDESCRIPTORS } from "graphQL/useMutationUpdateStageDealDescriptors";
-import { setFlowState, showErrorMessage, showSuccessMessage } from "actions";
+import { showErrorMessage, showSuccessMessage } from "actions";
 
-import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
 import Documents from "components/Shared/Documents";
@@ -329,8 +328,6 @@ function AddDealDialog(props) {
 
   const [mapSettings, setMapSettings] = useState(null);
 
-  const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
-
   const [getDeal, { data: getDealResult }] = useLazyQuery(GETDEAL, {
     fetchPolicy: "no-cache",
   });
@@ -368,13 +365,12 @@ function AddDealDialog(props) {
   const [contact, setContact] = useState({});
 
   useEffect(() => {
-    getPipelines();
     return () =>
       setStateTransact((stateTransact) => ({
         ...stateTransact,
         dealToCreate: {},
       }));
-  }, [getPipelines]);
+  }, []);
 
   //? pre saving the deal id in case deal descriptors
   //? are created before deal
@@ -464,24 +460,6 @@ function AddDealDialog(props) {
       });
     }
   }, [pipelineId, stateApp.activeDeal, stateTransact.dealToCreate]);
-
-  useEffect(() => {
-    if (pipelinesData) {
-      if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
-        dispatch(
-          setFlowState({
-            pipelines: pipelinesData.pipelines,
-          })
-        );
-      } else
-        dispatch(
-          setFlowState({
-            pipelines: [],
-            pipeToShow: false,
-          })
-        );
-    }
-  }, [pipelinesData]);
 
   useEffect(() => {
     if (pipelines.length > 0 && props.contactId) {
@@ -707,7 +685,6 @@ function AddDealDialog(props) {
       transactBarView: "Deal",
       viewDoc: null,
     }));
-    // setValid({title: false});
   };
 
   useEffect(() => {
@@ -1242,11 +1219,6 @@ function AddDealDialog(props) {
       if (history.location.pathname.includes("lane")) {
         history.push(`${history.location.pathname.split("/lane")[0]}`);
       }
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        dealDialog: false,
-        activeDeal: { cardId: null, laneId: null },
-      }));
       handleClose();
     }
   };

@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { get } from "lodash";
 
 import { AppContext } from "../../AppContext";
@@ -161,7 +161,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Transact() {
   const classes = useStyles();
   let history = useHistory();
-  const location = useLocation();
   const dispatch = useDispatch();
   const { pipeToShow, pipeToShowTab, selectedPipe } = useSelector(({ Flow }) => Flow);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -566,7 +565,7 @@ export default function Transact() {
     borderRight: cardId === stateApp.activeDeal?._id ? "2px solid #17aae0" : "",
     borderBottom: cardId === stateApp.activeDeal?._id ? "2px solid #17aae0" : "",
     backgroundColor: cardId === stateApp.activeDeal?._id ? "#d8f5ff" : "",
-  })
+  });
 
   const GetCard = React.memo((cardProps) => {
     const CardClasses = useStyles(cardProps);
@@ -603,11 +602,7 @@ export default function Transact() {
     const cardColor = getCardColor(get(lane, "metadata.rotting"), stageChangeDate);
 
     return (
-      <article
-        className={CardClasses.cardStyle}
-        onClick={() => handleCardClick(id, metadata, laneId)}
-        style={getCardBorder(id, cardColor)}
-      >
+      <article className={CardClasses.cardStyle} onClick={() => handleCardClick(id, metadata, laneId)} style={getCardBorder(id, cardColor)}>
         <header className={CardClasses.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span className={CardClasses.cardTitle}>{title?.length > 30 ? `${title.substr(0, 40)}...` : title}</span>
@@ -767,9 +762,7 @@ export default function Transact() {
               //onCardMoveAcrossLanes
               />
             )}
-            {stateApp.dealDisplayType === "table" && (
-              <M1nTable dense filteredTabTransactData={filteredTabTransactData} parent="TransactDeals" />
-            )}
+            {stateApp.dealDisplayType === "table" && <M1nTable dense filteredTabTransactData={filteredTabTransactData} parent="TransactDeals" />}
           </div>
         ) : pipeToShow === false ? (
           <h1 style={{ marginTop: 80 }}>No flowlines currently exist - please setup a new flowline and corresponding stages.</h1>
