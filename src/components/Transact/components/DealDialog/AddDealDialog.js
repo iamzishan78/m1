@@ -1282,6 +1282,7 @@ function AddDealDialog(props) {
           isTransactPage={props.isTransactPage}
           hiddenOverflow
           noBorder
+          hideBackdrop={true}
         >
           <DealDialogHeader
             titleFocus={titleFocus}

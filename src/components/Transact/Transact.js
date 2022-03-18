@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { get } from "lodash";
 
 import { AppContext } from "../../AppContext";
@@ -161,6 +161,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Transact() {
   const classes = useStyles();
   let history = useHistory();
+  const location = useLocation();
   const dispatch = useDispatch();
   const { pipeToShow, pipeToShowTab, selectedPipe } = useSelector(({ Flow }) => Flow);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -412,7 +413,7 @@ export default function Transact() {
   const handleDataChange = (newData) => { };
 
   const handleCardClick = (cardId, metadata, laneId) => {
-    history.push(`${history.location.pathname}/lane/${laneId}/card/${cardId}`);
+    history.push(`/flow/${selectedPipe._id}/lane/${laneId}/card/${cardId}`);
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: true,

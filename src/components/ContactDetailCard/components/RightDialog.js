@@ -57,6 +57,7 @@ export default function AlertDialogSlide(props) {
       aria-labelledby="alert-dialog-slide-title"
       aria-describedby="alert-dialog-slide-description"
       style={{ zIndex: 1301, border: "4px solid green", inset: "unset" }}
+      hideBackdrop={!!props.hideBackdrop}
     >
       {props.header && <DialogTitle id="alert-dialog-slide-title">{props.header}</DialogTitle>}
 
