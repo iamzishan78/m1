@@ -13,7 +13,7 @@ import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: "23px 23px 0 23px",
+    padding: "10px 0 0 10px",
     cursor: "pointer",
     width: "100%",
   },
