@@ -48,7 +48,7 @@ export const TableESHOC = (Component) => {
         const [searchedRows, setSearchedRows] = useState([])
 
         const [selectedRows, setSelectedRows] = useState([]);
-        const [tableFilters, setTableFilters] = useState([]);
+        const [intialFilters, setInitialFilters] = useState([]);
 
         const [loading, Loading] = useState(true);
         const setLoading = (newState) => { setStateIfDeepEqual(Loading, newState) };
@@ -148,7 +148,7 @@ export const TableESHOC = (Component) => {
                     }
                 });
                 if (tableMeta.selectedGridView)
-                    handleSelectedGridChange(tableMeta.TableHeader, tableMeta.selectedGridView, columns, true)
+                    handleSelectedGridChange(tableMeta.TableHeader, { ...tableMeta.selectedGridView, filters: (tableMeta.selectedGridView.filters || []).concat(tableMeta.filters) }, columns, true)
             }
             // eslint-disable-next-line
         }, [tableMeta]);
@@ -223,16 +223,11 @@ export const TableESHOC = (Component) => {
                     }
                 }
             });
-            if (tableMeta.selectedGridView?.filters) {
+            const allFilters = (tableMeta.selectedGridView?.filters || []).concat(intialFilters)
+            if (allFilters) {
                 tableCols.forEach((column, index) => {
                     setColumnDisplayAndFilter(TableHeader, tableMeta.selectedGridView, column);
-                    const value = get(
-                        tableMeta.selectedGridView?.filters?.find((filter) => {
-                            return JSON.stringify(filter.field) === JSON.stringify(column.esKey);
-                        }),
-                        "value",
-                        ""
-                    );
+                    const value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
                     let filterList = Array.isArray(column.esKey) ? undefined : [];
                     if (value && typeof value !== "object") {
                         filterList = [value];
@@ -350,13 +345,18 @@ export const TableESHOC = (Component) => {
 
         const handleMultiFieldFilter = (esFilter) => {
             const filters = []
+            const filterHistory = {}
             if (esFilter) {
                 esFilter.forEach((filter) => {
                     if (typeof filter.field === 'string') {
-                        filters.push(filter)
+                        if (!filterHistory[filter.field])
+                            filters.push(filter)
+                        filterHistory[filter.field] = true
                     } else {
                         filter.field.forEach((_, index) => {
-                            filters.push({ field: filter.field[index], value: filter.value[index] })
+                            if (!filterHistory[filter.field])
+                                filters.push({ field: filter.field[index], value: filter.value[index] })
+                            filterHistory[filter.field] = true
                         })
                     }
                 })
@@ -396,9 +396,7 @@ export const TableESHOC = (Component) => {
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0) {
                     if (columns[index].custom?.isDate) {
-                        const filterData = stateApp.filtersData[columns[index].name];
-                        const data = filterData.find(f => f.key === val[0])
-                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
+                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] });
                     } else if (columns[index].custom?.filterOptions?.length > 0) {
                         pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0] })
                     } else if (columns[index].custom?.formatedFilterOptions?.length > 0) {
@@ -439,7 +437,7 @@ export const TableESHOC = (Component) => {
                         ...pageESVariables,
                         variables: {
                             ...pageESVariables.variables,
-                            filters: handleMultiFieldFilter(pageESVariables.variables.filters)
+                            filters: handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters))
                         },
                     });
                 },
@@ -455,15 +453,9 @@ export const TableESHOC = (Component) => {
                                 before: rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
                                 after: rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
                             },
-                            filters: handleMultiFieldFilter(pageESVariables.variables.filters)
+                            filters: handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters))
                         },
                     });
-                },
-                extendSearchQuery: (extraSearch) => {
-                    // if (pageESVariables.variables.search)
-                    //     pageESVariables.variables.search = `${pageESVariables.variables.search} AND ${extraSearch}`
-                    // else
-                    //     pageESVariables.variables.search = `${extraSearch}`
                 }
             }
         }
@@ -499,7 +491,7 @@ export const TableESHOC = (Component) => {
                 updateGridViewRedux(tableState)
             }
             if (action === 'filterChange') {
-                setTableFilters(activeFiltersRef.current);
+                setInitialFilters(activeFiltersRef.current);
             }
 
             switch (action) {
@@ -509,14 +501,12 @@ export const TableESHOC = (Component) => {
                 case "resetFilters":
                 case "changeRowsPerPage":
                     // updateGridViewRedux(tableState)
-                    tableActions.extendSearchQuery(tableMeta.extendSearchQuery);
                     tableActions.genericESAction();
                     break;
                 case "rowSelectionChange":
                     setSelectedRows(tableState.selectedRows.data)
                     break;
                 case "changePage":
-                    tableActions.extendSearchQuery(tableMeta.extendSearchQuery);
                     tableActions.changeESPage();
                     break;
                 case "viewColumnsChange":
@@ -540,7 +530,7 @@ export const TableESHOC = (Component) => {
                     delete columns[i].options.filterOptions;
                 }
             }
-            setColumnsData(copy(columns));
+            setColumnsData(columns);
         };
 
         const count = tableData?.total || 0
@@ -551,7 +541,7 @@ export const TableESHOC = (Component) => {
             searchable: true,
             rowsSelected: selectedRows.map((sR => sR.dataIndex)),
             filter: true,
-            searchText: tableMeta.extendSearchQuery,
+            searchText: tableMeta.extendSearchQuery || undefined,
             searchFields: tableMeta.searchFields,
             customToolbar: (tableMeta.addBtnText || tableMeta.addableName) ? () => {
                 return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
@@ -636,6 +626,9 @@ export const TableESHOC = (Component) => {
 
                 activeSearchRef={activeSearchRef}
                 activeFiltersRef={activeFiltersRef}
+
+                intialFilters={intialFilters}
+                setInitialFilters={setInitialFilters}
             />
         );
     };

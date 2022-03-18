@@ -162,7 +162,7 @@ export const handleSelectedGridChange = (
           "value",
           ""
         );
-        let filterList = undefined;
+        let filterList = Array.isArray(column.esKey) ? undefined : [];
         if (value && typeof value !== "object") {
           filterList = [value];
         }
@@ -176,7 +176,7 @@ export const handleSelectedGridChange = (
       setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
       if (isGridChanged) {
         if (column.options) {
-          column.options.filterList = undefined;
+          column.options.filterList = Array.isArray(column.esKey) ? undefined : [];
         }
       }
     });

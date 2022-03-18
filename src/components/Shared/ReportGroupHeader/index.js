@@ -108,6 +108,7 @@ export default function ReportGroupHeader({
               name: config.name,
               module: type,
               type: "Custom",
+              isPrivate: false,
               user: stateApp.user.mongoId,
               filters: esFilters,
               // columns: columns.map((col) => ({ name: col.name, display: col.options.display })),
@@ -243,7 +244,7 @@ export default function ReportGroupHeader({
             onClose={setDeleteDialogOpen}
             deleteFunc={() => handleAddUpdateDelete({ type: "delete", name: reportingGroup })}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete this report group?
           </DeleteConfirmationDialogContent>

@@ -1,5 +1,4 @@
 import { call, takeLatest, put } from "redux-saga/effects";
-import get from "lodash/get";
 
 import Api from "api";
 import { GET_CURRENT_USER_GRID_VIEW_SETTINGS } from "graphQL/useQueryGetCurrentUserGridViewSettings";
@@ -10,7 +9,7 @@ import {
   setCurrentUserGridViewAction,
   updateUserGridViewSettingAction
 } from "store/actions/sessionActions";
-import { 
+import {
   CURRENT_USER_GRID_VIEW_SETTINGS,
   SET_CURRENT_USER_GRID_VIEW,
   UPDATE_USER_GRID_VIEW_SETTING
@@ -18,19 +17,19 @@ import {
 
 function* currentUserGridViewSettings(action) {
   try {
-    const res = 
+    const res =
       yield call(Api.query, GET_CURRENT_USER_GRID_VIEW_SETTINGS, {
         userId: action.payload,
       },
-      {
-        fetchPolicy: "no-cache",
-      })
+        {
+          fetchPolicy: "no-cache",
+        })
 
     yield put(
-        currentUserGridViewSettingsAction.FULLFILLED({ 
-          userId: action.payload,
-          userGridViewSettings: res?.data?.getCurrentUserGridViewSettings?.userGridViewSettings
-        })
+      currentUserGridViewSettingsAction.FULLFILLED({
+        userId: action.payload,
+        userGridViewSettings: res?.data?.getCurrentUserGridViewSettings?.userGridViewSettings
+      })
     );
   } catch (error) {
     yield put(currentUserGridViewSettingsAction.REJECTED());
@@ -39,7 +38,7 @@ function* currentUserGridViewSettings(action) {
 
 function* setCurrentUserGridView(action) {
   try {
-    const res = 
+    const res =
       yield call(Api.mutate, SET_CURRENT_USER_GRID_VIEW_MUTATION, action.payload)
 
     // const effect = yield put(currentUserGridViewSettingsAction.STARTED(action.payload.userId));
@@ -54,7 +53,7 @@ function* setCurrentUserGridView(action) {
 
 function* updateUserGridViewSetting(action) {
   try {
-    const res = 
+    const res =
       yield call(Api.mutate, UPDATE_USER_GRID_VIEW_SETTING_MUTATION, action.payload)
 
     // const effect = yield put(currentUserGridViewSettingsAction.STARTED(action.payload.userId));
