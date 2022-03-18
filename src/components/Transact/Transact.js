@@ -561,10 +561,10 @@ export default function Transact() {
 
   const getCardBorder = (cardId, cardColor) => ({
     borderLeft: `4px solid ${cardColor}`,
-    borderTop: cardId === stateApp.activeDeal._id ? "2px solid #17aae0" : "",
-    borderRight: cardId === stateApp.activeDeal._id ? "2px solid #17aae0" : "",
-    borderBottom: cardId === stateApp.activeDeal._id ? "2px solid #17aae0" : "",
-    backgroundColor: cardId === stateApp.activeDeal._id ? "#d8f5ff" : "",
+    borderTop: cardId === stateApp.activeDeal?._id ? "2px solid #17aae0" : "",
+    borderRight: cardId === stateApp.activeDeal?._id ? "2px solid #17aae0" : "",
+    borderBottom: cardId === stateApp.activeDeal?._id ? "2px solid #17aae0" : "",
+    backgroundColor: cardId === stateApp.activeDeal?._id ? "#d8f5ff" : "",
   })
 
   const GetCard = React.memo((cardProps) => {
