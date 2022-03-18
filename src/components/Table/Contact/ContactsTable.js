@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "react-redux";
 import { Container } from "@material-ui/core";
-import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 import moment from "moment";
 
@@ -14,11 +13,9 @@ import TableESHOC from "../TableESHOC";
 import Loader from "components/Loaders";
 import GridView from "components/Shared/GridView";
 import { HeaderComponent } from 'components/Table/helpers'
-import { handleSelectedGridChange, setColumnsData } from 'components/Table/helpers'
 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
-import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { REMOVE_CONTACTS } from "graphQL/useMutationRemoveContact";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 
