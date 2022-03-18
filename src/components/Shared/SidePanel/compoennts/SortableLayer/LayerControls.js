@@ -17,6 +17,8 @@ import { setMapGridCardState } from "actions";
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 
 import { IconButton } from '@material-ui/core';
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent.js";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const useStyles = makeStyles(() => ({
   disabledLayerTitle: {
@@ -171,19 +173,20 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
         {/* </Grid> */}
 
         <Grid item xs={4}>
-          {layer.file && <Tooltip title="Grid">
-            <IconButton size="small" aria-label="Grid" style={{ color: '#ffff' }} onClick={() => {
-              setStateApp((state) => ({
-                ...state,
-                layerGridCard: true,
-                selectedLayer: layer,
-              }));
-              dispatch(setMapGridCardState({ mapGridCardActivated: true }));
-            }}>
-              <GridOnIcon />
-            </IconButton>
-          </Tooltip>}
-
+          <FeatureFlag  feature={FEATURES.SHAPEELASTIC}>
+            {layer.file && <Tooltip title="Grid">
+              <IconButton size="small" aria-label="Grid" style={{ color: '#ffff' }} onClick={() => {
+                setStateApp((state) => ({
+                  ...state,
+                  layerGridCard: true,
+                  selectedLayer: layer,
+                }));
+                dispatch(setMapGridCardState({ mapGridCardActivated: true }));
+              }}>
+                <GridOnIcon />
+              </IconButton>
+            </Tooltip>}
+          </FeatureFlag>
         </Grid>
         <Grid item xs={4} className={classes.formControl}>
           <FormControlLabel
