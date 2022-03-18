@@ -68,16 +68,14 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: "2px solid #34b4e3 !important",
   },
   totalColCell: {
-    width: "160px",
+    fontWeight: "bolder",
+    fontSize: "16px",
+    fontFamily: "sans-serif",
   },
 }));
 
-export default function OilTable({ monthsInterval, netRevenueTotals, item, title, grossVolumeType = "BBL", price }) {
+export default function AcccessibleTable({ monthsInterval, items, total }) {
   const classes = useStyles();
-
-  const totalGrossVolume = item.data && Math.round(Object.values(item.data).reduce((prev, curr) => curr += prev, 0) / price / 0.375, 0);
-  const totalOwnerVolume = item.data && Math.round(Object.values(item.data).reduce((prev, curr) => curr += prev, 0) / price, 0);
-  const totalOwnerNetRevenue = item.data && Object.values(item.data).reduce((prev, curr) => curr += prev, 0);
 
   return (
     <div className={classes.root}>
@@ -87,9 +85,7 @@ export default function OilTable({ monthsInterval, netRevenueTotals, item, title
             <Table className={classes.table} aria-label="caption table">
               <TableHead>
                 <TableRow>
-                  <TableCell className={`${classes.headerCell}`} style={{ color: "#12abe0", textAlign: "left" }}>
-                    {title}
-                  </TableCell>
+                  <TableCell></TableCell>
                   <TableCell
                     align="center"
                     component="th"
@@ -101,42 +97,28 @@ export default function OilTable({ monthsInterval, netRevenueTotals, item, title
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow className={classes.highlightedRows}>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Gross Volume ({grossVolumeType})
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                  { vf_number(totalGrossVolume) }
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Owner Volume
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                   { vf_number(totalOwnerVolume) }
-                  </TableCell>
-                </TableRow>
-                <TableRow className={classes.highlightedRows}>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Average Price
-                  </TableCell>
-                  <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                    {price}
-                  </TableCell>
-                </TableRow>
+                {items.map((item, index) => (
+                  <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
+                    <TableCell scope="row" className={classes.leftCells}>
+                      {item.name}
+                    </TableCell>
+                    <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
+                      {item.total}
+                    </TableCell>
+                  </TableRow>
+                ))}
                 <TableRow className={classes.highlightedLessBordered}>
-                  <TableCell scope="row" className={classes.leftCells}>
-                    Owner Net Revenue
+                  <TableCell scope="row" className={`${classes.leftCells} ${classes.totalColCell}`}>
+                    Total Income
                   </TableCell>
                   <TableCell
                     scope="row"
                     className={`${classes.leftRightColoredBorderCell} ${classes.bottomColoredBorderCell} ${classes.totalColCell}`}
+                    style={{ width: "160px" }}
                   >
-                    { vf_number(totalOwnerNetRevenue) }
+                    {total}
                   </TableCell>
                 </TableRow>
-                <TableRow></TableRow>
               </TableBody>
             </Table>
           </Grid>
@@ -152,25 +134,23 @@ export default function OilTable({ monthsInterval, netRevenueTotals, item, title
                 </TableRow>
               </TableHead>
               <TableBody>
+                {items.map((item, index) => (
+                  <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
+                    {item.data && Object.values(item.data).map((value) => <TableCell scope="row">{vf_number(value)}</TableCell>)}
+                  </TableRow>
+                ))}
                 <TableRow className={classes.highlightedRows}>
-                  {monthsInterval.map((month) => (
-                    <TableCell scope="row">{vf_number(Math.round(totalGrossVolume / monthsInterval.length, 0))}</TableCell>
-                  ))}
-                </TableRow>
-                <TableRow>
-                  {monthsInterval.map((month) => (
-                    <TableCell scope="row">{vf_number(Math.round(totalOwnerVolume / monthsInterval.length, 0))}</TableCell>
-                  ))}
-                </TableRow>
-                <TableRow className={classes.highlightedRows}>
-                  {monthsInterval.map((month) => (
-                    <TableCell scope="row">{price}</TableCell>
-                  ))}
-                </TableRow>
-                <TableRow className={classes.highlightedLessBordered}>
-                  {monthsInterval.map((month) => (
-                    <TableCell scope="row">{vf_number(Math.round(totalOwnerNetRevenue / monthsInterval.length, 0))}</TableCell>
-                  ))}
+                  {monthsInterval.map((month) => {
+                    let total = 0;
+                    items.filter((item) => ["Net Revenue", "Lease Payments", "Other"].includes(item.name)).forEach((item) => {
+                      item.data && (total += item.data[month]);
+                    });
+                    return (
+                      <TableCell className={classes.totalColCell} scope="row">
+                        {vf_number(total)}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
 
                 <TableRow></TableRow>

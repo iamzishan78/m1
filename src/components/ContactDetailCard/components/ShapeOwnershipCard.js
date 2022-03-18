@@ -6,10 +6,11 @@ import IconButton from "@material-ui/core/IconButton";
 import { useHistory } from "react-router-dom";
 import _ from 'lodash';
 
-import { CONTACT_PARCEL_INTERESTS } from "graphQL/useQueryContactParcelInterest";
-import ParcelIcon from "../../Shared/svgIcons/ParcelIcon";
+import UnitIcon from "../../Shared/svgIcons/UnitIcon";
+
 import Button from '@material-ui/core/Button';
 
+import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     width: "80px",
     height: "80px",
-    backgroundColor: "#D4F4F9",
+    backgroundColor: "#F3D5E8",
     borderRadius: "100%",
     margin: "0 auto",
     display: "flex",
@@ -48,43 +49,43 @@ const useStyles = makeStyles((theme) => ({
   h5: { color: "#757575", marginTop: "0", textAlign: "left", },
 }));
 
-export default function ParcelsCard(props) {
+export default function ShapeOwnership(props) {
   const classes = useStyles();
   let history = useHistory();
   const [count, setCount] = useState("-");
   const [netAcres, setNetAcres] = useState("-");
   const [nra, setNRA] = useState("-");
 
-  const [getContactParcels, { data: dataContactParcels }] = useLazyQuery(CONTACT_PARCEL_INTERESTS, {
-    fetchPolicy: "cache-and-network",
+  const [getESAggsSumNra, { data: aggsData }] = useLazyQuery(GET_ES_AGGS_LIST, {
+    context: { batch: true },
+    fetchPolicy: "no-cache"
   });
 
   useEffect(() => {
     if (props.contactData && props.contactData._id) {
-      getContactParcels({
+      getESAggsSumNra({
         variables: {
-          contactId: props.contactData._id,
+          esIndex: "shapeowners_flat",
+          filters: [
+            { field: "contact._id.keyword", value: props.contactData._id },
+            { field: "shapeType.keyword", value: "Unit" }
+          ],
+          aggs: {
+            sumNra: {
+              sum: { field: "nra" }
+            }
+          },
         },
       });
     }
-  }, [getContactParcels, props.contactData]);
+  }, [getESAggsSumNra, props.contactData]);
 
   useEffect(() => {
-    if (dataContactParcels && dataContactParcels.contactParcelInterest) {
-      const wells = dataContactParcels.contactParcelInterest;
-      let net_acres = 0
-      let nra = 0
-      for (let i = 0; i < wells.length; i++) {
-        const newNetAcres = wells[i].net_acres ? wells[i].net_acres : 0
-        net_acres = net_acres + newNetAcres
-        const newNra = wells[i].nra ? wells[i].nra : 0
-        nra = nra + newNra
-      }
-      setNRA(nra)
-      setNetAcres(net_acres)
-      setCount(wells.length);
+    if (aggsData?.getESAggsList?.aggregations?.sumNra) {
+      setNRA(aggsData?.getESAggsList?.aggregations?.sumNra?.value?.toLocaleString("en-US", { maximumFractionDigits: 2 }))
+      setCount(aggsData?.getESAggsList?.total);
     }
-  }, [dataContactParcels]);
+  }, [aggsData]);
 
   return (
     <Button
@@ -92,13 +93,13 @@ export default function ParcelsCard(props) {
       fullWidth={true}
       variant="outlined"
       onClick={() => {
-        history.push(`/contact/details/${props.contactData._id}/parcels`);
+        history.push(`/contact/details/${props.contactData._id}/units`);
       }}
       // style={{justifyContent: "flex-start"}}
     >
       <div className={classes.root}>
         <div>
-          <h4 style={{ marginTop: "0", float: "left" }}>Tract Interests</h4>
+          <h4 style={{ marginTop: "0", float: "left" }}>Unit Interests</h4>
           {/* <IconButton
           size="small"
           className={classes.addIcon}
@@ -109,21 +110,16 @@ export default function ParcelsCard(props) {
         <div className={classes.cardContent}>
           <div className={classes.leftColumn}>
             <div className={classes.icon}>
-              <ParcelIcon />
+              <UnitIcon />
             </div>
           </div>
 
           <div>
             <h5 className={classes.h5}>
-              Net Acres
-              <br />
-              <span className={classes.lastContactedSpan}>{netAcres}</span>
-            </h5>
-            {/* <h5 className={classes.h5}>
               Net Royalty Acres
               <br />
               <span className={classes.lastContactedSpan}>{nra}</span>
-            </h5> */}
+            </h5>
             <h5 className={classes.h5}>
               Number of Interests
               <br />
