@@ -14,7 +14,7 @@ import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: "23px 23px 0 23px",
+    padding: "10px 0 0 10px",
     cursor: "pointer",
     width: "100%",
   },
@@ -104,7 +104,7 @@ export default function WellsCard(props) {
         <div className={classes.root}>
           <div>
             <h4 style={{ marginTop: "0", float: "left" }}>
-              Tax Roll &amp; Well ({count})
+              Tax Roll &amp; Well Interests
             </h4>
             <IconButton
               size="small"
@@ -135,11 +135,18 @@ export default function WellsCard(props) {
                   {interestTypes || "NONE"}
                 </span>
               </h5>
-              <h5 className={classes.h5}>
+              {/* <h5 className={classes.h5}>
                 Average Value
                 <br />
                 <span className={classes.lastContactedSpan}>
                   {vf_currency(avgTaxValues) || vf_currency("0")}
+                </span>
+              </h5> */}
+              <h5 className={classes.h5}>
+                Number of Interests
+                <br />
+                <span className={classes.lastContactedSpan}>
+                  {count}
                 </span>
               </h5>
             </div>

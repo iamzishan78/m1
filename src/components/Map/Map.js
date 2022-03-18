@@ -1564,7 +1564,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                 data = recent_submitted_permits;
                 break;
               case "Search":
-                data = stateApp.wellListFromSearch;
+                data = [ ...stateApp.wellListFromSearch, ...stateApp.landGridListFromSearch ]
                 break;
               case "User Tags":
                 data = stateApp.wellListFromTagsFilter;
@@ -1598,6 +1598,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
     stateApp.trackedwells,
     stateApp.wellListFromTagsFilter,
     stateApp.wellListFromSearch,
+    stateApp.landGridListFromSearch,
     stateApp.customLayers,
     //permits,
     recent_submitted_permits,
@@ -5566,6 +5567,38 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       }
     }
   }, [map, stateApp.wellListFromSearch]);
+
+  useEffect(() => {
+    if (map && stateApp.landGridListFromSearch && stateApp.landGridListFromSearch.length > 0) {
+      const findBounds = (shape) => {
+        if (gjv.valid(shape)) {
+          const bbox = turf.bbox(shape);
+          return {
+            minLong: bbox[0],
+            minLat: bbox[1],
+            maxLong: bbox[2],
+            maxLat: bbox[3],
+          };
+        }
+      };
+
+      const formatIt = (mdata) => {
+        return {
+          type: "FeatureCollection",
+          features: mdata.map((feature) => ({
+            type: "Feature",
+            ...JSON.parse(feature.shape)
+          }))
+        };
+      };
+
+      setStateApp((state) => ({
+        ...state,
+        searchLoader: false,
+        fitBounds: findBounds(formatIt(stateApp.landGridListFromSearch)),
+      }));
+    }
+  }, [map, stateApp.landGridListFromSearch]);
 
   useEffect(() => {
     if (map && stateApp.toggleZoomOut) {

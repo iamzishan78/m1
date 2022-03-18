@@ -10,6 +10,9 @@ import TableRow from "@material-ui/core/TableRow";
 import Checkbox from "@material-ui/core/Checkbox";
 import { AppContext } from "../../../AppContext";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
+// queries
+import { useApolloClient } from "@apollo/client";
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 
 const useStyles = makeStyles({
   root: {
@@ -94,6 +97,7 @@ const StyledTableCell = withStyles((theme) => ({
 export default function M1neralHeaders(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
+  const client = useApolloClient();
 
   let columns = [
     { label: "Import" },
@@ -119,17 +123,17 @@ export default function M1neralHeaders(props) {
       mappedHeadersFromCSV: CSV_headers,
     }));
   };
-  const handleChange_select = (event, index) => {
+  const handleChange_select = async (event, index) => {
     const selectedHeader = data.find(el => el?.actual_key === event.target.value)
     CSV_headers[index].actual_key = selectedHeader?.actual_key;
     CSV_headers[index].label = selectedHeader?.label;
     CSV_headers[index].required = true;
-    changeDataToSendState();
+    await changeDataToSendState();
     UpdateState();
   };
-  const handleChange_checkBox = (event, index) => {
+  const handleChange_checkBox = async (event, index) => {
     CSV_headers[index].required = event.target.checked;
-    changeDataToSendState();
+    await changeDataToSendState();
     UpdateState();
   };
 
@@ -148,11 +152,13 @@ export default function M1neralHeaders(props) {
     return leadSource;
   };
 
-  const changeDataToSendState = () => {
+  const changeDataToSendState = async () => {
     let headers = stateApp.mappedHeadersFromCSV;
     let arr_data = stateApp.csvContactsList;
 
-    let filtered_data_to_send = arr_data.map((obj) => {
+    // let filtered_data_to_send = arr_data.map((obj) => {
+    let filtered_data_to_send = [];
+    for await (const obj of arr_data) {
       let return_obj = {};
       for (let header of headers) {
         if (
@@ -167,13 +173,15 @@ export default function M1neralHeaders(props) {
       if (['PARCELINTERESTS'].includes(stateApp.jobType)) {
         if (!return_obj["parcel._id"] ||
             !return_obj["parcel.name"]) {
-              return null
+              filtered_data_to_send.push(null)
+              continue;
         }
       }
       if (['SHAPEOWNER'].includes(stateApp.jobType)) {
         if (!return_obj["shape._id"] ||
             !return_obj["shape.name"]) {
-              return null
+              filtered_data_to_send.push(null)
+              continue;
         }
       }
       if (['CONTACTS','PARCELINTERESTS','SHAPEOWNER'].includes(stateApp.jobType)) {
@@ -186,7 +194,8 @@ export default function M1neralHeaders(props) {
             return_obj["entityDetail.name"]
           )
         ) {
-          return null;
+          filtered_data_to_send.push(null)
+          continue;
         }
         //// mandatory fields
 
@@ -210,8 +219,56 @@ export default function M1neralHeaders(props) {
         }
       }
 
-      return return_obj;
-    });
+      if (['TRACTS'].includes(stateApp.jobType) && 
+          (!return_obj["landgrid._id"] ||
+          !return_obj["landgrid.name"])) {
+        const { data: landGridGeoms } = await client.query({
+          query: GET_ES_SIMPLE_SEARCH,
+          variables: {
+            index: "platformData:landgrid",
+            filters: [
+              ...[
+                "landgrid.level1Type.State",
+                "landgrid.level2Type.County",
+                "landgrid.level3Type.Survey",
+                "landgrid.level4Type.Block",
+                "landgrid.level5Type.Section",
+                "landgrid.level6Type.Abstract",
+                "landgrid.level3Type.Meridian",
+                "landgrid.level5Type.TownshipRange",
+                "landgrid.level6Type.Section"
+              ].flatMap((key) => {
+                const keyParts = key.split(".");
+                return (return_obj[key]) ?
+                  [
+                    { field: `${keyParts[1]}.keyword`, value: keyParts[2]},
+                    { field: `${keyParts[1].replace("Type", "Name")}.keyword`, value: return_obj[key]}
+                  ] :
+                  []
+              }),
+              {field: "level7Id.keyword", value: undefined},
+              {field: "level8Id.keyword", value: undefined},
+              {field: "level9Id.keyword", value: undefined},
+              {field: "level10Id.keyword", value: undefined}
+            ],
+            sort: [],
+          }
+        });
+
+        if (landGridGeoms?.getESSimpleSearch?.total === 1) {
+          return_obj["landgrid._id"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?._id;
+          return_obj["landgrid.name"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?.level6Name;
+        }
+
+        if (!return_obj["landgrid._id"] ||
+            !return_obj["landgrid.name"]) {
+              filtered_data_to_send.push(null)
+              continue;
+        }
+      }
+
+      filtered_data_to_send.push(return_obj)
+    };
     filtered_data_to_send = filtered_data_to_send.filter((obj) => {
       if (obj && Object.keys(obj).length !== 0) {
         return true;

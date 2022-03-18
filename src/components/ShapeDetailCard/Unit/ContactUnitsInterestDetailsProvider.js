@@ -11,18 +11,18 @@ import { CONTACT } from "graphQL/useQueryContact";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 import { NavigationContext } from "components/Navigation/NavigationContext";
 import { ContactDetailsContextProvider } from "components/ContactDetailCard/ContactDetailsContext";
-import ParcelsDetailCard from "./ParcelsDetailCard";
+import UnitDetailCard from "./UnitDetailCard";
 
-export default function ContactParcelsInterestProvider(props) {
+export default function ContactUnitInterestProvider(props) {
   let history = useHistory();
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [contactData, setContactData] = useState(null);
-  const [parcelObj, setParcelObj] = useState(null);
+  const [unitObj, setUnitObj] = useState(null);
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
-  const parcelId =
+  const unitId =
     history.location.pathname.split("/")[
     history.location.pathname.split("/").length - 1
     ];
@@ -33,14 +33,14 @@ export default function ContactParcelsInterestProvider(props) {
     ];
 
   useEffect(() => {
-    if (parcelId) {
+    if (unitId) {
       getCustomLayer({
         variables: {
-          id: parcelId,
+          id: unitId,
         },
       });
     }
-  }, [getCustomLayer, parcelId]);
+  }, [getCustomLayer, unitId]);
 
   useEffect(() => {
     if (contactId) {
@@ -58,7 +58,7 @@ export default function ContactParcelsInterestProvider(props) {
       if (typeof shape === "string") {
         shape = JSON.parse(shape);
       }
-      setParcelObj({
+      setUnitObj({
         ...dataCustomLayer.customLayer,
         shape: shape,
       });
@@ -77,7 +77,7 @@ export default function ContactParcelsInterestProvider(props) {
 
   return (
     <div style={{position: "absolute", top: "64px"}}>
-      <ContactDetailsContextProvider>
+      <ContactDetailsContextProvider >
         <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
           <Breadcrumbs
             separator={<NavigateNextIcon fontSize="small" />}
@@ -131,7 +131,7 @@ export default function ContactParcelsInterestProvider(props) {
                 cursor: "pointer",
               }}
               color="inherit"
-              onClick={() => history.push(`/contact/details/${contactId}/parcels`)}
+              onClick={() => history.push(`/contact/details/${contactId}/units`)}
             >
               Associated Interests
             </Link>
@@ -142,12 +142,12 @@ export default function ContactParcelsInterestProvider(props) {
                 marginLeft: "5px",
               }}
             >
-              {parcelObj?.name}
+              {unitObj?.name}
             </Typography>
           </Breadcrumbs>
         </Toolbar>
 
-        <ParcelsDetailCard id={parcelId}>{props.children}</ParcelsDetailCard>
+        <UnitDetailCard id={unitId}>{props.children}</UnitDetailCard>
       </ContactDetailsContextProvider>
     </div>
   );
