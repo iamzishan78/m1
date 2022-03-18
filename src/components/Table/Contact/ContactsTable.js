@@ -31,6 +31,7 @@ import {
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
+    height: "100%",
     "& .MuiToolbar-regular > div:nth-child(2)": {
       overflow: "auto",
       display: "flex",
@@ -44,6 +45,25 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiToolbar-regular > div:nth-child(1)": {
       minWidth: "400px"
+    },
+    "&>div>div": {
+      height: "100%"
+    },
+    "& .MuiPaper-root": {
+      display: "flex",
+      "flex-direction": "column",
+      height: "100%",
+      position: "relative",
+      "align-items": "stretch",
+      "&>:nth-child(1)": {
+        "min-height": "fit-content"
+      },
+      "&>:nth-child(3)": {
+        height: "inherit !important"
+      },
+      "&>:nth-child(4)": {
+        bottom: 0
+      }
     }
   },
   details: {

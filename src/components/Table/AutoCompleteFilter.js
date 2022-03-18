@@ -31,7 +31,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
         } else {
             setOptions(custom?.filterOptions)
         }
-    }, []);
+    }, [filters]);
 
     useEffect(() => {
         if (filtersData) {

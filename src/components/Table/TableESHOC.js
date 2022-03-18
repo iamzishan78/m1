@@ -48,6 +48,7 @@ export const TableESHOC = (Component) => {
         const [searchedRows, setSearchedRows] = useState([])
 
         const [selectedRows, setSelectedRows] = useState([]);
+        const [tableFilters, setTableFilters] = useState([]);
 
         const [loading, Loading] = useState(true);
         const setLoading = (newState) => { setStateIfDeepEqual(Loading, newState) };
@@ -196,9 +197,7 @@ export const TableESHOC = (Component) => {
                         },
                         filterOptions: {
                             display: (filterList, onChange, index, column) => {
-                                column.filterKey = TableHeader.find(
-                                    (el) => el.name === column.name
-                                )?.esKey;
+                                column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
                                 return (
                                     <AutoCompleteFilter
                                         esIndex={esIndex}
@@ -215,10 +214,7 @@ export const TableESHOC = (Component) => {
                                     />
                                 );
                             },
-                        },
-                        // onFilterChange: (columnChanged, filterList) => {
-                        //   setFilters(filterList);
-                        // },
+                        }
                     };
                 } else {
                     column.options = {
@@ -501,6 +497,9 @@ export const TableESHOC = (Component) => {
             }
             if (['filterChange', 'resetFilters'].includes(action)) {
                 updateGridViewRedux(tableState)
+            }
+            if (action === 'filterChange') {
+                setTableFilters(activeFiltersRef.current);
             }
 
             switch (action) {
