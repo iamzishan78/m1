@@ -23,7 +23,7 @@ import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponen
 
 const useStyles = makeStyles((theme) => ({
   actionBar: ({ isBackground }) => ({
-    padding: "10px 40px",
+    padding: "10px 25px",
     display: "flex",
     alignItems: "center",
     backgroundColor: isBackground ? "#F2F2F2" : "transparent",
@@ -42,7 +42,8 @@ const useStyles = makeStyles((theme) => ({
   }),
   container: {
     marginTop: 10,
-    padding: "10px 40px",
+    padding: "10px 30px",
+    fontWeight: "bold",
   },
   label: {
     fontSize: 13,
@@ -175,7 +176,7 @@ const CodeMapping = () => {
       />
       <div className={classes.container}>
         <label>
-          Map distinct values from revenue statements to reporting category
+          Map distinct values from revenue statements to desired reporting category
         </label>
         <div>
           <Grid container className={classes.header}>
@@ -204,7 +205,7 @@ const CodeMapping = () => {
                     />
                   }
                 />
-                <label style={{ fontSize: 12, marginTop: 3 }}>
+                <label style={{ fontSize: 12, marginTop: 4, marginRight:10 }}>
                   Show only empty fields
                 </label>
               </div>
@@ -285,7 +286,7 @@ const CodeMappingHeader = ({
               id="activityFilterByType"
               options={mappingTypeOptions}
               getOptionLabel={(option) => option.value}
-              style={{ width: 220 }}
+              style={{ width: 300 }}
               size="small"
               defaultValue={mappingType}
               value={mappingType}
