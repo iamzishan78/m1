@@ -87,7 +87,7 @@ export default function DealComment({
 
   useEffect(() => {
     let value = JSON.parse(JSON.stringify(comment));
-    if (value.includes("@")) {
+    if (value.includes("@") && value[value.length - 1] === "@") {
       setShowOptions(true);
     } else {
       setShowOptions(false);
