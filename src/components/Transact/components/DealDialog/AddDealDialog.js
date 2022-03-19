@@ -1249,8 +1249,6 @@ function AddDealDialog(props) {
           open={props.open}
           handleClickDialogClose={handleClickDialogClose}
           width="28vw"
-          height="calc(100vh - 135px)"
-          top="135px"
           isTransactPage={props.isTransactPage}
           hiddenOverflow
           noBorder
