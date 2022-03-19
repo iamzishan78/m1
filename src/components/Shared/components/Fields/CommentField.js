@@ -97,27 +97,27 @@ export default function DealComment({
       let updatedValue = JSON.parse(JSON.stringify(comment));
       for (let i = 0; i < users.length; i++) {
         if (updatedValue.includes(users[i]._id)) {
-          updatedValue = updatedValue.replace(
-            `{{${users[i]._id}}}`,
-            `@${users[i].name}`
-          );
-          value = value.replace(
-            `{{${users[i]._id}}}`,
-            ` <span class='blue'>@${users[i].name}</span>`
-          );
+          updatedValue = replaceAllWith(updatedValue, users[i]._id, `@${users[i].name}`);
+
+          value = replaceAllWith(value, `{{${users[i]._id}}}`, ` <span class='blue'>@${users[i].name}</span>`)
         }
       }
       document.getElementById("colorText").innerHTML = value;
       setNameAutValue({ name: updatedValue, _id: "" });
     } else {
-      // if (value.includes("\n")) {
-      //   value = value.replace(/\n/g, "<br/>");
-      // }
       document.getElementById("colorText").innerHTML = value;
       setNameAutValue({ name: comment, _id: "" });
     }
 
   }, [comment, users]);
+
+  const replaceAllWith = (_string, replaceFrom, replaceWith) => {
+    return _string.replace(/{{([^{{]+)}}/g, (match, key) => {
+      return replaceFrom.includes(key)
+        ? replaceWith
+        : match;
+    });
+  }
 
   const setCommentValue = (value) => {
     if (value.includes("@")) {
@@ -130,8 +130,8 @@ export default function DealComment({
           );
         }
       }
-      const splitedString = updatedValue.split("@")[1];
-      setFilterValue(splitedString ? splitedString.split(" ")[0] : "");
+      const splittingArray = updatedValue.split("@");
+      setFilterValue(splittingArray[splittingArray.length - 1] ?? "");
       setComment(updatedValue);
     } else {
       setComment(value);
@@ -150,7 +150,9 @@ export default function DealComment({
 
   const onChange = (e, act) => {
     setShowOptions(false);
-    const value = JSON.parse(JSON.stringify(comment.split("@")[0]));
+    const splittedArray = comment.split("@");
+    let value = "";
+    for (let i = 0; i < splittedArray.length - 1; i += 1) value += `${splittedArray[i]}${i !== splittedArray.length - 2 ? '@' : ""}`;
     setComment(value + `{{${act._id}}}`);
     setIsSelected(true);
   };
