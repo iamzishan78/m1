@@ -107,7 +107,7 @@ function UnitOwnersTable(props) {
       const objectsIdsArray = tableData?.hits?.map((hit) => hit.ownerEntity);
       const globalOwnerIds = tableData?.hits?.map((hit) => hit.ownerEntity || hit.globalOwnerId);
       props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
-      props.ifAreContacts([ ...globalOwnerIds]);
+      props.ifAreContacts([...globalOwnerIds]);
     }
   }, [tableData, elasticData]);
 
@@ -122,8 +122,6 @@ function UnitOwnersTable(props) {
       });
     }
   }, [tableData, elasticData]);
-
-  
 
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
@@ -201,19 +199,6 @@ function UnitOwnersTable(props) {
       default:
     }
   }
-
-//   const ButtonActions = React.useMemo(() => {
-//     return [{
-//         isShow: false, text: 'Update Group', action: () => {
-//             handleAddUpdateDelete({ type: 'update', name: reportingGroup })
-//         }
-//     },
-//     { isShow: true, text: 'Save as New Report Group', action: () => setConfig({ show: true, type: 'new', name: reportingGroup + " - Copy" }) },
-//     { isShow: true, text: 'Edit Report Group Name', action: () => setConfig({ show: true, type: 'update', name: reportingGroup }) },
-//     { isShow: true, text: 'Delete Report Group', action: () => setDeleteDialogOpen(true) }
-//     ]
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-// }, [reportingGroup, handleAddUpdateDelete]);
 
   const count = tableData?.total || 0
   const options = {

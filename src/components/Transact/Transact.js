@@ -100,11 +100,12 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "14px !important",
     fontWeight: "bold !important",
   },
-  boardAndTable: {
+  boardAndTable: ({ dealDialog }) => ({
     position: "relative",
     marginTop: "4px",
     overflowY: "auto",
-    maxWidth: "100vw",
+    maxWidth: dealDialog ? "calc(100vw - 28vw - 480px)" : "100vw",
+    transition: "width 0.5s",
     "& .react-trello-board": {
       height: "calc(100vh - 140px)",
       "& >div": {
@@ -136,7 +137,7 @@ const useStyles = makeStyles((theme) => ({
       },
     },
     "& .MuiToolbar-root": { textAlign: "initial" },
-  },
+  }),
   backdrop: {
     position: "absolute",
     "z-index": 1,
@@ -159,7 +160,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Transact() {
-  const classes = useStyles();
   let history = useHistory();
   const dispatch = useDispatch();
   const { pipeToShow, pipeToShowTab, selectedPipe } = useSelector(({ Flow }) => Flow);
@@ -170,7 +170,7 @@ export default function Transact() {
   });
   const [filteredTabTransactData, setFilteredTabTransactData] = useState([]);
   const [dealFilter, setDealFilter] = useState("all");
-
+  const classes = useStyles({ dealDialog: stateApp.dealDialog });
   const cardColors = useRef({});
 
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
@@ -412,7 +412,7 @@ export default function Transact() {
   const handleDataChange = (newData) => { };
 
   const handleCardClick = (cardId, metadata, laneId) => {
-    history.push(`${history.location.pathname}/lane/${laneId}/card/${cardId}`);
+    history.push(`/flow/${selectedPipe._id}/lane/${laneId}/card/${cardId}`);
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: true,
@@ -559,6 +559,14 @@ export default function Transact() {
     return cardColor;
   };
 
+  const getCardBorder = (cardId, cardColor) => ({
+    borderLeft: `4px solid ${cardColor}`,
+    borderTop: cardId === stateApp.activeDeal?._id ? "2px solid #17aae0" : "",
+    borderRight: cardId === stateApp.activeDeal?._id ? "2px solid #17aae0" : "",
+    borderBottom: cardId === stateApp.activeDeal?._id ? "2px solid #17aae0" : "",
+    backgroundColor: cardId === stateApp.activeDeal?._id ? "#d8f5ff" : "",
+  });
+
   const GetCard = React.memo((cardProps) => {
     const CardClasses = useStyles(cardProps);
     const { metadata, title, description, id, laneId } = cardProps;
@@ -594,11 +602,7 @@ export default function Transact() {
     const cardColor = getCardColor(get(lane, "metadata.rotting"), stageChangeDate);
 
     return (
-      <article
-        className={CardClasses.cardStyle}
-        onClick={() => handleCardClick(id, metadata, laneId)}
-        style={{ borderLeft: `4px solid ${cardColor}` }}
-      >
+      <article className={CardClasses.cardStyle} onClick={() => handleCardClick(id, metadata, laneId)} style={getCardBorder(id, cardColor)}>
         <header className={CardClasses.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span className={CardClasses.cardTitle}>{title?.length > 30 ? `${title.substr(0, 40)}...` : title}</span>
@@ -676,10 +680,10 @@ export default function Transact() {
 
   return (
     <div className={classes.root}>
-      <DocViewer />
+      <DocViewer width="calc(100vw - 28vw)" />
       {stateApp.dealDialog && (
         <AddDealDialog
-          open={stateApp.dealDialog ? true : false}
+          open={true}
           width="450px"
           isTransactPage
           onClose={() =>
@@ -758,9 +762,7 @@ export default function Transact() {
               //onCardMoveAcrossLanes
               />
             )}
-            {stateApp.dealDisplayType === "table" && (
-              <M1nTable dense filteredTabTransactData={filteredTabTransactData} parent="TransactDeals" />
-            )}
+            {stateApp.dealDisplayType === "table" && <M1nTable dense filteredTabTransactData={filteredTabTransactData} parent="TransactDeals" />}
           </div>
         ) : pipeToShow === false ? (
           <h1 style={{ marginTop: 80 }}>No flowlines currently exist - please setup a new flowline and corresponding stages.</h1>
