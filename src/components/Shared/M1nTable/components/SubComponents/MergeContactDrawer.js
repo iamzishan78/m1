@@ -33,7 +33,7 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
     mergeContacts({
       variables: { primary: primaryContact._id, secondary: secondaryContacts, mergedBy: stateApp.user.mongoId, },
       refetchQueries: [
-        "getESContacts",
+        "getESContacts", "getESSimpleSearch",
       ],
       awaitRefetchQueries: true
     }).then(
@@ -81,7 +81,7 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
                   component="h2"
                 >
                   Merge Contacts
-              </Typography>
+                </Typography>
               </Grid>
               <Grid item>
                 <IconButton aria-label="delete" color="primary" onClick={handleClose}>
@@ -94,7 +94,7 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
               <Typography>
                 Please select a primary contact below - data form the secondary
                 contacts will be merged then secondary contact will be deleted.
-            </Typography>
+              </Typography>
             </Box>
 
             <Box pt={3}>
@@ -119,17 +119,17 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
                     />
                   </IconButton>
                 ) : (
-                    <IconButton onClick={() => setPrimaryContact(row)}>
-                      <RemoveSharpIcon
-                        fontSize="small"
-                        style={{
-                          background: "#f70000",
-                          color: "white",
-                          borderRadius: 3,
-                        }}
-                      />
-                    </IconButton>
-                  )}
+                  <IconButton onClick={() => setPrimaryContact(row)}>
+                    <RemoveSharpIcon
+                      fontSize="small"
+                      style={{
+                        background: "#f70000",
+                        color: "white",
+                        borderRadius: 3,
+                      }}
+                    />
+                  </IconButton>
+                )}
               </Grid>
 
               <Grid item md={10}>
@@ -142,11 +142,11 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
               </Grid>
 
               {rows.length >= 2 &&
-              <Grid item md={1}>
-                <IconButton aria-label="delete" onClick={() => onDelete(row)}>
-                  <CloseSharp />
-                </IconButton>
-              </Grid>
+                <Grid item md={1}>
+                  <IconButton aria-label="delete" onClick={() => onDelete(row)}>
+                    <CloseSharp />
+                  </IconButton>
+                </Grid>
               }
             </Grid>
           ))}
@@ -154,13 +154,13 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
           <Box p={3}>
             <Typography>
               Note: Merging contacts is an irreversible action.
-          </Typography>
+            </Typography>
           </Box>
 
-          {(rows.length < 2) && 
-              <Typography style={{ fontWeight: "bold" , color: "red", marginTop: '40px', marginLeft: '25px'}}>
-                ** Please cancel and reselct two or more contacts to merge **
-              </Typography>
+          {(rows.length < 2) &&
+            <Typography style={{ fontWeight: "bold", color: "red", marginTop: '40px', marginLeft: '25px' }}>
+              ** Please cancel and reselct two or more contacts to merge **
+            </Typography>
           }
 
           <Box pt={6} mt={6}>
@@ -176,15 +176,15 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
               <Grid item>
 
                 {rows.length >= 2 &&
-                <Button
-                  variant="contained"
-                  component="span"
-                  disabled={rows.length < 2}
-                  style={{ backgroundColor: "#00abed", color: "white" }}
-                  onClick={onMerge}
-                >
-                  Merge
-              </Button>
+                  <Button
+                    variant="contained"
+                    component="span"
+                    disabled={rows.length < 2}
+                    style={{ backgroundColor: "#00abed", color: "white" }}
+                    onClick={onMerge}
+                  >
+                    Merge
+                  </Button>
                 }
 
               </Grid>

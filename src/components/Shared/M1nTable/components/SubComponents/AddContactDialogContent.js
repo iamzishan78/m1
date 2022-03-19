@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
       top: "55px",
     },
     margin: '0 8px 25px 8px',
-    flex:'none'
+    flex: 'none'
   },
   dialogTitle: {
     paddingBottom: (dataContacts) => (dataContacts ? "55px" : "16px"),
@@ -66,18 +66,18 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-end",
     paddingTop: "10px",
-    margin:'0 28px 15px 0',
+    margin: '0 28px 15px 0',
   },
   footerButton: {
     letterSpacing: "1px",
     textTransform: "capitalize",
     fontWeight: "bold",
     padding: "8px 20px",
-    width:'120px'
+    width: '120px'
   },
   closeIcon: {
-		color: theme.palette.secondary.main,
-	},
+    color: theme.palette.secondary.main,
+  },
 }));
 
 export default function AddContactDialogContent(props) {
@@ -226,7 +226,7 @@ export default function AddContactDialogContent(props) {
           refetchQueries: [
             "getPaginatedContacts",
             "getContact",
-            "getESContacts"
+            "getESContacts", "getESSimpleSearch"
           ],
           awaitRefetchQueries: true,
         });
@@ -253,7 +253,7 @@ export default function AddContactDialogContent(props) {
             lastUpdateBy: stateApp.user.mongoId,
           },
         },
-        refetchQueries: ["getPaginatedContacts", "getContact", "getESContacts"],
+        refetchQueries: ["getPaginatedContacts", "getContact", "getESContacts", "getESSimpleSearch"],
         awaitRefetchQueries: true,
       });
     }
@@ -302,8 +302,8 @@ export default function AddContactDialogContent(props) {
               </Grid>
             </Grid>
           ) : (
-              <CircularProgress size={40} disableShrink color="secondary" />
-            )}
+            <CircularProgress size={40} disableShrink color="secondary" />
+          )}
         </div>
       </React.Fragment>
     );
@@ -539,68 +539,68 @@ export default function AddContactDialogContent(props) {
         handleClickDialogClose={handleClickDialogClose}
         width="450px"
       >
-        <Grid item xs={12} style={{ minHeight: "35px",padding: 22 }}>
-        <h4
-              style={{
-                margin: "0 0 15px 0",
-                float: "left",
-                fontSize: "1.4rem",
-              }}
-            >
-               Add New Contact
+        <Grid item xs={12} style={{ minHeight: "35px", padding: 22 }}>
+          <h4
+            style={{
+              margin: "0 0 15px 0",
+              float: "left",
+              fontSize: "1.4rem",
+            }}
+          >
+            Add New Contact
           </h4>
-					<div style={{ float: "right" }}>
-							<IconButton
-									onClick={props.onClose}
-									size="small"
-								>
-									<CloseIcon className={classes.closeIcon} fontSize="small" />
-							</IconButton>
-					</div>
-          
-      </Grid>
-      <DialogContent className={classes.dialogContent}>
-        
-        {contacts && contacts.length > 0 ? (
-          <Taps
-            tabLabels={["Add New", "Select Existing"]}
-            tabPanels={[addNew(), selectExisting()]}
-            whichTapIsActive={whichTapIsActive}
-            backgroundColor="#fff"
-          />
-        ) : (
+          <div style={{ float: "right" }}>
+            <IconButton
+              onClick={props.onClose}
+              size="small"
+            >
+              <CloseIcon className={classes.closeIcon} fontSize="small" />
+            </IconButton>
+          </div>
+
+        </Grid>
+        <DialogContent className={classes.dialogContent}>
+
+          {contacts && contacts.length > 0 ? (
+            <Taps
+              tabLabels={["Add New", "Select Existing"]}
+              tabPanels={[addNew(), selectExisting()]}
+              whichTapIsActive={whichTapIsActive}
+              backgroundColor="#fff"
+            />
+          ) : (
             addNew()
           )}
-      </DialogContent>
-      <div className={classes.dialogFooter}>
-        <Button 
-        onClick={handleClickDialogClose} 
-        color="default"
-        size="medium"
-        variant="contained"
-        className={classes.footerButton}
-        style={{
-          margin: "0px 15px 0px 0px",
-        }}
-        >
-          Cancel
-        </Button>
-        <Button
-          disabled={!validated}
-          onClick={handleClickAdd}
-          variant="contained"
-          color="secondary"
-          className={classes.footerButton}
-          size="medium"
-        >
-          Add
-        </Button>
-      </div>
+        </DialogContent>
+        <div className={classes.dialogFooter}>
+          <Button
+            onClick={handleClickDialogClose}
+            color="default"
+            size="medium"
+            variant="contained"
+            className={classes.footerButton}
+            style={{
+              margin: "0px 15px 0px 0px",
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            disabled={!validated}
+            onClick={handleClickAdd}
+            variant="contained"
+            color="secondary"
+            className={classes.footerButton}
+            size="medium"
+          >
+            Add
+          </Button>
+        </div>
       </RightDialog>
     </>
   ) : (
-      <div style={{ padding: "15px" }}>
-        <CircularProgress size={80} disableShrink color="secondary" />
-      </div>
-    );
+    <div style={{ padding: "15px" }}>
+      <CircularProgress size={80} disableShrink color="secondary" />
+    </div>
+  );
 }

@@ -78,6 +78,7 @@ export default function ReportingGroups() {
 
       <div className={classes.propertyTableContainer}>
         <RevenuePropertiesTable
+          searchBar={true}
           esIndex={esIndex}
           header="Properties"
           esFilters={esFilters}

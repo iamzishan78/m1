@@ -142,7 +142,7 @@ function AddUnitInterestDialog(props) {
             ...getValues(),
           }]
         },
-        refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
       });
     } else {
       addShapeWellInterest({
@@ -155,7 +155,7 @@ function AddUnitInterestDialog(props) {
             ...getValues(),
           }
         },
-        refetchQueries: ["getESPaginatedList", "getESFilterList", "getShapeSummaryDetails"], awaitRefetchQueries: true
+        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getShapeSummaryDetails"], awaitRefetchQueries: true
       });
     }
   }
@@ -180,7 +180,7 @@ function AddUnitInterestDialog(props) {
           }],
         },
         refetchQueries: [
-          "getESPaginatedList", "getESFilterList", "getShapeSummaryDetails"
+          "getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getShapeSummaryDetails"
         ],
         awaitRefetchQueries: true,
       });
