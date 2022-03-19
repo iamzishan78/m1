@@ -4,11 +4,8 @@ import { useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTable";
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
-import { useLazyQuery } from "@apollo/client";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 // actions
-import { setRevenuePropertyData } from "actions";
 import LastCheckDateFilter from "../Common/LastCheckDateFilter";
 
 const useStyles = makeStyles((theme) => ({
@@ -92,23 +89,6 @@ export default function Properties() {
     setPropertiesCount(count);
   };
 
-  // query for Properties Table
-  const [getESPaginatedList, { data: elasticData, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
-    fetchPolicy: "no-cache",
-    onCompleted: (filteredData) => {
-      if (filteredData?.getESPaginatedList) {
-        const count = filteredData?.getESPaginatedList?.total;
-        onPropertiesCount(count);
-      }
-    },
-  });
-
-  // dipatching to redux
-  React.useEffect(() => {
-    dispatch(setRevenuePropertyData({ loading: loading, data: elasticData }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getESPaginatedList, elasticData]);
-
 
   // cards default
   const cardsDefault = [
@@ -146,6 +126,7 @@ export default function Properties() {
 
       <div className={classes.propertyTableContainer}>
         <RevenuePropertiesTable
+          searchBar={false}
           esIndex={esIndex}
           header="Properties"
           esFilters={esFilters}

@@ -7,7 +7,7 @@ import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 
 
 const useStyles = makeStyles((theme) => ({
-  root: { paddingTop: '30px' },
+  root: { paddingTop: '100px' },
   propertyTableContainer: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),

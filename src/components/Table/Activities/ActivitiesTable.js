@@ -77,17 +77,17 @@ function ActivitiesTable(props) {
   const client = useApolloClient();
   const [stateApp, setStateApp] = useContext(AppContext);
   const { appliedFilters, esIndex, searchFields, clickedRow } = props
-  
+
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [events, setEvents] = useState([]);
 
   const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
-    refetchQueries: ["getESPaginatedList", "getESFilterList"],
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
   });
 
   const formatHits = (hits) => {
-    setEvents(hits.map(hit => ({ ...hit, start: new Date(hit.dateTime), end: new Date(hit.endDateTime ? hit.endDateTime : hit.dateTime ) })));
+    setEvents(hits.map(hit => ({ ...hit, start: new Date(hit.dateTime), end: new Date(hit.endDateTime ? hit.endDateTime : hit.dateTime) })));
     return hits.map((hit) => {
       hit.type = get(
         activityTypes.find((type) => type.value === hit.type),
@@ -132,11 +132,11 @@ function ActivitiesTable(props) {
   }, [stateApp.activitySearchQuery, props.filterToggle]);
 
   useEffect(() => {
-    if(clickedRow){
-      setSelectedActivity({ ...clickedRow, type: get(activityTypes.find((type) => type.label === clickedRow.type),"value","")});
+    if (clickedRow) {
+      setSelectedActivity({ ...clickedRow, type: get(activityTypes.find((type) => type.label === clickedRow.type), "value", "") });
       onModalOpen()
     }
-  },[clickedRow]);
+  }, [clickedRow]);
 
   const deleteFunc = (ids) => {
     if (ids.length > 0) {
@@ -211,13 +211,12 @@ function ActivitiesTable(props) {
             )}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
-            {`Do you want to delete the selected interest${
-              props.selectedRows &&
-              props.selectedRows.length > 1 &&
-              props.selectedRows.length > 1
+            {`Do you want to delete the selected interest${props.selectedRows &&
+                props.selectedRows.length > 1 &&
+                props.selectedRows.length > 1
                 ? "s"
                 : ""
-            }?`}
+              }?`}
           </DeleteConfirmationDialogContent>
         )}
       </Dialog>

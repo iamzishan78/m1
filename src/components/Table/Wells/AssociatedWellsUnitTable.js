@@ -276,7 +276,7 @@ function AssociatedWellsUnitTable(props) {
         addMultiWellInterestToShape({
             variables: { wells: selectedWells, shapeId: props.customLayer._id, shapeType: props.shapeType, userId: stateApp.user.mongoId, },
             refetchQueries: [
-                "getESPaginatedList", "getESFilterList"
+                "getESPaginatedList", "getESSimpleSearch", "getESFilterList"
             ],
             awaitRefetchQueries: true
         }).then(

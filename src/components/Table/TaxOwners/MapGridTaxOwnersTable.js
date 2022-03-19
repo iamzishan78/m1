@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Container } from "@material-ui/core";
 import { useSelector } from "react-redux";
-import debounce from "lodash/debounce";
 
 // context
 import TableESHOC from "components/Table/TableESHOC";

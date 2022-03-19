@@ -29,7 +29,7 @@ function ESTableComponent(props) {
     },
 
     onError: (err) => { },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
 
   useEffect(() => {

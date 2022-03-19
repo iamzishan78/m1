@@ -70,7 +70,7 @@ function UnitOwnersTable(props) {
     },
 
     onError: (err) => { },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
 
   const tableData = elasticData?.getESPaginatedList
@@ -199,6 +199,19 @@ function UnitOwnersTable(props) {
       default:
     }
   }
+
+  //   const ButtonActions = React.useMemo(() => {
+  //     return [{
+  //         isShow: false, text: 'Update Group', action: () => {
+  //             handleAddUpdateDelete({ type: 'update', name: reportingGroup })
+  //         }
+  //     },
+  //     { isShow: true, text: 'Save as New Report Group', action: () => setConfig({ show: true, type: 'new', name: reportingGroup + " - Copy" }) },
+  //     { isShow: true, text: 'Edit Report Group Name', action: () => setConfig({ show: true, type: 'update', name: reportingGroup }) },
+  //     { isShow: true, text: 'Delete Report Group', action: () => setDeleteDialogOpen(true) }
+  //     ]
+  //     // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [reportingGroup, handleAddUpdateDelete]);
 
   const count = tableData?.total || 0
   const options = {

@@ -159,12 +159,12 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   }, [mutationData, updateData]);
 
   useEffect(() => {
-    if(nameAutValue){
-      if(nameAutValue.contactStatus){
+    if (nameAutValue) {
+      if (nameAutValue.contactStatus) {
         setValue('contactStatus', nameAutValue.contactStatus)
       }
     }
-  },[nameAutValue])
+  }, [nameAutValue])
 
   console.log('values', getValues());
   const emptyStates = () => {
@@ -206,7 +206,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             },
           ],
         },
-        refetchQueries: ["getESPaginatedList", "getESFilterList"],
+        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
         awaitRefetchQueries: true,
       });
     } else {
@@ -221,7 +221,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             lastUpdateBy: stateApp.user.mongoId,
           },
         },
-        refetchQueries: ["getESPaginatedList", "getESFilterList"],
+        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
         awaitRefetchQueries: true,
       });
     }
@@ -246,7 +246,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerToAdd.name = nameAutValue.name;
       }
 
-      if(ownerToAdd.contactStatus){
+      if (ownerToAdd.contactStatus) {
         updateContact({
           variables: {
             contact: {
@@ -256,12 +256,12 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             }
           }
         }).then(res => {
-          handleAddUpdate(ownerToAdd)  
+          handleAddUpdate(ownerToAdd)
         });
-      }else{
+      } else {
         handleAddUpdate(ownerToAdd)
       }
-      
+
     }
   };
 
@@ -576,7 +576,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         let val = value.name
                         props.onChange(val);
                       }}
-                      value={props.value ? props.value: ""}
+                      value={props.value ? props.value : ""}
                     />
                   )}
                 />

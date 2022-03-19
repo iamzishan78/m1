@@ -5,14 +5,13 @@ import MapGridCardSearch from "./MapGridCardSearch";
 import SearchByTypeSelectField from "./SearchByTypeSelectField";
 
 
-const SearchPanel = ({ isShapeGridOnly, handleChange, value, ativateSearchPanel }) => {
+const SearchPanel = ({ value, ativateSearchPanel, ...rest }) => {
 
     return (
         <>
             <Grid container direction="row" spacing={2}>
                 <Grid item>
-
-                    <SearchByTypeSelectField isShapeGridOnly={isShapeGridOnly} handleChange={handleChange} value={value} backgroundColor='#ffffff' />
+                    <SearchByTypeSelectField value={value}  {...rest} backgroundColor='#ffffff' />
                 </Grid>
                 <Grid item>
                     <MapGridCardSearch
@@ -21,7 +20,6 @@ const SearchPanel = ({ isShapeGridOnly, handleChange, value, ativateSearchPanel 
                     />
                 </Grid>
             </Grid>
-
             {/* <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small /> */}
         </>
     )

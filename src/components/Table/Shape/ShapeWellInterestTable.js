@@ -44,8 +44,7 @@ function ShapeWellInterestTable(props) {
   });
 
   const [updateShapeWellInterests] = useMutation(UPDATE_SHAPE_WELL_INTEREST, {
-    refetchQueries: ["getESPaginatedList", "getESFilterList"],
-    awaitRefetchQueries: true,
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
   const tableData = elasticData?.getESPaginatedList;
 
@@ -182,7 +181,9 @@ function ShapeWellInterestTable(props) {
           isDeleted: true,
         })),
       },
-      refetchQueries: ["getESPaginatedList", "getESFilterList"],
+      refetchQueries: [
+        "getESPaginatedList", "getESSimpleSearch", "getESFilterList"
+      ],
       awaitRefetchQueries: true,
     });
   };
