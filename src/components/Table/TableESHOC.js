@@ -48,7 +48,7 @@ export const TableESHOC = (Component) => {
         const [searchedRows, setSearchedRows] = useState([])
 
         const [selectedRows, setSelectedRows] = useState([]);
-        const [intialFilters, setInitialFilters] = useState([]);
+        const [initialFilters, setInitialFilters] = useState([]);
 
         const [loading, Loading] = useState(true);
         const setLoading = (newState) => { setStateIfDeepEqual(Loading, newState) };
@@ -142,6 +142,7 @@ export const TableESHOC = (Component) => {
                         },
                         sort: tableMeta.defaultSort,
                         filters: [
+                            ...(initialFilters ? handleMultiFieldFilter(initialFilters) : []),
                             ...(tableMeta.filters ? handleMultiFieldFilter(tableMeta.filters) : []),
                             ...(tableMeta.polygon) ? [tableMeta.polygon] : []
                         ]
@@ -223,7 +224,7 @@ export const TableESHOC = (Component) => {
                     }
                 }
             });
-            const allFilters = (tableMeta.selectedGridView?.filters || []).concat(intialFilters)
+            const allFilters = (tableMeta.selectedGridView?.filters || []).concat(initialFilters)
             if (allFilters) {
                 tableCols.forEach((column, index) => {
                     setColumnDisplayAndFilter(TableHeader, tableMeta.selectedGridView, column);
@@ -348,12 +349,12 @@ export const TableESHOC = (Component) => {
             const filterHistory = {}
             if (esFilter) {
                 esFilter.forEach((filter) => {
-                    if (typeof filter.field === 'string') {
+                    if (typeof filter?.field === 'string') {
                         if (!filterHistory[filter.field])
                             filters.push(filter)
                         filterHistory[filter.field] = true
                     } else {
-                        filter.field.forEach((_, index) => {
+                        filter?.field?.forEach((_, index) => {
                             if (!filterHistory[filter.field])
                                 filters.push({ field: filter.field[index], value: filter.value[index] })
                             filterHistory[filter.field] = true
@@ -396,7 +397,9 @@ export const TableESHOC = (Component) => {
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0) {
                     if (columns[index].custom?.isDate) {
-                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] });
+                        const filterData = stateApp.filtersData[columns[index].name];
+                        const data = filterData.find(f => f.key === val[0] || f.key_as_string === val[0])
+                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
                     } else if (columns[index].custom?.filterOptions?.length > 0) {
                         pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0] })
                     } else if (columns[index].custom?.formatedFilterOptions?.length > 0) {
@@ -461,16 +464,17 @@ export const TableESHOC = (Component) => {
         }
 
         const updateGridViewRedux = (tableState) => {
-            dispatch(updateUserGridViewSettingAction.STARTED({
-                userGridViewSetting: {
-                    gridView: tableMeta.selectedGridView._id,
-                    gridViewPatch: {
-                        filters: activeFiltersRef.current,
-                        columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
-                    },
-                    user: props.userId
-                }
-            }))
+            if (tableMeta?.selectedGridView?._id)
+                dispatch(updateUserGridViewSettingAction.STARTED({
+                    userGridViewSetting: {
+                        gridView: tableMeta.selectedGridView._id,
+                        gridViewPatch: {
+                            filters: activeFiltersRef.current,
+                            columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
+                        },
+                        user: props.userId
+                    }
+                }))
         }
 
         const onTableChange = (action, tableState, rows, meta) => {
@@ -627,7 +631,7 @@ export const TableESHOC = (Component) => {
                 activeSearchRef={activeSearchRef}
                 activeFiltersRef={activeFiltersRef}
 
-                intialFilters={intialFilters}
+                initialFilters={initialFilters}
                 setInitialFilters={setInitialFilters}
             />
         );

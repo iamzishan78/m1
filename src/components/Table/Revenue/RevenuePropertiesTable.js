@@ -64,12 +64,12 @@ function RevenuePropertiesTable(props) {
       // initializeGenericData: { key: 'id', actions: genericDataActions }
     });
     // eslint-disable-next-line
-  }, [esFilters, props.revenueSearchQuery, props.filterToggle, refetchData]);
+  }, [props.revenueSearchQuery, props.filterToggle, refetchData]);
 
   useEffect(() => {
-    setESFilters(props.intialFilters)
+    setESFilters(props.initialFilters)
     // eslint-disable-next-line
-  }, [props.intialFilters]);
+  }, [props.initialFilters]);
 
 
 
