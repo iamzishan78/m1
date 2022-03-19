@@ -100,11 +100,12 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "14px !important",
     fontWeight: "bold !important",
   },
-  boardAndTable: {
+  boardAndTable: ({ dealDialog }) => ({
     position: "relative",
     marginTop: "4px",
     overflowY: "auto",
-    maxWidth: "100vw",
+    maxWidth: dealDialog ? "calc(100vw - 28vw - 480px)" : "100vw",
+    transition: "width 0.5s",
     "& .react-trello-board": {
       height: "calc(100vh - 140px)",
       "& >div": {
@@ -136,7 +137,7 @@ const useStyles = makeStyles((theme) => ({
       },
     },
     "& .MuiToolbar-root": { textAlign: "initial" },
-  },
+  }),
   backdrop: {
     position: "absolute",
     "z-index": 1,
@@ -159,7 +160,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Transact() {
-  const classes = useStyles();
   let history = useHistory();
   const dispatch = useDispatch();
   const { pipeToShow, pipeToShowTab, selectedPipe } = useSelector(({ Flow }) => Flow);
@@ -170,7 +170,7 @@ export default function Transact() {
   });
   const [filteredTabTransactData, setFilteredTabTransactData] = useState([]);
   const [dealFilter, setDealFilter] = useState("all");
-
+  const classes = useStyles({ dealDialog: stateApp.dealDialog });
   const cardColors = useRef({});
 
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
@@ -680,7 +680,7 @@ export default function Transact() {
 
   return (
     <div className={classes.root}>
-      <DocViewer />
+      <DocViewer width="calc(100vw - 28vw)" />
       {stateApp.dealDialog && (
         <AddDealDialog
           open={true}

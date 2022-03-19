@@ -1159,7 +1159,6 @@ function AddDealDialog(props) {
   }, [files, uploadedFiles]);
 
   const saveViewport = useCallback(() => {
-    console.log(stateApp.mapVars)
     setMapSettings({
       activeBaseMap: stateApp?.mapVars?.styleId,
       mapDefaultPosition: {
