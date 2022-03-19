@@ -123,8 +123,6 @@ function UnitOwnersTable(props) {
     }
   }, [tableData, elasticData]);
 
-
-
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
       let hits = tableData?.hits

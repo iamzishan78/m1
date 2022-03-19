@@ -13,6 +13,50 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: "38px",
     paddingRight: "38px",
     marginTop: theme.spacing(2),
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": {
+          maxHeight: "65vh",
+          minHeight: "65vh",
+          "@media (max-height:1200px)": {
+            maxHeight: "68vh",
+            minHeight: "68vh",
+          },
+          "@media (max-height:1300px)": {
+            maxHeight: "68vh",
+            minHeight: "68vh",
+          },
+          "@media (max-height:1400px)": {
+            maxHeight: "68vh",
+            minHeight: "68vh",
+          },
+          "@media (max-height:1100px)": {
+            maxHeight: "65vh",
+            minHeight: "65vh",
+          },
+          "@media (max-height:1000px)": {
+            maxHeight: "63vh",
+            minHeight: "63vh",
+          },
+          "@media (max-height:900px)": {
+            maxHeight: "61vh",
+            minHeight: "61vh",
+          },
+          "@media (max-height:850px)": {
+            maxHeight: "59vh",
+            minHeight: "59vh",
+          },
+          "@media (max-height:800px)": {
+            maxHeight: "57vh",
+            minHeight: "57vh",
+          },
+          "@media (max-height:768px)": {
+            maxHeight: "54vh",
+            minHeight: "54vh",
+          },
+        },
+      },
+    },
   },
 }));
 

@@ -9,7 +9,7 @@ import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 
 const useStyles = makeStyles(() => ({
   root: {
-    padding: 20,
+    padding: '0px 20px',
     width: "100%",
     margin: 0,
     backgroundColor: "#fff",

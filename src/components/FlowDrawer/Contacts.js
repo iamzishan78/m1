@@ -333,7 +333,7 @@ export default function Contacts(props) {
                     </ListItemSecondaryAction>
                   )}
                 </ListItem>
-                <Divider />
+                <Divider key={`divider-${i}`} />
               </>
             ))
           ) : (
