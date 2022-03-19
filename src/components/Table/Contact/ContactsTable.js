@@ -123,6 +123,7 @@ function ContactsTable(props) {
     if (props.customAppliedFilters) {
       newFilters = [...newFilters, ...props.customAppliedFilters]
     }
+
     return newFilters;
   }
 
@@ -139,6 +140,7 @@ function ContactsTable(props) {
   }
 
   useEffect(() => {
+    props.setInitialFilters(props.customAppliedFilters || [])
     props.setTableMeta({
       addableName: "Contact",
       extendSearchQuery: props.contactSearchQuery,

@@ -84,14 +84,14 @@ const InterestDetailForm = (props) => {
     onCompleted: () => {
       props.onClose();
     },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"],
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
   });
   const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
     onCompleted: () => {
       props.onClose();
     },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"],
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
   });
 
@@ -139,7 +139,7 @@ const InterestDetailForm = (props) => {
           : { name: "", _id: null },
       });
     } else if (props.propertyOwnerContact) {
-      reset({owner: props.propertyOwnerContact});
+      reset({ owner: props.propertyOwnerContact });
     } else if (props.propertyDetails?.owner) {
       props.setShowOwnerDialog(true);
     }

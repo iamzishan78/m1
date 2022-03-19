@@ -28,8 +28,8 @@ function AgreementOwnersTractsTable(props) {
       props.setSelectedRows([]);
     },
 
-    onError: (err) => {},
-    refetchQueries: ["getESPaginatedList", "getESFilterList"],
+    onError: (err) => { },
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
   });
 
@@ -104,9 +104,8 @@ function AgreementOwnersTractsTable(props) {
             m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
-            {`Do you want to delete the selected tract${
-              props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
-            } from  this ${props.shapeType}?`}
+            {`Do you want to delete the selected tract${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+              } from  this ${props.shapeType}?`}
           </DeleteConfirmationDialogContent>
         )}
       </Dialog>

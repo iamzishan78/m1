@@ -56,7 +56,7 @@ function AddUnitTractDialog(props) {
       setLoading(false);
       handleClose();
     },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
   const [updateShapeTract] = useMutation(UPDATE_SHAPE_TRACTS, {
     onCompleted: () => {
@@ -64,7 +64,7 @@ function AddUnitTractDialog(props) {
       handleClose();
     },
     onError: (err) => { },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
 
   useEffect(() => {
@@ -142,7 +142,7 @@ function AddUnitTractDialog(props) {
             isDeleted: true
           },
         },
-        refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
       });
     } catch {
       setLoading(false);
