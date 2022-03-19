@@ -1,17 +1,22 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import set from 'lodash/set';
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
 import { ColorBox } from "material-ui-color";
-import { Typography, Paper, Grid, Button, IconButton, Divider, FormControlLabel, Switch } from "@material-ui/core";
+import { Typography, Paper, Grid, Button, IconButton, Divider, FormControlLabel, Switch, Box, Tooltip } from "@material-ui/core";
 import { Close as CloseIcon } from "@material-ui/icons";
 import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
 import Input from "@material-ui/core/Input";
+import GridOnIcon from "@material-ui/icons/GridOn";
 import FormControl from "@material-ui/core/FormControl";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { copy } from "components/Shared/functions";
+import { getLayerColor } from "components/Shared/SidePanel/compoennts/common";
+import vf_number from "components/Shared/valueformatters/vf_number";
+import { useDispatch } from "react-redux";
+import { setMapGridCardState } from "actions";
 
 function trim(str) {
   return str.replace(/^\s+|\s+$/gm, "");
@@ -57,8 +62,24 @@ const ColorPickerStyledBox = withStyles((theme) => ({
   },
 }))(ColorBox);
 
+const useStyles = makeStyles((theme) => ({
+
+  gridOnIcon: {
+    color: "#d3d3d3",
+    backgroundColor: "#1c2233",
+    borderRadius: "0px",
+    marginLeft: "5px",
+    "&:hover ": {
+      backgroundColor: "#626687",
+      borderRadius: "0px",
+    },
+  }
+}));
+
 function LayerStyling(props) {
-  const { layer } = props;
+  const { layer, fileName } = props;
+  const classes = useStyles();
+  const dispatch = useDispatch();
   // if (!layer || !layer.layerPaintProps || !layer.layerPaintProps[0])
   //   return null;
 
@@ -94,6 +115,7 @@ function LayerStyling(props) {
     initialWidth = layer.layerPaintProps[0]?.paintProps["line-width"] ? layer.layerPaintProps[0]?.paintProps["line-width"] : 1;
 
   const [width, setWidth] = useState(initialWidth);
+  const [rows, setRows] = useState(0);
   const [fillColor, setFillColor] = useState(initialFillColor);
   const [layerLabelVisibility, setLayerLabelVisibility] = useState(initialLayerLabelVisibility);
   const [layerClickability, setLayerClickability] = useState(initialLayerClickable);
@@ -108,6 +130,25 @@ function LayerStyling(props) {
     setFillColor(initialFillColor);
     setStrokeColor(initialStrokeColor);
   }, [initialFillColor, initialStrokeColor, initialWidth, layer]);
+
+  const setRowsCount = () => {
+    const rows = stateApp.map.querySourceFeatures(layer.layerPaintProps[0].sourceProps, {
+      sourceLayer: layer.identifier
+    });
+    if (rows) {
+      setRows(vf_number(rows.length));
+    }
+    return rows
+  }
+
+  useEffect(() => {
+    if (layer.file) {
+      setRowsCount()
+      const interval = setInterval(() => {
+        if (setRowsCount().length > 0) clearInterval(interval);
+      }, 1000);
+    }
+  }, [layer, stateApp.map])
 
   const handleClose = () => {
     setStateMapControls((stateMapControls) => ({
@@ -154,9 +195,9 @@ function LayerStyling(props) {
           if (layerPaintProps[i]?.labelProps?.symbolProps?.visibility)
             delete layerPaintProps[i].labelProps.symbolProps.visibility;
 
-            if (currentLayer.layerSettings?.colorable) {
-              set(layerPaintProps, `[${i}]labelProps.visibility`, layerLabelVisibility)
-            }
+          if (currentLayer.layerSettings?.colorable) {
+            set(layerPaintProps, `[${i}]labelProps.visibility`, layerLabelVisibility)
+          }
           const layerType = layerPaintProps[i].paintType;
 
           if (layerType === "circle" && layerPaintProps[i].paintProps) {
@@ -428,6 +469,41 @@ function LayerStyling(props) {
         </Grid>
       </Grid>
       <Divider />
+      {layer.file &&
+        <>
+          <Grid container spacing={3} style={{ padding: "10px 20px 10px 17px", justifyContent: "space-between" }}>
+            <Grid item style={{ display: "flex" }}>
+              <Box borderColor={getLayerColor(layer, "layer", {})} borderLeft={4} style={{ padding: "0 0 0 16px" }}>
+              </Box>
+              <Box display='inline'>
+                <Typography variant="h6" noWrap>
+                  {fileName}
+                </Typography>
+                <Typography id={layer.fileName} noWrap>
+                  {rows} rows
+                </Typography>
+              </Box>
+
+            </Grid>
+            <Grid style={{ padding: '25px 25px 0 0' }}>
+              <Tooltip title="Grid">
+                <IconButton size="small" aria-label="Grid" className={classes.gridOnIcon} onClick={() => {
+                  setStateApp((state) => ({
+                    ...state,
+                    layerGridCard: true,
+                  }));
+                  handleClose()
+                  dispatch(setMapGridCardState({ mapGridCardActivated: true }));
+                }}>
+                  <GridOnIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
+          <Divider />
+        </>
+      }
+
       <Grid container spacing={3} style={{ padding: "20px" }}>
         {layer.layerSettings?.colorable &&
           <Grid item xs={12}>
