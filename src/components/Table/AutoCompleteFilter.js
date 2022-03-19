@@ -8,7 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-export function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, searchFields, esIndex, filters, custom, setFilters }) {
+export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, searchFields, esIndex, filters, custom, setFilters }) {
     const [open, setOpen] = useState(false);
     const [stateApp, setStateApp] = useContext(AppContext);
     const [options, setOptions] = useState([]);
@@ -26,37 +26,36 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
     }, [filterList[index][0]]);
 
     useEffect(() => {
-        if(!custom?.filterOptions){
+        if (!custom?.filterOptions) {
             getFiltersAction("");
-        }else{
+        } else {
             setOptions(custom?.filterOptions)
         }
-    }, [filters]);
+    }, []);
 
     useEffect(() => {
         if (filtersData) {
             const keys = Object.keys(filtersData)
-            if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits){
-                if(custom?.isDate){
-                    const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key:moment(new Date(hit.key)).format("MM/DD/YYYY") }))
+            if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits) {
+                if (custom?.isDate) {
+                    const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key: moment(new Date(hit.key)).format("MM/DD/YYYY") }))
                     setOptions(hits)
                     setStateApp((state, props) => {
                         return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
-                      });
-                }else if(custom?.formatedFilterOptions){
+                    });
+                } else if (custom?.formatedFilterOptions) {
                     const hits = filtersData[keys[0]].hits
-                    for(let i=0; i<custom.formatedFilterOptions.length; i++){
-                        const index = hits.findIndex(h => h.key === custom.formatedFilterOptions[i].value)
-                        if(index > -1){
+                    for (let i = 0; i < custom.formatedFilterOptions.length; i++) {
+                        const index = hits.findIndex(h => h.key === custom.formatedFilterOptions[i].value || h.key_as_string === custom.formatedFilterOptions[i].value)
+                        if (index > -1) {
                             hits[index].key = custom.formatedFilterOptions[i].label
                         }
                     }
                     setOptions(hits)
-                }else{
+                } else {
                     setOptions(filtersData[keys[0]].hits)
                 }
             }
-                
         }
 
     }, [filtersData]);
@@ -85,7 +84,8 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
                 key_as_string: custom?.key_as_string,
                 filterAggs: {
                     query: rawSearch,
-                    field: filterKey,
+                    field: typeof filterKey === 'string' ? filterKey : undefined,
+                    fields: typeof filterKey !== 'string' ? filterKey : undefined,
                     size: 50
                 }
             },
@@ -115,7 +115,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
                     setSearch(value.key)
                     setValue(value)
                 }
-                if(setFilters) setFilters(filterList)
+                if (setFilters) setFilters(filterList)
                 onChange(filterList[index], index, column);
             }}
             options={options}
@@ -140,4 +140,4 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query,
             )}
         />
     );
-}
+})  

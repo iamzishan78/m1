@@ -102,7 +102,11 @@ const RevenuePropertiesHeadCells = [
     label: "Last Check Date",
     esKey: "lastCheck.checkDate",
     options: { sort: true, filter: true },
-    style: { minWidth: 100 }
+    style: { minWidth: 100 },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
   },
   {
     name: "tags",
