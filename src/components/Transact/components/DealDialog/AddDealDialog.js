@@ -1179,14 +1179,6 @@ function AddDealDialog(props) {
     setShowExpandableCard(true);
   };
 
-  const handleCloseExpandableCard = () => {
-    setShowExpandableCard(false);
-    setStateApp((state) => ({
-      ...state,
-      contactUpdated: null,
-    }));
-  };
-
   const setUploadedFileData = (uploadedfile) => {
     setUploadedFiles([...uploadedFiles, uploadedfile]);
   };
@@ -1608,9 +1600,9 @@ function AddDealDialog(props) {
           )}
         </RightDialog>
         {stateApp.transactBarView === "Map" && (
-          <Container
-            maxWidth={true}
-            style={{ position: "relative", "z-index": "9999" }}
+          <div
+            maxWidth="calc(100vw - 28vw)"
+            style={{ position: "relative", "z-index": "9999", width: "calc(100vw - 30vw)" }}
           >
             <MapProvider match={{
               params: {
@@ -1620,7 +1612,6 @@ function AddDealDialog(props) {
                   console.log("here")
                   setMapSettings(mapSettings)
                 },
-                width: "calc(100% - 650px)"
               }
             }} >
             </MapProvider>
@@ -1628,7 +1619,7 @@ function AddDealDialog(props) {
               style={{
                 position: "relative",
                 float: "right",
-                "margin-right": "650px",
+                "margin-right": "40px",
                 width: "fit-content",
                 "background-color": "#fff",
                 padding: "10px"
@@ -1639,7 +1630,7 @@ function AddDealDialog(props) {
                 Save Viewport
               </Button>
             </div>
-          </Container>
+          </div>
         )}
       </div>
     </>
