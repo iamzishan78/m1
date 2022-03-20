@@ -228,9 +228,14 @@ export const TableESHOC = (Component) => {
             if (allFilters) {
                 tableCols.forEach((column, index) => {
                     setColumnDisplayAndFilter(TableHeader, tableMeta.selectedGridView, column);
-                    const value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
+                    let value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
                     let filterList = Array.isArray(column.esKey) ? undefined : [];
                     if (value && typeof value !== "object") {
+                        if (column.custom?.isDate) {
+                            const filterData = stateApp.filtersData[columns[index].name];
+                            const data = filterData?.find(f => f.key_as_string === value)
+                            if (data) value = data.key
+                        }
                         filterList = [value];
                     }
                     if (column?.options?.filter) {
