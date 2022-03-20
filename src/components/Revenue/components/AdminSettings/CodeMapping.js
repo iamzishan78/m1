@@ -145,7 +145,7 @@ const CodeMapping = () => {
   }, [mappingType]);
 
   const onSelect = (value, selectedMeta, code) => {
-    let mapping = JSON.parse(JSON.stringify(selectedMeta.mapping));
+    let mapping = JSON.parse(JSON.stringify(selectedMeta)).mapping;
     if (mapping) {
       const index = mapping.findIndex((data) => data.from === code);
       if (index > -1) {
@@ -221,7 +221,7 @@ const CodeMapping = () => {
                   (data) => data.from === code
                 );
                 return (
-                  ((showEmpty && !value) || !showEmpty) && (
+                  ((showEmpty && (!value || !value?.to)) || !showEmpty) && (
                     <Grid container className={classes.body}>
                       <Grid item xs={3} className={classes.spacing}>
                         <span>{code}</span>
@@ -234,6 +234,7 @@ const CodeMapping = () => {
                           index={index}
                           fullWidth
                           variant="outlined"
+                          valueMarginLeft={5}
                           dropdownOptions={selectedMeta?.dropdownOptions || []}
                           column={selectedMeta}
                           value={value ? value.to : ""}

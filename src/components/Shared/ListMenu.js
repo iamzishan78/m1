@@ -32,7 +32,7 @@ const ListMenu = ({ options, onChange, selectedOption, optionStyle }) => {
                   : classes.inActive
               } `}
               style={optionStyle ? optionStyle : {}}
-              onClick={() => onChange(option.value)}
+              onClick={() => option.disabled ? {} :onChange(option.value)}
             >
               {option.label}
             </span>

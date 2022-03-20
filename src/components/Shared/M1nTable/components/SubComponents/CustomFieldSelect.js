@@ -45,7 +45,8 @@ const CustomFieldSelect = ({
   dropdownOptions,
   column,
   fullWidth,
-  variant
+  variant,
+  valueMarginLeft
 }) => {
   const classes = useStyles();
   const [options, setOptions] = useState([]);
@@ -245,7 +246,7 @@ const CustomFieldSelect = ({
                 {...params.inputProps}
               >
                 <Grid container item xs={10}>
-                  <span style={{ "white-space": "nowrap" }} id={`colorText_${index}_${column.name}`}></span>
+                  <span style={{ "white-space": "nowrap", marginLeft: valueMarginLeft ? valueMarginLeft: 0 }} id={`colorText_${index}_${column.name}`}></span>
                 </Grid>
               </Grid>
               <InputAdornment

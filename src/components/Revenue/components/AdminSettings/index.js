@@ -7,7 +7,7 @@ import Validations from "components/Revenue/components/AdminSettings/Validations
 
 const menuOptions = [
   { label: "Code Mapping", value: "code_mapping" },
-  { label: "Validations", value: "validation" },
+  { label: "Validations", value: "validation", disabled: true },
 ];
 
 const useStyles = makeStyles((theme) => ({
