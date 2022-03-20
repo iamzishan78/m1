@@ -21,6 +21,15 @@ const FileTree = ({ layerMap, panelItems }) => {
   const currentItem = React.useRef();
   const classes = useStyles();
 
+  const checkforUpdate = (updateFn, item, index, key) => {
+    if (item[key] !== layerMap[index][key]) {
+      updateFn[index] = {
+        ...updateFn[index],
+        [key]: { $set: layerMap[index][key] },
+      }
+    }
+  }
+
   useEffect(() => {
     if (!deepEqual(items, layerMap)) {
       if (items.length === layerMap.length) {
@@ -36,12 +45,8 @@ const FileTree = ({ layerMap, panelItems }) => {
                 visiable: { $set: layerMap[index].visiable },
               }
             }
-            if (item.name !== layerMap[index].name) {
-              updateFn[index] = {
-                ...updateFn[index],
-                name: { $set: layerMap[index].name },
-              }
-            }
+            checkforUpdate(updateFn, item, index, 'name')
+            checkforUpdate(updateFn, item, index, 'fileName')
             if (item.layerSettings) {
               updateFn[index] = {
                 ...updateFn[index],

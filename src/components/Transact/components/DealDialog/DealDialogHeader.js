@@ -212,18 +212,6 @@ const DealDialogHeader = ({
                   >
                     <MoreHorizIcon size="medium" />
                   </IconButton>
-                  <IconButton
-                    size="small"
-                    component="span"
-                    style={{
-                      background: "transparent",
-                      paddingLeft: "10px",
-                      align: "center",
-                    }}
-                    onClick={handleClickDialogClose}
-                  >
-                    <KeyboardTabBlackIcon />
-                  </IconButton>
                   <Menu
                     id="dealMenu"
                     anchorEl={anchorEl}
@@ -244,6 +232,18 @@ const DealDialogHeader = ({
                   </Menu>
                 </>
               )}
+              <IconButton
+                size="small"
+                component="span"
+                style={{
+                  background: "transparent",
+                  paddingLeft: "10px",
+                  align: "center",
+                }}
+                onClick={handleClickDialogClose}
+              >
+                <KeyboardTabBlackIcon />
+              </IconButton>
             </Grid>
           </>
         )}

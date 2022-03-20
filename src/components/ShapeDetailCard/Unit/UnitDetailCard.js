@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import set from 'lodash/set'
+import set from "lodash/set";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
-import GavelIcon from '@material-ui/icons/Gavel';
+import GavelIcon from "@material-ui/icons/Gavel";
 import { useDispatch } from "react-redux";
 import Taps from "components/Shared/Taps";
-import TabPanels from "components/Shared/TabPanels"
+import TabPanels from "components/Shared/TabPanels";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import SuggestedShapeTaxOwnersTable from "components/Table/TaxOwners/SuggestedShapeTaxOwnersTable";
 import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
 import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-import TabButtons from "components/Shared/TabPanels/TabButtons"
+import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
+import TabButtons from "components/Shared/TabPanels/TabButtons";
 import UnitSummary from "./UnitSummary";
 import UnitOwnersTable from "components/Table/Shape/UnitOwnersTable";
 import ShapeWellInterestTable from "components/Table/Shape/ShapeWellInterestTable";
@@ -28,7 +28,6 @@ import { copy } from "components/Shared/functions";
 import { detailCardStyles } from "../style";
 
 export default function UnitDetailCard(props) {
-
   const dispatch = useDispatch();
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedWellTab, setWellSelectedTab] = useState(0);
@@ -36,16 +35,12 @@ export default function UnitDetailCard(props) {
   const [uniObj, setUniObj] = useState();
   const [properties, setProperties] = useState();
   const [_, setStateApp] = useContext(AppContext);
-  const [updateCustomLayer, { data: updatedUnit }] = useMutation(
-    UPDATECUSTOMLAYER,
-  );
+  const [updateCustomLayer, { data: updatedUnit }] = useMutation(UPDATECUSTOMLAYER);
 
   const classes = detailCardStyles();
-  const showSummary = true
+  const showSummary = true;
 
-  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
-    CUSTOMLAYER,
-  );
+  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
   useEffect(() => {
     if (props.id) {
@@ -57,14 +52,13 @@ export default function UnitDetailCard(props) {
     }
   }, [props.id]);
 
-
   useEffect(() => {
     if (dataCustomLayer && dataCustomLayer.customLayer) {
       let shape = JSON.parse(dataCustomLayer.customLayer.shape);
-      if (dataCustomLayer.customLayer.shapeJson) shape = copy(dataCustomLayer.customLayer.shapeJson)
+      if (dataCustomLayer.customLayer.shapeJson) shape = copy(dataCustomLayer.customLayer.shapeJson);
       setUniObj({
         ...dataCustomLayer.customLayer,
-        shape
+        shape,
       });
       setProperties(shape.properties);
     }
@@ -81,7 +75,7 @@ export default function UnitDetailCard(props) {
 
         feature.id = customLayer._id;
         feature.properties.id = customLayer._id;
-        feature.layer = { id: 'unit' }
+        feature.layer = { id: "unit" };
         setStateApp((state) => ({
           ...state,
           selectedShape: { ...feature.properties, feature },
@@ -96,22 +90,21 @@ export default function UnitDetailCard(props) {
     e?.preventDefault();
     e?.stopPropagation();
     const shape = uniObj.shape;
-    set(shape.properties, field, value)
+    set(shape.properties, field, value);
     shape.properties[field] = value;
 
-    const customLayer = {}
+    const customLayer = {};
 
-    if (field === 'uName') {
+    if (field === "uName") {
       setStateApp((state) => ({
         ...state,
         selectedShape: { ...state.selectedShape, shapeLabel: value },
       }));
-      shape.properties.shapeLabel = value
+      shape.properties.shapeLabel = value;
       customLayer.name = value;
     }
-    customLayer.shape = JSON.stringify(shape)
-    customLayer.shapeJson = shape
-
+    customLayer.shape = JSON.stringify(shape);
+    customLayer.shapeJson = shape;
 
     updateCustomLayer({
       variables: {
@@ -123,18 +116,20 @@ export default function UnitDetailCard(props) {
 
   const updateCustomProperties = (type, value, id) => {
     const shape = uniObj.shape;
-    const customRow = properties.custom_data_arr.find((p) => p.id === id)
-    if (type === 'key') {
-      customRow.key = value
+    const customRow = properties.custom_data_arr.find((p) => p.id === id);
+    if (type === "key") {
+      customRow.key = value;
     } else {
-      customRow.value = value
+      customRow.value = value;
     }
-    properties.custom_data = {}
-    properties.custom_data_arr.forEach((data) => { properties.custom_data[data.key] = data.value })
-    const customLayer = {}
-    shape.properties = properties
-    customLayer.shape = JSON.stringify(shape)
-    customLayer.shapeJson = shape
+    properties.custom_data = {};
+    properties.custom_data_arr.forEach((data) => {
+      properties.custom_data[data.key] = data.value;
+    });
+    const customLayer = {};
+    shape.properties = properties;
+    customLayer.shape = JSON.stringify(shape);
+    customLayer.shapeJson = shape;
     updateCustomLayer({
       variables: {
         customLayerId: uniObj._id,
@@ -147,19 +142,20 @@ export default function UnitDetailCard(props) {
     <TabButtons
       labels={["Unit Ownership", "Potential Ownership"]}
       value={selectedTab}
-      setValue={(n) => { setSelectedTab(n) }}
+      setValue={(n) => {
+        setSelectedTab(n);
+      }}
     />
   );
 
   const DocumentHeader = () => {
     const classes = detailCardStyles();
     return (
-
       <div className={classes.documentHeader}>
         <DescriptionOutlinedIcon />
         <span>Documents</span>
       </div>
-    )
+    );
   };
 
   const RunsheetHeader = () => {
@@ -169,15 +165,16 @@ export default function UnitDetailCard(props) {
         <GavelIcon />
         <span>LIMITED TITLE RUNSHEET</span>
       </div>
-    )
+    );
   };
-
 
   const WellHeader = ({ selectedWellTab, setWellSelectedTab }) => (
     <TabButtons
       labels={["Unit Wells", "Potential Wells"]}
       value={selectedWellTab}
-      setValue={(n) => { setWellSelectedTab(n) }}
+      setValue={(n) => {
+        setWellSelectedTab(n);
+      }}
     />
   );
 
@@ -185,7 +182,9 @@ export default function UnitDetailCard(props) {
     <TabButtons
       labels={["Unit Tracts", "Potential Tracts"]}
       value={selectedTractTab}
-      setValue={(n) => { setTractSelectedTab(n) }}
+      setValue={(n) => {
+        setTractSelectedTab(n);
+      }}
     />
   );
 
@@ -201,8 +200,14 @@ export default function UnitDetailCard(props) {
           tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "Tracts", "Documents"]}
           openTabIdex={selectedTab}
           tabPanels={[
-            <UnitSummary properties={properties} setProperties={setProperties} updateProperties={updateProperties}
-              updateCustomProperties={updateCustomProperties} id={props.id} customLayer={uniObj} />,
+            <UnitSummary
+              properties={properties}
+              setProperties={setProperties}
+              updateProperties={updateProperties}
+              updateCustomProperties={updateCustomProperties}
+              id={props.id}
+              customLayer={uniObj}
+            />,
             <TabPanels
               value={selectedTab}
               panels={[
@@ -210,7 +215,7 @@ export default function UnitDetailCard(props) {
                   <UnitOwnersTable
                     customLayer={uniObj}
                     parent="ownersPerUnit"
-                    shapeType='Unit'
+                    shapeType="Unit"
                     targetLabel="Unit Ownership"
                     header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
                     setSelectedTab={setSelectedTab}
@@ -221,13 +226,13 @@ export default function UnitDetailCard(props) {
                   <SuggestedShapeTaxOwnersTable
                     customLayer={uniObj}
                     parent="potentialOwnersPerUnit"
-                    shapeType='Unit'
+                    shapeType="Unit"
                     targetLabel="well"
                     header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
                     setSelectedTab={setSelectedTab}
                     dense
                   />
-                </div>
+                </div>,
               ]}
             />,
 
@@ -246,7 +251,7 @@ export default function UnitDetailCard(props) {
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <ShapeWellInterestTable
                     customLayer={uniObj}
-                    shapeType='Unit'
+                    shapeType="Unit"
                     parent="associatedWellsPerUnits"
                     targetLabel="well"
                     header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
@@ -257,7 +262,7 @@ export default function UnitDetailCard(props) {
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <AssociatedWellsShapeTable
                     customLayer={uniObj}
-                    shapeType='Unit'
+                    shapeType="Unit"
                     parent="associatedWellsPerUnits"
                     targetLabel="well"
                     header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
@@ -265,7 +270,7 @@ export default function UnitDetailCard(props) {
                     setSelectedTab={setWellSelectedTab}
                     dense
                   />
-                </div>
+                </div>,
               ]}
             />,
             <TabPanels
@@ -274,7 +279,7 @@ export default function UnitDetailCard(props) {
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <UnitTractsTable
                     customLayer={uniObj}
-                    shapeType='Unit'
+                    shapeType="Unit"
                     header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
                     dense
                   />
@@ -282,28 +287,27 @@ export default function UnitDetailCard(props) {
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <AssociatedTractsShapeTable
                     customLayer={uniObj}
-                    shapeType='Unit'
+                    shapeType="Unit"
                     header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
                     setSelectedTab={setTractSelectedTab}
                     dense
                   />
-                </div>
+                </div>,
               ]}
             />,
             <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
               <RelatedDetailsDocumentTable
                 customLayer={uniObj}
-                relatedObjectType='Shape'
-                name='Unit'
+                relatedObjectType="Shape"
+                name="Unit"
                 header={<DocumentHeader />}
                 addAble={{ type: "UnitDocument" }}
                 dense
               />
-            </div>
+            </div>,
           ]}
         />
       </Grid>
-
     </Grid>
   ) : (
     <div style={{ padding: "20px", position: "absolute", height: "100%", width: "100%" }}>

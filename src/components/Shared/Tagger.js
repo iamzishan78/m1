@@ -297,7 +297,7 @@ export default function Tags(props) {
             "getOwnersIdsFromTagsArray",
             "getContactsFilterOptions",
             "getContactWellInterestsFilterOptions",
-            "getESPaginatedList",
+            "getESPaginatedList", "getESSimpleSearch",
           ],
           awaitRefetchQueries: true,
         });
@@ -324,7 +324,7 @@ export default function Tags(props) {
               "getTagsByObjectsIds",
               "getContactsFilterOptions",
               "getContactWellInterestsFilterOptions",
-              "getESPaginatedList",
+              "getESPaginatedList", "getESSimpleSearch",
             ],
             awaitRefetchQueries: true,
           });
@@ -365,7 +365,7 @@ export default function Tags(props) {
           "getTagsByObjectsIds",
           "getPaginatedContacts",
           "getContactsFilterOptions",
-          "getESPaginatedList",
+          "getESPaginatedList", "getESSimpleSearch",
         ],
         awaitRefetchQueries: true,
       });
@@ -390,7 +390,7 @@ export default function Tags(props) {
             "getTagsByObjectsIds",
             "getPaginatedContacts",
             "getContactsFilterOptions",
-            "getESPaginatedList",
+            "getESPaginatedList", "getESSimpleSearch",
           ],
           awaitRefetchQueries: true,
         });

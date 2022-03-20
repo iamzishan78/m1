@@ -102,7 +102,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       setLoading(false);
       handleClose();
     },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
 
   const [updateShapeOwners, { data: updateData }] = useMutation(UPDATE_SHAPE_OWNERS, {
@@ -110,7 +110,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       setLoading(false);
       handleClose();
     },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
 
   const [addShapeTract] = useMutation(ADD_TRACTS_TOA_SHAPE, {
@@ -118,7 +118,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       setLoading(false);
       handleClose();
     },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
   const [updateShapeTract] = useMutation(UPDATE_SHAPE_TRACTS, {
     onCompleted: () => {
@@ -126,7 +126,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       handleClose();
     },
     onError: (err) => { },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
 
   // const setShapeLayer = (layer) => {
@@ -255,7 +255,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             isDeleted: true
           },
         },
-        refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
       });
     } catch {
       setLoading(false);

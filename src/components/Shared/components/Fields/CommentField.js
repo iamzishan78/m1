@@ -110,6 +110,9 @@ export default function DealComment({
       document.getElementById("colorText").innerHTML = value;
       setNameAutValue({ name: updatedValue, _id: "" });
     } else {
+      // if (value.includes("\n")) {
+      //   value = value.replace(/\n/g, "<br/>");
+      // }
       document.getElementById("colorText").innerHTML = value;
       setNameAutValue({ name: comment, _id: "" });
     }

@@ -1,3 +1,7 @@
+import Loader from "components/Loaders";
+import { CREATE_JOB } from "graphQL/useMutationCreateJob";
+import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
+
 const random_rgb = () => {
     var o = Math.round,
         r = Math.random,
@@ -55,4 +59,42 @@ export const getDefaultSettings = (type, layerName, sourceProps) => {
         visiable: true,
     };
     return { layerPaintProps, layerSettings }
+}
+
+export const SimpleOrShapeFileImport = async (params) => {
+    const { stateApp, setStateApp, client, file_id, sourceProps } = params
+    const isShapeFileImport = stateApp?.user?.features?.find(f => f.name === 'ShapeFileImport')
+    if (isShapeFileImport) {
+        const jobInitialization = await client.mutate({
+            mutation: INITIALIZE_EXPORT_JOB,
+            variables: {
+                jobName: "Shape File Import",
+                jobType: "SHAPEFILEIMPORT",
+                requestPayload: {
+                    fileId: file_id,
+                },
+                userId: stateApp.user.mongoId,
+            },
+        });
+
+        await client.mutate({
+            mutation: CREATE_JOB,
+            variables: {
+                jobId: jobInitialization?.data?.initializeExportJob?.job?._id,
+                sendEmail: false,
+            },
+        });
+        setStateApp((state) => ({
+            ...state,
+            bulkUpload: !state.bulkUpload,
+        }));
+    } else {
+        Loader.createToast('layer-creation', 'Layer creation in progress')
+        const interval = setInterval(() => {
+            if (stateApp.map.isSourceLoaded(sourceProps)) {
+                Loader.successToast('layer-creation', 'Layer created')
+                clearInterval(interval);
+            }
+        }, 1000);
+    }
 }

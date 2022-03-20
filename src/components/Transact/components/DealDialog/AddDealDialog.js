@@ -35,9 +35,8 @@ import { UPSERTDEALDESCRIPTOR } from "graphQL/useMutationUpsertDealDescriptor";
 import { REMOVEDEALDESCRIPTOR } from "graphQL/useMutationRemoveDealDescriptor";
 import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
 import { UPDATESTAGEDEALDESCRIPTORS } from "graphQL/useMutationUpdateStageDealDescriptors";
-import { setFlowState, showErrorMessage, showSuccessMessage } from "actions";
+import { showErrorMessage, showSuccessMessage } from "actions";
 
-import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
 import Documents from "components/Shared/Documents";
@@ -125,7 +124,6 @@ const useStyles = makeStyles((theme) => ({
   contentRoot: {
     overflowY: "overlay",
     overflowX: "hidden",
-    maxHeight: "90vh",
     marginRight: "60px",
   },
   inputFieldRoot: {
@@ -329,8 +327,6 @@ function AddDealDialog(props) {
   let [transactData, setTransactData] = useState(props.transactData ? { ...props.transactData } : null);
 
   const [mapSettings, setMapSettings] = useState(null);
-  
-  const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
   const [getDeal, { data: getDealResult }] = useLazyQuery(GETDEAL, {
     fetchPolicy: "no-cache",
@@ -369,13 +365,12 @@ function AddDealDialog(props) {
   const [contact, setContact] = useState({});
 
   useEffect(() => {
-    getPipelines();
     return () =>
       setStateTransact((stateTransact) => ({
         ...stateTransact,
         dealToCreate: {},
       }));
-  }, [getPipelines]);
+  }, []);
 
   //? pre saving the deal id in case deal descriptors
   //? are created before deal
@@ -465,24 +460,6 @@ function AddDealDialog(props) {
       });
     }
   }, [pipelineId, stateApp.activeDeal, stateTransact.dealToCreate]);
-
-  useEffect(() => {
-    if (pipelinesData) {
-      if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
-        dispatch(
-          setFlowState({
-            pipelines: pipelinesData.pipelines,
-          })
-        );
-      } else
-        dispatch(
-          setFlowState({
-            pipelines: [],
-            pipeToShow: false,
-          })
-        );
-    }
-  }, [pipelinesData]);
 
   useEffect(() => {
     if (pipelines.length > 0 && props.contactId) {
@@ -708,7 +685,6 @@ function AddDealDialog(props) {
       transactBarView: "Deal",
       viewDoc: null,
     }));
-    // setValid({title: false});
   };
 
   useEffect(() => {
@@ -720,7 +696,7 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     if (stateApp?.activeDeal?.mapSettings?.mapDefaultPosition != null &&
-        stateApp?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition) {
+      stateApp?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition) {
       setStateApp((state) => {
         return { ...state, mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition }
       })
@@ -1183,13 +1159,12 @@ function AddDealDialog(props) {
   }, [files, uploadedFiles]);
 
   const saveViewport = useCallback(() => {
-    console.log(stateApp.mapVars)
     setMapSettings({
-      activeBaseMap : stateApp?.mapVars?.styleId, 
-      mapDefaultPosition : {
-        zoom: stateApp?.mapVars?.zoom, 
-        bearing: stateApp?.mapVars?.bearing, 
-        pitch: stateApp?.mapVars?.pitch, 
+      activeBaseMap: stateApp?.mapVars?.styleId,
+      mapDefaultPosition: {
+        zoom: stateApp?.mapVars?.zoom,
+        bearing: stateApp?.mapVars?.bearing,
+        pitch: stateApp?.mapVars?.pitch,
         center: stateApp?.mapVars?.center
       }
     })
@@ -1202,14 +1177,6 @@ function AddDealDialog(props) {
     setExpCardSubComponent(subComponent);
     setExpCardSubComponentTitle(subComponentTitle);
     setShowExpandableCard(true);
-  };
-
-  const handleCloseExpandableCard = () => {
-    setShowExpandableCard(false);
-    setStateApp((state) => ({
-      ...state,
-      contactUpdated: null,
-    }));
   };
 
   const setUploadedFileData = (uploadedfile) => {
@@ -1231,7 +1198,7 @@ function AddDealDialog(props) {
   }, [dealSettings]);
 
   const handleClickDialogClose = () => {
-    if(stateApp.transactBarView === "Map") {
+    if (stateApp.transactBarView === "Map") {
       setStateApp((state) => ({
         ...state,
         transactBarView: "Deal",
@@ -1243,11 +1210,6 @@ function AddDealDialog(props) {
       if (history.location.pathname.includes("lane")) {
         history.push(`${history.location.pathname.split("/lane")[0]}`);
       }
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        dealDialog: false,
-        activeDeal: { cardId: null, laneId: null },
-      }));
       handleClose();
     }
   };
@@ -1277,9 +1239,11 @@ function AddDealDialog(props) {
         <RightDialog
           open={props.open}
           handleClickDialogClose={handleClickDialogClose}
-          width="650px"
+          width="28vw"
           isTransactPage={props.isTransactPage}
           hiddenOverflow
+          noBorder
+          hideBackdrop={true}
         >
           <DealDialogHeader
             titleFocus={titleFocus}
@@ -1304,7 +1268,7 @@ function AddDealDialog(props) {
           ) : (
             <div className={classes.contentRoot}>
               <Drawer dealSettingsNumber={getSubtaskNumber()} mapSettings={mapSettings} />
-              { !["Deal", "Map"].includes(stateApp.transactBarView) &&
+              {!["Deal", "Map"].includes(stateApp.transactBarView) &&
                 (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>
               ) : (
@@ -1393,7 +1357,7 @@ function AddDealDialog(props) {
                           value={receivedDate}
                           placeholder=""
                           fullWidth
-                          className={classes.dateRoot, classes.inputFieldDate}
+                          className={`${classes.dateRoot} ${classes.inputFieldDate}`}
                           onChange={(e) => {
                             setReceivedDate(e.target.value);
                           }}
@@ -1635,26 +1599,27 @@ function AddDealDialog(props) {
             </div>
           )}
         </RightDialog>
-        {stateApp.transactBarView === "Map" &&  (
-          <Container
-            maxWidth={true}
-            style={{ position: "relative", "z-index": "9999" }}
+        {stateApp.transactBarView === "Map" && (
+          <div
+            maxWidth="calc(100vw - 28vw)"
+            style={{ position: "relative", "z-index": "9999", width: "calc(100vw - 30vw)" }}
           >
-              <MapProvider match={{ params: { 
-                expandedPanel: false, 
-                openSpeedDial: false, 
-                viewPortCallback: (mapSettings) => { 
+            <MapProvider match={{
+              params: {
+                expandedPanel: false,
+                openSpeedDial: false,
+                viewPortCallback: (mapSettings) => {
                   console.log("here")
                   setMapSettings(mapSettings)
                 },
-                width: "calc(100% - 650px)"
-              }}} >
-              </MapProvider>
-            <div 
-              style={{ 
-                position: "relative", 
+              }
+            }} >
+            </MapProvider>
+            <div
+              style={{
+                position: "relative",
                 float: "right",
-                "margin-right": "650px",
+                "margin-right": "40px",
                 width: "fit-content",
                 "background-color": "#fff",
                 padding: "10px"
@@ -1665,8 +1630,8 @@ function AddDealDialog(props) {
                 Save Viewport
               </Button>
             </div>
-          </Container>
-          )}
+          </div>
+        )}
       </div>
     </>
   );
