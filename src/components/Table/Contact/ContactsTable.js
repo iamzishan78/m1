@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "react-redux";
 import { Container } from "@material-ui/core";
 import get from "lodash/get";
+import uniqBy from "lodash/uniqBy";
 import moment from "moment";
 
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
@@ -124,7 +125,7 @@ function ContactsTable(props) {
       newFilters = [...newFilters, ...props.customAppliedFilters]
     }
 
-    return newFilters;
+    return uniqBy(newFilters, "field");
   }
 
   const formatHits = (hits) => {
@@ -140,14 +141,14 @@ function ContactsTable(props) {
   }
 
   useEffect(() => {
-    props.setInitialFilters(props.customAppliedFilters || [])
+    props.setInitialFilters(uniqBy(props.customAppliedFilters, "field") || [])
     props.setTableMeta({
       addableName: "Contact",
       extendSearchQuery: props.contactSearchQuery,
       searchFields: ["name^4", "_all"],
       TableHeader: copy(TableHeader),
       esIndex: "contacts_flat",
-      filters: Contacts ? getFilters() : [],
+      // filters: Contacts?.filters ? getFilters() : [],
       selectedGridView: Contacts || defaultView,
       startPaginationAt: 25,
       defaultSort: { field: 'lastUpdateAt', order: 'desc' },
@@ -158,7 +159,7 @@ function ContactsTable(props) {
   }, [props.contactSearchQuery, props.customAppliedFilters]);
 
   useEffect(() => {
-    props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView: Contacts || defaultView, filters: getFilters() }));
+    props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView: Contacts || defaultView, filters: [] }));
     // eslint-disable-next-line
   }, [selectedGridView]);
 

@@ -4,7 +4,7 @@ import { useLazyQuery } from "@apollo/client";
 import { Button, Tooltip, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useHistory } from "react-router-dom";
-import { isEmpty } from "lodash";
+import { isEmpty, uniqBy } from "lodash";
 
 import { AppContext } from "AppContext";
 
@@ -141,11 +141,12 @@ export const TableESHOC = (Component) => {
                             fields: tableMeta.searchFields
                         },
                         sort: tableMeta.defaultSort,
-                        filters: [
-                            ...(initialFilters ? handleMultiFieldFilter(initialFilters) : []),
-                            ...(tableMeta.filters ? handleMultiFieldFilter(tableMeta.filters) : []),
+                        filters: handleMultiFieldFilter([
+                            ...(initialFilters ? initialFilters : []),
+                            ...(tableMeta.filters ? tableMeta.filters : []),
+                            ...(tableMeta?.selectedGridView?.filters ? tableMeta?.selectedGridView?.filters : []),
                             ...(tableMeta.polygon) ? [tableMeta.polygon] : []
-                        ]
+                        ])
                     }
                 });
                 if (tableMeta.selectedGridView)
@@ -179,6 +180,7 @@ export const TableESHOC = (Component) => {
             }
             else if (tableData?.hits?.length === 0) {
                 setRows([]);
+                setColumnsData(copy(tableMeta.TableHeader));
                 setLoading(false);
             }
         }, [tableData, dependencyUpdate]);
