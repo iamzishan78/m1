@@ -123,6 +123,10 @@ const categoryOptions = [
     value: "Check",
   },
   {
+    label: "Check Details",
+    value: "Check Details",
+  },
+  {
     label: "Agreement",
     value: "Agreement",
   },
@@ -132,7 +136,7 @@ const categoryOptions = [
   },
 ];
 
-const MetaField = ({ category, columns, updateColumnSorting }) => {
+const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState("new");
   const [metaData, setMetaData] = useState(null);
@@ -227,7 +231,7 @@ const MetaField = ({ category, columns, updateColumnSorting }) => {
             name: name,
             label: values.title,
             esKey:
-              values.type === "dropdown"
+                esKey ? esKey : values.type === "dropdown"
                 ? `custom_data.${name}`
                 : `custom_data.${values.title
                   .replace(/ /g, "_")
