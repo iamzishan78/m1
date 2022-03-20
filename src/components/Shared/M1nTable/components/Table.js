@@ -2332,19 +2332,19 @@ function SubTable(props) {
               },
             };
             break;
-          case "validation":
+          case "isAmountValidated":
             column.options = {
               ...column.options,
               customBodyRender: (value, tableMeta) => {
                 return (
                   <>
-                    {!value && (
+                    {value && (
                       <div className="flex justifyCenter alignCenter success w-100">
                         <CheckCircle size={20} />
                       </div>
                     )}
 
-                    {value && (
+                    {!value && (
                       <div
                         className="flex justifyCenter alignCenter warning w-100"
                         onMouseOver={() => (document.getElementById(`alertTootip${tableMeta.rowIndex}`).style.display = "block")}

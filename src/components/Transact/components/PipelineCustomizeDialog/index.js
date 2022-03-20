@@ -236,7 +236,6 @@ const PipelineCustomDialog = (props) => {
 
     if (openPipeDialog === "newPipe") {
       // New flowline
-
       addPipeline({
         variables: {
           pipeline: {
@@ -410,7 +409,7 @@ const PipelineCustomDialog = (props) => {
           if (success === true) dispatch(showSuccessMessage("Flowline was successfully updated."));
           else dispatch(showErrorMessage("An error occurred during the update."));
         })
-        .catch((reason) => {});
+        .catch((reason) => { });
     }
   };
 
@@ -559,9 +558,9 @@ const PipelineCustomDialog = (props) => {
           <DeleteConfirmationDialogContent
             header={deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`}
             onClose={handleCloseDeleteDialog}
-            deleteFunc={deleteFunc ? deleteFunc : () => {}}
+            deleteFunc={deleteFunc ? deleteFunc : () => { }}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the flowline?" : "Are you sure you want to delete the stage?"}
           </DeleteConfirmationDialogContent>
