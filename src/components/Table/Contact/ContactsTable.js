@@ -89,6 +89,7 @@ function ContactsTable(props) {
 
   // const dispatch = useDispatch();
   const { Contacts } = useSelector(({ session }) => session.userGridViewSettings);
+  const User = useSelector(({ app }) => app.user);
 
   // function states
   const tableRef = useRef();
@@ -116,17 +117,17 @@ function ContactsTable(props) {
 
   const genericDataActions = ['tracks']
 
-  const getFilters = () => {
-    let newFilters = []
-    if (selectedGridView?.filters) {
-      newFilters = selectedGridView.filters
-    }
-    if (props.customAppliedFilters) {
-      newFilters = [...newFilters, ...props.customAppliedFilters]
-    }
+  // const getFilters = () => {
+  //   let newFilters = []
+  //   if (selectedGridView?.filters) {
+  //     newFilters = selectedGridView.filters
+  //   }
+  //   if (props.customAppliedFilters) {
+  //     newFilters = [...newFilters, ...props.customAppliedFilters]
+  //   }
 
-    return uniqBy(newFilters, "field");
-  }
+  //   return uniqBy(newFilters, "field");
+  // }
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
@@ -159,11 +160,14 @@ function ContactsTable(props) {
   }, [props.contactSearchQuery, props.customAppliedFilters]);
 
   useEffect(() => {
-    props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView: Contacts || defaultView, filters: [] }));
+    props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView, filters: [] }));
     // eslint-disable-next-line
   }, [selectedGridView]);
 
   useEffect(() => {
+    if (Contacts.name === 'My Contacts' && !Contacts.isPrivate) {
+      Contacts.filters[0].value = User.name
+    }
     setSelectedGridView(Contacts || defaultView);
     // eslint-disable-next-line
   }, [Contacts]);

@@ -150,7 +150,7 @@ export const TableESHOC = (Component) => {
                     }
                 });
                 if (tableMeta.selectedGridView)
-                    handleSelectedGridChange(tableMeta.TableHeader, { ...tableMeta.selectedGridView, filters: (tableMeta.selectedGridView.filters || []).concat(tableMeta.filters) }, columns, true)
+                    handleSelectedGridChange(tableMeta.TableHeader, { ...tableMeta.selectedGridView, filters: (tableMeta.selectedGridView.filters || []).concat(tableMeta.filters || []) }, columns, true)
             }
             // eslint-disable-next-line
         }, [tableMeta]);
