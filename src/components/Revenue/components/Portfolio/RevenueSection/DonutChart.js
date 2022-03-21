@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
@@ -24,7 +23,8 @@ const DonutChart = ({ items, total, id = "pie-chart" }) => {
         if (items?.length === 0) return;
         const _data = items.map(item => ({
             category: item.name,
-            value: item.value
+            value: item.value,
+            total: item.totalK,
         }));
         setData(_data);
     }, [items]);
@@ -49,7 +49,7 @@ const DonutChart = ({ items, total, id = "pie-chart" }) => {
         pieSeries.ticks.template.disabled = true;
 
         // Disable tooltips
-        pieSeries.slices.template.tooltipText = "";
+        // pieSeries.slices.template.tooltipText = "";
 
         // Put a thick white border around each Slice
         // pieSeries.slices.template.stroke = am4core.color("#4a2abb");
@@ -58,24 +58,27 @@ const DonutChart = ({ items, total, id = "pie-chart" }) => {
 
         // Add a legend
         chart.legend = new am4charts.Legend();
-        chart.legend.useDefaultMarker = true;
+        // chart.legend.useDefaultMarker = true;
+        chart.legend.labels.template.text = `[bold]{name}:[/] {value}| ${chart.legend.valueLabels.template.text}`;
+        // chart.legend.valueLabels.template.text = `{value} | ${chart.legend.valueLabels.template.text}`;
+        chart.legend.position = "right";
+        chart.legend.maxWidth = 400;
+        chart.legend.scrollable = true;
+
         var markerTemplate = chart.legend.markers.template;
         markerTemplate.width = 15;
         markerTemplate.height = 15;
         markerTemplate.stroke = am4core.color("#ccc");
-        chart.legend.position = "right";
-        chart.legend.maxWidth = 200;
-        chart.legend.scrollable = true;
-
+        markerTemplate.fontWeight = 500
 
         let label = pieSeries.createChild(am4core.Label);
-        label.text = `${total}`;
+        label.text = `${total} K`;
         label.horizontalCenter = "middle";
         label.verticalCenter = "middle";
         label.fontSize = 25;
         label.fontWeight = "bold";
 
-        chart.legend.valueLabels.template.text = "";
+
     }, [data]);
 
     return (

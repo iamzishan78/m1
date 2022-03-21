@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 const RevenueSection = ({ monthsInterval, adjustmentsRef, netRevenueRef }) => {
   const classes = useStyles();
-  const constItems =[
+  const constItems = [
     {
       name: "Gross Revenue",
       value: 500000,
@@ -48,18 +48,18 @@ const RevenueSection = ({ monthsInterval, adjustmentsRef, netRevenueRef }) => {
       data: {},
       total: 0
     },
-    {
-      name: "Lease Payments",
-      value: 44000,
-      data: {},
-      total: 0
-    },
-    {
-      name: "Other",
-      value: 13000,
-      data: {},
-      total: 0
-    },
+    // {
+    //   name: "Lease Payments",
+    //   value: 44000,
+    //   data: {},
+    //   total: 0
+    // },
+    // {
+    //   name: "Other",
+    //   value: 13000,
+    //   data: {},
+    //   total: 0
+    // },
   ];
   const [items, setItems] = useState(constItems);
 
@@ -82,12 +82,14 @@ const RevenueSection = ({ monthsInterval, adjustmentsRef, netRevenueRef }) => {
           item.total += item.value;
         });
       });
-      _items.forEach((item) => {item.total = vf_number(item.total)});
+      _items.forEach((item) => { item.totalK = vf_number(Math.floor(item.total / 1000)); item.total = vf_number(item.total) });
       adjustmentsRef(adjustmentTotals);
       netRevenueRef(netRevenueTotals);
       setItems(_items);
     }
   }, [monthsInterval]);
+
+  console.log(items)
 
   const total = React.useMemo(() => {
     let _total = 0;
@@ -96,23 +98,27 @@ const RevenueSection = ({ monthsInterval, adjustmentsRef, netRevenueRef }) => {
         item.data && (_total += item.data[month]);
       });
     })
-    return vf_number(_total);
+    return { withK: vf_number(Math.floor(_total / 1000)), withoutK: vf_number(Math.floor(_total)) }
   }, [items, monthsInterval]);
+
+  const donutItems = React.useMemo(() => {
+    return items.filter((item) => ["Net Revenue", "Adjustments"].includes(item.name))
+  }, [items]);
 
   return (
     <>
       <Typography variant="h6" className={classes.sectionTitle}>
-        Revenue & Income
+        Revenue
       </Typography>
-      <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3} className={classes.root}>
-        <Grid item>
-          <DonutChart items={items} total={total} />
+      <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={4} className={classes.root}>
+        <Grid item md={5} style={{ paddingRight: '0px' }}>
+          <DonutChart items={donutItems} total={items[0].totalK} />
         </Grid>
-        <Grid item>
-          <StackedChart items={items} total={total} monthsInterval={monthsInterval} />
+        <Grid item md={7}>
+          <StackedChart items={donutItems} total={total.withoutK} monthsInterval={monthsInterval} />
         </Grid>
       </Grid>
-      <RevenueTable monthsInterval={monthsInterval} items={items} total={total} />
+      <RevenueTable monthsInterval={monthsInterval} items={items} total={total.withoutK} />
     </>
   );
 };
