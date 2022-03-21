@@ -10,7 +10,6 @@ import Autocomplete, {
 } from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/core/styles";
 
-
 const filter = createFilterOptions();
 
 const useStyles = makeStyles((theme) => ({
@@ -98,17 +97,17 @@ export default function DealComment({
       for (let i = 0; i < users.length; i++) {
         if (updatedValue.includes(users[i]._id)) {
           updatedValue = replaceAllWith(updatedValue, users[i]._id, `@${users[i].name}`);
-
           value = replaceAllWith(value, `{{${users[i]._id}}}`, ` <span class='blue'>@${users[i].name}</span>`)
         }
       }
-      document.getElementById("colorText").innerHTML = value;
       setNameAutValue({ name: updatedValue, _id: "" });
     } else {
-      document.getElementById("colorText").innerHTML = value;
       setNameAutValue({ name: comment, _id: "" });
     }
-
+    if (value.includes("\n")) {
+      value = value.replace(/\n/g, "<br>");
+    }
+    document.getElementById("colorText").innerHTML = value;
   }, [comment, users]);
 
   const replaceAllWith = (_string, replaceFrom, replaceWith) => {
