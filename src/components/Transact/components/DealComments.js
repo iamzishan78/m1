@@ -460,7 +460,7 @@ export default function DealComment(props) {
                 showActions={showActions}
                 setComment={setComment}
                 upsertComment={addNewComment}
-                fieldWidth='477px'
+                fieldWidth='482px'
               />
             </div>
           </Grid>

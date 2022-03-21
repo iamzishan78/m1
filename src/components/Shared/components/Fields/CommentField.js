@@ -17,8 +17,10 @@ const useStyles = makeStyles((theme) => ({
     border: "none",
   },
   search: {
+    maxHeight: "230px",
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
+      paddingLeft: "8px",
     },
     "& .MuiOutlinedInput-root": {
       paddingRight: "0px !important",
@@ -27,6 +29,24 @@ const useStyles = makeStyles((theme) => ({
       display: "none",
     },
     "& .MuiInputBase-input": { color: "transparent", caretColor: "black" },
+    "& .MuiInputBase-inputMultiline": {
+      height: "201px !important"
+    },
+    "&:textarea": {
+      height: "201px !important",
+      color: "red",
+      wordBreak: "break-all",
+      overflow: "overlay",
+      zIndex: "9999",
+      "*::-webkit-scrollbar": {
+        height: "0.4em",
+        width: "0.4em",
+      },
+      "*:hover::-webkit-scrollbar": {
+        height: "0.4em",
+        width: "0.4em",
+      },
+    }
   },
   customTextField: {
     "& textarea::placeholder": {
@@ -46,9 +66,12 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: "19px",
     fontSize: "16px",
     marginRight: "4px",
-    height: "43px",
+    height: "200px",
     overflowY: "auto",
     width: (props) => props.fieldWidth ? props.fieldWidth : 'inherit',
+    wordBreak: "break-all",
+    position: "relative",
+    top: "-162px"
   },
   commentBtn: {
     "float": "right",
