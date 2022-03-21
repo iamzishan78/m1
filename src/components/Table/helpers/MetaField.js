@@ -452,15 +452,15 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
                             fullWidth
                             defaultValue=""
                             multiline
-                            rows={4}
-                            rowsMax={4}
+                            rows={5}
+                            rowsMax={5}
                           />
                         )}
                       />
                     )}
                   </Grid>
                   <Grid container item xs={5}>
-                    <label style={{ margin: "20px 0px 5px 0px" }}>Icon Type</label>
+                    <label style={{ margin: "15px 0px 5px 0px" }}>Icon Type</label>
                     <Controller
                       control={control}
                       name="iconType"
@@ -483,6 +483,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
                       )}
                     />
                     <div style={{ width: '100%', marginTop: 5 }}>
+                      <label>Module</label>
                       <Controller
                         control={control}
                         name="category"
