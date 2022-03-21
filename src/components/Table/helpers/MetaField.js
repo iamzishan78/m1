@@ -136,6 +136,17 @@ const categoryOptions = [
   },
 ];
 
+const iconOptions = [
+  {
+    label: "Chip",
+    value: "Chip",
+  },
+  {
+    label: "Bullet Point",
+    value: "Bullet Point",
+  }
+];
+
 const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState("new");
@@ -169,14 +180,17 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
         setValue("isAddedToLibrary", stateApp.selectedMeta.isAddedToLibrary);
         setValue("type", stateApp.selectedMeta.type);
         setValue("title", stateApp.selectedMeta.label);
+        setValue("iconType", stateApp.selectedMeta.iconType || iconOptions[0].value);
         setItems(stateApp.selectedMeta.dropdownOptions);
       }, 100);
     }
   }, [stateApp.selectedMeta]);
 
-  const [addMetaData, { }] = useMutation(ADD_META_DATA);
-  const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
-  const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(GET_ALL_LIBRARY_META_DATA);
+  const [addMetaData, {}] = useMutation(ADD_META_DATA);
+  const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
+  const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(
+    GET_ALL_LIBRARY_META_DATA
+  );
 
   useEffect(() => {
     getAllLibraryMetaData();
@@ -216,6 +230,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
           metaData: {
             _id: stateApp.selectedMeta._id,
             label: values.title,
+            iconType: values.iconType,
             dropdownOptions: items,
             isAddedToLibrary: values.isAddedToLibrary,
           },
@@ -224,18 +239,18 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
         awaitRefetchQueries: true,
       });
     } else {
-      const name = values.title.replace(/ /g, "_").toLowerCase()
+      const name = values.title.replace(/ /g, "_").toLowerCase();
       addMetaData({
         variables: {
           metaData: {
             name: name,
             label: values.title,
-            esKey:
-                esKey ? esKey : values.type === "dropdown"
-                ? `custom_data.${name}`
-                : `custom_data.${values.title
-                  .replace(/ /g, "_")
-                  .toLowerCase()}`,
+            iconType: values.iconType,
+            esKey: esKey
+              ? esKey
+              : values.type === "dropdown"
+              ? `custom_data.${name}`
+              : `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}`,
             options: {
               display: false,
               filter: true,
@@ -273,10 +288,15 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
   const rippleEffectCall = (data) => {
     if (updateColumnSorting) {
       const columnData = JSON.parse(JSON.stringify(columns));
-      columnData.push({ name: data.name, options: { display: true } })
-      updateColumnSorting(columnData.map(col => ({ name: col.name, display: col.options.display ? "true" : "false" })));
+      columnData.push({ name: data.name, options: { display: true } });
+      updateColumnSorting(
+        columnData.map((col) => ({
+          name: col.name,
+          display: col.options.display ? "true" : "false",
+        }))
+      );
     }
-  }
+  };
 
   const onSelectLibraryItem = (data) => {
     if (data.category !== category) {
@@ -302,7 +322,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
       });
     }
     rippleEffectCall(data);
-  }
+  };
 
   return (
     <Dialog
@@ -432,33 +452,57 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
                             fullWidth
                             defaultValue=""
                             multiline
-                            rows={3}
+                            rows={4}
                             rowsMax={4}
                           />
                         )}
                       />
                     )}
                   </Grid>
-                  <Grid container item xs={5} style={{ paddingTop: 20 }}>
+                  <Grid container item xs={5}>
+                    <label style={{ margin: "20px 0px 5px 0px" }}>Icon Type</label>
                     <Controller
                       control={control}
-                      name="category"
-                      defaultValue={category ?? categoryOptions[0].value}
+                      name="iconType"
+                      defaultValue={iconOptions[0].value}
                       render={(params) => (
                         <Select
                           styles={{
                             menu: (provided) => ({ ...provided, zIndex: 9999 }),
                           }}
-                          value={categoryOptions.find(
+                          value={iconOptions.find(
                             (op) => op.value === params.value
                           )}
                           menuPlacement="auto"
-                          options={categoryOptions}
+                          options={iconOptions}
                           className={classes.select}
-                          isDisabled={stateApp.selectedMeta}
+                          onChange={(e) => {
+                            params.onChange(e.value);
+                          }}
                         />
                       )}
                     />
+                    <div style={{ width: '100%', marginTop: 5 }}>
+                      <Controller
+                        control={control}
+                        name="category"
+                        defaultValue={category ?? categoryOptions[0].value}
+                        render={(params) => (
+                          <Select
+                            styles={{
+                              menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                            }}
+                            value={categoryOptions.find(
+                              (op) => op.value === params.value
+                            )}
+                            menuPlacement="auto"
+                            options={categoryOptions}
+                            className={classes.select}
+                            isDisabled={stateApp.selectedMeta}
+                          />
+                        )}
+                      />
+                    </div>
                   </Grid>
                 </Grid>
               </div>
