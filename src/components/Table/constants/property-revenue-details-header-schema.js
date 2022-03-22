@@ -41,6 +41,7 @@ const RevenueStatementHeadCells = [
     label: "Purchaser",
     esKey: "check.payor.name.keyword",
     options: { sort: true, filter: true },
+    style: { minWidth: 210 }
   },
   {
     name: "number",
@@ -53,6 +54,7 @@ const RevenueStatementHeadCells = [
     label: "Property Name",
     esKey: "property.name.keyword",
     options: { sort: true, filter: true },
+    style: { minWidth: 210 }
   },
   {
     name: "date",
