@@ -29,6 +29,9 @@ function RevenueStatementTable(props) {
     onGettingPotentialIssues,
     onGettingStatements,
     setGenricData,
+    esFilters,
+    revenueSearchQuery,
+    filterToggle
   } = props;
 
   const [removeChecks] = useMutation(REMOVE_CHECKS, {
@@ -77,16 +80,28 @@ function RevenueStatementTable(props) {
     [onGettingStatements, setGenricData]
   );
 
+  const formatedFilter = esFilters ? copy(esFilters) : [];
+  const fixedFilters = [];
+
+  if (formatedFilter[0] && formatedFilter[0].value.range) {
+    formatedFilter[0].type = 'range'
+    formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field]
+    fixedFilters.push(formatedFilter[0])
+  }
+
   useEffect(() => {
     setTableMeta({
       TableHeader: copy(TableHeader),
       esIndex: "checks_flat",
+      filters: fixedFilters,
+      extendSearchQuery: revenueSearchQuery,
+      searchFields: ["checkNumber", "_all"],
       startPaginationAt: 24,
       defaultSort: { field: "checkDate", order: "desc" },
       formatHits,
       initializeGenericData: { key: "_id", actions: genericDataActions },
     });
-  }, [setTableMeta, formatHits]);
+  }, [setTableMeta, formatHits, revenueSearchQuery, filterToggle]);
 
   useEffect(() => {
     // Potential Issues
