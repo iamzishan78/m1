@@ -30,21 +30,16 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiInputBase-input": { color: "transparent", caretColor: "black" },
     "& .MuiInputBase-inputMultiline": {
-      height: "201px !important"
-    },
-    "&:textarea": {
       height: "201px !important",
-      color: "red",
-      wordBreak: "break-all",
+      zIndex: 9999,
       overflow: "overlay",
-      zIndex: "9999",
       "*::-webkit-scrollbar": {
-        height: "0.4em",
-        width: "0.4em",
+        height: "0.2em !important",
+        width: "0.2em !important",
       },
       "*:hover::-webkit-scrollbar": {
-        height: "0.4em",
-        width: "0.4em",
+        height: "0.2em !important",
+        width: "0.2em !important",
       },
     }
   },
@@ -69,9 +64,22 @@ const useStyles = makeStyles((theme) => ({
     height: "200px",
     overflowY: "auto",
     width: (props) => props.fieldWidth ? props.fieldWidth : 'inherit',
-    wordBreak: "break-all",
+    // wordBreak: "break-all",
     position: "relative",
-    top: "-162px"
+    top: "-162px",
+
+    writingMode: "horizontal-tb !important",
+    textRendering: "auto",
+    wordSpacing: "normal",
+    textTransform: "none",
+    textIndent: "0px",
+    textShadow: "none",
+    columnCount: "initial !important",
+    textAlign: "start",
+    appearance: "auto",
+    "-webkit-rtl-ordering": "logical",
+    overflowWrap: "break-word",
+
   },
   commentBtn: {
     "float": "right",
@@ -102,14 +110,33 @@ export default function DealComment({
     var target = $("#colorText");
     $(".MuiOutlinedInput-input").scroll(function () {
       target
-        .prop("scrollTop", this.scrollTop)
+        .prop("scrollDown", this.scrollTop)
         .prop("scrollLeft", this.scrollLeft);
     });
   })();
 
+  const checkIfShowUsers = (comment) => {
+    let isActive = false;
+    for (let i = 0; i < comment.length; i += 1) {
+      if (comment[i] === "@") {
+        let j = i + 1;
+        for (j; j <= comment.length; j += 1) {
+          i = j;
+          if (comment[j] !== " ")
+            isActive = true;
+          else {
+            isActive = false;
+            break;
+          }
+        }
+      }
+    }
+    return isActive;
+  }
+
   useEffect(() => {
     let value = JSON.parse(JSON.stringify(comment));
-    if (value.includes("@") && value[value.length - 1] === "@") {
+    if (checkIfShowUsers(value)) {
       setShowOptions(true);
     } else {
       setShowOptions(false);
