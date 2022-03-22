@@ -7,6 +7,9 @@ import StackedChart from "./StackedChart";
 import RevenueTable from "./RevenueTable";
 import vf_number from "components/Shared/valueformatters/vf_number";
 import { copy } from "utils/helper";
+import { useSelector } from "react-redux";
+import { useLazyQuery } from "@apollo/client";
+import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
 
 const { useState } = React;
 
@@ -62,6 +65,16 @@ const RevenueSection = ({ monthsInterval, adjustmentsRef, netRevenueRef }) => {
     // },
   ];
   const [items, setItems] = useState(constItems);
+  const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
+  const filterDate = useSelector(({ Revenue }) => Revenue.filterDate);
+
+  // const [getPortfolioGrossRevenueSummary, { }] = useLazyQuery(GET_PORTFOLIO_GROSS_REVENUE_SUMMARY, {
+  //   fetchPolicy: "no-cache"
+  // });
+
+  // useEffect(() => {
+  //   getPortfolioGrossRevenueSummary({ variables: { filters: propertiesReportGroup || [] } })
+  // }, [propertiesReportGroup, filterDate])
 
   useEffect(() => {
     if (monthsInterval.length > 0) {

@@ -52,9 +52,14 @@ const DonutChart = ({ items, total, id = "pie-chart" }) => {
         // pieSeries.slices.template.tooltipText = "";
 
         // Put a thick white border around each Slice
-        // pieSeries.slices.template.stroke = am4core.color("#4a2abb");
+        // pieSeries.slices.template.stroke = am4core.color("#ffff");
         pieSeries.slices.template.strokeWidth = 2;
         pieSeries.slices.template.strokeOpacity = 1;
+        pieSeries.tooltip.getFillFromObject = false;
+        pieSeries.tooltip.label.fill = am4core.color("#000");
+        pieSeries.tooltip.background.fill = am4core.color('#ffff');
+        pieSeries.tooltip.getStrokeFromObject = true;
+        // pieSeries.slices.template.tooltipText = "[#ffff]{value}[/]";
 
         // Add a legend
         chart.legend = new am4charts.Legend();

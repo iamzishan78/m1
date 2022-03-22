@@ -77,6 +77,12 @@ const useStyles = makeStyles((theme) => ({
 export default function AcccessibleTable({ monthsInterval, items, total }) {
   const classes = useStyles();
 
+  const formatRow = (item, value) => {
+    if (item.name === 'Adjustments') return `(${value})`
+    if (item.name === 'Net Revenue') return <span style={{ fontSize: '16px', fontWeight: '700' }}>{value}</span>
+    return value
+  }
+
   return (
     <div className={classes.root}>
       <TableContainer>
@@ -100,14 +106,14 @@ export default function AcccessibleTable({ monthsInterval, items, total }) {
                 {items.map((item, index) => (
                   <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
                     <TableCell scope="row" className={classes.leftCells}>
-                      {item.name}
+                      {formatRow(item, item.name)}
                     </TableCell>
                     <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                      {item.total}
+                      {formatRow(item, item.total)}
                     </TableCell>
                   </TableRow>
                 ))}
-                <TableRow className={classes.highlightedLessBordered}>
+                {/* <TableRow className={classes.highlightedLessBordered}>
                   <TableCell scope="row" className={`${classes.leftCells} ${classes.totalColCell}`}>
                     Total Income
                   </TableCell>
@@ -118,7 +124,7 @@ export default function AcccessibleTable({ monthsInterval, items, total }) {
                   >
                     {total}
                   </TableCell>
-                </TableRow>
+                </TableRow> */}
               </TableBody>
             </Table>
           </Grid>
@@ -136,10 +142,10 @@ export default function AcccessibleTable({ monthsInterval, items, total }) {
               <TableBody>
                 {items.map((item, index) => (
                   <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
-                    {item.data && Object.values(item.data).map((value) => <TableCell scope="row">{vf_number(value)}</TableCell>)}
+                    {item.data && Object.values(item.data).map((value) => <TableCell scope="row">{formatRow(item, vf_number(value))}</TableCell>)}
                   </TableRow>
                 ))}
-                <TableRow className={classes.highlightedRows}>
+                {/* <TableRow className={classes.highlightedRows}>
                   {monthsInterval.map((month) => {
                     let total = 0;
                     items.filter((item) => ["Net Revenue", "Lease Payments", "Other"].includes(item.name)).forEach((item) => {
@@ -151,7 +157,7 @@ export default function AcccessibleTable({ monthsInterval, items, total }) {
                       </TableCell>
                     );
                   })}
-                </TableRow>
+                </TableRow> */}
 
                 <TableRow></TableRow>
               </TableBody>
