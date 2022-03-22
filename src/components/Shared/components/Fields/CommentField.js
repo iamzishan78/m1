@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
   search: {
     maxHeight: "230px",
+    width: "100%",
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
       paddingLeft: "8px",
@@ -33,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
       height: "201px !important",
       zIndex: 9999,
       overflow: "overlay",
+      paddingRight: "8px",
       "*::-webkit-scrollbar": {
         height: "0.2em !important",
         width: "0.2em !important",
@@ -63,11 +65,8 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "4px",
     height: "200px",
     overflowY: "auto",
-    width: (props) => props.fieldWidth ? props.fieldWidth : 'inherit',
-    // wordBreak: "break-all",
     position: "relative",
     top: "-162px",
-
     writingMode: "horizontal-tb !important",
     textRendering: "auto",
     wordSpacing: "normal",
@@ -79,12 +78,10 @@ const useStyles = makeStyles((theme) => ({
     appearance: "auto",
     "-webkit-rtl-ordering": "logical",
     overflowWrap: "break-word",
-
   },
   commentBtn: {
-    "float": "right",
-    right: "5px",
-    bottom: "5px",
+    float: "right",
+    right: "15px",
   },
 }));
 
@@ -108,11 +105,13 @@ export default function DealComment({
 
   (function () {
     var target = $("#colorText");
-    $(".MuiOutlinedInput-input").scroll(function () {
+    const scrollDiv = function () {
       target
-        .prop("scrollDown", this.scrollTop)
+        .prop("scrollTop", this.scrollTop)
         .prop("scrollLeft", this.scrollLeft);
-    });
+    }
+    $(".MuiOutlinedInput-input").scroll(scrollDiv);
+    $(".MuiInputBase-input").change(scrollDiv);
   })();
 
   const checkIfShowUsers = (comment) => {
