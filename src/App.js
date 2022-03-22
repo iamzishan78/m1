@@ -22,6 +22,7 @@ import ContactDetailsProvider from "./components/ContactDetailCard/ContactDetail
 import ContactDealsProvider from "./components/DealsDetailCard/ContactDealsProvider";
 import ContactParcelsInterestProvider from "./components/ParcelsDetailCard/ContactParcelsInterestProvider";
 import ContactParcelsInterestDetailsProvider from "./components/ParcelsDetailCard/ContactParcelsInterestDetailsProvider";
+import ContactUnitsInterestDetailsProvider from "./components/ShapeDetailCard/Unit/ContactUnitsInterestDetailsProvider";
 import ContactWellInterestProvider from "./components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/ContactWellInterestProvider";
 import ContactDocumentsProvider from "./components/ViewDocuments/ContactDocumentsProvider";
 import ContactDetailedInfoProvider from "./components/ContactDetailedInfo/ContactDetailedInfoProvider";
@@ -106,6 +107,10 @@ const theme = createMuiTheme({
         "*::-webkit-scrollbar": {
           height: "0.4em",
           width: "0.4em",
+        },
+        "*:hover::-webkit-scrollbar": {
+          height: "0.8em",
+          width: "0.8em",
         },
         "*::-webkit-scrollbar-track": {
           "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
@@ -351,11 +356,10 @@ function App() {
                         <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/wells" component={ContactWellInterestProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/parcels" component={ContactParcelsInterestProvider} />
-                        <PrivateRoute
-                          exact
-                          path="/contact/details/:contactId/parcels/:parcelId"
-                          component={ContactParcelsInterestDetailsProvider}
-                        />
+                        <PrivateRoute exact path="/contact/details/:contactId/parcels/:parcelId" component={ContactParcelsInterestDetailsProvider} />
+                        <PrivateRoute exact path="/contact/details/:contactId/units" component={ContactParcelsInterestProvider} />
+                        {/* <PrivateRoute exact path="/contact/details/:contactId/units/:unitId" component={ContactParcelsInterestProvider} /> */}
+                        <PrivateRoute exact path="/contact/details/:contactId/units/:unitId" component={ContactUnitsInterestDetailsProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/deals" component={ContactDealsProvider} />
                         <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
                         <PrivateRoute exact path="/studio" component={StudioProvider} />

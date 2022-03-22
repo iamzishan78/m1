@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import ContactWellInterestTable from "components/Table/Contact/ContactWellInterestTable";
 import ContactParcelInterestTable from "components/Table/Contact/ContactParcelInterestTable";
 import ContactTaxRollInterestTable from "components/Table/Contact/ContactTaxRollInterestTable";
+import UnitInterestsTable from "../../../Table/Unit/UnitInterestsTable";
 import TabPanels from "components/Shared/TabPanels";
 import TabButtons from "components/Shared/TabPanels/TabButtons";
 import { makeStyles } from "@material-ui/core/styles";
@@ -38,11 +39,11 @@ function ContactsWellInterestsParcelInterests(props) {
     history.location.pathname.split("/").length - 1
     ];
 
-  const [selectedTab, setSelectedTab] = useState(type === 'wells' ? 0 : type === 'parcels' ? 2 : 1);
+  const [selectedTab, setSelectedTab] = useState(type === 'wells' ? 0 : type === 'parcels' ? 2 : type === 'units' ? 3 : 1);
 
   const Header = () => (
     <TabButtons
-      labels={["Tax Roll Interests", "Well Interests", "Parcel Interests"]}
+      labels={["Tax Roll Interests", "Well Interests", "Parcel Interests", "Unit Interests"]}
       value={selectedTab}
       setValue={(n) => {
         setSelectedTab(n);
@@ -54,7 +55,6 @@ function ContactsWellInterestsParcelInterests(props) {
     <div>
       {/* temporarily comment search out until we have a chance to build it out fully */}
       <Search contactId={props.contactData._id} />
-      
 
       <div className={classes.root} style={{ position: "relative" }}>
         <TabPanels
@@ -80,6 +80,15 @@ function ContactsWellInterestsParcelInterests(props) {
               targetLabel="parcel"
               contactId={props.contactData._id}
               showTracks
+            />,
+            <UnitInterestsTable
+              parent="assocTaxRollInterests"
+              header={<Header />}
+              targetLabel="unit"
+              esFilters={[{ field: "contact._id.keyword", value: props.contactData._id}]}
+              esIndex="shapeowners_flat"
+              setESFilters={() => {}}
+              onTractCount={() => {}}
             />,
           ]}
         />

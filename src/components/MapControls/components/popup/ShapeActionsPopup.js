@@ -397,6 +397,7 @@ const ShapeActionsPopup = (props) => {
   }
 
   const saveAndOpenParcelDetail = () => {
+    
     if (!user._id) {
       return;
     }
