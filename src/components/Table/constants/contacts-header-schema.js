@@ -188,7 +188,7 @@ const ContactsHeadCells = [
     esKey: 'ownerType.keyword',
     options: {
       display: true,
-      filter: false, // i guess we cant dynamically remove the filter when hiding a column enabled by default
+      filter: true, // i guess we cant dynamically remove the filter when hiding a column enabled by default
       searchable: false,
       sort: true,
     },
@@ -269,7 +269,7 @@ const ContactsHeadCells = [
     options: {
       dbName: "contactOwners.name",
       // display: true,
-      filter: false,
+      filter: true,
       filterOptions: {
         names: [],
       },
@@ -623,7 +623,7 @@ const ContactsHeadCells = [
     esKey: 'isPurchased',
     options: {
       display: false,
-      filter: false,
+      filter: true,
       forceFilter: true,
       searchable: false,
       sort: false,

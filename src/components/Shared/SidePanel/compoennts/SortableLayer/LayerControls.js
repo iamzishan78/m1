@@ -1,5 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { useDispatch } from "react-redux";
 import Checkbox from "@material-ui/core/Checkbox";
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
@@ -11,9 +12,13 @@ import { AppContext } from "AppContext.js";
 
 import { Grid } from "@material-ui/core";
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import GridOnIcon from "@material-ui/icons/GridOn";
+import { setMapGridCardState } from "actions";
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 
 import { IconButton } from '@material-ui/core';
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent.js";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const useStyles = makeStyles(() => ({
   disabledLayerTitle: {
@@ -30,7 +35,8 @@ const useStyles = makeStyles(() => ({
 
 const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) => {
   const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
+  const dispatch = useDispatch();
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   const [, setStateMapControls] = useContext(MapControlsContext);
 
@@ -63,10 +69,27 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
     updateLayer(updatedLayer);
   };
 
+  useEffect(() => {
+    setStateApp((state) => {
+      if (state.selectedLayer) {
+        setStateApp((state) => ({
+          ...state,
+          selectedLayer: layer,
+        }))
+      }
+      return state
+    });
+  }, [layer.fileName])
+
   const handleColorPicker = (layer) => {
+    setStateApp((state) => ({
+      ...state,
+      selectedLayer: layer,
+    }))
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       selectedLayer: layer,
+      map: stateApp.map,
       addLayer: false
     }));
   };
@@ -145,8 +168,25 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
         {/* <Grid item xs={4}>
           {layerClickabilityControl}
         </Grid> */}
+        {/* <Grid item xs={4}> */}
+        {/* {layerClickabilityControl} */}
+        {/* </Grid> */}
+
         <Grid item xs={4}>
-          {/* {layerClickabilityControl} */}
+          <FeatureFlag  feature={FEATURES.SHAPEELASTIC}>
+            {layer.file && <Tooltip title="Grid">
+              <IconButton size="small" aria-label="Grid" style={{ color: '#ffff' }} onClick={() => {
+                setStateApp((state) => ({
+                  ...state,
+                  layerGridCard: true,
+                  selectedLayer: layer,
+                }));
+                dispatch(setMapGridCardState({ mapGridCardActivated: true }));
+              }}>
+                <GridOnIcon />
+              </IconButton>
+            </Tooltip>}
+          </FeatureFlag>
         </Grid>
         <Grid item xs={4} className={classes.formControl}>
           <FormControlLabel

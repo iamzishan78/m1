@@ -53,7 +53,7 @@ function UnitOwnersTable(props) {
     },
 
     onError: (err) => { },
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
 
   const tableData = elasticData?.getESPaginatedList

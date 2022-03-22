@@ -61,7 +61,7 @@ export const handleCustomFilterColumns = (TableHeader, filterObject) => {
     : TableHeader;
 };
 
-const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column) => {
+export const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column) => {
   if (selectedGridView?.columns) {
     const col = selectedGridView.columns.find(col => col.name === column.name)
     if (col && col.display) {
@@ -162,7 +162,7 @@ export const handleSelectedGridChange = (
           "value",
           ""
         );
-        let filterList = [];
+        let filterList = Array.isArray(column.esKey) ? undefined : [];
         if (value && typeof value !== "object") {
           filterList = [value];
         }
@@ -176,7 +176,7 @@ export const handleSelectedGridChange = (
       setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
       if (isGridChanged) {
         if (column.options) {
-          column.options.filterList = [];
+          column.options.filterList = Array.isArray(column.esKey) ? undefined : [];
         }
       }
     });
@@ -245,7 +245,7 @@ export const HeaderComponent = ({
             onMouseLeave={() => setShowIcon(false)}
           >
             <Typography>
-              <span style={ selectedGridView.isModified ? { "font-style": "italic" } : { } }>
+              <span style={selectedGridView.isModified ? { "font-style": "italic" } : {}}>
                 {selectedGridView.name}
               </span>
             </Typography>

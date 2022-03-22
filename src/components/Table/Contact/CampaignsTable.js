@@ -67,7 +67,7 @@ function CampaignsTable(props) {
   const [events, setEvents] = useState([]);
 
   const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
-    refetchQueries: ["getESPaginatedList", "getESFilterList"],
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
   });
 
@@ -148,9 +148,8 @@ function CampaignsTable(props) {
             m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
-            {`Do you want to delete the selected interest${
-              props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
-            }?`}
+            {`Do you want to delete the selected interest${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+              }?`}
           </DeleteConfirmationDialogContent>
         )}
       </Dialog>

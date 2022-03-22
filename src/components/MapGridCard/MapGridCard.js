@@ -27,6 +27,7 @@ import MapGridUnitTable from "components/Table/Unit/MapGridUnitTable";
 
 import SearchPanel from "./components/SearchPanel";
 import { platformDataInitialData } from "./components/data";
+import MapGridLayersTable from "components/Table/Layer/MapGridLayersTable";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -228,12 +229,12 @@ function MapGridCard(props) {
   // }
 
   // function state
-  const [searchTapValue, SearchTapValue] = useState(platformDataInitialData[0]);
+  const [searchTapValue, SearchTapValue] = useState(stateApp.layerGridCard ? platformDataInitialData[3] : platformDataInitialData[0]);
   const [viewportTapValue, ViewportTapValue] = useState(0);
   const [dockMenu, SetDockMenu] = useState("bottom");
   const [trackedTapValue, TrackedTapValue] = useState(0);
 
-  // selectors
+  // selectorsW
   const { mapGridCardActivated, mapGridCardActiveTap, selectedOwner } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
   const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
 
@@ -307,6 +308,9 @@ function MapGridCard(props) {
         privateColumns: operatorsColumnHeaders,
       },
       {
+        label: "layer"
+      },
+      {
         label: "lease",
         privateColumns: leasesColumnHeaders,
       },
@@ -318,6 +322,7 @@ function MapGridCard(props) {
         label: "location",
         privateColumns: locationsColumnHeaders,
       },
+
     ],
     []
   );
@@ -339,7 +344,7 @@ function MapGridCard(props) {
   const options = {
     toolbarActionMarginRight: "87px !important",
     customToolbar: () => {
-      const dynamicLeftPos = mapGridCardActiveTap !== 2 ? 207 : 107
+      const dynamicLeftPos = mapGridCardActiveTap !== 2 ? 222 : 122
       return (
         <div style={{ display: "flex", float: "left", position: "relative", left: `${dynamicLeftPos}px`, marginRight: "15px" }}>
           <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
@@ -363,6 +368,14 @@ function MapGridCard(props) {
       );
     },
   };
+
+  const commonProps = {
+    isShapeGridOnly: stateApp.gridPolygonString,
+    isLayerOnly: stateApp.selectedLayer,
+    handleChange: handleSearchPanelChange,
+    value: searchTapValue,
+    ativateSearchPanel: ativateSearchPanel
+  }
 
   const CardReturn = () => {
     return (
@@ -392,10 +405,7 @@ function MapGridCard(props) {
                       targetLabel={searchTapValue.value}
                       header={
                         <SearchPanel
-                          isShapeGridOnly={stateApp.gridPolygonString}
-                          handleChange={handleSearchPanelChange}
-                          value={searchTapValue}
-                          ativateSearchPanel={ativateSearchPanel}
+                          {...commonProps}
                         />
                       }
                       showTags
@@ -408,10 +418,7 @@ function MapGridCard(props) {
                       parent="boundary_grid_owners"
                       header={
                         <SearchPanel
-                          isShapeGridOnly={stateApp.gridPolygonString}
-                          handleChange={handleSearchPanelChange}
-                          value={searchTapValue}
-                          ativateSearchPanel={ativateSearchPanel}
+                          {...commonProps}
                         />
                       }
                       customOptions={options}
@@ -427,10 +434,7 @@ function MapGridCard(props) {
                       targetLabel={searchTapValue.value}
                       header={
                         <SearchPanel
-                          isShapeGridOnly={stateApp.gridPolygonString}
-                          handleChange={handleSearchPanelChange}
-                          value={searchTapValue}
-                          ativateSearchPanel={ativateSearchPanel}
+                          {...commonProps}
                         />
                       }
                       showTags
@@ -446,15 +450,25 @@ function MapGridCard(props) {
                       targetLabel={searchTapValue.value}
                       header={
                         <SearchPanel
-                          isShapeGridOnly={stateApp.gridPolygonString}
-                          handleChange={handleSearchPanelChange}
-                          value={searchTapValue}
-                          ativateSearchPanel={ativateSearchPanel}
+                          {...commonProps}
                         />
                       }
                       showTags
                       showComments
                       showTracks
+                    />
+                  )}
+                  {searchTapValue.value === 'layer' && (
+                    <MapGridLayersTable
+                      dense
+                      parent="search"
+                      customOptions={options}
+                      targetLabel={'operator'}
+                      header={
+                        <SearchPanel
+                          {...commonProps}
+                        />
+                      }
                     />
                   )}
                   {searchTapValue.value === 'contacts' && (
@@ -481,10 +495,7 @@ function MapGridCard(props) {
                       targetLabel={searchTapValue.value}
                       header={
                         <SearchPanel
-                          isShapeGridOnly={stateApp.gridPolygonString}
-                          handleChange={handleSearchPanelChange}
-                          value={searchTapValue}
-                          ativateSearchPanel={ativateSearchPanel}
+                          {...commonProps}
                         />
                       }
                     />
@@ -625,6 +636,30 @@ function MapGridCard(props) {
       }}
     />
   );
+
+  const LayerGridCard = () => {
+    return (
+      <Card className={`${mapGridCardActivated === "exp" ? "noDrag" : ""} ${classes.dockMenu}`}>
+        <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: "relative" }}>
+          <div style={{ position: "relative" }} classes={classes.gridTables}>
+            <MapGridLayersTable
+              dense
+              parent="search"
+              customOptions={options}
+              header={
+                <SearchPanel
+                  isShapeGridOnly={stateApp.gridPolygonString}
+                  handleChange={handleSearchPanelChange}
+                  value={searchTapValue}
+                  ativateSearchPanel={ativateSearchPanel}
+                />
+              }
+            />
+          </div>
+        </div>
+      </Card>
+    )
+  }
 
   return (
     <div className={classes.card}>

@@ -619,7 +619,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
     }
   }, [layerStates]);
 
-  const handleFileAsync = async (uri, internalKey, layerIndex) => {
+  const handleFileAsync = async (file, layerIndex) => {
+    const { uri, internalKey, name } = file
     if (uri && internalKey && layerIndex != -1) {
       // let response = await fetch(uri, {
       //   headers: {
@@ -635,11 +636,12 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       let layers = layersData.slice(0);
       let currentLayer = { ...layers[layerIndex] };
       // currentLayer.fileContent = response;
+      currentLayer.fileName = name;
       currentLayer.fileUrl = uri;
       layers[layerIndex] = currentLayer;
       layers.forEach((layer, index) => {
         if (layer.file === currentLayer.file) {
-          layers[index] = { ...layers[index], fileUrl: uri };
+          layers[index] = { ...layers[index], fileUrl: uri, fileName: name };
         }
       });
       setLayersData([...layers]);
@@ -675,7 +677,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       const fileId = result.id;
       if (result.uri && result.internalKey) {
         const layerIndex = stateApp.layers.findIndex((layer) => layer.file === fileId);
-        handleFileAsync(result.uri, result.internalKey, layerIndex);
+        handleFileAsync(result, layerIndex);
       } else if (fileId && fileRequestCounter < 30) {
         let waitBeforeRequestAgain = setTimeout(() => {
           setFileRequestCounter(fileRequestCounter + 1);

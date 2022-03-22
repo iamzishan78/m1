@@ -18,6 +18,7 @@ import Box from "@material-ui/core/Box";
 import { useSelector } from "react-redux";
 import { deepEqualObjects } from "../../../functions";
 import { getLayerColor } from "../common.js";
+import { useEffect } from "react";
 
 const useStyles = makeStyles((theme) => ({
   list: {

@@ -85,6 +85,10 @@ export default function SidePanel() {
       addLayer: true,
       selectedLayer: null,
     }));
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedLayer: null,
+    }))
   };
 
   const panelButtons = {

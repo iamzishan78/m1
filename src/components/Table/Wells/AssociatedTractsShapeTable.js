@@ -37,7 +37,7 @@ function AssociatedTractsShapeTable(props) {
             props.setSelectedTab(0)
         },
         refetchQueries: [
-            "getESPaginatedList", "getESFilterList"
+            "getESPaginatedList", "getESSimpleSearch", "getESFilterList"
         ],
         awaitRefetchQueries: true,
     });

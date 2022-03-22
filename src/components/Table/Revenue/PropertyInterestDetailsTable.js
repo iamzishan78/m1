@@ -19,12 +19,12 @@ import { UPDATE_PROPERTY_INTEREST } from "graphQL/useMutationUpdatepropertyInter
 function PropertyInterestDetailsTable(props) {
   const classes = usetableStyles();
   const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
 
   const formatHits = (hits) => {
     return hits.map((hit) => {
-      hit.effectiveDate = hit.effectiveDate ? moment(hit.effectiveDate).format("MM/DD/YYYY"): null;
+      hit.effectiveDate = hit.effectiveDate ? moment(hit.effectiveDate).format("MM/DD/YYYY") : null;
       hit.tags =
         hit?.tags?.length > 0
           ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
@@ -50,7 +50,7 @@ function PropertyInterestDetailsTable(props) {
 
   useEffect(() => {
     if (props.addToTable) {
-      if(props.addToTable === 'add'){
+      if (props.addToTable === 'add') {
         props.setSelectedInterest(null);
       }
       props.onClickAdd();
@@ -76,7 +76,7 @@ function PropertyInterestDetailsTable(props) {
   const deleteFunc = (ids) => {
     if (ids.length > 0) {
       props.setLoading(true);
-      for(let i=0; i<ids.length; i++) {
+      for (let i = 0; i < ids.length; i++) {
         updatePropertyInterest({
           variables: {
             propertyInterest: {
@@ -111,13 +111,12 @@ function PropertyInterestDetailsTable(props) {
             )}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
-            {`Do you want to delete the selected interest${
-              props.selectedRows &&
-              props.selectedRows.length > 1 &&
-              props.selectedRows.length > 1
+            {`Do you want to delete the selected interest${props.selectedRows &&
+                props.selectedRows.length > 1 &&
+                props.selectedRows.length > 1
                 ? "s"
                 : ""
-            }?`}
+              }?`}
           </DeleteConfirmationDialogContent>
         )}
       </Dialog>
