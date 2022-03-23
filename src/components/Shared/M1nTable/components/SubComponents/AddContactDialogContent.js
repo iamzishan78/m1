@@ -56,7 +56,6 @@ const useStyles = makeStyles((theme) => ({
       left: "0",
       top: "55px",
     },
-    margin: '0 8px 25px 8px',
     flex: 'none'
   },
   dialogTitle: {
@@ -539,7 +538,7 @@ export default function AddContactDialogContent(props) {
         handleClickDialogClose={handleClickDialogClose}
         width="450px"
       >
-        <Grid item xs={12} style={{ minHeight: "35px", padding: 22 }}>
+        <Grid item xs={12} style={{ maxHeight: "60px", padding: 22 }}>
           <h4
             style={{
               margin: "0 0 15px 0",
