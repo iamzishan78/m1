@@ -193,7 +193,7 @@ export default function DealComment({
 
   const onInputChange = (event, value, reason) => {
 
-    value = value.replace(/\s\s/g, ' ')
+    // value = value.replace(/\s\s/g, ' ');
     if (!isSelected) {
       setCommentValue(value);
     } else {
