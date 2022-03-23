@@ -19,6 +19,8 @@ import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { makeStyles } from "@material-ui/core/styles";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { GETMONGOUSERS } from "../../../../../graphQL/useQueryGetUsers";
+import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
+import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 
 const phonenumber = (inputtxt) => {
   if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
@@ -51,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   dialogContent: {
+    maxHeight: "calc(100vh - 135px)",
     "& header": {
       position: "absolute",
       left: "0",
@@ -356,6 +359,24 @@ export default function AddContactDialogContent(props) {
                 });
               }}
             />
+          </Grid>
+          <Grid item xs={12}>
+            <h3>Entity Type</h3>
+            <EntityType
+              className={classes.maxWidth}
+              setDocumentType={(value) => {
+                let val = value.name
+                const data = contactStatusOptions.find(s => s.label === val)
+                if (data) {
+                  val = data.value
+                }
+                setNewContact({
+                  ...newContact,
+                  ownerType: val,
+                });
+              }}
+              value={newContact.ownerType ?? ""}
+            />:
           </Grid>
           <Grid item xs={6}>
             <h3>Mobile Phone</h3>
