@@ -62,9 +62,12 @@ const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
     items.forEach((item) => {
       let series = chart.series.push(new am4charts.LineSeries());
       series.dataFields.dateX = "month";
-      series.name = item.name;
       series.dataFields.valueY = item.name;
-      series.tooltipText = "[#000]{valueY.value}[/]";
+      series.name = item.name;
+      series.sequencedInterpolation = true;
+      series.calculatePercent = true;
+      series.calculateAggregates = true;
+      series.tooltipText = "[#000 font-size:17px]{name} {valueY.value} | {valueY.percent.formatNumber('#.0')}%[/]";
       series.tooltip.background.fill = am4core.color("#FFF");
       series.tooltip.getStrokeFromObject = true;
       series.tooltip.background.strokeWidth = 3;

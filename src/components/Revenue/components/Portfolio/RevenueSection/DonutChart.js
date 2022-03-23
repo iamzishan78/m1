@@ -23,7 +23,7 @@ const DonutChart = ({ items, total, id = "pie-chart" }) => {
         if (items?.length === 0) return;
         const _data = items.map(item => ({
             category: item.name,
-            value: item.value,
+            value: item?.total?.replace ? Number(item?.total?.replace(/,/g, '')) : 0,
             total: item.totalK,
         }));
         setData(_data);
@@ -55,16 +55,22 @@ const DonutChart = ({ items, total, id = "pie-chart" }) => {
         // pieSeries.slices.template.stroke = am4core.color("#ffff");
         pieSeries.slices.template.strokeWidth = 2;
         pieSeries.slices.template.strokeOpacity = 1;
+        pieSeries.slices.template.tooltipText = "[font-size:16px]{category} {value} | {value.percent.formatNumber('#.')}%[/]";
         pieSeries.tooltip.getFillFromObject = false;
         pieSeries.tooltip.label.fill = am4core.color("#000");
         pieSeries.tooltip.background.fill = am4core.color('#ffff');
         pieSeries.tooltip.getStrokeFromObject = true;
+        pieSeries.legendSettings.labelText = "[bold font-size:17px]{name}:[/] {value.value} | {value.percent.formatNumber('#.0')}%";
         // pieSeries.slices.template.tooltipText = "[#ffff]{value}[/]";
 
         // Add a legend
         chart.legend = new am4charts.Legend();
-        // chart.legend.useDefaultMarker = true;
-        chart.legend.labels.template.text = `[bold]{name}:[/] {value}| ${chart.legend.valueLabels.template.text}`;
+        chart.legend.useDefaultMarker = true;
+        chart.legend.valueLabels.template.disabled = true;
+        // chart.legend.labels.template.disabled = true
+
+
+        // chart.legend.labels.template.text = `[bold font-size:17px]{name}:[/] {value.value} |`;
         // chart.legend.valueLabels.template.text = `{value} | ${chart.legend.valueLabels.template.text}`;
         chart.legend.position = "right";
         chart.legend.maxWidth = 400;

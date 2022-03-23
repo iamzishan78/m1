@@ -106,7 +106,7 @@ export default function AcccessibleTable({ monthsInterval, items, total }) {
                 {items.map((item, index) => (
                   <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
                     <TableCell scope="row" className={classes.leftCells}>
-                      {formatRow(item, item.name)}
+                      {item.name}
                     </TableCell>
                     <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
                       {formatRow(item, item.total)}

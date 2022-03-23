@@ -102,7 +102,6 @@ const RevenueSection = ({ monthsInterval, adjustmentsRef, netRevenueRef }) => {
     }
   }, [monthsInterval]);
 
-  console.log(items)
 
   const total = React.useMemo(() => {
     let _total = 0;
