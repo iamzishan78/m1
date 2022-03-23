@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     border: "none",
   },
   search: {
-    maxHeight: "230px",
+    maxHeight: "250px",
     width: "100%",
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
