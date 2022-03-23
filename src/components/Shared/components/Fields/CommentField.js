@@ -106,6 +106,11 @@ export default function DealComment({
   (function () {
     var target = $("#colorText");
     const scrollDiv = function () {
+      // console.log("Scroll Start")
+
+      // document.getElementById("colorText").style.height = "50px";
+      // document.getElementById("txtArea").style.height = "50px !IM";
+
       target
         .prop("scrollTop", this.scrollTop)
         .prop("scrollLeft", this.scrollLeft);
@@ -208,6 +213,7 @@ export default function DealComment({
   return (
     <>
       <Autocomplete
+        id='txtArea'
         className={classes.search}
         style={{
           margin: 0,
@@ -257,6 +263,7 @@ export default function DealComment({
         renderInput={(params) => (
           <>
             <TextField
+
               classes={{ root: classes.customTextField }}
               margin="dense"
               {...params}
