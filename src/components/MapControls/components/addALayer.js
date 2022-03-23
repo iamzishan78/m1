@@ -262,7 +262,8 @@ export default function AddLayer(props) {
   const parseGeoForTypesAndNames = (geo, name) => {
     const layerTypes = [];
     const fileNames = [];
-    geo.features.forEach((feature) => {
+    geo.features.forEach((feature, index) => {
+      feature.id = index + 1
       if (!feature.properties) {
         feature.properties = {};
       }
@@ -350,6 +351,9 @@ export default function AddLayer(props) {
                   allFileNames = allFileNames.concat(fileNames);
                 });
                 const merged = geojsonMerge.merge(geojson);
+                merged.features.forEach((feature, index) => {
+                  feature.id = index + 1
+                })
                 merged.fileNames = allFileNames;
                 merged.featureTypes = allLayerTypes;
                 merged.groupName = fileName.replace(".zip", "");
@@ -579,7 +583,7 @@ export default function AddLayer(props) {
                               {layer.layerType === "file layer" ? (
                                 <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} />
                               ) : (
-                                <ListItemText id={labelId} primary={layer.layerName} />
+                                <ListItemText id={labelId} primary={layer.layerName === "Parcels" ? "Tracts" : layer.layerName} />
                               )}
 
                               {layer.layerType === "file layer" && (

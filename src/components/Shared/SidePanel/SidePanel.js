@@ -85,6 +85,10 @@ export default function SidePanel() {
       addLayer: true,
       selectedLayer: null,
     }));
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedLayer: null,
+    }))
   };
 
   const panelButtons = {
@@ -201,7 +205,7 @@ export default function SidePanel() {
                 ...item,
                 visiable: item.layerSettings.visiable,
                 showable,
-                name: item.layerName,
+                name: item.layerName === "Parcels" ? "Tracts" : item.layerName,
                 depth: 0,
                 type: "layer",
                 id: item._id,

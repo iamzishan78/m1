@@ -10,7 +10,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import debounce from "lodash/debounce";
 
 // Queries 
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+// import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 
 const useStyles = makeStyles((theme) => ({
     secondaryText: {
@@ -31,33 +32,51 @@ function WellSearchApiField(props) {
     const [selectedWell, setSelectedWell] = useState(null);
 
     // Queries
-    const [getESWellsPaginatedList, { data: constDataWells, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
+    // const [getESWellsPaginatedList, { data: constDataWells, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
 
+    const [getESSimpleSearch, { data: constDataWells }] = useLazyQuery(
+        GET_ES_SIMPLE_SEARCH,
+        { fetchPolicy: "no-cache" }
+      );
     // searching wells
     const callWellESSearch = React.useMemo(
         () =>
             debounce((request, callback) => {
-                getESWellsPaginatedList({
+                getESSimpleSearch({
                     variables: {
-                        // polygon: {},
-                        esIndex: "platformData:wells",
-                        pagination: {
-                            first: startPaginationAt,
-                            keep_alive: "1micros"
-                        },
-                        search: (() => {
-                            let searchString = ""
-                            if (request.input) {
-                              searchString = request.input.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
-                            }
-                        
-                            return searchString
-                              ? `(wellName:(${searchString.join('* AND ')}*) OR api:(${searchString.join('* AND ')}*))^2 OR (wellName:(${searchString.join('* ')}*) OR api:(${searchString.join('* ')}*))`
-                              : ""
-                          })(),
-                        sort: [],
+                      index: "platformData:wells",
+                      pagination: {
+                        first: request.searchTop ? request.searchTop : startPaginationAt,
+                        keep_alive: "1micros"
+                      },
+                      search: {
+                        query: request.input,
+                        fields: ["wellName", "api"],
+                      },
+                      sort: [],
                     }
-                })
+                  })
+                // getESWellsPaginatedList({
+                //     variables: {
+                //         // polygon: {},
+                //         esIndex: "platformData:wells",
+                //         pagination: {
+                //             first: startPaginationAt,
+                //             keep_alive: "1micros"
+                //         },
+                //         search: (() => {
+                //             let searchString = ""
+                //             if (request.input) {
+                //               searchString = request.input.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
+                //             }
+                        
+                //             return searchString
+                //               ? `(wellName:(${searchString.join('* AND ')}*) OR api:(${searchString.join('* AND ')}*))^2 OR (wellName:(${searchString.join('* ')}*) OR api:(${searchString.join('* ')}*))`
+                //               : ""
+                //           })(),
+                //         sort: [],
+                //     }
+                // })
             }, 500),
         // eslint-disable-next-line react-hooks/exhaustive-deps
         []
@@ -65,7 +84,7 @@ function WellSearchApiField(props) {
 
     // setting the wells in set
     useEffect(() => {
-        const allESWell = constDataWells?.getESPaginatedList?.hits
+        const allESWell = constDataWells?.getESSimpleSearch?.hits
         setFoundWells(allESWell)
     }, [constDataWells])
 

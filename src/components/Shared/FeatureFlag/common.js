@@ -10,5 +10,6 @@ export const FEATURES = {
     CONTACTSUBMENU: 'ContactsSubMenu',
     CALENDAR_OBLIGATIONS: 'CALENDAR_OBLIGATIONS',
     LANDGRIDSEARCH: 'landGridSearch',
-    TRACTIMPORT: 'tractImport'
+    TRACTIMPORT: 'tractImport',
+    SHAPEELASTIC: 'ShapeFileImport'
 }
