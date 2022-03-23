@@ -136,7 +136,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsDetailContainer: ({ collapse }) => ({
     padding: 20,
-    maxWidth: !collapse ? "calc(100% - 380px)" : "100%",
+    maxWidth: !collapse ? "calc(100% - 444px)" : "100%",
   }),
   menuIcon: {
     background: "transparent",
@@ -383,11 +383,10 @@ export default function DetailComponents(props) {
             <div className="flex justifyBetween alignStart w-100">
               <div className={`w-100 ${classes.tabsDetailContainer}`}>
                 {/*** Component for viewing selected pdf file*/}
-                <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
 
                 {/**
-           * Detail tabs section
-           */}
+                  * Detail tabs section
+                  */}
                 <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
                   <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
                     <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
@@ -403,6 +402,9 @@ export default function DetailComponents(props) {
                     </div>
                   </div>
                 </div>
+
+
+                <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
               </div>
 
               {!collapse && <MetadataDrawer targetLabel='CHECK' setCollapse={setCollapse} users={users} targetSourceId={checkId} setStateApp={setStateApp} />}

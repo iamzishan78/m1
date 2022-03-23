@@ -98,6 +98,10 @@ const useStyles = makeStyles((theme) => ({
   inlineFlex: {
     display: "inline-flex",
   },
+  commentContent: {
+    width: "86%",
+    paddingRight: "10px"
+  }
 }));
 
 export default function CommentComponent(props) {
@@ -387,7 +391,7 @@ export default function CommentComponent(props) {
                             )}
                           </IconButton>
                         </Grid>
-                        <Grid item style={{ width: "86%" }} className={classes.paddingLeft10}>
+                        <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
                           <div>
                             <span className={classes.bold}>
                               {eachComment.user.name}
@@ -467,7 +471,7 @@ export default function CommentComponent(props) {
                 )}
               </IconButton>
             </Grid>
-            <Grid item style={{ width: "86%" }} className={classes.paddingLeft10}>
+            <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
               <SizeMe>{({ size }) =>
                 <div
                   className={classes.border}
