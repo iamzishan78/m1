@@ -234,7 +234,7 @@ const useStyles = makeStyles((theme) => ({
       height: "50px",
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
-      padding: "5px 11px 5px 0px !important",
+      padding: "5px 11px 5px 20px !important",
     },
     "& .MUIDataTableToolbar": {
       zIndex: "999999 !important",
