@@ -379,7 +379,7 @@ export default function ParcelsDetailCard(props) {
   const Header = () => (
     <TabButtons
       labels={[
-        "Parcel Ownership",
+        "Tract Ownership",
         "Potential Ownership",
       ]}
       value={selectedTab}

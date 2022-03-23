@@ -37,7 +37,7 @@ const RevenueStatementHeadCells = [
         name: "grossOwnerValue", label: "Gross Rev", esKey: 'grossOwnerValue', options: { sort: true, filter: true }
     },
     {
-        name: "ownerTax", label: "Severence", esKey: 'ownerTax', options: { sort: true, filter: true }
+        name: "ownerTax", label: "Severance", esKey: 'ownerTax', options: { sort: true, filter: true }
     },
     {
         name: "ownerDeducts", label: "Deduct Amt", esKey: 'ownerDeducts', options: { sort: true, filter: true }
