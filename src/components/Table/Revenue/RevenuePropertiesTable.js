@@ -80,7 +80,7 @@ function RevenuePropertiesTable(props) {
 
 
   useEffect(() => {
-    if (props?.total && props.onPropertiesCount) {
+    if ((props?.total === 0 || props?.total) && props.onPropertiesCount) {
       props.onPropertiesCount(props.total);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
