@@ -109,28 +109,28 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "isAmountValidated",
-    label: " ",
-    esKey: "isAmountValidated",
-    options: { sort: false, filter: false, viewColumns: false },
-  },
-  {
-    name: "isAmountValidated",
     label: "Validation",
     esKey: "isAmountValidated",
-    options: { display: false, sort: false, filter: true, viewColumns: false },
-    custom: {
-      key_as_string: true,
-      formatedFilterOptions: [
-        {
-          label: "Validated",
-          value: 'true',
-        },
-        {
-          label: "Potential Issues",
-          value: 'false'
-        },
-      ]
-    },
+    options: {       
+      customHeadLabelRender: () => (
+        <>
+          <div> </div>
+        </>
+      ),
+      display: true, sort: false, filter: false, viewColumns: false },
+      custom: {
+        key_as_string: true,
+        formatedFilterOptions: [
+          {
+            label: "Validated",
+            value: 'true',
+          },
+          {
+            label: "Potential Issues",
+            value: 'false'
+          },
+        ]
+      }
   },
 ];
 

@@ -583,7 +583,7 @@ export default function AddLayer(props) {
                               {layer.layerType === "file layer" ? (
                                 <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} />
                               ) : (
-                                <ListItemText id={labelId} primary={layer.layerName} />
+                                <ListItemText id={labelId} primary={layer.layerName === "Parcels" ? "Tracts" : layer.layerName} />
                               )}
 
                               {layer.layerType === "file layer" && (

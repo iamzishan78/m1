@@ -460,7 +460,7 @@ function LayerStyling(props) {
     <div style={{ width: '100%' }}>
       <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "15px" }}>
         <Grid item>
-          <Typography variant="h5">{layer.layerName}</Typography>
+          <Typography variant="h5">{layer.layerName === "Parcels" ? "Tracts" : layer.layerName}</Typography>
         </Grid>
         <Grid item>
           <IconButton size="small" onClick={handleClose}>

@@ -86,9 +86,19 @@ const CustomFieldSelect = ({
         const pallete = colorPallete.find(
           (pallete) => pallete.id === opt.palleteId
         );
-        document.getElementById(
-          `colorText_${index}_${column.name}`
-        ).innerHTML = `<span class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}">${data}</span>`;
+        if(column.iconType === 'Bullet Point') {
+          document.getElementById(
+            `colorText_${index}_${column.name}`
+          ).innerHTML = `
+          <div style="display:flex;">
+            <div class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}; margin-right:5px;"></div>
+            <span>${data}</span>
+          </div>`;
+        } else {
+          document.getElementById(
+            `colorText_${index}_${column.name}`
+          ).innerHTML = `<span class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}">${data}</span>`;
+        }
       } else {
         document.getElementById(
           `colorText_${index}_${column.name}`
