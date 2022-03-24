@@ -3,7 +3,7 @@ import React, { useEffect, useState, useContext } from "react";
 
 export const UsersnapContext = React.createContext(null);
 
-export const USERSNAP_PROJECT_API_KEY = "2c4ad39a-3cd6-49ed-8881-a48b7ac68a7c"
+export const USERSNAP_PROJECT_API_KEY = "b55a7d4f-c5a9-4f52-a0d1-d5ec51e5530d"
 
 export const UsersnapProvider = ({ initParams = {}, children }) => {
     const [usersnapApi, setUsersnapApi] = useState(null);
