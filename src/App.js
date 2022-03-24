@@ -41,6 +41,8 @@ import AgreementDetailProvider from "./components/Land/components/AgreementDetai
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 import { CircularProgress } from "@material-ui/core";
+import { UsersnapProvider } from './UsersnapContext';
+
 
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
 import { ApolloProvider, ApolloClient, InMemoryCache, useApolloClient } from "@apollo/client";
@@ -307,6 +309,7 @@ function App() {
     <ReduxProvider store={store}>
       <Notifications />
       <ToastContainer position={toast.POSITION.BOTTOM_LEFT} />
+      <UsersnapProvider/>
       <AppProvider>
         <SetApolloClient
           setApolloClient={updateApolloClient}
