@@ -98,6 +98,10 @@ const useStyles = makeStyles((theme) => ({
   inlineFlex: {
     display: "inline-flex",
   },
+  commentContent: {
+    width: "86%",
+    paddingRight: "10px"
+  }
 }));
 
 export default function CommentComponent(props) {
@@ -364,7 +368,7 @@ export default function CommentComponent(props) {
                         }
                         onMouseLeave={() => setShowCommentActionId(null)}
                       >
-                        <Grid item xs={size.width < 500 ? 2 : 1}>
+                        <Grid item style={{ maxWidth: "55px" }}>
                           <IconButton style={{ marginTop: "3px", marginLeft: "12px" }}>
                             {profilesInfo[eachComment.user.email]?.profileImage ||
                               eachComment.isNew ? (
@@ -387,7 +391,7 @@ export default function CommentComponent(props) {
                             )}
                           </IconButton>
                         </Grid>
-                        <Grid item xs={size.width < 500 ? 10 : 11} className={classes.paddingLeft10}>
+                        <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
                           <div>
                             <span className={classes.bold}>
                               {eachComment.user.name}
@@ -456,7 +460,7 @@ export default function CommentComponent(props) {
         </div>
         <div style={{ paddingBottom: '20px' }}>
           <Grid container>
-            <Grid item xs={size.width < 500 ? 2 : 1}>
+            <Grid item style={{ maxWidth: "55px" }}>
               <IconButton className={classes.commentView}
               // style={{ top: "3px" }}
               >
@@ -467,7 +471,7 @@ export default function CommentComponent(props) {
                 )}
               </IconButton>
             </Grid>
-            <Grid item xs={size.width < 500 ? 10 : 11} className={classes.paddingLeft10}>
+            <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
               <SizeMe>{({ size }) =>
                 <div
                   className={classes.border}
@@ -491,7 +495,7 @@ export default function CommentComponent(props) {
                     showActions={showActions}
                     setComment={setComment}
                     upsertComment={addNewComment}
-                    fieldWidth={`${size - 23}px`}
+                  // fieldWidth={`${size - 23}px`}
                   />
 
                 </div>

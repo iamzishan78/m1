@@ -157,7 +157,7 @@ const mergeDateAndTime = (d, t) => {
 function AddActivityDialog(props) {
   const classes = useStyles();
   const { selectedActivity, onClose, contactData, defaultActivityType } = props;
-  
+
   const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
 
@@ -167,7 +167,6 @@ function AddActivityDialog(props) {
   const [closed, setClosed] = useState(false);
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
-  const [calenderDate, setCalenderDate] = useState(new Date());
   const [startTime, setStartTime] = useState("08:00");
   const [endTime, setEndTime] = useState("08:00");
   const [notes, setNotes] = useState("");
@@ -311,26 +310,8 @@ function AddActivityDialog(props) {
     }
   }, [selectedActivity]);
 
-  const clearFields = () => {
-    setAddNew(true);
-    setNotes("");
-    setOwner({
-      name: stateApp.user.fullname || stateApp.user.email,
-      id: stateApp.user.mongoId,
-    });
-    setDealId(null);
-    setActivityType(defaultActivityType || "call");
-    setActivityName("");
-    setClosed(false);
-    setStartDate(getCurrentDate());
-    setEndDate(getCurrentDate());
-    setStartTime("08:00");
-    setEndTime("08:00");
-  };
-
   const onModalClose = () => {
     onClose();
-    clearFields();
   };
 
   const updateErrors = () => {
@@ -460,9 +441,6 @@ function AddActivityDialog(props) {
 
   return (
     <div style={{ padding: "30px" }}>
-      {/* <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
-        Recent Activities
-      </h4> */}
       {deleteDialogOpen && (
         <Dialog
           className={classes.dialog}
@@ -479,7 +457,7 @@ function AddActivityDialog(props) {
             setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected Activity?
-					</DeleteConfirmationDialogContent>
+          </DeleteConfirmationDialogContent>
         </Dialog>
       )}
 
@@ -560,7 +538,7 @@ function AddActivityDialog(props) {
           <option value={"task"}>Task</option>
           <option value={"deadline"}>Deadline</option>
 
-          
+
         </Select>
       </FormControl>
       <div className={classes.dateTimeRow}>

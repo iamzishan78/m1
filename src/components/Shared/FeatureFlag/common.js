@@ -11,5 +11,6 @@ export const FEATURES = {
     CALENDAR_OBLIGATIONS: 'CALENDAR_OBLIGATIONS',
     LANDGRIDSEARCH: 'landGridSearch',
     TRACTIMPORT: 'tractImport',
-    SHAPEELASTIC: 'ShapeFileImport'
+    SHAPEELASTIC: 'ShapeFileImport',
+    USERSNAP: "userSnap"
 }

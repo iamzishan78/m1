@@ -234,7 +234,7 @@ const useStyles = makeStyles((theme) => ({
       height: "50px",
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
-      padding: "5px 11px 5px 0px !important",
+      padding: "5px 11px 5px 20px !important",
     },
     "& .MUIDataTableToolbar": {
       zIndex: "999999 !important",
@@ -1843,7 +1843,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  if ((props.targetLabel == "deal" || props.targetLabel == "activity") && value === null) {
+                  if ((props.targetLabel === "deal" || props.targetLabel === "activity") && value === null) {
                     return (
                       <p
                         style={{
@@ -2493,16 +2493,16 @@ function SubTable(props) {
                 return (
                   <>
                     {row.wellApiNumber || row.wellName ? (
-                        <div>{value}</div>
-                      ):(
-                        <SearchWells
-                          setRefetchData={props.setRefetchData}
-                          // contactId={"props.contactData._id"}
-                          relatedObject={row._id}
-                          relatedObjectType="Property"
-                          // rowData={tableMeta.rowData}
-                          // rowIndex={tableMeta.rowIndex}
-                        />
+                      <div>{value}</div>
+                    ) : (
+                      <SearchWells
+                        setRefetchData={props.setRefetchData}
+                        // contactId={"props.contactData._id"}
+                        relatedObject={row._id}
+                        relatedObjectType="Property"
+                      // rowData={tableMeta.rowData}
+                      // rowIndex={tableMeta.rowIndex}
+                      />
                     )}
                   </>
                 );
@@ -2661,8 +2661,8 @@ function SubTable(props) {
                     );
                   }
 
-                  if(props.targetLabel === 'Revenue Properties') {
-                    return value? <p>{value}</p> : null
+                  if (props.targetLabel === 'Revenue Properties') {
+                    return value ? <p>{value}</p> : null
                   }
 
                   return (

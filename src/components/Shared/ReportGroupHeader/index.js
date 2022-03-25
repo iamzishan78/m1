@@ -152,7 +152,7 @@ export default function ReportGroupHeader({
   return (
     <>
       <Grid container direction="row" display="flex" justify="space-between" className={classes.actionBar}>
-        <Grid item xs={fullWidth ? 12 : 3} md={fullWidth ? 12 : 3}>
+        <Grid item xs={fullWidth ? 7 : 3} md={fullWidth ? 7 : 3}>
           {config.show ? (
             <TextField
               fullWidth={true}
@@ -211,7 +211,7 @@ export default function ReportGroupHeader({
         </Grid>
 
         {esFilters.length > 0 && (
-          <Grid item xs={4} md={4}>
+          <Grid item xs={5} md={5}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2}>
               <Grid item>
                 {reportingGroup === All_TYPE ? (

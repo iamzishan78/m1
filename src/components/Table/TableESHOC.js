@@ -4,7 +4,7 @@ import { useLazyQuery } from "@apollo/client";
 import { Button, Tooltip, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useHistory } from "react-router-dom";
-import { isEmpty } from "lodash";
+import { isEmpty, uniqBy } from "lodash";
 
 import { AppContext } from "AppContext";
 
@@ -141,15 +141,16 @@ export const TableESHOC = (Component) => {
                             fields: tableMeta.searchFields
                         },
                         sort: tableMeta.defaultSort,
-                        filters: [
-                            ...(initialFilters ? handleMultiFieldFilter(initialFilters) : []),
-                            ...(tableMeta.filters ? handleMultiFieldFilter(tableMeta.filters) : []),
+                        filters: handleMultiFieldFilter([
+                            ...(initialFilters ? initialFilters : []),
+                            ...(tableMeta.filters ? tableMeta.filters : []),
+                            ...(tableMeta?.selectedGridView?.filters ? tableMeta?.selectedGridView?.filters : []),
                             ...(tableMeta.polygon) ? [tableMeta.polygon] : []
-                        ]
+                        ])
                     }
                 });
                 if (tableMeta.selectedGridView)
-                    handleSelectedGridChange(tableMeta.TableHeader, { ...tableMeta.selectedGridView, filters: (tableMeta.selectedGridView.filters || []).concat(tableMeta.filters) }, columns, true)
+                    handleSelectedGridChange(tableMeta.TableHeader, { ...tableMeta.selectedGridView, filters: (tableMeta.selectedGridView.filters || []).concat(tableMeta.filters || []) }, columns, true)
             }
             // eslint-disable-next-line
         }, [tableMeta]);
@@ -182,6 +183,7 @@ export const TableESHOC = (Component) => {
                 if (formatHits)
                     formatHits([]);
                 setRows([]);
+                setColumnsData(copy(tableMeta.TableHeader));
                 setLoading(false);
             }
         }, [tableData, dependencyUpdate]);
@@ -231,9 +233,14 @@ export const TableESHOC = (Component) => {
             if (allFilters) {
                 tableCols.forEach((column, index) => {
                     setColumnDisplayAndFilter(TableHeader, tableMeta.selectedGridView, column);
-                    const value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
+                    let value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
                     let filterList = Array.isArray(column.esKey) ? undefined : [];
                     if (value && typeof value !== "object") {
+                        if (column.custom?.isDate) {
+                            const filterData = stateApp.filtersData[columns[index].name];
+                            const data = filterData?.find(f => f.key_as_string === value)
+                            if (data) value = data.key
+                        }
                         filterList = [value];
                     }
                     if (column?.options?.filter) {
