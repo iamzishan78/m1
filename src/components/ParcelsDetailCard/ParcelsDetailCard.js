@@ -17,7 +17,6 @@ import TabButtons from "components/Shared/TabPanels/TabButtons"
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 import QtrQtrSelector from "./components/QtrQtrSelector";
-import LeftTopSummary from "./components/LeftTopSummary";
 import StateCard from "./components/StateCard";
 import CountyCard from "./components/CountyCard";
 import MeridianCard from "./components/MeridianCard";
