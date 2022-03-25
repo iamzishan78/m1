@@ -10,7 +10,6 @@ import Autocomplete, {
 } from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/core/styles";
 
-
 const filter = createFilterOptions();
 
 const useStyles = makeStyles((theme) => ({
@@ -18,8 +17,11 @@ const useStyles = makeStyles((theme) => ({
     border: "none",
   },
   search: {
+    maxHeight: "230px",
+    width: "100%",
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
+      paddingLeft: "8px",
     },
     "& .MuiOutlinedInput-root": {
       paddingRight: "0px !important",
@@ -28,6 +30,20 @@ const useStyles = makeStyles((theme) => ({
       display: "none",
     },
     "& .MuiInputBase-input": { color: "transparent", caretColor: "black" },
+    "& .MuiInputBase-inputMultiline": {
+      height: "201px !important",
+      zIndex: 9999,
+      overflow: "overlay",
+      paddingRight: "8px",
+      "*::-webkit-scrollbar": {
+        height: "0.2em !important",
+        width: "0.2em !important",
+      },
+      "*:hover::-webkit-scrollbar": {
+        height: "0.2em !important",
+        width: "0.2em !important",
+      },
+    }
   },
   customTextField: {
     "& textarea::placeholder": {
@@ -47,14 +63,25 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: "19px",
     fontSize: "16px",
     marginRight: "4px",
-    height: "43px",
+    height: "200px",
     overflowY: "auto",
-    width: (props) => props.fieldWidth ? props.fieldWidth : 'inherit',
+    position: "relative",
+    top: "-162px",
+    writingMode: "horizontal-tb !important",
+    textRendering: "auto",
+    wordSpacing: "normal",
+    textTransform: "none",
+    textIndent: "0px",
+    textShadow: "none",
+    columnCount: "initial !important",
+    textAlign: "start",
+    appearance: "auto",
+    "-webkit-rtl-ordering": "logical",
+    overflowWrap: "break-word",
   },
   commentBtn: {
-    "float": "right",
-    right: "5px",
-    bottom: "5px",
+    float: "right",
+    right: "15px",
   },
 }));
 
@@ -78,16 +105,42 @@ export default function DealComment({
 
   (function () {
     var target = $("#colorText");
-    $(".MuiOutlinedInput-input").scroll(function () {
+    const scrollDiv = function () {
+      // console.log("Scroll Start")
+
+      // document.getElementById("colorText").style.height = "50px";
+      // document.getElementById("txtArea").style.height = "50px !IM";
+
       target
         .prop("scrollTop", this.scrollTop)
         .prop("scrollLeft", this.scrollLeft);
-    });
+    }
+    $(".MuiOutlinedInput-input").scroll(scrollDiv);
+    $(".MuiInputBase-input").change(scrollDiv);
   })();
+
+  const checkIfShowUsers = (comment) => {
+    let isActive = false;
+    for (let i = 0; i < comment.length; i += 1) {
+      if (comment[i] === "@") {
+        let j = i + 1;
+        for (j; j <= comment.length; j += 1) {
+          i = j;
+          if (comment[j] !== " ")
+            isActive = true;
+          else {
+            isActive = false;
+            break;
+          }
+        }
+      }
+    }
+    return isActive;
+  }
 
   useEffect(() => {
     let value = JSON.parse(JSON.stringify(comment));
-    if (value.includes("@")) {
+    if (checkIfShowUsers(value)) {
       setShowOptions(true);
     } else {
       setShowOptions(false);
@@ -97,27 +150,27 @@ export default function DealComment({
       let updatedValue = JSON.parse(JSON.stringify(comment));
       for (let i = 0; i < users.length; i++) {
         if (updatedValue.includes(users[i]._id)) {
-          updatedValue = updatedValue.replace(
-            `{{${users[i]._id}}}`,
-            `@${users[i].name}`
-          );
-          value = value.replace(
-            `{{${users[i]._id}}}`,
-            ` <span class='blue'>@${users[i].name}</span>`
-          );
+          updatedValue = replaceAllWith(updatedValue, users[i]._id, `@${users[i].name}`);
+          value = replaceAllWith(value, `{{${users[i]._id}}}`, ` <span class='blue'>@${users[i].name}</span>`)
         }
       }
-      document.getElementById("colorText").innerHTML = value;
       setNameAutValue({ name: updatedValue, _id: "" });
     } else {
-      // if (value.includes("\n")) {
-      //   value = value.replace(/\n/g, "<br/>");
-      // }
-      document.getElementById("colorText").innerHTML = value;
       setNameAutValue({ name: comment, _id: "" });
     }
-
+    if (value.includes("\n")) {
+      value = value.replace(/\n/g, "<br>");
+    }
+    document.getElementById("colorText").innerHTML = value;
   }, [comment, users]);
+
+  const replaceAllWith = (_string, replaceFrom, replaceWith) => {
+    return _string.replace(/{{([^{{]+)}}/g, (match, key) => {
+      return replaceFrom.includes(key)
+        ? replaceWith
+        : match;
+    });
+  }
 
   const setCommentValue = (value) => {
     if (value.includes("@")) {
@@ -130,8 +183,8 @@ export default function DealComment({
           );
         }
       }
-      const splitedString = updatedValue.split("@")[1];
-      setFilterValue(splitedString ? splitedString.split(" ")[0] : "");
+      const splittingArray = updatedValue.split("@");
+      setFilterValue(splittingArray[splittingArray.length - 1] ?? "");
       setComment(updatedValue);
     } else {
       setComment(value);
@@ -140,7 +193,7 @@ export default function DealComment({
 
   const onInputChange = (event, value, reason) => {
 
-    value = value.replace(/\s\s/g, ' ')
+    // value = value.replace(/\s\s/g, ' ');
     if (!isSelected) {
       setCommentValue(value);
     } else {
@@ -150,7 +203,9 @@ export default function DealComment({
 
   const onChange = (e, act) => {
     setShowOptions(false);
-    const value = JSON.parse(JSON.stringify(comment.split("@")[0]));
+    const splittedArray = comment.split("@");
+    let value = "";
+    for (let i = 0; i < splittedArray.length - 1; i += 1) value += `${splittedArray[i]}${i !== splittedArray.length - 2 ? '@' : ""}`;
     setComment(value + `{{${act._id}}}`);
     setIsSelected(true);
   };
@@ -158,6 +213,7 @@ export default function DealComment({
   return (
     <>
       <Autocomplete
+        id='txtArea'
         className={classes.search}
         style={{
           margin: 0,
@@ -207,6 +263,7 @@ export default function DealComment({
         renderInput={(params) => (
           <>
             <TextField
+
               classes={{ root: classes.customTextField }}
               margin="dense"
               {...params}

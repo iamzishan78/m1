@@ -278,7 +278,6 @@ const SidePanel = () => {
             .filter((pipe) => !selectedPipelines.includes(pipe._id) && pipe.depth === 0)
             .map((pipe, index) => ({ ...pipe, position: index + pipelines.length }))
         );
-        debugger;
         updatePipelinesPositions({
           variables: {
             data: pipelines,

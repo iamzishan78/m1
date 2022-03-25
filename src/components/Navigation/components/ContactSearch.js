@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
 const ContactSearch = () => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(stateApp.contactSearchQuery);
   const { quickActionsPanelState, activeModule } = useSelector(({ contact }) => contact);
 
   const isAllowed = stateApp?.user?.features?.find(
