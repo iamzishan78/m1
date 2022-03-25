@@ -1,4 +1,4 @@
-
+import { area, convertArea, length } from "@turf/turf";
 
 export const showIfUserDefinedLayer = (stateApp) => {
     return stateApp.selectedUserDefinedLayer !== null &&
@@ -97,3 +97,21 @@ export const modifyExandableCardStyle = (selectedShape) => {
     }
     return { backgroundColor, headerIcons, icons, headerLabelColor }
 }
+
+const formatNumber = (number) => {
+    return number.toLocaleString("en-US", { maximumFractionDigits: 2 });
+};
+
+export const calculateLandArea = (selectedFeature) => {
+    if (selectedFeature) {
+        if (selectedFeature.geometry.type === "Polygon" || selectedFeature.geometry.type === "MultiPolygon") {
+            const areaInSqMeters = area(selectedFeature);
+            const areaInAcres = convertArea(areaInSqMeters, "meters", "acres");
+            return `${formatNumber(Math.round(areaInAcres * 100) / 100)}`;
+        }
+        if (selectedFeature.geometry.type === "LineString") {
+            const distanceInMiles = length(selectedFeature, { units: "miles" });
+            return `${formatNumber(Math.round(distanceInMiles * 100) / 100)} miles`;
+        }
+    }
+};
