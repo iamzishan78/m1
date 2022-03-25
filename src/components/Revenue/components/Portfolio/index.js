@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Button, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
+import { useDispatch } from "react-redux";
 
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
@@ -51,6 +52,7 @@ const cards = [
 
 export default function Portfolio() {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [fromDate, setFromDate] = React.useState(null);
   const [toDate, setToDate] = React.useState(null);
   const [monthsInterval, setMonths] = useState([]);
@@ -74,7 +76,7 @@ export default function Portfolio() {
   };
 
   useEffect(() => {
-    setRevenueKey('filterDate', { toDate, fromDate })
+    dispatch(setRevenueKey('filterDate', { toDate: new Date(toDate), fromDate: new Date(fromDate) }))
   }, [toDate, fromDate])
 
   return (

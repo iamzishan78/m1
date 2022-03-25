@@ -67,7 +67,7 @@ const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
       series.sequencedInterpolation = true;
       series.calculatePercent = true;
       series.calculateAggregates = true;
-      series.tooltipText = "[#000 font-size:17px]{name} {valueY.value} | {valueY.percent.formatNumber('#.0')}%[/]";
+      series.tooltipText = "[#000 font-size:17px]{name} {valueY.value}[/]";
       series.tooltip.background.fill = am4core.color("#FFF");
       series.tooltip.getStrokeFromObject = true;
       series.tooltip.background.strokeWidth = 3;
