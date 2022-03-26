@@ -90,9 +90,9 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
         </Button> */}
                         </Grid>
                         <Grid item>
-                            <Button variant="contained" color="secondary" onClick={() => setFilterToggle(!filterToggle)}>
+                            {/* <Button variant="contained" color="secondary" onClick={() => setFilterToggle(!filterToggle)}>
                                 Filter
-                            </Button>
+                            </Button> */}
                         </Grid>
                     </Grid>
                 </Grid>

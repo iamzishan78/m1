@@ -409,7 +409,7 @@ function Search(props) {
               {...params}
               variant="outlined"
               fullWidth
-              style={{ width: "100%" }}
+              style={{ width: "85%" }}
               value={searchText}
               onChange={(e) => {
                 setSearchText(e.target.value)
