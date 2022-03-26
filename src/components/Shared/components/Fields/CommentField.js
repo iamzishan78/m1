@@ -16,8 +16,8 @@ const useStyles = makeStyles((theme) => ({
   noBorder: {
     border: "none",
   },
-  search505: {
-    maxHeight: "250px",
+  search: {
+    maxHeight: "217px",
     width: "100%",
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
@@ -31,10 +31,9 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiInputBase-input": { color: "transparent", caretColor: "black" },
     "& .MuiInputBase-inputMultiline": {
-      lineHeight: "17px",
-      maxHeight: "225px",
+      height: "201px !important",
       zIndex: 9999,
-      overflowY: "overlay",
+      overflow: "overlay",
       paddingRight: "8px",
       "*::-webkit-scrollbar": {
         height: "0.2em !important",
@@ -61,10 +60,13 @@ const useStyles = makeStyles((theme) => ({
   },
   textDiv: {
     marginLeft: "12px",
+    lineHeight: "19px",
     fontSize: "16px",
     marginRight: "4px",
+    height: "200px",
     overflowY: "auto",
     position: "relative",
+    top: "-162px",
     writingMode: "horizontal-tb !important",
     textRendering: "auto",
     wordSpacing: "normal",
@@ -76,34 +78,12 @@ const useStyles = makeStyles((theme) => ({
     appearance: "auto",
     "-webkit-rtl-ordering": "logical",
     overflowWrap: "break-word",
-
-    maxHeight: "228px",
-    height: "20px",
-    top: "19px",
-    lineHeight: "17px"
   },
   commentBtn: {
     float: "right",
     right: "15px",
   },
 }));
-
-const adjustDiv = () => {
-  const ele = document.getElementById("txtArea");
-  ele.style.overflow = "overlay";
-  if (parseInt(ele.style.height, 10) < 41) {
-    ele.style.height = "41px"
-  }
-  let searchEle = document.getElementById("commentField").firstChild;
-  if (searchEle) {
-    if (parseInt(ele.style.height, 10) <= 228) {
-      searchEle.style.maxHeight = `${parseInt(ele.style.height, 10) + 30}px`;
-      const colorTextEle = document.getElementById("colorText");
-      colorTextEle.style.height = `${parseInt(ele.style.height, 10) + 5}px`;
-      colorTextEle.style.top = `${19 - parseInt(colorTextEle.style.height, 10) + 20 - 1}px`;
-    }
-  }
-}
 
 export default function DealComment({
   comment,
@@ -132,7 +112,7 @@ export default function DealComment({
         .prop("scrollLeft", this.scrollLeft);
     }
     $(".MuiOutlinedInput-input").scroll(scrollDiv);
-    // $(".MuiInputBase-input").change(scrollDiv);
+    $(".MuiOutlinedInput-input").resize(scrollDiv);
   })();
 
   const checkIfShowUsers = (comment) => {
@@ -155,17 +135,6 @@ export default function DealComment({
   }
 
   useEffect(() => {
-    const ta = document.getElementById("txtArea");
-    if (ta.addEventListener) {
-      ta.addEventListener("mouseup", adjustDiv, false);
-      ta.addEventListener("keyup", adjustDiv, false);
-    } else if (ta.attachEvent) { // IE
-      ta.attachEvent("onmouseup", adjustDiv);
-      ta.attachEvent("onkeyup", adjustDiv);
-    }
-  }, []);
-
-  useEffect(() => {
     let value = JSON.parse(JSON.stringify(comment));
     if (checkIfShowUsers(value)) {
       setShowOptions(true);
@@ -186,7 +155,7 @@ export default function DealComment({
       setNameAutValue({ name: comment, _id: "" });
     }
     if (value.includes("\n")) {
-      value = value.replace(/\n/g, "<br/><span class='ml--4'>&nbsp;</span>");
+      value = value.replace(/\n/g, "<br>");
     }
     document.getElementById("colorText").innerHTML = value;
   }, [comment, users]);
@@ -203,11 +172,13 @@ export default function DealComment({
     if (value.includes("@")) {
       let updatedValue = JSON.parse(JSON.stringify(value));
       for (let i = 0; i < users.length; i++) {
-        if (comment.includes(users[i]._id)) {
-          updatedValue = updatedValue.replace(
-            `@${users[i].name}`,
-            `{{${users[i]._id}}}`
-          );
+        while (updatedValue.includes(users[i].name)) {
+          if (comment.includes(users[i]._id))
+            updatedValue = updatedValue.replace(
+              `@${users[i].name}`,
+              `{{${users[i]._id}}}`
+            );
+          else break;
         }
       }
       const splittingArray = updatedValue.split("@");
@@ -238,10 +209,10 @@ export default function DealComment({
   };
 
   return (
-    <div id="commentField">
+    <>
       <Autocomplete
         id='txtArea'
-        className={classes.search505}
+        className={classes.search}
         style={{
           margin: 0,
         }}
@@ -290,13 +261,16 @@ export default function DealComment({
         renderInput={(params) => (
           <>
             <TextField
-              {...params}
+
               classes={{ root: classes.customTextField }}
               margin="dense"
+              {...params}
               style={{
                 margin: 0,
               }}
               fullWidth
+              rows={(isEdit || showActions) ? 2 : 1}
+              rowsMax={2}
               multiline
               className={classes.activitySearchField}
               placeholder="Add a question or post an update"
@@ -305,7 +279,6 @@ export default function DealComment({
             />
             <div
               id="colorText"
-              style={{ whiteSpace: 'pre-line' }}
               className={`${comment || showActions
                 ? classes.commentInputFocusIn
                 : classes.commentInputFocusOut
@@ -355,6 +328,6 @@ export default function DealComment({
           </Button>
         </>
       )}
-    </div>
+    </>
   );
 }
