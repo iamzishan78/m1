@@ -227,6 +227,12 @@ export default function MetadataDrawer(props) {
     }
   }, [files, uploadedFiles, viewFiles]);
 
+  useEffect(() => {
+    if(props.data?.metaOwner){
+      setOwnerId(props.data.metaOwner._id)
+    }
+  },[props.data])
+  
   const setUploadedFileData = (uploadedfile) => {
     setUploadedFiles([...uploadedFiles, uploadedfile]);
   };
@@ -286,6 +292,8 @@ export default function MetadataDrawer(props) {
                     options={users.filter((u) => u.text)}
                     onChange={(e, user) => {
                       setOwnerId(user?.value);
+                      if(props.onUpdate)
+                        props.onUpdate({ owner: user?.value })
                     }}
                     value={
                       users.find((user) => user?.value === ownerId) || null
