@@ -4150,7 +4150,9 @@ function SubTable(props) {
           </Breadcrumbs>
         </div>
       );
-    } else {
+    } else if(typeof props.header === 'string'){
+      return <div style={{ fontSize: 16, marginLeft: 10 }}>{props.header}</div>
+    } else{
       return props.header;
     }
   };

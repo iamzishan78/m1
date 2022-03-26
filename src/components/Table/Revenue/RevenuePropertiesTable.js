@@ -12,6 +12,8 @@ import { usetableStyles } from "../Styles";
 import { setRevenuePropertyData } from "actions";
 import TableESHOC from "../TableESHOC";
 
+const genericDataActions = ["tags", "comments"];
+
 function RevenuePropertiesTable(props) {
   const classes = usetableStyles();
   const { esIndex, setESFilters } = props;
@@ -24,7 +26,12 @@ function RevenuePropertiesTable(props) {
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
-      hit = props.setGenricData(hit, hit._id, ["tracks"]);
+      hit = props.setGenricData(
+        hit,
+        hit._id,
+        genericDataActions,
+        genericDataActions
+      );
       hit.payorName = hit?.operator?.name;
       hit.wellApiNumber = hit?.well?.apiNumber
       hit.wellName = hit?.well?.wellName;
@@ -32,10 +39,6 @@ function RevenuePropertiesTable(props) {
       hit.amount = hit?.lastCheck?.netOwnerValue;
       hit.type = hit?.lastCheck?.interestType[0];
       hit.lastChecked = new Date(hit?.lastCheck?.checkDate).toLocaleDateString();
-      hit.tags = hit?.tags?.length > 0
-        ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
-        : [[], 0];
-      hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       return hit;
     });
     return hits
@@ -61,7 +64,7 @@ function RevenuePropertiesTable(props) {
       startPaginationAt: 25,
       defaultSort: { field: 'name.keyword', order: 'desc' },
       formatHits,
-      // initializeGenericData: { key: 'id', actions: genericDataActions }
+      initializeGenericData: { key: "_id", actions: genericDataActions },
     });
     // eslint-disable-next-line
   }, [props.revenueSearchQuery, props.filterToggle, refetchData]);
@@ -80,7 +83,7 @@ function RevenuePropertiesTable(props) {
 
 
   useEffect(() => {
-    if (props?.total && props.onPropertiesCount) {
+    if ((props?.total === 0 || props?.total) && props.onPropertiesCount) {
       props.onPropertiesCount(props.total);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
