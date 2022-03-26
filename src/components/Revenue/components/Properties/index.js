@@ -10,34 +10,37 @@ import LastCheckDateFilter from "../Common/LastCheckDateFilter";
 
 const useStyles = makeStyles((theme) => ({
   propertyTableContainer: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
+    paddingTop: theme.spacing(1),
     paddingLeft: "38px",
     paddingRight: "38px",
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
-          maxHeight: "48vh",
-          minHeight: "48vh",
-          "@media (max-height:1200px)": {
-            maxHeight: "48vh",
-            minHeight: "48vh",
-          },
-          "@media (max-height:1300px)": {
-            maxHeight: "56vh",
-            minHeight: "56vh",
+          maxHeight: "67vh",
+          minHeight: "67vh",
+          "@media (max-height:1600px)": {
+            maxHeight: "65vh",
+            minHeight: "65vh",
           },
           "@media (max-height:1400px)": {
-            maxHeight: "57vh",
-            minHeight: "57vh",
+            maxHeight: "63vh",
+            minHeight: "63vh",
+          },
+          "@media (max-height:1300px)": {
+            maxHeight: "61vh",
+            minHeight: "61vh",
+          },
+          "@media (max-height:1200px)": {
+            maxHeight: "58vh",
+            minHeight: "58vh",
           },
           "@media (max-height:1100px)": {
-            maxHeight: "48vh",
-            minHeight: "48vh",
+            maxHeight: "53vh",
+            minHeight: "53vh",
           },
           "@media (max-height:1000px)": {
-            maxHeight: "46vh",
-            minHeight: "46vh",
+            maxHeight: "49vh",
+            minHeight: "49vh",
           },
           "@media (max-height:900px)": {
             maxHeight: "44vh",
@@ -133,7 +136,6 @@ export default function Properties() {
           targetLabel="Revenue Properties"
           parent="RevenuePropertiesTable"
           loading={false}
-          dense={true}
           filterToggle={filterToggle}
           setESFilters={setESFilters}
           onPropertiesCount={onPropertiesCount}

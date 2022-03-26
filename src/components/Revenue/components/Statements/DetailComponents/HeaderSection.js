@@ -66,7 +66,14 @@ export default function HeaderFunction(props) {
 
   useEffect(() => {
     if (check) {
-      reset(check)
+      let checkAmount = check.checkAmount;
+      if(checkAmount) {
+        const data = checkAmount.toString().split(".");
+        if(data[1] && data[1].length === 1) {
+          checkAmount = checkAmount.toFixed(2);
+        }
+      }
+      reset({ ...check, checkAmount })
       setCheck(check);
     }
   }, [props.check]);

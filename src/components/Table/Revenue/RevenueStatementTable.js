@@ -176,6 +176,8 @@ function RevenueStatementTable(props) {
         }
       });
       setIssuesArr(issuesArr);
+    } else {
+      setIssuesArr([])
     }
   }, [issues, searchedRows]);
 
