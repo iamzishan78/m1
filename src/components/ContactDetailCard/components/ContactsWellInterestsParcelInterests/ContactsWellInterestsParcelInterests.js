@@ -43,7 +43,7 @@ function ContactsWellInterestsParcelInterests(props) {
 
   const Header = () => (
     <TabButtons
-      labels={["Tax Roll Interests", "Well Interests", "Parcel Interests", "Unit Interests"]}
+      labels={["Tax Roll Interests", "Well Interests", "Tract Interests", "Unit Interests"]}
       value={selectedTab}
       setValue={(n) => {
         setSelectedTab(n);

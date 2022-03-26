@@ -120,9 +120,9 @@ const useStyles = makeStyles((theme) => ({
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
   commentsContainer: {
-    // position: "fixed",
     bottom: "34px",
-    width: "336px",
+    width: "395px",
+    position: "absolute"
   },
 }));
 
@@ -336,11 +336,11 @@ export default function MetadataDrawer(props) {
                                           .toUpperCase()
                                           .split(" ").length > 1
                                           ? users
-                                              .find(
-                                                (user) =>
-                                                  user?.value === ownerId
-                                              )
-                                              .text.toString()
+                                            .find(
+                                              (user) =>
+                                                user?.value === ownerId
+                                            )
+                                            .text.toString()
                                           : "Add Owner"
                                       }
                                     />

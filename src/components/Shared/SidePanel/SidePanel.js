@@ -205,7 +205,7 @@ export default function SidePanel() {
                 ...item,
                 visiable: item.layerSettings.visiable,
                 showable,
-                name: item.layerName,
+                name: item.layerName === "Parcels" ? "Tracts" : item.layerName,
                 depth: 0,
                 type: "layer",
                 id: item._id,
