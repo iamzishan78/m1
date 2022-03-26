@@ -131,7 +131,13 @@ const RevenuePropertiesHeadCells = [
     name: "status",
     label: "Status",
     esKey: "status.keyword",
-    options: { sort: true, filter: true },
+    options: { 
+      customHeadLabelRender: () => (
+        <>
+          <div> </div>
+        </>
+      ),
+      sort: true, filter: true },
   },
 ];
 
