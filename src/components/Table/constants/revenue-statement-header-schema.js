@@ -40,7 +40,7 @@ const RevenueStatementHeadCells = [
       sort: true,
       filter: true,
       customRender: (value) => {
-        return value ? <p style={{ fontWeight: 600 }}>{value ? `$${value}` : ""}</p> : <p style={{ color: "#898989b0" }}>N/A</p>;
+        return value ? <p style={{ fontWeight: 600 }}>{value ? `$${value?.toFixed(2)}` : ""}</p> : <p style={{ color: "#898989b0" }}>N/A</p>;
       },
     },
   },
