@@ -179,6 +179,9 @@ export const TableESHOC = (Component) => {
                 setLoading(false);
             }
             else if (tableData?.hits?.length === 0) {
+                let { formatHits } = tableMeta;
+                if (formatHits)
+                    formatHits([]);
                 setRows([]);
                 setColumnsData(copy(tableMeta.TableHeader));
                 setLoading(false);

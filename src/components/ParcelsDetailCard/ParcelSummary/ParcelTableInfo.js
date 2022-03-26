@@ -12,7 +12,6 @@ import { showErrorMessage } from "actions";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 
-
 const tableData = [
   {
     label: 'Tract Name',
@@ -95,7 +94,7 @@ const tableData = [
     key: 'shapeArea',
     edit: false,
   }
-]
+];
 
 const useStyles = makeStyles((theme) => ({
 
@@ -135,8 +134,6 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: "18px",
     color: "#75767A",
     height: '55px'
-    // display: 'flex',
-    // justifyContent: "center",
   },
 
   select: {
@@ -158,8 +155,6 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: "bold",
     },
   }
-
-
 }));
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, setTableDataState, showMessage, type }) {
@@ -312,7 +307,6 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
                     </div>
                 } </> : <>{data.label}</>
               }
-
 
             </TableCell>
             <TableCell className={classes.cell2} align="right"
