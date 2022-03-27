@@ -119,15 +119,17 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": { color: "#757575" },
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
-  commentsContainer: {
+  commentsContainer: (({ files }) => ({
     bottom: "34px",
     width: "395px",
-    // position: "absolute"
-  },
+    position: files ? "initial" : "absolute"
+  })),
+  contentRoot: ({ files }) => ({
+    overflow: files ? "overlay" : "hidden"
+  }),
 }));
 
 export default function MetadataDrawer(props) {
-  const classes = useStyles();
 
   // States
   const [ownerId, setOwnerId] = useState("");
@@ -179,6 +181,8 @@ export default function MetadataDrawer(props) {
     useLazyQuery(VIEWFILESQUERY, {
       fetchPolicy: "no-cache",
     });
+
+  const classes = useStyles({ files: !!files?.getFileDescriptors?.length > 0 });
 
   useEffect(() => {
     setDescription(props.description);
@@ -277,8 +281,7 @@ export default function MetadataDrawer(props) {
       </div>
 
       <div
-        className="flex column justifyStart w-100"
-        style={{ overflow: "overlay" }}
+        className={`flex column justifyStart w-100 ${classes.contentRoot}`}
       >
         <div>
           <div style={{ marginTop: 10, marginLeft: 4 }}>
