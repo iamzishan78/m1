@@ -122,7 +122,7 @@ const useStyles = makeStyles((theme) => ({
   commentsContainer: {
     bottom: "34px",
     width: "395px",
-    position: "absolute"
+    // position: "absolute"
   },
 }));
 
@@ -228,11 +228,11 @@ export default function MetadataDrawer(props) {
   }, [files, uploadedFiles, viewFiles]);
 
   useEffect(() => {
-    if(props.data?.metaOwner){
+    if (props.data?.metaOwner) {
       setOwnerId(props.data.metaOwner._id)
     }
-  },[props.data])
-  
+  }, [props.data])
+
   const setUploadedFileData = (uploadedfile) => {
     setUploadedFiles([...uploadedFiles, uploadedfile]);
   };
@@ -278,9 +278,9 @@ export default function MetadataDrawer(props) {
 
       <div
         className="flex column justifyStart w-100"
-        style={{ overflow: "hidden" }}
+        style={{ overflow: "overlay" }}
       >
-        <div style={{ overflow: "auto" }}>
+        <div>
           <div style={{ marginTop: 10, marginLeft: 4 }}>
             <FormControl variant="outlined" fullWidth size="small">
               <Grid container className={classes.gridStyle}>
@@ -292,7 +292,7 @@ export default function MetadataDrawer(props) {
                     options={users.filter((u) => u.text)}
                     onChange={(e, user) => {
                       setOwnerId(user?.value);
-                      if(props.onUpdate)
+                      if (props.onUpdate)
                         props.onUpdate({ owner: user?.value })
                     }}
                     value={
