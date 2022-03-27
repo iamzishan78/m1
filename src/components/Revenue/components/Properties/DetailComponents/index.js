@@ -12,6 +12,7 @@ import {
   Delete as DeleteIcon,
 } from "@material-ui/icons";
 
+import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { GET_PROPERTY } from "graphQL/useQueryGetProperty";
@@ -204,7 +205,7 @@ const StyledTab = withStyles((theme) => ({
 
 export default function DetailComponents(props) {
   const history = useHistory();
-  const [, setStateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   const propertyId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
   const [propertyOwnerContact, setPropertyOwnerContacts] = useState([]);
@@ -224,6 +225,7 @@ export default function DetailComponents(props) {
 
   const classes = useStyles({ ...props, showInterestDetails, collapse });
 
+  const [updateMetaOwner] = useMutation(UPSERT_USER_DESCRIPTOR);
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
@@ -321,6 +323,17 @@ export default function DetailComponents(props) {
   }
 
   const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
+
+  const onUpdateMetaData = (data) => {
+    updateMetaOwner({
+      variables: {
+        descriptorObject: data.owner,
+        userId: stateApp.user.mongoId,
+        relatedObject: propertyDetails._id,
+        relatedObjectType: 'Property'
+      }
+    });
+  }
 
   return (
     <NavHeader title={`${get(propertyDetails, 'number', '')}-${get(propertyDetails, 'name', '')}`}>
@@ -425,7 +438,7 @@ export default function DetailComponents(props) {
         )}
 
         {!collapse && !showInterestDetails && !showOwnerDialog && (
-          <MetadataDrawer setCollapse={setCollapse} users={users} targetLabel='PROPERTY' targetSourceId={propertyId} setStateApp={setStateApp} />
+          <MetadataDrawer data={propertyDetails} onUpdate={onUpdateMetaData} setCollapse={setCollapse} users={users} targetLabel='PROPERTY' targetSourceId={propertyId} setStateApp={setStateApp} />
         )}
       </div>
       <Dialog

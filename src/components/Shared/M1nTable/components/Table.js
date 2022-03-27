@@ -1474,7 +1474,7 @@ function SubTable(props) {
                   } = tableMeta;
                   return (
                     <>
-                      {label === "Property Code" && <span style={{ padding: 10 }}>{rowData[1].number}</span>}
+                      {label === "Property #" && <span style={{ padding: 10 }}>{rowData[1].number}</span>}
 
                       {label === "Property Name" && <span style={{ padding: 10 }}>{rowData[1].name}</span>}
 
