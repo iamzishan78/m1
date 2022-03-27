@@ -143,14 +143,15 @@ const unitsColumnHeaders = [
         filter: true,
       },
     },
-    {
-      name: "unitStatus",
-      label: "Unit Status",
-      options: {
-        sort: true,
-        filter: false,
-      },
-    },
+    //hiding temporarily until we get the chart fixed -kc 20220327
+    // {
+    //   name: "unitStatus",
+    //   label: "Unit Status",
+    //   options: {
+    //     sort: true,
+    //     filter: false,
+    //   },
+    // },
     {
       name: "lastUpdated",
       label: "Last Updated",
