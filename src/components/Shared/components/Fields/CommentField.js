@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     border: "none",
   },
   search: {
-    maxHeight: "230px",
+    maxHeight: "217px",
     width: "100%",
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
@@ -106,17 +106,13 @@ export default function DealComment({
   (function () {
     var target = $("#colorText");
     const scrollDiv = function () {
-      // console.log("Scroll Start")
-
-      // document.getElementById("colorText").style.height = "50px";
-      // document.getElementById("txtArea").style.height = "50px !IM";
 
       target
         .prop("scrollTop", this.scrollTop)
         .prop("scrollLeft", this.scrollLeft);
     }
     $(".MuiOutlinedInput-input").scroll(scrollDiv);
-    $(".MuiInputBase-input").change(scrollDiv);
+    $(".MuiOutlinedInput-input").resize(scrollDiv);
   })();
 
   const checkIfShowUsers = (comment) => {
@@ -176,11 +172,13 @@ export default function DealComment({
     if (value.includes("@")) {
       let updatedValue = JSON.parse(JSON.stringify(value));
       for (let i = 0; i < users.length; i++) {
-        if (comment.includes(users[i]._id)) {
-          updatedValue = updatedValue.replace(
-            `@${users[i].name}`,
-            `{{${users[i]._id}}}`
-          );
+        while (updatedValue.includes(users[i].name)) {
+          if (comment.includes(users[i]._id))
+            updatedValue = updatedValue.replace(
+              `@${users[i].name}`,
+              `{{${users[i]._id}}}`
+            );
+          else break;
         }
       }
       const splittingArray = updatedValue.split("@");
