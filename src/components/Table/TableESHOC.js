@@ -149,8 +149,6 @@ export const TableESHOC = (Component) => {
                         ])
                     }
                 });
-                if(tableMeta.filters)
-                    setInitialFilters(tableMeta.filters)
                 if (tableMeta.selectedGridView)
                     handleSelectedGridChange(tableMeta.TableHeader, { ...tableMeta.selectedGridView, filters: (tableMeta.selectedGridView.filters || []).concat(tableMeta.filters || []) }, columns, true)
             }
