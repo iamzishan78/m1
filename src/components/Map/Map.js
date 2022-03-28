@@ -1564,7 +1564,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                 data = recent_submitted_permits;
                 break;
               case "Search":
-                data = [ ...stateApp.wellListFromSearch, ...stateApp.landGridListFromSearch ]
+                data = [...stateApp.wellListFromSearch, ...stateApp.landGridListFromSearch]
                 break;
               case "User Tags":
                 data = stateApp.wellListFromTagsFilter;

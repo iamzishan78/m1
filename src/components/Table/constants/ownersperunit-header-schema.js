@@ -34,7 +34,7 @@ const OwnersPerUnitHeadCells = [
       setCellProps: () => ({ style: { minWidth: "270px" } }),
     },
   },
-  { 
+  {
     name: "ownerType",
     esKey: 'contact.ownerType',
     label: "Entity Type",
