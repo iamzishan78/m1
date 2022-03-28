@@ -116,8 +116,10 @@ function SuggestedShapeTaxOwnersTable(props) {
   useEffect(() => {
     if (tableData?.edges?.length > 0) {
       let owners = tableData.edges.map((el) => el.node);
-      const objectsIdsArray = owners.map((owner) => owner.globalOwnerId);
-      props.initializeGenericData(objectsIdsArray, ['comments', 'tags', 'ifAreContacts']);
+      const objectsIdsArray = owners.map((owner) => owner.id);
+      const globalOwnerIds = tableData?.edges?.map((el) => el.node.globalOwnerId);
+      props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
+      props.ifAreContacts([...globalOwnerIds]);
     }
   }, [tableData]);
 
@@ -128,7 +130,8 @@ function SuggestedShapeTaxOwnersTable(props) {
         let owner = { ...o };
         owner.isContact = false;
         owner.ownershipType = owner.OwnerType || owner.ownershipType;
-        owner = props.setGenricData(owner, owner.globalOwnerId, ['comments', 'tracks', 'tags', 'ifAreContacts']);
+        owner = props.setGenricData(owner, owner.id, ['comments', 'tracks', 'tags']);
+        owner = props.setGenricData(owner, owner.globalOwnerId, ['ifAreContacts']);
 
         return owner;
       });
