@@ -1,13 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Typography, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
 import DonutChart from "./DonutChart";
 import StackedChart from "./StackedChart";
 import RevenueTable from "./RevenueTable";
-import { useSelector } from "react-redux";
-import { useLazyQuery } from "@apollo/client";
-import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -27,57 +24,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RevenueSection = ({ adjustmentsRef, netRevenueRef }) => {
+const RevenueSection = ({ portfolioSummary }) => {
   const classes = useStyles();
-  // const constItems = [
-  //   {
-  //     name: "Gross Revenue",
-  //     value: 500000,
-  //     data: {},
-  //     total: 0
-  //   },
-  //   {
-  //     name: "Adjustments",
-  //     value: 95000,
-  //     data: {},
-  //     total: 0
-  //   },
-  //   {
-  //     name: "Net Revenue",
-  //     value: 405000,
-  //     data: {},
-  //     total: 0
-  //   },
-  //   // {
-  //   //   name: "Lease Payments",
-  //   //   value: 44000,
-  //   //   data: {},
-  //   //   total: 0
-  //   // },
-  //   // {
-  //   //   name: "Other",
-  //   //   value: 13000,
-  //   //   data: {},
-  //   //   total: 0
-  //   // },
-  // ];
-  // const [items, setItems] = useState(constItems);
-  // // const [donutItems, setDonutItems] = useState([]);
-  // const [grossRevenue, setGrossRevenue] = useState([]);
-  const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
-  const filterDate = useSelector(({ Revenue }) => Revenue.filterDate);
 
-  const [getPortfolioSummary, { data: portfolioSummary }] = useLazyQuery(GET_PORTFOLIO_GROSS_REVENUE_SUMMARY, {
-    fetchPolicy: "no-cache"
-  });
-
-  const items = portfolioSummary?.getPortfolioSummary?.summaryDetails || []
-  const total = portfolioSummary?.getPortfolioSummary?.total || 0
-  const monthsInterval = portfolioSummary?.getPortfolioSummary?.months || []
-
-  useEffect(() => {
-    getPortfolioSummary({ variables: { filters: propertiesReportGroup || [], filterDate } })
-  }, [propertiesReportGroup, filterDate])
+  const items = portfolioSummary.summaryDetails || []
+  const total = portfolioSummary.revenueTotal || 0
+  const monthsInterval = portfolioSummary.months || []
 
   const chartItems = React.useMemo(() => {
     return items.filter((item) => ["Net Revenue", "Adjustments"].includes(item.name)) || []

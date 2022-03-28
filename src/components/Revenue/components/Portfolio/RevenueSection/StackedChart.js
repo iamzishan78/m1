@@ -26,7 +26,10 @@ const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
     monthsInterval?.forEach((month, index) => {
       _data.push({ month });
       items.forEach((item) => {
-        _data[index][item.name] = item.data[month];
+        if (typeof item.data[month] === 'object')
+          _data[index][item.name] = item.data[month].total;
+        else
+          _data[index][item.name] = item.data[month];
       });
     });
     setData(_data);

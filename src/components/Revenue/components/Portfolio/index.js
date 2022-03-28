@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Button, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import DetailTabsSection from "components/Revenue/components/Portfolio/DetailTabsSection";
 import { setRevenueKey } from "actions";
+import { useLazyQuery } from "@apollo/client";
+import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -53,6 +55,7 @@ const cards = [
 export default function Portfolio() {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
   const [fromDate, setFromDate] = React.useState(null);
   const [toDate, setToDate] = React.useState(null);
   const [monthsInterval, setMonths] = useState([]);
@@ -75,9 +78,15 @@ export default function Portfolio() {
     setMonths(months);
   };
 
+
+  const [getPortfolioSummary, { data: portfolioSummary }] = useLazyQuery(GET_PORTFOLIO_GROSS_REVENUE_SUMMARY, {
+    fetchPolicy: "no-cache"
+  });
+
   useEffect(() => {
-    dispatch(setRevenueKey('filterDate', { toDate: new Date(toDate), fromDate: new Date(fromDate) }))
-  }, [toDate, fromDate])
+    getPortfolioSummary({ variables: { filters: propertiesReportGroup || [], filterDate: { toDate: new Date(toDate), fromDate: new Date(fromDate) } } })
+  }, [propertiesReportGroup, toDate, fromDate])
+
 
   return (
     <>
@@ -108,7 +117,7 @@ export default function Portfolio() {
       </div>
       {/* <AnalyticsCards cards={cards} /> */}
       <Divider className={classes.divider} />
-      <DetailTabsSection monthsInterval={monthsInterval} />
+      <DetailTabsSection monthsInterval={monthsInterval} portfolioSummary={portfolioSummary?.getPortfolioSummary || {}} />
     </>
   );
 }
