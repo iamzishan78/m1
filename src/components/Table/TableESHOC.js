@@ -149,6 +149,8 @@ export const TableESHOC = (Component) => {
                         ])
                     }
                 });
+                if(tableMeta.filters)
+                    setInitialFilters(tableMeta.filters)
                 if (tableMeta.selectedGridView)
                     handleSelectedGridChange(tableMeta.TableHeader, { ...tableMeta.selectedGridView, filters: (tableMeta.selectedGridView.filters || []).concat(tableMeta.filters || []) }, columns, true)
             }
@@ -214,7 +216,7 @@ export const TableESHOC = (Component) => {
                                         onChange={onChange}
                                         query={GET_ES_SIMPLE_FILTER}
                                         searchFields={tableMeta.searchFields}
-                                        filters={activeFiltersRef.current}
+                                        filters={initialFilters}
                                         extendSearchQuery={extendSearchQuery}
                                         custom={custom}
                                     />

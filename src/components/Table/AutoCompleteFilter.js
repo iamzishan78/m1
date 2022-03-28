@@ -31,7 +31,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
         } else {
             setOptions(custom?.filterOptions)
         }
-    }, []);
+    }, [filters]);
 
     useEffect(() => {
         if (filtersData) {
