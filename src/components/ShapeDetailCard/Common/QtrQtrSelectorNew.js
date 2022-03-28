@@ -15,6 +15,7 @@ import { drawShapeLayerToggle, findBoundsMap } from "components/MapControls/comm
 import { useMutation } from "@apollo/client";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
+import { calculateLandArea } from "components/Shared/functions/shapeLayer";
 
 const useStyles = makeStyles((theme) => ({
   mainDiv: {
@@ -180,7 +181,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
     } else {
       stateApp?.draw?.deleteAll();
     }
-  }, [showAdjustGrid])
+  }, [showAdjustGrid]);
 
   const updateLayerQtr = () => {
     const values = Object.keys(qtrQtr).filter((key) => qtrQtr[key]).map((key) => key.toUpperCase())
@@ -203,9 +204,10 @@ export default function QtrQtrSelectorNew({ layerData }) {
     if (!layerDataCopy?.qtrQtrSelection?.originalGeometry) {
       layerDataCopy.qtrQtrSelection.originalGeometry = layerDataCopy.shape.geometry
     }
-    layerDataCopy.qtrQtrSelection.qtrQtr = qtrQtr
-    layerDataCopy.qtrQtrSelection.selectedQtr = qtr
-    layerDataCopy.shape.geometry = newShape.geometry
+    layerDataCopy.qtrQtrSelection.qtrQtr = qtrQtr;
+    layerDataCopy.qtrQtrSelection.selectedQtr = qtr;
+    layerDataCopy.shape.geometry = newShape.geometry;
+    layerDataCopy.shape.properties.shapeArea = calculateLandArea(newShape);
 
     const customLayer = {
       shapeJson: layerDataCopy.shape,
@@ -312,7 +314,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
             }
           </Grid>
         </Grid>
-        <Grid item md={3} style={{ paddingTop: '1.8em',  }}>
+        <Grid item md={3} style={{ paddingTop: '1.8em', }}>
           <Button variant="contained" color="primary" size="large" disabled={disableUpdate} onClick={() => {
             updateLayerQtr()
             setShowAdjustGrid(false)

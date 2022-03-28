@@ -151,7 +151,9 @@ const Documents = memo((props) => {
   const [recentFiles, setRecentFiles] = useState([]);
 
   useEffect(() => {
-    if (props.filesData?.viewFiles) setRecentFiles(props.filesData.viewFiles);
+    if (props.filesData?.viewFiles) {
+      setRecentFiles(props.filesData.viewFiles);
+    }
   }, [props.filesData]);
 
   const userId = stateApp.user.mongoId;

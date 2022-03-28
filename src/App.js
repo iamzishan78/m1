@@ -41,6 +41,11 @@ import AgreementDetailProvider from "./components/Land/components/AgreementDetai
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 import { CircularProgress } from "@material-ui/core";
+import { UsersnapProvider } from './UsersnapContext';
+
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
+
 
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
 import { ApolloProvider, ApolloClient, InMemoryCache, useApolloClient } from "@apollo/client";
@@ -316,6 +321,9 @@ function App() {
         />
         {apolloClient ? (
           <ApolloProvider client={apolloClient}>
+            <FeatureFlag feature={FEATURES.USERSNAP} >
+              <UsersnapProvider/>
+            </FeatureFlag>
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
                 <ContactBulkProgress />
