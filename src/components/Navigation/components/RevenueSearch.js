@@ -98,7 +98,7 @@ const LandSearch = ({ activeModule }) => {
           setTimeout(() => {
             setStateApp((stateApp) => ({
               ...stateApp,
-              revenueSearchQuery: `${e.target.value}`,
+              revenueSearchQuery: `${e.target.value}*`,
             }));
           }, 500);
         }}

@@ -103,6 +103,8 @@ const useStyles = makeStyles({
 function CheckDetailsEditableTable(props) {
 
     const [rows, setRows] = useState(props.rows);
+    const [currentRowIndex, setCurrentRowIndex] = useState(null);
+    const [resetAnchor, setResetAnchor] = useState(false);
     const [currentRow, setCurrentRow] = useState(null);
     const [newProperty, setNewProperty] = useState(null);
     const [startPaginationAt, setStartPaginationAt] = useState(0);
@@ -168,8 +170,9 @@ function CheckDetailsEditableTable(props) {
 
 
     const onFieldChange = (rowId, field, type) => (async (value) => {
-        const cRow = currentRow
-        let newPropertyAdded = false
+        // const cRow = currentRow
+        setCurrentRowIndex(currentRow)
+        // let newPropertyAdded = false
         let row = rows.find((r) => r._id === rowId);
         if (get(row, field) == value && type !== 'date') return;
 
@@ -206,7 +209,7 @@ function CheckDetailsEditableTable(props) {
                 });
                 newProperty = property.addProperty.property
                 setNewProperty(newProperty)
-                newPropertyAdded = true
+                // newPropertyAdded = true
             }
             Object.keys(newProperty).forEach((key) => { set(row, `property.${key}`, newProperty[key]) })
         }
@@ -223,12 +226,19 @@ function CheckDetailsEditableTable(props) {
         }).then((resp) => {
             if (!row._id && resp?.data?.updateCheckDetail?.updatedCheckDetail?._id){
                 set(row, `_id`, resp.data.updateCheckDetail.updatedCheckDetail._id)
-                if(newPropertyAdded){
-                    AnchorEl(document.getElementById(`${cRow}-0`));
-                }
+                setResetAnchor(!resetAnchor)
+                // if(newPropertyAdded){
+                //     AnchorEl(document.getElementById(`${cRow}-0`));
+                // }
             }
         })
     })
+
+    useEffect(() => {
+        if(currentRowIndex){
+            AnchorEl(document.getElementById(`${currentRowIndex}-0`))
+        }
+    },[resetAnchor]);
 
     const cols = () => RevenueStatementHeadCells.map((cell, index) => {
         cell.value = (row, { focus }) => {
