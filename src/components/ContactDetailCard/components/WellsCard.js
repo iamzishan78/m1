@@ -79,7 +79,7 @@ export default function WellsCard(props) {
       setAvgTaxValues(
         dataContactWellDetail.contactWellCardDetail?.avgTaxValues
       );
-      setCount(dataContactWellDetail.contactWellCardDetail?.totalTaxRollInterest);
+      setCount(dataContactWellDetail.contactWellCardDetail?.total);
     }
   }, [dataContactWellDetail]);
 
