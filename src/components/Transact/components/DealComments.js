@@ -63,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
   paddingCreateTask: {
     paddingLeft: "20px !important",
     paddingTop: "10px !important",
+    maxWidth: "90%"
   },
   moreComment: {
     padding: "10px",
@@ -433,7 +434,6 @@ export default function DealComment(props) {
           <Grid item xs={1}>
             <IconButton
               className={classes.commentView}
-            // style={{ top: "3px" }}
             >
               {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
             </IconButton>
