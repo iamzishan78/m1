@@ -443,7 +443,8 @@ const ShapeActionsPopup = (props) => {
       return;
     }
     let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
-    let shapeSubtitle = ''
+    let shapeSubtitle = '';
+    let shapeName = getParcelAndShapeName(abstractShape);
     const state = abstractShape?.properties?.State || abstractShape?.properties?.StateAbbreviation
     const section = abstractShape?.properties?.Section || abstractShape?.properties?.ShortName
     let blockTownship = `BLK ${abstractShape?.properties?.Block}`
@@ -451,10 +452,14 @@ const ShapeActionsPopup = (props) => {
       blockTownship = `TOWN ${abstractShape?.properties?.Township}`
     }
     if (abstractShape?.properties?.County && state) {
-      if (layerType === 'unit') shapeSubtitle = `${abstractShape?.properties?.County}, ${state} - ${blockTownship}, SEC ${section}`
-      if (layerType === 'agreement') shapeSubtitle = `${abstractShape?.properties?.County}, ${state}`
+      if (layerType === 'unit') {
+        if (abstractShape.properties.State === "TX")
+          shapeSubtitle = `${abstractShape?.properties?.County}, ${state} - ${blockTownship}${section ? `, SEC ${section}` : ""}`;
+        else
+          shapeSubtitle = `${abstractShape?.properties?.County}, ${state} - ${shapeName}`;
+      }
+      if (layerType === 'agreement') shapeSubtitle = `${abstractShape?.properties?.County}, ${state}`;
     }
-    let shapeName = getParcelAndShapeName(abstractShape)
     let properties = {}
     if (layerType === 'unit')
       properties = { uName: shapeName, uNumber: "", uType: "", uOperator: "", uStatus: "" }

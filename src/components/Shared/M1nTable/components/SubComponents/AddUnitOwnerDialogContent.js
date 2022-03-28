@@ -6,27 +6,26 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
-import DeleteIcon from "@material-ui/icons/Delete";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 import { Grid } from "@material-ui/core";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 
 import { AppContext } from "AppContext";
-import { Modals } from "styles/Modal";
 import { useMutation } from "@apollo/client";
 import { ADD_OWNER_TOA_SHAPE } from "graphQL/useMutationAddOwnerToAShape";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "actions";
-import { setStateIfDeepEqual } from "components/Shared/functions";
 import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import { addTrailingZeros } from "components/Shared/functions";
 import { Controller, useForm } from "react-hook-form";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
 import ContactStatus from 'components/ContactDetailCard/components/ContactStatus';
+import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
+import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -96,6 +95,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         name,
         ownerEntity,
         contactStatus,
+        ownerType
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
 
@@ -109,6 +109,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         competitor_offer_price: competitor_offer_price || null,
         offer_price: offer_price || null,
         contactStatus: contactStatus || null,
+        ownerType,
         customLayer,
       });
     }
@@ -246,22 +247,18 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerToAdd.name = nameAutValue.name;
       }
 
-      if (ownerToAdd.contactStatus) {
-        updateContact({
-          variables: {
-            contact: {
-              _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
-              contactStatus: ownerToAdd.contactStatus,
-              lastUpdateBy: stateApp.user.mongoId,
-            }
+      updateContact({
+        variables: {
+          contact: {
+            _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
+            contactStatus: ownerToAdd.contactStatus,
+            lastUpdateBy: stateApp.user.mongoId,
+            ownerType: ownerToAdd.ownerType
           }
-        }).then(res => {
-          handleAddUpdate(ownerToAdd)
-        });
-      } else {
+        }
+      }).then(res => {
         handleAddUpdate(ownerToAdd)
-      }
-
+      });
     }
   };
 
@@ -294,15 +291,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     } else return calculatedNRA !== nra;
   };
 
-  // const royalty_interest = watch('royalty_interest')
-  // const orri = watch('orri')
-
-  // useEffect(() => {
-  //   setValue('nra', calculateNRA(royalty_interest, orri))
-  // }, [royalty_interest, orri])
-
   const classes = useStyles();
-  const modalClass = Modals();
   return (
     <div className={classes.move}>
       <React.Fragment>
@@ -311,19 +300,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             <Grid item md={10} xs={10}>
               <DialogTitle id="customized-dialog-title" style={{ fontWeight: "bold" }}>
                 {selectedRow ? "Update" : "Add"} Unit Ownership
-                {/* {selectedRow && (
-              <IconButton
-                style={{ "float": "right", marginRight: "5px" }}
-                onClick={() => {
-                  props.setM1nSelectedRowsIds([selectedRow._id]);
-                  props.handleExpandClick(null, null, null, "deleteUnitOwnership");
-                }}
-                className={modalClass.titleClose}
-                size="small"
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            )} */}
               </DialogTitle>
             </Grid>
             <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
@@ -332,7 +308,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 component="span"
                 style={{
                   background: "transparent",
-                  // paddingLeft: "10px",
                   align: "center",
                   float: "right",
                 }}
@@ -347,6 +322,27 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               <Grid item xs={12}>
                 <h3>Name</h3>
                 <AutocompEntityNamesList userId={stateApp.user.mongoId} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Entity Type</h3>
+                <Controller
+                  control={control}
+                  name="ownerType"
+                  render={(props) => (
+                    <EntityType
+                      className={classes.maxWidth}
+                      setDocumentType={(value) => {
+                        let val = value.name
+                        const data = contactStatusOptions.find(s => s.label === val)
+                        if (data) {
+                          val = data.value
+                        }
+                        setValue('ownerType', val);
+                      }}
+                      value={props.value ?? ""}
+                    />
+                  )}
+                />
               </Grid>
               <Grid item xs={12}>
                 <h3>Working Interest</h3>

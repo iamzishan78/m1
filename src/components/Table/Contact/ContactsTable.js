@@ -165,7 +165,7 @@ function ContactsTable(props) {
   }, [selectedGridView]);
 
   useEffect(() => {
-    if (Contacts.name === 'My Contacts' && !Contacts.isPrivate) {
+    if (Contacts?.name === 'My Contacts' && !Contacts?.isPrivate) {
       Contacts.filters[0].value = User.name
     }
     setSelectedGridView(Contacts || defaultView);

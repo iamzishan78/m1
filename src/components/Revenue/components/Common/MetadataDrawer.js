@@ -122,13 +122,15 @@ const useStyles = makeStyles((theme) => ({
   commentsContainer: {
     bottom: "34px",
     width: "395px",
-    position: "absolute"
+    position: "initial"
+  },
+  contentRoot: {
+    overflow: "overlay"
   },
 }));
 
 export default function MetadataDrawer(props) {
   const classes = useStyles();
-
   // States
   const [ownerId, setOwnerId] = useState("");
   const [description, setDescription] = useState(props.description ?? "");
@@ -227,6 +229,12 @@ export default function MetadataDrawer(props) {
     }
   }, [files, uploadedFiles, viewFiles]);
 
+  useEffect(() => {
+    if (props.data?.metaOwner) {
+      setOwnerId(props.data.metaOwner._id)
+    }
+  }, [props.data])
+
   const setUploadedFileData = (uploadedfile) => {
     setUploadedFiles([...uploadedFiles, uploadedfile]);
   };
@@ -271,10 +279,9 @@ export default function MetadataDrawer(props) {
       </div>
 
       <div
-        className="flex column justifyStart w-100"
-        style={{ overflow: "hidden" }}
+        className={`flex column justifyStart w-100 ${classes.contentRoot}`}
       >
-        <div style={{ overflow: "auto" }}>
+        <div>
           <div style={{ marginTop: 10, marginLeft: 4 }}>
             <FormControl variant="outlined" fullWidth size="small">
               <Grid container className={classes.gridStyle}>
@@ -286,6 +293,8 @@ export default function MetadataDrawer(props) {
                     options={users.filter((u) => u.text)}
                     onChange={(e, user) => {
                       setOwnerId(user?.value);
+                      if (props.onUpdate)
+                        props.onUpdate({ owner: user?.value })
                     }}
                     value={
                       users.find((user) => user?.value === ownerId) || null

@@ -45,7 +45,7 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "number",
-    label: "Property Code",
+    label: "Property #",
     esKey: "property.number.keyword",
     options: { sort: true, filter: true },
   },
