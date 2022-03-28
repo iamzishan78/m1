@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
-import { matchRoutes } from "react-router-config";
 import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "lodash";
 import { makeStyles, withStyles } from "@material-ui/styles";
@@ -14,11 +13,11 @@ import {
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import Tags from "components/Shared/Tagger";
 import MetaField from "components/Table/helpers/MetaField";
-import { useLocation } from "react-router";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { GETCHECK } from "graphQL/useQueryCheck";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { REMOVE_CHECKS } from "graphQL/useMutationRemoveChecks";
+import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
 import { AppContext } from "AppContext";
 
 // Components
@@ -136,7 +135,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsDetailContainer: ({ collapse }) => ({
     padding: 20,
-    maxWidth: !collapse ? "calc(100% - 380px)" : "100%",
+    maxWidth: !collapse ? "calc(100% - 444px)" : "100%",
   }),
   menuIcon: {
     background: "transparent",
@@ -213,6 +212,8 @@ export default function DetailComponents(props) {
 
   const classes = useStyles({ ...props, collapse });
   // queries
+  const [updateOwner] = useMutation(UPSERT_USER_DESCRIPTOR);
+
   const [getCheck, { data: getCheckResult }] = useLazyQuery(GETCHECK, {
     fetchPolicy: "no-cache",
   });
@@ -303,6 +304,17 @@ export default function DetailComponents(props) {
 
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
 
+  const onUpdateMetaData = (data) => {
+    updateOwner({
+      variables: {
+        descriptorObject: data.owner,
+        userId: stateApp.user.mongoId,
+        relatedObject: checksFlatData._id,
+        relatedObjectType: 'Check'
+      }
+    });
+  }
+
   return (
     <>
       <Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
@@ -383,11 +395,10 @@ export default function DetailComponents(props) {
             <div className="flex justifyBetween alignStart w-100">
               <div className={`w-100 ${classes.tabsDetailContainer}`}>
                 {/*** Component for viewing selected pdf file*/}
-                <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
 
                 {/**
-           * Detail tabs section
-           */}
+                  * Detail tabs section
+                  */}
                 <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
                   <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
                     <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
@@ -403,9 +414,12 @@ export default function DetailComponents(props) {
                     </div>
                   </div>
                 </div>
+
+
+                <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
               </div>
 
-              {!collapse && <MetadataDrawer targetLabel='CHECK' setCollapse={setCollapse} users={users} targetSourceId={checkId} setStateApp={setStateApp} />}
+              {!collapse && <MetadataDrawer data={checksFlatData} onUpdate={onUpdateMetaData} targetLabel='CHECK' setCollapse={setCollapse} users={users} targetSourceId={checkId} setStateApp={setStateApp} />}
             </div>
 
             {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}

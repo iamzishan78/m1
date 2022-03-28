@@ -28,6 +28,11 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/revenue/reporting-groups",
     component: "ReportingGroups",
   },
+  ADMIN_SETTINGS: {
+    title: "Admin Settings",
+    link: "/revenue/admin-settings",
+    component: "AdminSettings",
+  },
   REVENUE_PROPERTY_DETAILS: {
     isExcluded: true,
     parent: "PROPERTIES",

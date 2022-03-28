@@ -14,7 +14,7 @@ import { AppContext } from "AppContext";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { USERSEARCHHISTORY } from "graphQL/useQueryUserSearchHistory";
 import { REMOVESEARCHHISTORY } from "graphQL/useMutationRemoveSearchHistory";
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { UPSERT_WELL_DESCRIPTOR } from "graphQL/useMutationWellDescriptor";
 // custom components
 import { deepEqualObjects } from "../../Shared/functions";
@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
     // "& .MuiAutocomplete-inputRoot": { maxHeight: "42px" },
   },
   autoCompleteInput: {
-    width: "355px !important",
+    width: "336px !important",
     position: "absolute",
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none"
@@ -237,8 +237,8 @@ function Search(props) {
   }, [removeSearchHistory, searchHistoryList]);
 
   // const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(PAGINATEDWELLSQUERY, { fetchPolicy: "network-only", skip: true });
-  const [getESWellsPaginatedList, { data: constDataWells }] = useLazyQuery(
-    GET_ES_PAGINATED_LIST,
+  const [getESSimpleSearch, { data: constDataWells }] = useLazyQuery(
+    GET_ES_SIMPLE_SEARCH,
     { fetchPolicy: "no-cache" }
   );
 
@@ -248,19 +248,20 @@ function Search(props) {
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        getESWellsPaginatedList({
+        getESSimpleSearch({
           variables: {
-            esIndex: "platformData:wells",
+            index: "platformData:wells",
             pagination: {
-              first: startPaginationAt,
-              keep_alive: "1micros",
+              first: request.searchTop ? request.searchTop : startPaginationAt,
+              keep_alive: "1micros"
             },
-            search: request.input
-              ? `wellName:*${request.input}* OR wellApi:*${request.input}*`
-              : "",
+            search: {
+              query: request.input,
+              fields: ["wellName", "api"],
+            },
             sort: [],
-          },
-        });
+          }
+        })
       }, 500),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
@@ -270,7 +271,7 @@ function Search(props) {
     if (constDataWells) {
       let newOptions = [];
       newOptions = [
-        ...constDataWells.getESPaginatedList.hits.map((well) => {
+        ...constDataWells.getESSimpleSearch.hits.map((well) => {
           return {
             ...well,
             Source: wellCogIndexName,
@@ -408,7 +409,7 @@ function Search(props) {
               {...params}
               variant="outlined"
               fullWidth
-              style={{ width: "100%" }}
+              style={{ width: "85%" }}
               value={searchText}
               onChange={(e) => {
                 setSearchText(e.target.value)

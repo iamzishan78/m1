@@ -153,7 +153,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsDetailContainer: ({ metaCollapse }) => ({
     padding: 20,
-    maxWidth: !metaCollapse ? "calc(100% - 380px)" : "100%",
+    maxWidth: !metaCollapse ? "calc(100% - 444px)" : "100%",
   }),
   menuIcon: {
     marginLeft: 10,

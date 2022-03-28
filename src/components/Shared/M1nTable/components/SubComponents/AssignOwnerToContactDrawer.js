@@ -41,7 +41,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     Loader.createToast('contact-creation', 'Contact owner assignment in progress')
     assignOwnerToContact({
       variables: { contactIds, contactOwner, userId: stateApp.user.mongoId },
-      refetchQueries: ["getESContacts"],
+      refetchQueries: ["getESContacts", "getESSimpleSearch"],
       awaitRefetchQueries: true
     }).then(
       res => {
@@ -73,7 +73,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
               <Grid item>
                 <Typography className={classes.topHeading} variant="h5" component="h2">
                   Contact Assignment
-              </Typography>
+                </Typography>
               </Grid>
               <Grid item>
                 <IconButton aria-label="delete" color="primary" onClick={handleClose}>
@@ -85,7 +85,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             <Box mt={2}>
               <Typography>
                 Assign a contact owner to the selected contacts by choosing contact owner from the list below and clicking the assign button.
-            </Typography>
+              </Typography>
             </Box>
 
             <Box pt={3}>
@@ -143,7 +143,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                   onClick={onAssign}
                 >
                   Assign
-              </Button>
+                </Button>
               </Grid>
             </Grid>
           </Box>

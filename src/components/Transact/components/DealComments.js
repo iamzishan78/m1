@@ -63,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
   paddingCreateTask: {
     paddingLeft: "20px !important",
     paddingTop: "10px !important",
+    maxWidth: "90%"
   },
   moreComment: {
     padding: "10px",
@@ -347,7 +348,7 @@ export default function DealComment(props) {
                       onMouseOver={() => setShowCommentActionId(eachComment._id)}
                       onMouseLeave={() => setShowCommentActionId(null)}
                     >
-                      <Grid item xs={1}>
+                      <Grid item style={{ maxWidth: "55px" }}>
                         <IconButton style={{ marginTop: "3px", marginLeft: "12px" }}>
                           {profilesInfo[eachComment.user?.email]?.profileImage || eachComment.isNew ? (
                             <Avatar
@@ -360,7 +361,7 @@ export default function DealComment(props) {
                           )}
                         </IconButton>
                       </Grid>
-                      <Grid item xs={11} className={classes.paddingCreateTask} >
+                      <Grid item className={classes.paddingCreateTask} >
                         <div>
                           <span className={classes.bold}>{eachComment.user?.name}</span>
                           {eachComment.isPinned && <span> created this task.</span>}
@@ -433,7 +434,6 @@ export default function DealComment(props) {
           <Grid item xs={1}>
             <IconButton
               className={classes.commentView}
-            // style={{ top: "3px" }}
             >
               {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
             </IconButton>
@@ -441,7 +441,7 @@ export default function DealComment(props) {
           <Grid item xs={11} className={classes.paddingLeft10}>
             <div
               className={classes.border}
-              style={{ width: "500px", paddingBottom: "20px" }}
+              style={{ width: "calc(23vw)", paddingBottom: "20px", paddingRight: "13px" }}
               onClick={() => {
                 if (!showActions) {
                   setShowActions(true);
@@ -460,7 +460,6 @@ export default function DealComment(props) {
                 showActions={showActions}
                 setComment={setComment}
                 upsertComment={addNewComment}
-                fieldWidth='477px'
               />
             </div>
           </Grid>

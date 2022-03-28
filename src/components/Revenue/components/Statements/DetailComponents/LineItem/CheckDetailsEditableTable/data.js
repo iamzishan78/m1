@@ -1,7 +1,7 @@
 
 export const RevenueStatementHeadCells = [
     {
-        id: "property.number", title: "Property Code", filterKey: 'property.number.keyword', sort: true, type: 'autocomplete', width: '180px'
+        id: "property.number", title: "Property #", filterKey: 'property.number.keyword', sort: true, type: 'autocomplete', width: '180px'
     },
     {
         id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', sort: true, width: '210px', disabled: true
@@ -34,7 +34,7 @@ export const RevenueStatementHeadCells = [
         id: "grossOwnerValue", title: "Gross Revenue", filterKey: 'grossOwnerValue', sort: true, width: '100px'
     },
     {
-        id: "ownerTax", title: "Severence Tax", filterKey: 'ownerTax', sort: true, width: '100px'
+        id: "ownerTax", title: "Severance Tax", filterKey: 'ownerTax', sort: true, width: '100px'
     },
     {
         id: "ownerDeducts", title: "Deduct Amount", filterKey: 'ownerDeducts', sort: true, width: '100px'

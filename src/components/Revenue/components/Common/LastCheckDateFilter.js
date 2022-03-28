@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "#f7f7f7",
         width: "100%",
         minHeight: "65px",
-        marginTop: "100px",
+        marginTop: "80px",
     },
     actionsGrid: {
         marginTop: "6px",
@@ -90,9 +90,9 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
         </Button> */}
                         </Grid>
                         <Grid item>
-                            <Button variant="contained" color="secondary" onClick={() => setFilterToggle(!filterToggle)}>
+                            {/* <Button variant="contained" color="secondary" onClick={() => setFilterToggle(!filterToggle)}>
                                 Filter
-                            </Button>
+                            </Button> */}
                         </Grid>
                     </Grid>
                 </Grid>

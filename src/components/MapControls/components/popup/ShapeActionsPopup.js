@@ -15,13 +15,11 @@ import GridOnIcon from "@material-ui/icons/GridOn";
 import OfflineBoltIcon from '@material-ui/icons/OfflineBoltOutlined';
 import CloudDownloadOutlinedIcon from '@material-ui/icons/CloudDownloadOutlined';
 import { default as DrawPoly } from "@material-ui/icons/AddBox";
-import GpxFixedIcon from "@material-ui/icons/GpsFixed";
 import { default as CheckCircle } from "../../../Shared/svgIcons/check-circle";
 import ConvertContact from "components/Shared/svgIcons/convert_contact";
 import LayerIcon from "@material-ui/icons/Layers";
 import FilterAltIcon from "../../../Shared/svgIcons/FilterAltIcon";
 import Typography from "@material-ui/core/Typography";
-import { area, convertArea, length } from "@turf/turf";
 import { AppContext } from "AppContext";
 import { NavigationContext, DRAWING_MODES } from "components/Navigation/NavigationContext";
 import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
@@ -31,10 +29,7 @@ import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { addCustomShapeProperties, drawBoundary } from "../../components/DrawShapes/drawShapesHelpers";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  toggleMapGridCardAtived,
-  setMapGridCardState
-} from "actions";
+import { toggleMapGridCardAtived } from "actions";
 import { gql } from "@apollo/client";
 import { setFeatureProperty, drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
 import { shapeTypeLayers } from "components/Shared/functions/shapeLayer";
@@ -45,6 +40,7 @@ import { resetShapeOwnerAction } from "store/actions/ownerActions";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import { getPolygonString } from "components/Shared/functions";
+import { calculateLandArea } from "components/Shared/functions/shapeLayer";
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
@@ -216,27 +212,6 @@ const ShapeActionsPopup = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.currentFeature]);
 
-  const formatNumber = (number) => {
-    return number.toLocaleString("en-US", { maximumFractionDigits: 2 });
-  };
-
-  const calculateLandArea = (selectedFeature) => {
-    if (!selectedFeature) {
-      selectedFeature = props.selectedFeature;
-    }
-    if (selectedFeature) {
-      if (selectedFeature.geometry.type === "Polygon" || selectedFeature.geometry.type === "MultiPolygon") {
-        const areaInSqMeters = area(selectedFeature);
-        const areaInAcres = convertArea(areaInSqMeters, "meters", "acres");
-        return `${formatNumber(Math.round(areaInAcres * 100) / 100)}`;
-      }
-      if (selectedFeature.geometry.type === "LineString") {
-        const distanceInMiles = length(selectedFeature, { units: "miles" });
-        return `${formatNumber(Math.round(distanceInMiles * 100) / 100)} miles`;
-      }
-    }
-  };
-
   const closeDrawTool = () => {
     stateApp.draw.changeMode("direct_select", { featureId: props.selectedFeature.id, });
     setFeatureProperty(stateApp.draw, props.selectedFeature.id, "shapeEdit", false);
@@ -397,7 +372,7 @@ const ShapeActionsPopup = (props) => {
   }
 
   const saveAndOpenParcelDetail = () => {
-    
+
     if (!user._id) {
       return;
     }
@@ -468,7 +443,8 @@ const ShapeActionsPopup = (props) => {
       return;
     }
     let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
-    let shapeSubtitle = ''
+    let shapeSubtitle = '';
+    let shapeName = getParcelAndShapeName(abstractShape);
     const state = abstractShape?.properties?.State || abstractShape?.properties?.StateAbbreviation
     const section = abstractShape?.properties?.Section || abstractShape?.properties?.ShortName
     let blockTownship = `BLK ${abstractShape?.properties?.Block}`
@@ -476,10 +452,14 @@ const ShapeActionsPopup = (props) => {
       blockTownship = `TOWN ${abstractShape?.properties?.Township}`
     }
     if (abstractShape?.properties?.County && state) {
-      if (layerType === 'unit') shapeSubtitle = `${abstractShape?.properties?.County}, ${state} - ${blockTownship}, SEC ${section}`
-      if (layerType === 'agreement') shapeSubtitle = `${abstractShape?.properties?.County}, ${state}`
+      if (layerType === 'unit') {
+        if (abstractShape.properties.State === "TX")
+          shapeSubtitle = `${abstractShape?.properties?.County}, ${state} - ${blockTownship}${section ? `, SEC ${section}` : ""}`;
+        else
+          shapeSubtitle = `${abstractShape?.properties?.County}, ${state} - ${shapeName}`;
+      }
+      if (layerType === 'agreement') shapeSubtitle = `${abstractShape?.properties?.County}, ${state}`;
     }
-    let shapeName = getParcelAndShapeName(abstractShape)
     let properties = {}
     if (layerType === 'unit')
       properties = { uName: shapeName, uNumber: "", uType: "", uOperator: "", uStatus: "" }
@@ -613,7 +593,7 @@ const ShapeActionsPopup = (props) => {
 
   const convertMenuAction = (action) => {
     setShowConvertMenu(false)
-    const area = parseInt(calculateLandArea().replace(/,/g, ''));
+    const area = parseInt(calculateLandArea(props.selectedFeature).replace(/,/g, ''));
     if (area > 500000) {
       setLimitExceed(true);
     } else if (action === 'convert') {
@@ -706,7 +686,7 @@ const ShapeActionsPopup = (props) => {
       </Menu>
 
       <Fragment>
-        <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span> {calculateLandArea()}
+        <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span> {calculateLandArea(props.selectedFeature)}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
 
           <FeatureFlag feature={FEATURES.MAPSHAPEEXPORT}>

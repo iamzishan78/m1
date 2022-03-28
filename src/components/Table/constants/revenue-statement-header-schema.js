@@ -40,7 +40,7 @@ const RevenueStatementHeadCells = [
       sort: true,
       filter: true,
       customRender: (value) => {
-        return value ? <p style={{ fontWeight: 600 }}>{value ? `$${value}` : ""}</p> : <p style={{ color: "#898989b0" }}>N/A</p>;
+        return value ? <p style={{ fontWeight: 600 }}>{value ? `$${value?.toFixed(2)}` : ""}</p> : <p style={{ color: "#898989b0" }}>N/A</p>;
       },
     },
   },
@@ -108,26 +108,29 @@ const RevenueStatementHeadCells = [
     },
   },
   {
-    name: "validation",
-    label: " ",
-    esKey: "validation.keyword",
-    options: { sort: false, filter: false, viewColumns: false },
-  },
-  {
-    name: "validation",
+    name: "isAmountValidated",
     label: "Validation",
-    esKey: "validation.keyword",
-    options: { display: false, sort: false, filter: true, viewColumns: false },
-    custom: {
-      filterOptions: [
-        {
-          key: "Validated",
-        },
-        {
-          key: "Potential Issues",
-        },
-      ],
-    },
+    esKey: "isAmountValidated",
+    options: {       
+      customHeadLabelRender: () => (
+        <>
+          <div> </div>
+        </>
+      ),
+      display: true, sort: false, filter: false, viewColumns: false },
+      custom: {
+        key_as_string: true,
+        formatedFilterOptions: [
+          {
+            label: "Validated",
+            value: 'true',
+          },
+          {
+            label: "Potential Issues",
+            value: 'false'
+          },
+        ]
+      }
   },
 ];
 

@@ -41,7 +41,7 @@ function UnitWellInterestTable(props) {
   });
 
   const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, {
-    refetchQueries: ["getESPaginatedList", "getESFilterList"], awaitRefetchQueries: true
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
   const tableData = elasticData?.getESPaginatedList
 
@@ -170,7 +170,7 @@ function UnitWellInterestTable(props) {
           },
         },
         refetchQueries: [
-          "getESPaginatedList", "getESFilterList"
+          "getESPaginatedList", "getESSimpleSearch", "getESFilterList"
         ],
         awaitRefetchQueries: true,
       });

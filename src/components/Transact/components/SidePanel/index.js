@@ -164,7 +164,7 @@ const SidePanel = () => {
   useEffect(() => {
     if (selectedPipe) {
       // Deselecting all flowwlines on ESC
-      document.removeEventListener("keydown", () => {});
+      document.removeEventListener("keydown", () => { });
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
           setMultiSelection([selectedPipe._id]);
@@ -331,7 +331,7 @@ const SidePanel = () => {
       <Drawer variant="permanent" className={classes.drawer} classes={{ paper: classes.drawer }} open={true}>
         <div className={classes.toolbar}>
           <div className={classes.toolbarHeader}>
-            <Typography variant="h5" component="h4" style={{ float: "left", marginTop: "15px"}}>
+            <Typography variant="h5" component="h4" style={{ float: "left", marginTop: "15px" }}>
               Flowlines
             </Typography>
             <Typography
@@ -409,7 +409,7 @@ const SidePanel = () => {
           onClose={() => setModal(false)}
           deleteFunc={handleDelete}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={() => { }}
         >
           <>
             Are you sure you want to delete the following selected {selectedPipelines.length > 1 ? "flowlines" : "flowline"}?

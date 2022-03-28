@@ -10,7 +10,7 @@ import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
 
 const filter = createFilterOptions();
 
-export default function EntityType({ setDocumentType, value /*, ...other */}) {
+export default function EntityType({ setDocumentType, value /*, ...other */ }) {
   const useStyles = makeStyles({
     inputRoot: {
       backgroundColor: "#ffffff",
@@ -25,7 +25,7 @@ export default function EntityType({ setDocumentType, value /*, ...other */}) {
   });
 
   const classes = useStyles();
-  
+
   const [options, setOptions] = useState([])
   const [search, setSearch] = useState(value)
 
@@ -34,25 +34,25 @@ export default function EntityType({ setDocumentType, value /*, ...other */}) {
   useEffect(() => {
     getEntityTypeFilters({
       variables: {
-          esIndex:'contacts_flat',
-          filterKey: 'ownerType.keyword',
-          size: 50,
+        esIndex: 'contacts_flat',
+        filterKey: 'ownerType.keyword',
+        size: 50,
       },
     });
-  },[])
+  }, [])
 
   useEffect(() => {
-    if(filtersData?.getESFilterList?.hits){
+    if (filtersData?.getESFilterList?.hits) {
       let filterData = filtersData.getESFilterList.hits.map(hit => hit.key)
-      for(let i = 0; i < entityTypeOptions.length; i++){
+      for (let i = 0; i < entityTypeOptions.length; i++) {
         filterData = filterData.filter(d => d !== entityTypeOptions[i].value && d !== entityTypeOptions[i].label)
       }
-      for(let i = 0; i < entityTypeOptions.length; i++){
+      for (let i = 0; i < entityTypeOptions.length; i++) {
         filterData.push(entityTypeOptions[i].label)
       }
       setOptions(filterData)
     }
-  },[filtersData])
+  }, [filtersData])
 
   const onInputChange = (event, value) => {
     setSearch(value);
@@ -121,7 +121,10 @@ export default function EntityType({ setDocumentType, value /*, ...other */}) {
         if (newValue && newValue._id) {
           if (newValue._id !== "newEntity") setDocumentType(newValue);
           else setDocumentType({ _id: "newEntity", name: newValue.name });
-        } else setSearch("");
+        } else {
+          setSearch("");
+          setDocumentType({ _id: "", name: "" });
+        }
       }}
       renderInput={(params) => (
         <TextField
@@ -133,7 +136,7 @@ export default function EntityType({ setDocumentType, value /*, ...other */}) {
           size="small"
         />
       )}
-      // {...other}
+    // {...other}
     />
   );
 };

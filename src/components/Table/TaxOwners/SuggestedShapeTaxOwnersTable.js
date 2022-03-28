@@ -273,11 +273,11 @@ function SuggestedShapeTaxOwnersTable(props) {
   };
 
   const pickSelectedRows = async (rows) => {
-    
+
   }
 
   const suggestedOwnerToShape = async () => {
-    
+
     const { rows } = props;
     const selectedOwners = selectedRows.map((sR => rows[sR.dataIndex]))
     const globalOwnerIds = [];
@@ -298,12 +298,12 @@ function SuggestedShapeTaxOwnersTable(props) {
         variables: {
           ownerIds: globalOwnerIds,
           existingContactId: null,
-          status : "Lead",
+          status: "Lead",
           contactOwner: null,
           action: "single",
           userId: stateApp.user.mongoId,
         },
-        refetchQueries: ["checkIfOwnersAreContacts", "getESPaginatedList", "getESFilterList"],
+        refetchQueries: ["checkIfOwnersAreContacts", "getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
         awaitRefetchQueries: true,
       }).then(
         async (res) => {
@@ -390,7 +390,7 @@ function SuggestedShapeTaxOwnersTable(props) {
             lastUpdateBy: stateApp.user.mongoId,
           },
         },
-        refetchQueries: ["getESPaginatedList", "getESFilterList"],
+        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
         awaitRefetchQueries: true,
       }).then(() => {
         props.setLoading(false);
@@ -437,8 +437,8 @@ function SuggestedShapeTaxOwnersTable(props) {
               setM1nSelectedRowsIndexesRef.current(m1nSelectedRowsIndexes);
             }
           }}
-          onSuccess={() => {}}
-          setRows={() => {}}
+          onSuccess={() => { }}
+          setRows={() => { }}
         />
       )}
     </Container>

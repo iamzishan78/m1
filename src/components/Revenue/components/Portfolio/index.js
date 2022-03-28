@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, Button, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import DetailTabsSection from "components/Revenue/components/Portfolio/DetailTabsSection";
+import { setRevenueKey } from "actions";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -54,11 +55,6 @@ export default function Portfolio() {
   const [toDate, setToDate] = React.useState(null);
   const [monthsInterval, setMonths] = useState([]);
 
-  const [filterToggle, setFilterToggle] = React.useState(false);
-  // props to pass in table
-  // const esIndex = "shapes_flat";
-  const [esFilters, setESFilters] = useState([]);
-
   const onChangeDates = (fromDate, toDate) => {
     const months = [];
     if (fromDate && toDate) {
@@ -75,8 +71,11 @@ export default function Portfolio() {
       }
     }
     setMonths(months);
-    
   };
+
+  useEffect(() => {
+    setRevenueKey('filterDate', { toDate, fromDate })
+  }, [toDate, fromDate])
 
   return (
     <>

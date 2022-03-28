@@ -4,7 +4,7 @@ const RevenueStatementHeadCells = [
         name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
     },
     {
-        name: "number", label: "Property Code", esKey: 'property.number.keyword', options: { sort: true, filter: true }
+        name: "number", label: "Property #", esKey: 'property.number.keyword', options: { sort: true, filter: true }
     },
     {
         name: "name", label: "Property Name", esKey: 'property.name.keyword', options: { sort: true, filter: true }
@@ -37,7 +37,7 @@ const RevenueStatementHeadCells = [
         name: "grossOwnerValue", label: "Gross Rev", esKey: 'grossOwnerValue', options: { sort: true, filter: true }
     },
     {
-        name: "ownerTax", label: "Severence", esKey: 'ownerTax', options: { sort: true, filter: true }
+        name: "ownerTax", label: "Severance", esKey: 'ownerTax', options: { sort: true, filter: true }
     },
     {
         name: "ownerDeducts", label: "Deduct Amt", esKey: 'ownerDeducts', options: { sort: true, filter: true }

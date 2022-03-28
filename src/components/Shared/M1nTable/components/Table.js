@@ -234,7 +234,7 @@ const useStyles = makeStyles((theme) => ({
       height: "50px",
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
-      padding: "5px 11px 5px 0px !important",
+      padding: "5px 11px 5px 20px !important",
     },
     "& .MUIDataTableToolbar": {
       zIndex: "999999 !important",
@@ -1474,7 +1474,7 @@ function SubTable(props) {
                   } = tableMeta;
                   return (
                     <>
-                      {label === "Property Code" && <span style={{ padding: 10 }}>{rowData[1].number}</span>}
+                      {label === "Property #" && <span style={{ padding: 10 }}>{rowData[1].number}</span>}
 
                       {label === "Property Name" && <span style={{ padding: 10 }}>{rowData[1].name}</span>}
 
@@ -1843,7 +1843,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  if ((props.targetLabel == "deal" || props.targetLabel == "activity") && value === null) {
+                  if ((props.targetLabel === "deal" || props.targetLabel === "activity") && value === null) {
                     return (
                       <p
                         style={{
@@ -2332,19 +2332,19 @@ function SubTable(props) {
               },
             };
             break;
-          case "validation":
+          case "isAmountValidated":
             column.options = {
               ...column.options,
               customBodyRender: (value, tableMeta) => {
                 return (
                   <>
-                    {!value && (
+                    {value && (
                       <div className="flex justifyCenter alignCenter success w-100">
                         <CheckCircle size={20} />
                       </div>
                     )}
 
-                    {value && (
+                    {!value && (
                       <div
                         className="flex justifyCenter alignCenter warning w-100"
                         onMouseOver={() => (document.getElementById(`alertTootip${tableMeta.rowIndex}`).style.display = "block")}
@@ -2493,16 +2493,16 @@ function SubTable(props) {
                 return (
                   <>
                     {row.wellApiNumber || row.wellName ? (
-                        <div>{value}</div>
-                      ):(
-                        <SearchWells
-                          setRefetchData={props.setRefetchData}
-                          // contactId={"props.contactData._id"}
-                          relatedObject={row._id}
-                          relatedObjectType="Property"
-                          // rowData={tableMeta.rowData}
-                          // rowIndex={tableMeta.rowIndex}
-                        />
+                      <div>{value}</div>
+                    ) : (
+                      <SearchWells
+                        setRefetchData={props.setRefetchData}
+                        // contactId={"props.contactData._id"}
+                        relatedObject={row._id}
+                        relatedObjectType="Property"
+                      // rowData={tableMeta.rowData}
+                      // rowIndex={tableMeta.rowIndex}
+                      />
                     )}
                   </>
                 );
@@ -2661,8 +2661,8 @@ function SubTable(props) {
                     );
                   }
 
-                  if(props.targetLabel === 'Revenue Properties') {
-                    return value? <p>{value}</p> : null
+                  if (props.targetLabel === 'Revenue Properties') {
+                    return value ? <p>{value}</p> : null
                   }
 
                   return (
@@ -4150,7 +4150,9 @@ function SubTable(props) {
           </Breadcrumbs>
         </div>
       );
-    } else {
+    } else if(typeof props.header === 'string'){
+      return <div style={{ fontSize: 16, marginLeft: 10 }}>{props.header}</div>
+    } else{
       return props.header;
     }
   };

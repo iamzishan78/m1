@@ -41,10 +41,11 @@ const RevenueStatementHeadCells = [
     label: "Purchaser",
     esKey: "check.payor.name.keyword",
     options: { sort: true, filter: true },
+    style: { minWidth: 210 }
   },
   {
     name: "number",
-    label: "Property Code",
+    label: "Property #",
     esKey: "property.number.keyword",
     options: { sort: true, filter: true },
   },
@@ -53,6 +54,7 @@ const RevenueStatementHeadCells = [
     label: "Property Name",
     esKey: "property.name.keyword",
     options: { sort: true, filter: true },
+    style: { minWidth: 210 }
   },
   {
     name: "date",
@@ -99,7 +101,7 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "ownerTax",
-    label: "Severence",
+    label: "Severance",
     esKey: "ownerTax",
     options: { sort: true, filter: true },
   },

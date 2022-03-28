@@ -102,7 +102,11 @@ const RevenuePropertiesHeadCells = [
     label: "Last Check Date",
     esKey: "lastCheck.checkDate",
     options: { sort: true, filter: true },
-    style: { minWidth: 100 }
+    style: { minWidth: 100 },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
   },
   {
     name: "tags",
@@ -127,7 +131,13 @@ const RevenuePropertiesHeadCells = [
     name: "status",
     label: "Status",
     esKey: "status.keyword",
-    options: { sort: true, filter: true },
+    options: { 
+      customHeadLabelRender: () => (
+        <>
+          <div> </div>
+        </>
+      ),
+      sort: true, filter: true },
   },
 ];
 
