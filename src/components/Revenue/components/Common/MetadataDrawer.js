@@ -119,18 +119,18 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": { color: "#757575" },
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
-  commentsContainer: (({ files }) => ({
+  commentsContainer: {
     bottom: "34px",
     width: "395px",
-    position: files ? "initial" : "absolute"
-  })),
-  contentRoot: ({ files }) => ({
-    overflow: files ? "overlay" : "hidden"
-  }),
+    position: "initial"
+  },
+  contentRoot: {
+    overflow: "overlay"
+  },
 }));
 
 export default function MetadataDrawer(props) {
-
+  const classes = useStyles();
   // States
   const [ownerId, setOwnerId] = useState("");
   const [description, setDescription] = useState(props.description ?? "");
@@ -181,8 +181,6 @@ export default function MetadataDrawer(props) {
     useLazyQuery(VIEWFILESQUERY, {
       fetchPolicy: "no-cache",
     });
-
-  const classes = useStyles({ files: !!files?.getFileDescriptors?.length > 0 });
 
   useEffect(() => {
     setDescription(props.description);
