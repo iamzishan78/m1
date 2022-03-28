@@ -547,6 +547,62 @@ const ContactsHeadCells = [
     },
   },
   {
+    name: "wellInterestCount",
+    label: "Well Interest Count",
+    esKey: 'interestSummary.wellInterestCount',
+    // editable: false,
+    options: {
+      display: false,
+      sort: true,
+      filter: false,
+      filterOptions: {
+        names: [],
+      },
+    },
+  },
+  {
+    name: "unitInterestCount",
+    label: "Unit Interest Count",
+    esKey: 'interestSummary.unitInterestCount',
+    // editable: false,
+    options: {
+      display: false,
+      sort: true,
+      filter: false,
+      filterOptions: {
+        names: [],
+      },
+    },
+  },
+  {
+    name: "unitNraSum",
+    label: "Unit NRA",
+    esKey: 'interestSummary.unitNraSum',
+    // editable: false,
+    options: {
+      display: false,
+      sort: true,
+      filter: false,
+      filterOptions: {
+        names: [],
+      },
+    },
+  },
+  {
+    name: "tractInterestCount",
+    label: "Tract Interest Count",
+    esKey: 'interestSummary.tractInterestCount',
+    // editable: false,
+    options: {
+      display: false,
+      sort: true,
+      filter: false,
+      filterOptions: {
+        names: [],
+      },
+    },
+  },
+  {
     name: "lastUpdateBy.name",
     label: "Updated By",
     esKey: 'lastUpdateBy.name.keyword',
