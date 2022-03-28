@@ -549,7 +549,7 @@ const ContactsHeadCells = [
   {
     name: "wellInterestCount",
     label: "Well Interest Count",
-    esKey: 'wellInterestCount',
+    esKey: 'interestSummary.wellInterestCount',
     // editable: false,
     options: {
       display: false,
@@ -563,7 +563,7 @@ const ContactsHeadCells = [
   {
     name: "unitInterestCount",
     label: "Unit Interest Count",
-    esKey: 'unitInterestCount',
+    esKey: 'interestSummary.unitInterestCount',
     // editable: false,
     options: {
       display: false,
@@ -577,10 +577,10 @@ const ContactsHeadCells = [
   {
     name: "unitNraSum",
     label: "Unit NRA",
-    esKey: 'unitNraSum',
+    esKey: 'interestSummary.unitNraSum',
     // editable: false,
     options: {
-      display: true,
+      display: false,
       sort: true,
       filter: false,
       filterOptions: {
@@ -591,7 +591,7 @@ const ContactsHeadCells = [
   {
     name: "tractInterestCount",
     label: "Tract Interest Count",
-    esKey: 'tractInterestCount',
+    esKey: 'interestSummary.tractInterestCount',
     // editable: false,
     options: {
       display: false,
