@@ -391,7 +391,7 @@ export default function Navigation(props) {
           className={clsx(classes.appBar, {
             [classes.appBarShift]: openDrawer,
           })}
-          style={location.pathname === "/contacts/activityDashboard" ? { background: 'white' } : null}
+          style={(location.pathname === "/contacts/activityDashboard" || location.pathname.includes('revenue')) ? { background: 'white' } : null}
         // style={{
         //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
         //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"

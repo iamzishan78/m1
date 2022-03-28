@@ -45,7 +45,7 @@ const RevenuePropertiesHeadCells = [
     label: "Operator",
     esKey: "operator.name.keyword",
     options: { sort: true, filter: true },
-    style: { minWidth: 150 }
+    style: { minWidth: 150 },
   },
   {
     name: "state",
@@ -63,20 +63,32 @@ const RevenuePropertiesHeadCells = [
     name: "source",
     label: "Source",
     esKey: "source.keyword",
-    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }) },
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
+    },
   },
 
   {
     name: "wellApiNumber",
     label: "Well API",
     esKey: "wells.apiNumber.keyword",
-    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "110px", maxWidth: "110px" } }) },
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "110px", maxWidth: "110px" } }),
+    },
   },
   {
     name: "wellName",
     label: "Well Name",
     esKey: "wells.wellName.keyword",
-    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "230px", maxWidth: "230px" } }) },
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "230px", maxWidth: "230px" } }),
+    },
   },
   // {
   //   name: "type",
@@ -94,8 +106,16 @@ const RevenuePropertiesHeadCells = [
     name: "checkNumber",
     label: "Last Check #",
     esKey: "lastCheck.checkNumber.keyword",
-    options: { sort: true, filter: true },
-    style: { minWidth: 100 }
+    options: {
+      customHeadLabelRender: () => (
+        <>
+          <div style={{ width: 120 }}>Last Check #</div>
+        </>
+      ),
+      sort: true,
+      filter: true,
+    },
+    style: { minWidth: 120 },
   },
   {
     name: "lastChecked",
@@ -131,13 +151,15 @@ const RevenuePropertiesHeadCells = [
     name: "status",
     label: "Status",
     esKey: "status.keyword",
-    options: { 
+    options: {
       customHeadLabelRender: () => (
         <>
           <div> </div>
         </>
       ),
-      sort: true, filter: true },
+      sort: true,
+      filter: true,
+    },
   },
 ];
 
