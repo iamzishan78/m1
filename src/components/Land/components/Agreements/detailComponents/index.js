@@ -326,6 +326,12 @@ export default function DetailComponents(props) {
     }
   }, [activeAgreement, getShapeSummaryDetails]);
 
+  useEffect(() => {
+    return () => {
+      setStateApp({ ...stateApp, viewDoc: null })
+    }
+  },[])
+  
   const updateAgreement = (field, value, isCustom) => {
     if (agreementDetails[field] === value) return;
     const shape = activeAgreement.shape;

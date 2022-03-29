@@ -75,7 +75,7 @@ const useStyles = makeStyles({
         display: "flex", flexDirection: "column-reverse"
     },
     tableGrid: {
-        backgroundColor: "#fff", overflow: "scroll",
+        backgroundColor: "#fff", overflowX: "auto",
         maxHeight: (p) => p.showPdfSection ? 'calc(50vh)' : 'calc(100vh)',
         // maxHeight: "500px",
     },

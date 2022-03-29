@@ -290,6 +290,12 @@ export default function DetailComponents(props) {
     }
   }, [userLists]);
 
+  useEffect(() => {
+    return () => {
+      setStateApp({ ...stateApp, viewDoc: null })
+    }
+  },[])
+  
   const handleScroll = (e) => {
     if (!isButtonScroll) {
       const { scrollTop } = e.target;
