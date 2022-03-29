@@ -17,6 +17,8 @@ import { getLayerColor } from "components/Shared/SidePanel/compoennts/common";
 import vf_number from "components/Shared/valueformatters/vf_number";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "actions";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent.js";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 function trim(str) {
   return str.replace(/^\s+|\s+$/gm, "");
@@ -469,41 +471,42 @@ function LayerStyling(props) {
         </Grid>
       </Grid>
       <Divider />
-      {layer.file &&
-        <>
-          <Grid container spacing={3} style={{ padding: "10px 20px 10px 17px", justifyContent: "space-between" }}>
-            <Grid item style={{ display: "flex" }}>
-              <Box borderColor={getLayerColor(layer, "layer", {})} borderLeft={4} style={{ padding: "0 0 0 16px" }}>
-              </Box>
-              <Box display='inline'>
-                <Typography variant="h6" noWrap>
-                  {fileName}
-                </Typography>
-                <Typography id={layer.fileName} noWrap>
-                  {rows} rows
-                </Typography>
-              </Box>
+      <FeatureFlag  feature={FEATURES.SHAPEELASTIC}>
+        {layer.file &&
+          <>
+            <Grid container spacing={3} style={{ padding: "10px 20px 10px 17px", justifyContent: "space-between" }}>
+              <Grid item style={{ display: "flex" }}>
+                <Box borderColor={getLayerColor(layer, "layer", {})} borderLeft={4} style={{ padding: "0 0 0 16px" }}>
+                </Box>
+                <Box display='inline'>
+                  <Typography variant="h6" noWrap>
+                    {fileName}
+                  </Typography>
+                  <Typography id={layer.fileName} noWrap>
+                    {rows} rows
+                  </Typography>
+                </Box>
 
+              </Grid>
+              <Grid style={{ padding: '25px 25px 0 0' }}>
+                <Tooltip title="Grid">
+                  <IconButton size="small" aria-label="Grid" className={classes.gridOnIcon} onClick={() => {
+                    setStateApp((state) => ({
+                      ...state,
+                      layerGridCard: true,
+                    }));
+                    handleClose()
+                    dispatch(setMapGridCardState({ mapGridCardActivated: true }));
+                  }}>
+                    <GridOnIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
             </Grid>
-            <Grid style={{ padding: '25px 25px 0 0' }}>
-              <Tooltip title="Grid">
-                <IconButton size="small" aria-label="Grid" className={classes.gridOnIcon} onClick={() => {
-                  setStateApp((state) => ({
-                    ...state,
-                    layerGridCard: true,
-                  }));
-                  handleClose()
-                  dispatch(setMapGridCardState({ mapGridCardActivated: true }));
-                }}>
-                  <GridOnIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-          </Grid>
-          <Divider />
-        </>
-      }
-
+            <Divider />
+          </>
+        }
+      </FeatureFlag>
       <Grid container spacing={3} style={{ padding: "20px" }}>
         {layer.layerSettings?.colorable &&
           <Grid item xs={12}>

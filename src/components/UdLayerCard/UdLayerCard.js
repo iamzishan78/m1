@@ -154,7 +154,7 @@ function UdLayerCard(props) {
         <CardContent className={classes.content}>
           <Grid container direction="row" alignItems="center" justify="flex" className={classes.contentGrid}>
             {Object.keys(properties)
-              .filter((prop) => prop !== "shapeCenter")
+              .filter((prop) => prop !== "shapeCenter" && prop !== "originalProperties")
               .map((prop) => (
                 <>
                   <Grid item xs={5}>
