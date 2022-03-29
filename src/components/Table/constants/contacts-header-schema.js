@@ -508,6 +508,7 @@ const ContactsHeadCells = [
       filter: false,
       searchable: false,
       sort: true,
+      viewColumns: false
     },
   },
   {
