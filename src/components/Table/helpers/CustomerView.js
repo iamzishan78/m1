@@ -45,15 +45,15 @@ const useStyles = makeStyles((theme) => ({
 
 const CustomerViewCol = (props) => {
   const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [, setStateApp] = useContext(AppContext);
   const [items, setItems] = useState([]);
   const { updateColumns, columns, tableColumns, updateColumnSorting, selectedGridView } = props;
 
-  const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
+  const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
 
   useEffect(() => {
     setItems(columns.filter((col) => col.viewColumns))
-  },[columns])
+  }, [columns])
 
   return (
     <>
@@ -167,21 +167,21 @@ const SortableList = SortableContainer(
     return (
       <List style={{ margin: 0, padding: 0 }} component="div">
         {items.map((item, index) => (
-            <SortableItem
-              key={`item-${item.value}`}
-              index={index}
-              item={item}
-              columns={columns}
-              selectedGridView={selectedGridView}
-              updateColumnSorting={updateColumnSorting}
-              tableColumns={tableColumns}
-              updateColumns={updateColumns}
-              updateMetaData={updateMetaData}
-              removeIndex={removeIndex}
-              updateIndex={updateIndex}
-              itemIndex={index}
-            />
-          ))}
+          <SortableItem
+            key={`item-${item.value}`}
+            index={index}
+            item={item}
+            columns={columns}
+            selectedGridView={selectedGridView}
+            updateColumnSorting={updateColumnSorting}
+            tableColumns={tableColumns}
+            updateColumns={updateColumns}
+            updateMetaData={updateMetaData}
+            removeIndex={removeIndex}
+            updateIndex={updateIndex}
+            itemIndex={index}
+          />
+        ))}
       </List>
     );
   }
@@ -208,7 +208,7 @@ const SortableItem = SortableElement(
   }) => {
     const classes = useSortableStyles();
     const [showDrag, setShowDrag] = useState(false);
-    const [stateApp, setStateApp] = useContext(AppContext);
+    const [, setStateApp] = useContext(AppContext);
 
     return (
       <ListItem
