@@ -82,10 +82,14 @@ const useStyles = makeStyles((theme) => ({
 export default function AdjustmentTable({ monthsInterval, items, total }) {
   const classes = useStyles();
 
-  const [selectedItem, setSelectedItem] = useState();
+  const [selectedItems, setSelectedItems] = useState({});
 
   const monthBreakDownValue = (index, breakDown) => {
-    return Object.values(breakDown || [])[index] ? Object.values(breakDown || [])[index] : 0
+    return Object.values(breakDown || [])[index] ? Object.values(breakDown || [])[index] : null
+  }
+
+  const displayValue = (value) => {
+    return value ? `(${vf_number(value.toFixed(2))})` : '-'
   }
 
   return (
@@ -113,18 +117,18 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
                     <TableCell scope="row" className={classes.leftCells}>
                       <Box >
 
-                        <span style={{ display: "flex" }}>{selectedItem === index ? <ArrowDropDownIcon style={{ cursor: "pointer" }} onClick={() => setSelectedItem(null)} /> :
-                          <ArrowDropRight style={{ cursor: "pointer" }} onClick={() => setSelectedItem(index)} />
+                        <span style={{ display: "flex" }}>{selectedItems[index] ? <ArrowDropDownIcon style={{ cursor: "pointer" }} onClick={() => setSelectedItems({ ...selectedItems, [index]: false })} /> :
+                          <ArrowDropRight style={{ cursor: "pointer" }} onClick={() => setSelectedItems({ ...selectedItems, [index]: true })} />
                         }
                           {item.name}
                         </span>
-                        <span style={{ display: 'grid', marginLeft: '25px', fontWeight: '200' }}> {selectedItem === index && Object.keys(item.breakDown).map((key) => key)}</span>
+                        <span style={{ display: 'grid', marginLeft: '25px', fontWeight: '200' }}> {selectedItems[index] && Object.keys(item.breakDown).map((key) => key ? key : '-')}</span>
                       </Box>
 
                     </TableCell>
                     <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
                       <span>({item.total.toFixed(2)})</span>
-                      <span style={{ display: 'grid' }}> {selectedItem === index && Object.values(item.breakDown).map((value) => `(${value.toFixed(2)})`)}</span>
+                      <span style={{ display: 'grid' }}> {selectedItems[index] && Object.values(item.breakDown).map((value) => displayValue(value))}</span>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -137,7 +141,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
                     className={`${classes.leftRightColoredBorderCell} ${classes.bottomColoredBorderCell} ${classes.totalColCell}`}
                     style={{ width: "160px" }}
                   >
-                    {total}
+                    {displayValue(total)}
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -157,10 +161,10 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
               <TableBody>
                 {items.map((item, index) => (
                   <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
-                    {monthsInterval.map((month) => <TableCell scope="row" >(
-                      <span>{vf_number(item.data[month]?.total?.toFixed(2) || 0)})</span>
+                    {monthsInterval.map((month) => <TableCell scope="row" >
+                      <span>{displayValue(item.data[month]?.total)}</span>
                       <span style={{ display: 'grid' }}>
-                        {selectedItem === index && Object.values(item.breakDown).map((_, index) => `(${monthBreakDownValue(index, item.data[month]?.breakDown)})`)}
+                        {selectedItems[index] && Object.values(item.breakDown).map((_, index) => displayValue(monthBreakDownValue(index, item.data[month]?.breakDown)))}
                       </span>
                     </TableCell>)}
                   </TableRow>
@@ -175,7 +179,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
                     });
                     return (
                       <TableCell className={classes.totalColCell} scope="row">
-                        ({vf_number(total.toFixed(2))})
+                        {displayValue(total)}
                       </TableCell>
                     );
                   })}

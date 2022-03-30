@@ -56,12 +56,12 @@ const DonutChart = ({ items, total, id = "pie-chart" }) => {
         // pieSeries.slices.template.stroke = am4core.color("#ffff");
         pieSeries.slices.template.strokeWidth = 2;
         pieSeries.slices.template.strokeOpacity = 1;
-        pieSeries.slices.template.tooltipText = "[font-size:16px]{category} {value} | {value.percent.formatNumber('#.')}%[/]";
+        pieSeries.slices.template.tooltipText = "[font-size:16px]{category} {value} | {value.percent.formatNumber('#.##')}%[/]";
         pieSeries.tooltip.getFillFromObject = false;
         pieSeries.tooltip.label.fill = am4core.color("#000");
         pieSeries.tooltip.background.fill = am4core.color('#ffff');
         pieSeries.tooltip.getStrokeFromObject = true;
-        pieSeries.legendSettings.labelText = "[bold font-size:17px]{name}:[/] {value.value} | {value.percent.formatNumber('#.0')}%";
+        pieSeries.legendSettings.labelText = "[bold font-size:17px]{name}:[/] {value.value} | {value.percent.formatNumber('#.##')}%";
         // pieSeries.slices.template.tooltipText = "[#ffff]{value}[/]";
 
         // Add a legend
