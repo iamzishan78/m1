@@ -6,9 +6,9 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+import ArrowDropRight from '@material-ui/icons/ArrowRight';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import { Box, Grid, IconButton } from "@material-ui/core";
+import { Box, Grid } from "@material-ui/core";
 import vf_number from "components/Shared/valueformatters/vf_number";
 
 const useStyles = makeStyles((theme) => ({
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   secondaryTable: {
     width: "auto",
     "& .MuiTableCell-root": {
-      paddingBottom: "5px",
+      paddingBottom: "8.9px",
       textAlign: "center",
       fontWeight: "bold",
       minWidth: "200px",
@@ -41,18 +41,21 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#f1f4fb !important",
     paddingBottom: "18px !important",
   },
+  monthCell: {
+    borderTop: "2px solid #f1f4fb !important"
+  },
   highlightedRows: {
     "& .MuiTableCell-root": {
-      paddingTop: "25px !important",
-      borderBottom: "none",
-      background: "linear-gradient(#e0e0e0, #e0e0e0) bottom/100% 3px no-repeat",
+      // paddingTop: "25px !important",
+      // borderBottom: "none",
+      // background: "linear-gradient(#e0e0e0, #e0e0e0) bottom/100% 3px no-repeat",
     },
   },
   highlightedLessBordered: {
     "& .MuiTableCell-root": {
-      paddingTop: "25px !important",
-      borderBottom: "none",
-      background: "linear-gradient(#e0e0e0, #e0e0e0) bottom/100% 2px no-repeat",
+      // paddingTop: "25px !important",
+      // borderBottom: "none",
+      // background: "linear-gradient(#e0e0e0, #e0e0e0) bottom/100% 2px no-repeat",
     },
   },
   leftCells: {
@@ -80,7 +83,10 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
   const classes = useStyles();
 
   const [selectedItem, setSelectedItem] = useState();
-  console.log(selectedItem)
+
+  const monthBreakDownValue = (index, breakDown) => {
+    return Object.values(breakDown || [])[index] ? Object.values(breakDown || [])[index] : 0
+  }
 
   return (
     <div className={classes.root}>
@@ -108,7 +114,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
                       <Box >
 
                         <span style={{ display: "flex" }}>{selectedItem === index ? <ArrowDropDownIcon style={{ cursor: "pointer" }} onClick={() => setSelectedItem(null)} /> :
-                          <ArrowDropUpIcon style={{ cursor: "pointer" }} onClick={() => setSelectedItem(index)} />
+                          <ArrowDropRight style={{ cursor: "pointer" }} onClick={() => setSelectedItem(index)} />
                         }
                           {item.name}
                         </span>
@@ -117,8 +123,8 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
 
                     </TableCell>
                     <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                      <span>{item.total.toFixed(2)}</span>
-                      <span style={{ display: 'grid' }}> {selectedItem === index && Object.values(item.breakDown).map((value) => value.toFixed(2))}</span>
+                      <span>({item.total.toFixed(2)})</span>
+                      <span style={{ display: 'grid' }}> {selectedItem === index && Object.values(item.breakDown).map((value) => `(${value.toFixed(2)})`)}</span>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -142,7 +148,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
               <TableHead>
                 <TableRow>
                   {monthsInterval.map((month) => (
-                    <TableCell align="center" component="th" className={classes.headerCell}>
+                    <TableCell align="center" component="th" className={classes.headerCell + ' ' + classes.monthCell}>
                       {month}
                     </TableCell>
                   ))}
@@ -151,9 +157,11 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
               <TableBody>
                 {items.map((item, index) => (
                   <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
-                    {monthsInterval.map((month) => <TableCell scope="row">(
+                    {monthsInterval.map((month) => <TableCell scope="row" >(
                       <span>{vf_number(item.data[month]?.total?.toFixed(2) || 0)})</span>
-                      <span style={{ display: 'grid' }}> {selectedItem === index && Object.values(item.data[month]?.breakDown || []).map((value) => vf_number(value.toFixed(2)))}</span>
+                      <span style={{ display: 'grid' }}>
+                        {selectedItem === index && Object.values(item.breakDown).map((_, index) => `(${monthBreakDownValue(index, item.data[month]?.breakDown)})`)}
+                      </span>
                     </TableCell>)}
                   </TableRow>
                 ))}
@@ -172,7 +180,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
                     );
                   })}
                 </TableRow>
-                {/* <TableRow></TableRow> */}
+                <TableRow></TableRow>
               </TableBody>
             </Table>
           </Grid>
