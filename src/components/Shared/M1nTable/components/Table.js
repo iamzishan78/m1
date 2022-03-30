@@ -504,11 +504,11 @@ const useStyles = makeStyles((theme) => ({
   },
   tooltip: {
     position: "absolute",
-    top: -60,
+    top: 15,
     display: "none",
     color: "rgb(255, 0, 0)",
     width: 200,
-    left: -124,
+    left: -150,
   },
   // filenamediv: {
   //   cursor: "pointer",

@@ -75,6 +75,12 @@ const LandSearch = ({ activeModule }) => {
   }, [activeModule]);
 
   useEffect(() => {
+    const newSearch = stateApp.revenueSearchQuery.replace('*','')
+    if(newSearch !== search)
+      setSearch(newSearch)
+  }, [stateApp.revenueSearchQuery])
+
+  useEffect(() => {
     return () => {
       setStateApp((stateApp) => ({
         ...stateApp,
