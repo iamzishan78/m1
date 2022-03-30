@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
@@ -10,11 +11,11 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function AlertDialogSlide(props) {
   const useStyles = makeStyles((theme) => ({
-    dialog: {
+    dialog: ({ quickActionsPanelState }) => ({
       "& .MuiDialog-paper": {
         position: "fixed",
         top: "128px !important",
-        left: "52px !important",
+        left: quickActionsPanelState ? "485px !important" : "52px !important",
         width: props.width ? String(props.width) : null,
         maxWidth: "100% !important",
         margin: "0 !important",
@@ -42,10 +43,10 @@ export default function AlertDialogSlide(props) {
       "& svg": {
         fill: "#c8c8c8",
       },
-    },
+    }),
   }));
-
-  const classes = useStyles(props);
+  const { quickActionsPanelState } = useSelector(state => state.common);
+  const classes = useStyles({ ...props, quickActionsPanelState });
   return (
     <Dialog
       className={classes.dialog}

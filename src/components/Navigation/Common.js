@@ -455,10 +455,10 @@ export const useStyles = makeStyles((theme) => ({
     marginRight: -8,
   },
   sideNavAction: {
-    top: "unset",
-    right: "unset",
-    position: "unset",
-    transform: "unset",
+    top: "unset !important",
+    right: "unset !important",
+    position: "unset !important",
+    transform: "unset !important",
     flex: 1,
   },
   activitySearchField: {
