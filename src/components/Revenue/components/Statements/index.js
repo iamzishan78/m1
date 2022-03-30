@@ -6,7 +6,20 @@ import { ADD_CHECK_DATA } from "graphQL/useMutationAddCheck";
 import LastCheckDateFilter from "../Common/LastCheckDateFilter";
 import { useMutation } from "@apollo/client";
 
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme) => ({
+  revenueContainer: {
+    "& .MuiTableRow-root": {
+      backgroundColor: 'red',
+      color: 'red',
+      zIndex: 0
+    }
+  }
+}));
+
 export default function RevenueStatements() {
+  const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const [statements, setStatements] = useState([]);
@@ -94,7 +107,7 @@ export default function RevenueStatements() {
           revenueSearchQuery={stateApp.revenueSearchQuery}
         />
 
-        <div style={{ marginTop: 40 }}>
+        <div classes={classes.revenueContainer} style={{ marginTop: 40 }}>
           <RevenueStatementTable
             header="Revenue Statements"
             targetLabel="check"

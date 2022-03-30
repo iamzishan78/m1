@@ -232,6 +232,9 @@ const useStyles = makeStyles((theme) => ({
   table: {
     "& .MuiTableBody-root": {
       height: "50px",
+      "& .MuiTableCell-paddingCheckbox": {
+        zIndex: (props) => (typeof props.headerZIndex !== 'undefined' ? props.headerZIndex : 100),
+      },
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
       padding: "5px 11px 5px 20px !important",
@@ -317,7 +320,7 @@ const useStyles = makeStyles((theme) => ({
       opacity: "1",
       transition: "opacity 1s ease-out",
       webkitTransition: "opacity 1s ease-out",
-      zIndex: 999,
+      zIndex: (props) => (typeof props.headerZIndex !== 'undefined' ? props.headerZIndex :999),
       position: "sticky",
     },
     "& tbody": {
