@@ -7,7 +7,7 @@ import LastCheckDateFilter from "../Common/LastCheckDateFilter";
 import { useMutation } from "@apollo/client";
 
 export default function RevenueStatements() {
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   const [statements, setStatements] = useState([]);
   const [approvedCount, setApprovedCount] = useState(0);
@@ -64,6 +64,14 @@ export default function RevenueStatements() {
       setUnapprovedCount(0);
     }
   }, [statements]);
+
+  useEffect(() => {
+    return () => {
+      setStateApp((state, props) => {
+        return { ...state, revenueSearchQuery: '' };
+      });
+    }
+  },[])
 
   const onGettingStatements = useCallback((statementsList) => {
     setStatements(statementsList);
