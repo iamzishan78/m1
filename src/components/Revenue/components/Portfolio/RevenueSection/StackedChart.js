@@ -26,7 +26,10 @@ const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
     monthsInterval?.forEach((month, index) => {
       _data.push({ month });
       items.forEach((item) => {
-        _data[index][item.name] = item.data[month];
+        if (typeof item.data[month] === 'object')
+          _data[index][item.name] = item.data[month]?.total?.toFixed(0) || 0;
+        else
+          _data[index][item.name] = item.data[month]?.toFixed(0) || 0;
       });
     });
     setData(_data);
@@ -67,7 +70,7 @@ const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
       series.sequencedInterpolation = true;
       series.calculatePercent = true;
       series.calculateAggregates = true;
-      series.tooltipText = "[#000 font-size:17px]{name} {valueY.value} | {valueY.percent.formatNumber('#.0')}%[/]";
+      series.tooltipText = "[#000 font-size:17px]{name} {valueY.value}[/]";
       series.tooltip.background.fill = am4core.color("#FFF");
       series.tooltip.getStrokeFromObject = true;
       series.tooltip.background.strokeWidth = 3;
