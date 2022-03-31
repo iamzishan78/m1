@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
+import vf_number from "components/Shared/valueformatters/vf_number";
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -23,8 +24,8 @@ const DonutChart = ({ items, total, id = "pie-chart" }) => {
         if (items?.length === 0) return;
         const _data = items.map(item => ({
             category: item.name,
-            value: item?.total?.replace ? Number(item?.total?.replace(/,/g, '')) : 0,
-            total: item.totalK,
+            value: item.total,
+            // total: item.totalK,
         }));
         setData(_data);
     }, [items]);
@@ -55,12 +56,12 @@ const DonutChart = ({ items, total, id = "pie-chart" }) => {
         // pieSeries.slices.template.stroke = am4core.color("#ffff");
         pieSeries.slices.template.strokeWidth = 2;
         pieSeries.slices.template.strokeOpacity = 1;
-        pieSeries.slices.template.tooltipText = "[font-size:16px]{category} {value} | {value.percent.formatNumber('#.')}%[/]";
+        pieSeries.slices.template.tooltipText = "[font-size:16px]{category} {value} | {value.percent.formatNumber('#.##')}%[/]";
         pieSeries.tooltip.getFillFromObject = false;
         pieSeries.tooltip.label.fill = am4core.color("#000");
         pieSeries.tooltip.background.fill = am4core.color('#ffff');
         pieSeries.tooltip.getStrokeFromObject = true;
-        pieSeries.legendSettings.labelText = "[bold font-size:17px]{name}:[/] {value.value} | {value.percent.formatNumber('#.0')}%";
+        pieSeries.legendSettings.labelText = "[bold font-size:17px]{name}:[/] {value.value} | {value.percent.formatNumber('#.##')}%";
         // pieSeries.slices.template.tooltipText = "[#ffff]{value}[/]";
 
         // Add a legend
@@ -83,7 +84,7 @@ const DonutChart = ({ items, total, id = "pie-chart" }) => {
         markerTemplate.fontWeight = 500
 
         let label = pieSeries.createChild(am4core.Label);
-        label.text = `${total} K`;
+        label.text = `${total > 9999 ? vf_number(Math.floor(total / 1000)) + ' K' : vf_number(Math.floor(total))}`;
         label.horizontalCenter = "middle";
         label.verticalCenter = "middle";
         label.fontSize = 25;
