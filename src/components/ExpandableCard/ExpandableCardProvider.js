@@ -4,7 +4,7 @@ import { ExpandableCardContextProvider } from "./ExpandableCardContext";
 import ExpandableCard from "./ExpandableCard";
 function ExpandableCardProvider(props) {
   return (
-    <ExpandableCardContextProvider>
+    <ExpandableCardContextProvider handleCloseExpandableCard={props.handleCloseExpandableCard}>
       <ExpandableCard
         expanded={props.expanded}
         handleCloseExpandableCard={props.handleCloseExpandableCard}

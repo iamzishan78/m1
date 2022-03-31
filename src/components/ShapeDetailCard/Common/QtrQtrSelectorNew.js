@@ -11,6 +11,7 @@ import { copy } from 'utils/helper';
 import SmallTXQtr from "components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/SmallTXQtr";
 import { changeModeToScaleRotate, drawBoundary, getDrawAdustedShape, getNewShapeFromSelectedQuarters, getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 import { AppContext } from "AppContext";
+import { ExpandableCardContext } from "components/ExpandableCard/ExpandableCardContext";
 import { drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
 import { useMutation } from "@apollo/client";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
@@ -119,6 +120,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
 
   const [stateApp] = useContext(AppContext);
   const [, setStateMapControls] = useContext(MapControlsContext);
+  const [setStateExpandableCard] = useContext(ExpandableCardContext);
 
   const eventsConfiguredRef = useRef(false);
 
@@ -271,7 +273,8 @@ export default function QtrQtrSelectorNew({ layerData }) {
             control={
               <Switch
                 checked={showAdjustGrid}
-                onChange={() => setShowAdjustGrid(!showAdjustGrid)}
+                // onChange={() => setShowAdjustGrid(!showAdjustGrid)}
+                onChange={() => setStateExpandableCard((state) => ({ ...state, expanded: true }))}
                 size="small"
               />
             }

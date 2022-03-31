@@ -16,10 +16,14 @@ import OfflineBoltIcon from '@material-ui/icons/OfflineBoltOutlined';
 import CloudDownloadOutlinedIcon from '@material-ui/icons/CloudDownloadOutlined';
 import { default as DrawPoly } from "@material-ui/icons/AddBox";
 import { default as CheckCircle } from "../../../Shared/svgIcons/check-circle";
+import { default as DrawShapeIcon } from "../../../Shared/svgIcons/draw_shape";
 import ConvertContact from "components/Shared/svgIcons/convert_contact";
 import LayerIcon from "@material-ui/icons/Layers";
 import FilterAltIcon from "../../../Shared/svgIcons/FilterAltIcon";
 import Typography from "@material-ui/core/Typography";
+import AutorenewIcon from '@material-ui/icons/Autorenew';
+import AspectRatioIcon from '@material-ui/icons/AspectRatio';
+
 import { AppContext } from "AppContext";
 import { NavigationContext, DRAWING_MODES } from "components/Navigation/NavigationContext";
 import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
@@ -689,7 +693,7 @@ const ShapeActionsPopup = (props) => {
         <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span> {calculateLandArea(props.selectedFeature)}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
 
-          <FeatureFlag feature={FEATURES.MAPSHAPEEXPORT}>
+          {/* <FeatureFlag feature={FEATURES.MAPSHAPEEXPORT}>
             <Tooltip title="Bulk Actions" className={enableEditOnly && classes.disableAction}>
               <IconButton
                 size="small"
@@ -719,7 +723,6 @@ const ShapeActionsPopup = (props) => {
             </IconButton>
           </Tooltip>
 
-          {/* {stateApp.isAbstractedLayersPolygon && ( */}
           <Tooltip title="Add Shape to Layer" className={enableEditOnly && classes.disableAction}>
             <IconButton
               size="small"
@@ -734,15 +737,32 @@ const ShapeActionsPopup = (props) => {
               <LayerIcon color="secondary" />
             </IconButton>
           </Tooltip>
-          {/* )} */}
 
           <Tooltip title="Area of Interest" className={enableEditOnly && classes.disableAction}>
             <IconButton size="small" disabled={enableEditOnly} onClick={actionAOI} aria-label="Area of Interest">
               <span style={{ color: 'white' }}>AOI</span>
             </IconButton>
-          </Tooltip>
-          <span className={classes.divider}></span>
+          </Tooltip> */}
 
+          <Tooltip title="Rotate Shape">
+            <IconButton size="small" aria-label="Rotate Shape">
+              <AutorenewIcon color="secondary" />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Resize Shape">
+            <IconButton size="small" aria-label="Resize Shape">
+              <AspectRatioIcon color="secondary" />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Edit Shape">
+            <IconButton size="small" aria-label="Edit Shape">
+              <DrawShapeIcon color="secondary" />
+            </IconButton>
+          </Tooltip>
+
+          <span className={classes.divider}></span>
           {
             stateApp.currentFeature && <Tooltip title="Add shape" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
               <IconButton size="small" aria-label="Add shape" onClick={() => {
@@ -756,8 +776,6 @@ const ShapeActionsPopup = (props) => {
               </IconButton>
             </Tooltip>
           }
-
-
 
           <Tooltip title="Edit Active Shape" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
             <IconButton size="small" aria-label="Edit Active Shape" onClick={actionEdit}>

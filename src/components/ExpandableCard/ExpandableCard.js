@@ -39,7 +39,7 @@ function ExpandableCard(props) {
 
   // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
+  const [stateExpandableCard, setStateExpandableCard, handleCloseExpandableCard] = useContext(ExpandableCardContext);
 
   // States
   const [openBugModal, setOpenBugModal] = useState(false);
@@ -357,7 +357,7 @@ function ExpandableCard(props) {
       // stateApp.selectedParcel?.id && history.replace({ pathname: '/' })
       history.replace({ pathname: '/' })
     }
-    props.handleCloseExpandableCard();
+    handleCloseExpandableCard();
     //if EC is inside map popup you need to close it
   };
 

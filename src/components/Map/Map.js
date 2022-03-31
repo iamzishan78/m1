@@ -1,6 +1,5 @@
 // react imports
 import React, { useContext, useState, useLayoutEffect, useRef, useEffect, useCallback } from "react";
-import { get } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
@@ -9,7 +8,6 @@ import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
 import { WellCardContext } from "../WellCard/WellCardContext";
-import { ParcelCardContext } from "../ParcelsDetailCard/ParcelCardContext";
 
 // custom components
 import MapControlsProvider from "../MapControls/MapControlsProvider";
@@ -6193,7 +6191,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           <ExpandableCardProvider
             expanded={true}
             handleCloseExpandableCard={handleCloseExpandableCard}
-            component={<ParcelCardProvider></ParcelCardProvider>}
+            component={<ParcelCardProvider />}
             title={stateApp.selectedParcel.shapeLabel}
             subTitle=""
             parent="map"
@@ -6206,7 +6204,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             targetSourceId={stateApp.selectedParcel.id}
             targetLabel="parcel"
             deleteCustomLayer={deleteCustomLayer}
-          ></ExpandableCardProvider>
+          />
         </div>
       )}
       {stateApp.selectedShape?.shapeLabel && stateApp.expandedCard && (
