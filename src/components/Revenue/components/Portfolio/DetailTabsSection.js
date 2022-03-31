@@ -112,7 +112,7 @@ const StyledTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-export default function DetailTabsSection({ monthsInterval }) {
+export default function DetailTabsSection({ monthsInterval, portfolioSummary }) {
   const classes = useStyles();
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
@@ -152,16 +152,16 @@ export default function DetailTabsSection({ monthsInterval }) {
       </div>
       <div style={{ maxHeight: "calc(100vh - 282px)", overflow: "overlay", backgroundColor: "#f3f3f3" }}>
         <div className={classes.revenueSection} ref={tab === 0 ? selectedTabRef : null}>
-          <RevenueSection monthsInterval={monthsInterval} adjustmentsRef={adjustmentsRef} netRevenueRef={netRevenueRef}/>
+          <RevenueSection monthsInterval={monthsInterval} portfolioSummary={portfolioSummary} adjustmentsRef={adjustmentsRef} netRevenueRef={netRevenueRef} />
         </div>
         <div className={classes.adjustmentSection} ref={tab === 1 ? selectedTabRef : null}>
-          <AdjustmentSection monthsInterval={monthsInterval} adjustmentTotals={adjustmentTotals}/>
+          <AdjustmentSection monthsInterval={monthsInterval} portfolioSummary={portfolioSummary} adjustmentTotals={adjustmentTotals} />
         </div>
         <div className={classes.productSection} ref={tab === 2 ? selectedTabRef : null}>
           <Typography variant="h6" className={classes.sectionTitle}>
             Products
           </Typography>
-          <ProductsSection monthsInterval={monthsInterval} netRevenueTotals={netRevenueTotals}/>
+          <ProductsSection monthsInterval={monthsInterval} portfolioSummary={portfolioSummary} netRevenueTotals={netRevenueTotals} />
         </div>
         {/* temp hide until we get properties section designed --kc 20220307 */}
         {/* <div className={classes.propertiesSection} ref={tab === 3 ? selectedTabRef : null}>

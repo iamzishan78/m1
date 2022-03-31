@@ -27,92 +27,97 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AdjustmentSection = ({ monthsInterval, adjustmentTotals }) => {
+const AdjustmentSection = ({ portfolioSummary }) => {
   const classes = useStyles();
-  const constItems = [
-    {
-      name: "Severance Tax",
-      value: 0.15,
-      data: {},
-      total: 0
-    },
-    {
-      name: "Transportation - Oil",
-      value: 0.15,
-      data: {},
-      total: 0
-    },
-    {
-      name: "Transportation - Gas",
-      value: 0.20,
-      data: {},
-      total: 0
-    },
-    {
-      name: "Compression",
-      value: 0.15,
-      data: {},
-      total: 0
-    },
-    {
-      name: "Processing",
-      value: 0.15,
-      data: {},
-      total: 0
-    },
-    {
-      name: "Lease Use",
-      value: 0.05,
-      data: {},
-      total: 0
-    },
-    {
-      name: "Other",
-      value: 0.15,
-      data: {},
-      total: 0
-    },
-  ];
-  const [items, setItems] = useState(constItems);
+  // const constItems = [
+  //   {
+  //     name: "Severance Tax",
+  //     value: 0.15,
+  //     data: {},
+  //     total: 0
+  //   },
+  //   {
+  //     name: "Transportation - Oil",
+  //     value: 0.15,
+  //     data: {},
+  //     total: 0
+  //   },
+  //   {
+  //     name: "Transportation - Gas",
+  //     value: 0.20,
+  //     data: {},
+  //     total: 0
+  //   },
+  //   {
+  //     name: "Compression",
+  //     value: 0.15,
+  //     data: {},
+  //     total: 0
+  //   },
+  //   {
+  //     name: "Processing",
+  //     value: 0.15,
+  //     data: {},
+  //     total: 0
+  //   },
+  //   {
+  //     name: "Lease Use",
+  //     value: 0.05,
+  //     data: {},
+  //     total: 0
+  //   },
+  //   {
+  //     name: "Other",
+  //     value: 0.15,
+  //     data: {},
+  //     total: 0
+  //   },
+  // ];
+  // const [items, setItems] = useState(constItems);
 
-  useEffect(() => {
-    if (monthsInterval.length > 0 && adjustmentTotals.length > 0) {
-      const _items = copy(constItems);
-      let total = 0;
-      _items.forEach((item) => {
-        monthsInterval.forEach((month, index) => {
-          item.data[`${month}`] = Math.round(adjustmentTotals[index] * item.value, 0);
-          total += item.data[`${month}`];
-        });
-        item.total = vf_number(total);
-        total = 0;
-      });
-      setItems(_items);
-    }
-  }, [monthsInterval, adjustmentTotals]);
+  // useEffect(() => {
+  //   if (monthsInterval.length > 0 && adjustmentTotals.length > 0) {
+  //     const _items = copy(constItems);
+  //     let total = 0;
+  //     _items.forEach((item) => {
+  //       monthsInterval.forEach((month, index) => {
+  //         item.data[`${month}`] = Math.round(adjustmentTotals[index] * item.value, 0);
+  //         total += item.data[`${month}`];
+  //       });
+  //       item.total = vf_number(total);
+  //       total = 0;
+  //     });
+  //     setItems(_items);
+  //   }
+  // }, [monthsInterval, adjustmentTotals]);
 
-  const total = useMemo(() => {
-    if (items.length === 0) return 0;
+  // const total = useMemo(() => {
+  //   if (items.length === 0) return 0;
 
-    let _total = 0;
-    monthsInterval.forEach((month) => {
-      items.forEach((item) => {
-        item.data && (_total += item.data[month]);
-      });
-    })
-    return vf_number(_total);
-  }, [items, monthsInterval]);
+  //   let _total = 0;
+  //   monthsInterval.forEach((month) => {
+  //     items.forEach((item) => {
+  //       item.data && (_total += item.data[month]);
+  //     });
+  //   })
+  //   return vf_number(_total);
+  // }, [items, monthsInterval]);
+
+
+  const items = portfolioSummary.adjustmentsDetails || []
+  const total = portfolioSummary.adjustmentTotal || 0
+  const monthsInterval = portfolioSummary.months || []
 
   return (
     <>
       <Typography variant="h6" className={classes.sectionTitle}>
         Adjustments
       </Typography>
-      <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3} className={classes.root}>
-        <Grid item >
+      <Grid container display="flex" direction="row" justify="flex-start" spacing={4} className={classes.root}>
+        <Grid item md={5} style={{ paddingRight: '0px' }}>
           <DonutChart items={items} total={total} id="adjustment-chart" />
         </Grid>
-        <Grid item >
+        <Grid item md={7}>
           <StackedChart items={items} total={total} monthsInterval={monthsInterval} id="adjustment-chart-stacked" />
         </Grid>
       </Grid>

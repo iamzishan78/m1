@@ -1,17 +1,18 @@
 const unitsColumnHeaders = [
+
     {
-      name: "uNumber",
-      label: "Unit #",
-      esKey: "shapeJson.properties.uNumber.keyword",
+      name: "name",
+      label: "Unit Name",
+      esKey: "name.keyword",
       options: {
         sort: true,
         filter: true,
       },
     },
     {
-      name: "name",
-      label: "Unit Name",
-      esKey: "name.keyword",
+      name: "uNumber",
+      label: "Unit #",
+      esKey: "shapeJson.properties.uNumber.keyword",
       options: {
         sort: true,
         filter: true,
