@@ -43,7 +43,7 @@ export default function EntityType({ setDocumentType, value /*, ...other */ }) {
 
   useEffect(() => {
     if (filtersData?.getESFilterList?.hits) {
-      let filterData = filtersData.getESFilterList.hits.map(hit => hit.key)
+      let filterData = filtersData.getESFilterList.hits.filter(hit => hit.key).map(hit => hit.key)
       for (let i = 0; i < entityTypeOptions.length; i++) {
         filterData = filterData.filter(d => d !== entityTypeOptions[i].value && d !== entityTypeOptions[i].label)
       }
