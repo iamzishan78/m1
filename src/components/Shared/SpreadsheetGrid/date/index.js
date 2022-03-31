@@ -48,7 +48,6 @@ const SpreadsheetGridDate = (props) => {
       defaultValue={moment(value).format("YYYY-MM-DD")}
       onKeyDown={(e) => {
         if (e.keyCode === 13 || e.keyCode === 9) {
-          e.stopPropagation();
           onBlur();
         }
       }}

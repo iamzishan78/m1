@@ -37,7 +37,7 @@ const SpreadsheetGridInput = (props) => {
   const prepareFocus = (focus) => {
     if (focus) {
       input.current.focus();
-      input.current.selectionStart = value.toString().length;
+      input.current.selectionStart = value?.toString()?.length;
     } else if (input.current === document.activeElement) {
       input.current.blur();
     }
