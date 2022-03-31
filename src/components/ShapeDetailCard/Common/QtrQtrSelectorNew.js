@@ -264,7 +264,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
     <div>
       <Grid container spacing={1} direction="row">
         <Grid item md={11}>
-          <Typography style={{ fontWeight: 700 }}> Show/adjust grid size and orientation on the map</Typography>
+          <Typography style={{ fontWeight: 700 }}>Show/edit the shape orientation and size on map</Typography>
         </Grid>
         <Grid item md={1}>
           <FormControlLabel
