@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useState, Fragment } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import get from "lodash/get";
-import { copy } from 'utils/helper';
+import { useHistory } from "react-router-dom";
 import * as turf from "@turf/turf";
 import hat from "hat";
 import polylabel from "polylabel";
@@ -47,6 +47,7 @@ import ShapeEditActions from "components/MapControls/components/popup/ShapeEditA
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const { classes, children, toggleSpatialDataCard, showSpatialDataCard, popupCloseAction } = props;
   const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -630,6 +631,13 @@ const ShapeActionsPopup = (props) => {
       awaitRefetchQueries: true,
     });
     setTimeout(() => popupCloseAction(), 0);
+    if (isShapeResizeMode) {
+      let newPath = '';
+      if (stateApp.featureToEdit?.layer?.id === "parcel")
+        newPath = `/map/parcels/${stateApp.currentFeature?.id}`;
+      else newPath = `/map/units/${stateApp.currentFeature?.id}`;
+      history.location.pathname !== newPath && history.replace(newPath)
+    }
   };
 
   return (
