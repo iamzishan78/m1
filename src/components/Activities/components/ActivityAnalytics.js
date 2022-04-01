@@ -104,10 +104,17 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
     if (analyticsData?.activitiesCountByTypePerOwner) {
       const chartData = { series: copy(defaultSeriesActivities), xaxis: [] };
       Object.entries(analyticsData?.activitiesCountByTypePerOwner).forEach((data, value) => {
-        chartData.xaxis.push(data[1].name.substring(0, 10));
+        if(data[1]?.name){
+          chartData.xaxis.push(data[1].name.substring(0, 10));
+        }
         for (let i = 0; i < chartData.series.length; i++) {
-          const count = data[1][chartData.series[i].key] ? data[1][chartData.series[i].key] : 0;
-          chartData.series[i].data.push(count);
+          if(data[1]){
+            const count = data[1][chartData.series[i].key] ? data[1][chartData.series[i].key] : 0;
+            chartData.series[i].data.push(count);
+          }else{
+            chartData.series[i].data.push(0);
+          }
+
         }
       });
       setActivitiesPerQualifier(JSON.parse(JSON.stringify(chartData)));
@@ -115,10 +122,16 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
     if (analyticsData?.dealAmountByStatusPerOwner) {
       const chartData = { series: copy(defaultSeriesDeals), xaxis: [] };
       Object.entries(analyticsData?.dealAmountByStatusPerOwner).forEach((data, value) => {
-        chartData.xaxis.push(data[1].name.substring(0, 10));
+        if(data[1]?.name){
+          chartData.xaxis.push(data[1].name.substring(0, 10));
+        }
         for (let i = 0; i < chartData.series.length; i++) {
-          const count = data[1][chartData.series[i].key] ? data[1][chartData.series[i].key] : 0;
-          chartData.series[i].data.push(count);
+          if(data[1]){
+            const count = data[1][chartData.series[i].key] ? data[1][chartData.series[i].key] : 0;
+            chartData.series[i].data.push(count);
+          }else{
+            chartData.series[i].data.push(0);
+          }
         }
       });
       setDealsPerQualifier(JSON.parse(JSON.stringify(chartData)));
