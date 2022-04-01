@@ -266,7 +266,7 @@ function CheckDetailsEditableTable(props) {
                                         const date = moment(value).toISOString();
                                         let dRow = rows.find((r) => r._id === row._id);
                                         set(dRow, cell.id, date)
-                                        onFieldChange(row._id, cell.id)(date)
+                                        onFieldChange(row._id, cell.id, cell.type)(date)
                                     }}
                                 />
                                 {/* <TextField

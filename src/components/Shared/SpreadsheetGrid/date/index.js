@@ -64,7 +64,7 @@ const SpreadsheetGridDate = (props) => {
         endAdornment: (
           <IconButton
             onClick={(event) => {
-              props.onChange(event);
+              onChange(null);
             }}
           >
             <Clear style={{ height: 22, width: 22 }} />
