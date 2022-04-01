@@ -244,16 +244,6 @@ export default function QtrQtrSelectorNew({ layerData }) {
 
   const openShapeEditPanel = () => {
     setShowAdjustGrid(true);
-    // Create grid for rotate
-    // const feature = copy(layerData.shape);
-    // let layerDataCopy = copy(layerData);
-    // if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
-    //   feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
-    // }
-    // drawShapeLayerToggle(stateApp, "visible");
-    // stateApp.draw.deleteAll();
-    // getRotateAbleShapeFromSelectedQuarters(feature, stateApp.draw);
-
     // Activiate the edit mode
     setStateApp((state) => ({
       ...state,

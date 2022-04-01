@@ -215,21 +215,23 @@ const ShapeActionsPopup = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.currentFeature]);
 
-  useEffect(() => {
-    const { shapeEditMode, currentFeature } = stateApp;
-    if (shapeEditMode && currentFeature) {
-      if (shapeEditMode === "rotate") {
-        const feature = copy(currentFeature);
-        let layerDataCopy = copy(currentFeature);
-        if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
-          feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
-        }
-        drawShapeLayerToggle(stateApp, "visible");
-        stateApp.draw.deleteAll();
-        getRotateAbleShapeFromSelectedQuarters(feature, stateApp.draw);
-      }
-    }
-  }, [stateApp.shapeEditMode]);
+  // useEffect(() => {
+  //   const { shapeEditMode, currentFeature } = stateApp;
+  //   if (shapeEditMode && currentFeature) {
+  //     if (shapeEditMode === "rotate") {
+  //       const feature = copy(currentFeature);
+  //       let layerDataCopy = copy(currentFeature);
+  //       if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
+  //         feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
+  //       }
+  //       drawShapeLayerToggle(stateApp, "visible");
+  //       stateApp.draw.deleteAll();
+  //       getRotateAbleShapeFromSelectedQuarters(feature, stateApp.draw);
+  //     } else if (shapeEditMode === "fullEdit") {
+  //       actionEdit();
+  //     }
+  //   }
+  // }, [stateApp.shapeEditMode]);
 
   const closeDrawTool = () => {
     stateApp.draw.changeMode("direct_select", { featureId: props.selectedFeature.id });
@@ -310,8 +312,9 @@ const ShapeActionsPopup = (props) => {
     setSelectedAction("filter");
   };
 
-  const actionEdit = () => {
+  const actionEdit = (_shapeEdit) => {
     const { selectedFeature } = props;
+    const shapeEdit = _shapeEdit ?? stateApp.shapeEdit;
     // If shape doesn't exist! AOI case
     if (!stateApp.draw.get(stateApp.currentFeature.id)) {
       stateApp.draw.add(stateApp.currentFeature);
@@ -320,10 +323,7 @@ const ShapeActionsPopup = (props) => {
     // If filter is applied, then remove it
     clearFilter();
 
-    // if (stateApp.shapeActionsFilterSelected) {
-    //   clearFilter();
-    // }
-    if (!stateApp.shapeEdit) {
+    if (!shapeEdit) {
       stateApp.draw.changeMode("direct_select", {
         featureId: selectedFeature.id,
       });
@@ -335,9 +335,9 @@ const ShapeActionsPopup = (props) => {
       ...stateNav,
       drawingMode: DRAWING_MODES.DRAW_CIRCLE,
     }));
-    setFeatureProperty(stateApp.draw, selectedFeature.id, "shapeEdit", !stateApp.shapeEdit);
-    drawShapeLayerToggle(stateApp, !stateApp.shapeEdit ? "visible" : "none");
-    setStateApp((state) => ({ ...state, currentFeature: selectedFeature, shapeEdit: !state.shapeEdit }));
+    setFeatureProperty(stateApp.draw, selectedFeature.id, "shapeEdit", !shapeEdit);
+    drawShapeLayerToggle(stateApp, !shapeEdit ? "visible" : "none");
+    setStateApp((state) => ({ ...state, currentFeature: selectedFeature, shapeEdit: !shapeEdit }));
     if (stateApp.selectedAoi) setSelectedAction("edit-aoi");
     else if (enableEditOnly) setSelectedAction("edit-shape");
   };
@@ -790,7 +790,11 @@ const ShapeActionsPopup = (props) => {
           )}
 
           <Tooltip title="Edit Active Shape" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
-            <IconButton size="small" aria-label="Edit Active Shape" onClick={actionEdit}>
+            <IconButton size="small" aria-label="Edit Active Shape" onClick={() => {
+              if (!isShapeResizeMode) {
+                actionEdit();
+              }
+            }}>
               <EditIcon className={stateApp.shapeEdit ? "selected" : ""} />
             </IconButton>
           </Tooltip>
