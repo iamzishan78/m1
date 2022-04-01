@@ -498,15 +498,6 @@ function ExpandableCard(props) {
   };
 
   const handleEditParcelAndShape = () => {
-    const additionalStates = {};
-    if (!_.isEmpty(stateApp.selectedParcel)) {
-      drawShapeLayerToggle(stateApp, "visible");
-      stateApp.draw.deleteAll();
-      getRotateAbleShapeFromSelectedQuarters(stateApp.selectedParcel.feature, stateApp.draw);
-      additionalStates.shapeEditMode = "rotate";
-    }
-
-    // Activiate the edit mode
     setStateApp((state) => ({
       ...state,
       popupOpen: false,
@@ -518,7 +509,7 @@ function ExpandableCard(props) {
       openDrawShapesControl: true,
       editParcelAndShape: true,
       editDraw: true,
-      ...additionalStates
+      shapeEditMode: "fullEdit"
     }));
     handleClose();
   }
@@ -526,7 +517,6 @@ function ExpandableCard(props) {
   // BreadCrum for Document's well
   const DisplayBreadCrums = () => {
     return <div className={classes.breadcrumContainer}>
-
       {
         history.location?.state?.fromUnitDetail
         &&

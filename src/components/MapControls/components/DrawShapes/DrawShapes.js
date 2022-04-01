@@ -314,7 +314,6 @@ export default function DrawShapes() {
             currentFeature.id = state.currentFeature.id
             currentFeature.properties.id = state.currentFeature.id;
           }
-
           return { ...state, editDraw: false, showShapeActionsPopup: true, currentFeature }
         });
         setTimeout(() => {
@@ -353,14 +352,16 @@ export default function DrawShapes() {
               featureOrMapShape: currentFeature,
             };
           });
-        } else {
-          setStateApp((state) => {
-            return {
-              ...state,
-              editDraw: false,
-            };
-          });
         }
+        // else {
+        //   debugger;
+        //   setStateApp((state) => {
+        //     return {
+        //       ...state,
+        //       editDraw: false,
+        //     };
+        //   });
+        // }
         setStateApp((stateApp) => {
           // if (!stateApp.shapeEdit) {
           //   stateApp.draw.changeMode("static");

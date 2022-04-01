@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useState, Fragment } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import get from "lodash/get";
+import { copy } from 'utils/helper';
 import * as turf from "@turf/turf";
 import hat from "hat";
 import polylabel from "polylabel";
@@ -27,7 +28,7 @@ import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
 import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
 import { ABSTRACTGEOCONTAINSQUERY } from "graphQL/useQueryAbstractGeoContains";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
-import { addCustomShapeProperties, drawBoundary, getDrawAdustedShape } from "../../components/DrawShapes/drawShapesHelpers";
+import { addCustomShapeProperties, drawBoundary, getDrawAdustedShape, getRotateAbleShapeFromSelectedQuarters } from "../../components/DrawShapes/drawShapesHelpers";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived } from "actions";
@@ -213,6 +214,22 @@ const ShapeActionsPopup = (props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.currentFeature]);
+
+  useEffect(() => {
+    const { shapeEditMode, currentFeature } = stateApp;
+    if (shapeEditMode && currentFeature) {
+      if (shapeEditMode === "rotate") {
+        const feature = copy(currentFeature);
+        let layerDataCopy = copy(currentFeature);
+        if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
+          feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
+        }
+        drawShapeLayerToggle(stateApp, "visible");
+        stateApp.draw.deleteAll();
+        getRotateAbleShapeFromSelectedQuarters(feature, stateApp.draw);
+      }
+    }
+  }, [stateApp.shapeEditMode]);
 
   const closeDrawTool = () => {
     stateApp.draw.changeMode("direct_select", { featureId: props.selectedFeature.id });
@@ -581,7 +598,7 @@ const ShapeActionsPopup = (props) => {
 
   const confirmShapeEditing = () => {
     let { featureToEdit, currentFeature } = stateApp;
-    if (isShapeResizeMode) {
+    if (isShapeResizeMode && stateApp.shapeEditMode === "rotate") {
       const quarters = ["NWNW", "NWSW", "SWNW", "SWSW", "SESW", "NESW", "SENW", "NENW", "SWSE", "NWSE", "SWNE", "NWNE", "SESE", "NESE", "SENE", "NENE"];
 
       let newShape = {};
@@ -697,7 +714,7 @@ const ShapeActionsPopup = (props) => {
         {calculateLandArea(props.selectedFeature)}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
           {isShapeResizeMode ? (
-            <ShapeEditActions shapeEdit={stateApp.shapeEdit} shapeEditMode={stateApp.shapeEditMode} />
+            <ShapeEditActions shapeEdit={stateApp.shapeEdit} shapeEditMode={stateApp.shapeEditMode} actionFullEdit={actionEdit} setStateApp={setStateApp} stateApp={stateApp} />
           ) : (
             <>
               <FeatureFlag feature={FEATURES.MAPSHAPEEXPORT}>
