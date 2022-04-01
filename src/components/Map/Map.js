@@ -6,8 +6,6 @@ import { useHistory } from "react-router-dom";
 // contexts
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
-import { MapControlsContext } from "../MapControls/MapControlsContext";
-import { WellCardContext } from "../WellCard/WellCardContext";
 
 // custom components
 import MapControlsProvider from "../MapControls/MapControlsProvider";
@@ -22,7 +20,6 @@ import HugeRequest from "./components/HugeRequest";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
 import "./popup.css";
-import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties, drawBoundary, drawWellBoundary } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 import MapGridCardProvider from "../MapGridCard/MapGridProvider";
@@ -141,8 +138,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   // context states
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
-  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
   const history = useHistory();
   const client = useApolloClient();
 
@@ -5273,7 +5268,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   }, [
     map,
     setStateApp,
-    setStateMapControls,
     mapStyles,
     // stateApp.checkedLayersInteraction,
   ]);

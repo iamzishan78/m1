@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
+import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 
@@ -109,6 +110,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
   layerData.state = ''
 
   const classes = useStyles({ layerData });
+  const history = useHistory();
   const [qtr, setQtr] = useState(layerData?.qtrQtrSelection?.selectedQtr ? copy(layerData.qtrQtrSelection.selectedQtr) : ["", "", "", ""])
 
   const [qtrQtr, setQtrQtr] = useState(layerData?.qtrQtrSelection?.qtrQtr ? copy(layerData.qtrQtrSelection.qtrQtr) : {})
@@ -118,9 +120,9 @@ export default function QtrQtrSelectorNew({ layerData }) {
     UPDATECUSTOMLAYER,
   );
 
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateMapControls] = useContext(MapControlsContext);
-  const [setStateExpandableCard] = useContext(ExpandableCardContext);
+  const [, , handleCloseExpandableCard] = useContext(ExpandableCardContext);
 
   const eventsConfiguredRef = useRef(false);
 
@@ -131,7 +133,6 @@ export default function QtrQtrSelectorNew({ layerData }) {
     }
 
   }, [layerData?.qtrQtrSelection])
-
 
   useEffect(() => {
     if (!layerData?.qtrQtrSelection?.qtrQtr) {
@@ -161,45 +162,24 @@ export default function QtrQtrSelectorNew({ layerData }) {
       });
       eventsConfiguredRef.current = true;
     }
-
-    return () => {
-      stateApp?.draw?.deleteAll();
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.map, stateApp.currentFeature]);
-
-
-  useEffect(() => {
-    if (showAdjustGrid) {
-      const feature = copy(layerData.shape)
-      let layerDataCopy = copy(layerData)
-      if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
-        feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
-      }
-      setStateMapControls((state) => ({ ...state, selectedMapControl: "" }))
-      drawShapeLayerToggle(stateApp, "visible")
-      stateApp.draw.deleteAll();
-      getRotateAbleShapeFromSelectedQuarters(feature, stateApp.draw)
-    } else {
-      stateApp?.draw?.deleteAll();
-    }
-  }, [showAdjustGrid]);
 
   const updateLayerQtr = () => {
     const values = Object.keys(qtrQtr).filter((key) => qtrQtr[key]).map((key) => key.toUpperCase())
     const feature = copy(layerData.shape)
     let layerDataCopy = copy(layerData)
 
-    let newShape = {}
+    let newShape = {};
     const drawFeature = stateApp.draw.getAll().features[0]
     if (drawFeature) {
       feature.geometry = drawFeature.geometry
-      newShape = getDrawAdustedShape(feature, values)
+      newShape = getDrawAdustedShape(feature, values);
     } else {
       if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
         feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
       }
-      newShape = getNewShapeFromSelectedQuarters(feature, values)
+      newShape = getNewShapeFromSelectedQuarters(feature, values);
     }
 
     if (!layerDataCopy.qtrQtrSelection) layerDataCopy.qtrQtrSelection = {}
@@ -262,6 +242,36 @@ export default function QtrQtrSelectorNew({ layerData }) {
     setDisableUpdate(isDisabled)
   }
 
+  const openShapeEditPanel = () => {
+    setShowAdjustGrid(true);
+    // Create grid for rotate
+    const feature = copy(layerData.shape);
+    let layerDataCopy = copy(layerData);
+    if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
+      feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
+    }
+    drawShapeLayerToggle(stateApp, "visible");
+    stateApp.draw.deleteAll();
+    getRotateAbleShapeFromSelectedQuarters(feature, stateApp.draw);
+
+    // Activiate the edit mode
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+      expandedCard: false,
+      showDrawShapesPopup: true,
+      selectedUserDefinedLayer: state.selectedParcel?.feature || state.selectedShape?.feature,
+      currentFeature: state.selectedParcel?.feature || state.selectedShape?.feature,
+      featureToEdit: state.selectedParcel?.feature || state.selectedShape?.feature,
+      openDrawShapesControl: true,
+      editParcelAndShape: true,
+      editDraw: true,
+      shapeEditMode: "rotate"
+    }));
+    history.replace({ pathname: '/' });
+    handleCloseExpandableCard();
+  }
+
   return (
     <div>
       <Grid container spacing={1} direction="row">
@@ -273,8 +283,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
             control={
               <Switch
                 checked={showAdjustGrid}
-                // onChange={() => setShowAdjustGrid(!showAdjustGrid)}
-                onChange={() => setStateExpandableCard((state) => ({ ...state, expanded: true }))}
+                onChange={openShapeEditPanel}
                 size="small"
               />
             }
@@ -318,10 +327,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
           </Grid>
         </Grid>
         <Grid item md={3} style={{ paddingTop: '1.8em', }}>
-          <Button variant="contained" color="primary" size="large" disabled={disableUpdate} onClick={() => {
-            updateLayerQtr()
-            setShowAdjustGrid(false)
-          }}>Update</Button>
+          <Button variant="contained" color="primary" size="large" disabled={disableUpdate} onClick={updateLayerQtr}>Update</Button>
         </Grid>
 
       </Grid>

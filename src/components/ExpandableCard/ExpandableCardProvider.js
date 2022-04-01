@@ -40,5 +40,5 @@ function ExpandableCardProvider(props) {
   );
 }
 
-ExpandableCardProvider.whyDidYouRender = true
+ExpandableCardProvider.whyDidYouRender = true;
 export default React.memo(ExpandableCardProvider);

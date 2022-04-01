@@ -1,4 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
+import _ from "underscore";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
@@ -19,6 +20,8 @@ import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
 import TrackToggleButton from "../Shared/TrackToggleButton";
 import LinkWithIcon from "../Shared/LinkWithIcon";
 import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
+import { drawShapeLayerToggle } from "components/MapControls/commonHelper";
 import ContactSearch from "./components/ContactSearch";
 import { modifyExandableCardStyle } from "components/Shared/functions/shapeLayer";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
@@ -495,9 +498,19 @@ function ExpandableCard(props) {
   };
 
   const handleEditParcelAndShape = () => {
-    console.dir(stateApp.selectedParcel?.feature);
+    const additionalStates = {};
+    if (!_.isEmpty(stateApp.selectedParcel)) {
+      drawShapeLayerToggle(stateApp, "visible");
+      stateApp.draw.deleteAll();
+      getRotateAbleShapeFromSelectedQuarters(stateApp.selectedParcel.feature, stateApp.draw);
+      additionalStates.shapeEditMode = "rotate";
+    }
+
+    // Activiate the edit mode
     setStateApp((state) => ({
       ...state,
+      popupOpen: false,
+      expandedCard: false,
       showDrawShapesPopup: true,
       selectedUserDefinedLayer: state.selectedParcel?.feature || state.selectedShape?.feature,
       currentFeature: state.selectedParcel?.feature || state.selectedShape?.feature,
@@ -505,9 +518,10 @@ function ExpandableCard(props) {
       openDrawShapesControl: true,
       editParcelAndShape: true,
       editDraw: true,
+      ...additionalStates
     }));
     handleClose();
-  };
+  }
 
   // BreadCrum for Document's well
   const DisplayBreadCrums = () => {
