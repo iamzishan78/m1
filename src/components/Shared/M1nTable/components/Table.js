@@ -504,11 +504,11 @@ const useStyles = makeStyles((theme) => ({
   },
   tooltip: {
     position: "absolute",
-    top: -60,
+    top: 15,
     display: "none",
     color: "rgb(255, 0, 0)",
     width: 200,
-    left: -124,
+    left: -150,
   },
   // filenamediv: {
   //   cursor: "pointer",
@@ -4150,9 +4150,9 @@ function SubTable(props) {
           </Breadcrumbs>
         </div>
       );
-    } else if(typeof props.header === 'string'){
+    } else if (typeof props.header === 'string') {
       return <div style={{ fontSize: 16, marginLeft: 10 }}>{props.header}</div>
-    } else{
+    } else {
       return props.header;
     }
   };

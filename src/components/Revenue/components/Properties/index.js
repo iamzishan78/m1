@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { AppContext } from "AppContext";
 import { useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Properties() {
   const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   // redux
   const dispatch = useDispatch();
   const [filterToggle, setFilterToggle] = React.useState(false);
@@ -92,6 +92,13 @@ export default function Properties() {
     setPropertiesCount(count);
   };
 
+  useEffect(() => {
+    return () => {
+      setStateApp((state, props) => {
+        return { ...state, revenueSearchQuery: '' };
+      });
+    }
+  },[])
 
   // cards default
   const cardsDefault = [
