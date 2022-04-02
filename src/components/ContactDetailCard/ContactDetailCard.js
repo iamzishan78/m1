@@ -471,6 +471,16 @@ export default function ContactDetailCard(props) {
     }
   }, [tData, tLoading]);
 
+  useEffect(() => {
+    return () => {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        dealDialog: false,
+        activeDeal: { cardId: null, laneId: null },
+      }))
+    }
+  },[])
+
   const checkModuleHistory = () => {
     if (stateNav.contactFromMap) {
       return !!stateNav.contactFromMap;
