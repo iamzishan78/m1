@@ -63,6 +63,8 @@ const DonutChart = ({ productDetails, getUnit }) => {
             })
         })
 
+        donut.production.items = donut.production.items.reverse()
+
         setData(donut)
     }, [productDetails]);
 
@@ -130,7 +132,7 @@ const DonutChart = ({ productDetails, getUnit }) => {
         var chart = am4core.create('bar-chart', am4charts.XYChart);
 
         // Add data
-        chart.data = data.production.items.reverse()
+        chart.data = data.production.items
 
         var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
         categoryAxis.dataFields.category = "category";
