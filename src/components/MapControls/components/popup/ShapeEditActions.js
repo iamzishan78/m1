@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { copy } from "utils/helper";
 import IconButton from "@material-ui/core/IconButton";
 
@@ -7,8 +7,8 @@ import AutorenewIcon from "@material-ui/icons/Autorenew";
 import AspectRatioIcon from "@material-ui/icons/AspectRatio";
 import Tooltip from "@material-ui/core/Tooltip";
 
-import { drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
-import { changeModeToScaleRotate, drawBoundary, getDrawAdustedShape, getNewShapeFromSelectedQuarters, getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
+import { drawShapeLayerToggle } from "components/MapControls/commonHelper";
+import { getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 
 export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullEdit, setStateApp, stateApp }) {
 
