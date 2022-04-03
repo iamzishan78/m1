@@ -93,7 +93,7 @@ export default function ProductTable({ monthsInterval, items, name, unit }) {
   }
 
   const displayValue = (value) => {
-    return value ? `(${vf_number(value.toFixed(2))})` : '-'
+    return value ? `${vf_number(value.toFixed(2))}` : '-'
   }
 
   return (

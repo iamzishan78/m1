@@ -28,11 +28,15 @@ const StackedAreaChart = ({ id = "chartDiv3", items, monthsInterval }) => {
     const _data = [];
     monthsInterval?.forEach((month, index) => {
       _data.push({ month });
-      Object.keys(items).forEach((item) => {
-        const ownerVolumne = items[item].find((it) => it.name === (mode === 'production' ? 'OWNER VOLUME' : 'OWNER NET REVENUE'))
-        debugger;
+      Object.keys(items).reverse().forEach((item) => {
+        let ownerVolumne = items[item].find((it) => it.name === (mode === 'production' ? 'OWNER VOLUME' : 'OWNER NET REVENUE'))
+        let value = ownerVolumne.data[month]?.total
+        if (mode === 'production') {
+          if (item === 'GAS' && value) value = value / 6
+          if (item.includes('NGL') && value) { value = value * 0.02381 }
+        }
         if (typeof ownerVolumne.data[month] === 'object')
-          _data[index][item] = ownerVolumne.data[month]?.total || 0;
+          _data[index][item] = value || 0;
         else
           _data[index][item] = ownerVolumne.data[month] || 0;
       });
@@ -46,7 +50,6 @@ const StackedAreaChart = ({ id = "chartDiv3", items, monthsInterval }) => {
     // Themes end
 
     let chart = am4core.create(id, am4charts.XYChart);
-    console.log(data)
     chart.data = data;
 
     chart.dateFormatter.inputDateFormat = "M/yyyy";
@@ -75,7 +78,11 @@ const StackedAreaChart = ({ id = "chartDiv3", items, monthsInterval }) => {
       series.sequencedInterpolation = true;
       series.calculatePercent = true;
       series.calculateAggregates = true;
-      series.tooltipText = "[#000 font-size:17px]{name} {valueY.value}[/]";
+      if (mode === 'production')
+        series.tooltipText = "[#000 font-size:17px]{name} {valueY.value} BOE[/]";
+      else
+        series.tooltipText = "[#000 font-size:17px]{name} {valueY.value}[/]";
+
       series.tooltip.background.fill = am4core.color("#FFF");
       series.tooltip.getStrokeFromObject = true;
       series.tooltip.background.strokeWidth = 3;
@@ -92,7 +99,7 @@ const StackedAreaChart = ({ id = "chartDiv3", items, monthsInterval }) => {
   return (
     <div className={classes.graphCard}>
 
-      <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ padding: "15px 15px 0 15px" }}>
+      <Grid container direction="row" alignItems="center" style={{ display: "flex", justifyContent: "space-between", padding: "15px 15px 0 15px" }}>
         <Grid item>
           <Typography variant="h5" component="h5" style={{ fontWeight: "bolder" }} >
             Product Summary

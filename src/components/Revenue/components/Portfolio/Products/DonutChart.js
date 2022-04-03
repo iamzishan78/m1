@@ -35,23 +35,31 @@ const DonutChart = ({ productDetails, getUnit }) => {
         }
         Object.keys(productDetails).forEach((key) => {
             let volume = productDetails[key].find((pd) => pd.name === 'GROSS VOLUME')
-            let net = productDetails[key].find((pd) => pd.name === 'OWNER NET REVENUE')
+            let net = productDetails[key].find((pd) => pd.name === 'OWNER VOLUME')
+            let owner_net_revenue = productDetails[key].find((pd) => pd.name === 'OWNER NET REVENUE')
             let formatedVolume = volume.total
-            if (key === 'GAS' && formatedVolume) formatedVolume = formatedVolume / 6
-            if (key.includes('NGL') && formatedVolume) formatedVolume = formatedVolume * 0.02381
+            let formatedNet = net.total
+            if (key === 'GAS' && formatedVolume) {
+                formatedNet = formatedNet / 6
+                formatedVolume = formatedVolume / 6
+            }
+            if (key.includes('NGL') && formatedVolume) {
+                formatedNet = formatedNet * 0.02381
+                formatedVolume = formatedVolume * 0.02381
+            }
             donut.production.items.push({
                 category: key.includes('NGL') ? 'NGL' : key,
                 value: vf_number(formatedVolume.toFixed(2)),
                 [key.includes('NGL') ? 'NGL' : key]: vf_number(formatedVolume.toFixed(2)),
             })
             donut.production.table.push({
-                gross: vf_number(volume.total.toFixed(2)),
-                net: vf_number(net.total.toFixed(2)),
+                gross: vf_number(formatedVolume.toFixed(2)),
+                net: vf_number(formatedNet.toFixed(2)),
                 unit: getUnit(key)
             })
             donut.revenue.push({
                 category: key.includes('NGL') ? 'NGL' : key,
-                value: vf_number(net.total.toFixed(2)),
+                value: vf_number(owner_net_revenue.total.toFixed(2)),
             })
         })
 
@@ -122,10 +130,12 @@ const DonutChart = ({ productDetails, getUnit }) => {
         var chart = am4core.create('bar-chart', am4charts.XYChart);
 
         // Add data
-        chart.data = data.production.items
+        chart.data = data.production.items.reverse()
 
         var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
         categoryAxis.dataFields.category = "category";
+        categoryAxis.renderer.labels.template.fontSize = 16;
+        categoryAxis.renderer.labels.template.fontWeight = 'bold';
         categoryAxis.renderer.grid.template.location = 0;
 
         var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
@@ -144,7 +154,11 @@ const DonutChart = ({ productDetails, getUnit }) => {
 
     return (
         <div className={classes.graphCard}>
-            <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ padding: "15px 15px 0 15px" }}>
+            <Grid container direction="row" alignItems="center" style={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "15px 15px 0 15px"
+            }}>
                 <Grid item>
                     <Typography variant="h5" component="h5" style={{ fontWeight: "bolder" }} >
                         Product Summary
