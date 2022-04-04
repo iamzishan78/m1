@@ -37,6 +37,7 @@ const rawJobs = [
   { name: 'Interest Owner Upload', type: 'PARCELINTERESTS' },
   { name: 'Shape Owner Upload', type: 'SHAPEOWNER' },
   { name: 'Import Tracts', type: 'TRACTS', featureFlag: "TRACTIMPORT" },
+  { name: 'Import Units', type: 'UNITS', featureFlag: "UNITIMPORT" },
   { name: 'Check Detail Upload', type: 'CHECKDETAILS' }
 ]
 
