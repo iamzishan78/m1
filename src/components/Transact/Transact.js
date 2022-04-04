@@ -409,6 +409,16 @@ export default function Transact() {
     }
   }, [pipeToShowTab, dealFilter]);
 
+  useEffect(() => {
+    return () => {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        dealDialog: false,
+        activeDeal: { cardId: null, laneId: null },
+      }))
+    }
+  },[])
+
   const handleDataChange = (newData) => { };
 
   const handleCardClick = (cardId, metadata, laneId) => {
