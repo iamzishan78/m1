@@ -629,15 +629,16 @@ const ShapeActionsPopup = (props) => {
       },
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
+    }).then(result => {
+      if (isShapeResizeMode) {
+        let newPath = '';
+        if (stateApp.featureToEdit?.layer?.id === "parcel")
+          newPath = `/map/parcels/${stateApp.currentFeature?.id}`;
+        else newPath = `/map/units/${stateApp.currentFeature?.id}`;
+        history.location.pathname !== newPath && history.replace(newPath)
+      }
     });
     setTimeout(() => popupCloseAction(), 0);
-    if (isShapeResizeMode) {
-      let newPath = '';
-      if (stateApp.featureToEdit?.layer?.id === "parcel")
-        newPath = `/map/parcels/${stateApp.currentFeature?.id}`;
-      else newPath = `/map/units/${stateApp.currentFeature?.id}`;
-      history.location.pathname !== newPath && history.replace(newPath)
-    }
   };
 
   return (
