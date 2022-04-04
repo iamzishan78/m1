@@ -73,7 +73,6 @@ const DonutChart = ({ productDetails, getUnit }) => {
         var chart = am4core.create('product-donut', am4charts.PieChart);
 
         // setting data
-        console.log(data.revenue)
         chart.data = data.revenue;
 
         chart.startAngle = 180;

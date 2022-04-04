@@ -28,7 +28,7 @@ const StackedAreaChart = ({ id = "chartDiv3", items, monthsInterval }) => {
     const _data = [];
     monthsInterval?.forEach((month, index) => {
       _data.push({ month });
-      Object.keys(items).reverse().forEach((item) => {
+      Object.keys(items).forEach((item) => {
         let ownerVolumne = items[item].find((it) => it.name === (mode === 'production' ? 'OWNER VOLUME' : 'OWNER NET REVENUE'))
         let value = ownerVolumne.data[month]?.total
         if (mode === 'production') {
@@ -41,6 +41,7 @@ const StackedAreaChart = ({ id = "chartDiv3", items, monthsInterval }) => {
           _data[index][item] = ownerVolumne.data[month] || 0;
       });
     });
+
     setData(_data);
   }, [items, mode]);
 
@@ -69,8 +70,7 @@ const StackedAreaChart = ({ id = "chartDiv3", items, monthsInterval }) => {
     let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
     valueAxis.tooltip.disabled = true;
 
-
-    Object.keys(items).forEach((item) => {
+    (mode === 'production' ? Object.keys(items).reverse() : Object.keys(items)).forEach((item) => {
       let series = chart.series.push(new am4charts.LineSeries());
       series.dataFields.dateX = "month";
       series.dataFields.valueY = item;

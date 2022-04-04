@@ -27,9 +27,9 @@ const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
       _data.push({ month });
       items.forEach((item) => {
         if (typeof item.data[month] === 'object')
-          _data[index][item.name] = item.data[month]?.total?.toFixed(2) || 0;
+          _data[index][item.name.toUpperCase()] = item.data[month]?.total?.toFixed(2) || 0;
         else
-          _data[index][item.name] = item.data[month]?.toFixed(2) || 0;
+          _data[index][item.name.toUpperCase()] = item.data[month]?.toFixed(2) || 0;
       });
     });
     setData(_data);
@@ -65,8 +65,8 @@ const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
     items.forEach((item) => {
       let series = chart.series.push(new am4charts.LineSeries());
       series.dataFields.dateX = "month";
-      series.dataFields.valueY = item.name;
-      series.name = item.name;
+      series.dataFields.valueY = item.name.toUpperCase();
+      series.name = item.name.toUpperCase();
       series.sequencedInterpolation = true;
       series.calculatePercent = true;
       series.calculateAggregates = true;
