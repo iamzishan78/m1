@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { copy } from "utils/helper";
+import { bbox, bboxPolygon, envelope, featureCollection, square } from "@turf/turf";
 import IconButton from "@material-ui/core/IconButton";
 
 import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
@@ -11,6 +12,7 @@ import { drawShapeLayerToggle } from "components/MapControls/commonHelper";
 import { getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 
 export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullEdit, setStateApp, stateApp }) {
+  const [feature, setFeature] = useState();
 
   React.useEffect(() => {
     if (shapeEdit) {
@@ -20,6 +22,7 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
       if (shapeEditMode === "" && shapeEdit) {
         setStateApp(stateApp => ({ ...stateApp, shapeEdit: false }));
       }
+      if (!feature) setFeature(stateApp.currentFeature);
     }
   }, [shapeEdit, shapeEditMode]);
 
@@ -34,11 +37,11 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
       stateApp?.draw?.deleteAll();
       setStateApp((stateApp) => ({ ...stateApp, shapeEdit: false, shapeEditMode: "" }));
     } else {
-      const feature = copy(stateApp?.currentFeature)
+      const _feature = copy(feature);
 
       drawShapeLayerToggle(stateApp, "visible")
       stateApp.draw.deleteAll();
-      getRotateAbleShapeFromSelectedQuarters(feature, stateApp.draw);
+      getRotateAbleShapeFromSelectedQuarters(_feature, stateApp.draw);
       setStateApp((stateApp) => ({ ...stateApp, shapeEdit: true, shapeEditMode: "rotate" }));
     }
   }
@@ -50,12 +53,36 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
     } else {
       if (_shapeEditMode === "rotate") {
         stateApp?.draw?.deleteAll();
-        actionFullEdit(false);
-        // stateApp.draw.changeMode("direct_select", {
-        //   featureId: stateApp?.currentFeature?.id,
-        // });
       }
       setStateApp((stateApp) => ({ ...stateApp, shapeEditMode: "fullEdit" }));
+      if (stateApp.draw.get(feature.id)) {
+        stateApp.draw.delete(feature.id);
+        stateApp.draw.add(feature);
+      }
+      actionFullEdit(false);
+    }
+  }
+
+  const onPreciseEdit = (mode) => {
+    if (mode !== "resize") {
+      setStateApp((stateApp) => ({ ...stateApp, shapeEditMode: "" }));
+      actionFullEdit();
+    } else {
+      if (_shapeEditMode === "rotate") {
+        stateApp?.draw?.deleteAll();
+      }
+      setStateApp((stateApp) => ({ ...stateApp, shapeEditMode: "resize" }));
+      if (!feature.properties.isCircle) {
+        const _feature = copy(feature);
+        const _bbox = bbox(feature);
+        const _bboxPolygon = bboxPolygon(_bbox);
+        _feature.geometry = _bboxPolygon.geometry;
+        if (stateApp.draw.get(_feature.id)) {
+          stateApp.draw.delete(_feature.id);
+          stateApp.draw.add(_feature);
+        }
+      }
+      actionFullEdit(false);
     }
   }
 
@@ -68,7 +95,7 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
       </Tooltip>
 
       <Tooltip title="Resize Shape">
-        <IconButton size="small" aria-label="Resize Shape">
+        <IconButton size="small" aria-label="Resize Shape" onClick={() => onPreciseEdit(_shapeEditMode !== "resize" ? "resize" : "")}>
           <AspectRatioIcon color="secondary" className={_shapeEditMode === "resize" ? "selected" : ""} />
         </IconButton>
       </Tooltip>
