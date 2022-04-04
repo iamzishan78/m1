@@ -14,10 +14,9 @@ import PermitCardProvider from "../PermitCard/PermitCardProvider";
 import UdLayerCardProvider from "../UdLayerCard/UdLayerCardProvider";
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import PortalD from "./components/Portal";
-import Coordinates from "./components/Coordinates";
+// import Coordinates from "./components/Coordinates";
 import ZoomFault from "./components/ZoomFault";
 import HugeRequest from "./components/HugeRequest";
-import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
 import "./popup.css";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
@@ -27,7 +26,7 @@ import MarkerIcon from "./sprites/marker-icon.png";
 import DefaultFiltersTest from "./filtersDefaultTest";
 import FilterControl from "./components/FilterControl";
 import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
-import { copy, deepEqual, deepEqualObjects, getPolygonString } from "../Shared/functions";
+import { copy, deepEqualObjects, getPolygonString } from "../Shared/functions";
 import gjv from "geojson-validation";
 import { setMainMapState, showErrorMessage } from "../../actions";
 
@@ -4993,7 +4992,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         let Draw = new MapboxDraw({
           displayControlsDefault: false,
           userProperties: true,
-          // styles: SRStyle,
           styles: drawShapeStyles,
           modes: {
             ...MapboxDraw.modes,
