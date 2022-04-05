@@ -2500,6 +2500,7 @@ function SubTable(props) {
                     ) : (
                       <SearchWells
                         setRefetchData={props.setRefetchData}
+                        refetchData={props.refetchData}
                         // contactId={"props.contactData._id"}
                         relatedObject={row._id}
                         relatedObjectType="Property"

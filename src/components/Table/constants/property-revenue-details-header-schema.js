@@ -48,6 +48,7 @@ const RevenueStatementHeadCells = [
     label: "Property #",
     esKey: "property.number.keyword",
     options: { sort: true, filter: true },
+    style: { minWidth: 150 }
   },
   {
     name: "name",
