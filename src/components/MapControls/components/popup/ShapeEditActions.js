@@ -17,8 +17,6 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
   React.useEffect(() => {
     if (shapeEdit) {
       if (shapeEditMode === "rotate") onRotateHandle("rotate");
-
-      // if (shapeEditMode === "fullEdit") onEditModeChange("fullEdit");
       if (shapeEditMode === "" && shapeEdit) {
         setStateApp(stateApp => ({ ...stateApp, shapeEdit: false }));
       }
@@ -68,7 +66,8 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
       setStateApp((stateApp) => ({ ...stateApp, shapeEditMode: "" }));
       actionFullEdit();
     } else {
-      if (_shapeEditMode === "rotate") {
+      const editMode = _shapeEditMode;
+      if (editMode === "rotate") {
         stateApp?.draw?.deleteAll();
       }
       setStateApp((stateApp) => ({ ...stateApp, shapeEditMode: "resize" }));
@@ -77,7 +76,7 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
         const _bbox = bbox(feature);
         const _bboxPolygon = bboxPolygon(_bbox);
         _feature.geometry = _bboxPolygon.geometry;
-        if (stateApp.draw.get(_feature.id)) {
+        if (stateApp.draw.get(_feature.id) || editMode) {
           stateApp.draw.delete(_feature.id);
           stateApp.draw.add(_feature);
         }
