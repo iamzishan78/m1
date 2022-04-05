@@ -10,13 +10,12 @@ import { Box, FormControlLabel, Switch, Typography } from "@material-ui/core";
 import { getQtrFilterData } from "../../ParcelsDetailCard/ParcelSummary/helper";
 import { copy } from 'utils/helper';
 import SmallTXQtr from "components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/SmallTXQtr";
-import { changeModeToScaleRotate, drawBoundary, getDrawAdustedShape, getNewShapeFromSelectedQuarters, getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
+import { changeModeToScaleRotate, drawBoundary, getDrawAdustedShape, getNewShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 import { AppContext } from "AppContext";
 import { ExpandableCardContext } from "components/ExpandableCard/ExpandableCardContext";
-import { drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
+import { findBoundsMap } from "components/MapControls/commonHelper";
 import { useMutation } from "@apollo/client";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
-import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import { calculateLandArea } from "components/Shared/functions/shapeLayer";
 
 const useStyles = makeStyles((theme) => ({
@@ -121,7 +120,6 @@ export default function QtrQtrSelectorNew({ layerData }) {
   );
 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [, setStateMapControls] = useContext(MapControlsContext);
   const [, , handleCloseExpandableCard] = useContext(ExpandableCardContext);
 
   const eventsConfiguredRef = useRef(false);

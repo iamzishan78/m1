@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { copy } from "utils/helper";
-import { bbox, bboxPolygon, envelope, featureCollection, square } from "@turf/turf";
+import { bbox, bboxPolygon } from "@turf/turf";
 import IconButton from "@material-ui/core/IconButton";
 
 import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
@@ -37,14 +37,14 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
       stateApp?.draw?.deleteAll();
       setStateApp((stateApp) => ({ ...stateApp, shapeEdit: false, shapeEditMode: "" }));
     } else {
-      const _feature = copy(feature);
+      const _feature = copy(stateApp.currentFeature);
 
       drawShapeLayerToggle(stateApp, "visible")
       stateApp.draw.deleteAll();
       getRotateAbleShapeFromSelectedQuarters(_feature, stateApp.draw);
       setStateApp((stateApp) => ({ ...stateApp, shapeEdit: true, shapeEditMode: "rotate" }));
     }
-  }
+  };
 
   const onEditModeChange = (mode) => {
     if (mode !== "fullEdit") {
