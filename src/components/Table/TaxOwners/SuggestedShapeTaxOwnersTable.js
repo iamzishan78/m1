@@ -49,13 +49,12 @@ function SuggestedShapeTaxOwnersTable(props) {
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
-  const [selectedYear, setSelectedYear] = useState(2020); // production selected year state
+  const [selectedYear, setSelectedYear] = useState("2021"); // production selected year state
   const [count, setCount] = useState()  // local state for async count query
   const [suggestedOwnersCount, setSuggestedOwnersCount] = useState()  // local state for async count query
 
   const setM1nSelectedRowsIndexesRef = useRef();
-
-  // queries
+// queries
   const [getPaginatedShapeWellOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(
     SHAPE_WELL_OWNERS,
     {
@@ -99,6 +98,7 @@ function SuggestedShapeTaxOwnersTable(props) {
       variables: {
         polygon: queryPoly,
         userId: stateApp.user.mongoId,
+        selectedYear: selectedYear.toString(),
         sort: {},
         pagination: {
           first: 10000/*tableState.rowsPerPage*/,
@@ -111,7 +111,7 @@ function SuggestedShapeTaxOwnersTable(props) {
         polygon: queryPoly,
       },
     });
-  }, [props.parent]);
+  }, [props.parent, selectedYear]);
 
   useEffect(() => {
     if (tableData?.edges?.length > 0) {

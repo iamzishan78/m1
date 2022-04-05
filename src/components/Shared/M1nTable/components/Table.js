@@ -265,6 +265,9 @@ const useStyles = makeStyles((theme) => ({
       marginRight: (props) => (props.toolbarActionMarginRight ? props.toolbarActionMarginRight : "inherit"),
       flex: "0 1 auto",
     },
+   "& .MuiInput-root" : {
+      left: "100px !important"
+  },
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
       backgroundColor: "#fff",
@@ -4197,7 +4200,6 @@ function SubTable(props) {
       return <TableViewCol {...columnsProps} />;
     }
   };
-
   return (
     <div
       style={{
@@ -4230,7 +4232,7 @@ function SubTable(props) {
           columns={columns ? columns : []}
           components={{
             TableViewCol: CustomTableViewCol,
-            TableFilterList: props.header === "Tax Roll Ownership" && !isSearchOpen ? TableFilterList : null,
+            TableFilterList: (props.header === "Tax Roll Ownership" || props.parent === "potentialOwnersPerUnit") && !isSearchOpen ? TableFilterList : null,
             icons: {
               FilterIcon,
               ViewColumnIcon,
