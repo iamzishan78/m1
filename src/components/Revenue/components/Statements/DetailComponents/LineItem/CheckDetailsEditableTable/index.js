@@ -184,8 +184,8 @@ function CheckDetailsEditableTable(props) {
             const { data: checkDetail } = await client.query({
                 query: GET_ES_PAGINATED_LIST,
                 variables: {
-                    esIndex,
-                    search: `property.number:"${value}"`,
+                    esIndex: 'properties_flat',
+                    search: `number:"${value}"`,
                     pagination: {
                         first: 1,
                         keep_alive: "1micros"
@@ -194,7 +194,7 @@ function CheckDetailsEditableTable(props) {
             });
             let newProperty = {}
             if (checkDetail?.getESPaginatedList?.hits.length > 0) {
-                newProperty = checkDetail.getESPaginatedList.hits[0].property
+                newProperty = checkDetail.getESPaginatedList.hits[0]
                 setNewProperty(null)
             } else {
                 const { data: property } = await client.mutate({
@@ -254,7 +254,7 @@ function CheckDetailsEditableTable(props) {
                     <div id={`id-${cell.id}`}></div>
                     {
                         focus && cell.type === 'autocomplete' ? <AutoCompleteField label={cell.title} value={get(row, cell.id)} column={cell} index={index} onChange={onFieldChange(row._id, cell.id)}
-                            query={GET_ES_FILTER_LIST} esIndex={esIndex} />
+                            query={GET_ES_FILTER_LIST} esIndex='properties_flat' />
 
                             : focus && cell.type === 'date' ? <>
                                 <Date
