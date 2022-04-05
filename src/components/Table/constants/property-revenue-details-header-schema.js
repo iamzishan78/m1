@@ -14,6 +14,11 @@ const RevenueStatementHeadCells = [
     label: "Check #",
     esKey: "check.checkNumber.keyword",
     options: {
+      customHeadLabelRender: () => (
+        <>
+          <div style={{ minWidth: 80 }}>Check #</div>
+        </>
+      ),
       customRender: (value, tableMeta) => {
         return (
           <p
@@ -47,7 +52,13 @@ const RevenueStatementHeadCells = [
     name: "number",
     label: "Property #",
     esKey: "property.number.keyword",
-    options: { sort: true, filter: true },
+    options: { 
+      customHeadLabelRender: () => (
+        <>
+          <div style={{ minWidth: 80 }}>Property #</div>
+        </>
+      ),
+      sort: true, filter: true },
     style: { minWidth: 150 }
   },
   {
