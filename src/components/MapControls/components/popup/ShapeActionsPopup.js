@@ -599,11 +599,12 @@ const ShapeActionsPopup = (props) => {
 
   const confirmShapeEditing = () => {
     let { featureToEdit, currentFeature } = stateApp;
+    let drawFeature = null;
     if (isShapeResizeMode && stateApp.shapeEditMode === "rotate") {
       const quarters = ["NWNW", "NWSW", "SWNW", "SWSW", "SESW", "NESW", "SENW", "NENW", "SWSE", "NWSE", "SWNE", "NWNE", "SESE", "NESE", "SENE", "NENE"];
 
       let newShape = {};
-      const drawFeature = stateApp.draw.getAll().features[0]
+      drawFeature = stateApp.draw.getAll().features[0];
       if (drawFeature) {
         currentFeature.geometry = drawFeature.geometry
         newShape = getDrawAdustedShape(currentFeature, quarters);
@@ -638,7 +639,7 @@ const ShapeActionsPopup = (props) => {
         history.location.pathname !== newPath && history.replace(newPath)
       }
     });
-    setTimeout(() => popupCloseAction(), 0);
+    setTimeout(() => popupCloseAction({ rotateableFeature: drawFeature }), 0);
   };
 
   return (

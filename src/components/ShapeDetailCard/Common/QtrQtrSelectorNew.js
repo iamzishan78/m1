@@ -169,7 +169,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
     let layerDataCopy = copy(layerData)
 
     let newShape = {};
-    const drawFeature = stateApp.draw.getAll().features[0]
+    const drawFeature = stateApp.rotateableFeature;
     if (drawFeature) {
       feature.geometry = drawFeature.geometry
       newShape = getDrawAdustedShape(feature, values);

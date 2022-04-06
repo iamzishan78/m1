@@ -20,8 +20,6 @@ import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
 import TrackToggleButton from "../Shared/TrackToggleButton";
 import LinkWithIcon from "../Shared/LinkWithIcon";
 import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
-import { getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
-import { drawShapeLayerToggle } from "components/MapControls/commonHelper";
 import ContactSearch from "./components/ContactSearch";
 import { modifyExandableCardStyle } from "components/Shared/functions/shapeLayer";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
@@ -356,6 +354,7 @@ function ExpandableCard(props) {
         selectedPermit: null,
         expandedCard: false,
         viewDoc: null,
+        rotateableFeature: null
       }));
       // stateApp.selectedParcel?.id && history.replace({ pathname: '/' })
       history.replace({ pathname: '/' })

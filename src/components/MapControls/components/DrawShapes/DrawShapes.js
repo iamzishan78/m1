@@ -384,7 +384,7 @@ export default function DrawShapes() {
   //   setStateApp((state) => ({ ...state, editDraw: !!stateApp.currentFeature }));
   // }, [setStateApp, stateApp.currentFeature]);
 
-  const actionClose = () => {
+  const actionClose = (additionalProps = {}) => {
     clearMapAndCloseShapeActionsPopup(stateApp, setStateApp);
 
     // Removing layer of AOI Label
@@ -397,7 +397,8 @@ export default function DrawShapes() {
       selectedAoi: null,
       shapeGridWellsCount: 0,
       shapeGridOwnersCount: 0,
-      changeDrawShapeType: false
+      changeDrawShapeType: false,
+      ...additionalProps
     }));
     dispatch(
       setMapGridCardState({
