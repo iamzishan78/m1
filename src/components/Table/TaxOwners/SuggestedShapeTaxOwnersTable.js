@@ -109,6 +109,7 @@ function SuggestedShapeTaxOwnersTable(props) {
     getShapeOwnersWellCount({
       variables: {
         polygon: queryPoly,
+        selectedYear: selectedYear.toString()
       },
     });
   }, [props.parent, selectedYear]);
