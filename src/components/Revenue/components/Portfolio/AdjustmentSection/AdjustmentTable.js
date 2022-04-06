@@ -89,7 +89,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
   }
 
   const displayValue = (value) => {
-    return value ? `(${vf_number(value.toFixed(2))})` : '-'
+    return value ? <span>{vf_number(value.toFixed(2))}</span> : <span>-</span>
   }
 
   return (
@@ -122,7 +122,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
                         }
                           {item.name}
                         </span>
-                        <span style={{ display: 'grid', marginLeft: '25px', fontWeight: '200' }}> {selectedItems[index] && Object.keys(item.breakDown).map((key) => key ? key : '-')}</span>
+                        <span style={{ display: 'grid', marginLeft: '25px', fontWeight: '200' }}> {selectedItems[index] && Object.keys(item.breakDown).map((key) => key ? <span>{key}</span> : <span>-</span>)}</span>
                       </Box>
 
                     </TableCell>

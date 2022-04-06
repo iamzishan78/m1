@@ -38,13 +38,10 @@ const DonutChart = ({ productDetails, getUnit }) => {
             let net = productDetails[key].find((pd) => pd.name === 'OWNER VOLUME')
             let owner_net_revenue = productDetails[key].find((pd) => pd.name === 'OWNER NET REVENUE')
             let formatedVolume = volume.total
-            let formatedNet = net.total
             if (key === 'GAS' && formatedVolume) {
-                formatedNet = formatedNet / 6
                 formatedVolume = formatedVolume / 6
             }
             if (key.includes('NGL') && formatedVolume) {
-                formatedNet = formatedNet * 0.02381
                 formatedVolume = formatedVolume * 0.02381
             }
             donut.production.items.push({
@@ -53,8 +50,8 @@ const DonutChart = ({ productDetails, getUnit }) => {
                 [key.includes('NGL') ? 'NGL' : key]: vf_number(formatedVolume.toFixed(2)),
             })
             donut.production.table.push({
-                gross: vf_number(formatedVolume.toFixed(2)),
-                net: vf_number(formatedNet.toFixed(2)),
+                gross: vf_number(volume.total.toFixed(2)),
+                net: vf_number(net.total.toFixed(2)),
                 unit: getUnit(key)
             })
             donut.revenue.push({
