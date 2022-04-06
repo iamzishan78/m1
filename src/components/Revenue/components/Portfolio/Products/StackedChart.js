@@ -102,7 +102,7 @@ const StackedAreaChart = ({ id = "chartDiv3", items, monthsInterval }) => {
       <Grid container direction="row" alignItems="center" style={{ display: "flex", justifyContent: "space-between", padding: "15px 15px 0 15px" }}>
         <Grid item>
           <Typography variant="h5" component="h5" style={{ fontWeight: "bolder" }} >
-            Product Summary
+            Product By Month
           </Typography>
         </Grid>
         <Grid item>
