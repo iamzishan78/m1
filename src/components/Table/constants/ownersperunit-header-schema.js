@@ -211,6 +211,18 @@ const OwnersPerUnitHeadCells = [
       ],
     },
   },
+  {
+    name: "actionMenu",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 ];
 
 export default OwnersPerUnitHeadCells;
