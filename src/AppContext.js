@@ -156,6 +156,7 @@ const AppProvider = (props) => {
     selectedView: null,
     revenueSearchQuery: "",
     filtersData: [],
+    shapeEditMode: "",
 
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
