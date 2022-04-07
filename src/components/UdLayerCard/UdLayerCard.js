@@ -105,8 +105,6 @@ function UdLayerCard(props) {
         expandedCard: false,
         currentFeature: undefined,
         selectedUserDefinedLayer: null,
-        // editDraw: false,
-        // showShapeActionsPopup: false,
         viewDoc: null,
       }));
     }

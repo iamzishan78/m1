@@ -148,7 +148,6 @@ export default function MapControls(props) {
 
   const handleCloseShapeDrawer = () => {
     const { map } = stateApp;
-    // draw.delete(currentFeature?.id);
     setStateApp((state) => ({
       ...state,
       editDraw: false,
@@ -340,7 +339,7 @@ export default function MapControls(props) {
 
   return (
     <div>
-      { props.openSpeedDial !== false && (
+      {props.openSpeedDial !== false && (
         <SpeedDial
           id="speed"
           ariaLabel="SpeedDial"
