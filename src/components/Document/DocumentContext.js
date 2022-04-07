@@ -8,7 +8,7 @@ import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument'
 const DocumentContext = createContext([{}, () => { }]);
 
 const DocumentContextProvider = (props) => {
-  const [wells, setWells] = useState([])
+  const [wells, setWells] = useState([]);
 
   //Queries
   const [getWellsFromDocument, { data: wellsFromDocument, loading: getWellsLoading }] = useLazyQuery(GETWELLSFROMDOCUMENTS, {
@@ -22,7 +22,7 @@ const DocumentContextProvider = (props) => {
   }, [wellsFromDocument])
 
   return (
-    <DocumentContext.Provider value={{ getWellsFromDocument, wells, getWellsLoading, wellsFromDocument,setWells }}>
+    <DocumentContext.Provider value={{ getWellsFromDocument, wells, getWellsLoading, wellsFromDocument, setWells }}>
       {props.children}
     </DocumentContext.Provider>
   );

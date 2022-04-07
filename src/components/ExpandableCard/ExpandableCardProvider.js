@@ -4,7 +4,7 @@ import { ExpandableCardContextProvider } from "./ExpandableCardContext";
 import ExpandableCard from "./ExpandableCard";
 function ExpandableCardProvider(props) {
   return (
-    <ExpandableCardContextProvider>
+    <ExpandableCardContextProvider handleCloseExpandableCard={props.handleCloseExpandableCard}>
       <ExpandableCard
         expanded={props.expanded}
         handleCloseExpandableCard={props.handleCloseExpandableCard}
@@ -40,5 +40,5 @@ function ExpandableCardProvider(props) {
   );
 }
 
-ExpandableCardProvider.whyDidYouRender = true
+ExpandableCardProvider.whyDidYouRender = true;
 export default React.memo(ExpandableCardProvider);

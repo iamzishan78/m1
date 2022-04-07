@@ -166,7 +166,10 @@ function ContactsTable(props) {
 
   useEffect(() => {
     if (Contacts?.name === 'My Contacts' && !Contacts?.isPrivate) {
-      Contacts.filters[0].value = User.name
+      Contacts.filters[0] = {
+        field: "contactOwners.name",
+        value: User.name
+      };
     }
     setSelectedGridView(Contacts || defaultView);
     // eslint-disable-next-line
