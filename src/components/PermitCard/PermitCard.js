@@ -1,6 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
 import { AppContext } from "../../AppContext";
-import { ExpandableCardContext } from "../ExpandableCard/ExpandableCardContext";
 
 //material-ui components
 import { makeStyles, useTheme } from "@material-ui/core/styles";
@@ -15,8 +14,6 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import Button from '@material-ui/core/Button';
-
-
 
 //custom components
 import WellIcon from "./components/svgIcons/WellIcon";
@@ -156,7 +153,6 @@ export default function PermitCard() {
 
   // context
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
 
   // function state
   const [source, setSource] = useState(null);
