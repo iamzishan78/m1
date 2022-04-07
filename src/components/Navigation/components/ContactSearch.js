@@ -27,7 +27,6 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: 5,
     },
   },
-
   toggleBtn: {
     borderRadius: 5,
     color: "grey",
@@ -36,11 +35,9 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#1CB6DA44",
     },
   },
-
   activeBtn: {
     color: "#1CB6DA",
   },
-
   contactSearchField: {
     color: "grey",
 
@@ -70,7 +67,7 @@ const ContactSearch = () => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [search, setSearch] = useState(stateApp.contactSearchQuery);
-  const { quickActionsPanelState, activeModule } = useSelector(({ contact }) => contact);
+  const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
   const isAllowed = stateApp?.user?.features?.find(
     (f) => f.name === FEATURES.CONTACTSUBMENU

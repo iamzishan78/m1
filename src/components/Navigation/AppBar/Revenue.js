@@ -83,6 +83,7 @@ export default function RevenueAppBar(props) {
                 setESFilters={(filters) => dispatch(setRevenueKey('propertiesReportGroup', filters))}
                 setFilterToggle={() => { }}
                 isBackground={false}
+                noUpdate={true}
                 fullWidth
                 isShrink
               />

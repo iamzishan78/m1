@@ -106,10 +106,11 @@ export default function AcccessibleTable({ monthsInterval, items, total }) {
                 {items.map((item, index) => (
                   <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
                     <TableCell scope="row" className={classes.leftCells}>
+
                       {item.name}
                     </TableCell>
                     <TableCell scope="row" className={`${classes.leftRightColoredBorderCell} ${index === items.length - 1 ? classes.bottomColoredBorderCell : ""}`}>
-                      {formatRow(item, item.total)}
+                      {formatRow(item, item.total.toFixed(2))}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -142,7 +143,7 @@ export default function AcccessibleTable({ monthsInterval, items, total }) {
               <TableBody>
                 {items.map((item, index) => (
                   <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
-                    {item.data && Object.values(item.data).map((value) => <TableCell scope="row">{formatRow(item, vf_number(value))}</TableCell>)}
+                    {item.data && Object.values(item.data).map((value) => <TableCell scope="row">{formatRow(item, vf_number(value.toFixed(2)))}</TableCell>)}
                   </TableRow>
                 ))}
                 {/* <TableRow className={classes.highlightedRows}>

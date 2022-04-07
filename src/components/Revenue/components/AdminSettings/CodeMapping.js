@@ -76,6 +76,12 @@ const mappingTypeOptions = [
     name: "Interest type code",
   },
   {
+    value: "Tax Type",
+    esIndex: "checkdetails_flat",
+    key: "taxType.keyword",
+    name: "Tax type code",
+  },
+  {
     value: "Deduction Type",
     esIndex: "checkdetails_flat",
     key: "deductType.keyword",
@@ -96,7 +102,7 @@ const CodeMapping = () => {
   const [showEmpty, setShowEmpty] = useState(false);
   const [mappingType, setMappingType] = useState(mappingTypeOptions[0]);
 
-  const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
+  const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
   const [getUniqueType, { data: uniqueType }] = useLazyQuery(
@@ -205,7 +211,7 @@ const CodeMapping = () => {
                     />
                   }
                 />
-                <label style={{ fontSize: 12, marginTop: 4, marginRight:10 }}>
+                <label style={{ fontSize: 12, marginTop: 4, marginRight: 10 }}>
                   Show only empty fields
                 </label>
               </div>

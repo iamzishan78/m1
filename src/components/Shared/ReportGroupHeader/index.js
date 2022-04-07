@@ -48,6 +48,7 @@ export default function ReportGroupHeader({
   isBackground = true,
   fullWidth = false,
   isShrink = false,
+  noUpdate,
 }) {
   const classes = useStyles({ isBackground, isShrink });
   const [stateApp] = useContext(AppContext);
@@ -210,7 +211,7 @@ export default function ReportGroupHeader({
           )}
         </Grid>
 
-        {esFilters.length > 0 && (
+        {esFilters.length > 0 && !noUpdate && (
           <Grid item xs={5} md={5}>
             <Grid container display="flex" justify="flex-end" direction="row" spacing={2}>
               <Grid item>

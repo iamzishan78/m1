@@ -131,13 +131,14 @@ export const contactManagementRoutes = {
     component: "ActivitiesDashboard",
     search: false,
   },
-  // temporarily hide until campaign management is built
+  // temporarily hide until campaign management is built (removed isExcluded when we want to turn back on)
   CAMPAIGNS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Campaign Management",
     link: "/contacts/campaignManagement",
     component: "CampaignManagement",
     search: true,
+    isExcluded: true,
   },
   CAMPAIGN_DETAIL: {
     featureFlag: "CONTACTSUBMENU",

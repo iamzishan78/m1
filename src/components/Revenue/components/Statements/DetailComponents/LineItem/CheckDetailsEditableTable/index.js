@@ -22,7 +22,7 @@ import { usetableStyles } from "components/Table/Styles";
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import get from 'lodash/get'
 import set from 'lodash/set'
-import { Grid as TableGrid, Input } from 'components/Shared/SpreadsheetGrid'
+import { Grid as TableGrid, Input, Date } from 'components/Shared/SpreadsheetGrid'
 import Typography from '@material-ui/core/Typography';
 import { AutoCompleteField } from "./AutoCompleteField";
 import { ActionCell } from "./ActionCell";
@@ -75,7 +75,7 @@ const useStyles = makeStyles({
         display: "flex", flexDirection: "column-reverse"
     },
     tableGrid: {
-        backgroundColor: "#fff", overflow: "scroll",
+        backgroundColor: "#fff", overflowX: "auto",
         maxHeight: (p) => p.showPdfSection ? 'calc(50vh)' : 'calc(100vh)',
         // maxHeight: "500px",
     },
@@ -103,6 +103,8 @@ const useStyles = makeStyles({
 function CheckDetailsEditableTable(props) {
 
     const [rows, setRows] = useState(props.rows);
+    const [currentRowIndex, setCurrentRowIndex] = useState(null);
+    const [resetAnchor, setResetAnchor] = useState(false);
     const [currentRow, setCurrentRow] = useState(null);
     const [newProperty, setNewProperty] = useState(null);
     const [startPaginationAt, setStartPaginationAt] = useState(0);
@@ -168,8 +170,9 @@ function CheckDetailsEditableTable(props) {
 
 
     const onFieldChange = (rowId, field, type) => (async (value) => {
-        const cRow = currentRow
-        let newPropertyAdded = false
+        // const cRow = currentRow
+        setCurrentRowIndex(currentRow)
+        // let newPropertyAdded = false
         let row = rows.find((r) => r._id === rowId);
         if (get(row, field) == value && type !== 'date') return;
 
@@ -181,8 +184,8 @@ function CheckDetailsEditableTable(props) {
             const { data: checkDetail } = await client.query({
                 query: GET_ES_PAGINATED_LIST,
                 variables: {
-                    esIndex,
-                    search: `property.number:"${value}"`,
+                    esIndex: 'properties_flat',
+                    search: `number:"${value}"`,
                     pagination: {
                         first: 1,
                         keep_alive: "1micros"
@@ -191,7 +194,7 @@ function CheckDetailsEditableTable(props) {
             });
             let newProperty = {}
             if (checkDetail?.getESPaginatedList?.hits.length > 0) {
-                newProperty = checkDetail.getESPaginatedList.hits[0].property
+                newProperty = checkDetail.getESPaginatedList.hits[0]
                 setNewProperty(null)
             } else {
                 const { data: property } = await client.mutate({
@@ -206,7 +209,7 @@ function CheckDetailsEditableTable(props) {
                 });
                 newProperty = property.addProperty.property
                 setNewProperty(newProperty)
-                newPropertyAdded = true
+                // newPropertyAdded = true
             }
             Object.keys(newProperty).forEach((key) => { set(row, `property.${key}`, newProperty[key]) })
         }
@@ -223,12 +226,19 @@ function CheckDetailsEditableTable(props) {
         }).then((resp) => {
             if (!row._id && resp?.data?.updateCheckDetail?.updatedCheckDetail?._id){
                 set(row, `_id`, resp.data.updateCheckDetail.updatedCheckDetail._id)
-                if(newPropertyAdded){
-                    AnchorEl(document.getElementById(`${cRow}-0`));
-                }
+                setResetAnchor(!resetAnchor)
+                // if(newPropertyAdded){
+                //     AnchorEl(document.getElementById(`${cRow}-0`));
+                // }
             }
         })
     })
+
+    useEffect(() => {
+        if(currentRowIndex){
+            AnchorEl(document.getElementById(`${currentRowIndex}-0`))
+        }
+    },[resetAnchor]);
 
     const cols = () => RevenueStatementHeadCells.map((cell, index) => {
         cell.value = (row, { focus }) => {
@@ -244,10 +254,22 @@ function CheckDetailsEditableTable(props) {
                     <div id={`id-${cell.id}`}></div>
                     {
                         focus && cell.type === 'autocomplete' ? <AutoCompleteField label={cell.title} value={get(row, cell.id)} column={cell} index={index} onChange={onFieldChange(row._id, cell.id)}
-                            query={GET_ES_FILTER_LIST} esIndex={esIndex} />
+                            query={GET_ES_FILTER_LIST} esIndex='properties_flat' />
 
                             : focus && cell.type === 'date' ? <>
-                                <TextField
+                                <Date
+                                    // className={tclasses.dateRoot}
+                                    focus={focus}
+                                    value={date}
+                                    dataDateFormat="MM/DD/YYYY"
+                                    onChange={(value) => {
+                                        const date = moment(value).toISOString();
+                                        let dRow = rows.find((r) => r._id === row._id);
+                                        set(dRow, cell.id, date)
+                                        onFieldChange(row._id, cell.id, cell.type)(date)
+                                    }}
+                                />
+                                {/* <TextField
                                     id='dateType'
                                     type="date"
                                     className={tclasses.dateRoot}
@@ -291,7 +313,7 @@ function CheckDetailsEditableTable(props) {
                                             </IconButton>
                                         ),
                                     }}
-                                />
+                                />  */}
                             </>
 
                                 : cell.type === 'action' ? <ActionCell id={cell.id + index} onChange={onFieldChange(row._id, 'IsDeleted')} />

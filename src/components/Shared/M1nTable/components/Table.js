@@ -232,6 +232,9 @@ const useStyles = makeStyles((theme) => ({
   table: {
     "& .MuiTableBody-root": {
       height: "50px",
+      "& .MuiTableCell-paddingCheckbox": {
+        zIndex: (props) => (typeof props.headerZIndex !== 'undefined' ? props.headerZIndex : 100),
+      },
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
       padding: "5px 11px 5px 20px !important",
@@ -317,7 +320,7 @@ const useStyles = makeStyles((theme) => ({
       opacity: "1",
       transition: "opacity 1s ease-out",
       webkitTransition: "opacity 1s ease-out",
-      zIndex: 999,
+      zIndex: (props) => (typeof props.headerZIndex !== 'undefined' ? props.headerZIndex :999),
       position: "sticky",
     },
     "& tbody": {
@@ -504,11 +507,11 @@ const useStyles = makeStyles((theme) => ({
   },
   tooltip: {
     position: "absolute",
-    top: -60,
+    top: 15,
     display: "none",
     color: "rgb(255, 0, 0)",
     width: 200,
-    left: -124,
+    left: -150,
   },
   // filenamediv: {
   //   cursor: "pointer",
@@ -2497,6 +2500,7 @@ function SubTable(props) {
                     ) : (
                       <SearchWells
                         setRefetchData={props.setRefetchData}
+                        refetchData={props.refetchData}
                         // contactId={"props.contactData._id"}
                         relatedObject={row._id}
                         relatedObjectType="Property"
@@ -4150,9 +4154,9 @@ function SubTable(props) {
           </Breadcrumbs>
         </div>
       );
-    } else if(typeof props.header === 'string'){
+    } else if (typeof props.header === 'string') {
       return <div style={{ fontSize: 16, marginLeft: 10 }}>{props.header}</div>
-    } else{
+    } else {
       return props.header;
     }
   };
