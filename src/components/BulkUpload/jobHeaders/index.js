@@ -5,11 +5,18 @@ const PARCELINTERESTS = require("./PARCELINTERESTS").default;
 const SHAPEOWNER = require("./SHAPEOWNER").default;
 const CHECKDETAILS = require("./CHECKDETAILS").default;
 
-module.exports = {
-    CONTACTS,
-    TRACTS,
-    UNITS,
-    PARCELINTERESTS,
-    SHAPEOWNER,
-    CHECKDETAILS
+
+
+const eportData = { CONTACTS, TRACTS, UNITS, PARCELINTERESTS, SHAPEOWNER, CHECKDETAILS }
+export default eportData
+
+
+
+export const addAfterLabel = (data, label, insertData) => {
+    const index = data.findIndex((row) => row.label === label)
+    data.splice(index, 0, insertData);
+}
+
+export const removeByLabel = (data, label) => {
+    return data.filter((row) => row.label !== label)
 }

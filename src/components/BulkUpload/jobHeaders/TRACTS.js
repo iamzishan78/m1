@@ -83,6 +83,5 @@ const tracts = [
 ];
 
 tracts.find((key) => key.actual_key === 'entityDetail.state').label = 'AddressState'
-// tracts.find((key) => key.actual_key === 'ownerType').label = 'Entity Type'
-console.log(tracts)
+
 export default tracts

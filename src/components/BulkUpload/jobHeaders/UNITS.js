@@ -1,6 +1,7 @@
-const PARCELINTERESTS_FIELDS = require("./PARCELINTERESTS").default
+import { addAfterLabel, removeByLabel } from "./helper";
+import SHAPEOWNER from "./SHAPEOWNER";
 
-export default [
+const unit = [
     {
         label: "State",
         mapped_key: "",
@@ -79,5 +80,60 @@ export default [
         required: true,
         actual_key: "landgrid.name",
     },
-    ...PARCELINTERESTS_FIELDS
+    ...SHAPEOWNER,
+    {
+        label: "Unit Number",
+        mapped_key: "",
+        required: true,
+        actual_key: "landgrid.name",
+    },
+    {
+        label: "Unit Acres",
+        mapped_key: "",
+        required: true,
+        actual_key: "landgrid.name",
+    },
+    {
+        label: "Unit Pricing",
+        mapped_key: "",
+        required: true,
+        actual_key: "landgrid.name",
+    },
 ];
+
+removeByLabel(unit, 'Shape Type')
+removeByLabel(unit, 'Shape Name')
+
+unit.forEach((row) => {
+    row.label.replace('Shape', 'Unit')
+})
+
+addAfterLabel(unit, 'Unit Id', {
+    label: "Unit Name",
+    mapped_key: "",
+    required: true,
+    actual_key: "shape.uName",
+})
+
+addAfterLabel(unit, 'Unit Name', {
+    label: "Unit Number",
+    mapped_key: "",
+    required: true,
+    actual_key: "shape.uNumber",
+})
+
+addAfterLabel(unit, 'Unit Number', {
+    label: "Unit Acres",
+    mapped_key: "",
+    required: true,
+    actual_key: "shape.uAcres",
+})
+
+addAfterLabel(unit, 'Unit Acres', {
+    label: "Unit Pricing",
+    mapped_key: "",
+    required: true,
+    actual_key: "shape.uUnitPricing",
+})
+
+export default unit;
