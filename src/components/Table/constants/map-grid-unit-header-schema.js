@@ -133,7 +133,7 @@ const unitsColumnHeaders = [
       esKey: "interestSummary.unitInterestCount",
       options: {
         sort: true,
-        filter: false,
+        filter: true,
       },
     },
     {
