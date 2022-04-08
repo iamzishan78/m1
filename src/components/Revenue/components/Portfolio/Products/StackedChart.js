@@ -2,6 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
+import { Button, ButtonGroup, Grid, Typography } from "@material-ui/core";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 
 const { useEffect, useState } = React;
@@ -17,23 +18,32 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
+const StackedAreaChart = ({ id = "chartDiv3", items, monthsInterval }) => {
   const classes = useStyles();
+  const [mode, setMode] = useState('revenue');
+  const selectedCss = { backgroundColor: '#05aff0', color: '#ffff' }
   const [data, setData] = useState([]);
 
   useEffect(() => {
     const _data = [];
     monthsInterval?.forEach((month, index) => {
       _data.push({ month });
-      items.forEach((item) => {
-        if (typeof item.data[month] === 'object')
-          _data[index][item.name.toUpperCase()] = item.data[month]?.total?.toFixed(2) || 0;
+      Object.keys(items).forEach((item) => {
+        let ownerVolumne = items[item].find((it) => it.name === (mode === 'production' ? 'OWNER VOLUME' : 'OWNER NET REVENUE'))
+        let value = ownerVolumne.data[month]?.total
+        if (mode === 'production') {
+          if (item === 'GAS' && value) value = value / 6
+          if (item.includes('NGL') && value) { value = value * 0.02381 }
+        }
+        if (typeof ownerVolumne.data[month] === 'object')
+          _data[index][item] = value || 0;
         else
-          _data[index][item.name.toUpperCase()] = item.data[month]?.toFixed(2) || 0;
+          _data[index][item] = ownerVolumne.data[month] || 0;
       });
     });
+
     setData(_data);
-  }, [items]);
+  }, [items, mode]);
 
   useEffect(() => {
     // Themes begin
@@ -41,7 +51,6 @@ const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
     // Themes end
 
     let chart = am4core.create(id, am4charts.XYChart);
-    console.log("StackedChart", data)
     chart.data = data;
 
     chart.dateFormatter.inputDateFormat = "M/yyyy";
@@ -61,16 +70,19 @@ const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
     let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
     valueAxis.tooltip.disabled = true;
 
-
-    items.forEach((item) => {
+    (mode === 'production' ? Object.keys(items).reverse() : Object.keys(items)).forEach((item) => {
       let series = chart.series.push(new am4charts.LineSeries());
       series.dataFields.dateX = "month";
-      series.dataFields.valueY = item.name.toUpperCase();
-      series.name = item.name.toUpperCase();
+      series.dataFields.valueY = item;
+      series.name = item;
       series.sequencedInterpolation = true;
       series.calculatePercent = true;
       series.calculateAggregates = true;
-      series.tooltipText = "[#000 font-size:17px]{name} {valueY.value}[/]";
+      if (mode === 'production')
+        series.tooltipText = "[#000 font-size:17px]{name} {valueY.value} BOE[/]";
+      else
+        series.tooltipText = "[#000 font-size:17px]{name} {valueY.value}[/]";
+
       series.tooltip.background.fill = am4core.color("#FFF");
       series.tooltip.getStrokeFromObject = true;
       series.tooltip.background.strokeWidth = 3;
@@ -83,10 +95,26 @@ const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
     chart.cursor = new am4charts.XYCursor();
     chart.cursor.xAxis = dateAxis;
     chart.scrollbarX = new am4core.Scrollbar();
-  }, [data]);
+  }, [data, mode]);
   return (
     <div className={classes.graphCard}>
-      <div id={id} style={{ height: "100%" }} />
+
+      <Grid container direction="row" alignItems="center" style={{ display: "flex", justifyContent: "space-between", padding: "15px 15px 0 15px" }}>
+        <Grid item>
+          <Typography variant="h5" component="h5" style={{ fontWeight: "bolder" }} >
+            Product By Month
+          </Typography>
+        </Grid>
+        <Grid item>
+          <ButtonGroup size="small" aria-label="small outlined button group">
+            <Button onClick={() => setMode('revenue')} style={mode === 'revenue' ? selectedCss : {}}>REVENUE</Button>
+            <Button onClick={() => setMode('production')} style={mode === 'production' ? selectedCss : {}}>PRODUCTION</Button>
+          </ButtonGroup>
+        </Grid>
+      </Grid>
+
+
+      <div id={id} style={{ height: "85%" }} />
     </div>
   );
 };

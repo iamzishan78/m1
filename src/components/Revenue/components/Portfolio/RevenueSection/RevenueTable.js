@@ -74,13 +74,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AcccessibleTable({ monthsInterval, items, total }) {
+export default function AcccessibleTable({ monthsInterval, items }) {
   const classes = useStyles();
 
   const formatRow = (item, value) => {
-    if (item.name === 'Adjustments') return `(${value})`
-    if (item.name === 'Net Revenue') return <span style={{ fontSize: '16px', fontWeight: '700' }}>{value}</span>
-    return value
+    if (item.name === 'Adjustments') return `(${vf_number(value.toFixed(2))})`
+    if (item.name === 'Net Revenue') return <span style={{ fontSize: '16px', fontWeight: '700' }}>{vf_number(value.toFixed(2))}</span>
+    return vf_number(value.toFixed(2))
   }
 
   return (
@@ -110,7 +110,7 @@ export default function AcccessibleTable({ monthsInterval, items, total }) {
                       {item.name}
                     </TableCell>
                     <TableCell scope="row" className={`${classes.leftRightColoredBorderCell} ${index === items.length - 1 ? classes.bottomColoredBorderCell : ""}`}>
-                      {formatRow(item, item.total.toFixed(2))}
+                      {formatRow(item, item.total)}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -143,7 +143,7 @@ export default function AcccessibleTable({ monthsInterval, items, total }) {
               <TableBody>
                 {items.map((item, index) => (
                   <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
-                    {item.data && Object.values(item.data).map((value) => <TableCell scope="row">{formatRow(item, vf_number(value.toFixed(2)))}</TableCell>)}
+                    {item.data && Object.values(item.data).map((value) => <TableCell scope="row">{formatRow(item, value)}</TableCell>)}
                   </TableRow>
                 ))}
                 {/* <TableRow className={classes.highlightedRows}>

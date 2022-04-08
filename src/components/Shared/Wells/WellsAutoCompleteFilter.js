@@ -308,7 +308,7 @@ function Search(props) {
         relatedObject: props.relatedObject,
         relatedObjectType: props.relatedObjectType
       },
-      refetchQueries: ["getWellsDescriptors"],
+      // refetchQueries: ["getWellsDescriptors"],
     }).then((res) => {
       if(props.setRefetchData)
         props.setRefetchData(!props.refetchData);
