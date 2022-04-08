@@ -1,5 +1,16 @@
 const unitsColumnHeaders = [
-
+    {
+      name: "id",
+      options: {
+        display: false,
+        filter: false,
+        searchable: false,
+        sort: false,
+        download: false,
+        print: false,
+        viewColumns: false,
+      },
+    },
     {
       name: "name",
       label: "Unit Name",
@@ -119,7 +130,7 @@ const unitsColumnHeaders = [
     {
       name: "ownersCount",
       label: "Owners",
-      esKey: "ownerCount.keyword",
+      esKey: "interestSummary.unitInterestCount",
       options: {
         sort: true,
         filter: false,
