@@ -5,7 +5,7 @@ import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
 import { ColorBox } from "material-ui-color";
-import { Typography, Paper, Grid, Button, IconButton, Divider, FormControlLabel, Switch, Box, Tooltip } from "@material-ui/core";
+import { Typography, Paper, Grid, Button, IconButton, Divider, FormControlLabel, Switch, Box, Tooltip, ClickAwayListener } from "@material-ui/core";
 import { Close as CloseIcon } from "@material-ui/icons";
 import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
 import Input from "@material-ui/core/Input";
@@ -193,7 +193,7 @@ function LayerStyling(props) {
       if (currentLayer && currentLayer.layerPaintProps && currentLayer.layerPaintProps[0] && currentLayer.layerPaintProps[0].paintType) {
         const layerPaintProps = copy(currentLayer.layerPaintProps);
 
-        for(let i = 0; i < layerPaintProps.length; i++ ) {
+        for (let i = 0; i < layerPaintProps.length; i++) {
           if (layerPaintProps[i]?.labelProps?.symbolProps?.visibility)
             delete layerPaintProps[i].labelProps.symbolProps.visibility;
 
@@ -432,6 +432,7 @@ function LayerStyling(props) {
 
   const WidthPicker = () => {
     return (
+
       <FormControl
         style={{
           display: "flex",
@@ -459,106 +460,92 @@ function LayerStyling(props) {
   };
 
   return (
-    <div style={{ width: '100%' }}>
-      <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "15px" }}>
-        <Grid item>
-          <Typography variant="h5">{layer.layerName === "Parcels" ? "Tracts" : layer.layerName}</Typography>
-        </Grid>
-        <Grid item>
-          <IconButton size="small" onClick={handleClose}>
-            <CloseIcon />
-          </IconButton>
-        </Grid>
-      </Grid>
-      <Divider />
-      <FeatureFlag  feature={FEATURES.SHAPEELASTIC}>
-        {layer.file &&
-          <>
-            <Grid container spacing={3} style={{ padding: "10px 20px 10px 17px", justifyContent: "space-between" }}>
-              <Grid item style={{ display: "flex" }}>
-                <Box borderColor={getLayerColor(layer, "layer", {})} borderLeft={4} style={{ padding: "0 0 0 16px" }}>
-                </Box>
-                <Box display='inline'>
-                  <Typography variant="h6" noWrap>
-                    {fileName}
-                  </Typography>
-                  <Typography id={layer.fileName} noWrap>
-                    {rows} rows
-                  </Typography>
-                </Box>
-
-              </Grid>
-              <Grid style={{ padding: '25px 25px 0 0' }}>
-                <Tooltip title="Grid">
-                  <IconButton size="small" aria-label="Grid" className={classes.gridOnIcon} onClick={() => {
-                    setStateApp((state) => ({
-                      ...state,
-                      layerGridCard: true,
-                    }));
-                    handleClose()
-                    dispatch(setMapGridCardState({ mapGridCardActivated: true }));
-                  }}>
-                    <GridOnIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-            </Grid>
-            <Divider />
-          </>
-        }
-      </FeatureFlag>
-      <Grid container spacing={3} style={{ padding: "20px" }}>
-        {layer.layerSettings?.colorable &&
-          <Grid item xs={12}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="h6">Layer label visibility</Typography>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={layerLabelVisibility === 'visible'}
-                    onChange={() => setLayerLabelVisibility(layerLabelVisibility === 'visible' ? 'none' : 'visible')}
-                    size="small"
-                  />
-                }
-              />
-            </div>
+    <ClickAwayListener onClickAway={handleApplyChanges}>
+      <div style={{ width: '100%' }}>
+        <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "15px" }}>
+          <Grid item>
+            <Typography variant="h5">{layer.layerName === "Parcels" ? "Tracts" : layer.layerName}</Typography>
           </Grid>
-        }
-
-        {(layer.layerSettings?.interaction?.interactionAble || layer.layerType === 'file layer') &&
-          <Grid item xs={12}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="h6">Layer clickable</Typography>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={layerClickability}
-                    onChange={(e) => setLayerClickability(!layerClickability)}
-                    size="small"
-                  />
-                }
-              />
-            </div>
+          <Grid item>
+            <IconButton size="small" onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
           </Grid>
-        }
+        </Grid>
+        <Divider />
+        <FeatureFlag feature={FEATURES.SHAPEELASTIC}>
+          {layer.file &&
+            <>
+              <Grid container spacing={3} style={{ padding: "10px 20px 10px 17px", justifyContent: "space-between" }}>
+                <Grid item style={{ display: "flex" }}>
+                  <Box borderColor={getLayerColor(layer, "layer", {})} borderLeft={4} style={{ padding: "0 0 0 16px" }}>
+                  </Box>
+                  <Box display='inline'>
+                    <Typography variant="h6" noWrap>
+                      {fileName}
+                    </Typography>
+                    <Typography id={layer.fileName} noWrap>
+                      {rows} rows
+                    </Typography>
+                  </Box>
 
-        {layer.layerSettings?.colorable &&
-          <>
+                </Grid>
+                <Grid style={{ padding: '25px 25px 0 0' }}>
+                  <Tooltip title="Grid">
+                    <IconButton size="small" aria-label="Grid" className={classes.gridOnIcon} onClick={() => {
+                      setStateApp((state) => ({
+                        ...state,
+                        layerGridCard: true,
+                      }));
+                      handleClose()
+                      dispatch(setMapGridCardState({ mapGridCardActivated: true }));
+                    }}>
+                      <GridOnIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+              </Grid>
+              <Divider />
+            </>
+          }
+        </FeatureFlag>
+        <Grid container spacing={3} style={{ padding: "20px" }}>
+          {layer.layerSettings?.colorable &&
             <Grid item xs={12}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography variant="h6">Fill Color</Typography>
-                {layerType === "line" && <WidthPicker />}
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography variant="h6">Layer label visibility</Typography>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={layerLabelVisibility === 'visible'}
+                      onChange={() => setLayerLabelVisibility(layerLabelVisibility === 'visible' ? 'none' : 'visible')}
+                      size="small"
+                    />
+                  }
+                />
               </div>
-              <Paper>
-                <ColorPickerStyledBox value={fillColor} onChange={(color) => fillColorChange(color)} />
-              </Paper>
             </Grid>
-            {initialStrokeColor && (
+          }
+
+          {(layer.layerSettings?.interaction?.interactionAble || layer.layerType === 'file layer') &&
+            <Grid item xs={12}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography variant="h6">Layer clickable</Typography>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={layerClickability}
+                      onChange={(e) => setLayerClickability(!layerClickability)}
+                      size="small"
+                    />
+                  }
+                />
+              </div>
+            </Grid>
+          }
+
+          {layer.layerSettings?.colorable &&
+            <>
               <Grid item xs={12}>
                 <div
                   style={{
@@ -566,33 +553,33 @@ function LayerStyling(props) {
                     justifyContent: "space-between",
                   }}
                 >
-                  <Typography variant="h6">Stroke Color</Typography>
-                  {layerType === "circle" && <WidthPicker />}
+                  <Typography variant="h6">Fill Color</Typography>
+                  {layerType === "line" && <WidthPicker />}
                 </div>
                 <Paper>
-                  <ColorPickerStyledBox value={strokeColor} onChange={(color) => strokeColorChange(color)} />
+                  <ColorPickerStyledBox value={fillColor} onChange={(color) => fillColorChange(color)} />
                 </Paper>
               </Grid>
-            )}
-          </>}
-
-      </Grid>
-      <div
-        style={{
-          position: "absolute",
-          right: "0px",
-          bottom: "0px",
-          padding: "15px",
-        }}
-      >
-        <Button autoFocus onClick={handleClose} color="primary" >
-          Cancel
-        </Button>
-        <Button autoFocus onClick={handleApplyChanges} color="primary">
-          Apply Changes
-        </Button>
+              {initialStrokeColor && (
+                <Grid item xs={12}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Typography variant="h6">Stroke Color</Typography>
+                    {layerType === "circle" && <WidthPicker />}
+                  </div>
+                  <Paper>
+                    <ColorPickerStyledBox value={strokeColor} onChange={(color) => strokeColorChange(color)} />
+                  </Paper>
+                </Grid>
+              )}
+            </>}
+        </Grid>
       </div>
-    </div>
+    </ClickAwayListener>
   );
 }
 
