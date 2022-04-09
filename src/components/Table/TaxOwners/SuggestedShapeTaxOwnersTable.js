@@ -3,7 +3,7 @@ import React, { useContext, useState, useEffect, useRef } from "react";
 // context
 import { AppContext } from "AppContext";
 
-import { Container, Button } from "@material-ui/core";
+import { Container, Button, Switch, Grid, FormControlLabel } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 
@@ -46,15 +46,17 @@ function SuggestedShapeTaxOwnersTable(props) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [showConvertDialog, setShowConvertDialog] = useState(false)
 
+
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
   const [selectedYear, setSelectedYear] = useState("2021"); // production selected year state
   const [count, setCount] = useState()  // local state for async count query
   const [suggestedOwnersCount, setSuggestedOwnersCount] = useState()  // local state for async count query
+  const [filterByWells, setFilterByWells] = useState(false); // production selected year state
 
   const setM1nSelectedRowsIndexesRef = useRef();
-// queries
+  // queries
   const [getPaginatedShapeWellOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(
     SHAPE_WELL_OWNERS,
     {
@@ -93,12 +95,13 @@ function SuggestedShapeTaxOwnersTable(props) {
   ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
     const queryPoly = getPolygonString(props.customLayer?.shape)
-
+    console.log("customlayer in onwers : ", props.customLayer)
     getPaginatedShapeWellOwners({
       variables: {
         polygon: queryPoly,
         userId: stateApp.user.mongoId,
         selectedYear: selectedYear.toString(),
+        filterByWells: filterByWells ? props.customLayer._id : '',
         sort: {},
         pagination: {
           first: 10000/*tableState.rowsPerPage*/,
@@ -112,7 +115,7 @@ function SuggestedShapeTaxOwnersTable(props) {
         selectedYear: selectedYear.toString()
       },
     });
-  }, [props.parent, selectedYear]);
+  }, [props.parent, selectedYear, filterByWells]);
 
   useEffect(() => {
     if (tableData?.edges?.length > 0) {
@@ -241,15 +244,38 @@ function SuggestedShapeTaxOwnersTable(props) {
     filter: true,
     customToolbar: () => {
 
-      return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-        <Button
-          color="secondary"
-          className={classes.multiSelectionTopBarButtons}
-          disabled={true}
-        // onClick={addAction}
-        >
-          + ADD TO {props.shapeType?.toUpperCase()}
-        </Button>
+      return <div style={{ display: "inline", "float": "left", width: '343px', marginRight: "15px", marginTop: "5px" }}>
+        <Grid container >
+          <Grid item xs={6}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={filterByWells}
+                  onChange={() => {
+                    filterOwnersByWells(!filterByWells)
+                  }}
+
+                  name="checked"
+                  inputProps={{ "aria-label": "primary checkbox" }}
+                />
+              }
+              label="Filter by wells"
+            />
+
+          </Grid>
+          <Grid item xs={6}>
+            <Button
+              color="secondary"
+              className={classes.multiSelectionTopBarButtons}
+              disabled={true}
+            // onClick={addAction}
+            >
+              + ADD TO {props.shapeType?.toUpperCase()}
+            </Button>
+          </Grid>
+
+        </Grid>
+
       </div>
     },
     customToolbarSelect: ({ data }) => {
@@ -274,6 +300,10 @@ function SuggestedShapeTaxOwnersTable(props) {
   ////////////-----Add your code section here-----///////////////////////
   const getWellOwnersByYear = (selectedYear) => {
     setSelectedYear(selectedYear);
+  };
+
+  const filterOwnersByWells = (filter) => {
+    setFilterByWells(filter);
   };
 
   const pickSelectedRows = async (rows) => {

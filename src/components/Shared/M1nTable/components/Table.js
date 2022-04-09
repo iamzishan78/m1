@@ -265,9 +265,9 @@ const useStyles = makeStyles((theme) => ({
       marginRight: (props) => (props.toolbarActionMarginRight ? props.toolbarActionMarginRight : "inherit"),
       flex: "0 1 auto",
     },
-   "& .MuiInput-root" : {
+    "& .MuiInput-root": {
       left: "100px !important"
-  },
+    },
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
       backgroundColor: "#fff",
