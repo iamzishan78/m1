@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   headerCell: {
+    width: '200px',
     backgroundColor: "#f1f4fb !important",
     paddingBottom: "18px !important",
   },
