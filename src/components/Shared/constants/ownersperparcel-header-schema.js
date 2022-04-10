@@ -159,6 +159,7 @@ const OwnersPerParcelHeadCells = [
       download: false,
       print: false,
       viewColumns: false,
+      parent: "Tract detail"
     },
   },
 

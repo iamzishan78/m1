@@ -221,6 +221,7 @@ const OwnersPerUnitHeadCells = [
       download: false,
       print: false,
       viewColumns: false,
+      parent: "Unit detail"
     },
   },
 ];
