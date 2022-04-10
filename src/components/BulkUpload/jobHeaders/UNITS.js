@@ -80,39 +80,21 @@ const unit = [
         required: true,
         actual_key: "landgrid.name",
     },
-    ...SHAPEOWNER,
-    {
-        label: "Unit Number",
-        mapped_key: "",
-        required: true,
-        actual_key: "landgrid.name",
-    },
-    {
-        label: "Unit Acres",
-        mapped_key: "",
-        required: true,
-        actual_key: "landgrid.name",
-    },
-    {
-        label: "Unit Pricing",
-        mapped_key: "",
-        required: true,
-        actual_key: "landgrid.name",
-    },
+    ...SHAPEOWNER
 ];
 
 removeByLabel(unit, 'Shape Type')
 removeByLabel(unit, 'Shape Name')
 
 unit.forEach((row) => {
-    row.label.replace('Shape', 'Unit')
+    row.label = row.label.replace('Shape', 'Unit')
 })
 
 addAfterLabel(unit, 'Unit Id', {
     label: "Unit Name",
     mapped_key: "",
     required: true,
-    actual_key: "shape.uName",
+    actual_key: "shape.name",
 })
 
 addAfterLabel(unit, 'Unit Name', {
@@ -135,5 +117,7 @@ addAfterLabel(unit, 'Unit Acres', {
     required: true,
     actual_key: "shape.uUnitPricing",
 })
+
+console.log(unit)
 
 export default unit;

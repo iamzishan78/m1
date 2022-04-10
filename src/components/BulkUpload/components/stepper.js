@@ -254,6 +254,9 @@ export default function CustomizedSteppers(props) {
         element.createAt = changeDate;
         element.lastUpdateBy = userID;
         element.lastUpdateAt = changeDate;
+        if (props.selectedJob.type === "UNITS") {
+          element['shape.shapeType'] = "Unit";
+        }
         delete element.tableData;
       });
       getJobUploadUri({
