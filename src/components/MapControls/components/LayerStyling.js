@@ -467,7 +467,7 @@ function LayerStyling(props) {
             <Typography variant="h5">{layer.layerName === "Parcels" ? "Tracts" : layer.layerName}</Typography>
           </Grid>
           <Grid item>
-            <IconButton size="small" onClick={handleClose}>
+            <IconButton size="small" onClick={handleApplyChanges}>
               <CloseIcon />
             </IconButton>
           </Grid>

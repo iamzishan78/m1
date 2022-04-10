@@ -212,52 +212,47 @@ export default function AddLayer(props) {
   };
 
   const handleApplyChange = () => {
-    const layersToUpdate = [];
-    const layersSettingsToUpdate = [];
-    for (let i = 0; i < currentLayers.length; i++) {
-      if (!deepEqualObjects(currentLayers[i], stateApp.layers[i])) {
-        layersSettingsToUpdate.push({
-          _id: currentLayers[i]._id,
-          layerSettings: currentLayers[i].layerSettings,
+    if (!deepEqual(currentLayers, stateApp.layers)) {
+      const layersToUpdate = [];
+      const layersSettingsToUpdate = [];
+      for (let i = 0; i < currentLayers.length; i++) {
+        if (!deepEqualObjects(currentLayers[i], stateApp.layers[i])) {
+          layersSettingsToUpdate.push({
+            _id: currentLayers[i]._id,
+            layerSettings: currentLayers[i].layerSettings,
+          });
+          layersToUpdate.push({
+            _id: currentLayers[i].layerId,
+            layerName: currentLayers[i].layerName,
+            groupName: currentLayers[i].groupName,
+          });
+        }
+      }
+
+      //// saving to stateApp
+      setStateApp({
+        ...stateApp,
+        layers: [...currentLayers],
+      });
+
+      //// saving to mongo
+      if (layersToUpdate.length > 0) {
+        updateManyLayer({
+          variables: {
+            layers: layersToUpdate,
+          },
         });
-        layersToUpdate.push({
-          _id: currentLayers[i].layerId,
-          layerName: currentLayers[i].layerName,
-          groupName: currentLayers[i].groupName,
+
+        updateManyUserLayerSettings({
+          variables: {
+            manySettings: layersSettingsToUpdate,
+          },
         });
       }
     }
 
-    //// saving to stateApp
-    setStateApp({
-      ...stateApp,
-      layers: [...currentLayers],
-    });
-
-    //// saving to mongo
-    if (layersToUpdate.length > 0) {
-      updateManyLayer({
-        variables: {
-          layers: layersToUpdate,
-        },
-      });
-
-      updateManyUserLayerSettings({
-        variables: {
-          manySettings: layersSettingsToUpdate,
-        },
-      });
-    }
-
     handleClose();
   };
-
-  // const handleAddLayer = () => {
-  //   setStateMapControls({
-  //     ...stateMapControls,
-  //     selectedControl: "add",
-  //   });
-  // };
 
   const parseGeoForTypesAndNames = (geo, name) => {
     const layerTypes = [];
@@ -420,10 +415,7 @@ export default function AddLayer(props) {
   }, [currentLayers]);
 
   return (
-    <ClickAwayListener onClickAway={() => {
-      if (deepEqual(currentLayers, stateApp.layers)) handleClose();
-      else handleApplyChange();
-    }}>
+    <ClickAwayListener onClickAway={handleApplyChange}>
       <div style={{ height: "100%", display: "flex", width: "100%" }}>
         <DropzoneAreaBase
           onAdd={handleFileInput}
@@ -448,7 +440,7 @@ export default function AddLayer(props) {
                     <Typography variant="h5">Layer Manager</Typography>
                   </Grid>
                   <Grid item>
-                    <IconButton size="small" onClick={windowClose}>
+                    <IconButton size="small" onClick={handleApplyChange}>
                       <CloseButton />
                     </IconButton>
                   </Grid>
