@@ -55,7 +55,7 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
 
     const handleChange = (search) => {
         setSearch(search);
-        // getFiltersAction(search);
+        getFiltersAction(search);
     }
 
     const getFiltersAction = (search) => {

@@ -27,7 +27,6 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: 5,
     },
   },
-
   toggleBtn: {
     borderRadius: 5,
     color: "grey",
@@ -36,11 +35,9 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#1CB6DA44",
     },
   },
-
   activeBtn: {
     color: "#1CB6DA",
   },
-
   contactSearchField: {
     color: "grey",
 

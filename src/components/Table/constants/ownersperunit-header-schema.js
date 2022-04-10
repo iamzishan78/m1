@@ -185,15 +185,10 @@ const OwnersPerUnitHeadCells = [
   {
     name: "isPurchased",
     label: "Purchased Data Exists",
-    esKey: "isPurchased",
+    esKey: "contact.isPurchased",
     options: {
       display: false,
-      filter: false,
-      forceFilter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
+      filter: true,
       viewColumns: false,
     },
     custom: {

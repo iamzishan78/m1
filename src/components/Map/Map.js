@@ -1,15 +1,11 @@
 // react imports
 import React, { useContext, useState, useLayoutEffect, useRef, useEffect, useCallback } from "react";
-import { get } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 // contexts
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
-import { MapControlsContext } from "../MapControls/MapControlsContext";
-import { WellCardContext } from "../WellCard/WellCardContext";
-import { ParcelCardContext } from "../ParcelsDetailCard/ParcelCardContext";
 
 // custom components
 import MapControlsProvider from "../MapControls/MapControlsProvider";
@@ -18,13 +14,11 @@ import PermitCardProvider from "../PermitCard/PermitCardProvider";
 import UdLayerCardProvider from "../UdLayerCard/UdLayerCardProvider";
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import PortalD from "./components/Portal";
-import Coordinates from "./components/Coordinates";
+// import Coordinates from "./components/Coordinates";
 import ZoomFault from "./components/ZoomFault";
 import HugeRequest from "./components/HugeRequest";
-import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
 import "./popup.css";
-import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties, drawBoundary, drawWellBoundary } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 import MapGridCardProvider from "../MapGridCard/MapGridProvider";
@@ -32,7 +26,7 @@ import MarkerIcon from "./sprites/marker-icon.png";
 import DefaultFiltersTest from "./filtersDefaultTest";
 import FilterControl from "./components/FilterControl";
 import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
-import { copy, deepEqual, deepEqualObjects, getPolygonString } from "../Shared/functions";
+import { copy, deepEqualObjects, getPolygonString } from "../Shared/functions";
 import gjv from "geojson-validation";
 import { setMainMapState, showErrorMessage } from "../../actions";
 
@@ -143,8 +137,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   // context states
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
-  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
   const history = useHistory();
   const client = useApolloClient();
 
@@ -5000,7 +4992,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         let Draw = new MapboxDraw({
           displayControlsDefault: false,
           userProperties: true,
-          // styles: SRStyle,
           styles: drawShapeStyles,
           modes: {
             ...MapboxDraw.modes,
@@ -5275,7 +5266,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   }, [
     map,
     setStateApp,
-    setStateMapControls,
     mapStyles,
     // stateApp.checkedLayersInteraction,
   ]);
@@ -6193,7 +6183,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           <ExpandableCardProvider
             expanded={true}
             handleCloseExpandableCard={handleCloseExpandableCard}
-            component={<ParcelCardProvider></ParcelCardProvider>}
+            component={<ParcelCardProvider />}
             title={stateApp.selectedParcel.shapeLabel}
             subTitle=""
             parent="map"
@@ -6206,7 +6196,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             targetSourceId={stateApp.selectedParcel.id}
             targetLabel="parcel"
             deleteCustomLayer={deleteCustomLayer}
-          ></ExpandableCardProvider>
+          />
         </div>
       )}
       {stateApp.selectedShape?.shapeLabel && stateApp.expandedCard && (
