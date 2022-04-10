@@ -33,7 +33,7 @@ const Secondarypanel = () => {
   return (
     <div className={classes.root}>
       {stateMapControls.addLayer && <AddALayer />}
-      {stateApp.selectedLayer && <LayerStyling layer={stateApp.selectedLayer} fileName={stateApp.selectedLayer.fileName} />}
+      {stateMapControls.selectedLayer && <LayerStyling layer={stateApp.selectedLayer} fileName={stateApp.selectedLayer.fileName} />}
     </div>
   );
 };
