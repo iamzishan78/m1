@@ -24,6 +24,7 @@ import MailOutlineOutlinedIcon from '@material-ui/icons/MailOutlineOutlined';
 import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import TextSMS from '@material-ui/icons/TextsmsOutlined';
+import EmailIcon from "@material-ui/icons/Mail";
 
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import M1nTable from "../M1nTable";
@@ -1224,6 +1225,10 @@ function SubTable(props) {
         <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, "text_message", null)}>
           <TextSMS className={classes.menuIcons} />
           Add text exchange
+        </MenuItem>
+        <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, "email", null)}>
+          <EmailIcon className={classes.menuIcons} />
+          Add email exchange
         </MenuItem>
         <Divider />
         <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, "meeting", null)}>
