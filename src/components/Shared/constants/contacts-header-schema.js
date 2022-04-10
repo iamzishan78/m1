@@ -321,7 +321,7 @@ const ContactsHeadCells = [
       searchable: false,
       sort: false,
     },
-  },  {
+  }, {
     name: "relatives",
     label: "Relative Names",
     options: {

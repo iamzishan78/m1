@@ -24,6 +24,7 @@ import MailOutlineOutlinedIcon from '@material-ui/icons/MailOutlineOutlined';
 import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import TextSMS from '@material-ui/icons/TextsmsOutlined';
+import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import M1nTable from "../M1nTable";
@@ -126,7 +127,6 @@ import AddActivityDialog from "components/ContactDetailCard/components/AddActivi
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
 import ConfirmationDialog from "components/ContactDetailCard/components/ConfirmationDialog";
-import { copy } from "utils/helper";
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -320,7 +320,7 @@ const useStyles = makeStyles((theme) => ({
       opacity: "1",
       transition: "opacity 1s ease-out",
       webkitTransition: "opacity 1s ease-out",
-      zIndex: (props) => (typeof props.headerZIndex !== 'undefined' ? props.headerZIndex :999),
+      zIndex: (props) => (typeof props.headerZIndex !== 'undefined' ? props.headerZIndex : 999),
       position: "sticky",
     },
     "& tbody": {
@@ -2749,12 +2749,6 @@ function SubTable(props) {
                               ...stateApp,
                               selectedContact: tableMeta.rowData[0],
                             }));
-                            // setSubComponent(
-                            //   <ContactDetailCard
-                            //     selectRowOpenContact={selectRowOpenContact}
-                            //     handleCloseExpandableCard={handleCloseExpandableCard}
-                            //   />
-                            // );
                             setTitle("Contact Details");
                             setSubTitle(" ");
                             handleOpenExpandableCard();
@@ -2784,25 +2778,17 @@ function SubTable(props) {
                         </FeatureFlag>
                       )}
 
-
-
-                      {/* temporarily removing the purchased data icon as we do not have functionality to actually purchase contact data currently - KC 3/17/21 */}
-                      {/* {props.targetLabel === "contact" &&
+                      {props.targetLabel === "contact" &&
                         column.name === "name" &&
                         tableMeta.rowData[
                         props.columns.findIndex(
-                          (val) => val.name === "melissaRowsCount"
+                          (val) => val.name === "isPurchased"
                         )
-                        ] &&
-                        tableMeta.rowData[
-                        props.columns.findIndex(
-                          (val) => val.name === "melissaRowsCount"
-                        )
-                        ] !== 0 && (
+                        ] && (
                           <MonetizationOnIcon
                             className={classes.monetizationIcon}
                           />
-                        )} */}
+                        )}
                     </div>
                   );
                 },
