@@ -305,7 +305,6 @@ export default function DrawShapes() {
         setFeatureProperty(draw, feature.id, "shapeEdit", false);
 
         let currentFeature = feature;
-
         setStateApp((state) => {
 
           drawShapeLayerToggle(state, state.lastSelectedDrawMode === "draw_polygon" ? "visible" : "none");
@@ -314,7 +313,6 @@ export default function DrawShapes() {
             currentFeature.id = state.currentFeature.id
             currentFeature.properties.id = state.currentFeature.id;
           }
-
           return { ...state, editDraw: false, showShapeActionsPopup: true, currentFeature }
         });
         setTimeout(() => {
@@ -353,14 +351,15 @@ export default function DrawShapes() {
               featureOrMapShape: currentFeature,
             };
           });
-        } else {
-          setStateApp((state) => {
-            return {
-              ...state,
-              editDraw: false,
-            };
-          });
         }
+        // else {
+        //   setStateApp((state) => {
+        //     return {
+        //       ...state,
+        //       editDraw: false,
+        //     };
+        //   });
+        // }
         setStateApp((stateApp) => {
           // if (!stateApp.shapeEdit) {
           //   stateApp.draw.changeMode("static");
@@ -385,7 +384,7 @@ export default function DrawShapes() {
   //   setStateApp((state) => ({ ...state, editDraw: !!stateApp.currentFeature }));
   // }, [setStateApp, stateApp.currentFeature]);
 
-  const actionClose = () => {
+  const actionClose = (additionalProps = {}) => {
     clearMapAndCloseShapeActionsPopup(stateApp, setStateApp);
 
     // Removing layer of AOI Label
@@ -398,7 +397,8 @@ export default function DrawShapes() {
       selectedAoi: null,
       shapeGridWellsCount: 0,
       shapeGridOwnersCount: 0,
-      changeDrawShapeType: false
+      changeDrawShapeType: false,
+      ...additionalProps
     }));
     dispatch(
       setMapGridCardState({

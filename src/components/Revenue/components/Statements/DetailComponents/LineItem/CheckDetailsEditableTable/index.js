@@ -22,7 +22,7 @@ import { usetableStyles } from "components/Table/Styles";
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import get from 'lodash/get'
 import set from 'lodash/set'
-import { Grid as TableGrid, Input } from 'components/Shared/SpreadsheetGrid'
+import { Grid as TableGrid, Input, Date } from 'components/Shared/SpreadsheetGrid'
 import Typography from '@material-ui/core/Typography';
 import { AutoCompleteField } from "./AutoCompleteField";
 import { ActionCell } from "./ActionCell";
@@ -184,8 +184,8 @@ function CheckDetailsEditableTable(props) {
             const { data: checkDetail } = await client.query({
                 query: GET_ES_PAGINATED_LIST,
                 variables: {
-                    esIndex,
-                    search: `property.number:"${value}"`,
+                    esIndex: 'properties_flat',
+                    search: `number:"${value}"`,
                     pagination: {
                         first: 1,
                         keep_alive: "1micros"
@@ -194,7 +194,7 @@ function CheckDetailsEditableTable(props) {
             });
             let newProperty = {}
             if (checkDetail?.getESPaginatedList?.hits.length > 0) {
-                newProperty = checkDetail.getESPaginatedList.hits[0].property
+                newProperty = checkDetail.getESPaginatedList.hits[0]
                 setNewProperty(null)
             } else {
                 const { data: property } = await client.mutate({
@@ -254,10 +254,22 @@ function CheckDetailsEditableTable(props) {
                     <div id={`id-${cell.id}`}></div>
                     {
                         focus && cell.type === 'autocomplete' ? <AutoCompleteField label={cell.title} value={get(row, cell.id)} column={cell} index={index} onChange={onFieldChange(row._id, cell.id)}
-                            query={GET_ES_FILTER_LIST} esIndex={esIndex} />
+                            query={GET_ES_FILTER_LIST} esIndex='properties_flat' />
 
                             : focus && cell.type === 'date' ? <>
-                                <TextField
+                                <Date
+                                    // className={tclasses.dateRoot}
+                                    focus={focus}
+                                    value={date}
+                                    dataDateFormat="MM/DD/YYYY"
+                                    onChange={(value) => {
+                                        const date = moment(value).toISOString();
+                                        let dRow = rows.find((r) => r._id === row._id);
+                                        set(dRow, cell.id, date)
+                                        onFieldChange(row._id, cell.id, cell.type)(date)
+                                    }}
+                                />
+                                {/* <TextField
                                     id='dateType'
                                     type="date"
                                     className={tclasses.dateRoot}
@@ -301,7 +313,7 @@ function CheckDetailsEditableTable(props) {
                                             </IconButton>
                                         ),
                                     }}
-                                />
+                                />  */}
                             </>
 
                                 : cell.type === 'action' ? <ActionCell id={cell.id + index} onChange={onFieldChange(row._id, 'IsDeleted')} />

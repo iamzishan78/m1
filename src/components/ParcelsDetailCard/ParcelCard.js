@@ -111,7 +111,7 @@ export default function ParcelCard(props) {
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
+  const [stateExpandableCard] = useContext(ExpandableCardContext);
   const [wellNumber, setWellNumber] = useState();
 
   const [parcelObj, setParcelObj] = useState();

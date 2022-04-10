@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -6,7 +6,9 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import { Grid } from "@material-ui/core";
+import ArrowDropRight from '@material-ui/icons/ArrowRight';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import { Box, Grid } from "@material-ui/core";
 import vf_number from "components/Shared/valueformatters/vf_number";
 
 const useStyles = makeStyles((theme) => ({
@@ -29,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   secondaryTable: {
     width: "auto",
     "& .MuiTableCell-root": {
-      paddingBottom: "5px",
+      paddingBottom: "8.9px",
       textAlign: "center",
       fontWeight: "bold",
       minWidth: "200px",
@@ -40,18 +42,25 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#f1f4fb !important",
     paddingBottom: "18px !important",
   },
+  nameCell: {
+    display: "flex",
+    color: "#34b4e3",
+  },
+  monthCell: {
+    borderTop: "2px solid #f1f4fb !important"
+  },
   highlightedRows: {
     "& .MuiTableCell-root": {
-      paddingTop: "25px !important",
-      borderBottom: "none",
-      background: "linear-gradient(#e0e0e0, #e0e0e0) bottom/100% 3px no-repeat",
+      // paddingTop: "25px !important",
+      // borderBottom: "none",
+      // background: "linear-gradient(#e0e0e0, #e0e0e0) bottom/100% 3px no-repeat",
     },
   },
   highlightedLessBordered: {
     "& .MuiTableCell-root": {
-      paddingTop: "25px !important",
-      borderBottom: "none",
-      background: "linear-gradient(#e0e0e0, #e0e0e0) bottom/100% 2px no-repeat",
+      // paddingTop: "25px !important",
+      // borderBottom: "none",
+      // background: "linear-gradient(#e0e0e0, #e0e0e0) bottom/100% 2px no-repeat",
     },
   },
   leftCells: {
@@ -75,24 +84,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AcccessibleTable({ monthsInterval, items }) {
+export default function ProductTable({ monthsInterval, items, name, unit }) {
   const classes = useStyles();
 
-  const formatRow = (item, value) => {
-    if (item.name === 'Adjustments') return `(${vf_number(value.toFixed(2))})`
-    if (item.name === 'Net Revenue') return <span style={{ fontSize: '16px', fontWeight: '700' }}>{vf_number(value.toFixed(2))}</span>
-    return vf_number(value.toFixed(2))
+  const [selectedItems, setSelectedItems] = useState({});
+
+  const monthBreakDownValue = (breakDownType, breakDown) => {
+    return breakDown && breakDown[breakDownType] ? breakDown[breakDownType] : null
+  }
+
+  const displayValue = (value) => {
+    return value ? <span>{vf_number(value.toFixed(2))}</span> : <span>-</span>
   }
 
   return (
     <div className={classes.root}>
       <TableContainer>
-        <Grid container display="flex" direction="row" justify="flex-start" alignItems="center" style={{ padding: "2px" }}>
+        <Grid container display="flex" direction="row" justify="flex-start" style={{ padding: "2px" }}>
           <Grid item md={5}>
             <Table className={classes.table} aria-label="caption table">
               <TableHead>
                 <TableRow>
-                  <TableCell></TableCell>
+                  <TableCell component="th" className={`${classes.nameCell} ${classes.headerCell}`}>
+                    {name}
+                  </TableCell>
                   <TableCell
                     align="center"
                     component="th"
@@ -105,28 +120,25 @@ export default function AcccessibleTable({ monthsInterval, items }) {
               </TableHead>
               <TableBody>
                 {items.map((item, index) => (
-                  <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
+                  <TableRow key={item.name + index}>
                     <TableCell scope="row" className={classes.leftCells}>
+                      <Box >
 
-                      {item.name}
+                        <span style={{ display: "flex" }}>{selectedItems[index] ? <ArrowDropDownIcon style={{ cursor: "pointer" }} onClick={() => setSelectedItems({ ...selectedItems, [index]: false })} /> :
+                          <ArrowDropRight style={{ cursor: "pointer" }} onClick={() => setSelectedItems({ ...selectedItems, [index]: true })} />
+                        }
+                          {item.name}{index === 0 && unit ? `(${unit})` : ''}
+                        </span>
+                        <span style={{ display: 'grid', marginLeft: '25px', fontWeight: '200' }}> {selectedItems[index] && Object.keys(item.breakDown).map((key) => key ? <span>{key}</span> : <span>-</span>)}</span>
+                      </Box>
+
                     </TableCell>
-                    <TableCell scope="row" className={`${classes.leftRightColoredBorderCell} ${index === items.length - 1 ? classes.bottomColoredBorderCell : ""}`}>
-                      {formatRow(item, item.total)}
+                    <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
+                      <span>{displayValue(item.total)}</span>
+                      <span style={{ display: 'grid' }}> {selectedItems[index] && Object.values(item.breakDown).map((value) => displayValue(value))}</span>
                     </TableCell>
                   </TableRow>
                 ))}
-                {/* <TableRow className={classes.highlightedLessBordered}>
-                  <TableCell scope="row" className={`${classes.leftCells} ${classes.totalColCell}`}>
-                    Total Income
-                  </TableCell>
-                  <TableCell
-                    scope="row"
-                    className={`${classes.leftRightColoredBorderCell} ${classes.bottomColoredBorderCell} ${classes.totalColCell}`}
-                    style={{ width: "160px" }}
-                  >
-                    {total}
-                  </TableCell>
-                </TableRow> */}
               </TableBody>
             </Table>
           </Grid>
@@ -135,7 +147,7 @@ export default function AcccessibleTable({ monthsInterval, items }) {
               <TableHead>
                 <TableRow>
                   {monthsInterval.map((month) => (
-                    <TableCell align="center" component="th" className={classes.headerCell}>
+                    <TableCell align="center" component="th" className={classes.headerCell + ' ' + classes.monthCell}>
                       {month}
                     </TableCell>
                   ))}
@@ -144,23 +156,14 @@ export default function AcccessibleTable({ monthsInterval, items }) {
               <TableBody>
                 {items.map((item, index) => (
                   <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
-                    {item.data && Object.values(item.data).map((value) => <TableCell scope="row">{formatRow(item, value)}</TableCell>)}
+                    {monthsInterval.map((month) => <TableCell scope="row" >
+                      <span>{displayValue(item.data[month]?.total)}</span>
+                      <span style={{ display: 'grid' }}>
+                        {selectedItems[index] && Object.keys(item.breakDown).map((breakDownType) => displayValue(monthBreakDownValue(breakDownType, item.data[month]?.breakDown)))}
+                      </span>
+                    </TableCell>)}
                   </TableRow>
                 ))}
-                {/* <TableRow className={classes.highlightedRows}>
-                  {monthsInterval.map((month) => {
-                    let total = 0;
-                    items.filter((item) => ["Net Revenue", "Lease Payments", "Other"].includes(item.name)).forEach((item) => {
-                      item.data && (total += item.data[month]);
-                    });
-                    return (
-                      <TableCell className={classes.totalColCell} scope="row">
-                        {vf_number(total)}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow> */}
-
                 <TableRow></TableRow>
               </TableBody>
             </Table>
