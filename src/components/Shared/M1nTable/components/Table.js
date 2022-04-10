@@ -723,7 +723,6 @@ function SubTable(props) {
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getContact, { data: contactData }] = useLazyQuery(CONTACT);
-  console.log("contact data in table : ", contactData)
 
   const [viewFile, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
@@ -1198,7 +1197,6 @@ function SubTable(props) {
   };
 
   const openActionMenu = (event, rowIndex, user, tableMeta) => {
-    console.log("user : ", user)
     const contactId = user.columnData.parent === "Tract detail" || user.columnData.parent === "Unit detail" ? user.rowData[1] : user.rowData[0]
     event.stopPropagation();
     setUsermanagementSettings(
