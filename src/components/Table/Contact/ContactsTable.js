@@ -152,7 +152,7 @@ function ContactsTable(props) {
       // filters: Contacts?.filters ? getFilters() : [],
       selectedGridView: Contacts || defaultView,
       startPaginationAt: 25,
-      defaultSort: { field: 'lastUpdateAt', order: 'desc' },
+      defaultSort: { field: 'createAt', order: 'desc' },
       formatHits,
       initializeGenericData: { key: 'id', actions: genericDataActions }
     });
@@ -192,7 +192,8 @@ function ContactsTable(props) {
       const rows = JSON.parse(JSON.stringify(props.rows));
       for (let i = 0; i < ContactPurchaseData?.getCheckPurchaseData.length; i++) {
         const index = rows.findIndex((row) => row._id === ContactPurchaseData.getCheckPurchaseData[i]);
-        rows[index].isPurchased = true;
+        if (index !== -1)
+          rows[index].isPurchased = true;
       }
       props.setRows(rows);
     }
