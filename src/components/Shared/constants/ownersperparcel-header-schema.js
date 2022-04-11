@@ -148,6 +148,21 @@ const OwnersPerParcelHeadCells = [
       filterType: "dropdown",
     },
   },
+
+  {
+    name: "actionMenu",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+      parent: "Tract detail"
+    },
+  },
+
   {
     name: "isSuggested",
     label: " ",

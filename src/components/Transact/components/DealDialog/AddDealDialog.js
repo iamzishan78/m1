@@ -15,7 +15,7 @@ import { ADDCONTACT } from "graphQL/useMutationAddContact";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Dialog, Avatar, CircularProgress, Container, Button } from "@material-ui/core";
+import { Dialog, Avatar, CircularProgress, Button } from "@material-ui/core";
 import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import DealDialogHeader from "components/Transact/components/DealDialog/DealDialogHeader";
 import Drawer from "components/Transact/components/Drawer";
