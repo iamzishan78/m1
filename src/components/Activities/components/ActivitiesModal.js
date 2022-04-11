@@ -20,6 +20,7 @@ import TaskIcon from "@material-ui/icons/WatchLater";
 import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
 import ContactMailIcon from "@material-ui/icons/ContactMail";
+import TextMsgIcon from "@material-ui/icons/Textsms";
 
 import DocumentIcon from "@material-ui/icons/DescriptionOutlined";
 import PersonIcon from "@material-ui/icons/Person";
@@ -572,6 +573,18 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
                     <CallIcon /> <span>Call</span>
                   </span>
                   <span
+                    className={clsx(classes.filterDisplay, activityType === "text_message" && classes.active)}
+                    onClick={() => setActivityType("text_message")}
+                  >
+                    <TextMsgIcon /> <span>Text Message</span>
+                  </span>
+                  <span
+                    className={clsx(classes.filterDisplay, activityType === "email" && classes.active)}
+                    onClick={() => setActivityType("email")}
+                  >
+                    <EmailIcon /> <span>Email</span>
+                  </span>
+                  <span
                     className={clsx(
                       classes.filterDisplay,
 
@@ -592,12 +605,6 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
                     onClick={() => setActivityType("deadline")}
                   >
                     <DeadlineIcon /> <span>Deadline</span>
-                  </span>
-                  <span
-                    className={clsx(classes.filterDisplay, activityType === "email" && classes.active)}
-                    onClick={() => setActivityType("email")}
-                  >
-                    <EmailIcon /> <span>Email</span>
                   </span>
                   <span
                     className={clsx(classes.filterDisplay, activityType === "mailer" && classes.active)}
