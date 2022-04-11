@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "18px !important",
   },
   nameCell: {
+    width: '100%',
     display: "flex",
     color: "#34b4e3",
   },
