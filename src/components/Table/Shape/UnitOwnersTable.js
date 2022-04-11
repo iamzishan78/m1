@@ -182,6 +182,13 @@ function UnitOwnersTable(props) {
   const onTableChange = (action, tableState, rows, meta) => {
     tableState.esIndex = esIndex
     const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
+    if(action === 'filterChange'){
+      if(tableActions?.pageESVariables?.variables?.filters?.length > 0){
+        props.setIsFiltered(true)
+      }else{
+        props.setIsFiltered(false)
+      }
+    }
     switch (action) {
       case "search":
       case "sort":

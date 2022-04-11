@@ -82,6 +82,18 @@ export const detailCardStyles = makeStyles((theme) => ({
       },
     },
   },
+  subContent3: {
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": {
+          height: "calc(100vh - 483px) !important",
+          "& .MuiTableCell-paddingCheckbox": {
+            position: "unset",
+          },
+        },
+      },
+    },
+  },
   subContent2: {
     "& div": {
       "&>.MuiPaper-root": {
