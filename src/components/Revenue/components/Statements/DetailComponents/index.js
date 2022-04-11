@@ -15,7 +15,6 @@ import Tags from "components/Shared/Tagger";
 import MetaField from "components/Table/helpers/MetaField";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { GETCHECK } from "graphQL/useQueryCheck";
-import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { REMOVE_CHECKS } from "graphQL/useMutationRemoveChecks";
 import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
 import { AppContext } from "AppContext";
@@ -217,9 +216,6 @@ export default function DetailComponents(props) {
   const [getCheck, { data: getCheckResult }] = useLazyQuery(GETCHECK, {
     fetchPolicy: "no-cache",
   });
-  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-    fetchPolicy: "no-cache",
-  });
 
   // mutations
   const [removeChecks, { data: removeChecksResult }] = useMutation(REMOVE_CHECKS, {
@@ -274,28 +270,15 @@ export default function DetailComponents(props) {
       getCheck({
         variables: { id: checkId },
       });
-      getAllMongoUsers();
     }
   }, []);
-
-  useEffect(() => {
-    if (userLists && userLists.allMongoUsers) {
-      setUsers(
-        userLists.allMongoUsers.map((user) => ({
-          value: user._id,
-          text: user.name,
-          email: user.email,
-        }))
-      );
-    }
-  }, [userLists]);
 
   useEffect(() => {
     return () => {
       setStateApp({ ...stateApp, viewDoc: null })
     }
-  },[])
-  
+  }, [])
+
   const handleScroll = (e) => {
     if (!isButtonScroll) {
       const { scrollTop } = e.target;
@@ -425,7 +408,26 @@ export default function DetailComponents(props) {
                 <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
               </div>
 
-              {!collapse && <MetadataDrawer data={checksFlatData} onUpdate={onUpdateMetaData} targetLabel='CHECK' setCollapse={setCollapse} users={users} targetSourceId={checkId} setStateApp={setStateApp} />}
+              {!collapse && (
+                <div
+                  style={{
+                    marginTop: 20,
+                    marginRight: 24,
+                    height: "calc(100vh - 305px)",
+                    maxHeight: "calc(100vh - 305px)",
+                    maxWidth: 420,
+                  }}
+                >
+                  <MetadataDrawer
+                    data={checksFlatData}
+                    onUpdate={onUpdateMetaData}
+                    targetLabel='Check'
+                    setCollapse={setCollapse}
+                    targetSourceId={checkId}
+                    setStateApp={setStateApp}
+                  />
+                </div>
+              )}
             </div>
 
             {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}

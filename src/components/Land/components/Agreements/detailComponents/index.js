@@ -98,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   tabsSectionDetails: {
-    maxHeight: "calc(100vh - 280px)",
+    maxHeight: "calc(100vh - 305px)",
     overflow: "overlay",
     backgroundColor: "#f3f3f3",
   },
@@ -221,16 +221,12 @@ export default function DetailComponents(props) {
   const [metaCollapse, setMetaCollapse] = useState(false);
   const [validationCollapse, setValidationCollapse] = useState(true);
   const [flowlineCollapse, setFlowlineCollapse] = useState(true);
-  const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
   const [uniObj, setUniObj] = useState();
 
   const classes = useStyles({ ...props, metaCollapse, validationCollapse, flowlineCollapse });
   // queries
 
-  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-    fetchPolicy: "no-cache",
-  });
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
   const [getStandardProvisions, { data: standardProvisions }] = useLazyQuery(GET_STANDARD_PROVISIONS);
   const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
@@ -269,10 +265,9 @@ export default function DetailComponents(props) {
 
   useEffect(() => {
     if (agreementId) {
-      getAllMongoUsers();
       getCustomLayer({ variables: { id: agreementId } });
     }
-  }, [agreementId, getAllMongoUsers, getCustomLayer]);
+  }, [agreementId, getCustomLayer]);
 
   useEffect(() => {
     if (dataCustomLayer && dataCustomLayer.customLayer) {
@@ -298,18 +293,6 @@ export default function DetailComponents(props) {
   }, [dataCustomLayer?.customLayer]);
 
   useEffect(() => {
-    if (userLists && userLists.allMongoUsers) {
-      setUsers(
-        userLists.allMongoUsers.map((user) => ({
-          value: user._id,
-          text: user.name,
-          email: user.email,
-        }))
-      );
-    }
-  }, [userLists]);
-
-  useEffect(() => {
     if (activeAgreement) {
       let shape = activeAgreement.shape;
       if (activeAgreement.shapeJson) shape = copy(activeAgreement.shapeJson);
@@ -330,8 +313,8 @@ export default function DetailComponents(props) {
     return () => {
       setStateApp({ ...stateApp, viewDoc: null })
     }
-  },[])
-  
+  }, [])
+
   const updateAgreement = (field, value, isCustom) => {
     if (agreementDetails[field] === value) return;
     const shape = activeAgreement.shape;
@@ -524,17 +507,26 @@ export default function DetailComponents(props) {
             </div>
           </div>
 
-          <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
+          <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 305px)" }} />
         </div>
 
         {!metaCollapse && (
-          <MetadataDrawer
-            setCollapse={setMetaCollapse}
-            users={users}
-            targetSourceId={agreementId}
-            description={agreementDetails?.description}
-            targetLabel="Shape"
-          />
+          <div
+            style={{
+              marginTop: 20,
+              marginRight: 24,
+              height: "calc(100vh - 305px)",
+              maxHeight: "calc(100vh - 305px)",
+              maxWidth: 420,
+            }}
+          >
+            <MetadataDrawer
+              setCollapse={setMetaCollapse}
+              targetSourceId={agreementId}
+              description={agreementDetails?.description}
+              targetLabel="Shape"
+            />
+          </div>
         )}
       </div>
 

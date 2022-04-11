@@ -16,7 +16,6 @@ import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { GET_PROPERTY } from "graphQL/useQueryGetProperty";
-import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { AppContext } from "AppContext";
 
 // Components
@@ -217,7 +216,6 @@ export default function DetailComponents(props) {
   const [refetchContacts, setRefetchContacts] = useState(false);
   const selectedTabRef = useRef(null);
   const [collapse, setCollapse] = useState(false);
-  const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
   const [isButtonScroll, setButtonScroll] = useState(false);
   const [propertyDetails, setProperty] = useState(null);
@@ -227,9 +225,6 @@ export default function DetailComponents(props) {
 
   const [updateMetaOwner] = useMutation(UPSERT_USER_DESCRIPTOR);
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
-  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-    fetchPolicy: "no-cache",
-  });
 
   const [getProperty, { data: getPropertyResult }] = useLazyQuery(GET_PROPERTY, {
     fetchPolicy: "no-cache",
@@ -243,8 +238,7 @@ export default function DetailComponents(props) {
     getProperty({
       variables: { id: propertyId },
     });
-    getAllMongoUsers();
-  }, [getAllMongoUsers, getProperty, propertyId]);
+  }, [getProperty, propertyId]);
 
   useEffect(() => {
     if (getPropertyResult) setProperty(getPropertyResult?.getProperty.property);
@@ -254,18 +248,6 @@ export default function DetailComponents(props) {
     }
     ))
   }, [getPropertyResult]);
-
-  useEffect(() => {
-    if (userLists && userLists.allMongoUsers) {
-      setUsers(
-        userLists.allMongoUsers.map((user) => ({
-          value: user._id,
-          text: user.name,
-          email: user.email,
-        }))
-      );
-    }
-  }, [userLists]);
 
   useEffect(() => {
     selectedTabRef.current &&
@@ -438,7 +420,24 @@ export default function DetailComponents(props) {
         )}
 
         {!collapse && !showInterestDetails && !showOwnerDialog && (
-          <MetadataDrawer data={propertyDetails} onUpdate={onUpdateMetaData} setCollapse={setCollapse} users={users} targetLabel='PROPERTY' targetSourceId={propertyId} setStateApp={setStateApp} />
+          <div
+            style={{
+              marginTop: 20,
+              marginRight: 24,
+              height: "calc(100vh - 305px)",
+              maxHeight: "calc(100vh - 305px)",
+              maxWidth: 420,
+            }}
+          >
+            <MetadataDrawer
+              data={propertyDetails}
+              onUpdate={onUpdateMetaData}
+              setCollapse={setCollapse}
+              targetLabel='PROPERTY'
+              targetSourceId={propertyId}
+              setStateApp={setStateApp}
+            />
+          </div>
         )}
       </div>
       <Dialog
