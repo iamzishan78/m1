@@ -174,6 +174,16 @@ function SuggestedShapeTaxOwnersTable(props) {
       },
     };
 
+    if(action === 'filterChange'){
+      let isFiltered = false
+      for(let i=0; i<tableState.filterList.length; i++){
+        if(tableState.filterList[i].length !==0){
+          isFiltered = true
+          break;
+        }
+      }
+      props.setIsFiltered(isFiltered)
+    }
     switch (action) {
       case "changeRowsPerPage":
         // props.setLoading(true);
