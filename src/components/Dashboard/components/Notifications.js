@@ -267,12 +267,14 @@ const Notifications = () => {
                         history.push(`/revenue/statement/details/${parent._id}`);
                       } else if (parentType === "PROPERTY") {
                         history.push(`/revenue/property/details/${parent._id}`);
+                      } else if (parentType === "CONTACT") {
+                        history.push(`/contact/details/${parent._id}`);
                       }
 
                     }}
                   >
                     <Grid item xs={10} zeroMinWidth>
-                      {parent && (parentType === "DEAL" || parentType === "PARCEL" || parentType === "UNIT" || parentType === "AGREEMENT") && (
+                      {parent && (parentType === "DEAL" || parentType === "PARCEL" || parentType === "UNIT" || parentType === "AGREEMENT" || parentType === "CONTACT") && (
                         <span className={classes.title}>{parent.name}</span>
                       )}
                       {parent && parentType === "CHECK" && (
