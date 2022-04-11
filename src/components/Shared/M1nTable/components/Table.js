@@ -24,7 +24,7 @@ import MailOutlineOutlinedIcon from '@material-ui/icons/MailOutlineOutlined';
 import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import TextSMS from '@material-ui/icons/TextsmsOutlined';
-import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
+import MonetizationOnIcon from "@material-ui/icons/LocalAtmOutlined";
 
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import M1nTable from "../M1nTable";
@@ -436,7 +436,7 @@ const useStyles = makeStyles((theme) => ({
   },
   monetizationIcon: {
     margin: "10px",
-    color: "#155388",
+    color: "gray",
   },
   blue: { color: theme.palette.secondary.main, fontWeight: "bold" },
   customDropDown: {
