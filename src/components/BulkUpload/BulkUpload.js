@@ -42,6 +42,7 @@ const rawJobs = [
 ]
 
 export default function BulkUpload(props) {
+  console.log(props)
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
   const history = useHistory();
@@ -68,7 +69,12 @@ export default function BulkUpload(props) {
     }
     return filter
   })
-  const [selectedJob, setSelectedJob] = useState(jobs[0]);
+  let initialJob = jobs[0]
+  if (props?.match?.params?.type) {
+    initialJob = jobs.find((job) => job.name.toLowerCase().includes(props.match.params.type)) || jobs[0]
+  }
+
+  const [selectedJob, setSelectedJob] = useState(initialJob);
   const [showIcon, setShowIcon] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const handleClose = () => {
@@ -93,7 +99,7 @@ export default function BulkUpload(props) {
   useEffect(() => {
     reset_state();
   }, [selectedJob]);
-  
+
   const reset_state = () => {
     setStateApp((state) => ({
       ...state,
@@ -195,7 +201,7 @@ export default function BulkUpload(props) {
               <Typography
                 style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}
               >
-                { selectedJob.name }
+                {selectedJob.name}
                 <span
                   style={{
                     height: "0px",
@@ -222,7 +228,7 @@ export default function BulkUpload(props) {
                 anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
                 transformOrigin={{ vertical: "top", horizontal: "center" }}
               >
-                { jobs.map((job) =>
+                {jobs.map((job) =>
                   <FeatureFlag feature={FEATURES[job.featureFlag]} noCheck={!FEATURES[job.featureFlag]}>
                     < MenuItem
                       onClick={(e) => {
@@ -231,7 +237,7 @@ export default function BulkUpload(props) {
                         setSelectedJob(job)
                       }}
                     >
-                      { job.name }
+                      {job.name}
                     </MenuItem>
                   </FeatureFlag>
                 )}
