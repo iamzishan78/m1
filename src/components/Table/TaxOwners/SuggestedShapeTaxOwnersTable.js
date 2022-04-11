@@ -3,9 +3,10 @@ import React, { useContext, useState, useEffect, useRef } from "react";
 // context
 import { AppContext } from "AppContext";
 
-import { Container, Button, Switch, Grid, FormControlLabel } from "@material-ui/core";
+import { Container, Button, Switch, Grid, FormControlLabel, FormGroup } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 // QUERIES
 import { useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
@@ -32,6 +33,41 @@ import { getPolygonString } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
+
+const AntSwitch = withStyles((theme) => ({
+  root: {
+    width: 28,
+    height: 16,
+    padding: 0,
+    display: "flex",
+  },
+  switchBase: {
+    padding: 2,
+    color: theme.palette.grey[500],
+    "&$checked": {
+      transform: "translateX(12px)",
+      color: theme.palette.common.white,
+      "& + $track": {
+        opacity: 1,
+        backgroundColor: "#12ABE0",
+        borderColor: "#12ABE0",
+      },
+    },
+  },
+  thumb: {
+    width: 12,
+    height: 12,
+    boxShadow: "none",
+  },
+  track: {
+    // border: `1px solid ${theme.palette.grey[500]}`,
+    borderRadius: 16 / 2,
+    opacity: 1,
+    backgroundColor: theme.palette.common.white,
+  },
+  checked: {},
+}))(Switch);
+
 
 function SuggestedShapeTaxOwnersTable(props) {
   const classes = usetableStyles();
@@ -112,7 +148,8 @@ function SuggestedShapeTaxOwnersTable(props) {
     getShapeOwnersWellCount({
       variables: {
         polygon: queryPoly,
-        selectedYear: selectedYear.toString()
+        selectedYear: selectedYear.toString(),
+        filterByWells: filterByWells ? props.customLayer._id : '',
       },
     });
   }, [props.parent, selectedYear, filterByWells]);
@@ -149,6 +186,34 @@ function SuggestedShapeTaxOwnersTable(props) {
       props.setLoading(false);
     }
   }, [tableData, props.dependencyUpdate]);
+
+  ////////////Toggle share button /////////////////
+  const ToggleSharedButton = () => {
+    return (
+      <FormGroup style={{ display: "block" }}>
+        <FormControlLabel
+          className={`${classes.switchButtom}`}
+          control={
+            <React.Fragment>
+              {props.publicLeftBottom && <h4 className="h4Before">Tags</h4>}
+              <AntSwitch
+                checked={filterByWells}
+                onChange={() => {
+                  filterOwnersByWells(!filterByWells)
+                }}
+                name="checkedC"
+
+              />
+
+
+            </React.Fragment>
+          }
+          label="Filter By Wells"
+          labelPlacement="start"
+        />
+      </FormGroup>
+    );
+  };
 
   ////////////Contact Wells end///////////////////////////////////////////////
 
@@ -247,20 +312,7 @@ function SuggestedShapeTaxOwnersTable(props) {
       return <div style={{ display: "inline", "float": "left", width: '343px', marginRight: "15px", marginTop: "5px" }}>
         <Grid container >
           <Grid item xs={6}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={filterByWells}
-                  onChange={() => {
-                    filterOwnersByWells(!filterByWells)
-                  }}
-
-                  name="checked"
-                  inputProps={{ "aria-label": "primary checkbox" }}
-                />
-              }
-              label="Filter by wells"
-            />
+            <ToggleSharedButton />
 
           </Grid>
           <Grid item xs={6}>

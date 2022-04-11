@@ -93,4 +93,15 @@ export const usetableStyles = makeStyles((theme) => ({
     height: "96%",
     width: "100%",
   },
+
+  switchButtom: {
+    float: "right",
+    width: "fit-content",
+    alignSelf: "flex-end",
+    marginTop: "10px",
+    marginRight: 0,
+    "& span.MuiTypography-body1": {
+      fontSize: "0.9rem",
+    },
+  },
 }));
