@@ -276,9 +276,9 @@ export default function MetadataDrawer(props) {
           varient="h5"
           className={classes.titleText}
           style={{
-            textTransform: "uppercase",
             fontWeight: "bold",
             marginLeft: "5px",
+            fontSize: 19
           }}
         >
           {props.title}
