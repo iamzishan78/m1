@@ -99,8 +99,9 @@ export const usetableStyles = makeStyles((theme) => ({
     width: "fit-content",
     alignSelf: "flex-end",
     marginTop: "10px",
-    marginRight: 0,
+    marginRight: "5px",
     "& span.MuiTypography-body1": {
+      marginRight: "5px",
       fontSize: "0.9rem",
     },
   },
