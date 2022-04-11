@@ -1057,7 +1057,7 @@ export default function ContactDetailCard(props) {
             >
               <MetadataDrawer
                 title="Additional Details"
-                documentsTitle="Recent Doeuments"
+                documentsTitle="Recent Documents"
                 setCollapse={() => togglePullout()}
                 targetSourceId={contactData._id}
                 showDescription={false}
