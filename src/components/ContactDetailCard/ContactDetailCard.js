@@ -19,6 +19,7 @@ import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import RequestPageIcon from "components/Shared/svgIcons/request_page";
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import { CONTACT_PURCHASE_DATA } from "graphQL/useQueryContactPurchaseData";
@@ -327,6 +328,17 @@ const useStyles = makeStyles((theme) => ({
       transform: "scaleX(0.5)",
     },
   },
+  contactDataButton: {
+    margin: "0px 5px",
+    fontWeight: "600",
+    backgroundColor: "rgba(1, 17, 51, 1) !important",
+    color: "#fff !important",
+    border: "1px solid #B3B3B3",
+    "&:hover": {
+      backgroundColor: "#263451",
+      color: "#fff",
+    },
+  }
 }));
 
 export default function ContactDetailCard(props) {
@@ -792,15 +804,15 @@ export default function ContactDetailCard(props) {
             >
               <div className={classes.leftColumnTopRigthCorner}>
                 {/* temporary removal until melissa is reactivated */}
-                {/* <Button
-                variant="contained"
-                // size="small"
-                onClick={() => {
-                  handleExpandClick("buyContactsInfo");
-                }}
-              >
-                Buy Contact Info
-              </Button> */}
+                <Button
+                  className={classes.contactDataButton}
+                  startIcon={<RequestPageIcon color="white" />}
+                  onClick={() => {
+                    handleExpandClick("buyContactsInfo");
+                  }}
+                >
+                  Contact Data
+                </Button>
 
                 {contactData.primaryEmail ? (
                   <a href={"mailto:" + contactData.primaryEmail}>
