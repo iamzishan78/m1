@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Button, Grid, Container, Box, CircularProgress, IconButton } from "@material-ui/core";
 
 import CloseSharp from "@material-ui/icons/CloseSharp";
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import Typography from "@material-ui/core/Typography";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { AppContext } from "AppContext";
@@ -72,21 +73,21 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             <Grid container direction="row" spacing={4} justify="space-between" alignItems="center" >
               <Grid item>
                 <Typography className={classes.topHeading} variant="h5" component="h2">
-                  Contact Assignment
+                  Bulk Update
                 </Typography>
               </Grid>
               <Grid item>
                 <IconButton aria-label="delete" color="primary" onClick={handleClose}>
-                  <CloseSharp />
+                  <KeyboardTabIcon />
                 </IconButton>
               </Grid>
             </Grid>
 
-            <Box mt={2}>
+            {/* <Box mt={2}>
               <Typography>
                 Assign a contact owner to the selected contacts by choosing contact owner from the list below and clicking the assign button.
               </Typography>
-            </Box>
+            </Box> */}
 
             <Box pt={3}>
               <Typography style={{ fontWeight: "bold" }}>Contacts</Typography>
@@ -116,7 +117,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           <Box p={3} pt={3}>
             <Grid container direction="column"  >
               <Grid item>
-                <Typography style={{ fontWeight: "bold" }}>Contact Owner</Typography>
+                <Typography style={{ fontWeight: "bold" }}>Search for the fields you would like to update from the list below</Typography>
               </Grid>
               <Grid item >
                 <ContactAutoComplete
@@ -142,7 +143,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                   style={{ backgroundColor: "#00abed", color: "white" }}
                   onClick={onAssign}
                 >
-                  Assign
+                  Update
                 </Button>
               </Grid>
             </Grid>
