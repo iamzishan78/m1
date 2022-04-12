@@ -172,7 +172,7 @@ export default function MetadataDrawer(props) {
               getRecentFiles({
                 variables: {
                   relatedObjectId: targetSourceId,
-                  relatedObjectType: "Check",
+                  relatedObjectType: targetLabel,
                 },
               });
               clearTimeout(waitBeforeRequestAgain);
