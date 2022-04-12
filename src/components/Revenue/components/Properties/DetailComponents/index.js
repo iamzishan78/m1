@@ -153,7 +153,7 @@ const useStyles = makeStyles((theme) => ({
     },
   }),
   tabsSectionDetails: {
-    maxHeight: "calc(100vh - 270px)",
+    maxHeight: "calc(100vh - 280px)",
     overflow: "overlay",
     backgroundColor: "#f3f3f3",
   },
