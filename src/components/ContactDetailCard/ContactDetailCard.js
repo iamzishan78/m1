@@ -803,7 +803,6 @@ export default function ContactDetailCard(props) {
               className={classes.border}
             >
               <div className={classes.leftColumnTopRigthCorner}>
-                {/* temporary removal until melissa is reactivated */}
                 <Button
                   className={classes.contactDataButton}
                   startIcon={<RequestPageIcon color="white" />}
