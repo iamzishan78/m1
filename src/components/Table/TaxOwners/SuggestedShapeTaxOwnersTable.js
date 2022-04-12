@@ -131,7 +131,8 @@ function SuggestedShapeTaxOwnersTable(props) {
   ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
     const queryPoly = getPolygonString(props.customLayer?.shape)
-    console.log("customlayer in onwers : ", props.customLayer)
+
+    props.setLoading(true)
     getPaginatedShapeWellOwners({
       variables: {
         polygon: queryPoly,
