@@ -122,8 +122,8 @@ const useStyles = makeStyles((theme) => ({
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
   commentsContainer: {
-    bottom: "34px",
-    position: "initial"
+    bottom: "20px",
+    position: "absolute",
   },
   contentRoot: {
     overflow: "overlay"
@@ -299,9 +299,7 @@ export default function MetadataDrawer(props) {
         </div>
       </div>
 
-      <div
-        className={`flex column justifyStart w-100 ${classes.contentRoot}`}
-      >
+      <div className={`flex column justifyStart w-100 ${classes.contentRoot}`}>
         <div>
           <div style={{ marginTop: 10, marginLeft: 4 }}>
             <FormControl variant="outlined" fullWidth size="small">

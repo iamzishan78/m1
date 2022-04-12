@@ -259,6 +259,8 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: "1",
     transition: "width 0.3s ease-out",
     webkitTransition: "width 0.3s ease-out",
+    overflow: "overlay",
+    maxHeight: "calc(100vh - 139px)"
   },
   shrinkRightColumn: {
     position: "absolute",
