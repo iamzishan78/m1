@@ -143,7 +143,7 @@ export default function MetadataDrawer(props) {
   const [, setStateApp] = useContext(AppContext);
 
   // Props
-  const { setCollapse, targetSourceId, targetLabel, viewAllDocuments } = props;
+  const { setCollapse, targetSourceId, targetLabel, viewAllDocuments, ownerTitle } = props;
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
@@ -305,7 +305,7 @@ export default function MetadataDrawer(props) {
             <FormControl variant="outlined" fullWidth size="small">
               <Grid container className={classes.gridStyle}>
                 <Grid item xs={3}>
-                  <div>Owner</div>
+                  <div>{ownerTitle}</div>
                 </Grid>
                 <Grid item xs={9}>
                   <Autocomplete
@@ -313,7 +313,7 @@ export default function MetadataDrawer(props) {
                     onChange={(e, user) => {
                       setOwnerId(user?.value);
                       if (props.onUpdate)
-                        props.onUpdate({ owner: user?.value })
+                        props.onUpdate({ owner: user?.value, ownerName: user?.text });
                     }}
                     value={
                       users.find((user) => user?.value === ownerId) || null
@@ -487,5 +487,6 @@ MetadataDrawer.defaultProps = {
   documentsTitle: "Documents",
   showDescription: true,
   commentsWidth: "395px",
-  viewAllDocuments: false
+  viewAllDocuments: false,
+  ownerTitle: "Owner",
 }

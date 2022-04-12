@@ -449,7 +449,7 @@ export default function ContactDetailCard(props) {
 
   useEffect(() => {
     if (data && data.contact) {
-      setContactData(data.contact);
+      setContactData({ ...data.contact, metaOwner: { _id: data.contact.contactOwnerId } });
       setStateApp((stateApp) => ({
         ...stateApp,
         currentContatcAtivities: data.contact.activityLog,
@@ -1062,13 +1062,30 @@ export default function ContactDetailCard(props) {
                 targetSourceId={contactData._id}
                 showDescription={false}
                 targetLabel="Contact"
-                commentsWidth="622px"
+                ownerTitle="Contact Owner"
+                commentsWidth="25vw"
                 viewAllDocuments
                 menuComponent={
                   <IconButton className={classes.menuIcon} onClick={handleClick}>
                     <MoreHorizIcon fontSize="medium" aria-controls="simple-menu" aria-haspopup="true" />
                   </IconButton>
                 }
+                data={contactData}
+                onUpdate={({ ownerName, owner }) => {
+                  updateContact({
+                    variables: {
+                      contact: {
+                        contactOwner: ownerName,
+                        contactOwnerId: owner,
+                        _id: contactData._id,
+                        lastUpdateBy: stateApp.user.mongoId,
+                      },
+                      ignoreResponse: true,
+                    },
+                    refetchQueries: ["getPaginatedContacts", "getContact"],
+                    awaitRefetchQueries: false,
+                  });
+                }}
               />
             </div>
           )}
