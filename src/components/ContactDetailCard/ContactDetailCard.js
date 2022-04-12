@@ -1063,6 +1063,7 @@ export default function ContactDetailCard(props) {
                 showDescription={false}
                 targetLabel="Contact"
                 commentsWidth="622px"
+                viewAllDocuments
                 menuComponent={
                   <IconButton className={classes.menuIcon} onClick={handleClick}>
                     <MoreHorizIcon fontSize="medium" aria-controls="simple-menu" aria-haspopup="true" />

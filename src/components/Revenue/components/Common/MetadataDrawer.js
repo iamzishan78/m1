@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import moment from "moment";
+import { useHistory } from "react-router-dom";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/styles";
 import {
@@ -19,6 +20,7 @@ import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
+import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -130,6 +132,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function MetadataDrawer(props) {
   const classes = useStyles();
+  const history = useHistory();
   // States
   const [ownerId, setOwnerId] = useState("");
   const [description, setDescription] = useState(props.description ?? "");
@@ -137,9 +140,10 @@ export default function MetadataDrawer(props) {
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [users, setUsers] = useState([]);
+  const [, setStateApp] = useContext(AppContext);
 
   // Props
-  const { setCollapse, targetSourceId, targetLabel } = props;
+  const { setCollapse, targetSourceId, targetLabel, viewAllDocuments } = props;
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
@@ -448,6 +452,17 @@ export default function MetadataDrawer(props) {
             style={{ padding: "20px 16px", marginBottom: -56 }}
           >
             <h4 style={{ margin: "0 0 8px 0", float: "left" }}>{props.documentsTitle}</h4>
+            {viewAllDocuments && (
+              <h4
+                className={classes.viewAll}
+                onClick={() => {
+                  history.push(`/contact/details/${targetSourceId}/documents`);
+                  setStateApp(stateApp => ({ ...stateApp, viewDoc: null }));
+                }}
+              >
+                View All
+              </h4>
+            )}
           </div>
 
           <AddDialogeUploadZone
@@ -473,5 +488,6 @@ MetadataDrawer.defaultProps = {
   title: "Metadata",
   documentsTitle: "Documents",
   showDescription: true,
-  commentsWidth: "395px"
+  commentsWidth: "395px",
+  viewAllDocuments: false
 }
