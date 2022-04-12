@@ -564,7 +564,7 @@ export default function ContactDetailCard(props) {
   };
   const togglePullout = () => dispatch(toggleRightColumn());
   return contactData ? (
-    <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)", overflow: "scroll" }}>
+    <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)" }}>
       <div className={classes.header}>
         <div
           style={{
