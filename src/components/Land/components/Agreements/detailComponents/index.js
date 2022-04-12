@@ -98,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   tabsSectionDetails: {
-    maxHeight: "calc(100vh - 305px)",
+    maxHeight: "calc(100vh - 270px)",
     overflow: "overlay",
     backgroundColor: "#f3f3f3",
   },
@@ -153,7 +153,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsDetailContainer: ({ metaCollapse }) => ({
     padding: 20,
-    maxWidth: !metaCollapse ? "calc(100% - 444px)" : "100%",
+    maxWidth: !metaCollapse ? "calc(100% - 644px)" : "100%",
   }),
   menuIcon: {
     marginLeft: 10,
@@ -515,9 +515,8 @@ export default function DetailComponents(props) {
             style={{
               marginTop: 20,
               marginRight: 24,
-              height: "calc(100vh - 305px)",
-              maxHeight: "calc(100vh - 305px)",
-              maxWidth: 420,
+              height: "calc(100vh - 270px)",
+              width: 620,
             }}
           >
             <MetadataDrawer

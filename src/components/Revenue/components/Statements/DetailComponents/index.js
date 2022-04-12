@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   tabsSectionDetails: {
-    maxHeight: "calc(100vh - 280px)",
+    maxHeight: "calc(100vh - 270px)",
     overflow: "overlay",
     backgroundColor: "#f3f3f3",
   },
@@ -134,7 +134,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsDetailContainer: ({ collapse }) => ({
     padding: 20,
-    maxWidth: !collapse ? "calc(100% - 444px)" : "100%",
+    maxWidth: !collapse ? "calc(100% - 644px)" : "100%",
   }),
   menuIcon: {
     background: "transparent",
@@ -198,7 +198,6 @@ export default function DetailComponents(props) {
   const [isButtonScroll, setButtonScroll] = useState(false);
   const [collapse, setCollapse] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [loader, setLoader] = useState(false);
@@ -413,9 +412,9 @@ export default function DetailComponents(props) {
                   style={{
                     marginTop: 20,
                     marginRight: 24,
-                    height: "calc(100vh - 305px)",
-                    maxHeight: "calc(100vh - 305px)",
-                    maxWidth: 420,
+                    height: "calc(100vh - 270px)",
+                    width: "620px",
+                    maxWidth: "620px",
                   }}
                 >
                   <MetadataDrawer
@@ -425,6 +424,7 @@ export default function DetailComponents(props) {
                     setCollapse={setCollapse}
                     targetSourceId={checkId}
                     setStateApp={setStateApp}
+                    commentsWidth="25vw"
                   />
                 </div>
               )}
