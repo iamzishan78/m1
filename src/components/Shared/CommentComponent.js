@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   comment: {
-    maxHeight: "290px",
+    maxHeight: "230px",
     overflow: "auto",
     padding: "5px 0px",
   },
