@@ -433,7 +433,7 @@ export default function DetailComponents(props) {
               data={propertyDetails}
               onUpdate={onUpdateMetaData}
               setCollapse={setCollapse}
-              targetLabel='PROPERTY'
+              targetLabel='Property'
               targetSourceId={propertyId}
               setStateApp={setStateApp}
             />
