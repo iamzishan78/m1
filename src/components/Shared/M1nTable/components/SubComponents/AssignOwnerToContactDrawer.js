@@ -30,8 +30,10 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const classes = useStyles();
   const [contactOwner, setContactOwner] = useState('');
   const [field, setField] = useState('');
-  const [fieldKey, setFieldKey] = useState('');
+  const [fieldKey, setFieldKey] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(true);
+
 
   const fieldsToUpdate = [
     { title: 'Campaign Name', value: "Campaign Name" },
@@ -50,6 +52,11 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const handleClose = () => {
     setM1nSelectedRowsIndexes([])
     onClose();
+  }
+
+  const onFieldToUpdateChange = (field) => {
+    setIsDisabled(true)
+    setField(field)
   }
 
   const onAssign = () => {
@@ -88,6 +95,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
         return <ContactAutoComplete
           value={contactOwner}
           onChange={(e, user) => {
+            setIsDisabled(false)
             setContactOwner(user.value);
           }}
         />
@@ -111,6 +119,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       value={fieldKey}
       filterKey={filterKey}
       onChange={(e, fieldKey) => {
+        setIsDisabled(false)
         setFieldKey(fieldKey.value);
       }}
     />
@@ -176,7 +185,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                   id="free-solo-2-demo"
                   disableClearable
                   options={fieldsToUpdate.map((field) => field.title)}
-                  onChange={(e, field) => setField(field)}
+                  onChange={(e, field) => onFieldToUpdateChange(field)}
 
                   renderInput={(params) => (
                     <TextField
@@ -215,8 +224,8 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                 <Button
                   variant="contained"
                   component="span"
-                  disabled={rows.length === 0}
-                  style={{ backgroundColor: "#00abed", color: "white" }}
+                  disabled={isDisabled}
+                  style={isDisabled ? {} : { backgroundColor: "#00abed", color: "white" }}
                   onClick={onAssign}
                 >
                   Update
