@@ -168,7 +168,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           <Box p={3} pt={3}>
             <Grid container direction="column"  >
               <Grid item>
-                <Typography style={{ fontWeight: "bold" }}>SearcAAAh for the fields you would like to update from the list below</Typography>
+                <Typography style={{ fontWeight: "bold" }}>Search for the fields you would like to update from the list below</Typography>
               </Grid>
               <Grid item >
                 <Autocomplete
