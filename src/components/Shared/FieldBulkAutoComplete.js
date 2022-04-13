@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function FieldBulkAutoComplete({ value, onChange, onKeyDown, onBlur, filterKey }) {
+export default function FieldBulkAutoComplete({ value, onChange, onKeyDown, onBlur, filterKey, placeholder }) {
     let classes = useStyles();
     const [options, setOptions] = useState([]);
 
@@ -54,7 +54,7 @@ export default function FieldBulkAutoComplete({ value, onChange, onKeyDown, onBl
             getOptionLabel={(option) => option.text}
             getOptionSelected={(option) => option.value === value}
             renderInput={(params) => (
-                <TextField size="small" placeholder='Select Contact Owner' {...params} className={classes.maxWidth} multiline value={value} />
+                <TextField size="small" placeholder={placeholder} {...params} className={classes.maxWidth} multiline value={value} />
             )}
         />
     );

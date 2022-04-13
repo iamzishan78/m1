@@ -115,14 +115,21 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       default:
 
     }
-    return <FieldBulkAutoComplete
-      value={fieldKey}
-      filterKey={filterKey}
-      onChange={(e, fieldKey) => {
-        setIsDisabled(false)
-        setFieldKey(fieldKey.value);
-      }}
-    />
+
+    if (filterKey) {
+      return <FieldBulkAutoComplete
+        value={fieldKey}
+        placeholder={`Select ${field}`}
+        filterKey={filterKey}
+        onChange={(e, fieldKey) => {
+          setIsDisabled(false)
+          setFieldKey(fieldKey.value);
+        }}
+      />
+    }
+    else return ''
+
+
   }
 
   return (
