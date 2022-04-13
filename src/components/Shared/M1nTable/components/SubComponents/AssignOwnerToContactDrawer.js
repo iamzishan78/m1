@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, Grid, Container, Box, CircularProgress, IconButton } from "@material-ui/core";
+import { Button, Grid, Container, Box, CircularProgress, InputAdornment, IconButton } from "@material-ui/core";
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import SearchIcon from "@material-ui/icons/Search";
 
 import CloseSharp from "@material-ui/icons/CloseSharp";
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
@@ -10,7 +12,11 @@ import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { AppContext } from "AppContext";
 import { ASSIGN_OWNER_TO_CONTACT } from "graphQL/useMutationAssignOwnerToContact";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
+import FieldBulkAutoComplete from "components/Shared/FieldBulkAutoComplete";
 import Loader from "components/Loaders";
+import TextField from "@material-ui/core/TextField";
+
+
 
 const styles = () => ({
   topHeading: { fontWeight: "bold" },
@@ -23,7 +29,17 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const [stateApp] = React.useContext(AppContext);
   const classes = useStyles();
   const [contactOwner, setContactOwner] = useState('');
+  const [field, setField] = useState('');
+  const [fieldKey, setFieldKey] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const fieldsToUpdate = [
+    { title: 'Campaign Name', value: "Campaign Name" },
+    { title: 'Contact Owner', value: "Contact" },
+    { title: 'Stage', value: "Stage" },
+    { title: 'Status', value: "Status" },
+    { title: 'Entity Type', value: "Entity Type" },
+  ];
 
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT);
 
@@ -64,6 +80,41 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     onClose();
     setLoading(false);
   };
+
+  function SelectedField() {
+    let filterKey = ''
+    switch (field) {
+      case 'Contact Owner':
+        return <ContactAutoComplete
+          value={contactOwner}
+          onChange={(e, user) => {
+            setContactOwner(user.value);
+          }}
+        />
+      case 'Campaign Name':
+        filterKey = 'campaignName.keyword'
+        // /> 
+        break;
+      case 'Stage':
+        filterKey = 'status.keyword'
+        break
+      case 'Status':
+        filterKey = 'contactStatus.keyword'
+        break
+      case 'Entity Type':
+        filterKey = 'ownerType.keyword'
+      // .. etc
+      default:
+
+    }
+    return <FieldBulkAutoComplete
+      value={fieldKey}
+      filterKey={filterKey}
+      onChange={(e, fieldKey) => {
+        setFieldKey(fieldKey.value);
+      }}
+    />
+  }
 
   return (
     <RightDialog open={true}>
@@ -117,15 +168,40 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           <Box p={3} pt={3}>
             <Grid container direction="column"  >
               <Grid item>
-                <Typography style={{ fontWeight: "bold" }}>Search for the fields you would like to update from the list below</Typography>
+                <Typography style={{ fontWeight: "bold" }}>SearcAAAh for the fields you would like to update from the list below</Typography>
               </Grid>
               <Grid item >
-                <ContactAutoComplete
-                  value={contactOwner}
-                  onChange={(e, user) => {
-                    setContactOwner(user.value);
-                  }}
+                <Autocomplete
+                  freeSolo
+                  id="free-solo-2-demo"
+                  disableClearable
+                  options={fieldsToUpdate.map((field) => field.title)}
+                  onChange={(e, field) => setField(field)}
+
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder="Select Field"
+                      variant="outlined"
+
+                      InputProps={{
+                        ...params.InputProps,
+                        type: 'search',
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon htmlColor="#757575" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
                 />
+              </Grid>
+              <Grid item>
+                <Typography style={{ fontWeight: "bold", marginTop: "30px" }}>{field}</Typography>
+              </Grid>
+              <Grid item>
+                <SelectedField />
               </Grid>
             </Grid>
           </Box>
