@@ -50,7 +50,7 @@ const Modals = makeStyles((theme) => ({
     fontSize: "15px",
   },
   actionButtons: {
-    margin: "15px",
+    margin: "0px 25px 50px 0px",
   },
 }));
 
