@@ -424,7 +424,6 @@ export default function DetailComponents(props) {
                     setCollapse={setCollapse}
                     targetSourceId={checkId}
                     setStateApp={setStateApp}
-                    commentsWidth="25vw"
                   />
                 </div>
               )}

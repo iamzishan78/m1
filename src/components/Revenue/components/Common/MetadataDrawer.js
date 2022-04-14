@@ -121,12 +121,13 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": { color: "#757575" },
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
-  commentsContainer: {
-    bottom: "20px",
-    position: "absolute",
-  },
   contentRoot: {
-    overflow: "overlay"
+    overflow: "overlay",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    width: "100%",
+    height: "100%"
   },
 }));
 
@@ -299,7 +300,7 @@ export default function MetadataDrawer(props) {
         </div>
       </div>
 
-      <div className={`flex column justifyStart w-100 ${classes.contentRoot}`}>
+      <div className={classes.contentRoot}>
         <div>
           <div style={{ marginTop: 10, marginLeft: 4 }}>
             <FormControl variant="outlined" fullWidth size="small">
@@ -471,7 +472,7 @@ export default function MetadataDrawer(props) {
             setUploadedFileData={setUploadedFileData}
           />
         </div>
-        <div className={classes.commentsContainer} style={{ width: props.commentsWidth }}>
+        <div style={{ width: props.commentsWidth }}>
           <CommentComponent
             targetLabel={targetLabel}
             targetSourceId={targetSourceId}
