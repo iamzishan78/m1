@@ -15,6 +15,8 @@ import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import FieldBulkAutoComplete from "components/Shared/FieldBulkAutoComplete";
 import Loader from "components/Loaders";
 import TextField from "@material-ui/core/TextField";
+import { UPDATEBULKCONTACT } from "graphQL/useMutationUpdateBulkContact";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 
 
@@ -30,20 +32,21 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const classes = useStyles();
   const [contactOwner, setContactOwner] = useState('');
   const [field, setField] = useState('');
-  const [fieldKey, setFieldKey] = useState(null);
+  const [fieldKey, setFieldKey] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
 
 
   const fieldsToUpdate = [
-    { title: 'Campaign Name', value: "Campaign Name" },
-    { title: 'Contact Owner', value: "Contact" },
-    { title: 'Stage', value: "Stage" },
-    { title: 'Status', value: "Status" },
-    { title: 'Entity Type', value: "Entity Type" },
+    { title: 'Campaign Name', value: "campaignName" },
+    { title: 'Contact Owner', value: "contactOwner" },
+    { title: 'Stage', value: "status" },
+    { title: 'Status', value: "contactStatus" },
+    { title: 'Entity Type', value: "ownerType" },
   ];
 
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT);
+  const [updateBulkContact] = useMutation(UPDATEBULKCONTACT);
 
   const onDelete = (row) => {
     setRows(rows.filter((r) => r._id !== row._id));
@@ -61,16 +64,48 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
 
   const onAssign = () => {
     let contactIds = rows.map((row) => row._id);
+
     const errorMsg = 'Failed to assign to contact owner'
-    Loader.createToast('contact-creation', 'Contact owner assignment in progress')
-    assignOwnerToContact({
-      variables: { contactIds, contactOwner, userId: stateApp.user.mongoId },
-      refetchQueries: ["getESContacts", "getESSimpleSearch"],
-      awaitRefetchQueries: true
-    }).then(
-      res => {
-        if (res.data && res.data.assignOwnerToContact) {
-          const { success, message } = res.data.assignOwnerToContact
+    Loader.createToast('contact-creation', 'Contact Bulk Update in progress')
+
+    if (field === 'Contact Owner') {
+      assignOwnerToContact({
+        variables: { contactIds, contactOwner, userId: stateApp.user.mongoId },
+        refetchQueries: ["getESContacts", "getESSimpleSearch"],
+        awaitRefetchQueries: true
+      }).then(
+        res => {
+          if (res.data && res.data.assignOwnerToContact) {
+            const { success, message } = res.data.assignOwnerToContact
+            if (success) {
+              Loader.successToast('contact-creation', message)
+            } else {
+              Loader.errorToast('contact-creation', message)
+            }
+          } else {
+            Loader.errorToast('contact-creation', errorMsg)
+          }
+        },
+        err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) }
+      );
+    }
+    else {
+      const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
+
+      const contact = {
+        ...fieldToUpdate,
+        _id: contactIds
+      }
+      updateBulkContact({
+        variables: {
+          contact: contact,
+          ignoreResponse: true,
+        },
+        refetchQueries: ["getESContacts", "getESSimpleSearch"],
+        awaitRefetchQueries: true,
+      }).then(res => {
+        if (res.data && res.data.updateBulkContact) {
+          const { success, message } = res.data.updateBulkContact
           if (success) {
             Loader.successToast('contact-creation', message)
           } else {
@@ -80,8 +115,11 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           Loader.errorToast('contact-creation', errorMsg)
         }
       },
-      err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) }
-    );
+        err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });
+    }
+
+
+
 
     setM1nSelectedRowsIndexes([])
     onClose();
@@ -100,9 +138,16 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           }}
         />
       case 'Campaign Name':
-        filterKey = 'campaignName.keyword'
-        // /> 
-        break;
+        // filterKey = 'campaignName.keyword'
+        return <CampaignNameField
+          className={classes.maxWidth}
+          onChange={(value) => {
+            setIsDisabled(false)
+            setFieldKey(value);
+          }}
+          value={fieldKey}
+          fullWidth
+        />
       case 'Stage':
         filterKey = 'status.keyword'
         break
@@ -115,10 +160,10 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       default:
 
     }
-
+    console.log("field : ", field)
     if (filterKey) {
       return <FieldBulkAutoComplete
-        value={fieldKey}
+        value={fieldKey || []}
         placeholder={`Select ${field}`}
         filterKey={filterKey}
         onChange={(e, fieldKey) => {
