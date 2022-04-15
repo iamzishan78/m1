@@ -89,34 +89,29 @@ export default function CampaignNameField(props) {
   const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   const showPlusAddIcon = () => {
-    if (tFActive || textValue ) return false;
+    if (tFActive || textValue) return false;
     return true;
   };
 
   const classes = useStyles({ ...props, showPlusAddIcon: showPlusAddIcon() });
 
   useEffect(() => {
-    if(options.length > 0) {
+    if (campaignfiltersData?.getESFilterList?.hits) {
+      const allFiltersData = campaignfiltersData.getESFilterList.hits.map(hit => hit.key)
+      setOptions(allFiltersData.filter(d => d))
       setLoadingTags(false);
     }
-  }, [options]);
-
-  useEffect(() => {
-    if(campaignfiltersData?.getESFilterList?.hits){
-      const allFiltersData = campaignfiltersData.getESFilterList.hits.map(hit => hit.key)
-      setOptions(allFiltersData.filter(d=> d))
-    }
-  },[campaignfiltersData]);
+  }, [campaignfiltersData]);
 
   useEffect(() => {
     getCampaignFilters({
       variables: {
-          esIndex:'contacts_flat',
-          filterKey: 'campaignName.keyword',
-          size: 50,
+        esIndex: 'contacts_flat',
+        filterKey: 'campaignName.keyword',
+        size: 50,
       },
     });
-  },[])
+  }, []);
 
   const UpperAndCleanTagText = (tagText) => {
     return tagText
@@ -143,8 +138,8 @@ export default function CampaignNameField(props) {
   const DeleteTag = (valueToRemove) => {
     const value = copy(props.value)
     const index = value.findIndex(v => v === valueToRemove)
-    if(index > -1){
-      value.splice(index,1);
+    if (index > -1) {
+      value.splice(index, 1);
       props.onChange(value)
     }
   };
@@ -178,7 +173,7 @@ export default function CampaignNameField(props) {
   };
 
   useEffect(() => {
-    if(textValue && options && props.value){
+    if (textValue && options && props.value) {
       const { cleanArray } = cleanDropDownArray();
       if (
         cleanArray.indexOf(UpperAndCleanTagText(textValue)) === -1 &&
@@ -218,15 +213,15 @@ export default function CampaignNameField(props) {
               freeSolo
               renderTags={(value, getTagProps) =>
                 value.map((tag, index) => {
-                    return (
-                      <Chip
-                        key={index}
-                        id={tag}
-                        label={tag}
-                        {...getTagProps({ index })}
-                        deleteIcon={<ClearIcon />}
-                      />
-                    );
+                  return (
+                    <Chip
+                      key={index}
+                      id={tag}
+                      label={tag}
+                      {...getTagProps({ index })}
+                      deleteIcon={<ClearIcon />}
+                    />
+                  );
                 })
               }
               renderInput={(params) => (
@@ -251,7 +246,7 @@ export default function CampaignNameField(props) {
                   InputProps={{
                     ...params.InputProps,
                     disableUnderline: true,
-                    
+
                   }}
                 />
               )}

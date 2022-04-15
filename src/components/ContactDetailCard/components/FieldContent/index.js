@@ -16,7 +16,7 @@ import { textFieldLabels, getHrefValue, LinkTypes, FieldTypes } from 'components
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style'
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-import {timeZoneOptions} from  './timeZoneList';
+import { timeZoneOptions } from './timeZoneList';
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Grid } from "@material-ui/core";
@@ -71,8 +71,8 @@ export default function FieldContent({
   const [fieldsCount, setFieldsCount] = useState(0);
 
   const [updateContact, { loading }] = useMutation(UPDATECONTACT);
-  const [updateMelissa, { melissaLoading }] = useMutation(UPDATEMELISSA);
-  const [updateMelissaAddress, { melissaAddressLoading }] = useMutation(
+  const [updateMelissa] = useMutation(UPDATEMELISSA);
+  const [updateMelissaAddress] = useMutation(
     UPDATEMELISSAADDRESS
   );
   const classes = useStyles({ noMargin, loading, fieldsCount });
@@ -83,33 +83,33 @@ export default function FieldContent({
   const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
   // const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
-  const [statusOptions, setStatusOptions] = useState([])
+  const [statusOptions, setStatusOptions] = useState([]);
 
   useEffect(() => {
     getFilters({
       variables: {
-          esIndex:'contacts_flat',
-          filterKey: 'status.keyword',
-          size: 50,
+        esIndex: 'contacts_flat',
+        filterKey: 'status.keyword',
+        size: 50,
       },
     });
-  },[])
+  }, [])
 
   useEffect(() => {
-    if(filtersData?.getESFilterList?.hits){
+    if (filtersData?.getESFilterList?.hits) {
       const allFiltersData = filtersData.getESFilterList.hits.map(hit => hit.key)
       let filterData = filtersData.getESFilterList.hits.map(hit => hit.key)
-      for(let i = 0; i < contactStatusOptions.length; i++){
+      for (let i = 0; i < contactStatusOptions.length; i++) {
         filterData = filterData.filter(d => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label)
       }
-      for(let i = 0; i < contactStatusOptions.length; i++){
-        if((contactStatusOptions[i].notInclude && allFiltersData.find(d => d === contactStatusOptions[i].value)) || !contactStatusOptions[i].notInclude){
+      for (let i = 0; i < contactStatusOptions.length; i++) {
+        if ((contactStatusOptions[i].notInclude && allFiltersData.find(d => d === contactStatusOptions[i].value)) || !contactStatusOptions[i].notInclude) {
           filterData.push(contactStatusOptions[i].label)
         }
       }
       setStatusOptions(filterData)
     }
-  },[filtersData])
+  }, [filtersData])
 
   useEffect(() => {
     if (content) {
@@ -128,7 +128,7 @@ export default function FieldContent({
   }, [content]);
 
 
-  useEffect(() => { 
+  useEffect(() => {
     editContent.ownerType && handleUpdating()
   }, [editContent.ownerType]);
 
@@ -162,9 +162,9 @@ export default function FieldContent({
       for (const field in editContent) {
         const value = val ? val : editContent[field];
         if (value !== null && value !== undefined) {
-          if(field === 'status'){
+          if (field === 'status') {
             trimmedEditContent[field] = value;
-          }else{
+          } else {
             trimmedEditContent[field] = typeof value === 'string' ? value.trim() : value;
           }
           if (trimmedEditContent[field] !== content[field]) differences = true;
@@ -193,7 +193,7 @@ export default function FieldContent({
           setStateApp({ ...stateApp, contactUpdated: id });
         });
       }
-    } else if (fieldType == FieldTypes.MelissaRecord) {
+    } else if (fieldType === FieldTypes.MelissaRecord) {
       let entries = Object.entries(editContent)[0];
       let key = entries[0];
       let updatedValue = entries[1];
@@ -274,157 +274,157 @@ export default function FieldContent({
 
       else if (editContent.hasOwnProperty(fieldName)) {
         inputsArray.push(
-          fieldName === 'contactStatus' ? 
-          <ContactStatus
-            className={classes.maxWidth}
-            setValue={(value) => {
-              let val = value.name
-              const data = contactStatusOptions.find(s => s.label === val)
-              if(data){
-                val = data.value
-              }
-              setEditContent((editContent) => ({
-                ...editContent,
-                [fieldName]: val,
-              }));
-              handleUpdating(val)
-            }}
-            value={editContent[fieldName] === null ? "" : editContent[fieldName]}
-          />:
-          fieldName === 'status' ? 
-          <Status
-            className={classes.maxWidth}
-            options={statusOptions}
-            setDocumentType={(value) => {
-              let val = value.name
-              const data = contactStatusOptions.find(s => s.label === val)
-              if(data){
-                val = data.value
-              }
-              setEditContent((editContent) => ({
-                ...editContent,
-                [fieldName]: val,
-              }));
-              handleUpdating(val)
-            }}
-            value={editContent[fieldName] === null ? "" : editContent[fieldName]}
-          />:
-            fieldName === 'timeZone' ?
-            <Autocomplete
-            id={"fieldContentInput" + fieldName}
-            key={"fieldContentInput" + fieldName}
-            options={timeZoneOptions}
-            getOptionLabel={(option) => option.title || editContent[fieldName]}
-            style={{ width: 300 }}
-            onChange={(e,data) => {
-              e.persist();
-              setEditContent((editContent) => ({
-                ...editContent,
-                [fieldName]: data?.title || ""
-              }));
-            }}
-            value={
-              editContent[fieldName] === null ? "" : editContent[fieldName]
-            }
-            autoComplete
-            onKeyDown={(event) => {
-              event.stopPropagation();
-              if (event.key === "Escape") {
-                if (fieldsCount <= 1) {
-                  setEdit(null);
-                  setEditContent((editContent) => ({
-                    ...editContent,
-                    [fieldName]: content[fieldName],
-                  }));
-                }
-              }
-              if (event.key === "Enter") {
-                event.preventDefault();
-                handleUpdating();
-              }
-            }}
-            onBlur={() => {
-              if (fieldsCount <= 1) {
-                setEdit(null);
-                setEditContent((editContent) => ({
-                  ...editContent,
-                  [fieldName]: content[fieldName],
-                }));
-              }
-            }}
-            style={{width:'100%'}}
-            renderInput={(params) => 
-              <TextField 
-              {...params}  
-              label={fieldsCount > 1 ? textFieldLabels(fieldName) : null} 
-              className={classes.editTextField}
-              />
-            }
-            /> :
-            fieldName === 'ownerType' ? 
-            <EntityType
+          fieldName === 'contactStatus' ?
+            <ContactStatus
               className={classes.maxWidth}
-              options={statusOptions}
-              setDocumentType={(value) => {
+              setValue={(value) => {
                 let val = value.name
                 const data = contactStatusOptions.find(s => s.label === val)
-                if(data){
+                if (data) {
                   val = data.value
                 }
                 setEditContent((editContent) => ({
                   ...editContent,
                   [fieldName]: val,
-                }));          
+                }));
+                handleUpdating(val)
               }}
               value={editContent[fieldName] === null ? "" : editContent[fieldName]}
-            />:
-            <TextField
-            key={"fieldContentInput" + fieldName}
-            id={"fieldContentInput" + fieldName}
-            className={classes.editTextField}
-            variant="outlined"
-            size="small"
-            autoComplete="nope"
-            fullWidth
-            label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
-            multiline
-            value={
-              editContent[fieldName] === null ? "" : editContent[fieldName]
-            }
-            onChange={(e) => {
-              e.persist();
-              setEditContent((editContent) => ({
-                ...editContent,
-                [fieldName]: e.target.value,
-              }));
-            }}
-            onKeyDown={(event) => {
-              event.stopPropagation();
-              if (event.key === "Escape") {
-                if (fieldsCount <= 1) {
-                  setEdit(null);
+            /> :
+            fieldName === 'status' ?
+              <Status
+                className={classes.maxWidth}
+                options={statusOptions}
+                setDocumentType={(value) => {
+                  let val = value.name
+                  const data = contactStatusOptions.find(s => s.label === val)
+                  if (data) {
+                    val = data.value
+                  }
                   setEditContent((editContent) => ({
                     ...editContent,
-                    [fieldName]: content[fieldName],
+                    [fieldName]: val,
                   }));
-                }
-              }
+                  handleUpdating(val)
+                }}
+                value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+              /> :
+              fieldName === 'timeZone' ?
+                <Autocomplete
+                  id={"fieldContentInput" + fieldName}
+                  key={"fieldContentInput" + fieldName}
+                  options={timeZoneOptions}
+                  getOptionLabel={(option) => option.title || editContent[fieldName]}
+                  style={{ width: 300 }}
+                  onChange={(e, data) => {
+                    e.persist();
+                    setEditContent((editContent) => ({
+                      ...editContent,
+                      [fieldName]: data?.title || ""
+                    }));
+                  }}
+                  value={
+                    editContent[fieldName] === null ? "" : editContent[fieldName]
+                  }
+                  autoComplete
+                  onKeyDown={(event) => {
+                    event.stopPropagation();
+                    if (event.key === "Escape") {
+                      if (fieldsCount <= 1) {
+                        setEdit(null);
+                        setEditContent((editContent) => ({
+                          ...editContent,
+                          [fieldName]: content[fieldName],
+                        }));
+                      }
+                    }
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      handleUpdating();
+                    }
+                  }}
+                  onBlur={() => {
+                    if (fieldsCount <= 1) {
+                      setEdit(null);
+                      setEditContent((editContent) => ({
+                        ...editContent,
+                        [fieldName]: content[fieldName],
+                      }));
+                    }
+                  }}
+                  style={{ width: '100%' }}
+                  renderInput={(params) =>
+                    <TextField
+                      {...params}
+                      label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
+                      className={classes.editTextField}
+                    />
+                  }
+                /> :
+                fieldName === 'ownerType' ?
+                  <EntityType
+                    className={classes.maxWidth}
+                    options={statusOptions}
+                    setDocumentType={(value) => {
+                      let val = value.name
+                      const data = contactStatusOptions.find(s => s.label === val)
+                      if (data) {
+                        val = data.value
+                      }
+                      setEditContent((editContent) => ({
+                        ...editContent,
+                        [fieldName]: val,
+                      }));
+                    }}
+                    value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+                  /> :
+                  <TextField
+                    key={"fieldContentInput" + fieldName}
+                    id={"fieldContentInput" + fieldName}
+                    className={classes.editTextField}
+                    variant="outlined"
+                    size="small"
+                    autoComplete="nope"
+                    fullWidth
+                    label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
+                    multiline
+                    value={
+                      editContent[fieldName] === null ? "" : editContent[fieldName]
+                    }
+                    onChange={(e) => {
+                      e.persist();
+                      setEditContent((editContent) => ({
+                        ...editContent,
+                        [fieldName]: e.target.value,
+                      }));
+                    }}
+                    onKeyDown={(event) => {
+                      event.stopPropagation();
+                      if (event.key === "Escape") {
+                        if (fieldsCount <= 1) {
+                          setEdit(null);
+                          setEditContent((editContent) => ({
+                            ...editContent,
+                            [fieldName]: content[fieldName],
+                          }));
+                        }
+                      }
 
-              if (event.key === "Enter") {
-                event.preventDefault();
-                handleUpdating();
-              }
-            }}
-            onBlur={() => {
-              if (fieldsCount <= 1) {
-                setEdit(null);
-                setEditContent((editContent) => ({
-                  ...editContent,
-                  [fieldName]: content[fieldName],
-                }));
-              }
-            }}
-          />
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        handleUpdating();
+                      }
+                    }}
+                    onBlur={() => {
+                      if (fieldsCount <= 1) {
+                        setEdit(null);
+                        setEditContent((editContent) => ({
+                          ...editContent,
+                          [fieldName]: content[fieldName],
+                        }));
+                      }
+                    }}
+                  />
         );
       }
     }
@@ -473,7 +473,7 @@ export default function FieldContent({
     }
   }
 
-  const renderOutput = campaignName ? 
+  const renderOutput = campaignName ?
     <CampaignNameField
       className={classes.maxWidth}
       onChange={(value) => {
@@ -505,10 +505,10 @@ export default function FieldContent({
           />
         )}
         {
-          fieldType == FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
+          fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
         }
         {
-          isPurchased && <CopyPurchaseInfo updateContact={updateContact} userId={stateApp.user.mongoId}  content={content} contactId={id} />
+          isPurchased && <CopyPurchaseInfo updateContact={updateContact} userId={stateApp.user.mongoId} content={content} contactId={id} />
         }
 
         {!childrenLeft && !onlyChildren && children ? children : ""}
@@ -520,20 +520,20 @@ export default function FieldContent({
     <React.Fragment>
       <p
         className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP}`}
-        style={campaignName ? { width: '100%'} : {}}
+        style={campaignName ? { width: '100%' } : {}}
       >
-        {(linkType == LinkTypes.Mail || linkType == LinkTypes.Simple) &&
+        {(linkType === LinkTypes.Mail || linkType === LinkTypes.Simple) &&
           textArray.length > 0 ? (
-            <a
-              href={getHrefValue(textArray.join(", "), linkType)}
-              target="_blank"
-              className={classes.noTextDecoration} rel="noreferrer"
-            >
-              {renderOutput}
-            </a>
-          ) : (
-            renderOutput
-          )}
+          <a
+            href={getHrefValue(textArray.join(", "), linkType)}
+            target="_blank"
+            className={classes.noTextDecoration} rel="noreferrer"
+          >
+            {renderOutput}
+          </a>
+        ) : (
+          renderOutput
+        )}
       </p>
       {loading && (
         <div style={{ height: "0", width: "0" }}>
@@ -541,7 +541,7 @@ export default function FieldContent({
             className={classes.loader}
             size={22}
             color="secondary"
-          ></CircularProgress>
+          />
         </div>
       )}
     </React.Fragment>
