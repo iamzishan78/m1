@@ -55,6 +55,7 @@ function MapGridUnitTable(props) {
           objectName: hit.Operator,
         },
       };
+      hit.ownersCount = get(hit, "interestSummary.unitInterestCount", "");
       hit.qualifier = get(hit, "qualifier.name", "");
       hit.lastUpdated = moment(hit._ts).format('MM/DD/YYYY');
       hit = props.setGenricData(hit, hit._id, [], []);
@@ -99,7 +100,6 @@ function MapGridUnitTable(props) {
       const contactStatuses = get(status, "getESFilterList.hits", []).map(s => ({ name:s.key, data:[] }));
 
       for (let i = 0; i < rows.length; i++) {
-        rows[i].ownersCount = owners?.getShapeOwnerDataById[rows[i]._id].total;
         for(let j=0; j<contactStatuses.length; j++){
           const data = owners?.getShapeOwnerDataById[rows[i]._id].status[contactStatuses[j].name]
           contactStatuses[j].data = data ?[data] : [0]
@@ -113,7 +113,7 @@ function MapGridUnitTable(props) {
   useEffect(() => {
     if (props.rows.length > 0) {
       const ids = props.rows
-        .filter((row) => typeof row.ownersCount !== "number")
+        .filter((row) => !row.unitStatus)
         .map((row) => row._id);
       if (ids.length > 0) {
         getShapeOwnerDataById({

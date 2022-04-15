@@ -36,7 +36,7 @@ const OwnersPerUnitHeadCells = [
   },
   {
     name: "ownerType",
-    esKey: 'contact.ownerType',
+    esKey: 'contact.ownerType.keyword',
     label: "Entity Type",
     options: { filter: true }
   },
@@ -185,15 +185,10 @@ const OwnersPerUnitHeadCells = [
   {
     name: "isPurchased",
     label: "Purchased Data Exists",
-    esKey: "isPurchased",
+    esKey: "contact.isPurchased",
     options: {
       display: false,
-      filter: false,
-      forceFilter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
+      filter: true,
       viewColumns: false,
     },
     custom: {
@@ -209,6 +204,19 @@ const OwnersPerUnitHeadCells = [
           value: "false",
         },
       ],
+    },
+  },
+  {
+    name: "actionMenu",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+      parent: "Unit detail"
     },
   },
 ];

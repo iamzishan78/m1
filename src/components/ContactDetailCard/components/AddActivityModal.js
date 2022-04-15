@@ -110,11 +110,11 @@ function AddActivityModal(props) {
 
     let activityLog = props.activityLog
       ? props.activityLog.map((act) => ({
-          type: act.type,
-          notes: act.notes,
-          dateTime: act.dateTime,
-          user_id: act.user_id,
-        }))
+        type: act.type,
+        notes: act.notes,
+        dateTime: act.dateTime,
+        user_id: act.user_id,
+      }))
       : [];
 
     activityLog.push({
@@ -141,11 +141,11 @@ function AddActivityModal(props) {
 
     let activityLog = props.activityLog
       ? props.activityLog.map((act) => ({
-          type: act.type,
-          notes: act.notes,
-          dateTime: act.dateTime,
-          user_id: act.user_id,
-        }))
+        type: act.type,
+        notes: act.notes,
+        dateTime: act.dateTime,
+        user_id: act.user_id,
+      }))
       : [];
 
     let newActLog = [...activityLog];

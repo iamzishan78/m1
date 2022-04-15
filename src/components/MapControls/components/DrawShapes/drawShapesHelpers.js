@@ -236,7 +236,7 @@ export const getNewShapeFromSelectedQuarters = (currentFeature, selectedQuarters
 }
 
 export const getDrawAdustedShape = (multiPolygon, selectedQuarters) => {
-  const quarters = ["NWNW", "NWSW", "SWNW", "SWSW", "SESW", "NESW", "SENW", "NENW", "SWSE", "NWSE", "SWNE", "NWNE", "SESE", "NESE", "SENE", "NENE"]
+  const quarters = ["NWNW", "NWSW", "SWNW", "SWSW", "SESW", "NESW", "SENW", "NENW", "SWSE", "NWSE", "SWNE", "NWNE", "SESE", "NESE", "SENE", "NENE"];
 
   let newShape = {
     geometry: { type: "Polygon", coordinates: [] },
@@ -247,11 +247,11 @@ export const getDrawAdustedShape = (multiPolygon, selectedQuarters) => {
   selectedQuarters.forEach((quarter) => {
     const index = quarters.findIndex(q => q === quarter)
     if (newShape.geometry.coordinates.length === 0) {
-      newShape.geometry.coordinates = multiPolygon.geometry.coordinates[index]
+      newShape.geometry.coordinates = multiPolygon.geometry.coordinates[index];
     } else {
-      newShape = turf.union(newShape, { ...newShape, geometry: { type: "Polygon", coordinates: multiPolygon.geometry.coordinates[index] } })
+      newShape = turf.union(newShape, { ...newShape, geometry: { type: "Polygon", coordinates: multiPolygon.geometry.coordinates[index] } });
     }
-  })
+  });
 
   newShape.id = multiPolygon.id
   newShape.properties.id = multiPolygon.id;
@@ -331,5 +331,4 @@ export const changeModeToScaleRotate = (draw) => {
       canSelectFeatures: true,
     });
   }
-
 }

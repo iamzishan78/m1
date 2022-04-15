@@ -7,7 +7,7 @@ const INIT_STATE = {
   shrinkRightColumn: false,
 };
 
-export default (state = INIT_STATE, action) => {
+export default function ContactReducer(state = INIT_STATE, action) {
   switch (action.type) {
     case TOGGLE_RIGHT_COLUMN: {
       return { ...state, shrinkRightColumn: !state.shrinkRightColumn };

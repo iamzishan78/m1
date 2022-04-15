@@ -45,7 +45,6 @@ function RevenuePropertiesTable(props) {
   }
 
   useEffect(() => {
-
     const formatedFilter = esFilters ? copy(esFilters) : []
     const fixedFilters = []
     if (formatedFilter[0] && formatedFilter[0].value.range) {
@@ -62,7 +61,7 @@ function RevenuePropertiesTable(props) {
       filters: fixedFilters,
       selectedGridView: { filters: [] },
       startPaginationAt: 25,
-      defaultSort: { field: 'name.keyword', order: 'desc' },
+      defaultSort: { field: 'name.keyword', order: 'asc' },
       formatHits,
       initializeGenericData: { key: "_id", actions: genericDataActions },
     });
@@ -118,6 +117,7 @@ function RevenuePropertiesTable(props) {
         parent={props.parent}
         setColumnsBase={[]}
         setRefetchData={setRefetchData}
+        refetchData={refetchData}
       />
     </Container>
   );

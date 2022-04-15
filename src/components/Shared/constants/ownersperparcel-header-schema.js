@@ -27,9 +27,10 @@ const OwnersPerParcelHeadCells = [
   {
     name: "name",
     label: "Owner Name",
-    options: { setCellProps: () => ({ style: { minWidth: "270px" } }) }
+    options: { setCellProps: () => ({ style: { minWidth: "320px" } }) },
+    style: { minWidth: "250px" }
   },
-  { name: "ownershipType", label: "Entity Type" },
+  { name: "ownershipType", label: "Entity Type", options: { setCellProps: () => ({ style: { minWidth: "270px !important" } }) }, style: { minWidth: "150px" } },
   { name: "surface_interest", label: "Surface Interest" },
   { name: "mineral_interest", label: "Mineral Interest" },
   { name: "royalty_interest", label: "Royalty Interest" },
@@ -129,25 +130,40 @@ const OwnersPerParcelHeadCells = [
       viewColumns: false,
     },
   },
+  // {
+  //   name: "isTracked",
+  //   label: "Track",
+  //   options: {
+  //     searchable: false,
+  //     download: false,
+  //     print: false,
+  //     filterOptions: {
+  //       names: ["Tracked", "Untracked"],
+  //       logic(tracked, filterVal) {
+  //         return !(
+  //           (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+  //           (filterVal.indexOf("Untracked") >= 0 && !tracked)
+  //         );
+  //       },
+  //     },
+  //     filterType: "dropdown",
+  //   },
+  // },
+
   {
-    name: "isTracked",
-    label: "Track",
+    name: "actionMenu",
+    label: " ",
     options: {
+      filter: false,
       searchable: false,
+      sort: true,
       download: false,
       print: false,
-      filterOptions: {
-        names: ["Tracked", "Untracked"],
-        logic(tracked, filterVal) {
-          return !(
-            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
-            (filterVal.indexOf("Untracked") >= 0 && !tracked)
-          );
-        },
-      },
-      filterType: "dropdown",
+      viewColumns: false,
+      parent: "Tract detail"
     },
   },
+
   {
     name: "isSuggested",
     label: " ",
