@@ -39,6 +39,7 @@ export default function UnitDetailCard(props) {
 
   const classes = detailCardStyles();
   const showSummary = true;
+  const [isFiltered, setIsFiltered] = useState(false);
 
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
@@ -211,7 +212,7 @@ export default function UnitDetailCard(props) {
             <TabPanels
               value={selectedTab}
               panels={[
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
+                <div className={!isFiltered ? classes.subContent : classes.subContent3}>
                   <UnitOwnersTable
                     customLayer={uniObj}
                     parent="ownersPerUnit"
@@ -219,10 +220,11 @@ export default function UnitDetailCard(props) {
                     targetLabel="Unit Ownership"
                     header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
                     setSelectedTab={setSelectedTab}
+                    setIsFiltered={setIsFiltered}
                     dense
                   />
                 </div>,
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
+                <div className={!isFiltered ? classes.subContent : classes.subContent3}>
                   <SuggestedShapeTaxOwnersTable
                     customLayer={uniObj}
                     parent="potentialOwnersPerUnit"
@@ -230,6 +232,7 @@ export default function UnitDetailCard(props) {
                     targetLabel="well"
                     header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
                     setSelectedTab={setSelectedTab}
+                    setIsFiltered={setIsFiltered}
                     dense
                   />
                 </div>,

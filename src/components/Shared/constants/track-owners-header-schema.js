@@ -1,7 +1,3 @@
-import React from "react";
-
-/* props is just a style object*/
-
 const TrackedOwnersHeadCells = [
   /// appears this code is used for the track grid owners 
   {

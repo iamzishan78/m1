@@ -23,7 +23,7 @@ const DonutChart = ({ items, total, id = "pie-chart" }) => {
     useEffect(() => {
         if (items?.length === 0) return;
         const _data = items.map(item => ({
-            category: item.name,
+            category: item.name.toUpperCase(),
             value: item.total,
             // total: item.totalK,
         }));

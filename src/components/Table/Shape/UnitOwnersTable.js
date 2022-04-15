@@ -132,20 +132,22 @@ function UnitOwnersTable(props) {
             hit[key] = addTrailingZeros(hit[key])
         })
         hit.contactStatus = hit?.contact?.contactStatus;
+        hit.isPurchased = hit?.contact?.isPurchased;
         hit = props.setGenricData(hit, hit.ownerEntity, ['comments', 'tracks', 'tags', 'ifAreContacts']);
         return hit;
       });
-      if (ContactPurchaseData?.getCheckPurchaseData) {
-        for (let i = 0; i < ContactPurchaseData?.getCheckPurchaseData.length; i++) {
-          for (let index in hits) {
-            if (hits[index].contactId === ContactPurchaseData.getCheckPurchaseData[i]) {
-              hits[index].isPurchased = true;
-            }
-          }
-        }
-      }
+      // if (ContactPurchaseData?.getCheckPurchaseData) {
+      //   for (let i = 0; i < ContactPurchaseData?.getCheckPurchaseData.length; i++) {
+      //     for (let index in hits) {
+      //       if (hits[index].contactId === ContactPurchaseData.getCheckPurchaseData[i]) {
+      //         hits[index].isPurchased = true;
+      //       }
+      //     }
+      //   }
+      // }
       props.setRows(copy(hits));
       TableHeader.forEach((column) => {
+        const custom = column.custom;
         if (column?.options?.filter) {
           column.options = {
             ...column.options,
@@ -157,7 +159,7 @@ function UnitOwnersTable(props) {
                 column.type = TableHeader.find(el => el.name === column.name)?.type;
                 return (
                   <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-                    extendSearchQuery={extendSearchQuery} query={GET_ES_FILTER_LIST} esIndex={esIndex} />
+                    extendSearchQuery={extendSearchQuery} query={GET_ES_FILTER_LIST} esIndex={esIndex} custom={custom} />
                 );
               }
             }
@@ -180,6 +182,13 @@ function UnitOwnersTable(props) {
   const onTableChange = (action, tableState, rows, meta) => {
     tableState.esIndex = esIndex
     const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
+    if(action === 'filterChange'){
+      if(tableActions?.pageESVariables?.variables?.filters?.length > 0){
+        props.setIsFiltered(true)
+      }else{
+        props.setIsFiltered(false)
+      }
+    }
     switch (action) {
       case "search":
       case "sort":
