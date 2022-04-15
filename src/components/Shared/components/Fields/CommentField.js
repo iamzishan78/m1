@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiInputBase-input": { color: "transparent", caretColor: "black" },
     "& .MuiInputBase-inputMultiline": {
       height: "201px !important",
-      zIndex: 9999,
       overflow: "overlay",
       paddingRight: "8px",
       "*::-webkit-scrollbar": {

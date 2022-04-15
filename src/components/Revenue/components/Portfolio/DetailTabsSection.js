@@ -39,6 +39,8 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "10px",
     backgroundColor: "#fff",
     width: "100%",
+    overflow: "scroll",
+    maxHeight: "calc(100vh - 185px)"
   },
   revenueSection: {
     padding: "20px 38px",

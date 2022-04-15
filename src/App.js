@@ -115,7 +115,7 @@ const theme = createMuiTheme({
         },
         "*:hover::-webkit-scrollbar": {
           height: "0.8em",
-          width: "0.8em",
+          width: "0.6em",
         },
         "*::-webkit-scrollbar-track": {
           "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
@@ -322,7 +322,7 @@ function App() {
         {apolloClient ? (
           <ApolloProvider client={apolloClient}>
             <FeatureFlag feature={FEATURES.USERSNAP} >
-              <UsersnapProvider/>
+              <UsersnapProvider />
             </FeatureFlag>
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>

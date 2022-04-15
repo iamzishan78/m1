@@ -90,7 +90,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
   }
 
   const displayValue = (value) => {
-    return value ? <span>{vf_number(value.toFixed(2))}</span> : <span>-</span>
+    return value ? <span>({vf_number(value.toFixed(2))})</span> : <span>-</span>
   }
 
   return (

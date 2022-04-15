@@ -1281,7 +1281,9 @@ function AddDealDialog(props) {
                         </Grid>
                         <Grid item xs={9}>
                           <Autocomplete
-                            options={users.filter((u) => u.text)}
+                                options={users.filter((u) => u.text).sort((a, b) => {
+                              return a.text.localeCompare(b.text)
+                            })}
                             onChange={(e, user) => {
                               setOwnerId(user?.value);
                             }}
