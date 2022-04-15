@@ -4558,13 +4558,13 @@ function SubTable(props) {
               )}
               {openDialog === "deleteWellInterest" && (
                 <DeleteConfirmationDialogContent
-                  header="Delete Well Interest(s)"
+                  header="Delete Well(s)"
                   onClose={handleCloseDialog}
                   deleteFunc={props.deleteFunc}
                   m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
-                  {`Do you want to permanently delete the well interest${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
+                  {`Do you want to permanently delete the well${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
                     } from  this unit?`}
                 </DeleteConfirmationDialogContent>
               )}
