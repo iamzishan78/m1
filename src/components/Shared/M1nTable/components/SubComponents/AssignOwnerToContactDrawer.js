@@ -160,7 +160,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       default:
 
     }
-    console.log("field : ", field)
+
     if (filterKey) {
       return <FieldBulkAutoComplete
         value={fieldKey || []}
