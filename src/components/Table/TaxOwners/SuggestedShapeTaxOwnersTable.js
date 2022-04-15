@@ -191,7 +191,7 @@ function SuggestedShapeTaxOwnersTable(props) {
   ////////////Toggle share button /////////////////
   const ToggleSharedButton = () => {
     return (
-      <FormGroup style={{ display: "block" }}>
+      <FormGroup style={{ display: "block", width: "180px" }}>
         <FormControlLabel
           className={`${classes.switchButtom}`}
           control={
@@ -209,7 +209,7 @@ function SuggestedShapeTaxOwnersTable(props) {
 
             </React.Fragment>
           }
-          label="Filter By Wells"
+          label="Filter by unit wells"
           labelPlacement="start"
         />
       </FormGroup>
