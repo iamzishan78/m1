@@ -22,7 +22,7 @@ const tableData = [
   },
   {
     label: "Unit Acres",
-    type: "number",
+    type: "comma-number",
     key: "uAcres",
   },
   {

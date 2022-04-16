@@ -15,6 +15,7 @@ import { summaryTableStyles } from "components/ShapeDetailCard/style";
 import UserList from "components/Shared/UserList";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import vf_currency from "components/Shared/valueformatters/vf_currency";
+import vf_number from "components/Shared/valueformatters/vf_number";
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
@@ -214,7 +215,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                         </Select>
                       </FormControl>
                     )}{" "}
-                    {(data.type === "text" || data.type === "number" || data.type === "currency") && (
+                    {(data.type === "text" || data.type === "number" || data.type === "currency" || data.type === "comma-number") && (
                       <TableTextField
                         data={data}
                         value={tableTempProperties[data.key]}
@@ -340,11 +341,10 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           {data.type !== "date" &&
                             data.type !== "custom" &&
                             data.type !== "currency" &&
+                            data.type !== "comma-number" &&
                             (data.value || properties[data.key] || "-")}
-                          {data.type !== "date" &&
-                            data.type !== "custom" &&
-                            data.type === "currency" &&
-                            (vf_currency(data.value) || vf_currency(properties[data.key]) || "-")}
+                          {data.type === "currency" && (vf_currency(data.value) || vf_currency(properties[data.key]) || "-")}
+                          {data.type === "comma-number" && (vf_number(data.value) || vf_number(properties[data.key]) || "-")}
                         </Grid>
                       )}
                       {!data.nonEditable && (
