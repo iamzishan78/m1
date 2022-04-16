@@ -87,11 +87,11 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
 
   return (
     <>
-      <Tooltip title="Rotate Shape">
+      {/* <Tooltip title="Rotate Shape">
         <IconButton size="small" aria-label="Rotate Shape" onClick={() => onRotateHandle(_shapeEditMode !== "rotate" ? "rotate" : "")}>
           <AutorenewIcon color="secondary" className={_shapeEditMode === "rotate" ? "selected" : ""} />
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
 
       <Tooltip title="Resize Shape">
         <IconButton size="small" aria-label="Resize Shape" onClick={() => onPreciseEdit(_shapeEditMode !== "resize" ? "resize" : "")}>
