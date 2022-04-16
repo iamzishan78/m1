@@ -115,7 +115,7 @@ const theme = createMuiTheme({
         },
         "*:hover::-webkit-scrollbar": {
           height: "0.8em",
-          width: "0.8em",
+          width: "0.6em",
         },
         "*::-webkit-scrollbar-track": {
           "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",

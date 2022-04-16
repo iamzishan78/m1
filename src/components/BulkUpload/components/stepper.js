@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { Radio, Checkbox } from "@material-ui/core";
+import { Checkbox } from "@material-ui/core";
 import clsx from "clsx";
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
-import Check from "@material-ui/icons/Check";
 import { useDispatch } from "react-redux";
 import StepConnector from "@material-ui/core/StepConnector";
 import Button from "@material-ui/core/Button";
