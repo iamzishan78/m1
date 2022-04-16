@@ -435,6 +435,32 @@ export const drawShapeStyles = [
             'circle-color': '#3bb2d0',
         },
     },
+
+    {
+        id: 'gl-draw-polygon-and-line-vertex-scale-icon',
+        type: 'symbol',
+        filter: [
+            'all',
+            ['==', 'meta', 'vertex'],
+            ['==', '$type', 'Point'],
+            ['!=', 'mode', 'static'],
+            ['has', 'heading'],
+        ],
+        layout: {
+            'icon-image': 'scale',
+            'icon-allow-overlap': true,
+            'icon-ignore-placement': true,
+            'icon-rotation-alignment': 'map',
+            'icon-rotate': ['get', 'heading'],
+        },
+        paint: {
+            'icon-opacity': 1.0,
+            'icon-opacity-transition': {
+                delay: 0,
+                duration: 0,
+            },
+        },
+    },
     {
         id: 'gl-draw-polygon-rotate-point-icon',
         type: 'symbol',
