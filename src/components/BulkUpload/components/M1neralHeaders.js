@@ -35,7 +35,7 @@ const useStyles = makeStyles({
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
       borderRadius: 10,
-  },
+    },
   },
 });
 const main_div = {
@@ -172,19 +172,19 @@ export default function M1neralHeaders(props) {
 
       if (['PARCELINTERESTS'].includes(stateApp.jobType)) {
         if (!return_obj["parcel._id"] ||
-            !return_obj["parcel.name"]) {
-              filtered_data_to_send.push(null)
-              continue;
+          !return_obj["parcel.name"]) {
+          filtered_data_to_send.push(null)
+          continue;
         }
       }
       if (['SHAPEOWNER'].includes(stateApp.jobType)) {
         if (!return_obj["shape._id"] ||
-            !return_obj["shape.name"]) {
-              filtered_data_to_send.push(null)
-              continue;
+          !return_obj["shape.name"]) {
+          filtered_data_to_send.push(null)
+          continue;
         }
       }
-      if (['CONTACTS','PARCELINTERESTS','SHAPEOWNER'].includes(stateApp.jobType)) {
+      if (['CONTACTS', 'PARCELINTERESTS', 'SHAPEOWNER'].includes(stateApp.jobType)) {
         if (
           return_obj === {} ||
           !(
@@ -219,8 +219,8 @@ export default function M1neralHeaders(props) {
         }
       }
 
-      if (['TRACTS'].includes(stateApp.jobType) && 
-          (!return_obj["landgrid._id"] ||
+      if (['TRACTS'].includes(stateApp.jobType) &&
+        (!return_obj["landgrid._id"] ||
           !return_obj["landgrid.name"])) {
         const { data: landGridGeoms } = await client.query({
           query: GET_ES_SIMPLE_SEARCH,
@@ -241,31 +241,82 @@ export default function M1neralHeaders(props) {
                 const keyParts = key.split(".");
                 return (return_obj[key]) ?
                   [
-                    { field: `${keyParts[1]}.keyword`, value: keyParts[2]},
-                    { field: `${keyParts[1].replace("Type", "Name")}.keyword`, value: return_obj[key]}
+                    { field: `${keyParts[1]}.keyword`, value: keyParts[2] },
+                    { field: `${keyParts[1].replace("Type", "Name")}.keyword`, value: return_obj[key] }
                   ] :
                   []
               }),
-              {field: "level7Id.keyword", value: undefined},
-              {field: "level8Id.keyword", value: undefined},
-              {field: "level9Id.keyword", value: undefined},
-              {field: "level10Id.keyword", value: undefined}
+              { field: "level7Id.keyword", value: undefined },
+              { field: "level8Id.keyword", value: undefined },
+              { field: "level9Id.keyword", value: undefined },
+              { field: "level10Id.keyword", value: undefined }
             ],
             sort: [],
           }
         });
 
-        if (landGridGeoms?.getESSimpleSearch?.total === 1) {
+        if (landGridGeoms?.getESSimpleSearch?.total > 0) {
           return_obj["landgrid._id"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?._id;
           return_obj["landgrid.name"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?.level6Name;
         }
 
         if (!return_obj["landgrid._id"] ||
-            !return_obj["landgrid.name"]) {
-              filtered_data_to_send.push(null)
-              continue;
+          !return_obj["landgrid.name"]) {
+          filtered_data_to_send.push(null)
+          continue;
         }
       }
+
+
+      if (['UNITS'].includes(stateApp.jobType) &&
+        (!return_obj["landgrid._id"] ||
+          !return_obj["landgrid.name"])) {
+        const { data: landGridGeoms } = await client.query({
+          query: GET_ES_SIMPLE_SEARCH,
+          variables: {
+            index: "platformData:landgrid",
+            filters: [
+              ...[
+                "landgrid.level1Type.State",
+                "landgrid.level2Type.County",
+                "landgrid.level3Type.Survey",
+                "landgrid.level4Type.Block",
+                "landgrid.level5Type.Section",
+                "landgrid.level6Type.Abstract",
+                "landgrid.level3Type.Meridian",
+                "landgrid.level5Type.TownshipRange",
+                "landgrid.level6Type.Section"
+              ].flatMap((key) => {
+                const keyParts = key.split(".");
+                return (return_obj[key]) ?
+                  [
+                    { field: `${keyParts[1]}.keyword`, value: keyParts[2] },
+                    { field: `${keyParts[1].replace("Type", "Name")}.keyword`, value: return_obj[key] }
+                  ] :
+                  []
+              }),
+              { field: "level7Id.keyword", value: undefined },
+              { field: "level8Id.keyword", value: undefined },
+              { field: "level9Id.keyword", value: undefined },
+              { field: "level10Id.keyword", value: undefined }
+            ],
+            sort: [],
+          }
+        });
+
+        if (landGridGeoms?.getESSimpleSearch?.total > 0) {
+          return_obj["landgrid._id"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?._id;
+          return_obj["landgrid.name"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?.level6Name;
+        }
+
+        if (!return_obj["landgrid._id"] ||
+          !return_obj["landgrid.name"]) {
+          filtered_data_to_send.push(null)
+          continue;
+        }
+      }
+
+
 
       filtered_data_to_send.push(return_obj)
     };
@@ -338,11 +389,11 @@ export default function M1neralHeaders(props) {
                             id={"select" + index}
                             defaultValue={(() => {
                               const matchedKeyIndex = data.find(el => el?.actual_key === row?.actual_key)
-                              return row.actual_key === "" 
+                              return row.actual_key === ""
                                 ? "initial"
                                 : matchedKeyIndex?.actual_key
                             })()}
-                            onChange={(event) => 
+                            onChange={(event) =>
                               handleChange_select(event, index)
                             }
                           >
@@ -350,16 +401,16 @@ export default function M1neralHeaders(props) {
                               {" "}
                               Select Header{" "}
                             </option>
-                            {[ ...data ].sort((a, b) => a.label.toUpperCase() < b.label.toUpperCase() ? -1 : 1)
-                             .map((option, i) => {
-                              return (
-                                <option value={option.actual_key} key={i}>
-                                  {(() => {
-                                    return option.label
-                                  })()}
-                                </option>
-                              );
-                            })}
+                            {[...data].sort((a, b) => a.label.toUpperCase() < b.label.toUpperCase() ? -1 : 1)
+                              .map((option, i) => {
+                                return (
+                                  <option value={option.actual_key} key={i}>
+                                    {(() => {
+                                      return option.label
+                                    })()}
+                                  </option>
+                                );
+                              })}
                           </select>
                         </div>
                       </StyledTableCell>
@@ -375,6 +426,6 @@ export default function M1neralHeaders(props) {
           uploading contacts.
         </div>
       </div>
-      </div>
+    </div>
   );
 }
