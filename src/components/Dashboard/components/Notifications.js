@@ -20,7 +20,9 @@ import TractIcon from "components/Shared/svgIcons/tract";
 import UnitIcon from "components/Shared/svgIcons/unit";
 import FolderIcon from "@material-ui/icons/Folder";
 import ContactIcon from "@material-ui/icons/Group";
-import LocalOfferIcon from "@material-ui/icons/LocalOffer";
+import FlowIcon from "@material-ui/icons/Repeat";
+import { LocalAtm } from "@material-ui/icons";
+import { DescriptionOutlined } from "@material-ui/icons";
 
 import { CommentText } from "components/Transact/components/DealComments";
 import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
@@ -222,7 +224,11 @@ const Notifications = () => {
       case "CONTACT":
         return <ContactIcon />;
       case "DEAL":
-        return <LocalOfferIcon />;
+        return <FlowIcon />;
+      case "CHECK":
+        return <LocalAtm />;
+      case "PROPERTY":
+        return <DescriptionOutlined />;
       default:
         return;
     }
@@ -289,11 +295,13 @@ const Notifications = () => {
                       )}
                     {parent && parentType === "CHECK" && (
                       <span className={classes.title}>
+                        {getNotificationIcon(parentType)}
                         {parent.checkNumber}-{parent?.payor?.name}
                       </span>
                     )}
                     {parent && parentType === "PROPERTY" && (
                       <span className={classes.title}>
+                        {getNotificationIcon(parentType)}
                         {parent.number}-{parent.name}
                       </span>
                     )}
