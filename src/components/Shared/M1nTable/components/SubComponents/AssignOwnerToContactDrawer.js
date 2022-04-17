@@ -244,7 +244,10 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                   id="free-solo-2-demo"
                   disableClearable
                   options={fieldsToUpdate.map((field) => field.title)}
-                  onChange={(e, field) => onFieldToUpdateChange(field)}
+                  onChange={(e, field) => {
+                    setFieldKey("")
+                    onFieldToUpdateChange(field)
+                  }}
 
                   renderInput={(params) => (
                     <TextField
@@ -274,7 +277,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             </Grid>
           </Box>
 
-          <Box pt={6} mt={6}>
+          <Box pt={6} mt={6} pb={6}>
             <Grid container direction="row" justify="flex-end" alignItems="flex-end">
               <Grid item>
                 <Button onClick={handleClose}>Cancel</Button>
