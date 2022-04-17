@@ -214,7 +214,7 @@ export const TableESHOC = (Component) => {
                                         onChange={onChange}
                                         query={GET_ES_SIMPLE_FILTER}
                                         searchFields={tableMeta.searchFields}
-                                        filters={initialFilters}
+                                        filters={[...initialFilters, ...tableMeta.filters]}
                                         extendSearchQuery={extendSearchQuery}
                                         custom={custom}
                                     />
