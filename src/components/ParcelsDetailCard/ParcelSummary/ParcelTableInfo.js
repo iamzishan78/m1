@@ -371,7 +371,7 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
                         </Select>
                       </FormControl>
                     )}
-                    {(data.type === "text" || data.type === "number") && (
+                    {(data.type === "text" || data.type === "number" || data.type === "comma-number") && (
                       <TableTextField
                         data={data}
                         value={tableTempProperties[data.key]}

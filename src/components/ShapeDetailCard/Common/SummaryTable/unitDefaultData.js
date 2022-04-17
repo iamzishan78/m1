@@ -27,7 +27,7 @@ const tableData = [
   },
   {
     label: "Calculated Acres",
-    type: "text",
+    type: "comma-number",
     key: "shapeArea",
     nonEditable: true,
   },
