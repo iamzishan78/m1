@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button, Grid, Container, Box, CircularProgress, InputAdornment, IconButton } from "@material-ui/core";
@@ -16,7 +16,7 @@ import FieldBulkAutoComplete from "components/Shared/FieldBulkAutoComplete";
 import Loader from "components/Loaders";
 import TextField from "@material-ui/core/TextField";
 import { UPDATEBULKCONTACT } from "graphQL/useMutationUpdateBulkContact";
-import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 
 
 
@@ -27,24 +27,29 @@ const styles = () => ({
 
 const useStyles = makeStyles(styles);
 
-export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes }) {
+export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes, getContactCampaignAction, campaignList }) {
   const [stateApp] = React.useContext(AppContext);
   const classes = useStyles();
   const [contactOwner, setContactOwner] = useState('');
   const [field, setField] = useState('');
-  const [fieldKey, setFieldKey] = useState([]);
+  const [fieldKey, setFieldKey] = useState('');
   const [loading, setLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
-
 
   const fieldsToUpdate = [
     { title: 'Campaign Name', value: "campaignName" },
     { title: 'Contact Owner', value: "contactOwner" },
-    { title: 'Entity Type', value: "ownerType" },
     { title: 'Stage', value: "status" },
     { title: 'Status', value: "contactStatus" },
-
+    { title: 'Entity Type', value: "ownerType" },
   ];
+
+  useEffect(() => {
+    getContactCampaignAction({
+      search: fieldKey ? `${fieldKey}*` : "*",
+    });
+    // eslint-disable-next-line
+  }, [fieldKey]);
 
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT);
   const [updateBulkContact] = useMutation(UPDATEBULKCONTACT);
@@ -93,27 +98,24 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     else {
       const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
 
-      const contact = {
-        ...fieldToUpdate,
-        _id: contactIds
-      }
       updateBulkContact({
         variables: {
-          contact: contact,
-          ignoreResponse: true,
+          contactIds: contactIds,
+          keysToUpdate: fieldToUpdate,
+          ignoreResponse: false,
         },
         refetchQueries: ["getESContacts", "getESSimpleSearch"],
         awaitRefetchQueries: true,
       }).then(res => {
         if (res.data && res.data.updateBulkContact) {
-          const { success, message } = res.data.updateBulkContact
+          const success = res.data.updateBulkContact.some(res => res.success)
           if (success) {
-            Loader.successToast('contact-creation', message)
+            Loader.successToast('contact-creation', "updated")
           } else {
-            Loader.errorToast('contact-creation', message)
+            Loader.errorToast('contact-creation', "updated")
           }
         } else {
-          Loader.errorToast('contact-creation', errorMsg)
+          Loader.errorToast('contact-creation', "failed")
         }
       },
         err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });
@@ -140,14 +142,18 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
         />
       case 'Campaign Name':
         // filterKey = 'campaignName.keyword'
-        return <CampaignNameField
-          className={classes.maxWidth}
-          onChange={(value) => {
+        return <AutoCompleteWithAddNew
+          value={fieldKey}
+          onSearch={(value) => {
             setIsDisabled(false)
             setFieldKey(value);
           }}
-          value={fieldKey}
-          fullWidth
+          setValue={(value) => {
+          }}
+          options={campaignList.map((campaign) => ({
+            _id: campaign,
+            name: campaign,
+          }))}
         />
       case 'Stage':
         filterKey = 'status.keyword'
@@ -230,7 +236,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           <Box p={3} pt={3}>
             <Grid container direction="column"  >
               <Grid item>
-                <Typography style={{ fontWeight: "bold", paddingBottom: "10px" }}>Search for the field you would like to update from the list below</Typography>
+                <Typography style={{ fontWeight: "bold" }}>Search for the fields you would like to update from the list below</Typography>
               </Grid>
               <Grid item >
                 <Autocomplete
@@ -243,7 +249,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      placeholder="Select field to update"
+                      placeholder="Select Field"
                       variant="outlined"
 
                       InputProps={{

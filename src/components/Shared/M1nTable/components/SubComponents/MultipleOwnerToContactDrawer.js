@@ -6,7 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 
 import {
   CircularProgress, Tab, Tabs,
-  Button, Grid, Container, Box, 
+  Button, Grid, Container, Box,
   RadioGroup, FormControlLabel,
   IconButton, FormControl, Radio,
 } from "@material-ui/core";
@@ -64,7 +64,7 @@ const styles = () => ({
   },
   bold: {
     fontWeight: "bold",
-  },  
+  },
 });
 
 const useStyles = makeStyles(styles);
@@ -104,7 +104,7 @@ const MultipleOwnerToContactDrawer = ({
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   const [newTagsIds, setNewTagsIds] = useState([]);
-  
+
   const { control, getValues, watch } = useForm();
 
   const contactStatus = watch("contactStatus", contactStatusOptions[0].value);
@@ -164,16 +164,16 @@ const MultipleOwnerToContactDrawer = ({
     let entities = rows.filter((row) => row.isEntity);
     let owners = rows.filter((row) => !row.isEntity);
 
-    if(entities.length > 0){
+    if (entities.length > 0) {
       let Ids = entities.filter((row) => row.id !== primaryOwner.id);
       Ids.unshift(primaryOwner);
       entitiesIds = Ids.map(id => id._id)
-    }else if(owners.length > 0){
+    } else if (owners.length > 0) {
       let Ids = owners.filter((row) => row.id !== primaryOwner.id);
       Ids.unshift(primaryOwner);
-      ownerIds = Ids.reduce((ids, row) => { ids.push({id: row.globalOwnerId || row.id, ownershipType: row.ownershipType}); return ids; }, []);
+      ownerIds = Ids.reduce((ids, row) => { ids.push({ id: row.globalOwnerId || row.id, ownershipType: row.ownershipType }); return ids; }, []);
     }
-    
+
     let existingContactId = null;
     let action = actionType
     if (tab === TAB.EXISTING) {
@@ -182,15 +182,15 @@ const MultipleOwnerToContactDrawer = ({
     }
 
     const index = rows.findIndex(row => row.id === primaryOwner.id);
-    if(index > -1){
+    if (index > -1) {
       rows[index].isPrimary = true
     }
     const values = getValues();
-    
-    if(entitiesIds.length === 0){
+
+    if (entitiesIds.length === 0) {
       convertMultipleOwnerToContactAction({ ...values, rows, existingContactId, actionType: action, userId: userId, tags: newTagsIds });
-     } else {
-     convertMultipleOwnerToContactAction({ ...values, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds });
+    } else {
+      convertMultipleOwnerToContactAction({ ...values, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds });
     }
     setM1nSelectedRowsIndexes([])
     onClose();
@@ -292,7 +292,7 @@ const MultipleOwnerToContactDrawer = ({
                     <Grid container alignItems='center' style={{ paddingLeft: 10 }}>
                       <div style={{ width: '100%' }}>{row.name || row.OwnerName}</div>
                       <div>{row.StreetAddress || row.address1} {row.City || row.city}, {row.State || row.state}, {row.Zip || row.zip}</div>
-                      
+
                     </Grid>
                   </Typography>
                 </Grid>
