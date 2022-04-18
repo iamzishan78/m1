@@ -39,9 +39,10 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const fieldsToUpdate = [
     { title: 'Campaign Name', value: "campaignName" },
     { title: 'Contact Owner', value: "contactOwner" },
+    { title: 'Entity Type', value: "ownerType" },
     { title: 'Stage', value: "status" },
     { title: 'Status', value: "contactStatus" },
-    { title: 'Entity Type', value: "ownerType" },
+
   ];
 
   useEffect(() => {
@@ -236,7 +237,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           <Box p={3} pt={3}>
             <Grid container direction="column"  >
               <Grid item>
-                <Typography style={{ fontWeight: "bold" }}>Search for the fields you would like to update from the list below</Typography>
+                <Typography style={{ fontWeight: "bold", paddingBottom: "10px" }}>Search for the field you would like to update from the list below</Typography>
               </Grid>
               <Grid item >
                 <Autocomplete
@@ -252,7 +253,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      placeholder="Select Field"
+                      placeholder="Select field to update"
                       variant="outlined"
 
                       InputProps={{
