@@ -1,34 +1,26 @@
 import React, { useEffect, useState, Fragment } from "react";
-import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
-import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
-import Drawer from "@material-ui/core/Drawer";
-import RightActionsPanel from "./RightActionsPanel";
 import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import { AppContext } from "AppContext";
-import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
 import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
-import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from "@material-ui/core";
+import { IconButton, TextField, withStyles } from "@material-ui/core";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import UploadZone from "../../Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import DeleteIcon from "@material-ui/icons/Delete";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
-import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
-import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
+import { useLazyQuery } from "@apollo/client";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
-import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
@@ -232,7 +224,7 @@ export default function DocumentDetails(props) {
 
   useEffect(() => {
     if (metaDataRes?.getMetaData?.metaData) {
-      sortFields(metaDataRes.getMetaData.metaData)
+      sortFields(metaDataRes.getMetaData.metaData);
     }
   }, [metaDataRes]);
 
@@ -261,11 +253,11 @@ export default function DocumentDetails(props) {
   }, [viewFileResult]);
 
   const sortFields = (gridViews) => {
-    const metaData = []
-    console.log(stateApp.selectedView)
+    const metaData = [];
+    console.log(stateApp.selectedView);
     if (stateApp.selectedView.columns?.length > 0) {
       for (let i = 0; i < stateApp.selectedView.columns?.length; i++) {
-        const data = gridViews.find(view => view.name === stateApp.selectedView.columns[i].name)
+        const data = gridViews.find((view) => view.name === stateApp.selectedView.columns[i].name);
         if (data) {
           metaData.push(data);
         }
@@ -274,8 +266,6 @@ export default function DocumentDetails(props) {
     } else {
       setMetaData(gridViews);
     }
-
-
   };
 
   const UpDatefileFN = () => {
@@ -322,6 +312,13 @@ export default function DocumentDetails(props) {
     viewFile({ variables: { fileId: id } });
     if (viewFileLoading) {
     }
+  };
+
+  const onFileUpload = (file) => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedDocument: { _id: file.id, ...file },
+    }));
   };
 
   return (
@@ -655,11 +652,11 @@ export default function DocumentDetails(props) {
                             <IconButton
                               disabled={false}
                               size="small"
-                            // onClick={() =>
-                            //   handleViewFile(
-                            //     files?.getFileDescriptors[key].fileId
-                            //   )
-                            // }
+                              // onClick={() =>
+                              //   handleViewFile(
+                              //     files?.getFileDescriptors[key].fileId
+                              //   )
+                              // }
                             >
                               <GetAppIcon />
                             </IconButton>
@@ -707,17 +704,12 @@ export default function DocumentDetails(props) {
           <div className={classes.Uploadcomp}>
             <UploadZone
               style={{
-                // width: "75px !important",
-                // height: "50px !important",
                 paddingLeft: "50px",
               }}
               userId={stateApp.user.mongoId}
               setFileData={setFileData}
-            // relatedObjectId={props.id}
-            // userId={userId}
-            // relatedObjectType={relatedObjectType} //Contact or Deal
-            // loading={props.loading}
-            // disabled={props.disabled}
+              fileId={stateApp.selectedDocument?._id}
+              onFileUpload={onFileUpload}
             />
           </div>
         ) : null}
