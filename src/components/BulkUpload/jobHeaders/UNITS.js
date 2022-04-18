@@ -1,6 +1,7 @@
-const PARCELINTERESTS_FIELDS = require("./PARCELINTERESTS").default
+import { addAfterLabel, removeByLabel } from "./helper";
+import SHAPEOWNER from "./SHAPEOWNER";
 
-const tracts = [
+const unit = [
     {
         label: "State",
         mapped_key: "",
@@ -79,9 +80,44 @@ const tracts = [
         required: true,
         actual_key: "landgrid.name",
     },
-    ...PARCELINTERESTS_FIELDS
+    ...SHAPEOWNER
 ];
 
-tracts.find((key) => key.actual_key === 'entityDetail.state').label = 'AddressState'
+removeByLabel(unit, 'Shape Type')
+removeByLabel(unit, 'Shape Name')
 
-export default tracts
+unit.forEach((row) => {
+    row.label = row.label.replace('Shape', 'Unit')
+})
+
+addAfterLabel(unit, 'Unit Id', {
+    label: "Unit Name",
+    mapped_key: "",
+    required: true,
+    actual_key: "shape.name",
+})
+
+addAfterLabel(unit, 'Unit Name', {
+    label: "Unit Number",
+    mapped_key: "",
+    required: true,
+    actual_key: "shape.uNumber",
+})
+
+addAfterLabel(unit, 'Unit Number', {
+    label: "Unit Acres",
+    mapped_key: "",
+    required: true,
+    actual_key: "shape.uAcres",
+})
+
+addAfterLabel(unit, 'Unit Acres', {
+    label: "Unit Pricing",
+    mapped_key: "",
+    required: true,
+    actual_key: "shape.uUnitPricing",
+})
+
+console.log(unit)
+
+export default unit;

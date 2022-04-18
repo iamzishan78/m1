@@ -205,12 +205,12 @@ export default function DetailInfo(props) {
   let history = useHistory();
   const [loading, setLoading] = useState(false);
 
-  useEffect(()=>{
-    if(props.purchaseData.length > 0){
+  useEffect(() => {
+    if (props.purchaseData.length > 0) {
       setSelectedPurchaseData(props.purchaseData[0]._id)
     }
 
-  },[props.purchaseData])
+  }, [props.purchaseData])
 
   useEffect(() => {
     setLoading(true);
@@ -228,9 +228,8 @@ export default function DetailInfo(props) {
     return (
       <FormGroup style={{ display: "block" }}>
         <FormControlLabel
-          className={`${classes.switchButtom}${
-            props.publicLeftBottom ? classes.publicLeftBottom : ""
-          } ${!showEmpty ? classes.switchTextDeselected : ""}`}
+          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""
+            } ${!showEmpty ? classes.switchTextDeselected : ""}`}
           control={
             <React.Fragment>
               <AntSwitch
@@ -250,7 +249,7 @@ export default function DetailInfo(props) {
   };
 
   const tabs =
-    props.purchaseData.length > 0 && props?.user?.features?.find(f => f.name === FEATURES.IDICORE) 
+    props.purchaseData.length > 0 && props?.user?.features?.find(f => f.name === FEATURES.IDICORE)
       ? ["Basic Info", "Purchased Info"]
       : ["Basic Info"];
 
@@ -260,9 +259,8 @@ export default function DetailInfo(props) {
         {tabs.map((tab) => {
           return (
             <span
-              className={`${classes.tab} ${
-                selectedTab === tab ? classes.selectedTab : ""
-              }`}
+              className={`${classes.tab} ${selectedTab === tab ? classes.selectedTab : ""
+                }`}
               onClick={() => setSelectedTab(tab)}
             >
               {tab}
@@ -279,7 +277,7 @@ export default function DetailInfo(props) {
           >
             {props.purchaseData.map((purchaseData) => {
               return (
-                <MenuItem  value={purchaseData._id}>
+                <MenuItem value={purchaseData._id}>
                   IDI Data -{" "}
                   {moment(purchaseData.sysDateTime).format(
                     "MM/DD/YYYY hh:mm:ss a"
@@ -390,12 +388,12 @@ export default function DetailInfo(props) {
                       let objName = Object.keys(row.data)[0];
 
                       if (
-                        row.data[objName] != undefined &&
-                        row.data[objName] != `""` &&
-                        row.data[objName] != "" &&
-                        row.data[objName] != "" &&
-                        row.data[objName].length != 0 &&
-                        row.data[objName] != null
+                        row.data[objName] !== undefined &&
+                        row.data[objName] !== `""` &&
+                        row.data[objName] !== "" &&
+                        row.data[objName] !== "" &&
+                        row.data[objName].length !== 0 &&
+                        row.data[objName] !== null
                       ) {
                         return (
                           <React.Fragment key={key}>
