@@ -1,10 +1,13 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
-import { Grid, ListItemIcon, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase } from "@material-ui/core";
+import { Grid, ListItemIcon, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase, Accordion, AccordionSummary, AccordionDetails } from "@material-ui/core";
 import get from "lodash/get";
 import Avatar from "react-avatar";
 import SearchIcon from "@material-ui/icons/Search";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import AddIcon from "@material-ui/icons/Add";
 import { useHistory } from "react-router-dom";
+import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
+import DomainOutlinedIcon from '@material-ui/icons/DomainOutlined';
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "graphQL/useMutationAddContact";
@@ -16,6 +19,9 @@ import IconButton from "@material-ui/core/IconButton";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { REMOVEDEALDESCRIPTOR } from "../../graphQL/useMutationRemoveDealDescriptor";
 import Link from "@material-ui/core/Link";
+import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
+import './Contact.css'
+import { element } from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
   rootPadding: {
@@ -75,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-
+let count = 0 ;
 export default function Contacts(props) {
   let history = useHistory();
   const classes = useStyles();
@@ -97,8 +103,9 @@ export default function Contacts(props) {
   });
   const [addNewContact, { data: addContactData }] = useMutation(ADDCONTACT);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
-
+  console.log('addContact ', addContact)
   useEffect(() => {
+    console.log('mongoEntitiesArray',mongoEntitiesArray)
     //will also run during initial mount
     setIsNextPageLoading(true);
     getPaginatedContacts({
@@ -130,7 +137,7 @@ export default function Contacts(props) {
       setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
       setIsNextPageLoading(false);
     }
-  }, [allContacts]);
+  }, []);
 
   const loadNextPage = async (pageVariables) => {
     setIsNextPageLoading(true);
@@ -152,13 +159,14 @@ export default function Contacts(props) {
         return "Empty";
       }
     });
+    console.log('name contacts : ' , contactnames);
     setContacts(contactnames);
+    console.log('stateApp',stateApp.activeDeal?.contacts)
   }, [stateApp.activeDeal?.contacts]);
 
   useEffect(() => {
     GettingContacts();
   }, [search, props, GettingContacts]);
-
   useEffect(() => {
     setMutationLoading(props.loading);
   }, [props.loading]);
@@ -177,6 +185,21 @@ export default function Contacts(props) {
       setMutationLoading(false);
     }
   };
+
+  const toggleAcordion = () => {
+    let contactArr = [] ;
+    console.log(' data insert : ' , mongoEntitiesArray , filteredContacts)
+      filteredContacts && filteredContacts.length>0 && filteredContacts.map((c) =>{
+        allContacts?.paginatedContacts?.edges?.map((el) =>{
+            if(el && el.node  && el.node.name === c) {
+              contactArr.push(el.node)
+             }
+      })
+      })
+      console.log(' data insert : ' , contactArr)
+  //  setFilteredContacts(contactData)
+
+  }
 
   const gotoContact = (index) => {
     setStateApp((stateApp) => ({
@@ -291,15 +314,27 @@ export default function Contacts(props) {
         </Grid>
 
         <List aria-label="contacts list">
+          {console.log('data can i consider ' , filteredContacts)}
           {filteredContacts && filteredContacts.length > 0 ? (
-            filteredContacts.map((c, i) => (
+            filteredContacts.map((c, i) => (        
               <>
-                <ListItem key={i}>
-                  <ListItemIcon>
+                <ListItem key={i}>     
+                  
+                    {/* {c} */}
+                    <Accordion>
+                    <AccordionSummary
+                    expandIcon={<ExpandMoreIcon  />}
+                      aria-controls="panel1a-content"
+                      id="panel1a-header"
+                      IconButtonProps={{
+                        onClick: () => toggleAcordion(c.name?c.name:c, i)
+                      }}
+                    >
+                       <ListItemIcon>
                     <Avatar
-                      color={Avatar.getRandomColor(c, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
+                      color={Avatar.getRandomColor(c.name?c.name:c, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                       fgColor="#000"
-                      name={c}
+                      name={c.name?c.name:c}
                       size="35"
                       round
                     />
@@ -309,12 +344,11 @@ export default function Contacts(props) {
                       cursor: "pointer",
                     }}
                     color="primary"
-                    onClick={() => gotoContact(i)}
+                   onClick={() => gotoContact(i)}
                   >
-                    {c}
-                  </Link>
-
-                  {mutationLoading === stateApp.activeDeal?.contacts[i]?._id ? (
+                      <Typography>{c.name?c.name:c}</Typography>
+                      </Link>
+                      {mutationLoading === stateApp.activeDeal?.contacts[i]?._id ? (
                     <ListItemSecondaryAction>
                       <IconButton edge="end" aria-label="delete">
                         <CircularProgress />
@@ -326,12 +360,31 @@ export default function Contacts(props) {
                         DeleteContact(i);
                         setMutationLoading(stateApp.activeDeal?.contacts[i]?._id);
                       }}
+                      
                     >
                       <IconButton edge="end" aria-label="delete">
                         <DeleteIcon />
                       </IconButton>
                     </ListItemSecondaryAction>
+                   
                   )}
+
+                    </AccordionSummary>
+                   
+                    <AccordionDetails >
+                              <div className="acc-data"> 
+                              <p><EmailOutlinedIcon/> {c.primaryEmail}</p>
+                              <p><CallOutlinedIcon/>{c.mobilePhone}</p>
+                              <p><DomainOutlinedIcon/>{c.address1 }</p>
+                              </div>
+                     </AccordionDetails>
+                    
+                    
+                    
+                  </Accordion>
+                
+                    
+               
                 </ListItem>
                 <Divider key={`divider-${i}`} />
               </>

@@ -1,0 +1,9 @@
+.MuiListItemSecondaryAction-root{
+    top: 50%;
+    right: -13px!important;
+    position: absolute;
+    transform: translateY(-50%);
+}
+.MuiAccordionSummary-root {
+    width: 297px!important;
+}
