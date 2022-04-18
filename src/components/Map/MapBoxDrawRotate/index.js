@@ -762,14 +762,10 @@ SRMode.computeRotationCenter = function (state, polygon) {
 
 SRMode.convertToPolygon = function (state, polygon) {
     const coordinates = copy(polygon.geometry.coordinates)
-
-    // const second = [coordinates[12][0][2][0], coordinates[15][0][3][1]]
     if (!state.secondIndex && coordinates[15][0][3][0] !== coordinates[12][0][2][0]) {
         state.secondIndex = 2
-        // console.log(coordinates[15][0], coordinates[12][0])
-        // console.log(coordinates[15][0], coordinates[12][0])
-        // console.log(coordinates[15][0][3][0] - coordinates[12][0][2][0])
-        // coordinates[15][0][3][0] = coordinates[12][0][2][0]
+    } else {
+        state.secondIndex = 3
     }
     return coordinates[1] ? {
         ...polygon,
@@ -777,7 +773,7 @@ SRMode.convertToPolygon = function (state, polygon) {
         "geometry": {
             "type": "Polygon",
             "coordinates": [
-                [coordinates[0][0][2], coordinates[15][0][state.secondIndex ? state.secondIndex : 3], coordinates[12][0][2],
+                [coordinates[0][0][2], coordinates[15][0][state.secondIndex], coordinates[12][0][2],
                 coordinates[3][0][0], coordinates[0][0][2]]
             ]
         }

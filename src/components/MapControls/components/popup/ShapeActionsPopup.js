@@ -826,7 +826,7 @@ const ShapeActionsPopup = (props) => {
           )}
 
           {(selectedAction === "edit-aoi" ||
-            selectedAction === "edit-shape") && (
+            selectedAction === "edit-shape" || stateApp.shapeEditMode === 'redraw') && (
               <span className={classes.multiSelectCheck}>
                 <Tooltip title="Confirm Editing">
                   <IconButton
@@ -834,7 +834,7 @@ const ShapeActionsPopup = (props) => {
                     aria-label="Set Boundary"
                     onClick={() => {
                       if (selectedAction === "edit-aoi") confirmEditing();
-                      else if (selectedAction === "edit-shape") confirmShapeEditing();
+                      else if (selectedAction === "edit-shape" || (stateApp.shapeEditMode === 'redraw')) confirmShapeEditing();
                     }}
                   >
                     <CheckCircle />

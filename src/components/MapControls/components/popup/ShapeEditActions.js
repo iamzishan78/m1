@@ -4,6 +4,8 @@ import { bbox, bboxPolygon } from "@turf/turf";
 import IconButton from "@material-ui/core/IconButton";
 
 import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
+import HighlightAltIcon from "components/Shared/svgIcons/highlightAlt";
+// import HighlightAltIcon from "@material-ui/icons/HighlightAlt";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 import AspectRatioIcon from "@material-ui/icons/AspectRatio";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -85,13 +87,40 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
     }
   }
 
+  const onShapeRedraw = (mode) => {
+    if (mode !== "redraw") {
+      setStateApp((stateApp) => ({ ...stateApp, shapeEditMode: "" }));
+      actionFullEdit();
+    } else {
+      stateApp?.draw?.deleteAll();
+      stateApp.draw.changeMode("static");
+      setStateApp((state) => ({
+        ...state,
+        shapeEditMode: "redraw",
+        reDrawShape: true,
+      }));
+      // setStateApp((stateApp) => ({ ...stateApp, shapeEditMode: "redraw" }));
+      // if (!feature.properties.isCircle) {
+      //   const _feature = copy(feature);
+      //   const _bbox = bbox(feature);
+      //   const _bboxPolygon = bboxPolygon(_bbox);
+      //   _feature.geometry = _bboxPolygon.geometry;
+      //   if (stateApp.draw.get(_feature.id) || editMode) {
+      //     stateApp.draw.delete(_feature.id);
+      //     stateApp.draw.add(_feature);
+      //   }
+      // }
+      // actionFullEdit(false);
+    }
+  }
+
   return (
     <>
-      {/* <Tooltip title="Rotate Shape">
-        <IconButton size="small" aria-label="Rotate Shape" onClick={() => onRotateHandle(_shapeEditMode !== "rotate" ? "rotate" : "")}>
-          <AutorenewIcon color="secondary" className={_shapeEditMode === "rotate" ? "selected" : ""} />
+      <Tooltip title="Redraw Shape">
+        <IconButton size="small" aria-label="Redraw Shape" onClick={() => onShapeRedraw(_shapeEditMode !== "redraw" ? "redraw" : "")}>
+          <HighlightAltIcon color="secondary" className={_shapeEditMode === "redraw" ? "selected" : ""} />
         </IconButton>
-      </Tooltip> */}
+      </Tooltip>
 
       <Tooltip title="Resize Shape">
         <IconButton size="small" aria-label="Resize Shape" onClick={() => onPreciseEdit(_shapeEditMode !== "resize" ? "resize" : "")}>
