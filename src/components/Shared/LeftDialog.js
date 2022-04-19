@@ -45,8 +45,11 @@ export default function AlertDialogSlide(props) {
       },
     }),
   }));
-  const { quickActionsPanelState } = useSelector(state => state.common);
-  const classes = useStyles({ ...props, quickActionsPanelState });
+  const { quickActionsPanelState } = useSelector((state) => state.common);
+  const {
+    location: { pathname },
+  } = useSelector((state) => state.router);
+  const classes = useStyles({ ...props, quickActionsPanelState: pathname !== "/documents" ? quickActionsPanelState : false });
   return (
     <Dialog
       className={classes.dialog}

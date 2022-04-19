@@ -353,6 +353,7 @@ export default function DocumentDrawer() {
                   onClick={() => {
                     setOpenDeleteConfirmDialog(true);
                     setFileIdToDelete(stateApp.selectedDocument.fileId);
+                    handleMenuClose();
                   }}
                 >
                   <ListItemIcon>
@@ -387,11 +388,7 @@ export default function DocumentDrawer() {
               />
             )}
             {activePanel === "Wells" && <AssociatedWells />}
-            {activePanel === "Info" && (
-              <Information
-                fileData={fileData}
-              />
-            )}
+            {activePanel === "Info" && <Information fileData={fileData} />}
           </div>
         </div>
       </div>
