@@ -327,7 +327,7 @@ export const changeModeToScaleRotate = (draw) => {
       scaleCenter: SRCenter.Opposite, // scale around opposite vertex
 
       singleRotationPoint: true, // only one rotation point
-      rotationPointRadius: 1.2, // offset rotation point
+      rotationPointRadius: 1.1, // offset rotation point
 
       canSelectFeatures: true,
     });

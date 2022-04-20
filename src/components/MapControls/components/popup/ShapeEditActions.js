@@ -24,6 +24,7 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
         setStateApp(stateApp => ({ ...stateApp, shapeEdit: false }));
       }
       if (!feature) setFeature(stateApp.currentFeature);
+      if (shapeEditMode === "resize") onPreciseEdit("resize");
     }
   }, [shapeEdit, shapeEditMode]);
 
@@ -74,36 +75,39 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
         stateApp?.draw?.deleteAll();
       }
       setStateApp((stateApp) => ({ ...stateApp, shapeEditMode: "resize" }));
-      if (!feature.properties.isCircle) {
-        const _feature = copy(feature);
-        // const _bbox = bbox(feature);
-        // const _bboxPolygon = bboxPolygon(_bbox);
-        // _feature.geometry = _bboxPolygon.geometry;
-        _feature.properties.isrotate = 1
-        stateApp?.draw?.deleteAll();
-        if (stateApp.draw.get(_feature.id) || editMode) {
-          stateApp.draw.delete(_feature.id);
-          stateApp.draw.add(_feature);
+
+      setFeature((feature) => {
+        if (!feature.properties.isCircle) {
+          const _feature = copy(feature);
+          // const _bbox = bbox(feature);
+          // const _bboxPolygon = bboxPolygon(_bbox);
+          // _feature.geometry = _bboxPolygon.geometry;
+          _feature.properties.isrotate = 1
+          stateApp?.draw?.deleteAll();
+          if (stateApp.draw.get(_feature.id) || editMode) {
+            stateApp.draw.delete(_feature.id);
+            stateApp.draw.add(_feature);
+          }
+
+          stateApp.draw.changeMode('tx_poly', {
+            // required
+            featureId: feature.id,
+            canScale: true,
+            canRotate: false, // only rotation enabled
+            canTrash: false, // disable feature delete
+
+            rotatePivot: SRCenter.Center, // rotate around center
+            scaleCenter: SRCenter.Opposite, // scale around opposite vertex
+
+            singleRotationPoint: true, // only one rotation point
+            rotationPointRadius: 1.4, // offset rotation point
+
+            canSelectFeatures: false,
+          });
         }
+        return feature
+      })
 
-        stateApp.draw.changeMode('tx_poly', {
-          // required
-          featureId: feature.id,
-          canScale: true,
-          canRotate: false, // only rotation enabled
-          canTrash: false, // disable feature delete
-
-          rotatePivot: SRCenter.Center, // rotate around center
-          scaleCenter: SRCenter.Opposite, // scale around opposite vertex
-
-          singleRotationPoint: true, // only one rotation point
-          rotationPointRadius: 1.4, // offset rotation point
-
-          canSelectFeatures: false,
-        });
-
-
-      }
       // actionFullEdit(false);
     }
   }
@@ -131,8 +135,8 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
         </IconButton>
       </Tooltip>
 
-      <Tooltip title="Scale Shape">
-        <IconButton size="small" aria-label="Scale Shape" onClick={() => onPreciseEdit(_shapeEditMode !== "resize" ? "resize" : "")}>
+      <Tooltip title="Resize Shape">
+        <IconButton size="small" aria-label="Resize Shape" onClick={() => onPreciseEdit(_shapeEditMode !== "resize" ? "resize" : "")}>
           <AspectRatioIcon color="secondary" className={_shapeEditMode === "resize" ? "selected" : ""} />
         </IconButton>
       </Tooltip>

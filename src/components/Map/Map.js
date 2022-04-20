@@ -1291,7 +1291,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         });
       }
       setStateApp((state) => {
-        if (!state.showDrawShapesPopup || ifDefaultSources(feature.source)) createUDPopUp(feature.properties);
+        if ((!state.showDrawShapesPopup || ifDefaultSources(feature.source)) && state.shapeEditMode !== 'redraw') createUDPopUp(feature.properties);
         return state;
       });
       map.resize();
