@@ -611,6 +611,10 @@ const ShapeActionsPopup = (props) => {
       }
       currentFeature.geometry = newShape.geometry;
     }
+    if (isShapeResizeMode && stateApp.shapeEditMode === "resize") {
+      drawFeature = stateApp.draw.getAll().features[0];
+      currentFeature.geometry = drawFeature.geometry;
+    }
     const shapeJson = {
       ...currentFeature,
       shapeArea: calculateLandArea(currentFeature),

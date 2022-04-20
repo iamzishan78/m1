@@ -12,6 +12,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 
 import { drawShapeLayerToggle } from "components/MapControls/commonHelper";
 import { getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
+import { SRCenter } from "components/Map/MapBoxDrawRotate";
 
 export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullEdit, setStateApp, stateApp }) {
   const [feature, setFeature] = useState();
@@ -75,15 +76,35 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
       setStateApp((stateApp) => ({ ...stateApp, shapeEditMode: "resize" }));
       if (!feature.properties.isCircle) {
         const _feature = copy(feature);
-        const _bbox = bbox(feature);
-        const _bboxPolygon = bboxPolygon(_bbox);
-        _feature.geometry = _bboxPolygon.geometry;
+        // const _bbox = bbox(feature);
+        // const _bboxPolygon = bboxPolygon(_bbox);
+        // _feature.geometry = _bboxPolygon.geometry;
+        _feature.properties.isrotate = 1
+        stateApp?.draw?.deleteAll();
         if (stateApp.draw.get(_feature.id) || editMode) {
           stateApp.draw.delete(_feature.id);
           stateApp.draw.add(_feature);
         }
+
+        stateApp.draw.changeMode('tx_poly', {
+          // required
+          featureId: feature.id,
+          canScale: true,
+          canRotate: false, // only rotation enabled
+          canTrash: false, // disable feature delete
+
+          rotatePivot: SRCenter.Center, // rotate around center
+          scaleCenter: SRCenter.Opposite, // scale around opposite vertex
+
+          singleRotationPoint: true, // only one rotation point
+          rotationPointRadius: 1.4, // offset rotation point
+
+          canSelectFeatures: false,
+        });
+
+
       }
-      actionFullEdit(false);
+      // actionFullEdit(false);
     }
   }
 
@@ -99,18 +120,6 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
         shapeEditMode: "redraw",
         reDrawShape: true,
       }));
-      // setStateApp((stateApp) => ({ ...stateApp, shapeEditMode: "redraw" }));
-      // if (!feature.properties.isCircle) {
-      //   const _feature = copy(feature);
-      //   const _bbox = bbox(feature);
-      //   const _bboxPolygon = bboxPolygon(_bbox);
-      //   _feature.geometry = _bboxPolygon.geometry;
-      //   if (stateApp.draw.get(_feature.id) || editMode) {
-      //     stateApp.draw.delete(_feature.id);
-      //     stateApp.draw.add(_feature);
-      //   }
-      // }
-      // actionFullEdit(false);
     }
   }
 
@@ -122,8 +131,8 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
         </IconButton>
       </Tooltip>
 
-      <Tooltip title="Resize Shape">
-        <IconButton size="small" aria-label="Resize Shape" onClick={() => onPreciseEdit(_shapeEditMode !== "resize" ? "resize" : "")}>
+      <Tooltip title="Scale Shape">
+        <IconButton size="small" aria-label="Scale Shape" onClick={() => onPreciseEdit(_shapeEditMode !== "resize" ? "resize" : "")}>
           <AspectRatioIcon color="secondary" className={_shapeEditMode === "resize" ? "selected" : ""} />
         </IconButton>
       </Tooltip>

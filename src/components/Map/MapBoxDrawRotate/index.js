@@ -478,7 +478,6 @@ SRMode.onSetup = function (opts) {
     const state = {
         featureId,
         feature,
-
         canTrash: opts.canTrash != undefined ? opts.canTrash : true,
 
         canScale: opts.canScale != undefined ? opts.canScale : true,
@@ -535,13 +534,13 @@ SRMode.toDisplayFeatures = function (state, geojson, push) {
     if (state.featureId === geojson.properties.id) {
         geojson.properties.active = Constants.activeStates.ACTIVE;
         push(geojson);
-        let supGeo = {}
+        let supGeo
         if (geojson.geometry.type === Constants.geojsonTypes.MULTI_POLYGON) {
             supGeo = this.convertToPolygon(state, geojson)
         }
 
 
-        var suppPoints = createSupplementaryPoints(supGeo, {
+        var suppPoints = createSupplementaryPoints(supGeo || geojson, {
             map: this.map,
             midpoints: false,
             selectedPaths: state.selectedCoordPaths,
@@ -762,11 +761,18 @@ SRMode.computeRotationCenter = function (state, polygon) {
 
 SRMode.convertToPolygon = function (state, polygon) {
     const coordinates = copy(polygon.geometry.coordinates)
-    if (!state.secondIndex && coordinates[15][0][3][0] !== coordinates[12][0][2][0]) {
-        state.secondIndex = 2
-    } else {
-        state.secondIndex = 3
-    }
+    // console.log("convertToPolygon [15][0][3] ", coordinates[15][0][3][0], coordinates[15][0][3][1])
+    // console.log("convertToPolygon [15][0][2] ", coordinates[15][0][2][0], coordinates[15][0][2][1])
+
+    // console.log("convertToPolygon [12][0][2] ", coordinates[12][0][2][0], coordinates[12][0][2][1])
+
+    // console.log("convertToPolygon secondIndex ", state.secondIndex)
+    if (!state.secondIndex)
+        if (coordinates[15][0][3][0] !== coordinates[12][0][2][0]) {
+            state.secondIndex = 2
+        } else {
+            state.secondIndex = 3
+        }
     return coordinates[1] ? {
         ...polygon,
         "type": "Feature",
