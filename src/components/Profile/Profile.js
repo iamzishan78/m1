@@ -19,10 +19,15 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden",
   },
   tabs: {
-    paddingLeft: theme.spacing(2)
+    paddingLeft: theme.spacing(2),
   },
   tab: {
     minWidth: "unset",
+  },
+  boldCheckboxLabel: {
+    "& > .MuiFormControlLabel-label": {
+      fontWeight: "bold",
+    },
   },
 }));
 
@@ -46,9 +51,19 @@ const Profile = () => {
   };
 
   const handleCheckboxChange = (event) => {
+    const { name, checked } = event.target;
+    const setObj = {
+      [name]: checked
+    }
+
+    if (name === "flowModule"){
+      setObj.newDealsAssigned = true;
+      setObj.delasEntersOnAssignedLane = true;
+    }
+
     setNotificationState({
       ...notificationsState,
-      [event.target.name]: event.target.checked,
+      ...setObj
     });
   }
 
@@ -90,6 +105,7 @@ const Profile = () => {
                       name="flowModule"
                     />
                   }
+                  className={classes.boldCheckboxLabel}
                   label="Flow Module"
                 />
               </dt>
@@ -126,6 +142,7 @@ const Profile = () => {
                       name="mentions"
                     />
                   }
+                  className={classes.boldCheckboxLabel}
                   label="Mentions"
                 />
               </dt>
