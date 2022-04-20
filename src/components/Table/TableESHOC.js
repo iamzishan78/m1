@@ -189,7 +189,11 @@ export const TableESHOC = (Component) => {
         }, [tableData, dependencyUpdate]);
 
         const setColumnsData = (tableCols) => {
-            let { TableHeader, extendSearchQuery, esIndex } = tableMeta
+            let { TableHeader, extendSearchQuery, esIndex, filters } = tableMeta
+            let appliedFilters = initialFilters;
+            if(filters && filters.length > 0) {
+                appliedFilters = [...initialFilters, ...filters]
+            }
             tableCols.forEach((column, index) => {
                 if (column?.options?.filter) {
                     const custom = column.custom;
@@ -214,7 +218,7 @@ export const TableESHOC = (Component) => {
                                         onChange={onChange}
                                         query={GET_ES_SIMPLE_FILTER}
                                         searchFields={tableMeta.searchFields}
-                                        filters={[...initialFilters, ...tableMeta.filters]}
+                                        filters={appliedFilters}
                                         extendSearchQuery={extendSearchQuery}
                                         custom={custom}
                                     />

@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ExportOwnerAndContacts = ({
+const ExportContacts = ({
   isSelectAll,
   filters,
   esIndex,
@@ -71,13 +71,8 @@ const ExportOwnerAndContacts = ({
     name: "exportContacts",
     defaultValue: false,
   });
-  const exportInterestOwners = useWatch({
-    control,
-    name: "exportInterestOwners",
-    defaultValue: false,
-  });
 
-  const exportDisabled = !exportContacts && !exportInterestOwners;
+  const exportDisabled = !exportContacts;
 
   const onExport = () => {
     onClose();
@@ -93,17 +88,14 @@ const ExportOwnerAndContacts = ({
         filters,
         esIndex,
         isSelectAll,
-        ownerIds: rows.map(row => row._id),
-        contactIds: rows.map(row => row.contactId),
+        contactIds: rows.map(row => row._id),
         datasets: {
           exportContacts: exportContacts,
           exportContactsPurchase: exportContacts,
-          exportShapeInterestOwner : exportInterestOwners
         },
         counts: {
           exportContacts: rows.length,
           exportContactsPurchase: rows.length,
-          exportShapeInterestOwner : rows.length
         },
       }
     }));
@@ -121,29 +113,6 @@ const ExportOwnerAndContacts = ({
           </div>
         </div>
         <label className={classes.bold}>Available Data Elements</label>
-
-        <div className={classes.field}>
-          <div className={classes.checkbox}>
-            <div>
-              <Controller
-                control={control}
-                name="exportInterestOwners"
-                defaultValue={false}
-                render={(props) => (
-                  <Checkbox
-                    {...props}
-                    disabled={rows.length === 0}
-                    onChange={(e) => {
-                      props.onChange(e.target.checked);
-                    }}
-                  />
-                )}
-              />
-              <label className={classes.bold}>Unit Ownership Interest</label>
-            </div>
-            <label className={classes.value}>{rows.length} selected</label>
-          </div>
-        </div>
 
         <div className={classes.field}>
           <div className={classes.checkbox}>
@@ -200,4 +169,4 @@ const ExportOwnerAndContacts = ({
   );
 };
 
-export default ExportOwnerAndContacts;
+export default ExportContacts;

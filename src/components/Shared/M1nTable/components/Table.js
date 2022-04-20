@@ -113,6 +113,7 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 
 //icons
 import GetAppIcon from "@material-ui/icons/GetApp";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 // import { ReactComponent as RequestPageIcon } from 'components/Shared/svgIcons/request_page_icon.svg';
 import RequestPageIcon from "components/Shared/svgIcons/request_page";
 // import RequestPageIcon from 'components/Shared/svgIcons/request_page_icon';
@@ -3304,6 +3305,25 @@ function SubTable(props) {
                       >
                         Mailers
                       </Button>
+                      <FeatureFlag feature={FEATURES.CONTACTGRIDEXPORT}>
+                        <Button
+                          color="secondary"
+                          startIcon={<CloudUploadIcon color="white" />}
+                          className={classes.multiSelectionTopBarButtons}
+                          onClick={() => {
+                            let owners = [];
+                            for (let i in props.selectedRows) {
+                              owners.push(
+                                props.rows[props.selectedRows[i].dataIndex]
+                              );
+                            }
+                            props.setSelectedRows(owners);
+                            props.setOpenCustomDialog("exportContacts");
+                          }}
+                        >
+                          Export
+                        </Button>
+                      </FeatureFlag>
 
                       <Divider orientation="vertical" flexItem />
                     </>

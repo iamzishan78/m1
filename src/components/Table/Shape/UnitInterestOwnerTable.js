@@ -254,6 +254,7 @@ function UnitInterestOwnerTable(props) {
           isSelectAll={isSelectAll}
           rows={selectedRows}
           esIndex={esIndex}
+          type="Unit"
           open={true}
         />
       )}

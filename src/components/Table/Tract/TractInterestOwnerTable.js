@@ -3,19 +3,19 @@ import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Container, Button, Tooltip, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { useApolloClient, useMutation } from "@apollo/client";
-import { useDispatch } from "react-redux";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import { useMutation } from "@apollo/client";
 
 import { AppContext } from "AppContext";
 import TableESHOC from "components/Table/TableESHOC";
 import Table from "components/Shared/M1nTable/components/Table";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import RequestPageIcon from "components/Shared/svgIcons/request_page";
-import { execCommonAsyncExportJobAction } from "store/actions/commonActions";
 import ButtonDropDown from "components/Shared/M1nTable/components/ButtonGroup";
 import { NavigationContext } from "components/Navigation/NavigationContext";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import RightDialog from "components/ContactDetailCard/components/RightDialog";
+import ExportOwnersAndContacts from "components/Shared/ExportOwnerAndContacts";
 import AddParcelOwnerDialogContent from "components/Shared/M1nTable/components/SubComponents/AddParcelOwnerDialogContent";
 import BuyContactsInfoDialogContent from "components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
@@ -40,12 +40,13 @@ const interestKeys = [
   "net_acres",
   "unknown_interest",
 ];
+const startPaginationAt = 25;
 
 function TractInterestOwnerTable(props) {
   let history = useHistory();
-  const dispatch = useDispatch();
   const classes = usetableStyles();
-  const client = useApolloClient();
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [isSelectAll, setIsSelectAll] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const { customLayer, esIndex, searchFields, clickedRow } = props;
@@ -120,7 +121,7 @@ function TractInterestOwnerTable(props) {
       searchFields,
       TableHeader: copy(TableHeader),
       esIndex,
-      startPaginationAt: 25,
+      startPaginationAt,
       formatHits,
       formatColumns,
       defaultSort: { field: "_ts", order: "asc" },
@@ -141,29 +142,7 @@ function TractInterestOwnerTable(props) {
       setOpenCustomDialog("addOwnerToParcel");
     }
   }, [clickedRow]);
-
-  const onDownload = (e) => {
-    dispatch(
-      execCommonAsyncExportJobAction.STARTED({
-        jobType: "EXPORTCSV",
-        client,
-        setStateApp,
-        userId: stateApp.user.mongoId,
-        requestPayload: {
-          esIndex,
-          filters: [],
-          search: { query: stateApp.activitySearchQuery, fields: searchFields },
-          datasets: {
-            exportActivities: true,
-          },
-          counts: {
-            exportActivities: props.total,
-          },
-        },
-      })
-    );
-  };
-
+  
   const getRows = () => {
     const selectedRows = [];
     for (let i = 0; i < props.selectedRows.length; i++) {
@@ -192,6 +171,19 @@ function TractInterestOwnerTable(props) {
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
+      {openCustomDialog === "exportOwnersAndContact" && (
+        <ExportOwnersAndContacts
+          onClose={() => setOpenCustomDialog("")}
+          search={props.activeSearchRef.current}
+          filters={[...props.initialFilters, ...appliedFilters]}
+          total={props.options.count}
+          isSelectAll={isSelectAll}
+          rows={selectedRows}
+          esIndex={esIndex}
+          type="Tract"
+          open={true}
+        />
+      )}
       {openCustomDialog === "buyContactsInfoData" && (
         <RightDialog
           open={true}
@@ -300,6 +292,23 @@ function TractInterestOwnerTable(props) {
                     display: "flex",
                   }}
                 >
+                  <Button
+                    color="secondary"
+                    startIcon={<CloudUploadIcon color="white" />}
+                    className={classes.multiSelectionTopBarButtons}
+                    onClick={() => {
+                      let owners = [];
+                      for (let i in props.selectedRows) {
+                        owners.push(
+                          props.rows[props.selectedRows[i].dataIndex]
+                        );
+                      }
+                      setSelectedRows(owners);
+                      setOpenCustomDialog("exportOwnersAndContact");
+                    }}
+                  >
+                    Export
+                  </Button>
                   <FeatureFlag feature={FEATURES.IDICORE}>
                     <Button
                       color="secondary"
@@ -328,6 +337,20 @@ function TractInterestOwnerTable(props) {
               </div>
             );
           },
+          onRowSelectionChange: (
+            currentRowsSelected,
+            allRowsSelected,
+            rowsSelected
+          ) => {
+            if (
+              allRowsSelected.length === startPaginationAt ||
+              allRowsSelected.length === props.options.count
+            ) {
+              setIsSelectAll(true);
+            } else {
+              setIsSelectAll(false);
+            }
+          }
         }}
         parent={props.parent}
         setColumnsBase={[]}
