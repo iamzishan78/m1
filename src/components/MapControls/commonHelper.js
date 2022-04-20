@@ -47,16 +47,35 @@ export const setFeatureProperty = (draw, drawFeatureID, field, value) => {
 }
 
 export const drawShapeLayerToggle = (stateApp, value) => {
-    stateApp.map.moveLayer('gl-draw-polygon-midpoint.cold');
-    stateApp.map.moveLayer('gl-draw-polygon-midpoint.hot');
-    stateApp.map.moveLayer('gl-draw-polygon-stroke-active.hot');
-    stateApp.map.moveLayer('gl-draw-polygon-stroke-active.cold');
+    const layers = [
+        'gl-draw-polygon-and-line-vertex-scale-icon',
+        'gl-draw-polygon-rotate-point-icon',
+        'gl-draw-polygon-fill-inactive',
+        'gl-draw-polygon-fill-active',
+        'gl-draw-polygon-midpoint',
+        'gl-draw-polygon-stroke-active',
+        'gl-draw-polygon-and-line-vertex-inactive',
+        'gl-draw-polygon-and-line-vertex-stroke-inactive'
+    ]
+
+    layers.forEach((layer) => {
+        stateApp.map.moveLayer(layer + '.cold');
+        stateApp.map.moveLayer(layer + '.hot');
+    })
+
+    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-scale-icon.cold');
+    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-scale-icon.hot');
+
+    // stateApp.map.moveLayer('gl-draw-polygon-midpoint.cold');
+    // stateApp.map.moveLayer('gl-draw-polygon-midpoint.hot');
+    // stateApp.map.moveLayer('gl-draw-polygon-stroke-active.hot');
+    // stateApp.map.moveLayer('gl-draw-polygon-stroke-active.cold');
 
 
-    stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-inactive.cold');
-    stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-inactive.hot');
-    stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-stroke-inactive.cold');
-    stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-stroke-inactive.hot');
+    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-inactive.cold');
+    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-inactive.hot');
+    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-stroke-inactive.cold');
+    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-stroke-inactive.hot');
 
     stateApp.map.setLayoutProperty('gl-draw-polygon-midpoint.cold', "visibility", value);
     stateApp.map.setLayoutProperty('gl-draw-polygon-midpoint.hot', "visibility", value);
