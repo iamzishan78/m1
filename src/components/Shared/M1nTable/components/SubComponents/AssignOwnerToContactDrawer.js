@@ -27,7 +27,7 @@ const styles = () => ({
 
 const useStyles = makeStyles(styles);
 
-export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes, getContactCampaignAction, campaignList }) {
+export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes, showSuccessMessage, getContactCampaignAction, campaignList }) {
   const [stateApp] = React.useContext(AppContext);
   const classes = useStyles();
   const [contactOwner, setContactOwner] = useState('');
@@ -86,6 +86,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             const { success, message } = res.data.assignOwnerToContact
             if (success) {
               Loader.successToast('contact-creation', message)
+              showSuccessMessage("Contacts Updated Successfuly")
             } else {
               Loader.errorToast('contact-creation', message)
             }
@@ -112,6 +113,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           const success = res.data.updateBulkContact.some(res => res.success)
           if (success) {
             Loader.successToast('contact-creation', "updated")
+            showSuccessMessage(`${field} Bulk Updated Successfully`)
           } else {
             Loader.errorToast('contact-creation', "updated")
           }

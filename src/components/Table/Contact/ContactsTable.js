@@ -13,38 +13,37 @@ import TableESHOC from "../TableESHOC";
 
 import Loader from "components/Loaders";
 import GridView from "components/Shared/GridView";
-import { HeaderComponent } from 'components/Table/helpers'
+import { HeaderComponent } from "components/Table/helpers";
 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import { REMOVE_CONTACTS } from "graphQL/useMutationRemoveContact";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 
-import { getContactsAddress, copy } from 'utils/helper';
+import { getContactsAddress, copy } from "utils/helper";
 
-import { deepEqualObjects, } from "components/Shared/functions";
-
+import { deepEqualObjects } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
     height: "100%",
     "& .MuiToolbar-regular > div:nth-child(2)": {
-      overflow: "auto",
+      overflow: "hidden",
       display: "flex",
-      flexDirection: "row-reverse"
+      flexDirection: "row-reverse",
     },
     "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(1)": {
-      marginRight: '52px'
+      marginRight: "52px",
     },
     "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(2)": {
-      marginRight: '-104px'
+      marginRight: "-104px",
     },
     "& .MuiToolbar-regular > div:nth-child(1)": {
-      minWidth: "400px"
+      minWidth: "400px",
     },
     "&>div>div": {
-      height: "100%"
+      height: "100%",
     },
     "& .MuiPaper-root": {
       display: "flex",
@@ -53,15 +52,23 @@ const useStyles = makeStyles((theme) => ({
       position: "relative",
       "align-items": "stretch",
       "&>:nth-child(1)": {
-        "min-height": "fit-content"
+        "min-height": "fit-content",
       },
       "&>:nth-child(3)": {
-        height: "inherit !important"
+        height: "inherit !important",
+        "&::-webkit-scrollbar": {
+          height: "0.8em",
+          width: "0.6em",
+        },
+        "&:hover::-webkit-scrollbar": {
+          height: "0.8em",
+          width: "0.6em",
+        },
       },
       "&>:nth-child(4)": {
-        bottom: 0
-      }
-    }
+        bottom: 0,
+      },
+    },
   },
   details: {
     display: "block",
@@ -84,8 +91,8 @@ function ContactsTable(props) {
   const classes = useStyles();
   const defaultView = {
     name: "All Contacts",
-    type: 'Default'
-  }
+    type: "Default",
+  };
 
   // const dispatch = useDispatch();
   const { Contacts } = useSelector(({ session }) => session.userGridViewSettings);
@@ -98,11 +105,8 @@ function ContactsTable(props) {
   const [selectedGridView, setSelectedGridView] = useState(Contacts || defaultView);
   const { activeModule } = useSelector(({ common }) => common);
 
-
   // queries
-  const [getCheckPurchaseData, { data: ContactPurchaseData }] = useLazyQuery(
-    GET_CHECK_PURCHASE_DATA
-  );
+  const [getCheckPurchaseData, { data: ContactPurchaseData }] = useLazyQuery(GET_CHECK_PURCHASE_DATA);
   const [updateGridView] = useMutation(UPDATE_GRID_VIEW);
   const [removeContact] = useMutation(REMOVE_CONTACTS);
 
@@ -115,7 +119,7 @@ function ContactsTable(props) {
   const orderByTracks = false;
   const startPaginationAt = 25;
 
-  const genericDataActions = ['tracks']
+  const genericDataActions = ["tracks"];
 
   // const getFilters = () => {
   //   let newFilters = []
@@ -132,17 +136,15 @@ function ContactsTable(props) {
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
       hit = getContactsAddress(props.setGenricData(hit, hit._id, ["tracks"]));
-      hit.tags = hit?.tags?.length > 0
-        ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
-        : [[], 0];
+      hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       return hit;
     });
-    return hits
-  }
+    return hits;
+  };
 
   useEffect(() => {
-    props.setInitialFilters(uniqBy(props.customAppliedFilters, "field") || [])
+    props.setInitialFilters(uniqBy(props.customAppliedFilters, "field") || []);
     props.setTableMeta({
       addableName: "Contact",
       extendSearchQuery: props.contactSearchQuery,
@@ -152,9 +154,9 @@ function ContactsTable(props) {
       // filters: Contacts?.filters ? getFilters() : [],
       selectedGridView: Contacts || defaultView,
       startPaginationAt: 25,
-      defaultSort: { field: 'lastUpdateAt', order: 'desc' },
+      defaultSort: { field: "lastUpdateAt", order: "desc" },
       formatHits,
-      initializeGenericData: { key: 'id', actions: genericDataActions }
+      initializeGenericData: { key: "id", actions: genericDataActions },
     });
     // eslint-disable-next-line
   }, [props.contactSearchQuery, props.customAppliedFilters]);
@@ -165,10 +167,10 @@ function ContactsTable(props) {
   }, [selectedGridView]);
 
   useEffect(() => {
-    if (Contacts?.name === 'My Contacts' && !Contacts?.isPrivate) {
+    if (Contacts?.name === "My Contacts" && !Contacts?.isPrivate) {
       Contacts.filters[0] = {
         field: "contactOwners.name",
-        value: User.name
+        value: User.name,
       };
     }
     setSelectedGridView(Contacts || defaultView);
@@ -198,7 +200,6 @@ function ContactsTable(props) {
     }
   }, [ContactPurchaseData]);
 
-
   const deleteFunc = (contactsIdsToDelete) => {
     if (contactsIdsToDelete) {
       Loader.createToast("contact-deletion", "Contact Deletion in Progress");
@@ -207,11 +208,7 @@ function ContactsTable(props) {
           contactIds: contactsIdsToDelete,
           userId: props.userId,
         },
-        refetchQueries: [
-          "getESSimpleSearch",
-          "getContact",
-          "checkIfOwnersAreContacts",
-        ],
+        refetchQueries: ["getESSimpleSearch", "getContact", "checkIfOwnersAreContacts"],
         awaitRefetchQueries: true,
       }).then(
         (res) => {
@@ -219,11 +216,7 @@ function ContactsTable(props) {
             const { success, message } = res.data.removeContact;
             if (success) Loader.successToast("contact-deletion", message);
             else Loader.errorToast("contact-deletion", message);
-          } else
-            Loader.errorToast(
-              "contact-deletion",
-              "Failed to convert to contact"
-            );
+          } else Loader.errorToast("contact-deletion", "Failed to convert to contact");
         },
         (err) => {
           Loader.errorToast("contact-deletion", "Failed to convert to contact");
@@ -236,31 +229,25 @@ function ContactsTable(props) {
     if (view.name === "My Contacts") {
       view.filters[0].value = user.name;
     }
-    if (
-      view.name === "Recently Modified" ||
-      view.name === "Recently Added"
-    ) {
-      view.filters[0].value.range[view.filters[0].field].gte =
-        moment().subtract(30, "days").toISOString();
-      view.filters[0].value.range[view.filters[0].field].lte =
-        moment().toISOString();
+    if (view.name === "Recently Modified" || view.name === "Recently Added") {
+      view.filters[0].value.range[view.filters[0].field].gte = moment().subtract(30, "days").toISOString();
+      view.filters[0].value.range[view.filters[0].field].lte = moment().toISOString();
     }
     return view;
-  }
+  };
 
   const getSelectedView = () => {
-    const isAllModule = get(activeModule, 'title', '').includes('All')
+    const isAllModule = get(activeModule, "title", "").includes("All");
     const view = copy(isAllModule ? selectedGridView : defaultView);
-    if (view.type === 'Default') {
-      if (get(activeModule, 'title', '').includes('All')) {
-        view.name = view.name.replace('Contacts', get(activeModule, 'title', '').replace('All ', ''))
+    if (view.type === "Default") {
+      if (get(activeModule, "title", "").includes("All")) {
+        view.name = view.name.replace("Contacts", get(activeModule, "title", "").replace("All ", ""));
       } else {
-        view.name = view.name.replace('Contacts', get(activeModule, 'title', ''))
+        view.name = view.name.replace("Contacts", get(activeModule, "title", ""));
       }
-
     }
     return view;
-  }
+  };
 
   const headerProps = {
     columns: props.columns,
@@ -277,15 +264,11 @@ function ContactsTable(props) {
   delete props.options.customToolbar;
   delete props.options.customToolbarSelect;
   delete props.options.onRowClick;
-  props.options.search = false
+  props.options.search = false;
 
   return (
     <>
-      <Container
-        maxWidth={false}
-        className={classes.container}
-        id={props.id ? props.id : props.parent}
-      >
+      <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
         {showViewModal && (
           <GridView
             module="Contacts"
