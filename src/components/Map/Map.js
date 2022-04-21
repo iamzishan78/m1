@@ -37,7 +37,8 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import polylabel from "polylabel";
 import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from "mapbox-gl-draw-circle";
 import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
-import { SRMode } from 'mapbox-gl-draw-scale-rotate-mode';
+// import { SRMode } from 'mapbox-gl-draw-scale-rotate-mode';
+import { SRMode, TxCenter } from './MapBoxDrawRotate/index';
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
@@ -1290,7 +1291,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         });
       }
       setStateApp((state) => {
-        if (!state.showDrawShapesPopup || ifDefaultSources(feature.source)) createUDPopUp(feature.properties);
+        if ((!state.showDrawShapesPopup || ifDefaultSources(feature.source)) && state.shapeEditMode !== 'redraw') createUDPopUp(feature.properties);
         return state;
       });
       map.resize();
@@ -5001,7 +5002,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             direct_select: DirectMode,
             simple_select: SimpleSelectMode,
             draw_rectangle: CostumDrawRectangle,
-            scaleRotateMode: SRMode,
+            tx_poly: SRMode,
+            // tx_poly: TxRectMode,
           },
         });
         newMap.addControl(Draw);
