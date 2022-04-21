@@ -115,7 +115,7 @@ const theme = createMuiTheme({
         },
         "*:hover::-webkit-scrollbar": {
           height: "0.8em",
-          width: "0.8em",
+          width: "0.6em",
         },
         "*::-webkit-scrollbar-track": {
           "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
@@ -322,7 +322,7 @@ function App() {
         {apolloClient ? (
           <ApolloProvider client={apolloClient}>
             <FeatureFlag feature={FEATURES.USERSNAP} >
-              <UsersnapProvider/>
+              <UsersnapProvider />
             </FeatureFlag>
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -369,7 +369,7 @@ function App() {
                         <PrivateRoute exact path="/contact/details/:contactId/deals" component={ContactDealsProvider} />
                         <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
                         <PrivateRoute exact path="/studio" component={StudioProvider} />
-                        <PrivateRoute title="Bulk Upload" exact path="/bulkupload" component={BulkUpload} />
+                        <PrivateRoute title="Bulk Upload" exact path={["/bulkupload", "/bulkupload/:type"]} component={BulkUpload} />
                         <PrivateRoute exact path="/agreement" component={AgreementProvider} />
                         <PrivateRoute path="/revenue" component={RevenueProvider} />
                         <PrivateRoute path="/land" component={Land} />

@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect, useContext } from "react";
+import moment from "moment";
+import { useHistory } from "react-router-dom";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/styles";
 import {
   Typography,
@@ -16,9 +18,9 @@ import AddDialogeUploadZone from "components/ContactDetailCard/components/AddDia
 import { useLazyQuery } from "@apollo/client";
 import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
-import moment from "moment";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
+import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -119,27 +121,34 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": { color: "#757575" },
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
-  commentsContainer: {
-    bottom: "34px",
-    width: "395px",
-    position: "initial"
-  },
   contentRoot: {
-    overflow: "overlay"
+    overflow: "overlay",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    width: "100%",
+    height: "100%"
   },
 }));
 
 export default function MetadataDrawer(props) {
   const classes = useStyles();
+  const history = useHistory();
   // States
   const [ownerId, setOwnerId] = useState("");
   const [description, setDescription] = useState(props.description ?? "");
   const [onFocusDescription, setFocusSate] = useState(false);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [, setStateApp] = useContext(AppContext);
 
   // Props
-  const { setCollapse, users, targetSourceId, targetLabel } = props;
+  const { setCollapse, targetSourceId, targetLabel, viewAllDocuments, ownerTitle } = props;
+
+  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
+    fetchPolicy: "no-cache",
+  });
 
   // Queries and Mutations
   const [getRecentFiles, { data: files }] = useLazyQuery(
@@ -164,7 +173,7 @@ export default function MetadataDrawer(props) {
               getRecentFiles({
                 variables: {
                   relatedObjectId: targetSourceId,
-                  relatedObjectType: "Check",
+                  relatedObjectType: targetLabel,
                 },
               });
               clearTimeout(waitBeforeRequestAgain);
@@ -187,11 +196,27 @@ export default function MetadataDrawer(props) {
   }, [props.description]);
 
   useEffect(() => {
+    getAllMongoUsers();
+  }, [getAllMongoUsers]);
+
+  useEffect(() => {
+    if (userLists && userLists.allMongoUsers) {
+      setUsers(
+        userLists.allMongoUsers.map((user) => ({
+          value: user._id,
+          text: user.name,
+          email: user.email,
+        }))
+      );
+    }
+  }, [userLists]);
+
+  useEffect(() => {
     if (targetSourceId) {
       getRecentFiles({
         variables: {
           relatedObjectId: targetSourceId,
-          relatedObjectType: "Check",
+          relatedObjectType: targetLabel,
         },
       });
     }
@@ -243,15 +268,11 @@ export default function MetadataDrawer(props) {
     <div
       className="flex column justifyStart alignStart w-100"
       style={{
-        marginTop: 20,
-        marginRight: 24,
         padding: "16px 10px",
         background: "#ffffff",
         borderRadius: 8,
         overflow: "auto",
-        height: "calc(100vh - 280px)",
-        maxHeight: "calc(100vh - 280px)",
-        maxWidth: 420,
+        height: "100%",
         width: "100%",
       }}
     >
@@ -260,15 +281,16 @@ export default function MetadataDrawer(props) {
           varient="h5"
           className={classes.titleText}
           style={{
-            textTransform: "uppercase",
             fontWeight: "bold",
             marginLeft: "5px",
+            fontSize: 19
           }}
         >
-          Metadata
+          {props.title}
         </Typography>
 
         <div className="flex alignCenter">
+          {props.menuComponent}
           <span
             onClick={() => setCollapse(true)}
             className={classes.metaPanelCloseIcon}
@@ -278,15 +300,13 @@ export default function MetadataDrawer(props) {
         </div>
       </div>
 
-      <div
-        className={`flex column justifyStart w-100 ${classes.contentRoot}`}
-      >
+      <div className={classes.contentRoot}>
         <div>
           <div style={{ marginTop: 10, marginLeft: 4 }}>
             <FormControl variant="outlined" fullWidth size="small">
               <Grid container className={classes.gridStyle}>
                 <Grid item xs={3}>
-                  <div>Owner</div>
+                  <div>{ownerTitle}</div>
                 </Grid>
                 <Grid item xs={9}>
                   <Autocomplete
@@ -294,7 +314,7 @@ export default function MetadataDrawer(props) {
                     onChange={(e, user) => {
                       setOwnerId(user?.value);
                       if (props.onUpdate)
-                        props.onUpdate({ owner: user?.value })
+                        props.onUpdate({ owner: user?.value, ownerName: user?.text });
                     }}
                     value={
                       users.find((user) => user?.value === ownerId) || null
@@ -369,36 +389,37 @@ export default function MetadataDrawer(props) {
               </Grid>
             </FormControl>
           </div>
-
-          <Grid item className={classes.descriptionInput}>
-            <TextField
-              id="outlined-multiline-static"
-              label="Description"
-              value={description}
-              multiline
-              fullWidth
-              rows={5}
-              variant="outlined"
-              onChange={(e) => {
-                setDescription(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.keyCode === 13) {
-                  setFocusSate(false);
-                  setDescription("");
-                }
-              }}
-              onFocus={() => setFocusSate(true)}
-              onBlur={() => setFocusSate(false)}
-              InputProps={{
-                endAdornment: onFocusDescription === true && (
-                  <p className={classes.foodText}>
-                    <span>Return</span> to save
-                  </p>
-                ),
-              }}
-            />
-          </Grid>
+          {props.showDescription && (
+            <Grid item className={classes.descriptionInput}>
+              <TextField
+                id="outlined-multiline-static"
+                label="Description"
+                value={description}
+                multiline
+                fullWidth
+                rows={5}
+                variant="outlined"
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.keyCode === 13) {
+                    setFocusSate(false);
+                    setDescription("");
+                  }
+                }}
+                onFocus={() => setFocusSate(true)}
+                onBlur={() => setFocusSate(false)}
+                InputProps={{
+                  endAdornment: onFocusDescription === true && (
+                    <p className={classes.foodText}>
+                      <span>Return</span> to save
+                    </p>
+                  ),
+                }}
+              />
+            </Grid>
+          )}
 
           {/* hiding for now until we get custom metadata added to statements and properties - kc 20220123 */}
           {/* <div
@@ -429,19 +450,29 @@ export default function MetadataDrawer(props) {
             className="flex justifyBetween alignCenter"
             style={{ padding: "20px 16px", marginBottom: -56 }}
           >
-            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents</h4>
-            {/* <h4 className={classes.viewAll}>View All</h4> */}
+            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>{props.documentsTitle}</h4>
+            {viewAllDocuments && (
+              <h4
+                className={classes.viewAll}
+                onClick={() => {
+                  history.push(`/contact/details/${targetSourceId}/documents`);
+                  setStateApp(stateApp => ({ ...stateApp, viewDoc: null }));
+                }}
+              >
+                View All
+              </h4>
+            )}
           </div>
 
           <AddDialogeUploadZone
             filesData={viewFileResult}
             id={targetSourceId}
             loading={viewFileLoading}
-            targetLabel="Check"
+            targetLabel={targetLabel}
             setUploadedFileData={setUploadedFileData}
           />
         </div>
-        <div className={classes.commentsContainer}>
+        <div style={{ width: props.commentsWidth }}>
           <CommentComponent
             targetLabel={targetLabel}
             targetSourceId={targetSourceId}
@@ -450,4 +481,13 @@ export default function MetadataDrawer(props) {
       </div>
     </div>
   );
+}
+
+MetadataDrawer.defaultProps = {
+  title: "Metadata",
+  documentsTitle: "Documents",
+  showDescription: true,
+  commentsWidth: "600px",
+  viewAllDocuments: false,
+  ownerTitle: "Owner",
 }

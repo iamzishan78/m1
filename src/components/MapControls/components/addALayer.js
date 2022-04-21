@@ -28,6 +28,7 @@ import Box from "@material-ui/core/Box";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import UploadIcon from "components/Shared/svgIcons/uploadIcon";
 import EditableTextField from "components/Shared/components/Fields/EditableTextField";
 import { truncate } from "components/Shared/functions";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -36,6 +37,7 @@ import proj4 from "proj4";
 // cra webpack hack to call this a png to get included in bundle
 import conus from "../../Shared/constants/nadgrids/conus.png";
 import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
+import { useHistory } from "react-router-dom";
 
 const GCS_North_American_1927 =
   'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
@@ -141,6 +143,7 @@ const StyledListItem = withStyles((theme) => ({
 
 export default function AddLayer(props) {
   const classes = useStyles();
+  let history = useHistory();
 
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -581,6 +584,15 @@ export default function AddLayer(props) {
                                 ) : (
                                   <ListItemText id={labelId} primary={layer.layerName === "Parcels" ? "Tracts" : layer.layerName} />
                                 )}
+
+                                {
+                                  (layer.layerName === 'Parcels' || layer.layerName === 'Units') &&
+                                  <ListItemSecondaryAction>
+                                    <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/${layer.layerName === 'Parcels' ? 'tracts' : 'units'}`); }}>
+                                      <UploadIcon opacity="1.0" small />
+                                    </IconButton>
+                                  </ListItemSecondaryAction>
+                                }
 
                                 {layer.layerType === "file layer" && (
                                   <ListItemSecondaryAction>
