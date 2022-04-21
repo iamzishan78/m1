@@ -553,7 +553,7 @@ export const TableESHOC = (Component) => {
             count: count,
             serverSide: true,
             searchable: true,
-            rowsSelected: selectedRows.map((sR => sR.dataIndex)),
+            // rowsSelected: selectedRows.map((sR => sR.dataIndex)),
             filter: true,
             searchText: tableMeta.extendSearchQuery || undefined,
             searchFields: tableMeta.searchFields,

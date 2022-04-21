@@ -7,13 +7,13 @@ import CloseSharp from "@material-ui/icons/CloseSharp";
 import DoneSharpIcon from "@material-ui/icons/DoneSharp";
 import RemoveSharpIcon from "@material-ui/icons/RemoveSharp";
 import Typography from "@material-ui/core/Typography";
+import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import { MERGE_CONTACTS } from "../../../../../graphQL/useMutationMergeContact";
 import { AppContext } from "../../../../../AppContext";
 
-
-export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes }) {
+export default function MergeContactDrawer({ onClose, rows, setRows }) {
   const [stateApp] = React.useContext(AppContext);
   const dispatch = useDispatch();
   const [primaryContact, setPrimaryContact] = useState(rows[0]);
@@ -22,78 +22,56 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
   const [mergeContacts] = useMutation(MERGE_CONTACTS);
 
   const onMerge = () => {
-    let secondaryContacts = rows.filter(
-      (row) => row._id !== primaryContact._id
-    );
+    let secondaryContacts = rows.filter((row) => row._id !== primaryContact._id);
     secondaryContacts = secondaryContacts.reduce((ids, row) => {
       ids.push(row._id);
       return ids;
     }, []);
     setLoading(true);
     mergeContacts({
-      variables: { primary: primaryContact._id, secondary: secondaryContacts, mergedBy: stateApp.user.mongoId, },
-      refetchQueries: [
-        "getESContacts", "getESSimpleSearch",
-      ],
-      awaitRefetchQueries: true
+      variables: { primary: primaryContact._id, secondary: secondaryContacts, mergedBy: stateApp.user.mongoId },
+      refetchQueries: ["getESContacts", "getESSimpleSearch"],
+      awaitRefetchQueries: true,
     }).then(
-      res => {
+      (res) => {
         dispatch(showSuccessMessage("Contacts Merged Successfully"));
-        setM1nSelectedRowsIndexes([])
         onClose();
         setLoading(false);
       },
-      err => {
-        console.log(err)
+      (err) => {
+        console.log(err);
         setLoading(false);
         dispatch(showErrorMessage("Failed to merge"));
       }
-    );;
-
+    );
   };
 
   const onDelete = (row) => {
     setRows(rows.filter((r) => r._id !== row._id));
   };
 
-  const handleClose = () => {
-    setM1nSelectedRowsIndexes([])
-    onClose();
-  }
-
   return (
-    <RightDialog open={true} width=''>
+    <RightDialog open={true} width="">
       <Container maxWidth="sm">
         <div>
-
-          <Box p={3} pt={1}>
-            <Grid
-              container
-              direction="row"
-              spacing={4}
-              justify="space-between"
-              alignItems="center"
-            >
+          <Box p={3} pt={1} style={{ padding: "8px 0px 24px 12px" }}>
+            <Grid container direction="row" spacing={4} justify="space-between" alignItems="center">
               <Grid item>
-                <Typography
-                  style={{ fontWeight: "bold" }}
-                  variant="h5"
-                  component="h2"
-                >
+                <Typography style={{ fontWeight: "bold" }} variant="h5" component="h2">
                   Merge Contacts
                 </Typography>
               </Grid>
               <Grid item>
-                <IconButton aria-label="delete" color="primary" onClick={handleClose}>
-                  <CloseSharp />
+                <IconButton aria-label="delete" color="primary" onClick={onClose}>
+                  <KeyboardTabBlackIcon />
                 </IconButton>
               </Grid>
             </Grid>
 
             <Box mt={2}>
               <Typography>
-                Please select a primary contact below - data form the secondary
-                contacts will be merged then secondary contact will be deleted.
+                Please select a primary contact below - data form the secondary contacts will be merged then secondary contact will be
+                deleted.
               </Typography>
             </Box>
 
@@ -134,48 +112,44 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
 
               <Grid item md={10}>
                 <Typography style={{ backgroundColor: "#edfbff" }}>
-                  <Grid container justify='center' alignItems='center'>
-                    <Grid item md={4}>{row.name}</Grid>
-                    <Grid item md={8}>{row.address1} {row.address2} {row.city}, {row.state} {row.zip}</Grid>
+                  <Grid container justify="center" alignItems="center">
+                    <Grid item md={4}>
+                      {row.name}
+                    </Grid>
+                    <Grid item md={8}>
+                      {row.address1} {row.address2} {row.city}, {row.state} {row.zip}
+                    </Grid>
                   </Grid>
                 </Typography>
               </Grid>
 
-              {rows.length >= 2 &&
+              {rows.length >= 2 && (
                 <Grid item md={1}>
                   <IconButton aria-label="delete" onClick={() => onDelete(row)}>
                     <CloseSharp />
                   </IconButton>
                 </Grid>
-              }
+              )}
             </Grid>
           ))}
 
           <Box p={3}>
-            <Typography>
-              Note: Merging contacts is an irreversible action.
-            </Typography>
+            <Typography>Note: Merging contacts is an irreversible action.</Typography>
           </Box>
 
-          {(rows.length < 2) &&
-            <Typography style={{ fontWeight: "bold", color: "red", marginTop: '40px', marginLeft: '25px' }}>
+          {rows.length < 2 && (
+            <Typography style={{ fontWeight: "bold", color: "red", marginTop: "40px", marginLeft: "25px" }}>
               ** Please cancel and reselct two or more contacts to merge **
             </Typography>
-          }
+          )}
 
           <Box pt={6} mt={6}>
-            <Grid
-              container
-              direction="row"
-              justify="flex-end"
-              alignItems="flex-end"
-            >
+            <Grid container direction="row" justify="flex-end" alignItems="flex-end">
               <Grid item>
-                <Button onClick={handleClose}>Cancel</Button>
+                <Button onClick={onClose}>Cancel</Button>
               </Grid>
               <Grid item>
-
-                {rows.length >= 2 &&
+                {rows.length >= 2 && (
                   <Button
                     variant="contained"
                     component="span"
@@ -185,28 +159,25 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
                   >
                     Merge
                   </Button>
-                }
-
+                )}
               </Grid>
             </Grid>
           </Box>
         </div>
       </Container>
 
-      {
-        loading && (
-          <div
-            style={{
-              position: "absolute",
-              left: "250px",
-              bottom: "148px",
-              zIndex: "150",
-            }}
-          >
-            <CircularProgress size={80} disableShrink color="secondary" />
-          </div>
-        )
-      }
-    </RightDialog >
+      {loading && (
+        <div
+          style={{
+            position: "absolute",
+            left: "250px",
+            bottom: "148px",
+            zIndex: "150",
+          }}
+        >
+          <CircularProgress size={80} disableShrink color="secondary" />
+        </div>
+      )}
+    </RightDialog>
   );
 }
