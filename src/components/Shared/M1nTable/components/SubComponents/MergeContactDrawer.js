@@ -13,7 +13,7 @@ import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import { MERGE_CONTACTS } from "../../../../../graphQL/useMutationMergeContact";
 import { AppContext } from "../../../../../AppContext";
 
-export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes }) {
+export default function MergeContactDrawer({ onClose, rows, setRows }) {
   const [stateApp] = React.useContext(AppContext);
   const dispatch = useDispatch();
   const [primaryContact, setPrimaryContact] = useState(rows[0]);
@@ -35,7 +35,6 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
     }).then(
       (res) => {
         dispatch(showSuccessMessage("Contacts Merged Successfully"));
-        setM1nSelectedRowsIndexes([]);
         onClose();
         setLoading(false);
       },
@@ -51,11 +50,6 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
     setRows(rows.filter((r) => r._id !== row._id));
   };
 
-  const handleClose = () => {
-    setM1nSelectedRowsIndexes([]);
-    onClose();
-  };
-
   return (
     <RightDialog open={true} width="">
       <Container maxWidth="sm">
@@ -68,7 +62,7 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
                 </Typography>
               </Grid>
               <Grid item>
-                <IconButton aria-label="delete" color="primary" onClick={handleClose}>
+                <IconButton aria-label="delete" color="primary" onClick={onClose}>
                   <KeyboardTabBlackIcon />
                 </IconButton>
               </Grid>
@@ -152,7 +146,7 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
           <Box pt={6} mt={6}>
             <Grid container direction="row" justify="flex-end" alignItems="flex-end">
               <Grid item>
-                <Button onClick={handleClose}>Cancel</Button>
+                <Button onClick={onClose}>Cancel</Button>
               </Grid>
               <Grid item>
                 {rows.length >= 2 && (

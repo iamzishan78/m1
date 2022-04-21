@@ -2804,6 +2804,7 @@ function SubTable(props) {
       ...stateApp,
       isEditSelectedProfileName: null,
     }));
+    setM1nSelectedRowsIndexes([]);
   };
 
   const handleOpenExpandableCard = () => {
@@ -4267,11 +4268,10 @@ function SubTable(props) {
             ...(props.header === "Contacts" && {
               customSearchRender: (searchText, handleSearch, hideSearch, options) => {
                 registerSearchHandler(handleSearch);
-                const Component = props.headerComponent;
                 return getHeaders();
               },
             }),
-            ...props.options,
+            ...props.options
           }}
         />
         {openDialog && openDialog === "sendMailers" && (
@@ -4360,7 +4360,6 @@ function SubTable(props) {
           <MultipleOwnerToContactDrawerContainer
             onClose={handleCloseDialog}
             rows={expandedObject}
-            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
             setRows={setExpandedObject}
           />
         )}
@@ -4368,7 +4367,6 @@ function SubTable(props) {
           <AssignOwnerToContactDrawerContainer
             onClose={handleCloseDialog}
             rows={expandedObject}
-            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
             setRows={setExpandedObject}
           />
         )}
@@ -4376,7 +4374,6 @@ function SubTable(props) {
           <MergeContactDrawer
             onClose={handleCloseDialog}
             rows={expandedObject}
-            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
             setRows={setExpandedObject}
           />
         )}
