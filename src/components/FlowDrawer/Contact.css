@@ -7,3 +7,9 @@
 .MuiAccordionSummary-root {
     width: 297px!important;
 }
+.MuiIconButton-label{
+    margin-left: 3px!important;
+}
+.MuiIconButton-edgeEnd {
+    margin-right: 17px!important;
+}
