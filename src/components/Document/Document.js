@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
       "&>.MuiPaper-root": {
         display: "flex",
         "flex-direction": "column",
-        height: "calc(100vh - 65px)",
+        height: "calc(100vh - 90px)",
         position: "relative",
         "align-items": "stretch",
         "&>.MuiPaper-root": {
@@ -43,19 +43,19 @@ export default function DocumentComponent() {
         pdfView: null,
         viewDoc: null,
         selectedDocument: {},
-        DocumentDrawer: false
+        DocumentDrawer: false,
       }));
-    }
+    };
   }, [setStateApp]);
 
   const onCloseHandler = () => {
-    history.push('/documents');
+    history.push("/documents");
     setStateApp((state) => ({
       ...state,
       pdfView: null,
       viewDoc: null,
     }));
-  }
+  };
 
   return (
     <div className={classes.root}>
