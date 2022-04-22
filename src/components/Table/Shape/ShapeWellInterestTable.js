@@ -174,6 +174,7 @@ function ShapeWellInterestTable(props) {
   };
 
   const deleteFunc = (ids) => {
+    props.setLoading(true)
     updateShapeWellInterests({
       variables: {
         wellInterests: ids?.map((id) => ({
