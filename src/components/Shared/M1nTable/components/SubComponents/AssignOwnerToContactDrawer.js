@@ -99,6 +99,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
         variables: {
           contactIds: contactIds,
           keysToUpdate: fieldToUpdate,
+          lastUpdateBy: stateApp.user.mongoId,
           ignoreResponse: false,
         },
         refetchQueries: ["getESContacts", "getESSimpleSearch"],
