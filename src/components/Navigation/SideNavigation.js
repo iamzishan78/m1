@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
+import { useLazyQuery } from "@apollo/client";
 
 import { IconButton, List, ListItem, ListItemIcon, ListItemText, Button, Tooltip, Badge } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
@@ -20,7 +21,9 @@ import SearchIcon from "@material-ui/icons/Search";
 import BarChartIcon from "@material-ui/icons/BarChart";
 import LandScapeIcon from "components/Shared/svgIcons/LandscapeBlackIcon";
 
+import { AppContext } from "AppContext";
 import { M1neralLogoNavNoAuth, useStyles } from "./Common";
+import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
 
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
@@ -32,9 +35,31 @@ const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
 `;
 
 const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handleListItemClick, handleDrawerClose, handleDrawerOpen }) => {
+  const [stateApp, setAppState] = useContext(AppContext);
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
+  const [notifications, setNotifications] = useState([]);
   const classes = useStyles({ mapGridCardActivated });
   const theme = useTheme();
+
+  const [getNotifications, { data: notificationsData }] =
+    useLazyQuery(GET_NOTIFICATIONS, {
+      fetchPolicy: 'network-only'
+     });
+
+  useEffect(() => {
+    getNotifications({
+      variables: {
+        userId: stateApp.user.mongoId,
+        state: "Active",
+      },
+    });
+  }, [getNotifications, stateApp.user]);
+
+  useEffect(() => {
+    if (notificationsData?.getNotifications) {
+      setNotifications(notificationsData.getNotifications);
+    }
+  }, [notificationsData]);
 
   return (
     <div style={{ zIndex: 1223 }}>
@@ -93,7 +118,10 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               >
                 <ListItemIcon className={classes.sideNavIcon}>
                   {/* TODO: Add actual notification count here */}
-                  <Badge badgeContent={4} color="secondary">
+                  <Badge
+                    badgeContent={notifications.length}
+                    color="secondary"
+                  >
                     <DashboardIcon />
                   </Badge>
                 </ListItemIcon>

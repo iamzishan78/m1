@@ -123,7 +123,9 @@ const Notifications = () => {
 
   const [updateNotificationStatus] = useMutation(UPDATE_NOTIFICATION_STATUS);
   const [getNotifications, { data: notificationsData, loading }] =
-    useLazyQuery(GET_NOTIFICATIONS);
+    useLazyQuery(GET_NOTIFICATIONS, {
+      fetchPolicy: 'cache-and-network'
+    });
   const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
     fetchPolicy: "cache-first",
   });
