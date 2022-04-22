@@ -5,6 +5,7 @@ export const ADD_WELL_TO_FILE_DESCRIPTOR = gql`
     addWellToFileDescriptor(descriptorId: $descriptorId, wellData: $wellData) {
       success
       message
+      _id
     }
   }
 `;

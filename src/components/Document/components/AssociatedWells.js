@@ -133,14 +133,7 @@ const AssociatedWellsList = ({ title }) => {
       }),
   });
 
-  const [addWellToFileDescriptor, { loading: addWellLoading }] = useMutation(ADD_WELL_TO_FILE_DESCRIPTOR, {
-    onCompleted: () =>
-      getWellsFromDocument({
-        variables: {
-          descriptorObject: stateApp.selectedDocument._id,
-        },
-      }),
-  });
+  const [addWellToFileDescriptor, { loading: addWellLoading }] = useMutation(ADD_WELL_TO_FILE_DESCRIPTOR);
 
   // Fetching wells from descriptor
   useEffect(() => {
@@ -166,8 +159,20 @@ const AssociatedWellsList = ({ title }) => {
       createdBy: stateApp?.user?._id,
     };
     setAddWell(false);
-    await addWellToFileDescriptor({
+    addWellToFileDescriptor({
       variables: { descriptorId: stateApp?.selectedDocument?._id, wellData: wellData },
+    }).then(({ data }) => {
+      const descriptorId = data.addWellToFileDescriptor._id;
+      const selectedDocument = stateApp.selectedDocument ?? {};
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        selectedDocument: { ...selectedDocument, _id: descriptorId },
+      }));
+      getWellsFromDocument({
+        variables: {
+          descriptorObject: descriptorId,
+        },
+      });
     });
   };
 
