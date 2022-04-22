@@ -369,7 +369,7 @@ function App() {
                         <PrivateRoute exact path="/contact/details/:contactId/deals" component={ContactDealsProvider} />
                         <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
                         <PrivateRoute exact path="/studio" component={StudioProvider} />
-                        <PrivateRoute title="Bulk Upload" exact path="/bulkupload" component={BulkUpload} />
+                        <PrivateRoute title="Bulk Upload" exact path={["/bulkupload", "/bulkupload/:type"]} component={BulkUpload} />
                         <PrivateRoute exact path="/agreement" component={AgreementProvider} />
                         <PrivateRoute path="/revenue" component={RevenueProvider} />
                         <PrivateRoute path="/land" component={Land} />

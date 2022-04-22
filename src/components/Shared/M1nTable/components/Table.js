@@ -35,6 +35,7 @@ import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationD
 import MakeItAContactConfirmationDialogContent from "./SubComponents/MakeItAContactConfirmationDialogContent";
 import Button from "@material-ui/core/Button";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
+import EditIcon from '@material-ui/icons/Edit';
 import MergeTypeIcon from "@material-ui/icons/MergeType";
 import AssignmentIndOutlinedIcon from "@material-ui/icons/AssignmentIndOutlined";
 import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
@@ -68,7 +69,7 @@ import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
 import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
 import moment from "moment";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
-import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
+import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
 import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
 import Grid from "@material-ui/core/Grid";
@@ -2806,6 +2807,7 @@ function SubTable(props) {
       ...stateApp,
       isEditSelectedProfileName: null,
     }));
+    setM1nSelectedRowsIndexes([]);
   };
 
   const handleOpenExpandableCard = () => {
@@ -3256,14 +3258,14 @@ function SubTable(props) {
                       </FeatureFlag>
                       <Button
                         color="secondary"
-                        startIcon={<AssignmentIndOutlinedIcon />}
+                        startIcon={<EditIcon />}
                         className={classes.multiSelectionTopBarButtons}
                         disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
                         onClick={() => {
                           handleExpandClick(null, null, getSelectedRows(), "asign");
                         }}
                       >
-                        Assign
+                        Bulk Update
                       </Button>
 
                       <Button
@@ -3610,11 +3612,11 @@ function SubTable(props) {
                 </FeatureFlag>
                 <Button
                   color="secondary"
-                  startIcon={<AssignmentIndOutlinedIcon />}
+                  startIcon={<EditIcon />}
                   className={classes.multiSelectionTopBarButtons}
                   disabled
                 >
-                  Assign
+                  Bulk Update
                 </Button>
                 <Button color="secondary" startIcon={<MergeTypeIcon />} className={classes.multiSelectionTopBarButtons} disabled>
                   Merge
@@ -4268,11 +4270,10 @@ function SubTable(props) {
             ...(props.header === "Contacts" && {
               customSearchRender: (searchText, handleSearch, hideSearch, options) => {
                 registerSearchHandler(handleSearch);
-                const Component = props.headerComponent;
                 return getHeaders();
               },
             }),
-            ...props.options,
+            ...props.options
           }}
         />
         {openDialog && openDialog === "sendMailers" && (
@@ -4361,15 +4362,13 @@ function SubTable(props) {
           <MultipleOwnerToContactDrawerContainer
             onClose={handleCloseDialog}
             rows={expandedObject}
-            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
             setRows={setExpandedObject}
           />
         )}
         {openDialog === "asign" && (
-          <AssignOwnerToContactDrawer
+          <AssignOwnerToContactDrawerContainer
             onClose={handleCloseDialog}
             rows={expandedObject}
-            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
             setRows={setExpandedObject}
           />
         )}
@@ -4377,7 +4376,6 @@ function SubTable(props) {
           <MergeContactDrawer
             onClose={handleCloseDialog}
             rows={expandedObject}
-            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
             setRows={setExpandedObject}
           />
         )}

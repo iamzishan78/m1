@@ -611,6 +611,10 @@ const ShapeActionsPopup = (props) => {
       }
       currentFeature.geometry = newShape.geometry;
     }
+    if (isShapeResizeMode && stateApp.shapeEditMode === "resize") {
+      drawFeature = stateApp.draw.getAll().features[0];
+      currentFeature.geometry = drawFeature.geometry;
+    }
     const shapeJson = {
       ...currentFeature,
       shapeArea: calculateLandArea(currentFeature),
@@ -826,7 +830,7 @@ const ShapeActionsPopup = (props) => {
           )}
 
           {(selectedAction === "edit-aoi" ||
-            selectedAction === "edit-shape") && (
+            selectedAction === "edit-shape" || stateApp.shapeEditMode === 'redraw') && (
               <span className={classes.multiSelectCheck}>
                 <Tooltip title="Confirm Editing">
                   <IconButton
@@ -834,7 +838,7 @@ const ShapeActionsPopup = (props) => {
                     aria-label="Set Boundary"
                     onClick={() => {
                       if (selectedAction === "edit-aoi") confirmEditing();
-                      else if (selectedAction === "edit-shape") confirmShapeEditing();
+                      else if (selectedAction === "edit-shape" || (stateApp.shapeEditMode === 'redraw')) confirmShapeEditing();
                     }}
                   >
                     <CheckCircle />
