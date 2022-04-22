@@ -399,6 +399,7 @@ export default function DrawShapes() {
       ...state,
       gridPolygonString: "",
       selectedAoi: null,
+      shapeEditMode: state.shapeEditMode === 'redraw' ? "" : state.shapeEditMode,
       shapeGridWellsCount: 0,
       shapeGridOwnersCount: 0,
       changeDrawShapeType: false,
