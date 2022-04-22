@@ -508,7 +508,7 @@ function ExpandableCard(props) {
       openDrawShapesControl: true,
       editParcelAndShape: true,
       editDraw: true,
-      shapeEditMode: "fullEdit"
+      shapeEditMode: "resize"
     }));
     handleClose();
   }
@@ -626,13 +626,13 @@ function ExpandableCard(props) {
             <div className={classes.headerIcons}>
               {
                 (targetLabel === 'parcel' || stateApp.selectedShape) && (
-                  <Tooltip title={`Edit ${targetLabel}`} placement="top">
+                  <Tooltip title={`Resize ${targetLabel}`} placement="top">
                     <IconButton
                       // size="small"
                       onClick={() => {
                         handleEditParcelAndShape();
                       }}
-                      aria-label={`Edit ${targetLabel}`}
+                      aria-label={`Resize ${targetLabel}`}
                     >
                       <DrawPoly className={classes.iconPolygon} />
                     </IconButton>
