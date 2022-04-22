@@ -302,7 +302,7 @@ export default function Contacts(props) {
         </Grid>
       </Grid>
       <Divider />
-      <div className={classes.list}>
+      <div className={classes.list} style={{padding:'0px'}}>
         <Grid container className={classes.actionGrid}>
           <Grid item xs={12}>
             {mutationLoading === true && (
@@ -362,7 +362,7 @@ export default function Contacts(props) {
                       }}
                       
                     >
-                      <IconButton edge="end" aria-label="delete">
+                      <IconButton edge="end" aria-label="delete" style={{marginLeft:'20px'}}>  
                         <DeleteIcon />
                       </IconButton>
                     </ListItemSecondaryAction>

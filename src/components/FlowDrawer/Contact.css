@@ -13,3 +13,14 @@
 .MuiIconButton-edgeEnd {
     margin-right: 17px!important;
 }
+.MuiAccordion-rounded{
+    width: 100%!important;
+    box-shadow: none!important;
+}
+.makeStyles-list-572 {
+   padding: 0px 0px!important;
+}
+.MuiAccordionSummary-root{
+    max-width: 100%!important;
+    min-width: 100%!important;
+}
