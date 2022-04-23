@@ -113,7 +113,7 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 
 //icons
 import GetAppIcon from "@material-ui/icons/GetApp";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 // import { ReactComponent as RequestPageIcon } from 'components/Shared/svgIcons/request_page_icon.svg';
 import RequestPageIcon from "components/Shared/svgIcons/request_page";
 // import RequestPageIcon from 'components/Shared/svgIcons/request_page_icon';
@@ -3308,7 +3308,7 @@ function SubTable(props) {
                       <FeatureFlag feature={FEATURES.CONTACTGRIDEXPORT}>
                         <Button
                           color="secondary"
-                          startIcon={<CloudUploadIcon color="white" />}
+                          startIcon={<CloudDownloadIcon color="white" />}
                           className={classes.multiSelectionTopBarButtons}
                           onClick={() => {
                             let owners = [];

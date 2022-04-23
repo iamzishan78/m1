@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 
 import { useHistory } from "react-router-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import { Container, Button, Tooltip, IconButton } from "@material-ui/core";
 import { useMutation } from "@apollo/client";
 
@@ -180,7 +180,7 @@ function UnitInterestOwnerTable(props) {
             >
               <Button
                 color="secondary"
-                startIcon={<CloudUploadIcon color="white" />}
+                startIcon={<CloudDownloadIcon color="white" />}
                 className={classes.multiSelectionTopBarButtons}
                 onClick={() => {
                   let owners = [];

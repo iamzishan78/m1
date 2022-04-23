@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Container, Button, Tooltip, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import { useMutation } from "@apollo/client";
 
 import { AppContext } from "AppContext";
@@ -294,7 +294,7 @@ function TractInterestOwnerTable(props) {
                 >
                   <Button
                     color="secondary"
-                    startIcon={<CloudUploadIcon color="white" />}
+                    startIcon={<CloudDownloadIcon color="white" />}
                     className={classes.multiSelectionTopBarButtons}
                     onClick={() => {
                       let owners = [];
