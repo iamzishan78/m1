@@ -3,9 +3,10 @@ import React, { useContext, useState, useEffect, useRef } from "react";
 // context
 import { AppContext } from "AppContext";
 
-import { Container, Button } from "@material-ui/core";
+import { Container, Button, Switch, Grid, FormControlLabel, FormGroup } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 // QUERIES
 import { useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
@@ -33,6 +34,41 @@ import { usetableStyles } from "../Styles";
 
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
+const AntSwitch = withStyles((theme) => ({
+  root: {
+    width: 28,
+    height: 16,
+    padding: 0,
+    display: "flex",
+  },
+  switchBase: {
+    padding: 2,
+    color: theme.palette.grey[500],
+    "&$checked": {
+      transform: "translateX(12px)",
+      color: theme.palette.common.white,
+      "& + $track": {
+        opacity: 1,
+        backgroundColor: "#12ABE0",
+        borderColor: "#12ABE0",
+      },
+    },
+  },
+  thumb: {
+    width: 12,
+    height: 12,
+    boxShadow: "none",
+  },
+  track: {
+    // border: `1px solid ${theme.palette.grey[500]}`,
+    borderRadius: 16 / 2,
+    opacity: 1,
+    backgroundColor: theme.palette.common.white,
+  },
+  checked: {},
+}))(Switch);
+
+
 function SuggestedShapeTaxOwnersTable(props) {
   const classes = usetableStyles();
 
@@ -46,15 +82,16 @@ function SuggestedShapeTaxOwnersTable(props) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [showConvertDialog, setShowConvertDialog] = useState(false)
 
+
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
-  const [selectedYear, setSelectedYear] = useState(2020); // production selected year state
+  const [selectedYear, setSelectedYear] = useState("2021"); // production selected year state
   const [count, setCount] = useState()  // local state for async count query
   const [suggestedOwnersCount, setSuggestedOwnersCount] = useState()  // local state for async count query
+  const [filterByWells, setFilterByWells] = useState(false); // production selected year state
 
   const setM1nSelectedRowsIndexesRef = useRef();
-
   // queries
   const [getPaginatedShapeWellOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(
     SHAPE_WELL_OWNERS,
@@ -95,10 +132,13 @@ function SuggestedShapeTaxOwnersTable(props) {
   useEffect(() => {
     const queryPoly = getPolygonString(props.customLayer?.shape)
 
+    props.setLoading(true)
     getPaginatedShapeWellOwners({
       variables: {
         polygon: queryPoly,
         userId: stateApp.user.mongoId,
+        selectedYear: selectedYear.toString(),
+        filterByWells: filterByWells ? props.customLayer._id : '',
         sort: {},
         pagination: {
           first: 10000/*tableState.rowsPerPage*/,
@@ -109,9 +149,11 @@ function SuggestedShapeTaxOwnersTable(props) {
     getShapeOwnersWellCount({
       variables: {
         polygon: queryPoly,
+        selectedYear: selectedYear.toString(),
+        filterByWells: filterByWells ? props.customLayer._id : '',
       },
     });
-  }, [props.parent]);
+  }, [props.parent, selectedYear, filterByWells]);
 
   useEffect(() => {
     if (tableData?.edges?.length > 0) {
@@ -145,6 +187,34 @@ function SuggestedShapeTaxOwnersTable(props) {
       props.setLoading(false);
     }
   }, [tableData, props.dependencyUpdate]);
+
+  ////////////Toggle share button /////////////////
+  const ToggleSharedButton = () => {
+    return (
+      <FormGroup style={{ display: "block", width: "180px" }}>
+        <FormControlLabel
+          className={`${classes.switchButtom}`}
+          control={
+            <React.Fragment>
+              {props.publicLeftBottom && <h4 className="h4Before">Tags</h4>}
+              <AntSwitch
+                checked={filterByWells}
+                onChange={() => {
+                  filterOwnersByWells(!filterByWells)
+                }}
+                name="checkedC"
+
+              />
+
+
+            </React.Fragment>
+          }
+          label="Filter by unit wells"
+          labelPlacement="start"
+        />
+      </FormGroup>
+    );
+  };
 
   ////////////Contact Wells end///////////////////////////////////////////////
 
@@ -250,15 +320,25 @@ function SuggestedShapeTaxOwnersTable(props) {
     filter: true,
     customToolbar: () => {
 
-      return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-        <Button
-          color="secondary"
-          className={classes.multiSelectionTopBarButtons}
-          disabled={true}
-        // onClick={addAction}
-        >
-          + ADD TO {props.shapeType?.toUpperCase()}
-        </Button>
+      return <div style={{ display: "inline", "float": "left", width: '343px', marginRight: "15px", marginTop: "5px" }}>
+        <Grid container >
+          <Grid item xs={6}>
+            <ToggleSharedButton />
+
+          </Grid>
+          <Grid item xs={6}>
+            <Button
+              color="secondary"
+              className={classes.multiSelectionTopBarButtons}
+              disabled={true}
+            // onClick={addAction}
+            >
+              + ADD TO {props.shapeType?.toUpperCase()}
+            </Button>
+          </Grid>
+
+        </Grid>
+
       </div>
     },
     customToolbarSelect: ({ data }) => {
@@ -283,6 +363,10 @@ function SuggestedShapeTaxOwnersTable(props) {
   ////////////-----Add your code section here-----///////////////////////
   const getWellOwnersByYear = (selectedYear) => {
     setSelectedYear(selectedYear);
+  };
+
+  const filterOwnersByWells = (filter) => {
+    setFilterByWells(filter);
   };
 
   const pickSelectedRows = async (rows) => {

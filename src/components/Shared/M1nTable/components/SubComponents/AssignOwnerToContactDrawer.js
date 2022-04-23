@@ -59,11 +59,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     setRows(rows.filter((r) => r._id !== row._id));
   };
 
-  const handleClose = () => {
-    setM1nSelectedRowsIndexes([])
-    onClose();
-  }
-
   const onFieldToUpdateChange = (field) => {
     setIsDisabled(true)
     setField(field)
@@ -104,6 +99,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
         variables: {
           contactIds: contactIds,
           keysToUpdate: fieldToUpdate,
+          lastUpdateBy: stateApp.user.mongoId,
           ignoreResponse: false,
         },
         refetchQueries: ["getESContacts", "getESSimpleSearch"],
@@ -127,7 +123,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
 
 
 
-    setM1nSelectedRowsIndexes([])
     onClose();
     setLoading(false);
   };
@@ -199,7 +194,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                 </Typography>
               </Grid>
               <Grid item>
-                <IconButton aria-label="delete" color="primary" onClick={handleClose}>
+                <IconButton aria-label="delete" color="primary" onClick={onClose}>
                   <KeyboardTabIcon />
                 </IconButton>
               </Grid>
@@ -283,7 +278,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           <Box pt={6} mt={6} pb={6}>
             <Grid container direction="row" justify="flex-end" alignItems="flex-end">
               <Grid item>
-                <Button onClick={handleClose}>Cancel</Button>
+                <Button onClick={onClose}>Cancel</Button>
               </Grid>
               <Grid item>
                 <Button
