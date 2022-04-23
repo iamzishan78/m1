@@ -87,13 +87,14 @@ const ContactBulkProgress = () => {
   const downloadResults = async (job, onCloseToast) => {
     if (job?.resultsPayload?.datasets) {
       for (const dataset of job?.resultsPayload?.datasets) {
+        console.log('dataset', dataset.uri)
         // job?.resultsPayload?.datasets.map(async (dataset) => {
         let a = document.createElement("a");
         a.href = dataset.uri;
         a.download = dataset.fileName;
         a.click();
 
-        await new Promise((resolve) => setTimeout(resolve, 1 * 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1 * 2000));
       }
       onCloseToast(job._id);
     }
