@@ -1,7 +1,8 @@
 import {
   CURRENT_USER_GRID_VIEW_SETTINGS,
   SET_CURRENT_USER_GRID_VIEW,
-  UPDATE_USER_GRID_VIEW_SETTING
+  UPDATE_USER_GRID_VIEW_SETTING,
+  SET_USER_GRID_VIEW_FILTERS
 } from "store/type";
 
 export const currentUserGridViewSettingsAction = {
@@ -30,3 +31,8 @@ export const updateUserGridViewSettingAction = {
   }),
   REJECTED: () => ({ type: UPDATE_USER_GRID_VIEW_SETTING.REJECTED }),
 };
+
+export const updateUserGridViewFiltersAction = (payload) => ({
+  type: SET_USER_GRID_VIEW_FILTERS,
+  payload,
+})
