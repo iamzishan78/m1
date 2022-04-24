@@ -55,7 +55,7 @@ const CustomFieldMultiSelect = ({
 }) => {
   const classes = useStyles();
   const [options, setOptions] = useState([]);
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [, setStateApp] = useContext(AppContext);
   const defaultValue = {
     label: "----",
     value: "----",
@@ -318,11 +318,11 @@ const CustomFieldMultiSelect = ({
                   ></span>
                 </Grid> */}
                 {/* <Grid container item xs={10}> */}
-                  <MultSelectValues
-                    value={value}
-                    dropdownOptions={dropdownOptions}
-                    onCustomKeyChange={onCustomKeyChange}
-                  />
+                <MultSelectValues
+                  value={value}
+                  dropdownOptions={dropdownOptions}
+                  onCustomKeyChange={onCustomKeyChange}
+                />
                 {/* </Grid> */}
               </Grid>
               <InputAdornment
@@ -377,7 +377,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange }) => {
                   e.stopPropagation();
                   const newValue = copy(value)
                   newValue.splice(index, 1);
-                
+
                   onCustomKeyChange(newValue);
                 }}
               />

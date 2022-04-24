@@ -7,6 +7,7 @@ import uniqBy from "lodash/uniqBy";
 import moment from "moment";
 
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
+import ExportContacts from "components/Shared/ExportContacts";
 import Contact from "components/Shared/svgIcons/contact";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "../TableESHOC";
@@ -100,8 +101,11 @@ function ContactsTable(props) {
 
   // function states
   const tableRef = useRef();
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [isSelectAll, setIsSelectAll] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
+  const [openCustomDialog, setOpenCustomDialog] = useState("");
   const [selectedGridView, setSelectedGridView] = useState(Contacts || defaultView);
   const { activeModule } = useSelector(({ common }) => common);
 
@@ -118,8 +122,8 @@ function ContactsTable(props) {
   const total = false;
   const orderByTracks = false;
   const startPaginationAt = 25;
-
-  const genericDataActions = ["tracks"];
+  const esIndex = 'contacts_flat'
+  const genericDataActions = ['tracks']
 
   // const getFilters = () => {
   //   let newFilters = []
@@ -146,11 +150,12 @@ function ContactsTable(props) {
   useEffect(() => {
     props.setInitialFilters(uniqBy(props.customAppliedFilters, "field") || []);
     props.setTableMeta({
+      // filters: uniqBy(props.customAppliedFilters, "field") || [],
       addableName: "Contact",
       extendSearchQuery: props.contactSearchQuery,
       searchFields: ["name^4", "_all"],
       TableHeader: copy(TableHeader),
-      esIndex: "contacts_flat",
+      esIndex,
       // filters: Contacts?.filters ? getFilters() : [],
       selectedGridView: Contacts || defaultView,
       startPaginationAt: 25,
@@ -268,7 +273,23 @@ function ContactsTable(props) {
 
   return (
     <>
-      <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
+      <Container
+        maxWidth={false}
+        className={classes.container}
+        id={props.id ? props.id : props.parent}
+      >
+        {openCustomDialog === "exportContacts" && (
+          <ExportContacts
+            onClose={() => setOpenCustomDialog("")}
+            search={props.activeSearchRef.current}
+            filters={[...props.initialFilters, ...uniqBy(props.customAppliedFilters, "field") || []]}
+            total={props.options.count}
+            isSelectAll={isSelectAll}
+            rows={selectedRows}
+            esIndex={esIndex}
+            open={true}
+          />
+        )}
         {showViewModal && (
           <GridView
             module="Contacts"
@@ -300,9 +321,26 @@ function ContactsTable(props) {
           orderByTracks={orderByTracks}
           startPaginationAt={startPaginationAt}
           contactId={props.contactId}
+          selectedRows={props.selectedRows}
+          setSelectedRows={setSelectedRows}
+          setOpenCustomDialog={setOpenCustomDialog}
           options={{
             ...props.options,
             ...props.customOptions,
+            onRowSelectionChange: (
+              currentRowsSelected,
+              allRowsSelected,
+              rowsSelected
+            ) => {
+              if (
+                allRowsSelected.length === startPaginationAt ||
+                allRowsSelected.length === props.options.count
+              ) {
+                setIsSelectAll(true);
+              } else {
+                setIsSelectAll(false);
+              }
+            }
           }}
           parent={props.parent}
           setColumnsBase={[]}
