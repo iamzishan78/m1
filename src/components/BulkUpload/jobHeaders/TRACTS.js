@@ -1,6 +1,6 @@
 const PARCELINTERESTS_FIELDS = require("./PARCELINTERESTS").default
 
-export default [
+const tracts = [
     {
         label: "State",
         mapped_key: "",
@@ -81,3 +81,7 @@ export default [
     },
     ...PARCELINTERESTS_FIELDS
 ];
+
+tracts.find((key) => key.actual_key === 'entityDetail.state').label = 'AddressState'
+
+export default tracts

@@ -39,8 +39,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "10px",
     backgroundColor: "#fff",
     width: "100%",
-    overflow: "scroll",
-    maxHeight: "calc(100vh - 185px)"
   },
   revenueSection: {
     padding: "20px 38px",
@@ -152,7 +150,7 @@ export default function DetailTabsSection({ monthsInterval, portfolioSummary }) 
           {/* <StyledTab label="Properties" /> */}
         </StyledTabs>
       </div>
-      <div style={{ overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+      <div style={{ overflow: "overlay", backgroundColor: "#f3f3f3", maxHeight: "calc(100vh - 235px)" }}>
         <div className={classes.revenueSection} ref={tab === 0 ? selectedTabRef : null}>
           <RevenueSection monthsInterval={monthsInterval} portfolioSummary={portfolioSummary} adjustmentsRef={adjustmentsRef} netRevenueRef={netRevenueRef} />
         </div>
