@@ -1,3 +1,4 @@
+import { copy } from "components/Shared/functions";
 import { addAfterLabel, removeByLabel } from "./helper";
 import SHAPEOWNER from "./SHAPEOWNER";
 
@@ -80,7 +81,7 @@ const unit = [
         required: true,
         actual_key: "landgrid.name",
     },
-    ...SHAPEOWNER
+    ...copy(SHAPEOWNER)
 ];
 
 removeByLabel(unit, 'Shape Type')
