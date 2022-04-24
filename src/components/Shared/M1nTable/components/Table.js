@@ -2982,6 +2982,10 @@ function SubTable(props) {
         setM1nSelectedRowsIndexes([]);
         setM1nSelectedRowsIds([]);
       }
+
+      if (props.onRowSelectionChange) {
+        props.onRowSelectionChange(currentRowsSelected, rowsSelected);
+      }
     },
     onRowsDelete: (rowsDeleted) => {
       handleExpandClick(null, null, null, "deleteOwnersFromContact");

@@ -326,25 +326,26 @@ function ContactsTable(props) {
           setOpenCustomDialog={setOpenCustomDialog}
           options={{
             ...props.options,
-            ...props.customOptions,
-            onRowSelectionChange: (
-              currentRowsSelected,
-              allRowsSelected,
-              rowsSelected
-            ) => {
-              if (
-                allRowsSelected.length === startPaginationAt ||
-                allRowsSelected.length === props.options.count
-              ) {
-                setIsSelectAll(true);
-              } else {
-                setIsSelectAll(false);
-              }
-            }
+            ...props.customOptions
           }}
           parent={props.parent}
           setColumnsBase={[]}
           deleteFunc={deleteFunc}
+          onRowSelectionChange={(
+            currentRowsSelected,
+            allRowsSelected,
+            rowsSelected
+          ) => {
+            if (
+              allRowsSelected.length === startPaginationAt ||
+              allRowsSelected.length === props.options.count
+            ) {
+              setIsSelectAll(true);
+            } else {
+              setIsSelectAll(false);
+            }
+          }
+          }
           onTableChange={props.onTableChange}
         />
       </Container>
