@@ -449,7 +449,7 @@ export default function CommentComponent(props) {
             <CircularProgress color="secondary"></CircularProgress>
           )}
         </div>
-        {editCommentId && (
+        {!editCommentId && (
           <div style={{ paddingBottom: '20px' }}>
             <Grid container>
               <Grid item style={{ maxWidth: "55px" }}>

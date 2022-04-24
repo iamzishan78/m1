@@ -1017,7 +1017,6 @@ export default function ContactDetailCard(props) {
                       <WellsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
                     </Card>
                   </Grid>
-                  {/* TEMP DELETION UNTIL CODE COMES */}
                   <Grid item xs={3} style={{ minWidth: "250px" }}>
                     <Card raised style={{ minHeight: "35px", height: "100%" }}>
                       <ShapeOwnershipCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
