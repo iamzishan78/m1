@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
   paddingCreateTask: {
     paddingLeft: "20px !important",
     paddingTop: "10px !important",
-    maxWidth: "90%"
+    width: "92%"
   },
   moreComment: {
     padding: "10px",
@@ -429,42 +429,44 @@ export default function DealComment(props) {
           <CircularProgress color="secondary"></CircularProgress>
         )}
       </div>
-      <div style={{ paddingBottom: "20px" }}>
-        <Grid container>
-          <Grid item xs={1}>
-            <IconButton
-              className={classes.commentView}
-            >
-              {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
-            </IconButton>
+      {!editCommentId && (
+        <div style={{ paddingBottom: "20px" }}>
+          <Grid container>
+            <Grid item xs={1}>
+              <IconButton
+                className={classes.commentView}
+              >
+                {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
+              </IconButton>
+            </Grid>
+            <Grid item xs={11} className={classes.paddingLeft10}>
+              <div
+                className={classes.border}
+                style={{ width: "calc(23vw)", paddingBottom: "20px", paddingRight: "13px" }}
+                onClick={() => {
+                  if (!showActions) {
+                    setShowActions(true);
+                  }
+                }}
+                onBlur={() => {
+                  if (showActions && !comment) {
+                    setShowActions(false);
+                  }
+                }}
+              >
+                <CommentField
+                  profilesInfo={profilesInfo}
+                  users={users}
+                  comment={comment}
+                  showActions={showActions}
+                  setComment={setComment}
+                  upsertComment={addNewComment}
+                />
+              </div>
+            </Grid>
           </Grid>
-          <Grid item xs={11} className={classes.paddingLeft10}>
-            <div
-              className={classes.border}
-              style={{ width: "calc(23vw)", paddingBottom: "20px", paddingRight: "13px" }}
-              onClick={() => {
-                if (!showActions) {
-                  setShowActions(true);
-                }
-              }}
-              onBlur={() => {
-                if (showActions && !comment) {
-                  setShowActions(false);
-                }
-              }}
-            >
-              <CommentField
-                profilesInfo={profilesInfo}
-                users={users}
-                comment={comment}
-                showActions={showActions}
-                setComment={setComment}
-                upsertComment={addNewComment}
-              />
-            </div>
-          </Grid>
-        </Grid>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
