@@ -78,9 +78,8 @@ function TractInterestOwnerTable(props) {
             : hit.cost_free_high_value;
       }
       if (hit.qtr) {
-        hit.qtr_calls = `${hit.qtr[0] ? hit.qtr[0] : ""} ${
-          hit.qtr[1] ? hit.qtr[1] : ""
-        } ${hit.qtr[2] ? hit.qtr[2] : ""} ${hit.qtr[3] ? hit.qtr[3] : ""}`;
+        hit.qtr_calls = `${hit.qtr[0] ? hit.qtr[0] : ""} ${hit.qtr[1] ? hit.qtr[1] : ""
+          } ${hit.qtr[2] ? hit.qtr[2] : ""} ${hit.qtr[3] ? hit.qtr[3] : ""}`;
       }
       Object.keys(hit).forEach((key) => {
         if (interestKeys.includes(key)) {
@@ -142,7 +141,7 @@ function TractInterestOwnerTable(props) {
       setOpenCustomDialog("addOwnerToParcel");
     }
   }, [clickedRow]);
-  
+
   const getRows = () => {
     const selectedRows = [];
     for (let i = 0; i < props.selectedRows.length; i++) {
@@ -220,13 +219,12 @@ function TractInterestOwnerTable(props) {
           )}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
-          {`Do you want to permanently delete the tract owner${
-            props.selectedRows &&
-            props.selectedRows.length > 1 &&
-            props.selectedRows.length > 1
+          {`Do you want to permanently delete the tract owner${props.selectedRows &&
+              props.selectedRows.length > 1 &&
+              props.selectedRows.length > 1
               ? "s"
               : ""
-          }?`}
+            }?`}
         </DeleteConfirmationDialogContent>
       )}
       <Table
@@ -336,20 +334,20 @@ function TractInterestOwnerTable(props) {
                 </div>
               </div>
             );
-          },
-          onRowSelectionChange: (
-            currentRowsSelected,
-            allRowsSelected,
-            rowsSelected
-          ) => {
-            if (
-              allRowsSelected.length === startPaginationAt ||
-              allRowsSelected.length === props.options.count
-            ) {
-              setIsSelectAll(true);
-            } else {
-              setIsSelectAll(false);
-            }
+          }
+        }}
+        onRowSelectionChange={(
+          currentRowsSelected,
+          allRowsSelected,
+          rowsSelected
+        ) => {
+          if (
+            allRowsSelected.length === startPaginationAt ||
+            allRowsSelected.length === props.options.count
+          ) {
+            setIsSelectAll(true);
+          } else {
+            setIsSelectAll(false);
           }
         }}
         parent={props.parent}

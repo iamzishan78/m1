@@ -50,7 +50,7 @@ function UnitInterestOwnerTable(props) {
 
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
 
-  const searchFields= ["contact.entityDetail.name", "_all"];
+  const searchFields = ["contact.entityDetail.name", "_all"];
   const appliedFilters = [
     { field: "shape._id", value: customLayer._id },
     { field: "contact.IsDeleted", value: "false" },
@@ -131,112 +131,99 @@ function UnitInterestOwnerTable(props) {
 
   const customOptions = {
     customToolbar: () => {
-        const options = [
-          {
-            text: "+ ADD OWNER TO UNIT",
-            isShow: false,
-            action: () => setOpenCustomDialog("addOwnerToUnit"),
+      const options = [
+        {
+          text: "+ ADD OWNER TO UNIT",
+          isShow: false,
+          action: () => setOpenCustomDialog("addOwnerToUnit"),
+        },
+        {
+          text: "Import Interest Owners",
+          isShow: true,
+          action: () => {
+            setStateNav((stateNav) => ({
+              ...stateNav,
+              bulkUploadFromMap: true,
+              bulkUploadParcel: stateApp.selectedParcel,
+            }));
+            history.push("/bulkupload");
           },
-          {
-            text: "Import Interest Owners",
-            isShow: true,
-            action: () => {
-              setStateNav((stateNav) => ({
-                ...stateNav,
-                bulkUploadFromMap: true,
-                bulkUploadParcel: stateApp.selectedParcel,
-              }));
-              history.push("/bulkupload");
-            },
-          },
-        ];
-        return (
+        },
+      ];
+      return (
+        <div
+          style={{
+            display: "inline",
+            float: "left",
+            marginTop: "5px",
+            marginRight: "5px",
+          }}
+        >
+          <ButtonDropDown options={options} />
+        </div>
+      );
+    },
+    customToolbarSelect: () => {
+      return (
+        <div
+          style={{
+            height: "48px",
+            display: "flex",
+          }}
+        >
           <div
             style={{
-              display: "inline",
-              float: "left",
-              marginTop: "5px",
-              marginRight: "5px",
-            }}
-          >
-            <ButtonDropDown options={options} />
-          </div>
-        );
-      },
-      customToolbarSelect: () => {
-        return (
-          <div
-            style={{
-              height: "48px",
+              marginTop: "6px",
+              height: "35px",
               display: "flex",
             }}
           >
-            <div
-              style={{
-                marginTop: "6px",
-                height: "35px",
-                display: "flex",
+            <Button
+              color="secondary"
+              startIcon={<CloudDownloadIcon color="white" />}
+              className={classes.multiSelectionTopBarButtons}
+              onClick={() => {
+                let owners = [];
+                for (let i in props.selectedRows) {
+                  owners.push(
+                    props.rows[props.selectedRows[i].dataIndex]
+                  );
+                }
+                setSelectedRows(owners);
+                setOpenCustomDialog("exportOwnersAndContact");
               }}
             >
+              Export
+            </Button>
+            <FeatureFlag feature={FEATURES.IDICORE}>
               <Button
                 color="secondary"
-                startIcon={<CloudDownloadIcon color="white" />}
+                startIcon={<RequestPageIcon color="white" />}
                 className={classes.multiSelectionTopBarButtons}
-                onClick={() => {
-                  let owners = [];
-                  for (let i in props.selectedRows) {
-                    owners.push(
-                      props.rows[props.selectedRows[i].dataIndex]
-                    );
-                  }
-                  setSelectedRows(owners);
-                  setOpenCustomDialog("exportOwnersAndContact");
-                }}
+                disabled={props.selectedRows.length < 1}
+                onClick={() => setOpenCustomDialog("buyContactsInfoData")}
               >
-                Export
+                Contact Data
               </Button>
-              <FeatureFlag feature={FEATURES.IDICORE}>
-                <Button
-                  color="secondary"
-                  startIcon={<RequestPageIcon color="white" />}
-                  className={classes.multiSelectionTopBarButtons}
-                  disabled={props.selectedRows.length < 1}
-                  onClick={() => setOpenCustomDialog("buyContactsInfoData")}
-                >
-                  Contact Data
-                </Button>
-              </FeatureFlag>
+            </FeatureFlag>
 
-              <Tooltip title={"Delete"}>
-                <IconButton
-                  size="medium"
-                  style={{ margin: "0 5px" }}
-                  onClick={(e) => {
-                    setOpenCustomDialog("deleteOwner");
-                  }}
-                  aria-label="delete"
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
-            </div>
+            <Tooltip title={"Delete"}>
+              <IconButton
+                size="medium"
+                style={{ margin: "0 5px" }}
+                onClick={(e) => {
+                  setOpenCustomDialog("deleteOwner");
+                }}
+                aria-label="delete"
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
           </div>
-        );
-      },
-      onRowSelectionChange: (
-        currentRowsSelected,
-        allRowsSelected,
-        rowsSelected
-      ) => {
-        if (
-          allRowsSelected.length === startPaginationAt ||
-          allRowsSelected.length === props.options.count
-        ) {
-          setIsSelectAll(true);
-        } else {
-          setIsSelectAll(false);
-        }
-      }
+        </div>
+      );
+    }
+
   }
 
   return (
@@ -296,13 +283,12 @@ function UnitInterestOwnerTable(props) {
           )}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
-          {`Do you want to permanently delete the tract owner${
-            props.selectedRows &&
+          {`Do you want to permanently delete the tract owner${props.selectedRows &&
             props.selectedRows.length > 1 &&
             props.selectedRows.length > 1
-              ? "s"
-              : ""
-          }?`}
+            ? "s"
+            : ""
+            }?`}
         </DeleteConfirmationDialogContent>
       )}
       <Table
@@ -318,6 +304,20 @@ function UnitInterestOwnerTable(props) {
         orderByTracks={false}
         startPaginationAt={null}
         onTableChange={props.onTableChange}
+        onRowSelectionChange={(
+          currentRowsSelected,
+          allRowsSelected,
+          rowsSelected
+        ) => {
+          if (
+            allRowsSelected.length === startPaginationAt ||
+            allRowsSelected.length === props.options.count
+          ) {
+            setIsSelectAll(true);
+          } else {
+            setIsSelectAll(false);
+          }
+        }}
         options={{
           ...props.options,
           ...customOptions
