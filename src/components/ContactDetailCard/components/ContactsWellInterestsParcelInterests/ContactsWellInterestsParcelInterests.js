@@ -15,12 +15,12 @@ const useStyles = makeStyles((theme) => ({
       "&>.MuiPaper-root": {
         display: "flex",
         "flex-direction": "column",
-        height: "calc(100vh - 176px)",
+        height: "calc(100vh - 220px)",
         "align-items": "stretch",
-        "&>.MuiPaper-root": { 
+        "&>.MuiPaper-root": {
           display: "contents",
         },
-        "&>:nth-child(3)": { 
+        "&>:nth-child(3)": {
           height: "inherit !important",
         },
         "&> table": {
@@ -85,10 +85,10 @@ function ContactsWellInterestsParcelInterests(props) {
               parent="assocTaxRollInterests"
               header={<Header />}
               targetLabel="unit"
-              esFilters={[{ field: "contact._id.keyword", value: props.contactData._id}]}
+              esFilters={[{ field: "contact._id.keyword", value: props.contactData._id }]}
               esIndex="shapeowners_flat"
-              setESFilters={() => {}}
-              onTractCount={() => {}}
+              setESFilters={() => { }}
+              onTractCount={() => { }}
             />,
           ]}
         />
