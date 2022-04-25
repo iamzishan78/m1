@@ -90,11 +90,11 @@ const ExportContacts = ({
         isSelectAll,
         contactIds: rows.map(row => row._id),
         datasets: {
-          // exportContacts: exportContacts,
+          exportContacts: exportContacts,
           exportContactsPurchase: exportContacts,
         },
         counts: {
-          // exportContacts: rows.length,
+          exportContacts: rows.length,
           exportContactsPurchase: rows.length,
         },
       }
