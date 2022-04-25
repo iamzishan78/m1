@@ -90,11 +90,11 @@ const ExportContacts = ({
         isSelectAll,
         contactIds: rows.map(row => row._id),
         datasets: {
-          exportContacts: exportContacts,
+          // exportContacts: exportContacts,
           exportContactsPurchase: exportContacts,
         },
         counts: {
-          exportContacts: rows.length,
+          // exportContacts: rows.length,
           exportContactsPurchase: rows.length,
         },
       }
@@ -135,7 +135,7 @@ const ExportContacts = ({
                 Contact Data (Basic & Purchased Info)
               </label>
             </div>
-            <label className={classes.value}>{rows.length} selected</label>
+            <label className={classes.value}>{isSelectAll ? total: rows.length} selected</label>
           </div>
         </div>
         <Box pt={6} mt={6} mb={6} mr={2}>
