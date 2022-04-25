@@ -113,6 +113,7 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 
 //icons
 import GetAppIcon from "@material-ui/icons/GetApp";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 // import { ReactComponent as RequestPageIcon } from 'components/Shared/svgIcons/request_page_icon.svg';
 import RequestPageIcon from "components/Shared/svgIcons/request_page";
 // import RequestPageIcon from 'components/Shared/svgIcons/request_page_icon';
@@ -269,6 +270,9 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiToolbar-regular > div:nth-child(2)": {
       marginRight: (props) => (props.toolbarActionMarginRight ? props.toolbarActionMarginRight : "inherit"),
       flex: "0 1 auto",
+    },
+    "& .MuiInput-root": {
+      left: "100px !important"
     },
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
@@ -2765,7 +2769,7 @@ function SubTable(props) {
 
                       {props.parent === "ownersPerParcel" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span> {tableMeta.rowData[19] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span> {tableMeta.rowData[22] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 
@@ -2804,6 +2808,7 @@ function SubTable(props) {
       ...stateApp,
       isEditSelectedProfileName: null,
     }));
+    setM1nSelectedRowsIndexes([]);
   };
 
   const handleOpenExpandableCard = () => {
@@ -2976,6 +2981,10 @@ function SubTable(props) {
       } else {
         setM1nSelectedRowsIndexes([]);
         setM1nSelectedRowsIds([]);
+      }
+
+      if (props.onRowSelectionChange) {
+        props.onRowSelectionChange(currentRowsSelected, rowsSelected);
       }
     },
     onRowsDelete: (rowsDeleted) => {
@@ -3304,6 +3313,25 @@ function SubTable(props) {
                       >
                         Mailers
                       </Button>
+                      <FeatureFlag feature={FEATURES.CONTACTGRIDEXPORT}>
+                        <Button
+                          color="secondary"
+                          startIcon={<CloudDownloadIcon color="white" />}
+                          className={classes.multiSelectionTopBarButtons}
+                          onClick={() => {
+                            let owners = [];
+                            for (let i in props.selectedRows) {
+                              owners.push(
+                                props.rows[props.selectedRows[i].dataIndex]
+                              );
+                            }
+                            props.setSelectedRows(owners);
+                            props.setOpenCustomDialog("exportContacts");
+                          }}
+                        >
+                          Export
+                        </Button>
+                      </FeatureFlag>
 
                       <Divider orientation="vertical" flexItem />
                     </>
@@ -4178,7 +4206,6 @@ function SubTable(props) {
       return <TableViewCol {...columnsProps} />;
     }
   };
-
   return (
     <div
       style={{
@@ -4211,7 +4238,7 @@ function SubTable(props) {
           columns={columns ? columns : []}
           components={{
             TableViewCol: CustomTableViewCol,
-            TableFilterList: props.header === "Tax Roll Ownership" && !isSearchOpen ? TableFilterList : null,
+            TableFilterList: (props.header === "Tax Roll Ownership" || props.parent === "potentialOwnersPerUnit") && !isSearchOpen ? TableFilterList : null,
             icons: {
               FilterIcon,
               ViewColumnIcon,
@@ -4267,11 +4294,10 @@ function SubTable(props) {
             ...(props.header === "Contacts" && {
               customSearchRender: (searchText, handleSearch, hideSearch, options) => {
                 registerSearchHandler(handleSearch);
-                const Component = props.headerComponent;
                 return getHeaders();
               },
             }),
-            ...props.options,
+            ...props.options
           }}
         />
         {openDialog && openDialog === "sendMailers" && (
@@ -4360,7 +4386,6 @@ function SubTable(props) {
           <MultipleOwnerToContactDrawerContainer
             onClose={handleCloseDialog}
             rows={expandedObject}
-            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
             setRows={setExpandedObject}
           />
         )}
@@ -4368,7 +4393,6 @@ function SubTable(props) {
           <AssignOwnerToContactDrawerContainer
             onClose={handleCloseDialog}
             rows={expandedObject}
-            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
             setRows={setExpandedObject}
           />
         )}
@@ -4376,7 +4400,6 @@ function SubTable(props) {
           <MergeContactDrawer
             onClose={handleCloseDialog}
             rows={expandedObject}
-            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
             setRows={setExpandedObject}
           />
         )}
@@ -4537,13 +4560,13 @@ function SubTable(props) {
               )}
               {openDialog === "deleteWellInterest" && (
                 <DeleteConfirmationDialogContent
-                  header="Delete Well Interest(s)"
+                  header="Delete Well(s)"
                   onClose={handleCloseDialog}
                   deleteFunc={props.deleteFunc}
                   m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
-                  {`Do you want to permanently delete the well interest${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
+                  {`Do you want to permanently delete the well${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
                     } from  this unit?`}
                 </DeleteConfirmationDialogContent>
               )}

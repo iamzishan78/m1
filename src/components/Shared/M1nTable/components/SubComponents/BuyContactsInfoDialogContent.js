@@ -13,6 +13,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import DialogContent from "@material-ui/core/DialogContent";
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 
 import { AppContext } from "../../../../../AppContext";
 import { GETPERSONDATA } from "../../../../../graphQL/useQueryGetPersonData";
@@ -28,16 +29,11 @@ import Close from "@material-ui/icons/Close";
 import { Tooltip } from "@material-ui/core";
 
 const styles = (theme) => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(2),
-  },
-  closeButton: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-  },
+  dialogTitle: {
+    padding: "25px",
+    display: "flex",
+    justifyContent: "space-between"
+  }
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -65,18 +61,17 @@ const useStyles = makeStyles((theme) => ({
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, updateMelissaTable, ...other } = props;
   return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
+    <MuiDialogTitle disableTypography className={classes.dialogTitle} {...other}>
       <Typography variant="h5" style={{ fontWeight: "bold" }}>
         {children}
       </Typography>
       {onClose ? (
         <IconButton
           aria-label="close"
-          className={classes.closeButton}
           onClick={onClose}
-          size="small"
+          size="medium"
         >
-          <CloseIcon fontSize="small" />
+          <KeyboardTabIcon fontSize="small" />
         </IconButton>
       ) : null}
     </MuiDialogTitle>
@@ -154,7 +149,7 @@ export default function BuyContactsInfoDialogContent(props) {
           tenantId: stateApp.user.tenantId,
           persons: validContactData,
         },
-        refetchQueries: ["featureQuota", "getCheckPurchaseData", "getContactPurchaseData"],
+        refetchQueries: ["featureQuota", "getCheckPurchaseData", "getContactPurchaseData", "getESSimpleSearch"],
         awaitRefetchQueries: true,
       });
     }
@@ -210,15 +205,10 @@ export default function BuyContactsInfoDialogContent(props) {
     <React.Fragment>
       <>
         <DialogTitle
-          style={{ backgroundColor: "#fff" }}
           id="customized-dialog-title"
+          onClose={props.onClose}
         >
           {props.header ? props.header : "Contact Info Purchase"}
-          <Close
-            fontSize="medium"
-            className={modalClass.closeIcon}
-            onClick={props.onClose}
-          />
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={1}>

@@ -7,6 +7,8 @@ export const SHAPE_WELL_OWNERS = gql`
     $sort: SortInput = {}
     $filters: [FilterInput] = []
     $search: String = ""
+    $selectedYear: String = ""
+    $filterByWells: String = ""
     $userId: ID
   ) {
     paginatedShapeWellOwners(
@@ -15,6 +17,8 @@ export const SHAPE_WELL_OWNERS = gql`
       sort: $sort
       filters: $filters
       search: $search
+      selectedYear: $selectedYear
+      filterByWells: $filterByWells
       userId: $userId
     ) {
       edges {

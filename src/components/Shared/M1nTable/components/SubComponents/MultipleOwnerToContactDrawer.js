@@ -83,7 +83,6 @@ const MultipleOwnerToContactDrawer = ({
   onClose,
   rows,
   setRows,
-  setM1nSelectedRowsIndexes,
   getContactCampaignAction,
   convertMultipleOwnerToContactAction,
   campaignList,
@@ -153,11 +152,6 @@ const MultipleOwnerToContactDrawer = ({
     setRows(rows.filter((r) => r.id !== row.id));
   };
 
-  const handleClose = () => {
-    setM1nSelectedRowsIndexes([])
-    onClose();
-  }
-
   const onConvert = () => {
     let ownerIds = [];
     let entitiesIds = [];
@@ -192,7 +186,6 @@ const MultipleOwnerToContactDrawer = ({
     } else {
       convertMultipleOwnerToContactAction({ ...values, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds });
     }
-    setM1nSelectedRowsIndexes([])
     onClose();
     setLoading(false);
   };
@@ -215,7 +208,7 @@ const MultipleOwnerToContactDrawer = ({
                 </Typography>
               </Grid>
               <Grid item>
-                <IconButton aria-label="delete" color="primary" onClick={handleClose}>
+                <IconButton aria-label="delete" color="primary" onClick={onClose}>
                   <CloseSharp />
                 </IconButton>
               </Grid>
@@ -392,7 +385,7 @@ const MultipleOwnerToContactDrawer = ({
           <Box pt={6} mt={6} mb={6} mr={2}>
             <Grid container direction="row" justify="flex-end" alignItems="flex-end">
               <Grid item>
-                <Button onClick={handleClose}>Cancel</Button>
+                <Button onClick={onClose}>Cancel</Button>
               </Grid>
               <Grid item>
 

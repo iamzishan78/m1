@@ -1007,7 +1007,7 @@ export default function ContactDetailCard(props) {
             {/*/////////// new section -associated interests and deals //////////// */}
             <Grid container item xs={12} className={`${classes.border}`} style={{ padding: "23px 28px" }} spacing={0}>
               <Grid item xs={12}>
-                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>Associated Interests &amp; Deals</h4>
+                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>Entity Associations</h4>
               </Grid>
 
               <Grid item xs={12}>
@@ -1017,7 +1017,6 @@ export default function ContactDetailCard(props) {
                       <WellsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
                     </Card>
                   </Grid>
-                  {/* TEMP DELETION UNTIL CODE COMES */}
                   <Grid item xs={3} style={{ minWidth: "250px" }}>
                     <Card raised style={{ minHeight: "35px", height: "100%" }}>
                       <ShapeOwnershipCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />

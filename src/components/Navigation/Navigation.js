@@ -442,7 +442,7 @@ export default function Navigation(props) {
               {matchActivities ? (
                 <div>
                   <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-                    <Button onClick={handleClickAddActivity} color="secondary" variant="contained" startIcon={<Add />}>
+                    <Button onClick={handleClickAddActivity} color="primary" variant="contained" startIcon={<Add />}>
                       Add Activity
                     </Button>
                   </div>

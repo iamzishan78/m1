@@ -12,5 +12,6 @@ export const FEATURES = {
     LANDGRIDSEARCH: 'landGridSearch',
     TRACTIMPORT: 'tractImport',
     SHAPEELASTIC: 'ShapeFileImport',
-    USERSNAP: "userSnap"
+    USERSNAP: "userSnap",
+    CONTACTGRIDEXPORT: 'ContactGridExport'
 }
