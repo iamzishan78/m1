@@ -217,7 +217,7 @@ export default function DetailComponents(props) {
   });
 
   // mutations
-  const [removeChecks, { data: removeChecksResult }] = useMutation(REMOVE_CHECKS, {
+  const [removeChecks] = useMutation(REMOVE_CHECKS, {
     refetchQueries: ["getESPaginatedList"],
     awaitRefetchQueries: true,
   });
@@ -276,7 +276,7 @@ export default function DetailComponents(props) {
     return () => {
       setStateApp({ ...stateApp, viewDoc: null })
     }
-  }, [])
+  }, []);
 
   const handleScroll = (e) => {
     if (!isButtonScroll) {

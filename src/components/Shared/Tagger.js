@@ -148,7 +148,7 @@ export default function Tags(props) {
   const [getUserAvailableTags, { data: dataUserAvailableTags }] = useLazyQuery(USERAVAILABLETAGSQUERY, {
     fetchPolicy: "cache-and-network",
   });
-  const [upsertTag, { data: upsertedTag }] = useMutation(UPSERTTAG);
+  const [upsertTag, { data: upsertedTag, loading: upsertLoading }] = useMutation(UPSERTTAG);
   const [removeTag] = useMutation(REMOVETAG);
 
   ///////////////////// START FETCHING TAGS DATA ////////////////////////////////////////////
@@ -436,9 +436,6 @@ export default function Tags(props) {
   const AddingAddRowToDropDown = () => {
     let { cleanArray } = cleanDropDownArray();
 
-    // if (props.multipleIds && userAvailableTagsArray) {
-    //   cleanArray = [...userAvailableTagsArray];
-    // }
     if (addInDropDown) {
       cleanArray.unshift(addInDropDown);
     }
@@ -508,20 +505,29 @@ export default function Tags(props) {
               options={AddingAddRowToDropDown().map((option) => option)}
               value={tagsArray}
               freeSolo
-              renderTags={(value, getTagProps) =>
-                value.map((tag, index) => {
-                  if ((publicTag && tag.public) || (!publicTag && !tag.public && stateApp.user.email === tag.user.email)) {
-                    return (
-                      <Chip
-                        key={index}
-                        id={!props.multipleIds ? tag._id : tag.ids.join("???|||///")}
-                        label={tag.tag}
-                        {...getTagProps({ index })}
-                        deleteIcon={<ClearIcon />}
-                      />
-                    );
-                  }
-                })
+              renderTags={(value, getTagProps) => {
+                return (
+                  <>
+                    {
+                      value.filter(tag => (publicTag && tag.public) || (!publicTag && !tag.public && stateApp.user.email === tag.user.email))
+                        .map((tag, index) => (
+                          <Chip
+                            key={index}
+                            id={!props.multipleIds ? tag._id : tag.ids.join("???|||///")}
+                            label={tag.tag}
+                            {...getTagProps({ index })}
+                            deleteIcon={<ClearIcon />}
+                          />
+                        ))
+                    }
+                    {
+                      upsertLoading && (
+                        <CircularProgress color="secondary" />
+                      )
+                    }
+                  </>
+                )
+              }
               }
               renderInput={(params) => (
                 <TextField
@@ -548,7 +554,7 @@ export default function Tags(props) {
           </Grid>
         </Grid>
       ) : (
-        <CircularProgress color="secondary"></CircularProgress>
+        <CircularProgress color="secondary" />
       )}
     </div>
   );
