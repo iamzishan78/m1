@@ -62,10 +62,7 @@ const DialogTitle = withStyles(styles)((props) => {
 	);
 });
 
-const useStyles = makeStyles({});
-
 export default function SendMailersDialogContent(props) {
-	const classes = useStyles();
 	const dispatch = useDispatch();
 	const modalClass = Modals();
 
