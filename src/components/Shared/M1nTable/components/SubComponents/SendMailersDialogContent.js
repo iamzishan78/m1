@@ -35,23 +35,27 @@ const styles = (theme) => ({
 		top: theme.spacing(1),
 		color: theme.palette.grey[500],
 	},
+	dialogTitle: {
+		padding: "25px",
+		display: "flex",
+		justifyContent: "space-between",
+		alignItems: "center"
+	}
 });
 
 const DialogTitle = withStyles(styles)((props) => {
 	const { children, classes, onClose, ...other } = props;
 	return (
-		<MuiDialogTitle disableTypography className={classes.root} {...other}>
+		<MuiDialogTitle disableTypography className={classes.dialogTitle} {...other}>
 			<Typography variant="h5" style={{ fontWeight: 'bold' }}>
 				{children}
 			</Typography>
 			{onClose ? (
 				<IconButton
 					aria-label="close"
-					className={classes.closeButton}
 					onClick={onClose}
-					size="small"
 				>
-					<KeyboardTabIcon fontSize="small" />
+					<KeyboardTabIcon fontSize="large" />
 				</IconButton>
 			) : null}
 		</MuiDialogTitle>
@@ -101,13 +105,8 @@ export default function SendMailersDialogContent(props) {
 
 	return (
 		<React.Fragment>
-			<DialogTitle styles={{ backgroundColor: "#fff" }} id="customized-dialog-title">
+			<DialogTitle styles={{ backgroundColor: "#fff" }} id="customized-dialog-title" onClose={props.onClose}>
 				New Mailer Campaign
-				<KeyboardTabIcon
-					fontSize="large"
-					className={modalClass.closeIcon}
-					onClick={props.onClose}
-				/>
 			</DialogTitle>
 			<DialogContent>
 				<Grid container spacing={1}>
@@ -120,7 +119,7 @@ export default function SendMailersDialogContent(props) {
 						<TextField
 							margin="none"
 							placeholder="Enter a campaign name"
-							style={{ width: '100%', marginBottom: '10px', marginLeft: 15, }}
+							style={{ width: '96%', marginBottom: '10px', marginLeft: 15, }}
 							value={campaign}
 							onChange={(e) => {
 								setCampaign(e.target.value);

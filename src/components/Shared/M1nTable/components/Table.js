@@ -4311,7 +4311,7 @@ function SubTable(props) {
           </RightDialog>
         )}
 
-        <RightDialog open={activityModalOpen} handleClickDialogClose={() => setActivityModalOpen(false)} width="450px">
+        <RightDialog open={activityModalOpen} handleClickDialogClose={() => setActivityModalOpen(false)} width={"700px"}>
           <AddActivityDialog
             onClose={() => setActivityModalOpen(false)}
             id={contact?._id}
