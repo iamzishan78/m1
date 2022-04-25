@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiTypography-root": {
       fontSize: "30px",
       fontWeight: "bold",
+      color: "black",
     },
   },
   search: {
