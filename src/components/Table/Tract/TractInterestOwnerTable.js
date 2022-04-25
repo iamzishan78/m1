@@ -46,6 +46,7 @@ function TractInterestOwnerTable(props) {
   let history = useHistory();
   const classes = usetableStyles();
   const [selectedRows, setSelectedRows] = useState([]);
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -163,6 +164,7 @@ function TractInterestOwnerTable(props) {
         awaitRefetchQueries: true,
       });
     }
+    setResetSelectedRow(!resetSelectedRow)
   };
   return (
     <Container
@@ -240,6 +242,7 @@ function TractInterestOwnerTable(props) {
         orderByTracks={false}
         startPaginationAt={null}
         onTableChange={props.onTableChange}
+        resetSelectedRow={resetSelectedRow}
         options={{
           ...props.options,
           customToolbar: () => {
