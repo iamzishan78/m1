@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
   },
   commentBtn: {
-    "float": "right",
+    float: "right",
     right: "10px",
     bottom: "10px",
     marginBottom: -20,
@@ -62,8 +62,8 @@ const useStyles = makeStyles((theme) => ({
   },
   paddingCreateTask: {
     paddingLeft: "20px !important",
-    paddingTop: "10px !important",
-    width: "92%"
+    paddingTop: "4px !important",
+    width: "90%",
   },
   moreComment: {
     padding: "10px",
@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "12px",
   },
   floatRight: {
-    "float": "right",
+    float: "right",
   },
   cursorPointer: {
     cursor: "pointer",
@@ -238,21 +238,21 @@ export default function DealComment(props) {
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value
-        .split("\n")
-        .map((line) => {
-          if (line.trim() !== ".") {
-            return line.trim();
-          }
-        })
-        .join("\n")
+          .split("\n")
+          .map((line) => {
+            if (line.trim() !== ".") {
+              return line.trim();
+            }
+          })
+          .join("\n")
       : `${value
-        .split("\n")
-        .map((line) => {
-          if (line.trim() !== ".") {
-            return line.trim();
-          }
-        })
-        .join("\n")}`;
+          .split("\n")
+          .map((line) => {
+            if (line.trim() !== ".") {
+              return line.trim();
+            }
+          })
+          .join("\n")}`;
 
   const updateComment = (value) => {
     setLoadingComments(true);
@@ -361,7 +361,7 @@ export default function DealComment(props) {
                           )}
                         </IconButton>
                       </Grid>
-                      <Grid item className={classes.paddingCreateTask} >
+                      <Grid item className={classes.paddingCreateTask}>
                         <div>
                           <span className={classes.bold}>{eachComment.user?.name}</span>
                           {eachComment.isPinned && <span> created this task.</span>}
@@ -433,9 +433,7 @@ export default function DealComment(props) {
         <div style={{ paddingBottom: "20px" }}>
           <Grid container>
             <Grid item xs={1}>
-              <IconButton
-                className={classes.commentView}
-              >
+              <IconButton className={classes.commentView}>
                 {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
               </IconButton>
             </Grid>

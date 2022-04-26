@@ -445,7 +445,7 @@ function AddDealDialog(props) {
         }));
       }
     }
-  }
+  };
   // }, [dealData]);
 
   useEffect(() => {
@@ -693,13 +693,14 @@ function AddDealDialog(props) {
     }
   }, [addContactData]);
 
-
   useEffect(() => {
-    if (stateApp?.activeDeal?.mapSettings?.mapDefaultPosition != null &&
-      stateApp?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition) {
+    if (
+      stateApp?.activeDeal?.mapSettings?.mapDefaultPosition != null &&
+      stateApp?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition
+    ) {
       setStateApp((state) => {
-        return { ...state, mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition }
-      })
+        return { ...state, mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition };
+      });
     }
   }, [mapSettings]);
 
@@ -753,7 +754,7 @@ function AddDealDialog(props) {
         receivedDate: selectedReceivedDate && selectedReceivedDate !== "" ? new Date(`${selectedReceivedDate}T08:00`).toUTCString() : null,
         bidDate: selectedBidDate && selectedBidDate !== "" ? new Date(`${selectedBidDate}T08:00`).toUTCString() : null,
         closeDate: selectedCloseDate && selectedCloseDate !== "" ? new Date(`${selectedCloseDate}T08:00`).toUTCString() : null,
-        mapSettings: mapSettings
+        mapSettings: mapSettings,
       };
 
       if (cardId) {
@@ -989,7 +990,7 @@ function AddDealDialog(props) {
           ],
           awaitRefetchQueries: true,
         }).then((result) => {
-          finishCreatingDeal(result?.data)
+          finishCreatingDeal(result?.data);
         });
       }
     }
@@ -1165,9 +1166,9 @@ function AddDealDialog(props) {
         zoom: stateApp?.mapVars?.zoom,
         bearing: stateApp?.mapVars?.bearing,
         pitch: stateApp?.mapVars?.pitch,
-        center: stateApp?.mapVars?.center
-      }
-    })
+        center: stateApp?.mapVars?.center,
+      },
+    });
   }, [stateApp.mapVars]);
 
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
@@ -1229,7 +1230,7 @@ function AddDealDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
+            setM1nSelectedRowsIndexes={() => {}}
           >
             Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
@@ -1269,7 +1270,7 @@ function AddDealDialog(props) {
             <div className={classes.contentRoot}>
               <Drawer dealSettingsNumber={getSubtaskNumber()} mapSettings={mapSettings} />
               {!["Deal", "Map"].includes(stateApp.transactBarView) &&
-                (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
+              (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>
               ) : (
                 <div className={classes.inputFieldRoot}>
@@ -1281,9 +1282,11 @@ function AddDealDialog(props) {
                         </Grid>
                         <Grid item xs={9}>
                           <Autocomplete
-                                options={users.filter((u) => u.text).sort((a, b) => {
-                              return a.text.localeCompare(b.text)
-                            })}
+                            options={users
+                              .filter((u) => u.text)
+                              .sort((a, b) => {
+                                return a.text.localeCompare(b.text);
+                              })}
                             onChange={(e, user) => {
                               setOwnerId(user?.value);
                             }}
@@ -1371,7 +1374,7 @@ function AddDealDialog(props) {
                               root: classes.dateRoot,
                               focused: classes.focused,
                               notchedOutline: classes.notchedOutline,
-                              light: classes.light
+                              light: classes.light,
                             },
                           }}
                         />
@@ -1597,26 +1600,24 @@ function AddDealDialog(props) {
           )}
           {["Deal", "Map"].includes(stateApp.transactBarView) && (
             <div style={{ marginTop: 2 }}>
-              <DealComments setNewCommentId={setNewCommentId} targetLabel='deal' targetSourceId={stateApp.activeDeal?.cardId} />
+              <DealComments setNewCommentId={setNewCommentId} targetLabel="deal" targetSourceId={stateApp.activeDeal?.cardId} />
             </div>
           )}
         </RightDialog>
         {stateApp.transactBarView === "Map" && (
-          <div
-            maxWidth="calc(100vw - 28vw)"
-            style={{ position: "relative", "z-index": "9999", width: "calc(100vw - 30vw)" }}
-          >
-            <MapProvider match={{
-              params: {
-                expandedPanel: false,
-                openSpeedDial: false,
-                viewPortCallback: (mapSettings) => {
-                  console.log("here")
-                  setMapSettings(mapSettings)
+          <div maxWidth="calc(100vw - 28vw)" style={{ position: "relative", "z-index": "9999", width: "calc(100vw - 30vw)" }}>
+            <MapProvider
+              match={{
+                params: {
+                  expandedPanel: false,
+                  openSpeedDial: false,
+                  viewPortCallback: (mapSettings) => {
+                    console.log("here");
+                    setMapSettings(mapSettings);
+                  },
                 },
-              }
-            }} >
-            </MapProvider>
+              }}
+            ></MapProvider>
             <div
               style={{
                 position: "relative",
@@ -1624,7 +1625,7 @@ function AddDealDialog(props) {
                 "margin-right": "40px",
                 width: "fit-content",
                 "background-color": "#fff",
-                padding: "10px"
+                padding: "10px",
               }}
               className={classes.inputFieldDealName}
             >
