@@ -97,6 +97,7 @@ export default function Contacts(props) {
   const [addContact, setAddContact] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [mutationLoading, setMutationLoading] = useState(false);
+  const [expandedPanel, setExpandedPanel] = useState(false);
   const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
@@ -107,6 +108,12 @@ export default function Contacts(props) {
   });
   const [addNewContact, { data: addContactData }] = useMutation(ADDCONTACT);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
+
+  const handleAccordionChange = (panel) => (event, isExpanded) => {
+    console.log(' ================== ',{ event, isExpanded } , panel);
+    setExpandedPanel(isExpanded ? panel : false);
+    console.log(' ================== data ',{ event, isExpanded } , panel , expandedPanel);
+  };
   useEffect(() => {
     //will also run during initial mount
     setIsNextPageLoading(true);
@@ -359,14 +366,13 @@ export default function Contacts(props) {
         </Grid>
 
         <List aria-label="contacts list">
-          {console.log('data can i consider ' , filteredContacts)}
           {filteredContacts && filteredContacts.length > 0 ? (
             filteredContacts.map((c, i) => (        
               <>
                 <ListItem key={i}>     
                   
                     {/* {c} */}
-                    <Accordion>
+                    <Accordion expanded={expandedPanel === 'panel'+i.toString()} onChange={handleAccordionChange('panel'+i.toString())}>
                     <AccordionSummary
                     expandIcon={<ExpandMoreIcon  />}
                       aria-controls="panel1a-content"
