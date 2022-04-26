@@ -586,6 +586,7 @@ export default function ParcelsDetailCard(props) {
                   <TractInterestOwnerTable
                     esIndex='shapeowners_flat'
                     parent="ownersPerParcel" 
+                    targetLabel="Parcel Ownership"
                     customLayer={copy(parcelObj)} 
                     dense
                     header={<Header />}

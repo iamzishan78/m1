@@ -27,7 +27,7 @@ import { deepEqualObjects, copy } from "components/Shared/functions";
 import { addTrailingZeros } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 
-const genericDataActions = ["tags", "comments", "tracks", "ifAreContacts"];
+const genericDataActions = ["comments", "tracks", "ifAreContacts"];
 const interestKeys = [
   "nra",
   "surface_interest",
@@ -90,6 +90,15 @@ function TractInterestOwnerTable(props) {
           }
         }
       });
+      if(hit?.tags?.length > 0){
+        const tags = hit.tags.map((tag) => tag.tag)
+        if(tags[0]){
+          hit.tags = [[tags], hit.tags.length]
+        }
+
+      }else{
+        hit.tags = [[], 0];
+      }
       hit = props.setGenricData(
         hit,
         hit?.contact?._id,
