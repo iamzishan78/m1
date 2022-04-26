@@ -30,27 +30,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const cards = [
-  {
-    heading: "Total Revenue",
-    points: "$48,643",
-  },
-  {
-    heading: "Properties",
-    points: "123",
-  },
-  {
-    heading: "Needs Approval",
-    points: "17",
-    type: "warning",
-  },
-  {
-    heading: "Potential Issues",
-    points: "8",
-    type: "error",
-  },
-];
-
 export default function Portfolio() {
   const classes = useStyles();
   const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
