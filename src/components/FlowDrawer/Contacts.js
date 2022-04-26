@@ -168,7 +168,7 @@ export default function Contacts(props) {
                  descriptorId:dataMap.descriptorId,
                  name:allContactList?.paginatedContacts?.edges[0].node.name,
                  mobilePhone:allContactList?.paginatedContacts?.edges[0].node.mobilePhone?allContactList?.paginatedContacts?.edges[0].node.mobilePhone:"",
-                 address1:allContactList?.paginatedContacts?.edges[0].node.address1?allContactList?.paginatedContacts?.edges[0].node.address1 + " " +allContactList?.paginatedContacts?.edges[0].node.city + " " + allContactList?.paginatedContacts?.edges[0].node.state + "" + allContactList?.paginatedContacts?.edges[0].node.zip:"",
+                 address1:allContactList?.paginatedContacts?.edges[0].node.address1?allContactList?.paginatedContacts?.edges[0].node.address1 + " " +allContactList?.paginatedContacts?.edges[0].node.city + " " + allContactList?.paginatedContacts?.edges[0].node.state + " " + allContactList?.paginatedContacts?.edges[0].node.zip:"",
                  primaryEmail:allContactList?.paginatedContacts?.edges[0].node.primaryEmail?allContactList?.paginatedContacts?.edges[0].node.primaryEmail:""
                }
              }else {
