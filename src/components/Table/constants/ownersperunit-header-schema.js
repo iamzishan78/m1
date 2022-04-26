@@ -189,6 +189,7 @@ const OwnersPerUnitHeadCells = [
     options: {
       display: false,
       filter: true,
+      forceFilter: true,
       viewColumns: false,
     },
     custom: {

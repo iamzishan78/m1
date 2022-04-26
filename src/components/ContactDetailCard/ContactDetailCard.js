@@ -1,13 +1,12 @@
 // react core
 import React, { useContext, useState, useEffect } from "react";
-
 // mui styling
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 // mui core components
-import { Grid, Menu, MenuItem } from "@material-ui/core";
+import { Grid, Menu, MenuItem, IconButton } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { useHistory } from "react-router-dom";
 
 // internal components
@@ -19,6 +18,8 @@ import FacebookIcon from "@material-ui/icons/Facebook";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import RequestPageIcon from "components/Shared/svgIcons/request_page";
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import { CONTACT_PURCHASE_DATA } from "graphQL/useQueryContactPurchaseData";
@@ -32,17 +33,10 @@ import Documents from "../Shared/Documents";
 import ParcelsCard from "./components/ParcelsCard";
 import ShapeOwnershipCard from "./components/ShapeOwnershipCard";
 import LeadStage from "../Shared/LeadStage";
-import Divider from "@material-ui/core/Divider";
 import RightDialog from "./components/RightDialog";
 import Dialog from "@material-ui/core/Dialog";
 import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import ArrowForwardIosRoundedIcon from "@material-ui/icons/ArrowForwardIosRounded";
-import ArrowBackIosRoundedIcon from "@material-ui/icons/ArrowBackIosRounded";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleRightColumn } from "../../actions";
-import MessageRoundedIcon from "@material-ui/icons/MessageRounded";
-import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
+import { useSelector, useDispatch } from "react-redux";
 import Card from "@material-ui/core/Card";
 import DealsNew from "./components/DealsNew";
 import WellsCard from "./components/WellsCard";
@@ -52,6 +46,7 @@ import ContactDataMissingDialog from "./components/ContactDataMissingDialog";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
 import DocViewer from "../Shared/DocViewer";
+import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Link from "@material-ui/core/Link";
@@ -65,6 +60,7 @@ import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
+import { toggleRightColumn } from 'actions/ContactDetailCard';
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -101,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     transition: "width 0.3s ease-out",
     webkitTransition: "width 0.3s ease-out",
-    width: ({ shrinkRightColumn }) => (shrinkRightColumn ? "68px" : "37%"),
+    width: ({ shrinkRightColumn }) => (shrinkRightColumn ? "0px" : "37%"),
   },
   gridStyling: {
     "& .MuiListItem-container": {
@@ -264,6 +260,8 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: "1",
     transition: "width 0.3s ease-out",
     webkitTransition: "width 0.3s ease-out",
+    overflow: "overlay",
+    maxHeight: "calc(100vh - 139px)"
   },
   shrinkRightColumn: {
     position: "absolute",
@@ -295,10 +293,11 @@ const useStyles = makeStyles((theme) => ({
   },
   menuIcon: {
     padding: "0px !important",
-    margin: "0px !important",
-    minWidth: "0px !important",
-    background: "white !important",
-    color: "black !important",
+    margin: "0px 15px !important",
+    "& svg": {
+      cursor: "pointer",
+      fill: "#808080 !important",
+    },
   },
 
   emailButton: {
@@ -312,6 +311,33 @@ const useStyles = makeStyles((theme) => ({
     '& .MuiButton-label': {
       color: 'grey !important'
     },
+  },
+  pulloutBox: {
+    position: "absolute",
+    top: "140px",
+    right: 0,
+    height: "80px",
+    color: "white",
+    width: "20px",
+    background: "#141d32",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    "& svg": {
+      transform: "scaleX(0.5)",
+    },
+  },
+  contactDataButton: {
+    margin: "0px 5px",
+    fontWeight: "600",
+    backgroundColor: "rgba(1, 17, 51, 1) !important",
+    color: "#fff !important",
+    border: "1px solid #B3B3B3",
+    "&:hover": {
+      backgroundColor: "#263451",
+      color: "#fff",
+    },
   }
 }));
 
@@ -319,6 +345,7 @@ export default function ContactDetailCard(props) {
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
+  const dispatch = useDispatch();
 
   let history = useHistory();
   const pathName = history.location.pathname;
@@ -434,7 +461,7 @@ export default function ContactDetailCard(props) {
 
   useEffect(() => {
     if (data && data.contact) {
-      setContactData(data.contact);
+      setContactData({ ...data.contact, metaOwner: { _id: data.contact.contactOwnerId } });
       setStateApp((stateApp) => ({
         ...stateApp,
         currentContatcAtivities: data.contact.activityLog,
@@ -479,7 +506,7 @@ export default function ContactDetailCard(props) {
         activeDeal: { cardId: null, laneId: null },
       }))
     }
-  },[])
+  }, []);
 
   const checkModuleHistory = () => {
     if (stateNav.contactFromMap) {
@@ -535,8 +562,9 @@ export default function ContactDetailCard(props) {
   const getName = (contact) => {
     return contact.name || `${get(contact, "firstName", "")} ${get(contact, "lastName", "")}`;
   };
+  const togglePullout = () => dispatch(toggleRightColumn());
   return contactData ? (
-    <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)", overflow: "scroll" }}>
+    <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)" }}>
       <div className={classes.header}>
         <div
           style={{
@@ -775,16 +803,15 @@ export default function ContactDetailCard(props) {
               className={classes.border}
             >
               <div className={classes.leftColumnTopRigthCorner}>
-                {/* temporary removal until melissa is reactivated */}
-                {/* <Button
-                variant="contained"
-                // size="small"
-                onClick={() => {
-                  handleExpandClick("buyContactsInfo");
-                }}
-              >
-                Buy Contact Info
-              </Button> */}
+                <Button
+                  className={classes.contactDataButton}
+                  startIcon={<RequestPageIcon color="white" />}
+                  onClick={() => {
+                    handleExpandClick("buyContactsInfo");
+                  }}
+                >
+                  Contact Data
+                </Button>
 
                 {contactData.primaryEmail ? (
                   <a href={"mailto:" + contactData.primaryEmail}>
@@ -804,10 +831,6 @@ export default function ContactDetailCard(props) {
                   >
                     Email
                   </Button>)}
-
-                <Button className={classes.menuIcon} onClick={handleClick}>
-                  <MoreVertIcon aria-controls="simple-menu" aria-haspopup="true" />
-                </Button>
 
                 <Menu
                   id="simple-menu"
@@ -984,7 +1007,7 @@ export default function ContactDetailCard(props) {
             {/*/////////// new section -associated interests and deals //////////// */}
             <Grid container item xs={12} className={`${classes.border}`} style={{ padding: "23px 28px" }} spacing={0}>
               <Grid item xs={12}>
-                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>Associated Interests &amp; Deals</h4>
+                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>Entity Associations</h4>
               </Grid>
 
               <Grid item xs={12}>
@@ -994,7 +1017,6 @@ export default function ContactDetailCard(props) {
                       <WellsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
                     </Card>
                   </Grid>
-                  {/* TEMP DELETION UNTIL CODE COMES */}
                   <Grid item xs={3} style={{ minWidth: "250px" }}>
                     <Card raised style={{ minHeight: "35px", height: "100%" }}>
                       <ShapeOwnershipCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
@@ -1036,86 +1058,53 @@ export default function ContactDetailCard(props) {
         )}
         {/*/////////// rigth column //////////// */}
         <div className={classes.rightColumnGrid}>
-          {/* <IconButton
-            size="small"
-            className={classes.shrinkRightColumn}
-            onClick={() => {
-              dispatch(toggleRightColumn());
-            }}
-          >
-            {shrinkRightColumn ? (
-              <ArrowBackIosRoundedIcon />
-            ) : (
-                <ArrowForwardIosRoundedIcon />
-              )}
-          </IconButton> */}
-
-          {shrinkRightColumn || showShrinkColumnContent ? (
-            <div style={{ width: "68px" }}>
-              {/* <IconButton className={classes.shrinkRightColumnIcons}>
-                <MessageRoundedIcon
-                  onClick={() => {
-                    dispatch(toggleRightColumn());
-                  }}
-                />
-              </IconButton> */}
-
-              {/* <IconButton className={classes.shrinkRightColumnIcons}>
-                <DescriptionRoundedIcon
-                  onClick={() =>
-                    handleOpenExpandableCard(
-                      <ViewDocuments
-                        id={contactData._id}
-                        user_id={stateApp.user.email}
-                        activityLog={contactData.activityLog}
-                      />,
-                      "Documents"
-                    )
-                  }
-                />
-              </IconButton> */}
+          {!shrinkRightColumn && !showShrinkColumnContent && (
+            <div
+              style={{
+                margin: "0px 15px",
+                height: "calc(100vh - 145px)",
+              }}
+            >
+              <MetadataDrawer
+                title="Additional Details"
+                documentsTitle="Recent Documents"
+                setCollapse={() => togglePullout()}
+                targetSourceId={contactData._id}
+                showDescription={false}
+                targetLabel="Contact"
+                ownerTitle="Contact Owner"
+                commentsWidth="25vw"
+                viewAllDocuments
+                menuComponent={
+                  <IconButton className={classes.menuIcon} onClick={handleClick}>
+                    <MoreHorizIcon fontSize="medium" aria-controls="simple-menu" aria-haspopup="true" />
+                  </IconButton>
+                }
+                data={contactData}
+                onUpdate={({ ownerName, owner }) => {
+                  updateContact({
+                    variables: {
+                      contact: {
+                        contactOwner: ownerName,
+                        contactOwnerId: owner,
+                        _id: contactData._id,
+                        lastUpdateBy: stateApp.user.mongoId,
+                      },
+                      ignoreResponse: true,
+                    },
+                    refetchQueries: ["getPaginatedContacts", "getContact"],
+                    awaitRefetchQueries: false,
+                  });
+                }}
+              />
             </div>
-          ) : (
-            <Grid container spacing={0} id="expandedRCContent">
-              {/* //////////// Deal Card ////////////// */}
-
-              {/* TEMPORARY COMMENT OUT. DO NOT DELETE. */}
-              {/* <Grid item xs={12}>
-                <Paper className={classes.paper}>
-                  <div className={classes.divDealCard}>
-                    <p className={classes.pDealCard}>
-                      Add a deal for this contact?
-                    </p>
-                    <Button variant="contained" color="secondary">
-                      Add Deal
-                    </Button>
-                  </div>
-                </Paper>
-              </Grid>
-              */}
-
-              {/* <Grid item xs={12}>
-                <Deals
-                  contact={contactData}
-                  transactData={transactData}
-                  transactId={transactId}
-                  selectRowOpenContact={props.selectRowOpenContact}
-                />
-                <Divider />
-              </Grid> */}
-
-              <Grid item xs={12} className={classes.Comments}>
-                <Comments targetSourceId={contactData._id} targetLabel="contact" detailCard top={2} viewAll={handleClickRightDialogOpen} />
-                <Divider />
-              </Grid>
-
-              <Grid item xs={12} className={classes.Comments}>
-                <Documents handleOpenExpandableCard={handleOpenExpandableCard} id={contactData._id} user_id={stateApp.user.email} />
-                <Divider />
-              </Grid>
-            </Grid>
           )}
         </div>
+        {shrinkRightColumn && (
+          <div className={classes.pulloutBox} onClick={togglePullout}>
+            <ArrowBackIosIcon />
+          </div>
+        )}
 
         {openDialog === "buyContactsInfo" && (
           <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>

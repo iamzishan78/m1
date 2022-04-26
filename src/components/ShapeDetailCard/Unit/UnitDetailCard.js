@@ -16,6 +16,7 @@ import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import TabButtons from "components/Shared/TabPanels/TabButtons";
 import UnitSummary from "./UnitSummary";
 import UnitOwnersTable from "components/Table/Shape/UnitOwnersTable";
+import UnitInterestOwnerTable from "components/Table/Shape/UnitInterestOwnerTable";
 import ShapeWellInterestTable from "components/Table/Shape/ShapeWellInterestTable";
 import AssociatedWellsShapeTable from "components/Table/Wells/AssociatedWellsShapeTable";
 import UnitTractsTable from "components/Table/Shape/UnitTractsTable";
@@ -213,7 +214,16 @@ export default function UnitDetailCard(props) {
               value={selectedTab}
               panels={[
                 <div className={!isFiltered ? classes.subContent : classes.subContent3}>
-                  <UnitOwnersTable
+                  <UnitInterestOwnerTable
+                    esIndex="shapeowners_flat"
+                    customLayer={uniObj}
+                    parent="ownersPerUnit"
+                    shapeType="Unit"
+                    targetLabel="Unit Ownership"
+                    header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
+                    dense
+                  />
+                  {/* <UnitOwnersTable
                     customLayer={uniObj}
                     parent="ownersPerUnit"
                     shapeType="Unit"
@@ -222,7 +232,7 @@ export default function UnitDetailCard(props) {
                     setSelectedTab={setSelectedTab}
                     setIsFiltered={setIsFiltered}
                     dense
-                  />
+                  /> */}
                 </div>,
                 <div className={!isFiltered ? classes.subContent : classes.subContent3}>
                   <SuggestedShapeTaxOwnersTable

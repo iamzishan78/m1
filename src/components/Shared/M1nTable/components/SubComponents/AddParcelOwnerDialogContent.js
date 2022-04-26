@@ -324,7 +324,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: ["getparcelOwners", "getContactParcelInterests", "getContactParcelInterest"],
+          refetchQueries: ["getparcelOwners", "getContactParcelInterests", "getContactParcelInterest", "getESSimpleSearch"],
           awaitRefetchQueries: true,
         });
       } else {
@@ -342,6 +342,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             "getparcelOwners",
             "getContactParcelInterests",
             "getContactParcelInterest",
+            "getESSimpleSearch"
           ],
           awaitRefetchQueries: true,
         });

@@ -4,6 +4,8 @@ import { bindActionCreators } from "redux";
 import MultipleOwnerToContactDrawer from "components/Shared/M1nTable/components/SubComponents/MultipleOwnerToContactDrawer";
 import ConvertTaxOwnerToContact from "components/MapControls/components/popup/ConvertTaxOwnerToContact";
 import ExportWellsOwners from "components/MapControls/components/popup/ExportWellsOwners";
+import AssignOwnerToContactDrawer from "components/Shared/M1nTable/components/SubComponents/AssignOwnerToContactDrawer";
+
 import {
   getShapeOwnersAndWellsAction,
   getShapeOwnersAndCountAction,
@@ -16,7 +18,32 @@ import {
   convertTaxOwnerToContactAction,
   convertMultipleOwnerToContactAction
 } from "store/actions/contactActions";
+import { showSuccessMessage } from "actions";
+
 import { getShapeOwnersSelectors } from "store/selectors/index";
+
+const AssignOwnerToContactDrawerProps = (state) => {
+  const { campaignList } = state.contact;
+  return {
+    campaignList,
+  };
+};
+
+const AssignOwnerToContactDrawerDispatch = (dispatch) => {
+  return bindActionCreators(
+    {
+      showSuccessMessage,
+      getContactCampaignAction: getContactCampaignAction.STARTED,
+      convertMultipleOwnerToContactAction: convertMultipleOwnerToContactAction.STARTED,
+    },
+    dispatch
+  );
+};
+
+export const AssignOwnerToContactDrawerContainer = connect(
+  AssignOwnerToContactDrawerProps,
+  AssignOwnerToContactDrawerDispatch
+)(AssignOwnerToContactDrawer);
 
 const MultipleOwnerToContactDrawerProps = (state) => {
   const { campaignList } = state.contact;

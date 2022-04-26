@@ -69,6 +69,12 @@ export default [
         actual_key: "parcel.nra"
     },
     {
+        label: "Gross Acres",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.sdGrossAcres"
+    },
+    {
         label: "Depth From",
         mapped_key: "",
         required: false,

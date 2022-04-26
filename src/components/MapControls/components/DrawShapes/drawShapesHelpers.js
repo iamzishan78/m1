@@ -315,18 +315,19 @@ export const changeModeToScaleRotate = (draw) => {
   const all = draw.getAll()
   const feature = all.features.find((f) => f.properties.isrotate)
   if (feature) {
-    draw.changeMode("direct_select", { featureId: feature.id, });
-    draw.changeMode('scaleRotateMode', {
+    // draw.changeMode("direct_select", { featureId: feature.id, });
+    draw.changeMode('tx_poly', {
       // required
+      featureId: feature.id,
       canScale: true,
       canRotate: true, // only rotation enabled
       canTrash: false, // disable feature delete
 
       rotatePivot: SRCenter.Center, // rotate around center
-      // scaleCenter: SRCenter.Opposite, // scale around opposite vertex
+      scaleCenter: SRCenter.Opposite, // scale around opposite vertex
 
       singleRotationPoint: true, // only one rotation point
-      rotationPointRadius: 1.6, // offset rotation point
+      rotationPointRadius: 1.1, // offset rotation point
 
       canSelectFeatures: true,
     });

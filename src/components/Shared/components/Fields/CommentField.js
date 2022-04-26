@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiInputBase-input": { color: "transparent", caretColor: "black" },
     "& .MuiInputBase-inputMultiline": {
       height: "201px !important",
-      zIndex: 9999,
       overflow: "overlay",
       paddingRight: "8px",
       "*::-webkit-scrollbar": {
@@ -307,6 +306,7 @@ export default function DealComment({
         <>
           <Button
             className={classes.commentBtn}
+            style={{ marginBottom: "10px" }}
             variant="contained"
             color="primary"
             onClick={() => {
@@ -318,6 +318,7 @@ export default function DealComment({
 
           <Button
             className={classes.commentBtn}
+            style={{ marginRight: "10px", marginBottom: "10px" }}
             variant="contained"
             onClick={() => {
               setComment("");

@@ -32,14 +32,11 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiFormControl-marginDense": {
       margin: "0px !important",
     },
-    "& .MuiIconButton-root": {
-      padding: "0px !important",
-    },
   },
   comment: {
-    maxHeight: "290px",
+    maxHeight: "230px",
     overflow: "auto",
-    padding: "5px 10px",
+    padding: "5px 0px",
   },
   noBorder: {
     border: "none",
@@ -58,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
 
   },
   paddingLeft10: {
-    paddingLeft: "20px !important",
+    paddingLeft: "8px !important",
     paddingTop: "3px !important",
 
   },
@@ -78,12 +75,6 @@ const useStyles = makeStyles((theme) => ({
   },
   bold: {
     fontWeight: "bold",
-  },
-  commentView: {
-    padding: "10px 5px 10px 0px",
-    // marginRight: "60px",
-    // marginBottom: "10px",
-    marginLeft: '20px'
   },
   commentTime: {
     marginLeft: "10px",
@@ -368,8 +359,8 @@ export default function CommentComponent(props) {
                         }
                         onMouseLeave={() => setShowCommentActionId(null)}
                       >
-                        <Grid item style={{ maxWidth: "55px" }}>
-                          <IconButton style={{ marginTop: "3px", marginLeft: "12px" }}>
+                        <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
+                          <IconButton>
                             {profilesInfo[eachComment.user.email]?.profileImage ||
                               eachComment.isNew ? (
                               <Avatar
@@ -458,51 +449,53 @@ export default function CommentComponent(props) {
             <CircularProgress color="secondary"></CircularProgress>
           )}
         </div>
-        <div style={{ paddingBottom: '20px' }}>
-          <Grid container>
-            <Grid item style={{ maxWidth: "55px" }}>
-              <IconButton className={classes.commentView}
-              // style={{ top: "3px" }}
-              >
-                {profileImage ? (
-                  <Avatar src={profileImage} size="38" round />
-                ) : (
-                  <Avatar name={stateApp.user.name} size="38" round />
-                )}
-              </IconButton>
-            </Grid>
-            <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
-              <SizeMe>{({ size }) =>
-                <div
-                  className={classes.border}
-                  style={{ paddingBottom: '20px' }}
-                  onClick={() => {
-                    if (!showActions) {
-                      setShowActions(true);
-                    }
-                  }}
-                  onBlur={() => {
-                    if (showActions && !comment) {
-                      setShowActions(false);
-                    }
-                  }}
+        {!editCommentId && (
+          <div style={{ paddingBottom: '20px' }}>
+            <Grid container>
+              <Grid item style={{ maxWidth: "55px" }}>
+                <IconButton className={classes.commentView}
+                // style={{ top: "3px" }}
                 >
+                  {profileImage ? (
+                    <Avatar src={profileImage} size="38" round />
+                  ) : (
+                    <Avatar name={stateApp.user.name} size="38" round />
+                  )}
+                </IconButton>
+              </Grid>
+              <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
+                <SizeMe>{({ size }) =>
+                  <div
+                    className={classes.border}
+                    style={{ paddingBottom: '20px' }}
+                    onClick={() => {
+                      if (!showActions) {
+                        setShowActions(true);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (showActions && !comment) {
+                        setShowActions(false);
+                      }
+                    }}
+                  >
 
-                  <CommentField
-                    profilesInfo={profilesInfo}
-                    users={users}
-                    comment={comment}
-                    showActions={showActions}
-                    setComment={setComment}
-                    upsertComment={addNewComment}
-                  // fieldWidth={`${size - 23}px`}
-                  />
+                    <CommentField
+                      profilesInfo={profilesInfo}
+                      users={users}
+                      comment={comment}
+                      showActions={showActions}
+                      setComment={setComment}
+                      upsertComment={addNewComment}
+                    // fieldWidth={`${size - 23}px`}
+                    />
 
-                </div>
-              }</SizeMe>
+                  </div>
+                }</SizeMe>
+              </Grid>
             </Grid>
-          </Grid>
-        </div>
+          </div>
+        )}
       </div>
     }</SizeMe>
   );
