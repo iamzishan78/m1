@@ -152,14 +152,14 @@ export default function Contacts(props) {
     if (allContactList?.paginatedContacts&&allContactList?.paginatedContacts?.edges[0]) {
           if (filteredContacts&&filteredContacts.length > 0) {
            let filterData= filteredContacts.map((dataMap, index) => {
-              console.log('data map id ' ,dataMap)
+              console.log('data map id ' ,allContactList?.paginatedContacts?.edges[0].node)
               if (dataMap === allContactList?.paginatedContacts?.edges[0].node.name) {
                 contactDetail = {
                   _id:dataMap._id,
                   descriptorId:dataMap.descriptorId,
                   name:allContactList?.paginatedContacts?.edges[0].node.name,
                   mobilePhone:allContactList?.paginatedContacts?.edges[0].node.mobilePhone?allContactList?.paginatedContacts?.edges[0].node.mobilePhone:"",
-                  address1:allContactList?.paginatedContacts?.edges[0].node.address1?allContactList?.paginatedContacts?.edges[0].node.address1:"",
+                  address1:allContactList?.paginatedContacts?.edges[0].node.address1?allContactList?.paginatedContacts?.edges[0].node.address1 + " " +allContactList?.paginatedContacts?.edges[0].node.city + " " + allContactList?.paginatedContacts?.edges[0].node.state + " " + allContactList?.paginatedContacts?.edges[0].node.zip:"",
                   primaryEmail:allContactList?.paginatedContacts?.edges[0].node.primaryEmail?allContactList?.paginatedContacts?.edges[0].node.primaryEmail:""
                 }
               } else if (dataMap.name === allContactList?.paginatedContacts?.edges[0].node.name) {
@@ -168,7 +168,7 @@ export default function Contacts(props) {
                  descriptorId:dataMap.descriptorId,
                  name:allContactList?.paginatedContacts?.edges[0].node.name,
                  mobilePhone:allContactList?.paginatedContacts?.edges[0].node.mobilePhone?allContactList?.paginatedContacts?.edges[0].node.mobilePhone:"",
-                 address1:allContactList?.paginatedContacts?.edges[0].node.address1?allContactList?.paginatedContacts?.edges[0].node.address1:"",
+                 address1:allContactList?.paginatedContacts?.edges[0].node.address1?allContactList?.paginatedContacts?.edges[0].node.address1 + " " +allContactList?.paginatedContacts?.edges[0].node.city + " " + allContactList?.paginatedContacts?.edges[0].node.state + "" + allContactList?.paginatedContacts?.edges[0].node.zip:"",
                  primaryEmail:allContactList?.paginatedContacts?.edges[0].node.primaryEmail?allContactList?.paginatedContacts?.edges[0].node.primaryEmail:""
                }
              }else {
@@ -424,9 +424,10 @@ export default function Contacts(props) {
 
                       <AccordionDetails >
                         <div className="acc-data">
-                          <p className="address"><EmailOutlinedIcon/> <Typography className="address_tabs"> {c.primaryEmail}</Typography></p>
-                          <p className="address"><CallOutlinedIcon/> <Typography className="address_tabs">{c.mobilePhone}</Typography></p>
-                          <p className="address"><DomainOutlinedIcon/> <Typography className="address_tabs">{c.address1 }</Typography></p>
+                          { c.primaryEmail?<p className="address"><EmailOutlinedIcon/> <Typography className="address_tabs"> {c.primaryEmail}</Typography></p>:null}
+                          {c.mobilePhone ?<p className="address"><CallOutlinedIcon/> <Typography className="address_tabs">{c.mobilePhone}</Typography></p>:null}
+                          {c.address1 ? <p className="address"><DomainOutlinedIcon/> <Typography className="address_tabs">{c.address1 }</Typography></p>
+                              :null}
                         </div>
                       </AccordionDetails>
                     
