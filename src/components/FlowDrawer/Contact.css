@@ -27,3 +27,9 @@
 .MuiAccordionSummary-content{
     align-items: center !important;
 }
+.address{
+    display: flex;
+}
+.address_tabs{
+    margin-left: 10px !important;
+}

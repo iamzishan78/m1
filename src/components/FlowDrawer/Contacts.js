@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-let count = 0 ;
+let contactDetail = {}
 export default function Contacts(props) {
   let history = useHistory();
   const classes = useStyles();
@@ -97,15 +97,24 @@ export default function Contacts(props) {
   const [addContact, setAddContact] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [mutationLoading, setMutationLoading] = useState(false);
+  const [expandedPanel, setExpandedPanel] = useState(false);
   const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+  });
+  const [getPaginatedContactList, { data: allContactList, fetchMore: fetchMorePaginatedContactList }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
   const [addNewContact, { data: addContactData }] = useMutation(ADDCONTACT);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
-  console.log('addContact ', addContact)
+
+  const handleAccordionChange = (panel) => (event, isExpanded) => {
+    console.log(' ================== ',{ event, isExpanded } , panel);
+    setExpandedPanel(isExpanded ? panel : false);
+    console.log(' ================== data ',{ event, isExpanded } , panel , expandedPanel);
+  };
   useEffect(() => {
-    console.log('mongoEntitiesArray',mongoEntitiesArray)
     //will also run during initial mount
     setIsNextPageLoading(true);
     getPaginatedContacts({
@@ -137,15 +146,64 @@ export default function Contacts(props) {
       setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
       setIsNextPageLoading(false);
     }
-  }, []);
+  }, [allContacts]);
+
+  useEffect(() => {
+    if (allContactList?.paginatedContacts&&allContactList?.paginatedContacts?.edges[0]) {
+          if (filteredContacts&&filteredContacts.length > 0) {
+           let filterData= filteredContacts.map((dataMap, index) => {
+              console.log('data map id ' ,dataMap)
+              if (dataMap === allContactList?.paginatedContacts?.edges[0].node.name) {
+                contactDetail = {
+                  _id:dataMap._id,
+                  descriptorId:dataMap.descriptorId,
+                  name:allContactList?.paginatedContacts?.edges[0].node.name,
+                  mobilePhone:allContactList?.paginatedContacts?.edges[0].node.mobilePhone?allContactList?.paginatedContacts?.edges[0].node.mobilePhone:"",
+                  address1:allContactList?.paginatedContacts?.edges[0].node.address1?allContactList?.paginatedContacts?.edges[0].node.address1:"",
+                  primaryEmail:allContactList?.paginatedContacts?.edges[0].node.primaryEmail?allContactList?.paginatedContacts?.edges[0].node.primaryEmail:""
+                }
+              } else if (dataMap.name === allContactList?.paginatedContacts?.edges[0].node.name) {
+               contactDetail = {
+                 _id:dataMap._id,
+                 descriptorId:dataMap.descriptorId,
+                 name:allContactList?.paginatedContacts?.edges[0].node.name,
+                 mobilePhone:allContactList?.paginatedContacts?.edges[0].node.mobilePhone?allContactList?.paginatedContacts?.edges[0].node.mobilePhone:"",
+                 address1:allContactList?.paginatedContacts?.edges[0].node.address1?allContactList?.paginatedContacts?.edges[0].node.address1:"",
+                 primaryEmail:allContactList?.paginatedContacts?.edges[0].node.primaryEmail?allContactList?.paginatedContacts?.edges[0].node.primaryEmail:""
+               }
+             }else {
+                contactDetail = {
+                  _id:dataMap._id,
+                  descriptorId:dataMap.descriptorId,
+                  name:dataMap.name?dataMap.name:dataMap,
+                  mobilePhone:dataMap.mobilePhone?dataMap.mobilePhone:"",
+                  address1:dataMap.address1?dataMap.address1:"",
+                  primaryEmail:dataMap.primaryEmail?dataMap.primaryEmail:"",
+                }
+              }
+             return contactDetail;
+            })
+             const uniqueIds = [];
+            const unique = filterData.filter(element => {
+              const isDuplicate = uniqueIds.includes(element.name);
+              if (!isDuplicate) {
+                uniqueIds.push(element.id);
+                return true;
+              }
+            });
+           console.log(' data insert duplicate secure : ' , unique)
+            setFilteredContacts(unique)
+          }
+    }
+  }, [allContactList]);
 
   const loadNextPage = async (pageVariables) => {
     setIsNextPageLoading(true);
-    fetchMorePaginatedContacts(pageVariables);
+    fetchMorePaginatedContacts(528487);
   };
 
   useEffect(() => {
-    let filtered = contacts?.filter((c) => c.toLowerCase().includes(search.toLowerCase()));
+    let filtered = contacts?.filter((c) => c?c:c.name.toLowerCase().includes(search.toLowerCase()));
     setFilteredContacts(filtered);
   }, [search, contacts]);
 
@@ -159,9 +217,7 @@ export default function Contacts(props) {
         return "Empty";
       }
     });
-    console.log('name contacts : ' , contactnames);
     setContacts(contactnames);
-    console.log('stateApp',stateApp.activeDeal?.contacts)
   }, [stateApp.activeDeal?.contacts]);
 
   useEffect(() => {
@@ -186,19 +242,15 @@ export default function Contacts(props) {
     }
   };
 
-  const toggleAcordion = () => {
-    let contactArr = [] ;
-    console.log(' data insert : ' , mongoEntitiesArray , filteredContacts)
-      filteredContacts && filteredContacts.length>0 && filteredContacts.map((c) =>{
-        allContacts?.paginatedContacts?.edges?.map((el) =>{
-            if(el && el.node  && el.node.name === c) {
-              contactArr.push(el.node)
-             }
-      })
-      })
-      console.log(' data insert : ' , contactArr)
-  //  setFilteredContacts(contactData)
-
+  const toggleAcordion = (c) => {
+    if (c&&c !== ""&&c!== "Empty") {
+      setIsNextPageLoading(true);
+      getPaginatedContactList({
+        variables: {
+          search: c,
+        },
+      });
+    }
   }
 
   const gotoContact = (index) => {
@@ -314,14 +366,13 @@ export default function Contacts(props) {
         </Grid>
 
         <List aria-label="contacts list">
-          {console.log('data can i consider ' , filteredContacts)}
           {filteredContacts && filteredContacts.length > 0 ? (
             filteredContacts.map((c, i) => (        
               <>
                 <ListItem key={i}>     
                   
                     {/* {c} */}
-                    <Accordion>
+                    <Accordion expanded={expandedPanel === 'panel'+i.toString()} onChange={handleAccordionChange('panel'+i.toString())}>
                     <AccordionSummary
                     expandIcon={<ExpandMoreIcon  />}
                       aria-controls="panel1a-content"
@@ -370,14 +421,14 @@ export default function Contacts(props) {
                   )}
 
                     </AccordionSummary>
-                   
-                    <AccordionDetails >
-                              <div className="acc-data"> 
-                              <p><EmailOutlinedIcon/> {c.primaryEmail}</p>
-                              <p><CallOutlinedIcon/>{c.mobilePhone}</p>
-                              <p><DomainOutlinedIcon/>{c.address1 }</p>
-                              </div>
-                     </AccordionDetails>
+
+                      <AccordionDetails >
+                        <div className="acc-data">
+                          <p className="address"><EmailOutlinedIcon/> <Typography className="address_tabs"> {c.primaryEmail}</Typography></p>
+                          <p className="address"><CallOutlinedIcon/> <Typography className="address_tabs">{c.mobilePhone}</Typography></p>
+                          <p className="address"><DomainOutlinedIcon/> <Typography className="address_tabs">{c.address1 }</Typography></p>
+                        </div>
+                      </AccordionDetails>
                     
                     
                     
