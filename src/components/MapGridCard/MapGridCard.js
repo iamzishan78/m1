@@ -127,11 +127,13 @@ const useStyles = makeStyles((theme) => {
       "& div": {
         "&>.MuiPaper-root": {
           "&>:nth-child(3)": {
-            minHeight: ({ mapGridCardActiveTap, mapGridCardActivated }) =>
+            minHeight: ({ mapGridCardActiveTap, mapGridCardActivated, userGridViewFilters, dockMenu }) =>
               mapGridCardActiveTap === 0
                 ? mapGridCardActivated === "exp"
                   ? "calc(91vh - 233px)"
-                  : "calc(58.75vh - 235px)"
+                  : dockMenu === "bottom"
+                    ? userGridViewFilters?.length > 0 ? "calc(58.75vh - 320px)" : "calc(58.75vh - 280px)"
+                    : userGridViewFilters?.length > 0 ? "calc(58.75vh - 275px)" : "calc(58.75vh - 235px)"
                 : mapGridCardActivated === "exp"
                   ? "calc(91vh - 183px)"
                   : "calc(58.75vh - 183px)",
@@ -143,10 +145,10 @@ const useStyles = makeStyles((theme) => {
               }
             },
             "@media (max-height:1600px)": {
-              maxHeight: ({ dockMenu }) => {
+              maxHeight: ({ dockMenu, userGridViewFilters }) => {
                 if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 640px)"
-                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 204px)"
-                else if (dockMenu === "full") return "calc(100vh - 183px)"
+                else if (dockMenu === "left" || dockMenu === "right") return userGridViewFilters?.length > 0 ? "calc(100vh - 235px)" : "calc(100vh - 200px)"
+                else if (dockMenu === "full") return userGridViewFilters?.length ? "calc(100vh - 275px)" : "calc(100vh - 183px)"
               }
             },
           },
@@ -220,7 +222,6 @@ const TabLabels = ({ labels, value, setValue }) => {
 function MapGridCard(props) {
   // contexts
   const [stateApp] = useContext(AppContext);
-  const [stateMapControls] = useContext(MapControlsContext);
   // const dcreenSizes = {
   //   "1000": useMediaQuery("(min-height: 1000px)"),
   //   "1200": useMediaQuery("(min-height: 1200px)"),
@@ -237,6 +238,7 @@ function MapGridCard(props) {
   // selectorsW
   const { mapGridCardActivated, mapGridCardActiveTap, selectedOwner } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
   const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
+  const userGridViewFilters = useSelector(({ session }) => session.userGridViewSettings?.filters);
 
   const dispatch = useDispatch();
 
@@ -274,6 +276,7 @@ function MapGridCard(props) {
     mapGridCardActivated,
     mapGridCardActiveTap,
     viewportWells: stateApp.viewportWells,
+    userGridViewFilters
     // screenSizes
   });
 
@@ -636,30 +639,6 @@ function MapGridCard(props) {
       }}
     />
   );
-
-  const LayerGridCard = () => {
-    return (
-      <Card className={`${mapGridCardActivated === "exp" ? "noDrag" : ""} ${classes.dockMenu}`}>
-        <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: "relative" }}>
-          <div style={{ position: "relative" }} classes={classes.gridTables}>
-            <MapGridLayersTable
-              dense
-              parent="search"
-              customOptions={options}
-              header={
-                <SearchPanel
-                  isShapeGridOnly={stateApp.gridPolygonString}
-                  handleChange={handleSearchPanelChange}
-                  value={searchTapValue}
-                  ativateSearchPanel={ativateSearchPanel}
-                />
-              }
-            />
-          </div>
-        </div>
-      </Card>
-    )
-  }
 
   return (
     <div className={classes.card}>

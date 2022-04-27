@@ -24,7 +24,6 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
         setStateApp(stateApp => ({ ...stateApp, shapeEdit: false }));
       }
       if (!feature) setFeature(stateApp.currentFeature);
-      if (shapeEditMode === "resize") onPreciseEdit("resize");
     }
   }, [shapeEdit, shapeEditMode]);
 

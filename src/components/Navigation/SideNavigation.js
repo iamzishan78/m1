@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
+import { useLazyQuery } from "@apollo/client";
 
-import { IconButton, List, ListItem, ListItemIcon, ListItemText, Button, Tooltip } from "@material-ui/core";
+import { IconButton, List, ListItem, ListItemIcon, ListItemText, Button, Tooltip, Badge } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
@@ -20,24 +21,50 @@ import SearchIcon from "@material-ui/icons/Search";
 import BarChartIcon from "@material-ui/icons/BarChart";
 import LandScapeIcon from "components/Shared/svgIcons/LandscapeBlackIcon";
 
+import { AppContext } from "AppContext";
 import { M1neralLogoNavNoAuth, useStyles } from "./Common";
+import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
 
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
-  width: 200px;
+  width: 260px;
   padding-left: 10px;
   padding-right: 15px;
 `;
 
 const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handleListItemClick, handleDrawerClose, handleDrawerOpen }) => {
+  const [stateApp, setAppState] = useContext(AppContext);
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
+  const [notifications, setNotifications] = useState([]);
   const classes = useStyles({ mapGridCardActivated });
   const theme = useTheme();
 
+  const [getNotifications, { data: notificationsData }] =
+    useLazyQuery(GET_NOTIFICATIONS, {
+      fetchPolicy: 'network-only'
+     });
+
+  useEffect(() => {
+    getNotifications({
+      variables: {
+        userId: stateApp.user.mongoId,
+        state: "Active",
+      },
+    });
+  }, [getNotifications, stateApp.user]);
+
+  useEffect(() => {
+    if (notificationsData?.getNotifications) {
+      setNotifications(notificationsData.getNotifications);
+    }
+  }, [notificationsData]);
+
   return (
-    <div style={{ zIndex: 1223 }}> {/* zIndex greater than zIndex of ExpandableCard */}
+    <div style={{ zIndex: 1223 }}>
+      {" "}
+      {/* zIndex greater than zIndex of ExpandableCard */}
       <Drawer
         variant="permanent"
         anchor="left"
@@ -57,7 +84,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             <M1neralLogoWhiteLetters />
           </div>
 
-          <IconButton className={classes.iconArrow} color="secondary" onClick={handleDrawerClose}>
+          <IconButton
+            className={classes.iconArrow}
+            color="secondary"
+            onClick={handleDrawerClose}
+          >
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
@@ -80,12 +111,25 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="dashboard"
           >
             <div className={classes.tabContent}>
-              <Tooltip title="Dashboard" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+              <Tooltip
+                title="Dashboard"
+                placement="right"
+                classes={{ tooltip: classes.iconTooltip }}
+              >
                 <ListItemIcon className={classes.sideNavIcon}>
-                  <DashboardIcon />
+                  {/* TODO: Add actual notification count here */}
+                  <Badge
+                    badgeContent={notifications.length}
+                    color="secondary"
+                  >
+                    <DashboardIcon />
+                  </Badge>
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Dashboard" />
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Dashboard"
+              />
             </div>
           </ListItem>
 
@@ -100,12 +144,19 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="home"
           >
             <div className={classes.tabContent}>
-              <Tooltip title="Find" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+              <Tooltip
+                title="Find"
+                placement="right"
+                classes={{ tooltip: classes.iconTooltip }}
+              >
                 <ListItemIcon className={classes.sideNavIcon}>
                   <SearchIcon />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Find" />
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Find"
+              />
             </div>
           </ListItem>
 
@@ -131,12 +182,19 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="contacts"
           >
             <div className={classes.tabContent}>
-              <Tooltip title="Contacts" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+              <Tooltip
+                title="Contacts"
+                placement="right"
+                classes={{ tooltip: classes.iconTooltip }}
+              >
                 <ListItemIcon className={classes.sideNavIcon}>
                   <PersonIcon />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Contacts" />
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Contacts"
+              />
             </div>
           </ListItem>
 
@@ -151,14 +209,26 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="flow"
           >
             <div className={classes.tabContent}>
-              <Tooltip title="Flow" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+              <Tooltip
+                title="Flow"
+                placement="right"
+                classes={{ tooltip: classes.iconTooltip }}
+              >
                 <ListItemIcon className={classes.sideNavIcon}>
                   <FlowIcon />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Flow" />
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Flow"
+              />
               <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
+                <Button
+                  disabled
+                  className={`${classes.betaSideNav3} uppercase`}
+                  edge="start"
+                  aria-label="beta"
+                >
                   beta
                 </Button>
               </ListItemSecondaryAction>
@@ -179,14 +249,26 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               key="land"
             >
               <div className={classes.tabContent}>
-                <Tooltip title="Land" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <Tooltip
+                  title="Land"
+                  placement="right"
+                  classes={{ tooltip: classes.iconTooltip }}
+                >
                   <ListItemIcon className={classes.sideNavIcon}>
                     <LandScapeIcon />
                   </ListItemIcon>
                 </Tooltip>
-                <ListItemText className={`${classes.sideNavText} uppercase`} primary="Land" />
+                <ListItemText
+                  className={`${classes.sideNavText} uppercase`}
+                  primary="Land"
+                />
                 <ListItemSecondaryAction className={classes.sideNavAction}>
-                  <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
+                  <Button
+                    disabled
+                    className={`${classes.betaSideNav3} uppercase`}
+                    edge="start"
+                    aria-label="beta"
+                  >
                     beta
                   </Button>
                 </ListItemSecondaryAction>
@@ -208,14 +290,26 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               key="Revenue"
             >
               <div className={classes.tabContent}>
-                <Tooltip title="Revenue" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <Tooltip
+                  title="Revenue"
+                  placement="right"
+                  classes={{ tooltip: classes.iconTooltip }}
+                >
                   <ListItemIcon className={classes.sideNavIcon}>
                     <BarChartIcon />
                   </ListItemIcon>
                 </Tooltip>
-                <ListItemText className={`${classes.sideNavText} uppercase`} primary="Revenue" />
+                <ListItemText
+                  className={`${classes.sideNavText} uppercase`}
+                  primary="Revenue"
+                />
                 <ListItemSecondaryAction className={classes.sideNavAction}>
-                  <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
+                  <Button
+                    disabled
+                    className={`${classes.betaSideNav3} uppercase`}
+                    edge="start"
+                    aria-label="beta"
+                  >
                     beta
                   </Button>
                 </ListItemSecondaryAction>
@@ -240,14 +334,26 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="documents"
           >
             <div className={classes.tabContent}>
-              <Tooltip title="Documents" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+              <Tooltip
+                title="Documents"
+                placement="right"
+                classes={{ tooltip: classes.iconTooltip }}
+              >
                 <ListItemIcon className={classes.sideNavIcon}>
                   <DescriptionIcon />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Documents" />
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Documents"
+              />
               <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
+                <Button
+                  disabled
+                  className={`${classes.betaSideNav3} uppercase`}
+                  edge="start"
+                  aria-label="beta"
+                >
                   beta
                 </Button>
               </ListItemSecondaryAction>
@@ -264,14 +370,26 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="calendar"
           >
             <div className={classes.tabContent}>
-              <Tooltip title="Calendar" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+              <Tooltip
+                title="Calendar"
+                placement="right"
+                classes={{ tooltip: classes.iconTooltip }}
+              >
                 <ListItemIcon className={classes.sideNavIcon}>
                   <ActivityIcon />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Calendar" />
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Calendar"
+              />
               <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
+                <Button
+                  disabled
+                  className={`${classes.betaSideNav3} uppercase`}
+                  edge="start"
+                  aria-label="beta"
+                >
                   beta
                 </Button>
               </ListItemSecondaryAction>

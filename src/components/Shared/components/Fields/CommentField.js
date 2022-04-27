@@ -306,6 +306,7 @@ export default function DealComment({
         <>
           <Button
             className={classes.commentBtn}
+            style={{ marginBottom: "10px" }}
             variant="contained"
             color="primary"
             onClick={() => {
@@ -317,6 +318,7 @@ export default function DealComment({
 
           <Button
             className={classes.commentBtn}
+            style={{ marginRight: "10px", marginBottom: "10px" }}
             variant="contained"
             onClick={() => {
               setComment("");

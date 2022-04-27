@@ -626,7 +626,7 @@ function AddActivityDialog(props) {
         onChange={(e, deal) => {
           setDealId(deal?._id);
         }}
-        value={openDeals.find((deal) => deal._id === dealId) || null}
+        value={openDeals?.find((deal) => deal._id === dealId) || null}
         getOptionSelected={(option) => option.id === dealId}
         getOptionLabel={(option) => option.name}
         renderOption={(option) => {

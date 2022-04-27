@@ -4,7 +4,7 @@ import { useLazyQuery } from "@apollo/client";
 import { Button, Tooltip, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useHistory } from "react-router-dom";
-import { isEmpty, uniqBy } from "lodash";
+import { isEmpty } from "lodash";
 
 import { AppContext } from "AppContext";
 
@@ -21,7 +21,7 @@ import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { get } from "lodash";
 
 import { usetableStyles } from "./Styles";
-import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
+import { updateUserGridViewSettingAction, updateUserGridViewFiltersAction } from "store/actions/sessionActions";
 import { handleSelectedGridChange, setColumnDisplayAndFilter } from "./helpers";
 
 
@@ -189,7 +189,11 @@ export const TableESHOC = (Component) => {
         }, [tableData, dependencyUpdate]);
 
         const setColumnsData = (tableCols) => {
-            let { TableHeader, extendSearchQuery, esIndex } = tableMeta
+            let { TableHeader, extendSearchQuery, esIndex, filters } = tableMeta
+            let appliedFilters = initialFilters;
+            if(filters && filters.length > 0) {
+                appliedFilters = [...initialFilters, ...filters]
+            }
             tableCols.forEach((column, index) => {
                 if (column?.options?.filter) {
                     const custom = column.custom;
@@ -214,7 +218,7 @@ export const TableESHOC = (Component) => {
                                         onChange={onChange}
                                         query={GET_ES_SIMPLE_FILTER}
                                         searchFields={tableMeta.searchFields}
-                                        filters={initialFilters}
+                                        filters={appliedFilters}
                                         extendSearchQuery={extendSearchQuery}
                                         custom={custom}
                                     />
@@ -484,7 +488,12 @@ export const TableESHOC = (Component) => {
                         },
                         user: props.userId
                     }
-                }))
+                }));
+            let filters = activeFiltersRef.current;
+            if (props.targetLabel === "well") {
+                filters = filters.filter(f => f.type !== "geo_intersects");
+            }
+            dispatch(updateUserGridViewFiltersAction(filters));
         }
 
         const onTableChange = (action, tableState, rows, meta) => {
