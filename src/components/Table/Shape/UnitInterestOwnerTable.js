@@ -144,7 +144,11 @@ function UnitInterestOwnerTable(props) {
             setStateNav((stateNav) => ({
               ...stateNav,
               bulkUploadFromMap: true,
-              bulkUploadParcel: stateApp.selectedParcel,
+              bulkUploadShape: {
+                id: props.customLayer._id,
+                shapeLabel: props.customLayer.name,
+                shapeType: "Unit"
+              }
             }));
             history.push("/bulkupload");
           },
