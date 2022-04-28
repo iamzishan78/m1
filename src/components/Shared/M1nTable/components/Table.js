@@ -70,8 +70,7 @@ import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
 import moment from "moment";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
-import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
-import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
+import ExportContacts from "components/Shared/ExportContacts";
 import Grid from "@material-ui/core/Grid";
 import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
 import StackedBarChart from "components/Shared/Charts/StackedBarChart";
@@ -884,6 +883,10 @@ function SubTable(props) {
     }
   }, [contactData, contact]);
 
+  useEffect(() => {
+    setM1nSelectedRowsIndexes([]);
+    setM1nSelectedRowsIds([]);
+  },[props.resetSelectedRow])
   //// opening the well detail card after fetch the extra well data needed
   useEffect(() => {
     if (
@@ -2897,23 +2900,22 @@ function SubTable(props) {
         }
       }
     } else {
-      rows = props.rows;
+      rows = JSON.parse(JSON.stringify(props.rows));
     }
-    rows = JSON.parse(JSON.stringify(rows));
+    const filteredRows = JSON.parse(JSON.stringify(rows));
     for (let j = 0; j < tableState.filterList.length; j++) {
       if (tableState.filterList[j].length > 0) {
-        for (let i = 0; i < rows.length; i++) {
-          const isFiltered = rows[i].isFiltered !== false;
-          const rowdata = rows[i][columns[j].name];
+        for (let i = 0; i < filteredRows.length; i++) {
+          const isFiltered = filteredRows[i].isFiltered !== false;
+          const rowdata = filteredRows[i][columns[j].name];
           const filter = tableState.filterList[j][0];
           if (isFiltered && rowdata !== filter) {
-            rows[i].isFiltered = false;
-            continue;
+            filteredRows[i].isFiltered = false;          
           }
         }
       }
     }
-    setSearchedRows(rows.filter((row) => row.isFiltered !== false));
+    setSearchedRows(filteredRows.filter((row) => row.isFiltered !== false));
   };
   const options = {
     filterType: "dropdown",
@@ -3326,7 +3328,8 @@ function SubTable(props) {
                               );
                             }
                             props.setSelectedRows(owners);
-                            props.setOpenCustomDialog("exportContacts");
+                            // props.setOpenCustomDialog("exportContacts");
+                            handleExpandClick(null, null, getSelectedRows(), "exportContacts");
                           }}
                         >
                           Export
@@ -4035,6 +4038,7 @@ function SubTable(props) {
           m1nSelectedRowsIds,
           m1nSelectedRowsIndexes,
           setSelectedRow,
+          searchData
         });
       }
     },
@@ -4223,7 +4227,7 @@ function SubTable(props) {
           className={tableStyle}
           title={getHeaders()}
           data={
-            props.parent === "ownersPerParcel"
+            props.parent === "ownersPerParcel" || props.parent === 'boundary_grid_owners'
               ? searchedRows
               : props.addAble?.type === "RevenueStatement"
                 ? getRevenueStatementRows()
@@ -4311,7 +4315,7 @@ function SubTable(props) {
           </RightDialog>
         )}
 
-        <RightDialog open={activityModalOpen} handleClickDialogClose={() => setActivityModalOpen(false)} width="450px">
+        <RightDialog open={activityModalOpen} handleClickDialogClose={() => setActivityModalOpen(false)} width={"700px"}>
           <AddActivityDialog
             onClose={() => setActivityModalOpen(false)}
             id={contact?._id}
@@ -4401,6 +4405,20 @@ function SubTable(props) {
             onClose={handleCloseDialog}
             rows={expandedObject}
             setRows={setExpandedObject}
+          />
+        )}
+        {openDialog === "exportContacts" && (
+          <ExportContacts
+            {...props.exportContactsProps}
+            onClose={handleCloseDialog}
+          // onClose={() => {}}
+          // search={props.activeSearchRef.current}
+          // filters={[...props.initialFilters, ...uniqBy(props.customAppliedFilters, "field") || []]}
+          // total={props.options.count}
+          // isSelectAll={isSelectAll}
+          // rows={selectedRows}
+          // esIndex={esIndex}
+          // open={true}
           />
         )}
         {openDialog &&

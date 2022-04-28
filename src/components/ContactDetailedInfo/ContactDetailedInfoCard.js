@@ -216,7 +216,7 @@ export default function ContactDetailedInfoCard() {
       style={{
         padding: "20px",
         position: "absolute",
-        height: "100%",
+        height: "95%",
         width: "100%",
         zIndex: "50",
       }}

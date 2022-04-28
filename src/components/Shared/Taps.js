@@ -98,11 +98,7 @@ export default function Taps(props) {
 
   return (
     <div
-      style={{
-        backgroundColor: props.backgroundColor ? props.backgroundColor : "#efefef",
-        height: "calc(100vh - 230px)",
-        overflow: "overlay",
-      }}
+      style={{ backgroundColor: props.backgroundColor ? props.backgroundColor : "#efefef" }}
       className={classes.root}
       id="M1nTaps"
     >
