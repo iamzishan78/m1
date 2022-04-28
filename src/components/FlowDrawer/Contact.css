@@ -1,6 +1,6 @@
-.MuiListItemSecondaryAction-root{
+.MuiListItemSecondaryAction-root {
     top: 50%;
-    right: -13px!important;
+    right: -13px !important;
     position: absolute;
     transform: translateY(-50%);
 }

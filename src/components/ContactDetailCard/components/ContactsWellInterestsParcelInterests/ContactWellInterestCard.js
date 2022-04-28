@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
       "&>.MuiPaper-root": {
         display: "flex",
         "flex-direction": "column",
-        height: "calc(100vh - 176px)",
+        height: "calc(100vh - 220px)",
         "align-items": "stretch",
         "&>.MuiPaper-root": {
           display: "contents",
@@ -71,7 +71,7 @@ export default function ContactDocumentsCard(props) {
       style={{
         position: "absolute",
         top: "64px",
-        height: "100%",
+        height: "95%",
         width: "100%",
         zIndex: "50",
       }}

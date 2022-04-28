@@ -22,8 +22,8 @@ const useStyles = makeStyles((theme) => ({
     "flex-direction": "row",
     "align-items": "stretch",
     "&>div": {
-      flex: 1
-    }
+      flex: 1,
+    },
   },
 }));
 
@@ -103,10 +103,9 @@ const AdjustmentSection = ({ portfolioSummary }) => {
   //   return vf_number(_total);
   // }, [items, monthsInterval]);
 
-
-  const items = portfolioSummary.adjustmentsDetails || []
-  const total = portfolioSummary.adjustmentTotal || 0
-  const monthsInterval = portfolioSummary.months || []
+  const items = portfolioSummary.adjustmentsDetails || [];
+  const total = portfolioSummary.adjustmentTotal || 0;
+  const monthsInterval = portfolioSummary.months || [];
 
   return (
     <>
@@ -114,8 +113,8 @@ const AdjustmentSection = ({ portfolioSummary }) => {
         Adjustments
       </Typography>
       <Grid container display="flex" direction="row" justify="flex-start" spacing={4} className={classes.root}>
-        <Grid item md={5} style={{ paddingRight: '0px' }}>
-          <DonutChart items={items} total={total} id="adjustment-chart" />
+        <Grid item md={5} style={{ paddingRight: "0px" }}>
+          <DonutChart items={items.map((item) => ({ ...item, total: item?.total?.toFixed(0) }))} total={total} id="adjustment-chart" />
         </Grid>
         <Grid item md={7}>
           <StackedChart items={items} total={total} monthsInterval={monthsInterval} id="adjustment-chart-stacked" />
