@@ -70,8 +70,7 @@ import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
 import moment from "moment";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
-import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
-import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
+import ExportContacts from "components/Shared/ExportContacts";
 import Grid from "@material-ui/core/Grid";
 import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
 import StackedBarChart from "components/Shared/Charts/StackedBarChart";
@@ -3330,7 +3329,8 @@ function SubTable(props) {
                               );
                             }
                             props.setSelectedRows(owners);
-                            props.setOpenCustomDialog("exportContacts");
+                            // props.setOpenCustomDialog("exportContacts");
+                            handleExpandClick(null, null, getSelectedRows(), "exportContacts");
                           }}
                         >
                           Export
@@ -4315,7 +4315,7 @@ function SubTable(props) {
           </RightDialog>
         )}
 
-        <RightDialog open={activityModalOpen} handleClickDialogClose={() => setActivityModalOpen(false)} width="450px">
+        <RightDialog open={activityModalOpen} handleClickDialogClose={() => setActivityModalOpen(false)} width={"700px"}>
           <AddActivityDialog
             onClose={() => setActivityModalOpen(false)}
             id={contact?._id}
@@ -4405,6 +4405,20 @@ function SubTable(props) {
             onClose={handleCloseDialog}
             rows={expandedObject}
             setRows={setExpandedObject}
+          />
+        )}
+        {openDialog === "exportContacts" && (
+          <ExportContacts
+            {...props.exportContactsProps}
+            onClose={handleCloseDialog}
+          // onClose={() => {}}
+          // search={props.activeSearchRef.current}
+          // filters={[...props.initialFilters, ...uniqBy(props.customAppliedFilters, "field") || []]}
+          // total={props.options.count}
+          // isSelectAll={isSelectAll}
+          // rows={selectedRows}
+          // esIndex={esIndex}
+          // open={true}
           />
         )}
         {openDialog &&

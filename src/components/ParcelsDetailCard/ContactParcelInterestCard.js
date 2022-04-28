@@ -20,7 +20,7 @@ export default function ContactDocumentsCard(props) {
 
   const contactId =
     history.location.pathname.split("/")[
-      history.location.pathname.split("/").length - 2
+    history.location.pathname.split("/").length - 2
     ];
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
@@ -51,11 +51,11 @@ export default function ContactDocumentsCard(props) {
       style={{
         position: "absolute",
         top: "64px",
-        height: "100%",
+        height: "95%",
         width: "100%",
         zIndex: "50",
       }}
-      // style={{overflowY: 'scroll'}}
+    // style={{overflowY: 'scroll'}}
     >
       <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
         <Breadcrumbs
