@@ -10,7 +10,6 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import DialogContent from "@material-ui/core/DialogContent";
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
@@ -25,14 +24,14 @@ import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 import ErrorIcon from "@material-ui/icons/Error";
-import Close from "@material-ui/icons/Close";
 import { Tooltip } from "@material-ui/core";
 
 const styles = (theme) => ({
   dialogTitle: {
     padding: "25px",
     display: "flex",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    alignItems: "center"
   }
 });
 
@@ -71,7 +70,7 @@ const DialogTitle = withStyles(styles)((props) => {
           onClick={onClose}
           size="medium"
         >
-          <KeyboardTabIcon fontSize="small" />
+          <KeyboardTabIcon fontSize="large" />
         </IconButton>
       ) : null}
     </MuiDialogTitle>

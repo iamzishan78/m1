@@ -6,7 +6,6 @@ import DonutChart from "./DonutChart";
 import StackedChart from "./StackedChart";
 import RevenueTable from "./RevenueTable";
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "25px 0px 25px 0px",
@@ -15,8 +14,8 @@ const useStyles = makeStyles((theme) => ({
     "flex-direction": "row",
     "align-items": "stretch",
     "&>div": {
-      flex: 1
-    }
+      flex: 1,
+    },
   },
   sectionTitle: {
     textTransform: "uppercase",
@@ -27,12 +26,12 @@ const useStyles = makeStyles((theme) => ({
 const RevenueSection = ({ portfolioSummary }) => {
   const classes = useStyles();
 
-  const items = portfolioSummary.summaryDetails || []
-  const total = portfolioSummary.revenueTotal || 0
-  const monthsInterval = portfolioSummary.months || []
+  const items = portfolioSummary.summaryDetails || [];
+  const total = portfolioSummary.revenueTotal || 0;
+  const monthsInterval = portfolioSummary.months || [];
 
   const chartItems = React.useMemo(() => {
-    return items.filter((item) => ["Net Revenue", "Adjustments"].includes(item.name)) || []
+    return items.filter((item) => ["Net Revenue", "Adjustments"].includes(item.name)) || [];
   }, [portfolioSummary]);
 
   return (
@@ -41,8 +40,8 @@ const RevenueSection = ({ portfolioSummary }) => {
         Revenue
       </Typography>
       <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={4} className={classes.root}>
-        <Grid item md={5} style={{ paddingRight: '0px' }}>
-          <DonutChart items={chartItems} total={total} />
+        <Grid item md={5} style={{ paddingRight: "0px" }}>
+          <DonutChart items={chartItems.map((ci) => ({ ...ci, total: ci?.total?.toFixed(0) }))} total={total} />
         </Grid>
         <Grid item md={7}>
           <StackedChart items={chartItems} total={total} monthsInterval={monthsInterval} />
