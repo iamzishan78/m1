@@ -883,6 +883,10 @@ function SubTable(props) {
     }
   }, [contactData, contact]);
 
+  useEffect(() => {
+    setM1nSelectedRowsIndexes([]);
+    setM1nSelectedRowsIds([]);
+  },[props.resetSelectedRow])
   //// opening the well detail card after fetch the extra well data needed
   useEffect(() => {
     if (
