@@ -589,8 +589,9 @@ export default function ParcelsDetailCard(props) {
                   {/* <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense header={<Header />} /> */}
                   <TractInterestOwnerTable
                     esIndex='shapeowners_flat'
-                    parent="ownersPerParcel"
-                    customLayer={copy(parcelObj)}
+                    parent="ownersPerParcel" 
+                    targetLabel="Parcel Ownership"
+                    customLayer={copy(parcelObj)} 
                     dense
                     header={<Header />}
                   />
