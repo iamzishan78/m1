@@ -65,6 +65,15 @@ const ownersColumnHeaders = [
       filter: true,
     },
   },
+  {
+    name: "wellCount",
+    label: "Interest Count",
+    esKey: "wellCount",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
   // {
   //   name: "tags",
   //   label: "Tags ",
