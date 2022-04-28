@@ -198,7 +198,6 @@ export default function CSVFileReader(props) {
             ...(stateNav.bulkUploadParcel?.shapeLabel) && { 'Parcel Name': stateNav.bulkUploadParcel?.shapeLabel }
           })
         })
-        debugger;
         stateNav.bulkUploadFromMap && stateNav.bulkUploadShape && data.forEach((data) => {
           Object.assign(data.data, {
             ...(stateNav.bulkUploadShape?.id) && { 'Shape Id': stateNav.bulkUploadShape?.id },

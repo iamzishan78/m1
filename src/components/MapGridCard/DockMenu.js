@@ -60,7 +60,7 @@ export default function DockMenu({ setSelectedDockMenu }) {
                 open={open}
                 onClose={handleClose}
                 TransitionComponent={Fade}
-                style={{ marginTop: "35px" }}
+                style={{ marginTop: "50px" }}
                 getContentAnchorEl={null}
             >
                 <Box>

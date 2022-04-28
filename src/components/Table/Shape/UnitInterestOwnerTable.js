@@ -26,7 +26,7 @@ import { deepEqualObjects, copy } from "components/Shared/functions";
 import { addTrailingZeros } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 
-const genericDataActions = ["tags", "comments", "tracks", "ifAreContacts"];
+const genericDataActions = ["comments", "tracks", "ifAreContacts"];
 const interestKeys = [
   "working_interest",
   "royalty_interest",
@@ -78,6 +78,15 @@ function UnitInterestOwnerTable(props) {
           }
         }
       });
+      if(hit?.tags?.length > 0){
+        const tags = hit.tags.map((tag) => tag.tag)
+        if(tags[0]){
+          hit.tags = [[tags], hit.tags.length]
+        }
+
+      }else{
+        hit.tags = [[], 0];
+      }
       hit = props.setGenricData(
         hit,
         hit?.contact?._id,
@@ -154,7 +163,11 @@ function UnitInterestOwnerTable(props) {
             setStateNav((stateNav) => ({
               ...stateNav,
               bulkUploadFromMap: true,
-              bulkUploadParcel: stateApp.selectedParcel,
+              bulkUploadShape: {
+                id: props.customLayer._id,
+                shapeLabel: props.customLayer.name,
+                shapeType: "Unit"
+              }
             }));
             history.push("/bulkupload");
           },
