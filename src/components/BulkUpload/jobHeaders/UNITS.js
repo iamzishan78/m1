@@ -119,6 +119,4 @@ addAfterLabel(unit, 'Unit Acres', {
     actual_key: "shape.uUnitPricing",
 })
 
-console.log(unit)
-
 export default unit;

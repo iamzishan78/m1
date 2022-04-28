@@ -12,6 +12,7 @@ import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 // Components
 import PieChartWithLegend from "./Charts/PieChartWithLegend";
 import BarChartWithController from "./Charts/BarChartWithController";
+import ProductChart from "./Charts/ProductChart";
 
 export const TabButtons = ({ tab, actiiveId, setActive }) => {
   return (
@@ -193,8 +194,8 @@ const SummarySection = ({ checkId }) => {
 
   const summaryTabs = [
     { id: 1, label: "Revenue" },
-    { id: 2, label: "Products" },
-    { id: 3, label: "Adjustments" },
+    { id: 2, label: "Adjustments" },
+    { id: 3, label: "Products" },
   ];
 
   useEffect(() => {
@@ -291,6 +292,7 @@ const SummarySection = ({ checkId }) => {
     if (prodSummary) {
       const products = ["OIL", "GAS", "NGL", "OTHER"];
       let buckets = [];
+      console.log(prodSummary)
       products.forEach((p) => {
         const index = prodSummary?.product?.buckets.findIndex((b) => b.key === p);
         if (index !== -1) buckets.push(prodSummary?.product?.buckets[index]);
@@ -321,12 +323,12 @@ const SummarySection = ({ checkId }) => {
 
       const deducts =
         deductType?.buckets?.length > 0 ?
-        deductType?.buckets?.map((item) => ({ name: item.key, value: (item.ownerDeducts?.value).toFixed(2) })) :
-        [];
+          deductType?.buckets?.map((item) => ({ name: item.key, value: (item.ownerDeducts?.value).toFixed(2) })) :
+          [];
       const taxes =
         taxType?.buckets?.length > 0 ?
-        taxType?.buckets?.map((item) => ({ name: item.key, value: (item.ownerTax?.value).toFixed(2) })) :
-        [];
+          taxType?.buckets?.map((item) => ({ name: item.key, value: (item.ownerTax?.value).toFixed(2) })) :
+          [];
 
       const adjustments = [...deducts, ...taxes];
       let totalAdjustment = 0;
@@ -354,33 +356,40 @@ const SummarySection = ({ checkId }) => {
       {activeTabId === 1 && (
         <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3}>
           <Grid item xs={6}>
-            <div className={classes.graphCard}>
+            <div className={classes.graphCard} style={{ maxWidth: '100%' }}>
               <PieChartWithLegend type="revenue" chartData={revenueSummaryDetails} />
             </div>
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={6}>
             <div className={classes.analyticTable}>
               {revenueSummaryDetails?.length > 0 &&
                 revenueSummaryDetails.map((item, index) => (
                   <>
-                    {item.name === "Total Income" && <Divider />}
-                    <div
-                      key={index + 1}
-                      className={`${classes.dataCardWidth} ${classes.dataCardMargin} flex justifyBetween alignCenter w-100`}
-                    >
-                      <div className="flex alignCenter justifyStart">
-                        <Typography varient="h6" className={classes.textTransform}>
-                          {item.name || ""}
-                        </Typography>
-                      </div>
+                    {
+                      ['Net Revenue', 'Adjustments', 'Gross Revenue'].includes(item.name) ?
+                        <>
+                          {item.name === "Net Revenue" && <Divider />}
+                          <div
+                            key={index + 1}
+                            className={`${classes.dataCardWidth} ${classes.dataCardMargin} flex justifyBetween alignCenter w-100`}
+                          >
+                            <div className="flex alignCenter justifyStart">
+                              <Typography varient="h6" className={classes.textTransform}>
+                                {item.name || ""}
+                              </Typography>
+                            </div>
 
-                      <div className="flex" style={{ minWidth: "60px", alignItems: "center", justifyContent: "center" }}>
-                        <Typography varient="h6" className={classes.textTransform}>
-                          {item.value}
-                        </Typography>
-                      </div>
-                    </div>
+                            <div className="flex" style={{ minWidth: "60px", alignItems: "center", justifyContent: "center" }}>
+                              <Typography varient="h6" className={classes.textTransform}>
+                                {item.name === 'Adjustments' ? `( ${item.value} )` : item.value}
+                              </Typography>
+                            </div>
+                          </div>
+                        </>
+                        : <></>
+                    }
                   </>
+
                 ))}
             </div>
           </Grid>
@@ -388,15 +397,16 @@ const SummarySection = ({ checkId }) => {
       )}
 
       {/* Property */}
-      {activeTabId === 2 && (
+      {activeTabId === 3 && (
         <div className="flex alignCenter w-100" style={{ justifyContent: "flex-start" }}>
-          <Grid item xs={5}>
-            <div className={classes.graphCard}>
-              <ProductDropdown />
-              <BarChartWithController productSummaryDetails={productSummaryDetails} />
-            </div>
+          <Grid item xs={6}>
+            {/* <div className={classes.graphCard} style={{ maxWidth: '100%' }}> */}
+            {/* <ProductDropdown /> */}
+            {/* <BarChartWithController productSummaryDetails={productSummaryDetails} /> */}
+            <ProductChart productSummaryDetails={productSummaryDetails} />
+            {/* </div> */}
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={6}>
             <div>
               <Grid container display="flex" direction="row" alignItems="center">
                 <Grid item xs={12}>
@@ -461,10 +471,10 @@ const SummarySection = ({ checkId }) => {
       )}
 
       {/* Adjustments */}
-      {activeTabId === 3 && (
+      {activeTabId === 2 && (
         <Grid container display="flex" direction="row" alignItems="center" justify="flex-start" spacing={3}>
           <Grid item xs={6}>
-            <div className={classes.graphCard}>
+            <div className={classes.graphCard} style={{ maxWidth: '100%' }}>
               <PieChartWithLegend type="adjustments" chartData={adjustmentSummaryDetails} />
             </div>
           </Grid>
@@ -486,7 +496,7 @@ const SummarySection = ({ checkId }) => {
 
                       <div className="flex" style={{ minWidth: "60px", alignItems: "center", justifyContent: "center" }}>
                         <Typography varient="h6" className={classes.textTransform}>
-                          {item.name === "Total Adjustments" ? item.value : wrapWithBrackets(item.value)}
+                          {item.name === "Total Adjustments" ? Number(item.value).toFixed(2) : wrapWithBrackets(Number(item.value).toFixed(2))}
                         </Typography>
                       </div>
                     </div>
