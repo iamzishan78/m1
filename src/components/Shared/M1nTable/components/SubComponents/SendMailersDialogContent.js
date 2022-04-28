@@ -3,24 +3,24 @@ import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/client';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
-import { Modals } from '../../../../../styles/Modal';
+import { Modals } from 'styles/Modal';
 import DialogActions from '@material-ui/core/DialogActions';
 import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import Typography from '@material-ui/core/Typography';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
-import Close from '@material-ui/icons/Close';
-import { AppContext } from '../../../../../AppContext';
-import { showSuccessMessage, showErrorMessage } from '../../../../../actions';
-import { UPLOADRECIPIENTS } from '../../../../../graphQL/useMutationUploadStorefrontRecipientsList';
+
+import { AppContext } from 'AppContext';
+import { showSuccessMessage, showErrorMessage } from 'actions';
+import { UPLOADRECIPIENTS } from 'graphQL/useMutationUploadStorefrontRecipientsList';
 
 // import value formatters
-import joinAddress from "../../../../Shared/valueformatters/join-address.js";
+import joinAddress from "components/Shared/valueformatters/join-address.js";
 
 
 const styles = (theme) => ({
@@ -35,33 +35,34 @@ const styles = (theme) => ({
 		top: theme.spacing(1),
 		color: theme.palette.grey[500],
 	},
+	dialogTitle: {
+		padding: "25px",
+		display: "flex",
+		justifyContent: "space-between",
+		alignItems: "center"
+	}
 });
 
 const DialogTitle = withStyles(styles)((props) => {
 	const { children, classes, onClose, ...other } = props;
 	return (
-		<MuiDialogTitle disableTypography className={classes.root} {...other}>
+		<MuiDialogTitle disableTypography className={classes.dialogTitle} {...other}>
 			<Typography variant="h5" style={{ fontWeight: 'bold' }}>
 				{children}
 			</Typography>
 			{onClose ? (
 				<IconButton
 					aria-label="close"
-					className={classes.closeButton}
 					onClick={onClose}
-					size="small"
 				>
-					<CloseIcon fontSize="small" />
+					<KeyboardTabIcon fontSize="large" />
 				</IconButton>
 			) : null}
 		</MuiDialogTitle>
 	);
 });
 
-const useStyles = makeStyles({});
-
 export default function SendMailersDialogContent(props) {
-	const classes = useStyles();
 	const dispatch = useDispatch();
 	const modalClass = Modals();
 
@@ -101,13 +102,8 @@ export default function SendMailersDialogContent(props) {
 
 	return (
 		<React.Fragment>
-			<DialogTitle styles={ {backgroundColor: "#fff"}}  id="customized-dialog-title">
+			<DialogTitle styles={{ backgroundColor: "#fff" }} id="customized-dialog-title" onClose={props.onClose}>
 				New Mailer Campaign
-				<Close
-					fontSize="large"
-					className = {modalClass.closeIcon}
-					onClick={props.onClose}
-				/>
 			</DialogTitle>
 			<DialogContent>
 				<Grid container spacing={1}>
@@ -120,15 +116,15 @@ export default function SendMailersDialogContent(props) {
 						<TextField
 							margin="none"
 							placeholder="Enter a campaign name"
-							style={{ width: '100%', marginBottom: '10px',marginLeft: 15, }}
+							style={{ width: '96%', marginBottom: '10px', marginLeft: 15, }}
 							value={campaign}
 							onChange={(e) => {
 								setCampaign(e.target.value);
 							}}
 						/>
 					</Grid>
-					<Grid item xs={12} style={{  marginTop: '40px' }}>
-						<h3 style={{ margin: '0', marginLeft: 15,}}>Mailing List</h3>
+					<Grid item xs={12} style={{ marginTop: '40px' }}>
+						<h3 style={{ margin: '0', marginLeft: 15, }}>Mailing List</h3>
 					</Grid>
 					<Grid item xs={12} style={{ margin: 0, paddingTop: 0, marginLeft: 15, }}>
 						<FormLabel>

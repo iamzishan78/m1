@@ -1,21 +1,40 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useMutation } from "@apollo/client";
-import { Button, Grid, Container, Box, CircularProgress } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, Grid, Box, CircularProgress } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import CloseSharp from "@material-ui/icons/CloseSharp";
 import DoneSharpIcon from "@material-ui/icons/DoneSharp";
 import RemoveSharpIcon from "@material-ui/icons/RemoveSharp";
 import Typography from "@material-ui/core/Typography";
-import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
-import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
-import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
-import { MERGE_CONTACTS } from "../../../../../graphQL/useMutationMergeContact";
-import { AppContext } from "../../../../../AppContext";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
+import { Modals } from "styles/Modal";
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
+import RightDialog from "components/ContactDetailCard/components/RightDialog";
+import { showSuccessMessage, showErrorMessage } from "actions";
+import { MERGE_CONTACTS } from "graphQL/useMutationMergeContact";
+import { AppContext } from "AppContext";
+const styles = () => ({
+  topHeading: { fontWeight: "bold" },
+  loading: { position: "absolute", left: "250px", bottom: "148px", zIndex: "150" },
+  dialogTitle: {
+    padding: "25px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center"
+  }
+});
+
+const useStyles = makeStyles(styles);
 
 export default function MergeContactDrawer({ onClose, rows, setRows }) {
   const [stateApp] = React.useContext(AppContext);
   const dispatch = useDispatch();
+  const classes = useStyles();
+  const modalClass = Modals();
   const [primaryContact, setPrimaryContact] = useState(rows[0]);
   const [loading, setLoading] = useState(false);
 
@@ -51,38 +70,32 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
   };
 
   return (
-    <RightDialog open={true} width="">
-      <Container maxWidth="sm">
-        <div>
-          <Box p={3} pt={1} style={{ padding: "8px 0px 24px 12px" }}>
-            <Grid container direction="row" spacing={4} justify="space-between" alignItems="center">
-              <Grid item>
-                <Typography style={{ fontWeight: "bold" }} variant="h5" component="h2">
-                  Merge Contacts
-                </Typography>
-              </Grid>
-              <Grid item>
-                <IconButton aria-label="delete" color="primary" onClick={onClose}>
-                  <KeyboardTabBlackIcon />
-                </IconButton>
-              </Grid>
-            </Grid>
+    <RightDialog open={true} width={"700px"}>
+      <MuiDialogTitle disableTypography className={classes.dialogTitle}>
+        <Typography style={{ fontWeight: "bold" }} variant="h5" component="h2">
+          Merge Contacts
+        </Typography>
+        <IconButton aria-label="delete" color="primary" onClick={onClose}>
+          <KeyboardTabIcon fontSize="large" />
+        </IconButton>
+      </MuiDialogTitle>
+      <DialogContent>
+        <Box mt={2}>
+          <Typography>
+            Please select a primary contact below - data form the secondary contacts will be merged then secondary contact will be
+            deleted.
+          </Typography>
+        </Box>
 
-            <Box mt={2}>
-              <Typography>
-                Please select a primary contact below - data form the secondary contacts will be merged then secondary contact will be
-                deleted.
-              </Typography>
-            </Box>
+        <Box pt={3}>
+          <Typography style={{ fontWeight: "bold" }}>Contacts</Typography>
 
-            <Box pt={3}>
-              <Typography style={{ fontWeight: "bold" }}>Contacts</Typography>
+          <Typography>{rows.length} selected</Typography>
+        </Box>
 
-              <Typography>{rows.length} selected</Typography>
-            </Box>
-          </Box>
 
-          {rows.map((row) => (
+        {
+          rows.map((row) => (
             <Grid container direction="row" spacing={2} alignItems="center" key={row._id}>
               <Grid item md={1}>
                 {primaryContact._id === row._id ? (
@@ -131,40 +144,36 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
                 </Grid>
               )}
             </Grid>
-          ))}
+          ))
+        }
 
-          <Box p={3}>
-            <Typography>Note: Merging contacts is an irreversible action.</Typography>
-          </Box>
+        <Box p={3}>
+          <Typography>Note: Merging contacts is an irreversible action.</Typography>
+        </Box>
 
-          {rows.length < 2 && (
+        {
+          rows.length < 2 && (
             <Typography style={{ fontWeight: "bold", color: "red", marginTop: "40px", marginLeft: "25px" }}>
               ** Please cancel and reselct two or more contacts to merge **
             </Typography>
-          )}
+          )
+        }
+      </DialogContent>
 
-          <Box pt={6} mt={6}>
-            <Grid container direction="row" justify="flex-end" alignItems="flex-end">
-              <Grid item>
-                <Button onClick={onClose}>Cancel</Button>
-              </Grid>
-              <Grid item>
-                {rows.length >= 2 && (
-                  <Button
-                    variant="contained"
-                    component="span"
-                    disabled={rows.length < 2}
-                    style={{ backgroundColor: "#00abed", color: "white" }}
-                    onClick={onMerge}
-                  >
-                    Merge
-                  </Button>
-                )}
-              </Grid>
-            </Grid>
-          </Box>
-        </div>
-      </Container>
+      <DialogActions className={modalClass.actionButtons}>
+        <Button onClick={onClose}>Cancel</Button>
+        {rows.length >= 2 && (
+          <Button
+            variant="contained"
+            component="span"
+            disabled={rows.length < 2}
+            style={{ backgroundColor: "#00abed", color: "white" }}
+            onClick={onMerge}
+          >
+            Merge
+          </Button>
+        )}
+      </DialogActions>
 
       {loading && (
         <div
@@ -177,7 +186,8 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
         >
           <CircularProgress size={80} disableShrink color="secondary" />
         </div>
-      )}
-    </RightDialog>
+      )
+      }
+    </RightDialog >
   );
 }

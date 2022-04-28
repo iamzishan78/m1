@@ -26,9 +26,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "14px",
   },
   paper: {
-    // width: "fit-content",
     "min-width": "125px",
-    // "max-width": fullWidth ? "400px" : "none",
     "& .MuiAutocomplete-option": {
       padding: '0px !important'
     }
