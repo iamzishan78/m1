@@ -158,14 +158,19 @@ export default function ContactDocumentsCard(props) {
         </Breadcrumbs>
       </Toolbar>
 
-      <DealsDetailCard activeDeals={activeDeals} lostDeals={lostDeals} closedDeals={wonDeals} contact={contactData} />
+      <DealsDetailCard
+        activeDeals={activeDeals}
+        lostDeals={lostDeals}
+        closedDeals={wonDeals}
+        contact={contactData}
+      />
     </div>
   ) : (
     <div
       style={{
         padding: "20px",
         position: "absolute",
-        height: "100%",
+        height: "95%",
         width: "100%",
         zIndex: "50",
       }}

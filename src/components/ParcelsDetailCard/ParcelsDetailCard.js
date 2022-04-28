@@ -43,7 +43,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import ParcelSummary from "./ParcelSummary";
 import { findBoundsMap } from "components/MapControls/commonHelper";
 import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
-import { copy } from 'utils/helper'
+import { copy } from 'utils/helper';
 
 const ENTER_KEY = 13;
 
@@ -570,14 +570,18 @@ export default function ParcelsDetailCard(props) {
           tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "Documents"]}
           openTabIdex={props.selectTabIndex}
           tabPanels={[
-            <ParcelSummary
-              id={props.id}
-              customLayer={copy(parcelObj)}
-              properties={parcelProperties}
-              setProperties={setProperties}
-              updateProperties={updateProperties}
-              updateCustomProperties={updateCustomProperties}
-            />,
+            <div
+              style={{ overflow: "overlay", maxHeight: "calc(100vh - 285px)" }}
+            >
+              <ParcelSummary
+                id={props.id}
+                customLayer={copy(parcelObj)}
+                properties={parcelProperties}
+                setProperties={setProperties}
+                updateProperties={updateProperties}
+                updateCustomProperties={updateCustomProperties}
+              />
+            </div>,
             <TabPanels
               value={selectedTab}
               panels={[

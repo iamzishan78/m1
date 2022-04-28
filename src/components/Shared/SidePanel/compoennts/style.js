@@ -54,15 +54,15 @@ export const useStyles = makeStyles((theme) => ({
   itemOne: {
     "&.MuiDivider-root": {
       "&::before": {
-        borderTop: "thin solid green"
+        borderTop: "thin solid green",
       },
       "&::after": {
-        borderTop: "thin solid blue"
-      }
+        borderTop: "thin solid blue",
+      },
     },
     "& .MuiDivider-wrapper": {
-      fontSize: 16
-    }
+      fontSize: 16,
+    },
   },
   mapPositionSection: {
     minWidth: "425px",
@@ -359,6 +359,7 @@ export const StyledListItemSecondaryAction = withStyles((theme) => ({
   // this is the layer "manager" button styling
 
   root: {
+    right: "16px !important",
     "& .MuiButton-textPrimary": {
       color: theme.palette.common.white,
       background: "#17acdd",

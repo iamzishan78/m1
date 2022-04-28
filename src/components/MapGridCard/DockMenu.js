@@ -49,8 +49,7 @@ export default function DockMenu({ setSelectedDockMenu }) {
                 aria-label="delete"
                 aria-controls="fade-menu"
                 aria-haspopup="true"
-                onMouseEnter={handleClick}
-            // onClick={handleClick}
+                onClick={handleClick}
             >
                 <SelectedIcon fontSize="md" color="rgba(23, 170, 221, 1)" />
             </IconButton>
@@ -61,7 +60,7 @@ export default function DockMenu({ setSelectedDockMenu }) {
                 open={open}
                 onClose={handleClose}
                 TransitionComponent={Fade}
-                style={{ marginTop: "35px" }}
+                style={{ marginTop: "50px" }}
                 getContentAnchorEl={null}
             >
                 <Box>

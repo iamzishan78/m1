@@ -33,7 +33,7 @@ const TractInterestOwnerHeadCells = [
   {
     name: "ownershipType",
     label: "Entity Type",
-    esKey: "contact.entityDetail.ownerType.keyword",
+    esKey: "contact.ownerType.keyword",
     options: { display: true },
     style: { minWidth: "150px" },
   },
