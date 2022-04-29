@@ -244,16 +244,17 @@ function SuggestedShapeTaxOwnersTable(props) {
       },
     };
 
-    if(action === 'filterChange'){
+    if (action === 'filterChange') {
       let isFiltered = false
-      for(let i=0; i<tableState.filterList.length; i++){
-        if(tableState.filterList[i].length !==0){
+      for (let i = 0; i < tableState.filterList.length; i++) {
+        if (tableState.filterList[i].length !== 0) {
           isFiltered = true
           break;
         }
       }
       props.setIsFiltered(isFiltered)
     }
+    setCount(tableState.count = tableState?.displayData.length)
     switch (action) {
       case "changeRowsPerPage":
         // props.setLoading(true);
@@ -314,7 +315,7 @@ function SuggestedShapeTaxOwnersTable(props) {
   const options = {
     rowsPerPageOptions:
       count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
-    count: suggestedOwnersCount || count || 0,
+    count: count || 0,
     serverSide: false,
     searchable: true,
     filter: true,
