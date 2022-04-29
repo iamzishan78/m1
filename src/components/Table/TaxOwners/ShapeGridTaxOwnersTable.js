@@ -203,12 +203,14 @@ function ShapeGridTaxOwnersTable(props) {
                 );
                 break;
             case "search":
+                meta.searchData(tableState);
                 break;
             case "onSearchClose":
                 break;
             case "propsUpdate":
                 break;
             case "filterChange":
+                meta.searchData(tableState);
                 break;
             case "resetFilters":
                 break;

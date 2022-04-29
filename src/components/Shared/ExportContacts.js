@@ -151,7 +151,7 @@ const ExportContacts = ({
                 Contact Data (Basic & Purchased Info)
               </label>
             </div>
-            <label className={classes.value}>{rows.length} selected</label>
+            <label className={classes.value}>{isSelectAll ? total: rows.length} selected</label>
           </div>
         </div>
       </DialogContent>
