@@ -87,9 +87,9 @@ export const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
     overflowX: "hidden",
-    width: theme.spacing(6) + 4,
+    width: theme.spacing(7) + 4,
     [theme.breakpoints.up("sm")]: {
-      width: theme.spacing(6) + 4,
+      width: theme.spacing(7) + 4,
     },
     borderRight: "1px solid rgb(38 52 81) !important",
   },
@@ -443,7 +443,8 @@ export const useStyles = makeStyles((theme) => ({
   },
   sideNavIcon: {
     minWidth: 0,
-    marginRight: 12,
+    marginRight: 22,
+    marginLeft: 3,
     border: "1px solid #263451",
     borderRadius: "5px",
     "& svg": {

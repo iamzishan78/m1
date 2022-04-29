@@ -34,6 +34,7 @@ import SuggestedTaxOwnersTable from "components/Table/TaxOwners/SuggestedTaxOwne
 import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsParcelTable";
 import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
 import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
+import TractInterestOwnerTable from "components/Table/Tract/TractInterestOwnerTable";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 import { AppContext } from "../../AppContext";
@@ -42,6 +43,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import ParcelSummary from "./ParcelSummary";
 import { findBoundsMap } from "components/MapControls/commonHelper";
 import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
+import { copy } from 'utils/helper';
 
 const ENTER_KEY = 13;
 
@@ -259,13 +261,14 @@ export default function ParcelsDetailCard(props) {
 
   useEffect(() => {
     if (dataCustomLayer && dataCustomLayer.customLayer) {
-      let shape = dataCustomLayer.customLayer.shape;
+      let shape = copy(dataCustomLayer.customLayer.shape);
       if (typeof shape === "string") {
         shape = JSON.parse(shape);
       }
-      setParcelObj({
+      const data = {
         ...dataCustomLayer.customLayer,
         shape: shape,
+        state: dataCustomLayer.customLayer.state,
         qtrQtr: {
           nwnw: false,
           nenw: false,
@@ -284,7 +287,8 @@ export default function ParcelsDetailCard(props) {
           swse: false,
           sese: false,
         }
-      });
+      }
+      setParcelObj(data);
       setProperties(shape.properties);
       setParcelName(shape.properties.shapeLabel);
       setGrossAcres(shape.properties.sdGrossAcres);
@@ -314,21 +318,24 @@ export default function ParcelsDetailCard(props) {
   }, [updatedParcel]);
 
   const setQtrQtr = (qtrQtr) => {
-    setParcelObj({ ...parcelObj, qtrQtr });
+    const data = copy(parcelObj)
+    setParcelObj({ ...data, qtrQtr });
   };
 
   useEffect(() => {
     if (parcelObj) {
-      const original_properties = getParcelOriginalProperties(parcelObj.shape.properties);
+      const data = copy(parcelObj)
+      const original_properties = getParcelOriginalProperties(data.shape.properties);
       setOriginalProperties(original_properties);
     }
   }, [parcelObj]);
 
   const updateProperties = (e, field, value) => {
+    const data = copy(parcelObj)
     if (e.keyCode === ENTER_KEY) {
       e.preventDefault();
       e.stopPropagation();
-      const shape = parcelObj.shape;
+      const shape = data.shape;
       shape.properties[field] = value;
 
       const customLayer = {
@@ -346,7 +353,7 @@ export default function ParcelsDetailCard(props) {
 
       updateCustomLayer({
         variables: {
-          customLayerId: parcelObj._id,
+          customLayerId: data._id,
           customLayer,
         },
       });
@@ -354,7 +361,8 @@ export default function ParcelsDetailCard(props) {
   };
 
   const updateCustomProperties = (type, value, id) => {
-    const shape = parcelObj.shape;
+    const data = copy(parcelObj)
+    const shape = data.shape;
     const customRow = parcelProperties.custom_data_arr.find((p) => p.id === id)
     if (type === 'key') {
       customRow.key = value
@@ -369,7 +377,7 @@ export default function ParcelsDetailCard(props) {
     customLayer.shapeJson = shape
     updateCustomLayer({
       variables: {
-        customLayerId: parcelObj._id,
+        customLayerId: data._id,
         customLayer,
       },
     });
@@ -562,23 +570,35 @@ export default function ParcelsDetailCard(props) {
           tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "Documents"]}
           openTabIdex={props.selectTabIndex}
           tabPanels={[
-            <ParcelSummary
-              customLayer={parcelObj}
-              properties={parcelProperties}
-              setProperties={setProperties}
-              updateProperties={updateProperties}
-              updateCustomProperties={updateCustomProperties}
-              id={props.id}
-            />,
+            <div
+              style={{ overflow: "overlay", maxHeight: "calc(100vh - 285px)" }}
+            >
+              <ParcelSummary
+                id={props.id}
+                customLayer={copy(parcelObj)}
+                properties={parcelProperties}
+                setProperties={setProperties}
+                updateProperties={updateProperties}
+                updateCustomProperties={updateCustomProperties}
+              />
+            </div>,
             <TabPanels
               value={selectedTab}
               panels={[
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense header={<Header />} />
+                  {/* <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense header={<Header />} /> */}
+                  <TractInterestOwnerTable
+                    esIndex='shapeowners_flat'
+                    parent="ownersPerParcel" 
+                    targetLabel="Parcel Ownership"
+                    customLayer={copy(parcelObj)} 
+                    dense
+                    header={<Header />}
+                  />
                 </div>,
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <SuggestedTaxOwnersTable
-                    customLayer={parcelObj}
+                    customLayer={copy(parcelObj)}
                     parent="potentialOwnersPerParcel"
                     targetLabel="well"
                     header={<Header />}
@@ -590,7 +610,7 @@ export default function ParcelsDetailCard(props) {
             />,
             <div className={showSummary ? classes.subContent : classes.subContent2}>
               <ParcelDetailsRunsheetTable
-                customLayer={parcelObj}
+                customLayer={copy(parcelObj)}
                 parent="associatedRunsheetPerParcel"
                 targetLabel="parcelRunsheet"
                 header={<RunsheetHeader />}
@@ -599,7 +619,7 @@ export default function ParcelsDetailCard(props) {
             </div>,
             <div className={showSummary ? classes.subContent : classes.subContent2}>
               <AssociatedWellsParcelTable
-                customLayer={parcelObj}
+                customLayer={copy(parcelObj)}
                 parent="associatedWellsPerParcel"
                 targetLabel="well"
                 header={<WellHeader />}
@@ -609,7 +629,7 @@ export default function ParcelsDetailCard(props) {
             </div>,
             <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
               <RelatedDetailsDocumentTable
-                customLayer={parcelObj}
+                customLayer={copy(parcelObj)}
                 relatedObjectType='Parcel'
                 parent="associatedDocumentsPerParcel"
                 targetLabel="parcelDocument"

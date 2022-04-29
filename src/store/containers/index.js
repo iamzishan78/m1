@@ -18,6 +18,8 @@ import {
   convertTaxOwnerToContactAction,
   convertMultipleOwnerToContactAction
 } from "store/actions/contactActions";
+import { showSuccessMessage } from "actions";
+
 import { getShapeOwnersSelectors } from "store/selectors/index";
 
 const AssignOwnerToContactDrawerProps = (state) => {
@@ -30,6 +32,7 @@ const AssignOwnerToContactDrawerProps = (state) => {
 const AssignOwnerToContactDrawerDispatch = (dispatch) => {
   return bindActionCreators(
     {
+      showSuccessMessage,
       getContactCampaignAction: getContactCampaignAction.STARTED,
       convertMultipleOwnerToContactAction: convertMultipleOwnerToContactAction.STARTED,
     },

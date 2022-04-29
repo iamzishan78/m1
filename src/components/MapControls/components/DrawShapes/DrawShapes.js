@@ -308,12 +308,16 @@ export default function DrawShapes() {
         setStateApp((state) => {
 
           drawShapeLayerToggle(state, state.lastSelectedDrawMode === "draw_polygon" ? "visible" : "none");
-          if (state.currentFeature) {
+          if (state.reDrawShape) {
+            state.currentFeature.geometry = feature.geometry
+            currentFeature = state.currentFeature
+          }
+          else if (state.currentFeature && !state.reDrawShape) {
             currentFeature = union(feature, state.currentFeature);
             currentFeature.id = state.currentFeature.id
             currentFeature.properties.id = state.currentFeature.id;
           }
-          return { ...state, editDraw: false, showShapeActionsPopup: true, currentFeature }
+          return { ...state, editDraw: false, showShapeActionsPopup: true, currentFeature, reDrawShape: false }
         });
         setTimeout(() => {
 
@@ -395,9 +399,11 @@ export default function DrawShapes() {
       ...state,
       gridPolygonString: "",
       selectedAoi: null,
+      shapeEditMode: state.shapeEditMode === 'redraw' ? "" : state.shapeEditMode,
       shapeGridWellsCount: 0,
       shapeGridOwnersCount: 0,
       changeDrawShapeType: false,
+      reDrawShape: false,
       ...additionalProps
     }));
     dispatch(
@@ -414,7 +420,7 @@ export default function DrawShapes() {
 
   return (
     <Fragment>
-      {((stateApp.showDrawShapesPopup && !stateApp.currentFeature) || (stateApp.changeDrawShapeType)) && (
+      {((stateApp.showDrawShapesPopup && !stateApp.currentFeature) || (stateApp.changeDrawShapeType) || stateApp.reDrawShape) && (
         <ClickAwayListener onClickAway={handleClose}>
           <div className={classes.mapOverlay}>
             <div class={classes.mapOverlayInner}>
@@ -436,6 +442,7 @@ export default function DrawShapes() {
       {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
         stateApp.currentFeature !== undefined &&
         !stateApp.changeDrawShapeType &&
+        !stateApp.reDrawShape &&
         !stateApp.currentFeature.id?.includes("draw_polygon") &&
         !stateApp.currentFeature.id?.includes("drag_circle") &&
         !stateApp.currentFeature.id?.includes("draw_rectangle") &&
