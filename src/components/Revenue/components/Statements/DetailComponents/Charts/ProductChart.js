@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
         border: "2px solid #959595",
         borderRadius: 8,
         // maxWidth: "550px",
-        height: "430px",
+        height: "300px",
     },
 }));
 
@@ -195,7 +195,7 @@ const ProductChart = ({ productSummaryDetails }) => {
             {/*  */}
             <span style={{ height: "100%", display: mode === 'production' ? "flex" : 'block' }}>
 
-                {mode === 'production' ? <div id={'bar-chart'} style={{ paddingTop: "40px", height: "85%", width: "55%" }} /> : <div id={'product-donut'} style={{ height: "85%" }} />}
+                {mode === 'production' ? <div id={'bar-chart'} style={{ paddingTop: "40px", height: "80%", width: "55%" }} /> : <div id={'product-donut'} style={{ height: "80%" }} />}
 
                 {mode === 'production' &&
                     <div style={{ width: "45%", paddingLeft: '50px' }}>
