@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { get } from "lodash";
+import { set, get, uniqBy } from "lodash";
 import { Typography, Grid, Divider, Popover, List, ListItem, ListItemText, Button } from "@material-ui/core";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import { makeStyles } from "@material-ui/styles";
@@ -13,6 +13,7 @@ import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 import PieChartWithLegend from "./Charts/PieChartWithLegend";
 import BarChartWithController from "./Charts/BarChartWithController";
 import ProductChart from "./Charts/ProductChart";
+import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 
 export const TabButtons = ({ tab, actiiveId, setActive }) => {
   return (
@@ -188,15 +189,27 @@ const SummarySection = ({ checkId }) => {
     fetchPolicy: "no-cache",
   });
 
+  const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
+
   let revSummary = revenueSummary?.getESAggsList?.aggregations;
   let adjSummary = adjustmentSummary?.getESAggsList?.aggregations;
   let prodSummary = productSummary?.getESAggsList?.aggregations;
+  let metaData = metaDataRes?.getMetaData?.metaData
+  console.log(metaData)
 
   const summaryTabs = [
     { id: 1, label: "Revenue" },
     { id: 2, label: "Adjustments" },
     { id: 3, label: "Products" },
   ];
+
+  useEffect(() => {
+    getMetaData({
+      variables: {
+        category: "Check Details"
+      },
+    });
+  }, [getMetaData]);
 
   useEffect(() => {
     getESAggsRevenue({
@@ -290,12 +303,24 @@ const SummarySection = ({ checkId }) => {
   // products summary
   useEffect(() => {
     if (prodSummary) {
-      const products = ["OIL", "GAS", "NGL", "OTHER"];
+      const productMapping = metaData.find((meta) => meta.name === 'product_type')
+
+      const products = uniqBy(productMapping.mapping, 'to').map((product) => product.to)
       let buckets = [];
       console.log(prodSummary)
       products.forEach((p) => {
-        const index = prodSummary?.product?.buckets.findIndex((b) => b.key === p);
-        if (index !== -1) buckets.push(prodSummary?.product?.buckets[index]);
+        const mappings = productMapping.mapping.filter((m) => m.to === p)
+        const bucket = { key: p.includes('NGL') ? 'NGL' : p }
+        mappings.forEach((m) => {
+          const fundBucket = prodSummary?.product?.buckets.find((b) => b.key === m.from);
+          if (fundBucket) {
+            set(bucket, "grossPropertyVolume.value", ((get(bucket, "grossPropertyVolume.value") || 0) + get(fundBucket, "grossPropertyVolume.value")))
+            set(bucket, "grossOwnerVolume.value", ((get(bucket, "grossOwnerVolume.value") || 0) + get(fundBucket, "grossOwnerVolume.value")))
+            set(bucket, "netRevenue.value", ((get(bucket, "netRevenue.value") || 0) + get(fundBucket, "netRevenue.value")))
+            set(bucket, "avgPrice.value", ((get(bucket, "avgPrice.value") || 0) + get(fundBucket, "avgPrice.value")))
+          }
+        })
+        buckets.push(bucket);
       });
 
       buckets = buckets.map((b) => ({
@@ -305,13 +330,6 @@ const SummarySection = ({ checkId }) => {
         netRevenue: b.netRevenue ? vf_number((Math.round(get(b, "netRevenue.value") * 100) / 100).toFixed(2)) : "-",
         avgPrice: b.avgPrice ? vf_number((Math.round(get(b, "avgPrice.value") * 100) / 100).toFixed(2)) : "-",
       }));
-      buckets.push({
-        key: "OTHER",
-        grsProd: "-",
-        netProd: "-",
-        netRevenue: "-",
-        avgPrice: "-",
-      });
       setProductSummaryDetails(buckets);
     }
   }, [prodSummary]);
@@ -496,7 +514,8 @@ const SummarySection = ({ checkId }) => {
 
                       <div className="flex" style={{ minWidth: "60px", alignItems: "center", justifyContent: "center" }}>
                         <Typography varient="h6" className={classes.textTransform}>
-                          {item.name === "Total Adjustments" ? Number(item.value).toFixed(2) : wrapWithBrackets(Number(item.value).toFixed(2))}
+                          {wrapWithBrackets(Number(item.value).toFixed(2))}
+                          {/* {item.name === "Total Adjustments" ? Number(item.value).toFixed(2) : wrapWithBrackets(Number(item.value).toFixed(2))} */}
                         </Typography>
                       </div>
                     </div>

@@ -18,14 +18,17 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const ProductChart = ({ productSummaryDetails, getUnit }) => {
+const ProductChart = ({ productSummaryDetails }) => {
     const [data, setData] = useState();
 
     const [mode, setMode] = useState('revenue');
     const selectedCss = { backgroundColor: '#05aff0', color: '#ffff' }
     const classes = useStyles();
 
-    console.log(productSummaryDetails)
+    const getUnit = (key) => {
+        return key === 'GAS' ? 'MCF' : key === 'OIL' ? 'BBL' : key.includes('NGL') ? 'GAL' : ''
+    }
+
     useEffect(() => {
         const donut = {
             production: {
@@ -47,9 +50,9 @@ const ProductChart = ({ productSummaryDetails, getUnit }) => {
                 [data.key.includes('NGL') ? 'NGL' : data.key]: vf_number(Number(data.grsProd).toFixed(2)),
             })
             donut.production.table.push({
-                gross: vf_number(Number(data.grsProd).toFixed(2)),
-                net: vf_number(Number(data.netProd).toFixed(2)),
-                // unit: getUnit(key)
+                gross: vf_number((Number(data.grsProd) || 0).toFixed(2)),
+                net: vf_number((Number(data.netProd) || 0).toFixed(2)),
+                unit: getUnit(data.key)
             })
         })
         // Object.keys(productDetails).forEach((key) => {
@@ -177,9 +180,9 @@ const ProductChart = ({ productSummaryDetails, getUnit }) => {
                 padding: "15px 15px 0 15px"
             }}>
                 <Grid item>
-                    {/* <Typography variant="h5" component="h5" style={{ fontWeight: "bolder" }} >
+                    <Typography variant="h5" component="h5" style={{ fontWeight: "bolder" }} >
                         Product Summary
-                    </Typography> */}
+                    </Typography>
                 </Grid>
                 <Grid item>
                     <ButtonGroup size="small" aria-label="small outlined button group">
@@ -192,9 +195,9 @@ const ProductChart = ({ productSummaryDetails, getUnit }) => {
             {/*  */}
             <span style={{ height: "100%", display: mode === 'production' ? "flex" : 'block' }}>
 
-                {mode === 'production' ? <div id={'bar-chart'} style={{ paddingTop: "40px", height: "85%", width: "100%" }} /> : <div id={'product-donut'} style={{ height: "85%" }} />}
+                {mode === 'production' ? <div id={'bar-chart'} style={{ paddingTop: "40px", height: "85%", width: "55%" }} /> : <div id={'product-donut'} style={{ height: "85%" }} />}
 
-                {/* {mode === 'production' &&
+                {mode === 'production' &&
                     <div style={{ width: "45%", paddingLeft: '50px' }}>
 
                         <Table className={classes.table} aria-label="caption table">
@@ -224,7 +227,7 @@ const ProductChart = ({ productSummaryDetails, getUnit }) => {
                             </TableBody>
                         </Table>
                     </div>
-                } */}
+                }
 
             </span>
         </div>
