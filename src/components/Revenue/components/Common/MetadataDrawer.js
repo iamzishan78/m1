@@ -475,7 +475,7 @@ export default function MetadataDrawer(props) {
           <CommentComponent
             targetLabel={targetLabel}
             targetSourceId={targetSourceId}
-            commentsHeight={targetLabel === "Contact" ? "550px" : null}
+            commentsHeight={targetLabel === "Contact" ? "580px" : null}
           />
         </div>
       </div>
