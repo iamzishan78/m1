@@ -35,6 +35,10 @@ import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginated
 import { setStateIfDeepEqual } from "../../../functions";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { addTrailingZeros } from "components/Shared/functions";
+import { Controller, useForm } from "react-hook-form";
+import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
+import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+
 
 const entities = [
   "Corporation",
@@ -97,16 +101,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const toNumber = (value) => {
-  return value ? parseInt(value.replace(/\$/g, "").replace(/\,/g, "")): null
+  return value ? parseInt(value.replace(/\$/g, "").replace(/\,/g, "")) : null
 }
 
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
   let tenantName = window.sessionStorage.getItem("tenantName");
   const [stateApp, setStateApp] = useContext(AppContext);
+  const { control } = useForm();
   const [newOwner, setNewOwner] = useState({
     surface_interest: null,
     cost_bearing: null,
+    ownerType: null,
     cost_bearing_high_value: null,
     cost_free_high_value: null,
     mineral_interest: null,
@@ -142,6 +148,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         cost_bearing_high_value,
         cost_free_high_value,
         surface_interest,
+        ownershipType,
         mineral_interest,
         royalty_interest,
         orri,
@@ -162,6 +169,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
       setNewOwner({
         surface_interest: surface_interest || null,
+        ownershipType: ownershipType || null,
         cost_bearing: cost_bearing || null,
         cost_bearing_high_value: toNumber(cost_bearing_high_value) || null,
         cost_free_high_value: toNumber(cost_free_high_value) || null,
@@ -270,6 +278,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const emptyStates = () => {
     setNewOwner({
       surface_interest: null,
+      ownershipType: null,
       cost_bearing: null,
       cost_bearing_high_value: null,
       cost_free_high_value: null,
@@ -453,6 +462,26 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       awaitRefetchQueries: true,
                     });
                   }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Entity Type</h3>
+                <Controller
+                  control={control}
+                  name="ownershipType"
+                  render={(props) => (
+                    <EntityType
+                      className={classes.maxWidth}
+                      setDocumentType={(value) => {
+                        console.log("value : ", value.name)
+                        setNewOwner({
+                          ...newOwner,
+                          ownerType: value ? addTrailingZeros(value.name) : null,
+                        });
+                      }}
+                      value={newOwner.ownershipType || ""}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -695,7 +724,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       id="standard-number"
                       type="number"
                       size="small"
-                      className={ classes.maxWidth}
+                      className={classes.maxWidth}
                       value={newOwner.cost_free_high_value}
                       onChange={(e) => {
                         const value = addTrailingZeros(e.target.value);
@@ -712,7 +741,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       id="standard-number"
                       type="number"
                       size="small"
-                      className={ classes.maxWidth}
+                      className={classes.maxWidth}
                       value={newOwner.cost_bearing_high_value}
                       onChange={(e) => {
                         const value = addTrailingZeros(e.target.value);
