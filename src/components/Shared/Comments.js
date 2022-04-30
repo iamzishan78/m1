@@ -1,9 +1,8 @@
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { useMutation, useLazyQuery } from "@apollo/client";
+import { useMutation, useLazyQuery, useQuery } from "@apollo/client";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
-import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -23,12 +22,14 @@ import { COMMENTSBYOBJECTIDQUERY } from "../../graphQL/useQueryCommentsByObjectI
 import { COMMENTSBYOBJECTSIDS } from "../../graphQL/useQueryCommentsByObjectsIds";
 import { UPSERTCOMMENT } from "../../graphQL/useMutationUpsertComment";
 import { REMOVECOMMENT } from "../../graphQL/useMutationRemoveComment";
+import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import CloseIcon from "@material-ui/icons/Close";
 
 // import value formatters
 import capitalizeFirstLetter from "../Shared/valueformatters/capitalize-first-letter.js";
+import { CommentText } from "components/Transact/components/DealComments";
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -78,7 +79,6 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     height: "100%",
-    padding: "0",
     padding: (props) => (props.detailCard ? "0 23px 0 23px" : props.handleRightDialogClose ? "0 0 0 8px" : "0"),
     overflowY: "auto",
     "&::-webkit-scrollbar": {
@@ -225,6 +225,9 @@ export default function Comments(props) {
   const [getCommentsByObjectsIds, { data: dataCommentsMultiIds }] = useLazyQuery(COMMENTSBYOBJECTSIDS, {
     fetchPolicy: "cache-and-network",
   });
+  const { data: userLists } = useQuery(GETMONGOUSERS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   const [upsertComment] = useMutation(UPSERTCOMMENT);
   const [removeComment] = useMutation(REMOVECOMMENT);
@@ -265,18 +268,6 @@ export default function Comments(props) {
   useEffect(() => {
     if (dataComments && dataComments.commentsByObjectId) {
       setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
-      //setCommentsArray(dataComments.commentsByObjectId);
-      //let tmp = Object.assign({}, dataComments.commentsByObjectId)
-      /*let tmp = [...dataComments.commentsByObjectId]
-      const compare = (a, b) => {
-        if (a.ts > b.ts) return -1;
-        if (b.ts > a.ts) return 1;
-    
-        return 0;
-      };
-    
-      if (!props.multipleIds) tmp.sort(compare);
-      setCommentsArray(tmp);*/
     }
     setLoadingComments(false);
   }, [dataComments]);
@@ -362,17 +353,6 @@ export default function Comments(props) {
         for (let i = 0; i < props.multipleIds.length; i++) {
           addNewComment(event.target.value, props.multipleIds[i]);
         }
-
-        // //// adding the new comment to the down list
-        // setCommentsArray((commentsArray) => [
-        //   ...commentsArray,
-        //   {
-        //     ts: Date.now(),
-        //     public: publicComment,
-        //     user: { name: stateApp.user.name, email: stateApp.user.email },
-        //     comment: newCommentCleaner(event.target.value),
-        //   },
-        // ]);
       }
       setEmptyInput(false);
     } else {
@@ -455,8 +435,6 @@ export default function Comments(props) {
       variant="outlined"
       style={props.detailCard ? { backgroundColor: "transparent", border: "none", zIndex: 99999 } : {}}
     >
-      {/* <CardHeader className={classes.header} title="Comments" /> */}
-
       <CardActions
         style={
           props.detailCard || props.handleRightDialogClose
@@ -630,9 +608,7 @@ export default function Comments(props) {
                       className={classes.listItemText}
                       primary={
                         <React.Fragment>
-                          {comment.comment.split("\n").map((line, i) => {
-                            return <p key={i}>{line}</p>;
-                          })}
+                          <CommentText users={userLists?.allMongoUsers} eachComment={comment} />
                         </React.Fragment>
                       }
                       secondary={

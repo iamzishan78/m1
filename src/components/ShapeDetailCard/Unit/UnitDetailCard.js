@@ -225,6 +225,7 @@ export default function UnitDetailCard(props) {
                     parent="ownersPerUnit"
                     shapeType="Unit"
                     targetLabel="Unit Ownership"
+                    setIsFiltered={setIsFiltered}
                     header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
                     dense
                   />

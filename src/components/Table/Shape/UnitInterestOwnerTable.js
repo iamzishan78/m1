@@ -116,6 +116,14 @@ function UnitInterestOwnerTable(props) {
   }, [stateApp.activitySearchQuery, props.filterToggle]);
 
   useEffect(() => {
+    if(props.initialFilters.length > 2) {
+      props.setIsFiltered(true)
+    }else{
+      props.setIsFiltered(false)
+    }
+  },[props.initialFilters])
+
+  useEffect(() => {
     if (clickedRow) {
       setSelectedOwner({
         ...clickedRow,

@@ -33,11 +33,11 @@ const useStyles = makeStyles((theme) => ({
       margin: "0px !important",
     },
   },
-  comment: {
-    maxHeight: "230px",
+  comment: ({ commentsHeight }) => ({
+    maxHeight: commentsHeight ?? "230px",
     overflow: "auto",
     padding: "5px 0px",
-  },
+  }),
   noBorder: {
     border: "none",
   },
@@ -96,8 +96,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CommentComponent(props) {
-  const { targetSourceId } = props;
-  const classes = useStyles();
+  const { targetSourceId, commentsHeight } = props;
+  const classes = useStyles({ commentsHeight });
   const [stateApp] = useContext(AppContext);
 
   const [users, setUsers] = useState([]);
@@ -113,8 +113,7 @@ export default function CommentComponent(props) {
   const [loadingComments, setLoadingComments] = useState(true);
 
   const [removeComment] = useMutation(REMOVECOMMENT);
-  const [upsertComment, { data: newlyAddedComment }] =
-    useMutation(UPSERTCOMMENT);
+  const [upsertComment, { data: newlyAddedComment }] = useMutation(UPSERTCOMMENT);
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "cache-and-network",
   });
