@@ -18,7 +18,6 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import IconButton from "@material-ui/core/IconButton";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { REMOVEDEALDESCRIPTOR } from "../../graphQL/useMutationRemoveDealDescriptor";
-import { UPSERTDEALDESCRIPTOR } from "graphQL/useMutationUpsertDealDescriptor";
 import Link from "@material-ui/core/Link";
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import './Contact.css'
@@ -108,12 +107,9 @@ export default function Contacts(props) {
   });
   const [addNewContact, { data: addContactData }] = useMutation(ADDCONTACT);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
-  const [upsertDealDescriptor] = useMutation(UPSERTDEALDESCRIPTOR);
 
   const handleAccordionChange = (panel) => (event, isExpanded) => {
-    console.log(' ================== ', { event, isExpanded }, panel);
     setExpandedPanel(isExpanded ? panel : false);
-    console.log(' ================== data ', { event, isExpanded }, panel, expandedPanel);
   };
   useEffect(() => {
     //will also run during initial mount
@@ -127,16 +123,6 @@ export default function Contacts(props) {
 
   useEffect(() => {
     if (nameAutValue) {
-      // upsertDealDescriptor({
-      //   variables: {
-      //     dealId: stateApp.activeDeal._id,
-      //     relatedObject: [nameAutValue],
-      //     relatedObjectType: "Contact",
-      //     userId: stateApp.user.mongoId,
-      //   },
-      //   refetchQueries: ["getPipeline", "getContactDeals", "getDeal"],
-      //   awaitRefetchQueries: true,
-      // });
       props.addSelectedContact(nameAutValue);
       GettingContacts();
       // setMutationLoading(true);
