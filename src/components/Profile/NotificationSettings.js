@@ -44,10 +44,8 @@ const NotificationSettings = () => {
           <FormControlLabel
             control={
               <Checkbox
-                checked={
-                  !!notificationPreferences?.newDealsAssigned ||
-                  !!notificationPreferences?.delasEntersOnAssignedLane
-                }
+                checked={!!notificationPreferences?.newDealsAssigned ||
+                          !!notificationPreferences?.dealEntersAssignedLane}
                 onChange={handleCheckboxChange}
                 name="flowModule"
               />
