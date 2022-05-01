@@ -85,7 +85,7 @@ const tracts = [
 ];
 
 addAfterLabel(tracts, 'Parcel Name', {
-    label: "Parcel Description",
+    label: "Description",
     mapped_key: "",
     actual_key: "shape.description",
 })

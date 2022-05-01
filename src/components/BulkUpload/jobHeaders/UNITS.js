@@ -132,7 +132,7 @@ addAfterLabel(unit, 'Unit Campaign', {
 })
 
 addAfterLabel(unit, 'Qualifier', {
-    label: "Unit Description",
+    label: "Description",
     mapped_key: "",
     actual_key: "shape.description",
 })
