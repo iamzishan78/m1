@@ -119,4 +119,28 @@ addAfterLabel(unit, 'Unit Acres', {
     actual_key: "shape.uUnitPricing",
 })
 
+addAfterLabel(unit, 'Unit Pricing', {
+    label: "Unit Campaign",
+    mapped_key: "",
+    actual_key: "shape.campaignName",
+})
+
+addAfterLabel(unit, 'Unit Campaign', {
+    label: "Qualifier",
+    mapped_key: "",
+    actual_key: "shape.qualifier",
+})
+
+addAfterLabel(unit, 'Qualifier', {
+    label: "Unit Description",
+    mapped_key: "",
+    actual_key: "shape.description",
+})
+
+addAfterLabel(unit, 'Overriding Royalty', {
+    label: "Net Revenue Interest",
+    mapped_key: "",
+    actual_key: "shape.nri"
+})
+
 export default unit;
