@@ -20,7 +20,6 @@ import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
 
 import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
 import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
-import MailOutlineOutlinedIcon from '@material-ui/icons/MailOutlineOutlined';
 import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import TextSMS from '@material-ui/icons/TextsmsOutlined';
@@ -37,7 +36,6 @@ import Button from "@material-ui/core/Button";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
 import EditIcon from '@material-ui/icons/Edit';
 import MergeTypeIcon from "@material-ui/icons/MergeType";
-import AssignmentIndOutlinedIcon from "@material-ui/icons/AssignmentIndOutlined";
 import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
 import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
 import SendMailersDialogContent from "./SubComponents/SendMailersDialogContent";
@@ -128,104 +126,11 @@ import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
-import ConfirmationDialog from "components/ContactDetailCard/components/ConfirmationDialog";
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
-// const customStyles = makeStyles((theme) => ({
-//   table: {
-//     "& .MuiTableCell-body": {
-//       padding: (props) =>
-//         props.dense ? "0 !important" : "0px 16px !important",
-//     },
-//     "& .MuiTableHead-root": {
-//       "& th": {
-//         backgroundColor: "#F2F2F2",
-//         zIndex: "auto",
-//         padding: (props) => (props.dense ? "10px" : null),
-//       },
-//       "& .MuiTableCell-paddingCheckbox": {
-//         padding: (props) => (props.dense ? "0 !important" : "16px"),
-//       },
-//     },
-//     "& tr": {
-//       paddingRight: (props) => (props.dense ? "12px" : null),
-//       "& td": {
-//         "& div": {
-//           padding: 0,
-//         },
-//       },
-//       "& td:nth-child(3)": {
-//         "& div": {
-//           width: 300,
-//         },
-//       },
-//       "& td:nth-child(13)": {
-//         "& div": {
-//           width: 300,
-//           "& span": {
-//             maxWidth: 300,
-//           },
-//         },
-//       },
-//     },
-//     "& thead": {
-//       opacity: "1",
-//       transition: "opacity 1s ease-out",
-//       webkitTransition: "opacity 1s ease-out",
-//     },
-//     "& tbody": {
-//       opacity: "1",
-//       transition: "opacity 1s ease-out",
-//       webkitTransition: "opacity 1s ease-out",
-//     },
-//   },
-// }));
-
-// const productionStyle = makeStyles((theme) => ({
-//   table: {
-//     "& .MuiTableCell-body": {
-//       padding: (props) =>
-//         props.dense ? "0 !important" : "0px 16px !important",
-//     },
-//     "& .MuiTableCell-head": {
-//       "& span": {
-//         justifyContent: "center",
-//       },
-//     },
-//     "& .MuiTableHead-root": {
-//       "& th": {
-//         backgroundColor: "#F2F2F2",
-//         zIndex: "auto",
-//         padding: (props) => (props.dense ? "10px" : null),
-//       },
-//       "& .MuiTableCell-paddingCheckbox": {
-//         padding: (props) => (props.dense ? "0 !important" : "16px"),
-//       },
-//     },
-//     "& tr": {
-//       paddingRight: (props) => (props.dense ? "12px" : null),
-//       "& td": {
-//         textAlign: "center",
-//         "& div": {
-//           justifyContent: "center",
-//         },
-//       },
-//     },
-//     "& thead": {
-//       opacity: "1",
-//       transition: "opacity 1s ease-out",
-//       webkitTransition: "opacity 1s ease-out",
-//     },
-//     "& tbody": {
-//       opacity: "1",
-//       transition: "opacity 1s ease-out",
-//       webkitTransition: "opacity 1s ease-out",
-//     },
-//   },
-// }));
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -747,13 +652,16 @@ function SubTable(props) {
 
   // handlers
   const handleWellFlyTo = (value) => {
-    let unitId = history.location.pathname.split("/");
+    const shapeId = history.location.pathname.split("/");
+    const shapeType = stateApp.selectedShape.layerType;
     history.push(
       `/map/wells/${value?.wellId.toUpperCase()}`,
       {
-        fromUnitDetail: true,
-        unitName: stateApp.selectedShape.shapeLabel,
-        unitId: unitId[unitId.length - 1]
+        fromShapeDetail: true,
+        shapeName: stateApp.selectedShape.shapeLabel,
+        shapeId: shapeId[shapeId.length - 1],
+        shapeType: shapeType === "agreement" ? "Agreements" : "Units",
+        link: shapeType === "agreement" ? `/land/agreement/details/${stateApp.selectedShape.id}` : `/map/units/${shapeId[shapeId.length - 1]}`
       }
     );
     setStateApp((stateApp) => ({
@@ -886,7 +794,7 @@ function SubTable(props) {
   useEffect(() => {
     setM1nSelectedRowsIndexes([]);
     setM1nSelectedRowsIds([]);
-  },[props.resetSelectedRow])
+  }, [props.resetSelectedRow])
   //// opening the well detail card after fetch the extra well data needed
   useEffect(() => {
     if (
@@ -1208,12 +1116,6 @@ function SubTable(props) {
         open={true}
         onClose={closeMenu}
       >
-
-        {/* <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(null, null, null, "")}>
-          <MailOutlineOutlinedIcon className={classes.menuIcons} />
-         Send email
-        </MenuItem>
-        <Divider /> */}
         <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, "call", null)}>
           <CallOutlinedIcon className={classes.menuIcons} />
           Add call log
@@ -2910,7 +2812,7 @@ function SubTable(props) {
           const rowdata = filteredRows[i][columns[j].name];
           const filter = tableState.filterList[j][0];
           if (isFiltered && rowdata !== filter) {
-            filteredRows[i].isFiltered = false;          
+            filteredRows[i].isFiltered = false;
           }
         }
       }
@@ -3491,7 +3393,6 @@ function SubTable(props) {
       }
       if (props.addAble.type === "document") {
         buttonLabel = "ADD DOCUMENT";
-        // menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
       }
       if (props.addAble.type === "revenueStatementDetails") {
         buttonLabel = "INPUT MODE";

@@ -29,7 +29,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
-import Documents from "../Shared/Documents";
 import ParcelsCard from "./components/ParcelsCard";
 import ShapeOwnershipCard from "./components/ShapeOwnershipCard";
 import LeadStage from "../Shared/LeadStage";
@@ -385,9 +384,7 @@ export default function ContactDetailCard(props) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleClickRightDialogOpen = (childrenToOpen) => {
-    setRightDialogOpen(childrenToOpen);
-  };
+
   const handleClickRightDialogClose = (e) => {
     e.preventDefault();
     setRightDialogOpen(false);

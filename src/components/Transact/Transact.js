@@ -409,17 +409,17 @@ export default function Transact() {
     }
   }, [pipeToShowTab, dealFilter]);
 
-  useEffect(() => {
-    return () => {
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        dealDialog: false,
-        activeDeal: { cardId: null, laneId: null },
-      }));
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     setStateApp((stateApp) => ({
+  //       ...stateApp,
+  //       dealDialog: false,
+  //       activeDeal: { cardId: null, laneId: null },
+  //     }));
+  //   };
+  // }, []);
 
-  const handleDataChange = (newData) => {};
+  const handleDataChange = (newData) => { };
 
   const handleCardClick = (cardId, metadata, laneId) => {
     history.push(`/flow/${selectedPipe._id}/lane/${laneId}/card/${cardId}`);
@@ -459,14 +459,14 @@ export default function Transact() {
     let movedCardDescriptor =
       sourceLaneId === targetLaneId
         ? {
-            _id: cardDetails.metadata.descriptorId,
-            relatedObject: targetLaneId,
-            position: unfilteredTargetPosition,
-          }
+          _id: cardDetails.metadata.descriptorId,
+          relatedObject: targetLaneId,
+          position: unfilteredTargetPosition,
+        }
         : {
-            _id: cardDetails.metadata.descriptorId,
-            isCurrent: false,
-          };
+          _id: cardDetails.metadata.descriptorId,
+          isCurrent: false,
+        };
 
     // update unfilteredSourceLane descriptors
     // including dragging down in same lane
@@ -754,22 +754,22 @@ export default function Transact() {
                   Card: (cardProps) => <GetCard {...cardProps} />,
                 }}
 
-                //onCardAdd = {handleCardAdd}
-                //onCardDelete = {handleCardDelete}
-                // handleDragStart = {}
-                // handleDragEnd={}
-                // handleLaneDragStart
-                // onDataChange
-                // onCardAdd
-                // onBeforeCardDelete
-                // onCardDelete
-                // onCardMoveAcrossLanes
-                // onLaneAdd
-                // onLaneDelete
-                // onLaneUpdate
-                // onLaneClick
-                // onLaneScroll
-                //onCardMoveAcrossLanes
+              //onCardAdd = {handleCardAdd}
+              //onCardDelete = {handleCardDelete}
+              // handleDragStart = {}
+              // handleDragEnd={}
+              // handleLaneDragStart
+              // onDataChange
+              // onCardAdd
+              // onBeforeCardDelete
+              // onCardDelete
+              // onCardMoveAcrossLanes
+              // onLaneAdd
+              // onLaneDelete
+              // onLaneUpdate
+              // onLaneClick
+              // onLaneScroll
+              //onCardMoveAcrossLanes
               />
             )}
             {stateApp.dealDisplayType === "table" && (

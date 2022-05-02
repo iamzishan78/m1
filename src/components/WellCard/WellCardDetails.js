@@ -22,7 +22,6 @@ import WellProdChartProvider from "../WellProdChart/WellProdChartProvider";
 import WellStatusCard from "../Shared/WellStatusCard";
 import CompletionDateCard from "../Shared/CompletionDateCard";
 import FirstProdDateCard from "../Shared/FirstProdDateCard";
-import Last12StatusCard from "../Shared/Last12StatusCard";
 import OwnerNumCard from "../Shared/OwnerNumCard";
 import PermitDateCard from "../Shared/PermitDateCard";
 import ProfileCard from "../Shared/ProfileCard";
@@ -246,18 +245,15 @@ const tableGridStyle = makeStyles({
 
 export default function WellCardDetails(props) {
   const classes = useStyles();
-  const table_classes = tableGridStyle();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
-  const [tabValue, setTabValue] = React.useState(0);
+  const [, setTabValue] = React.useState(0);
   const [production, setProduction] = useState(null);
-  const [target, setTarget] = useState(null);
-  const [chartDisplay, setChartDisplay] = useState([]);
+  const [, setTarget] = useState(null);
   const [showSummary, setShowSummary] = useState(true)
-  let temp_state = useRef(null);
   const [
     getExternalProductionDetail,
-    { loading: loadingProductionDetail, data: externalProductionDetail },
+    { data: externalProductionDetail },
   ] = useLazyQuery(PRODUCTIONDETAILQUERY);
 
   useEffect(() => {
@@ -293,10 +289,6 @@ export default function WellCardDetails(props) {
       ...stateWellCard,
       chartToggleOil: event.target.checked,
     });
-  };
-
-  const handleTabValueChange = (event, newValue) => {
-    setTabValue(newValue);
   };
 
   const handleChangeGas = (event) => {
@@ -376,7 +368,6 @@ export default function WellCardDetails(props) {
         <WellTypeCard summary={props.summary} />
 
         <WellStatusCard summary={props.summary} />
-        {/* <Last12StatusCard summary={props.summary}/> */}
         <OwnerNumCard summary={props.summary} />
         <ProfileCard summary={props.summary} />
         <PermitDateCard summary={props.summary} />
@@ -442,7 +433,6 @@ export default function WellCardDetails(props) {
                             onChange={handleChangeGas}
                             name="checkedGas"
                             color="secondary"
-                          // color="#e57373"//invalid color
                           />
                         }
                         label="Allocated Gas"
