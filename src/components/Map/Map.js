@@ -1211,6 +1211,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       } else if (feature.source === "parcels_source") {
         setStateApp((state) => {
           if (state.isDrawing) return state;
+          findBoundsMap([selectedUserDefinedLayer], map);
           return {
             ...state,
             selectedUserDefinedLayer: null,
@@ -6041,29 +6042,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
     if (stateApp.parcelDetailCardOpen && stateApp.parcelDetailCardOpen === true && map) {
       // set and remove map marker
-
-      let coordinates = stateApp.selectedParcel.shapeCenter;
-      if (typeof stateApp.selectedParcel.shapeCenter === "string") {
-        coordinates = JSON.parse(stateApp.selectedParcel.shapeCenter);
-      }
-      const longitude = coordinates[0];
-      const latitude = coordinates[1];
-
-      const mapBounds = map.getBounds();
-      const fitBounds = fitOverBounds();
-      const screenLeftLng = fitBounds?.minLong || mapBounds._sw.lng;
-      const screenRightLng = fitBounds?.maxLong || mapBounds._ne.lng;
-      const alpha = (screenRightLng - screenLeftLng) / 2;
-
-      const bbox = [
-        [longitude - 1.5 * alpha, fitBounds?.minLat || latitude],
-        [longitude + 0.5 * alpha, fitBounds?.maxLat || latitude],
-      ];
-
-      map.fitBounds(bbox, {
-        speed: 0.75,
-        linear: true,
-      });
+      if (stateApp.selectedParcel.feature)
+        findBoundsMap([stateApp.selectedParcel.feature], map);
 
       setStateApp((state) => ({
         ...state,
