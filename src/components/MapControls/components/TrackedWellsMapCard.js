@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
       borderRadius: 10,
-  },
+    },
     padding: 0,
   },
   wellListItem: {

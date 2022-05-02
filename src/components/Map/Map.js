@@ -482,7 +482,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
     // }
   }
 
-  useEffect(() => { if (paramId) getCustomLayer(); }, [loading, paramId, map]);
+  useEffect(() => {
+    if (paramId) {
+      getCustomLayer();
+    }
+  }, [loading, paramId, map]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
@@ -1302,7 +1306,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         var clusterId = feature.properties.cluster_id;
         map.getSource(feature.source).getClusterExpansionZoom(clusterId, function (err, zoom) {
           if (err) return;
-
           map.easeTo({
             center: feature.geometry.coordinates,
             zoom: zoom,
@@ -2720,7 +2723,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         filterLayers.forEach((filterLayer) => {
           const baseFilter = getLayerBaseFilters(filterLayer);
 
-          console.log("filterCustomArray[filterLayer]", filterCustomArray[filterLayer]);
           if (filterCustomArray[filterLayer]) {
             if (
               [
@@ -2731,10 +2733,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                 "rigs",
               ].indexOf(filterLayer) > -1
             ) {
-              console.log("on select operator");
-              // const filterClusterLayer = filterLayer + "-clusters";
-              // const filterClusterLayerLabel = filterLayer + "-clusters-counts";
-              console.log("baseFilter", baseFilter);
               map.setFilter(filterLayer, ["all", baseFilter, ["within", mergeIntoMultiPolygon(filterCustomArray[filterLayer])]]);
             } else if (["recent_submitted_permits", "recent_submitted_permit_laterals"].indexOf(filterLayer) > -1) {
               map.setFilter(filterLayer, [
@@ -5646,7 +5644,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           map.setPitch(0);
           map.setBearing(0);
         }
-
         setStateApp((stateApp) => ({
           ...stateApp,
           mapVars: {

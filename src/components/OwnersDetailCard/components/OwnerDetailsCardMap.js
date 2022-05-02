@@ -320,7 +320,6 @@ export default function OwnerDetailsCardMap(props) {
         let features = map.queryRenderedFeatures(bbox, {
           layers: ["unclustered-point"],
         });
-
         map.flyTo({
           center: features[0].geometry.coordinates,
           zoom: 13,
