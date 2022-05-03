@@ -7,7 +7,6 @@ import uniqBy from "lodash/uniqBy";
 import moment from "moment";
 
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
-import ExportContacts from "components/Shared/ExportContacts";
 import Contact from "components/Shared/svgIcons/contact";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "../TableESHOC";
@@ -105,7 +104,6 @@ function ContactsTable(props) {
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
-  const [openCustomDialog, setOpenCustomDialog] = useState("");
   const [selectedGridView, setSelectedGridView] = useState(Contacts || defaultView);
   const { activeModule } = useSelector(({ common }) => common);
 
@@ -159,7 +157,7 @@ function ContactsTable(props) {
       // filters: Contacts?.filters ? getFilters() : [],
       selectedGridView: Contacts || defaultView,
       startPaginationAt: 25,
-      defaultSort: { field: "lastUpdateAt", order: "desc" },
+      // defaultSort: { field: "lastUpdateAt", order: "desc", unmapped_type: 'date' },
       formatHits,
       initializeGenericData: { key: "id", actions: genericDataActions },
     });
@@ -278,18 +276,6 @@ function ContactsTable(props) {
         className={classes.container}
         id={props.id ? props.id : props.parent}
       >
-        {openCustomDialog === "exportContacts" && (
-          <ExportContacts
-            onClose={() => setOpenCustomDialog("")}
-            search={props.activeSearchRef.current}
-            filters={[...props.initialFilters, ...uniqBy(props.customAppliedFilters, "field") || []]}
-            total={props.options.count}
-            isSelectAll={isSelectAll}
-            rows={selectedRows}
-            esIndex={esIndex}
-            open={true}
-          />
-        )}
         {showViewModal && (
           <GridView
             module="Contacts"
@@ -323,7 +309,6 @@ function ContactsTable(props) {
           contactId={props.contactId}
           selectedRows={props.selectedRows}
           setSelectedRows={setSelectedRows}
-          setOpenCustomDialog={setOpenCustomDialog}
           options={{
             ...props.options,
             ...props.customOptions
@@ -347,6 +332,15 @@ function ContactsTable(props) {
           }
           }
           onTableChange={props.onTableChange}
+          exportContactsProps={{
+            search: props.activeSearchRef.current,
+            filters: [...props.initialFilters, ...uniqBy(props.customAppliedFilters, "field") || []],
+            total: props.options.count,
+            isSelectAll: isSelectAll,
+            rows: selectedRows,
+            esIndex: esIndex,
+            open: true
+          }}
         />
       </Container>
     </>

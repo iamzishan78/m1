@@ -7,7 +7,7 @@ import GavelIcon from '@material-ui/icons/Gavel';
 import LocationIcon from '@material-ui/icons/Place';
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Box, IconButton } from "@material-ui/core";
@@ -43,7 +43,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import ParcelSummary from "./ParcelSummary";
 import { findBoundsMap } from "components/MapControls/commonHelper";
 import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
-import { copy } from 'utils/helper'
+import { copy } from 'utils/helper';
 
 const ENTER_KEY = 13;
 
@@ -240,6 +240,8 @@ export default function ParcelsDetailCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [onChangeFooterLabel, setChangeFooterLabel] = useState({ parcelName: false, grossAcres: false, legalDescription: false });
   const [showSummary, setShowSummary] = useState(true);
+
+  const contactsAdded = useSelector((state) => state?.common?.contactsAdded)
   const [updateCustomLayer, { data: updatedParcel }] = useMutation(
     UPDATECUSTOMLAYER,
   );
@@ -247,6 +249,11 @@ export default function ParcelsDetailCard(props) {
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
     CUSTOMLAYER,
   );
+
+  useEffect(() => {
+    if (contactsAdded)
+      setSelectedTab(0)
+  }, [contactsAdded]);
 
   useEffect(() => {
     if (props.id) {
@@ -570,14 +577,18 @@ export default function ParcelsDetailCard(props) {
           tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "Documents"]}
           openTabIdex={props.selectTabIndex}
           tabPanels={[
-            <ParcelSummary
-              id={props.id}
-              customLayer={copy(parcelObj)}
-              properties={parcelProperties}
-              setProperties={setProperties}
-              updateProperties={updateProperties}
-              updateCustomProperties={updateCustomProperties}
-            />,
+            <div
+              style={{ overflow: "overlay", maxHeight: "calc(100vh - 285px)" }}
+            >
+              <ParcelSummary
+                id={props.id}
+                customLayer={copy(parcelObj)}
+                properties={parcelProperties}
+                setProperties={setProperties}
+                updateProperties={updateProperties}
+                updateCustomProperties={updateCustomProperties}
+              />
+            </div>,
             <TabPanels
               value={selectedTab}
               panels={[
@@ -585,8 +596,9 @@ export default function ParcelsDetailCard(props) {
                   {/* <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense header={<Header />} /> */}
                   <TractInterestOwnerTable
                     esIndex='shapeowners_flat'
-                    parent="ownersPerParcel" 
-                    customLayer={copy(parcelObj)} 
+                    parent="ownersPerParcel"
+                    targetLabel="Parcel Ownership"
+                    customLayer={copy(parcelObj)}
                     dense
                     header={<Header />}
                   />

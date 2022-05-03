@@ -112,6 +112,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     surface_interest: null,
     ownerType: null,
     cost_bearing: null,
+    ownerType: null,
     cost_bearing_high_value: null,
     cost_free_high_value: null,
     mineral_interest: null,

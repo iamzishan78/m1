@@ -52,7 +52,7 @@ export default function BulkUpload(props) {
         Our robots are working their magic to quickly upload your data.
       </div>
       <div style={{ ...padding_div_top }}>
-        <img style={image_style} src="img/M1neral Robot.svg"></img>
+        <img style={image_style} src={process.env.PUBLIC_URL + "/img/M1neral Robot.svg"}></img>
       </div>
       <div style={notification_div}>
         <div style={{ ...text_grey, ...padding_div_top }}>

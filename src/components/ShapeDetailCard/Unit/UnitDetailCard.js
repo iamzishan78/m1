@@ -202,14 +202,19 @@ export default function UnitDetailCard(props) {
           tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "Tracts", "Documents"]}
           openTabIdex={selectedTab}
           tabPanels={[
-            <UnitSummary
-              properties={properties}
-              setProperties={setProperties}
-              updateProperties={updateProperties}
-              updateCustomProperties={updateCustomProperties}
-              id={props.id}
-              customLayer={uniObj}
-            />,
+            <div style={{
+              height: "calc(100vh - 285px)",
+              overflow: "overlay"
+            }}>
+              <UnitSummary
+                properties={properties}
+                setProperties={setProperties}
+                updateProperties={updateProperties}
+                updateCustomProperties={updateCustomProperties}
+                id={props.id}
+                customLayer={uniObj}
+              />
+            </div>,
             <TabPanels
               value={selectedTab}
               panels={[
@@ -220,6 +225,7 @@ export default function UnitDetailCard(props) {
                     parent="ownersPerUnit"
                     shapeType="Unit"
                     targetLabel="Unit Ownership"
+                    setIsFiltered={setIsFiltered}
                     header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
                     dense
                   />
@@ -248,7 +254,6 @@ export default function UnitDetailCard(props) {
                 </div>,
               ]}
             />,
-
             <div className={showSummary ? classes.subContent : classes.subContent2}>
               <ParcelDetailsRunsheetTable
                 customLayer={uniObj}

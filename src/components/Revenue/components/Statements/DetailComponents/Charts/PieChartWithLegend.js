@@ -8,12 +8,14 @@ import { copy } from "utils/helper";
 export default function PieChart({ chartData = [], type = "" }) {
   const [data, setData] = useState([]);
 
+  console.log(chartData, type)
+
   useEffect(() => {
     let data = [];
     data = copy(chartData);
     if (type === "revenue") {
       data = data
-        .filter((item) => item.name === "Gross Revenue" || item.name === "Adjustments")
+        .filter((item) => item.name === "Net Revenue" || item.name === "Adjustments")
         .filter((item) => item.value)
         .map((item) => {
           item.value = item.value.replace("-", "").replace("(", "").replace(")", "");
@@ -56,6 +58,12 @@ export default function PieChart({ chartData = [], type = "" }) {
     // pieSeries.slices.template.stroke = am4core.color("#4a2abb");
     pieSeries.slices.template.strokeWidth = 2;
     pieSeries.slices.template.strokeOpacity = 1;
+    pieSeries.slices.template.tooltipText = "[font-size:16px]{category} {value} | {value.percent.formatNumber('#.##')}%[/]";
+    pieSeries.tooltip.getFillFromObject = false;
+    pieSeries.tooltip.label.fill = am4core.color("#000");
+    pieSeries.tooltip.background.fill = am4core.color('#ffff');
+    pieSeries.tooltip.getStrokeFromObject = true;
+    pieSeries.legendSettings.labelText = "[bold font-size:17px]{name}:[/] {value.value} | {value.percent.formatNumber('#.##')}%";
 
     // Add a legend
     chart.legend = new am4charts.Legend();
@@ -65,14 +73,14 @@ export default function PieChart({ chartData = [], type = "" }) {
     markerTemplate.height = 15;
     markerTemplate.stroke = am4core.color("#ccc");
     chart.legend.position = "right";
-    chart.legend.maxWidth = 200;
+    chart.legend.maxWidth = 400;
     chart.legend.scrollable = true;
 
     // Setting "NET REVENUE" label
-    const netRevenue = chartData.find((d) => d.name === "Net Revenue" || d.name === "Total Adjustments");
-    if (netRevenue) {
+    const grossRevenue = chartData.find((d) => d.name === "Gross Revenue" || d.name === "Total Adjustments");
+    if (grossRevenue) {
       let label = pieSeries.createChild(am4core.Label);
-      label.text = `${netRevenue.value}`;
+      label.text = `${Number(grossRevenue.value).toFixed(2)}`;
       label.horizontalCenter = "middle";
       label.verticalCenter = "middle";
       label.fontSize = 30;

@@ -228,6 +228,12 @@ export default [
         actual_key: "campaignName",
     },
     {
+        label: "Status",
+        mapped_key: "",
+        required: false,
+        actual_key: "contactStatus"
+    },
+    {
         label: "Website",
         mapped_key: "",
         required: false,
@@ -238,6 +244,12 @@ export default [
         mapped_key: "",
         required: false,
         actual_key: "contactOwner",
+    },
+    {
+        label: "Notes/Comments",
+        mapped_key: "",
+        required: false,
+        actual_key: "comment"
     },
     // {
     //   label: "Comments",

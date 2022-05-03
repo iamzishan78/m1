@@ -21,12 +21,12 @@ import BuyContactsInfoDialogContent from "components/Shared/M1nTable/components/
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 import TableHeader from "components/Table/constants/ownersperunit-header-schema";
-import { UPDATEPARCELOWNER } from "graphQL/useMutationUpdateParcelOwner";
+import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import { deepEqualObjects, copy } from "components/Shared/functions";
 import { addTrailingZeros } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 
-const genericDataActions = ["tags", "comments", "tracks", "ifAreContacts"];
+const genericDataActions = ["comments", "tracks", "ifAreContacts"];
 const interestKeys = [
   "working_interest",
   "royalty_interest",
@@ -41,6 +41,7 @@ function UnitInterestOwnerTable(props) {
   const classes = usetableStyles();
   const [selectedRows, setSelectedRows] = useState([]);
   const [isSelectAll, setIsSelectAll] = useState(false);
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
   const [stateApp,] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const { customLayer, esIndex, clickedRow } = props;
@@ -48,7 +49,15 @@ function UnitInterestOwnerTable(props) {
   const [openCustomDialog, setOpenCustomDialog] = useState("");
   const [selectedOwner, setSelectedOwner] = useState(null);
 
-  const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
+  const [updateShapeOwners, { data: updateData }] = useMutation(UPDATE_SHAPE_OWNERS, {
+    onCompleted: () => {
+      props.setLoading(false);
+      setSelectedRows([])
+    },
+
+    onError: (err) => { },
+    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
+  });
 
   const searchFields = ["contact.entityDetail.name", "_all"];
   const appliedFilters = [
@@ -69,6 +78,15 @@ function UnitInterestOwnerTable(props) {
           }
         }
       });
+      if(hit?.tags?.length > 0){
+        const tags = hit.tags.map((tag) => tag.tag)
+        if(tags[0]){
+          hit.tags = [[tags], hit.tags.length]
+        }
+
+      }else{
+        hit.tags = [[], 0];
+      }
       hit = props.setGenricData(
         hit,
         hit?.contact?._id,
@@ -98,6 +116,14 @@ function UnitInterestOwnerTable(props) {
   }, [stateApp.activitySearchQuery, props.filterToggle]);
 
   useEffect(() => {
+    if(props.initialFilters.length > 2) {
+      props.setIsFiltered(true)
+    }else{
+      props.setIsFiltered(false)
+    }
+  },[props.initialFilters])
+
+  useEffect(() => {
     if (clickedRow) {
       setSelectedOwner({
         ...clickedRow,
@@ -117,16 +143,17 @@ function UnitInterestOwnerTable(props) {
     return selectedRows;
   };
 
-  const deleteFunc = (idsToDelete) => {
-    for (let i = 0; i < idsToDelete.length; i++) {
-      updateParcelOwner({
+  const deleteFunc = (ids) => {
+    if (ids.length > 0) {
+      props.setLoading(true);
+      updateShapeOwners({
         variables: {
-          parcelOwner: { _id: idsToDelete[i], isDeleted: true },
-        },
-        refetchQueries: ["getESSimpleSearch"],
-        awaitRefetchQueries: true,
+          shapeType: props.shapeType,
+          shapeOwners: ids.map((_id) => ({ _id, isDeleted: true })),
+        }
       });
     }
+    setResetSelectedRow(!resetSelectedRow)
   };
 
   const customOptions = {
@@ -144,7 +171,11 @@ function UnitInterestOwnerTable(props) {
             setStateNav((stateNav) => ({
               ...stateNav,
               bulkUploadFromMap: true,
-              bulkUploadParcel: stateApp.selectedParcel,
+              bulkUploadShape: {
+                id: props.customLayer._id,
+                shapeLabel: props.customLayer.name,
+                shapeType: "Unit"
+              }
             }));
             history.push("/bulkupload");
           },
@@ -304,6 +335,7 @@ function UnitInterestOwnerTable(props) {
         orderByTracks={false}
         startPaginationAt={null}
         onTableChange={props.onTableChange}
+        resetSelectedRow={resetSelectedRow}
         onRowSelectionChange={(
           currentRowsSelected,
           allRowsSelected,

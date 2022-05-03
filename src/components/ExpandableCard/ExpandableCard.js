@@ -517,21 +517,22 @@ function ExpandableCard(props) {
   const DisplayBreadCrums = () => {
     return <div className={classes.breadcrumContainer}>
       {
-        history.location?.state?.fromUnitDetail
+        history.location?.state?.fromShapeDetail
         &&
         <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-          <Typography className={classes.unClickable} color="inherit">Units</Typography>
+          <Typography className={classes.unClickable} color="inherit">{history.location?.state?.shapeType}</Typography>
           <Typography className={classes.prevlocation} color="inherit"
             onClick={() => {
               setStateApp({ ...stateApp, selectedWell: null, selectedWellId: null, wellSelectedCoordinates: [] });
-              history.push(`/map/units/${history.location?.state?.unitId}`);
+              history.push(history.location?.state?.link);
             }}>
-            {history.location?.state?.unitName}
+            {history.location?.state?.shapeName}
           </Typography>
           <Typography className={classes.unClickable} color="inherit">Wells</Typography>
           <Typography className={classes.currentLocation}> {title.toUpperCase()}</Typography>
         </Breadcrumbs>
-      }{
+      }
+      {
         history.location?.state?.showWellBreadcrumb
         &&
         <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
@@ -582,7 +583,7 @@ function ExpandableCard(props) {
           open={openBugModal}
           onClose={() => setOpenBugModal(false)}
         />
-        {(history.location?.state?.fromUnitDetail
+        {(history.location?.state?.fromShapeDetail
           || history.location?.state?.showWellBreadcrumb)
           && <DisplayBreadCrums />}
 

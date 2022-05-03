@@ -20,7 +20,6 @@ import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
 
 import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
 import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
-import MailOutlineOutlinedIcon from '@material-ui/icons/MailOutlineOutlined';
 import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import TextSMS from '@material-ui/icons/TextsmsOutlined';
@@ -37,7 +36,6 @@ import Button from "@material-ui/core/Button";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
 import EditIcon from '@material-ui/icons/Edit';
 import MergeTypeIcon from "@material-ui/icons/MergeType";
-import AssignmentIndOutlinedIcon from "@material-ui/icons/AssignmentIndOutlined";
 import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
 import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
 import SendMailersDialogContent from "./SubComponents/SendMailersDialogContent";
@@ -70,8 +68,7 @@ import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
 import moment from "moment";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
-import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
-import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
+import ExportContacts from "components/Shared/ExportContacts";
 import Grid from "@material-ui/core/Grid";
 import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
 import StackedBarChart from "components/Shared/Charts/StackedBarChart";
@@ -129,104 +126,11 @@ import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
-import ConfirmationDialog from "components/ContactDetailCard/components/ConfirmationDialog";
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
-// const customStyles = makeStyles((theme) => ({
-//   table: {
-//     "& .MuiTableCell-body": {
-//       padding: (props) =>
-//         props.dense ? "0 !important" : "0px 16px !important",
-//     },
-//     "& .MuiTableHead-root": {
-//       "& th": {
-//         backgroundColor: "#F2F2F2",
-//         zIndex: "auto",
-//         padding: (props) => (props.dense ? "10px" : null),
-//       },
-//       "& .MuiTableCell-paddingCheckbox": {
-//         padding: (props) => (props.dense ? "0 !important" : "16px"),
-//       },
-//     },
-//     "& tr": {
-//       paddingRight: (props) => (props.dense ? "12px" : null),
-//       "& td": {
-//         "& div": {
-//           padding: 0,
-//         },
-//       },
-//       "& td:nth-child(3)": {
-//         "& div": {
-//           width: 300,
-//         },
-//       },
-//       "& td:nth-child(13)": {
-//         "& div": {
-//           width: 300,
-//           "& span": {
-//             maxWidth: 300,
-//           },
-//         },
-//       },
-//     },
-//     "& thead": {
-//       opacity: "1",
-//       transition: "opacity 1s ease-out",
-//       webkitTransition: "opacity 1s ease-out",
-//     },
-//     "& tbody": {
-//       opacity: "1",
-//       transition: "opacity 1s ease-out",
-//       webkitTransition: "opacity 1s ease-out",
-//     },
-//   },
-// }));
-
-// const productionStyle = makeStyles((theme) => ({
-//   table: {
-//     "& .MuiTableCell-body": {
-//       padding: (props) =>
-//         props.dense ? "0 !important" : "0px 16px !important",
-//     },
-//     "& .MuiTableCell-head": {
-//       "& span": {
-//         justifyContent: "center",
-//       },
-//     },
-//     "& .MuiTableHead-root": {
-//       "& th": {
-//         backgroundColor: "#F2F2F2",
-//         zIndex: "auto",
-//         padding: (props) => (props.dense ? "10px" : null),
-//       },
-//       "& .MuiTableCell-paddingCheckbox": {
-//         padding: (props) => (props.dense ? "0 !important" : "16px"),
-//       },
-//     },
-//     "& tr": {
-//       paddingRight: (props) => (props.dense ? "12px" : null),
-//       "& td": {
-//         textAlign: "center",
-//         "& div": {
-//           justifyContent: "center",
-//         },
-//       },
-//     },
-//     "& thead": {
-//       opacity: "1",
-//       transition: "opacity 1s ease-out",
-//       webkitTransition: "opacity 1s ease-out",
-//     },
-//     "& tbody": {
-//       opacity: "1",
-//       transition: "opacity 1s ease-out",
-//       webkitTransition: "opacity 1s ease-out",
-//     },
-//   },
-// }));
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -268,7 +172,7 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#D4E8F1",
     },
     "& .MuiToolbar-regular > div:nth-child(2)": {
-      marginRight: (props) => (props.toolbarActionMarginRight ? props.toolbarActionMarginRight : "inherit"),
+      marginRight: (props) => props.toolbarActionMarginRight ?? "inherit",
       flex: "0 1 auto",
     },
     "& .MuiInput-root": {
@@ -748,13 +652,16 @@ function SubTable(props) {
 
   // handlers
   const handleWellFlyTo = (value) => {
-    let unitId = history.location.pathname.split("/");
+    const shapeId = history.location.pathname.split("/");
+    const shapeType = stateApp.selectedShape.layerType;
     history.push(
       `/map/wells/${value?.wellId.toUpperCase()}`,
       {
-        fromUnitDetail: true,
-        unitName: stateApp.selectedShape.shapeLabel,
-        unitId: unitId[unitId.length - 1]
+        fromShapeDetail: true,
+        shapeName: stateApp.selectedShape.shapeLabel,
+        shapeId: shapeId[shapeId.length - 1],
+        shapeType: shapeType === "agreement" ? "Agreements" : "Units",
+        link: shapeType === "agreement" ? `/land/agreement/details/${stateApp.selectedShape.id}` : `/map/units/${shapeId[shapeId.length - 1]}`
       }
     );
     setStateApp((stateApp) => ({
@@ -884,6 +791,10 @@ function SubTable(props) {
     }
   }, [contactData, contact]);
 
+  useEffect(() => {
+    setM1nSelectedRowsIndexes([]);
+    setM1nSelectedRowsIds([]);
+  }, [props.resetSelectedRow])
   //// opening the well detail card after fetch the extra well data needed
   useEffect(() => {
     if (
@@ -1205,12 +1116,6 @@ function SubTable(props) {
         open={true}
         onClose={closeMenu}
       >
-
-        {/* <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(null, null, null, "")}>
-          <MailOutlineOutlinedIcon className={classes.menuIcons} />
-         Send email
-        </MenuItem>
-        <Divider /> */}
         <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, "call", null)}>
           <CallOutlinedIcon className={classes.menuIcons} />
           Add call log
@@ -1841,6 +1746,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  value = tableMeta.rowData[1]
                   if ((props.targetLabel === "deal" || props.targetLabel === "activity") && value === null) {
                     return (
                       <p
@@ -1891,8 +1797,10 @@ function SubTable(props) {
                               selectedMenuIndexFind: 0,
                               contactFromMap: true,
                             }));
-
-                            routeChange(`/contact/details/${value}/`);
+                            console.log("value : ", value)
+                            console.log("tablemeta : ", tableMeta)
+                            console.log("updateValue : ", updateValue)
+                            routeChange(`/contact/details/${tableMeta.rowData[1]}/`);
                             setTitle("Contact Details");
                             setSubTitle(" ");
 
@@ -2897,23 +2805,22 @@ function SubTable(props) {
         }
       }
     } else {
-      rows = props.rows;
+      rows = JSON.parse(JSON.stringify(props.rows));
     }
-    rows = JSON.parse(JSON.stringify(rows));
+    const filteredRows = JSON.parse(JSON.stringify(rows));
     for (let j = 0; j < tableState.filterList.length; j++) {
       if (tableState.filterList[j].length > 0) {
-        for (let i = 0; i < rows.length; i++) {
-          const isFiltered = rows[i].isFiltered !== false;
-          const rowdata = rows[i][columns[j].name];
+        for (let i = 0; i < filteredRows.length; i++) {
+          const isFiltered = filteredRows[i].isFiltered !== false;
+          const rowdata = filteredRows[i][columns[j].name];
           const filter = tableState.filterList[j][0];
           if (isFiltered && rowdata !== filter) {
-            rows[i].isFiltered = false;
-            continue;
+            filteredRows[i].isFiltered = false;
           }
         }
       }
     }
-    setSearchedRows(rows.filter((row) => row.isFiltered !== false));
+    setSearchedRows(filteredRows.filter((row) => row.isFiltered !== false));
   };
   const options = {
     filterType: "dropdown",
@@ -3326,7 +3233,8 @@ function SubTable(props) {
                               );
                             }
                             props.setSelectedRows(owners);
-                            props.setOpenCustomDialog("exportContacts");
+                            // props.setOpenCustomDialog("exportContacts");
+                            handleExpandClick(null, null, getSelectedRows(), "exportContacts");
                           }}
                         >
                           Export
@@ -3488,7 +3396,6 @@ function SubTable(props) {
       }
       if (props.addAble.type === "document") {
         buttonLabel = "ADD DOCUMENT";
-        // menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
       }
       if (props.addAble.type === "revenueStatementDetails") {
         buttonLabel = "INPUT MODE";
@@ -4035,6 +3942,7 @@ function SubTable(props) {
           m1nSelectedRowsIds,
           m1nSelectedRowsIndexes,
           setSelectedRow,
+          searchData
         });
       }
     },
@@ -4223,7 +4131,7 @@ function SubTable(props) {
           className={tableStyle}
           title={getHeaders()}
           data={
-            props.parent === "ownersPerParcel"
+            props.parent === "ownersPerParcel" || props.parent === 'boundary_grid_owners'
               ? searchedRows
               : props.addAble?.type === "RevenueStatement"
                 ? getRevenueStatementRows()
@@ -4311,7 +4219,7 @@ function SubTable(props) {
           </RightDialog>
         )}
 
-        <RightDialog open={activityModalOpen} handleClickDialogClose={() => setActivityModalOpen(false)} width="450px">
+        <RightDialog open={activityModalOpen} handleClickDialogClose={() => setActivityModalOpen(false)} width={"700px"}>
           <AddActivityDialog
             onClose={() => setActivityModalOpen(false)}
             id={contact?._id}
@@ -4401,6 +4309,20 @@ function SubTable(props) {
             onClose={handleCloseDialog}
             rows={expandedObject}
             setRows={setExpandedObject}
+          />
+        )}
+        {openDialog === "exportContacts" && (
+          <ExportContacts
+            {...props.exportContactsProps}
+            onClose={handleCloseDialog}
+          // onClose={() => {}}
+          // search={props.activeSearchRef.current}
+          // filters={[...props.initialFilters, ...uniqBy(props.customAppliedFilters, "field") || []]}
+          // total={props.options.count}
+          // isSelectAll={isSelectAll}
+          // rows={selectedRows}
+          // esIndex={esIndex}
+          // open={true}
           />
         )}
         {openDialog &&

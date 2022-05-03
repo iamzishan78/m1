@@ -482,7 +482,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
     // }
   }
 
-  useEffect(() => { if (paramId) getCustomLayer(); }, [loading, paramId, map]);
+  useEffect(() => {
+    if (paramId) {
+      getCustomLayer();
+    }
+  }, [loading, paramId, map]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
@@ -1211,6 +1215,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       } else if (feature.source === "parcels_source") {
         setStateApp((state) => {
           if (state.isDrawing) return state;
+          findBoundsMap([selectedUserDefinedLayer], map);
           return {
             ...state,
             selectedUserDefinedLayer: null,
@@ -1302,7 +1307,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         var clusterId = feature.properties.cluster_id;
         map.getSource(feature.source).getClusterExpansionZoom(clusterId, function (err, zoom) {
           if (err) return;
-
           map.easeTo({
             center: feature.geometry.coordinates,
             zoom: zoom,
@@ -2720,7 +2724,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         filterLayers.forEach((filterLayer) => {
           const baseFilter = getLayerBaseFilters(filterLayer);
 
-          console.log("filterCustomArray[filterLayer]", filterCustomArray[filterLayer]);
           if (filterCustomArray[filterLayer]) {
             if (
               [
@@ -2731,10 +2734,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                 "rigs",
               ].indexOf(filterLayer) > -1
             ) {
-              console.log("on select operator");
-              // const filterClusterLayer = filterLayer + "-clusters";
-              // const filterClusterLayerLabel = filterLayer + "-clusters-counts";
-              console.log("baseFilter", baseFilter);
               map.setFilter(filterLayer, ["all", baseFilter, ["within", mergeIntoMultiPolygon(filterCustomArray[filterLayer])]]);
             } else if (["recent_submitted_permits", "recent_submitted_permit_laterals"].indexOf(filterLayer) > -1) {
               map.setFilter(filterLayer, [
@@ -5646,7 +5645,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           map.setPitch(0);
           map.setBearing(0);
         }
-
         setStateApp((stateApp) => ({
           ...stateApp,
           mapVars: {
@@ -6041,29 +6039,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
     if (stateApp.parcelDetailCardOpen && stateApp.parcelDetailCardOpen === true && map) {
       // set and remove map marker
-
-      let coordinates = stateApp.selectedParcel.shapeCenter;
-      if (typeof stateApp.selectedParcel.shapeCenter === "string") {
-        coordinates = JSON.parse(stateApp.selectedParcel.shapeCenter);
-      }
-      const longitude = coordinates[0];
-      const latitude = coordinates[1];
-
-      const mapBounds = map.getBounds();
-      const fitBounds = fitOverBounds();
-      const screenLeftLng = fitBounds?.minLong || mapBounds._sw.lng;
-      const screenRightLng = fitBounds?.maxLong || mapBounds._ne.lng;
-      const alpha = (screenRightLng - screenLeftLng) / 2;
-
-      const bbox = [
-        [longitude - 1.5 * alpha, fitBounds?.minLat || latitude],
-        [longitude + 0.5 * alpha, fitBounds?.maxLat || latitude],
-      ];
-
-      map.fitBounds(bbox, {
-        speed: 0.75,
-        linear: true,
-      });
+      if (stateApp.selectedParcel.feature)
+        findBoundsMap([stateApp.selectedParcel.feature], map);
 
       setStateApp((state) => ({
         ...state,

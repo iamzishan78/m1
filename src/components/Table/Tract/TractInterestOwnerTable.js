@@ -27,7 +27,7 @@ import { deepEqualObjects, copy } from "components/Shared/functions";
 import { addTrailingZeros } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 
-const genericDataActions = ["tags", "comments", "tracks", "ifAreContacts"];
+const genericDataActions = ["comments", "tracks", "ifAreContacts"];
 const interestKeys = [
   "nra",
   "surface_interest",
@@ -46,6 +46,7 @@ function TractInterestOwnerTable(props) {
   let history = useHistory();
   const classes = usetableStyles();
   const [selectedRows, setSelectedRows] = useState([]);
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -90,6 +91,15 @@ function TractInterestOwnerTable(props) {
           }
         }
       });
+      if(hit?.tags?.length > 0){
+        const tags = hit.tags.map((tag) => tag.tag)
+        if(tags[0]){
+          hit.tags = [[tags], hit.tags.length]
+        }
+
+      }else{
+        hit.tags = [[], 0];
+      }
       hit = props.setGenricData(
         hit,
         hit?.contact?._id,
@@ -163,6 +173,7 @@ function TractInterestOwnerTable(props) {
         awaitRefetchQueries: true,
       });
     }
+    setResetSelectedRow(!resetSelectedRow)
   };
   return (
     <Container
@@ -240,6 +251,7 @@ function TractInterestOwnerTable(props) {
         orderByTracks={false}
         startPaginationAt={null}
         onTableChange={props.onTableChange}
+        resetSelectedRow={resetSelectedRow}
         options={{
           ...props.options,
           customToolbar: () => {

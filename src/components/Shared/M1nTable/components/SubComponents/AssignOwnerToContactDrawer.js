@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, Grid, Container, Box, CircularProgress, InputAdornment, IconButton } from "@material-ui/core";
+import { Button, Grid, Box, CircularProgress, InputAdornment, IconButton } from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import SearchIcon from "@material-ui/icons/Search";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
+import { Modals } from "styles/Modal";
 
 import CloseSharp from "@material-ui/icons/CloseSharp";
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
@@ -18,11 +22,15 @@ import TextField from "@material-ui/core/TextField";
 import { UPDATEBULKCONTACT } from "graphQL/useMutationUpdateBulkContact";
 import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 
-
-
 const styles = () => ({
   topHeading: { fontWeight: "bold" },
   loading: { position: "absolute", left: "250px", bottom: "148px", zIndex: "150" },
+  dialogTitle: {
+    padding: "25px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center"
+  }
 });
 
 const useStyles = makeStyles(styles);
@@ -30,6 +38,7 @@ const useStyles = makeStyles(styles);
 export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes, showSuccessMessage, getContactCampaignAction, campaignList }) {
   const [stateApp] = React.useContext(AppContext);
   const classes = useStyles();
+  const modalClass = Modals();
   const [contactOwner, setContactOwner] = useState('');
   const [field, setField] = useState('');
   const [fieldKey, setFieldKey] = useState('');
@@ -183,118 +192,98 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   }
 
   return (
-    <RightDialog open={true}>
-      <Container maxWidth="sm" >
-        <div >
-          <Box p={3} pt={1}>
-            <Grid container direction="row" spacing={4} justify="space-between" alignItems="center" >
-              <Grid item>
-                <Typography className={classes.topHeading} variant="h5" component="h2">
-                  Bulk Update
+    <RightDialog open={true} width={'700px'}>
+      <MuiDialogTitle disableTypography className={classes.dialogTitle}>
+        <Typography className={classes.topHeading} variant="h5" component="h1">
+          Bulk Update
+        </Typography>
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          size="medium"
+        >
+          <KeyboardTabIcon fontSize="large" />
+        </IconButton>
+      </MuiDialogTitle>
+      <DialogContent>
+        <Box p={0} pt={2} pb={2}>
+          {rows.map((row) => (
+            <Grid container direction="row" spacing={2} alignItems="center" key={row.id}>
+              <Grid item md={11}>
+                <Typography style={{ backgroundColor: "#edfbff" }}>
+                  <Grid container alignItems='center' style={{ paddingLeft: 10 }}>
+                    <Grid item md={4}>{row.name}</Grid>
+                    <Grid item md={8}>{row.address1} {row.address2} {row.city}, {row.state} {row.zip}</Grid>
+                  </Grid>
                 </Typography>
               </Grid>
-              <Grid item>
-                <IconButton aria-label="delete" color="primary" onClick={onClose}>
-                  <KeyboardTabIcon />
+              <Grid item md={1}>
+                <IconButton aria-label="delete" onClick={() => onDelete(row)}>
+                  <CloseSharp />
                 </IconButton>
               </Grid>
             </Grid>
-
-            {/* <Box mt={2}>
-              <Typography>
-                Assign a contact owner to the selected contacts by choosing contact owner from the list below and clicking the assign button.
-              </Typography>
-            </Box> */}
-
-            <Box pt={3}>
-              <Typography style={{ fontWeight: "bold" }}>Contacts</Typography>
-              <Typography>{rows.length} selected</Typography>
-            </Box>
-          </Box>
-
-          <Box ml={3}>
-            {rows.map((row) => (
-              <Grid container direction="row" spacing={2} alignItems="center" key={row.id}>
-                <Grid item md={11}>
-                  <Typography style={{ backgroundColor: "#edfbff" }}>
-                    <Grid container alignItems='center' style={{ paddingLeft: 10 }}>
-                      <Grid item md={4}>{row.name}</Grid>
-                      <Grid item md={8}>{row.address1} {row.address2} {row.city}, {row.state} {row.zip}</Grid>
-                    </Grid>
-                  </Typography>
-                </Grid>
-                <Grid item md={1}>
-                  <IconButton aria-label="delete" onClick={() => onDelete(row)}>
-                    <CloseSharp />
-                  </IconButton>
-                </Grid>
-              </Grid>
-            ))}
-          </Box>
-          <Box p={3} pt={3}>
-            <Grid container direction="column"  >
-              <Grid item>
-                <Typography style={{ fontWeight: "bold", paddingBottom: "10px" }}>Search for the field you would like to update from the list below</Typography>
-              </Grid>
-              <Grid item >
-                <Autocomplete
-                  freeSolo
-                  id="free-solo-2-demo"
-                  disableClearable
-                  options={fieldsToUpdate.map((field) => field.title)}
-                  onChange={(e, field) => {
-                    setFieldKey("")
-                    onFieldToUpdateChange(field)
-                  }}
-
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      placeholder="Select field to update"
-                      variant="outlined"
-
-                      InputProps={{
-                        ...params.InputProps,
-                        type: 'search',
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SearchIcon htmlColor="#757575" />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item>
-                <Typography style={{ fontWeight: "bold", marginTop: "30px" }}>{field}</Typography>
-              </Grid>
-              <Grid item>
-                <SelectedField />
-              </Grid>
+          ))}
+        </Box>
+        <Box p={0} pt={2} pb={2}>
+          <Grid container direction="column"  >
+            <Grid item>
+              <Typography style={{ fontWeight: "bold", paddingBottom: "10px" }}>Search for the field you would like to update from the list below</Typography>
             </Grid>
-          </Box>
+            <Grid item >
+              <Autocomplete
+                freeSolo
+                id="free-solo-2-demo"
+                disableClearable
+                options={fieldsToUpdate.map((field) => field.title)}
+                onChange={(e, field) => {
+                  setFieldKey("")
+                  onFieldToUpdateChange(field)
+                }}
 
-          <Box pt={6} mt={6} pb={6}>
-            <Grid container direction="row" justify="flex-end" alignItems="flex-end">
-              <Grid item>
-                <Button onClick={onClose}>Cancel</Button>
-              </Grid>
-              <Grid item>
-                <Button
-                  variant="contained"
-                  component="span"
-                  disabled={isDisabled}
-                  style={isDisabled ? {} : { backgroundColor: "#00abed", color: "white" }}
-                  onClick={onAssign}
-                >
-                  Update
-                </Button>
-              </Grid>
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="Select field to update"
+                    variant="outlined"
+
+                    InputProps={{
+                      ...params.InputProps,
+                      type: 'search',
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon htmlColor="#757575" />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
+              />
             </Grid>
-          </Box>
-        </div>
-      </Container>
+            <Grid item>
+              <Typography style={{ fontWeight: "bold", marginTop: "30px" }}>{field}</Typography>
+            </Grid>
+            <Grid item>
+              <SelectedField />
+            </Grid>
+          </Grid>
+        </Box>
+      </DialogContent>
+
+      <DialogActions className={modalClass.actionButtons}>
+
+        <Button onClick={onClose}>Cancel</Button>
+        <Button
+          variant="contained"
+          component="span"
+          disabled={isDisabled}
+          style={isDisabled ? {} : { backgroundColor: "#00abed", color: "white" }}
+          onClick={onAssign}
+        >
+          Update
+        </Button>
+      </DialogActions>
+
 
       {loading && (
         <div className={classes.loading}>
