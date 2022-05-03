@@ -219,7 +219,6 @@ function SuggestedShapeTaxOwnersTable(props) {
   ////////////Contact Wells end///////////////////////////////////////////////
 
   const onTableChange = (action, tableState, rows, meta) => {
-
     const pageVariables = {
       variables: {
         polygon: getPolygonString(props.customLayer?.shape),

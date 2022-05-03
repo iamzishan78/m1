@@ -39,7 +39,6 @@ import { Controller, useForm } from "react-hook-form";
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 
-
 const entities = [
   "Corporation",
   "Educational Institution",
@@ -111,6 +110,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const { control } = useForm();
   const [newOwner, setNewOwner] = useState({
     surface_interest: null,
+    ownerType: null,
     cost_bearing: null,
     ownerType: null,
     cost_bearing_high_value: null,
