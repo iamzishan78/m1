@@ -408,8 +408,8 @@ function SuggestedOwnerTable(props) {
               setM1nSelectedRowsIndexesRef.current(m1nSelectedRowsIndexes);
             }
           }}
-          onSuccess={() => {}}
-          setRows={() => {}}
+          onSuccess={() => { }}
+          setRows={() => { }}
         />
       )}
     </Container>

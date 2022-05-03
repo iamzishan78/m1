@@ -268,7 +268,6 @@ export default function MapShape() {
 
       const initializeMap = ({ setMap, mapEl, setStateApp }) => {
         let id = mapEl.current.id;
-
         const newMap = new mapboxgl.Map({
           container: `${id}`,
           style: "mapbox://styles/m1neral/" + mapStyles[index].id,
