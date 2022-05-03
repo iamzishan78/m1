@@ -1,3 +1,5 @@
+import { addAfterLabel } from "./helper";
+
 const PARCELINTERESTS_FIELDS = require("./PARCELINTERESTS").default
 
 const tracts = [
@@ -81,6 +83,13 @@ const tracts = [
     },
     ...PARCELINTERESTS_FIELDS
 ];
+
+addAfterLabel(tracts, 'Parcel Name', {
+    label: "Description",
+    mapped_key: "",
+    actual_key: "shape.description",
+})
+
 
 tracts.find((key) => key.actual_key === 'entityDetail.state').label = 'AddressState'
 

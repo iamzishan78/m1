@@ -157,7 +157,7 @@ function ContactsTable(props) {
       // filters: Contacts?.filters ? getFilters() : [],
       selectedGridView: Contacts || defaultView,
       startPaginationAt: 25,
-      defaultSort: { field: "lastUpdateAt", order: "desc" },
+      // defaultSort: { field: "lastUpdateAt", order: "desc", unmapped_type: 'date' },
       formatHits,
       initializeGenericData: { key: "id", actions: genericDataActions },
     });
