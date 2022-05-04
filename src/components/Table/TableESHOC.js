@@ -134,7 +134,7 @@ export const TableESHOC = (Component) => {
                         index: tableMeta.esIndex,
                         pagination: {
                             first: tableMeta.startPaginationAt,
-                            keep_alive: "1micros"
+                            after: null
                         },
                         search: {
                             query: tableMeta.extendSearchQuery,
@@ -191,7 +191,7 @@ export const TableESHOC = (Component) => {
         const setColumnsData = (tableCols) => {
             let { TableHeader, extendSearchQuery, esIndex, filters } = tableMeta
             let appliedFilters = initialFilters;
-            if(filters && filters.length > 0) {
+            if (filters && filters.length > 0) {
                 appliedFilters = [...initialFilters, ...filters]
             }
             tableCols.forEach((column, index) => {
@@ -397,7 +397,7 @@ export const TableESHOC = (Component) => {
                             let field = columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
                                 columns.find(el => el.name === tableState.sortOrder?.name)?.name;
                             return {
-                                field: Array.isArray(field) ? field[0] : field,
+                                field: Array.isArray(field) ? field[0].replace('.keyword', "") : field.replace('.keyword', ""),
                                 order: tableState.sortOrder?.direction
                             }
 

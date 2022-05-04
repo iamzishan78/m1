@@ -628,6 +628,8 @@ const ContactsHeadCells = [
     options: {
       filter: false,
       sort: true,
+      sortDescFirst: true,
+      sortDirection: 'desc',
     },
   },
   // {
