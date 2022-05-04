@@ -646,14 +646,10 @@ function SubTable(props) {
     }
   }, [viewFileResult]);
 
-  useEffect(() => {
-    console.log("console from table component");
-  }, [activeRowIndex]);
-
   // handlers
   const handleWellFlyTo = (value) => {
     const shapeId = history.location.pathname.split("/");
-    const shapeType = stateApp.selectedShape.layerType;
+    const shapeType = stateApp.selectedShape.type;
     history.push(
       `/map/wells/${value?.wellId.toUpperCase()}`,
       {
