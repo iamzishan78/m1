@@ -10,6 +10,7 @@ import { AppContext } from "../../../AppContext";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 import AddDealDialog from "components/Transact/components/DealDialog/AddDealDialog";
 import Button from "@material-ui/core/Button";
+import PipelinesFetchHoc from "components/Transact/components/Common/PipelinesFetchHoc";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   h5: { color: "#757575", marginTop: "0", textAlign: "left" },
 }));
 
-export default function Deals({ contact, ...props }) {
+const Deals = ({ contact, ...props }) => {
   const classes = useStyles();
   let history = useHistory();
   const [wonDeals, setWonDeals] = useState([]); // deal closed
@@ -202,4 +203,6 @@ export default function Deals({ contact, ...props }) {
       )}
     </>
   );
-}
+};
+
+export default PipelinesFetchHoc(Deals);

@@ -1230,7 +1230,7 @@ function AddDealDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
+            setM1nSelectedRowsIndexes={() => {}}
           >
             Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
@@ -1270,7 +1270,7 @@ function AddDealDialog(props) {
             <div className={classes.contentRoot}>
               <Drawer dealSettingsNumber={getSubtaskNumber()} mapSettings={mapSettings} />
               {!["Deal", "Map"].includes(stateApp.transactBarView) &&
-                (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
+              (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>
               ) : (
                 <div className={classes.inputFieldRoot}>
@@ -1469,14 +1469,13 @@ function AddDealDialog(props) {
                           fullWidth
                         >
                           {selectedPipe && <option value={selectedPipe._id}>{selectedPipe.name}</option>}
-                          {sortedPipelines?.map((pipeline, i) => {
-                            if (selectedPipe && selectedPipe._id === pipeline._id) return <></>;
-                            return (
+                          {sortedPipelines
+                            .filter((pipeline) => selectedPipe?._id !== pipeline?._id)
+                            .map((pipeline, i) => (
                               <option value={pipeline._id} key={i}>
                                 {pipeline.name}
                               </option>
-                            );
-                          })}
+                            ))}
                         </TextField>
                       </Grid>
                     </Grid>
