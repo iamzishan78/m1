@@ -175,9 +175,9 @@ const useStyles = makeStyles((theme) => ({
       marginRight: (props) => props.toolbarActionMarginRight ?? "inherit",
       flex: "0 1 auto",
     },
-    "& .MuiInput-root": {
-      left: "100px !important"
-    },
+    "& .MuiInput-root": props => ({
+      left: props.header !== "Tax Roll Ownership" ? "100px !important" : "0px !important",
+    }),
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
       backgroundColor: "#fff",
