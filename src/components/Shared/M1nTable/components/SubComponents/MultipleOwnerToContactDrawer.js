@@ -372,7 +372,15 @@ const MultipleOwnerToContactDrawer = ({
             </>
           }
           <Box marginTop={3} >
-            <Tags variant="standard" setTagId={setTagId} targetLabel="contact" targetSourceId="new" hidePlusIcon />
+            <Tags
+              variant="standard"
+              setTagId={setTagId}
+              targetLabel="contact"
+              targetSourceId="new"
+              hidePlusIcon
+              shareable={false}
+              width="100%"
+            />
           </Box>
 
           {((tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)) &&
