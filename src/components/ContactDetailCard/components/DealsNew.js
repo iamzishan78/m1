@@ -205,4 +205,4 @@ const Deals = ({ contact, ...props }) => {
   );
 };
 
-export default PipelinesFetchHoc(Deals);
+export default PipelinesFetchHoc(Deals, "contact");

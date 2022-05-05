@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import { setFlowState } from "actions";
 
-export default function PipelinesFetchHoc(Component) {
+export default function PipelinesFetchHoc(Component, module = "flow") {
   return function HOC(props) {
     const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
     const { selectedPipe, pipelines } = useSelector(({ Flow }) => Flow);
@@ -45,10 +45,12 @@ export default function PipelinesFetchHoc(Component) {
               activePipeline = pipelinesData.pipelines.find((p) => p._id === selectedPipe._id);
             } else activePipeline = pipelinesData.pipelines[0];
           }
-          if (activePipeline && laneId && cardId) {
-            history.push(`/flow/${activePipeline._id}/lane/${laneId}/card/${cardId}`);
-          } else if (activePipeline) {
-            history.push(`/flow/${activePipeline._id}`);
+          if (module === "module") {
+            if (activePipeline && laneId && cardId) {
+              history.push(`/flow/${activePipeline._id}/lane/${laneId}/card/${cardId}`);
+            } else if (activePipeline) {
+              history.push(`/flow/${activePipeline._id}`);
+            }
           }
 
           dispatch(
