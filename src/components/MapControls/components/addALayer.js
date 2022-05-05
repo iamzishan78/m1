@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
   },
   contentRoot: {
     padding: "15px",
-    height: "calc(100% - 130px)",
+    height: "calc(100% - 65px)",
     position: "absolute",
     overflow: "overlay",
   },
@@ -456,19 +456,6 @@ export default function AddLayer(props) {
                   <div className={classes.uploaderText}>
                     <span>
                       To add a new user-defined shape layer, drag and drop a GeoJSON or Shapefile anywhere on this screen or click here to select file from your local drive
-                      {/* //hiding for now as this functionality does not work currently
-                {" "}
-                <span
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleAddLayer();
-                  }}
-                  className={classes.url}
-                >
-                  here
-                </span>{" "}
-                to enter an URL. */}
                     </span>
                   </div>
                   <div onClick={(e) => e.stopPropagation()}>
@@ -519,9 +506,9 @@ export default function AddLayer(props) {
                                     inputProps={{ "aria-label": "primary checkbox" }}
                                   />
                                   <EditableTextField onChange={changeLayerName} item={layer} name={layer.name} isEditable={checkIfDeleteAllow(layer)} />
-                                  <ListItemSecondaryAction style={{ marginRight: "30px" }} onClick={(e) => e.stopPropagation()}>
-                                    {
-                                      checkIfDeleteAllow(layer) && <Tooltip title="Delete" placement="top">
+                                  {checkIfDeleteAllow(layer) && (
+                                    <ListItemSecondaryAction onClick={(e) => e.stopPropagation()}>
+                                      <Tooltip title="Delete" placement="top">
                                         <IconButton
                                           edge="end"
                                           size="small"
@@ -532,9 +519,8 @@ export default function AddLayer(props) {
                                           <DeleteIcon />
                                         </IconButton>
                                       </Tooltip>
-                                    }
-
-                                  </ListItemSecondaryAction>
+                                    </ListItemSecondaryAction>
+                                  )}
                                 </AccordionSummary>
                                 <Box paddingLeft={2} paddingRight={2}>
                                   <List className={classes.list}>
