@@ -15,6 +15,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import CloseSharp from "@material-ui/icons/CloseSharp";
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import DoneSharpIcon from "@material-ui/icons/DoneSharp";
 import RemoveSharpIcon from "@material-ui/icons/RemoveSharp";
 
@@ -200,7 +201,7 @@ const MultipleOwnerToContactDrawer = ({
     <RightDialog open={true}>
       <Container maxWidth="sm" >
         <div >
-          <Box p={3} pt={1}>
+          <Box pt={1} pb={3} p={0}>
             <Grid container direction="row" spacing={4} justify="space-between" alignItems="center" >
               <Grid item>
                 <Typography className={classes.topHeading} variant="h5" component="h2">
@@ -209,7 +210,7 @@ const MultipleOwnerToContactDrawer = ({
               </Grid>
               <Grid item>
                 <IconButton aria-label="delete" color="primary" onClick={onClose}>
-                  <CloseSharp />
+                  <KeyboardTabIcon />
                 </IconButton>
               </Grid>
             </Grid>
@@ -262,10 +263,10 @@ const MultipleOwnerToContactDrawer = ({
             </Box>
           </Box>
 
-          <Box ml={3}>
+          <Box>
             {rows.map((row) => (
 
-              <Grid container direction="row" spacing={2} alignItems="center" key={row.id}>
+              <Grid container direction="row" spacing={2} alignItems="center" key={row.id} justify="space-between" display="flex">
                 {
                   tab === TAB.NEW && actionType === ACTION.COMBINE && <Grid item md={1}>
                     {primaryOwner.id === row.id ? (
