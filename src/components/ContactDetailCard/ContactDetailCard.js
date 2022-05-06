@@ -1004,7 +1004,7 @@ export default function ContactDetailCard(props) {
             {/*/////////// new section -associated interests and deals //////////// */}
             <Grid container item xs={12} className={`${classes.border}`} style={{ padding: "23px 28px" }} spacing={0}>
               <Grid item xs={12}>
-                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>Entity Associations</h4>
+                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>Contact Relationships</h4>
               </Grid>
 
               <Grid item xs={12}>
