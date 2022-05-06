@@ -170,7 +170,7 @@ const RssFeed = () => {
     <Fragment>
       <CardHeader
        // action={<DragHandle />}
-        title={`Latest News`}
+        title={`In The News`}
         className={classes.header}
       />
 
