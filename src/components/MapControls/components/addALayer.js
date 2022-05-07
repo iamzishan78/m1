@@ -151,6 +151,7 @@ export default function AddLayer(props) {
   const [openUD, setOpenUD] = React.useState(true);
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openUDLayers, setUDLayersStates] = useState([]);
 
   const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
@@ -493,10 +494,15 @@ export default function AddLayer(props) {
                             return (
                               <Accordion>
                                 <AccordionSummary
-                                  expandIcon={<ExpandMoreIcon />}
+                                  // expandIcon={<ExpandMoreIcon />}
                                   aria-controls="panel1a-content"
                                   id="panel1a-header"
                                   style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
+                                  onClick={() => {
+                                    const _index = openUDLayers.findIndex(l => l === index);
+                                    if (_index === -1) setUDLayersStates([...openUDLayers, index]);
+                                    else setUDLayersStates(openUDLayers.filter(l => l !== index));
+                                  }}
                                 >
                                   <Checkbox
                                     checked={!!layer.layers.find((l) => l.layerSettings.showable)}
@@ -505,7 +511,14 @@ export default function AddLayer(props) {
                                     onChange={(e) => changeShowAble(layer)}
                                     inputProps={{ "aria-label": "primary checkbox" }}
                                   />
-                                  <EditableTextField onChange={changeLayerName} item={layer} name={layer.name} isEditable={checkIfDeleteAllow(layer)} />
+                                  <EditableTextField
+                                    onChange={changeLayerName}
+                                    item={layer}
+                                    name={layer.name}
+                                    isEditable={checkIfDeleteAllow(layer)}
+                                    showExpandIcon
+                                    openUd={openUDLayers.includes(index)}
+                                  />
                                   {checkIfDeleteAllow(layer) && (
                                     <ListItemSecondaryAction onClick={(e) => e.stopPropagation()}>
                                       <Tooltip title="Delete" placement="top">

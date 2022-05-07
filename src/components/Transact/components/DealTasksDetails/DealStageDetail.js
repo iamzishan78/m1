@@ -196,8 +196,15 @@ function DealStageDetail({ settings, index, users, extendedTaskIndex, user, acti
                 defaultValue={get(settings, "stageDealDescriptor.comment", "")}
                 label="Stage notes"
                 fullWidth
-                onBlur={(e) => handleChangeSettings(settings, { comment: e.target.value })}
+                onBlur={(e) => {
+                  handleChangeSettings(settings, { comment: e.target.value });
+                }}
                 className={classes.notes}
+                onKeyPress={(event) => {
+                  if (event.key === "Enter") {
+                    document.activeElement.blur();
+                  }
+                }}
               />
             </Grid>
             <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
