@@ -175,9 +175,9 @@ const useStyles = makeStyles((theme) => ({
       marginRight: (props) => props.toolbarActionMarginRight ?? "inherit",
       flex: "0 1 auto",
     },
-    "& .MuiInput-root": props => ({
-      left: props.header !== "Tax Roll Ownership" ? "100px !important" : "0px !important",
-    }),
+    // "& .MuiInput-root": props => ({
+    //   left: props.header !== "Tax Roll Ownership" ? "100px !important" : "0px !important",
+    // }),
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
       backgroundColor: "#fff",
@@ -335,15 +335,14 @@ const useStyles = makeStyles((theme) => ({
     color: "gray",
   },
   blue: { color: theme.palette.secondary.main, fontWeight: "bold" },
-  customDropDown: {
+  customDropDown: props => ({
     height: "31px",
-    // border: "1px solid red",
     display: "inline",
-    left: "223px",
     position: "absolute",
     top: "19px",
     zIndex: "88889 !important",
-  },
+    left: props.parent === "OwnersPerWell" ? "205px !important" : "325px !important",
+  }),
   selectPopover: {
     zIndex: "88890 !important",
   },
