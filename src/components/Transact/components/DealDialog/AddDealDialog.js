@@ -312,7 +312,6 @@ function AddDealDialog(props) {
   const [receivedDate, setReceivedDate] = useState("");
   const [bidDate, setBidDate] = useState("");
   const [closeDate, setCloseDate] = useState("");
-  const [colaborators, setColaborators] = useState([]);
   const [originationDate, setOriginationDate] = useState(null);
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
@@ -324,7 +323,7 @@ function AddDealDialog(props) {
   const [hasNextPage, setHasNextPage] = useState(true);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
-  let [transactData, setTransactData] = useState(props.transactData ? { ...props.transactData } : null);
+  let [transactData] = useState(props.transactData ? { ...props.transactData } : null);
 
   const [mapSettings, setMapSettings] = useState(null);
 
@@ -338,13 +337,13 @@ function AddDealDialog(props) {
     fetchPolicy: "no-cache",
   });
 
-  const [addDeal, { data: dealData, loading: addDealLoading }] = useMutation(ADDDEAL);
+  const [addDeal, { loading: addDealLoading }] = useMutation(ADDDEAL);
   const [createDealDefaultSettings] = useMutation(CREATE_DEAL_DEFAULT_SETTINGS);
   const [updateDeal, { loading: updateDealLoading }] = useMutation(UPDATEDEAL);
   const [upsertDealDescriptor, { loading: upsertDealDescriptorLoading }] = useMutation(UPSERTDEALDESCRIPTOR);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
   const [updateStageDealDescriptor, { data: updatedStageDealDescriptor }] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
-  const [updateStageDealDescriptors, { data: updatedStageDealDescriptors }] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
+  const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
 
   const [getContact, { data: cData }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
@@ -633,7 +632,6 @@ function AddDealDialog(props) {
       setCloseDate(card.closeDate ? moment.parseZone(card.closeDate).format("yyyy-MM-DD") : "");
       setMapSettings(card.mapSettings ? card.mapSettings : null);
       setDealPosition(card.position ? card.position : null);
-      // setColaborators(card.colaborators ? card.colaborators : []);
       setOriginationDate(card.ts ? card.ts : null);
 
       setOwnerId(card.owners[0]?.relatedObject?._id || card.ownerId);
@@ -672,7 +670,6 @@ function AddDealDialog(props) {
     setBidDate("");
     setCloseDate("");
     setMapSettings(null);
-    setColaborators([]);
     setOriginationDate(null);
     setTarget({});
     setCardId("");
@@ -1469,14 +1466,13 @@ function AddDealDialog(props) {
                           fullWidth
                         >
                           {selectedPipe && <option value={selectedPipe._id}>{selectedPipe.name}</option>}
-                          {sortedPipelines?.map((pipeline, i) => {
-                            if (selectedPipe && selectedPipe._id === pipeline._id) return <></>;
-                            return (
+                          {sortedPipelines
+                            .filter((pipeline) => selectedPipe?._id !== pipeline?._id)
+                            .map((pipeline, i) => (
                               <option value={pipeline._id} key={i}>
                                 {pipeline.name}
                               </option>
-                            );
-                          })}
+                            ))}
                         </TextField>
                       </Grid>
                     </Grid>

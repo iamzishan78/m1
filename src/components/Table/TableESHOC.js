@@ -595,15 +595,21 @@ export const TableESHOC = (Component) => {
                 </div>
             } : undefined,
             customToolbarSelect: ({ data }) => {
-                return props.targetLabel !== "well" && (<div style={{ height: "48px", display: "flex" }}>
-                    <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
-                        <Tooltip title={"Delete"}>
-                            <IconButton size="medium" style={{ margin: "0 5px" }} aria-label="delete" onClick={(e) => { setOpenDialog("delete"); }}>
-                                <DeleteIcon />
-                            </IconButton>
-                        </Tooltip>
-                    </div>
-                </div>)
+                return props.targetLabel !== "well"
+                    && props.targetLabel !== "unit"
+                    && props.targetLabel !== "operator"
+                    && props.targetLabel !== "owner"
+                    && (
+                        <div style={{ height: "48px", display: "flex" }}>
+                            <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
+                                <Tooltip title={"Delete"}>
+                                    <IconButton size="medium" style={{ margin: "0 5px" }} aria-label="delete" onClick={(e) => { setOpenDialog("delete"); }}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </div>
+                        </div>
+                    )
             },
             onRowClick: (rowData, { dataIndex, rowIndex }) => {
                 setAddToTable('update')

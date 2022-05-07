@@ -4,6 +4,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { TextField, Grid } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import Typography from "@material-ui/core/Typography";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
 import { truncate } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
@@ -27,13 +29,16 @@ const useStyles = makeStyles((theme) => ({
     left: "7px",
     position: "relative",
   }),
+  expandIcon: {
+    margin: "9px 0px 0px 9px"
+  },
   textFieldInput: {
     height: "40px",
   },
   textFieldLabel: {},
 }));
 
-function EditableTextField({ item, onChange, name, isEditable = true }) {
+function EditableTextField({ item, onChange, name, isEditable = true, showExpandIcon = false, openUd = false }) {
   const [isEdit, setEdit] = useState({});
   const classes = useStyles({ isEdit, type: item.type });
   return (
@@ -84,6 +89,11 @@ function EditableTextField({ item, onChange, name, isEditable = true }) {
           />
         )}
       </Grid>
+      {showExpandIcon && (
+        <Grid item className={classes.expandIcon}>
+          {openUd ? <ExpandLess /> : <ExpandMore />}
+        </Grid>
+      )}
     </Grid>
   );
 }
