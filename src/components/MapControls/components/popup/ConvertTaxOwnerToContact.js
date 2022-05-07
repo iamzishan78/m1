@@ -230,7 +230,14 @@ const ConvertTaxOwnerToContact = ({
           />
         </div>
         <div className={classes.tags}>
-          <Tags variant="standard" setTagId={setTagId} removeTagId={removeTagId} targetLabel="contact" targetSourceId="new" hidePlusIcon />
+          <Tags
+            variant="standard"
+            setTagId={setTagId}
+            removeTagId={removeTagId}
+            targetLabel="contact"
+            targetSourceId="new"
+            hidePlusIcon
+          />
         </div>
         <Box pt={6} mt={6} mb={6} mr={2}>
           <Grid container direction="row" justify="flex-end" alignItems="flex-end">
