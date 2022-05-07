@@ -237,6 +237,7 @@ const ConvertTaxOwnerToContact = ({
             targetLabel="contact"
             targetSourceId="new"
             hidePlusIcon
+            shareable={false}
           />
         </div>
         <Box pt={6} mt={6} mb={6} mr={2}>
