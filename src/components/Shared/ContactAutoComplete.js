@@ -6,14 +6,10 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles(theme => ({
-    iconContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-
-    },
-    tex1: {
-        colorPrimary: 'white'
+    maxWidth: {
+        "& textarea": {
+            height: "20px !important"
+        }
     }
 }));
 
