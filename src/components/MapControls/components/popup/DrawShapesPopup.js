@@ -78,7 +78,7 @@ const DrawShapesPopup = (props) => {
       setStateApp((state) => ({
         ...state,
         multiSelectLandGrids: !state.multiSelectLandGrids,
-        editDraw: false,
+        editDraw: true, isDrawing: true,
         shapeToExtend: state.currentFeature,
         lastSelectedDrawMode: shape.mode,
         changeDrawShapeType: false
@@ -128,7 +128,8 @@ const DrawShapesPopup = (props) => {
     newFeature.properties.id = featureId;
 
     if (shapeToExtend) {
-      newFeature = union(newFeature, shapeToExtend);
+      if (stateApp.shapeEditMode !== 'redraw')
+        newFeature = union(newFeature, shapeToExtend);
       shapeToExtend.geometry = newFeature.geometry
       newFeature = shapeToExtend
     }
@@ -144,7 +145,8 @@ const DrawShapesPopup = (props) => {
       shapeToExtend: undefined,
       multiSelectLandGrids: false,
       isAbstractedLayersPolygon: true,
-      showShapeActionsPopup: true
+      showShapeActionsPopup: true,
+      reDrawShape: false,
     }));
     addCustomShapeProperties(newFeature, draw);
 
