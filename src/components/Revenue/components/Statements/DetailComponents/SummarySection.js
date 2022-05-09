@@ -305,11 +305,11 @@ const SummarySection = ({ checkId }) => {
     if (prodSummary) {
       const productMapping = metaData.find((meta) => meta.name === 'product_type')
 
-      const products = uniqBy(productMapping.mapping, 'to').map((product) => product.to)
+      const products = uniqBy(productMapping?.mapping, 'to').map((product) => product.to)
       let buckets = [];
       console.log(prodSummary)
       products.forEach((p) => {
-        const mappings = productMapping.mapping.filter((m) => m.to === p)
+        const mappings = productMapping?.mapping.filter((m) => m.to === p)
         const bucket = { key: p.includes('NGL') ? 'NGL' : p }
         mappings.forEach((m) => {
           const fundBucket = prodSummary?.product?.buckets.find((b) => b.key === m.from);
