@@ -45,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   customTextField: {
+    "& textarea": {
+      zIndex: 99
+    },
     "& textarea::placeholder": {
       color: "black",
     },
