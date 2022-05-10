@@ -483,6 +483,14 @@ export const useStyles = makeStyles((theme) => ({
     fontSize: "15px",
     padding: "10px",
   },
+  editWorkspaceIcon: {
+    textAlign: "right",
+    margin: "5px 0px 0px 108px",
+    "& svg": {
+      color: "white",
+      fill: "#ffff"
+    }
+  }
 }));
 
 export const M1neralLogoNavNoAuth = (props) => (
