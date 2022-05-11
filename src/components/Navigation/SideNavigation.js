@@ -46,6 +46,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
   const [notifications, setNotifications] = useState([]);
   const [showWorkspaceModal, setWorkspaceModal] = useState(false);
   const [logoSrc, setLogoSrc] = useState(`${process.env.PUBLIC_URL}/icons/logo-192x192.png`);
+  const [logoTitle, setLogoTitle] = useState();
   const classes = useStyles({ mapGridCardActivated });
   const theme = useTheme();
 
@@ -88,6 +89,9 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
   }, [viewFileResult]);
 
   useEffect(() => {
+    if (workspaceSettings?.workspaceSettings?.workspaceSetting?.title) {
+      setLogoTitle(workspaceSettings?.workspaceSettings?.workspaceSetting?.title);
+    }
     if (workspaceSettings?.workspaceSettings?.workspaceSetting?.file?.fileUrl) {
       viewFile({ variables: { fileId: workspaceSettings.workspaceSettings.workspaceSetting.file._id } });
     } else {
@@ -115,10 +119,10 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
       >
         <div className={classes.toolbar}>
           <div className={classes.drawerOpenLogo} onClick={handleDrawerOpen}>
-            {!_.isEmpty(workspaceSettings?.workspaceSettings?.workspaceSetting) ? (
+            {logoSrc && logoTitle ? (
               <div className={classes.workspaceIcon}>
                 <img src={logoSrc} alt="Logo Not Found" />
-                <Typography variant="h3">{workspaceSettings?.workspaceSettings?.workspaceSetting?.title}</Typography>
+                <Typography variant="h3">{logoTitle}</Typography>
               </div>
             ) : (
               <M1neralLogoWhiteLetters />
@@ -393,6 +397,8 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
           workspaceSettings={{ ...workspaceSettings.workspaceSettings?.workspaceSetting, fileUrl: logoSrc }}
           setWorkspaceModal={setWorkspaceModal}
           setLogoSrc={setLogoSrc}
+          setLogoTitle={setLogoTitle}
+          logoTitle={logoTitle}
         />
       )}
     </div>

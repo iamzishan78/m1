@@ -100,12 +100,12 @@ const DialogActions = withStyles((theme) => ({
 
 const m1neralIconPath = `${process.env.PUBLIC_URL}/icons/logo-192x192.png`;
 
-export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal, setLogoSrc }) {
+export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal, setLogoSrc, logoTitle, setLogoTitle }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [inputFile, setInputFile] = useState(null);
   const [src, setSrc] = useState(workspaceSettings?.fileUrl ?? m1neralIconPath);
-  const [workspaceTitle, setWorkspaceTitle] = useState(workspaceSettings.title ?? "m1neral");
+  const [workspaceTitle, setWorkspaceTitle] = useState(logoTitle ?? "m1neral");
   const [addOrUpdateWorkspaceSettings, { data: upsertWorkspaceSettings }] = useMutation(UPSERT_WORKSPACE_SETTINGS);
   const [addFile, { data: fileData }] = useMutation(ADDFILE);
 
@@ -156,6 +156,7 @@ export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal
   useEffect(() => {
     if (upsertWorkspaceSettings?.upsertWorkspaceSettings?.status === true) {
       setLogoSrc(src);
+      setLogoTitle(workspaceTitle);
       handleClose();
     }
   }, [upsertWorkspaceSettings]);
@@ -178,15 +179,16 @@ export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal
   };
 
   const saveSettings = () => {
-    if (src === m1neralIconPath) {
+    if (src === m1neralIconPath || !inputFile?.name) {
+      const obj = {
+        name: window.sessionStorage.getItem("tenantName"),
+        modifier: stateApp.user._id,
+        title: workspaceTitle,
+      };
+      if (src === m1neralIconPath) obj.file = null;
       addOrUpdateWorkspaceSettings({
         variables: {
-          workspaceSettings: {
-            name: window.sessionStorage.getItem("tenantName"),
-            modifier: stateApp.user._id,
-            file: null,
-            title: workspaceTitle,
-          },
+          workspaceSettings: obj,
         },
         refetchQueries: ["getWorkspaceSettings"],
         awaitRefetchQueries: true,
