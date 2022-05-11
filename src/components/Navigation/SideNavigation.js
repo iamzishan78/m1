@@ -392,6 +392,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
         <WorkspaceEditModal
           workspaceSettings={{ ...workspaceSettings.workspaceSettings?.workspaceSetting, fileUrl: logoSrc }}
           setWorkspaceModal={setWorkspaceModal}
+          setLogoSrc={setLogoSrc}
         />
       )}
     </div>

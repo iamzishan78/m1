@@ -100,7 +100,7 @@ const DialogActions = withStyles((theme) => ({
 
 const m1neralIconPath = `${process.env.PUBLIC_URL}/icons/logo-192x192.png`;
 
-export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal }) {
+export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal, setLogoSrc }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [inputFile, setInputFile] = useState(null);
@@ -144,8 +144,6 @@ export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal
                       title: workspaceTitle,
                     },
                   },
-                  refetchQueries: ["getWorkspaceSettings"],
-                  awaitRefetchQueries: true,
                 });
               } else dispatch(showErrorMessage("Upload failed"));
             })
@@ -157,6 +155,7 @@ export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal
 
   useEffect(() => {
     if (upsertWorkspaceSettings?.upsertWorkspaceSettings?.status === true) {
+      setLogoSrc(src);
       handleClose();
     }
   }, [upsertWorkspaceSettings]);
