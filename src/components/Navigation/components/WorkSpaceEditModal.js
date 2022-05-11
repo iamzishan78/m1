@@ -165,10 +165,11 @@ export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal
     setWorkspaceModal(false);
   };
 
-  const handleFileInput = (files) => {
-    if (Array.isArray(files)) {
-      let inputFile = files[0]?.file;
-      let fileName = files[0]?.file?.name;
+  const handleFileInput = (e) => {
+    if (e.target.files?.length > 0) {
+      const file = e.target.files[0];
+      let inputFile = file;
+      let fileName = file.name;
 
       if (inputFile && fileName) {
         setInputFile(inputFile);
