@@ -59,30 +59,11 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "transparent !important",
     borderRadius: "10px !important",
   },
-  dropzoneClass: {
-    "&:hover": { backgroundColor: "#dddddd" },
-    "& .MuiDropzoneArea-text": {
-      fontSize: "0.83em",
-      marginBlockStart: "1.67em",
-      marginBlockEnd: "1.67em",
-      fontWeight: "bold",
-    },
-    "& .MuiDropzoneArea-icon": { display: "none" },
-
+  button: {
+    textTransform: "none",
     width: "100%",
-    border: "1px solid #dddddd",
-    height: "36px",
-    display: "flex",
-    padding: "6px 37px",
-    minHeight: "0px",
     textAlign: "center",
-    alignItems: "center",
-    fontWeight: "normal",
     marginBottom: "4px",
-    justifyContent: "center",
-    backgroundColor: "#eee",
-    borderRadius: "5px",
-    fontSize: "16px",
   },
   cancelButton: {
     textTransform: "capitalize",
@@ -269,17 +250,19 @@ export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <DropzoneAreaBase
-                    onAdd={handleFileInput}
-                    showAlerts={false}
-                    filesLimit={1}
-                    dropzoneText={"Upload an image"}
-                    acceptedFiles={["image/*"]}
-                    maxFileSize={104857600}
-                    dropzoneClass={classes.dropzoneClass}
-                    showPreviews={true}
-                    useChipsForPreview={true}
+                  <input
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    id="workspace-image"
+                    type="file"
+                    name="profileimage"
+                    onChange={(e) => handleFileInput(e)}
                   />
+                  <label htmlFor="workspace-image">
+                    <Button variant="outlined" component="span" className={classes.button}>
+                      Upload an image
+                    </Button>
+                  </label>
                   <Button fullWidth style={{ textTransform: "capitalize" }} onClick={handleRemoveImage}>
                     Remove Image
                   </Button>
