@@ -84,6 +84,9 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "5px",
     fontSize: "16px",
   },
+  cancelButton: {
+    textTransform: "capitalize",
+  },
 }));
 
 const DialogTitle = (props) => {
@@ -286,7 +289,7 @@ export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleClose} variant="outlined">
+          <Button onClick={handleClose} variant="outlined" className={classes.cancelButton}>
             Cancel
           </Button>
           <Button variant="contained" component="span" style={{ backgroundColor: "#00abed", color: "white" }} onClick={saveSettings}>
