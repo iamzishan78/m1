@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { useDispatch } from "react-redux";
+import { useMutation } from "@apollo/client";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -11,6 +13,14 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import { DropzoneAreaBase } from "material-ui-dropzone";
+import { showErrorMessage } from "actions";
+
+import { BlockBlobClient } from "@azure/storage-blob";
+
+import { UPSERT_WORKSPACE_SETTINGS } from "graphQL/useMutationWorksapceSettings";
+import { ADDFILE } from "graphQL/useMutationAddFile";
+
+import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,13 +45,6 @@ const useStyles = makeStyles((theme) => ({
       border: "1px solid black",
       backgroundColor: "transparent",
     },
-    "&:hover": {
-      backgroundColor: "#EBEBEB",
-    },
-    "&:active": {
-      border: "1px solid black",
-      backgroundColor: "#fff",
-    },
   },
   inputFieldDate: {
     marginBottom: "7px",
@@ -54,7 +57,6 @@ const useStyles = makeStyles((theme) => ({
     width: "135px !important",
     height: "130px !important",
     backgroundColor: "transparent !important",
-    // border: "1px solid #999",
     borderRadius: "10px !important",
   },
   dropzoneClass: {
@@ -112,8 +114,68 @@ const DialogActions = withStyles((theme) => ({
   },
 }))(MuiDialogActions);
 
+const m1neralIconPath = `${process.env.PUBLIC_URL}/icons/logo-192x192.png`;
+
 export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal }) {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const [inputFile, setInputFile] = useState(null);
+  const [src, setSrc] = useState(workspaceSettings?.fileUrl ?? m1neralIconPath);
+  const [workspaceTitle, setWorkspaceTitle] = useState(workspaceSettings.title ?? "m1neral");
+  const [addOrUpdateWorkspaceSettings, { data: upsertWorkspaceSettings }] = useMutation(UPSERT_WORKSPACE_SETTINGS);
+  const [addFile, { data: fileData }] = useMutation(ADDFILE);
+
+  const [stateApp] = useContext(AppContext);
+
+  useEffect(() => {
+    if (fileData && fileData.addFile) {
+      if (fileData.addFile.success) {
+        // Upload file to MS Blob Storage
+
+        const uri = fileData.addFile.file.uri;
+        const interal_key = fileData.addFile.file.internalKey;
+        const file_id = fileData.addFile.file.id;
+        const file_name = fileData.addFile.file.name;
+
+        if (file_id) {
+          const blockBlobClient = new BlockBlobClient(uri);
+          blockBlobClient
+            .uploadBrowserData(inputFile, {
+              maxSingleShotSize: 4 * 1024 * 1024,
+              blobHTTPHeaders: {
+                blobContentDisposition: `attachment; filename="${file_name}"`,
+              },
+              metadata: {
+                Internalkey: interal_key,
+              },
+            })
+            .then((res) => {
+              if (res?._response?.status === 201) {
+                addOrUpdateWorkspaceSettings({
+                  variables: {
+                    workspaceSettings: {
+                      name: window.sessionStorage.getItem("tenantName"),
+                      modifier: stateApp.user._id,
+                      file: fileData.addFile.file.id,
+                      title: workspaceTitle,
+                    },
+                  },
+                  refetchQueries: ["getWorkspaceSettings"],
+                  awaitRefetchQueries: true,
+                });
+              } else dispatch(showErrorMessage("Upload failed"));
+            })
+            .catch((err) => console.log(err));
+        }
+      }
+    }
+  }, [fileData]);
+
+  useEffect(() => {
+    if (upsertWorkspaceSettings?.upsertWorkspaceSettings?.status === true) {
+      handleClose();
+    }
+  }, [upsertWorkspaceSettings]);
 
   const handleClose = () => {
     setWorkspaceModal(false);
@@ -125,8 +187,38 @@ export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal
       let fileName = files[0]?.file?.name;
 
       if (inputFile && fileName) {
+        setInputFile(inputFile);
+        setSrc(URL.createObjectURL(inputFile));
       }
     }
+  };
+
+  const saveSettings = () => {
+    if (src === m1neralIconPath) {
+      addOrUpdateWorkspaceSettings({
+        variables: {
+          workspaceSettings: {
+            name: window.sessionStorage.getItem("tenantName"),
+            modifier: stateApp.user._id,
+            file: null,
+            title: workspaceTitle,
+          },
+        },
+        refetchQueries: ["getWorkspaceSettings"],
+        awaitRefetchQueries: true,
+      });
+    } else {
+      addFile({
+        variables: {
+          fileName: inputFile.name,
+          userId: stateApp.user._id,
+        },
+      });
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSrc(m1neralIconPath);
   };
 
   return (
@@ -137,27 +229,29 @@ export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal
         </DialogTitle>
         <DialogContent dividers>
           <Grid container display="flex" justify="center" alignItems="center" direction="row" style={{ width: "480px" }}>
-            <Grid item xs={5}>
-              <img
-                src={
-                  "https://m1devstorage.blob.core.windows.net/m1dev/61411e422a6d59605f572965.jpg?st=2022-05-10T08%3A56%3A14Z&se=2022-05-10T09%3A56%3A14Z&sp=r&sv=2018-03-28&sr=b&sig=sSUoDNFbEXypXUkf84M3ccFW3iioOJ1mhUeR%2FOR0RWc%3D"
-                }
-                alt={"file uri not found"}
-                className={classes.forImage}
-              />
+            <Grid item xs={5} style={{ paddingLeft: "20px" }}>
+              <img src={src} alt={"file uri not found"} className={classes.forImage} />
             </Grid>
             <Grid item xs={6}>
-              <Grid container display="flex" justify="space-between" alignItems="center" direction="row" spacing={2}>
+              <Grid
+                container
+                display="flex"
+                justify="space-between"
+                alignItems="center"
+                direction="row"
+                spacing={2}
+                style={{ color: "#575757" }}
+              >
                 <Grid item xs={12}>
                   <h4 style={{ marginBottom: 0 }}>Display Name</h4>
                   <TextField
                     margin="dense"
                     variant="outlined"
-                    value={"M1neral"}
+                    value={workspaceTitle}
                     placeholder=""
                     fullWidth
                     className={`${classes.dateRoot} ${classes.inputFieldDate}`}
-                    onChange={(e) => {}}
+                    onChange={(e) => setWorkspaceTitle(e.target.value)}
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -180,8 +274,10 @@ export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal
                     acceptedFiles={["image/*"]}
                     maxFileSize={104857600}
                     dropzoneClass={classes.dropzoneClass}
-                  ></DropzoneAreaBase>
-                  <Button fullWidth style={{ textTransform: "capitalize" }}>
+                    showPreviews={true}
+                    useChipsForPreview={true}
+                  />
+                  <Button fullWidth style={{ textTransform: "capitalize" }} onClick={handleRemoveImage}>
                     Remove Image
                   </Button>
                 </Grid>
@@ -193,7 +289,7 @@ export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal
           <Button autoFocus onClick={handleClose} variant="outlined">
             Cancel
           </Button>
-          <Button variant="contained" component="span" style={{ backgroundColor: "#00abed", color: "white" }}>
+          <Button variant="contained" component="span" style={{ backgroundColor: "#00abed", color: "white" }} onClick={saveSettings}>
             Save changes
           </Button>
         </DialogActions>

@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
+import _ from "underscore";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
@@ -15,6 +16,7 @@ import DashboardIcon from "@material-ui/icons/Dashboard";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import MenuIcon from "@material-ui/icons/Menu";
+import Typography from "@material-ui/core/Typography";
 import FlowIcon from "@material-ui/icons/Repeat";
 import ActivityIcon from "@material-ui/icons/Event";
 import SearchIcon from "@material-ui/icons/Search";
@@ -26,6 +28,7 @@ import { AppContext } from "AppContext";
 import { M1neralLogoNavNoAuth, useStyles } from "./Common";
 import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
 import { GET_WORKSPACE_SETTINGS } from "graphQL/useQueryWorkspaceSettings";
+import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
@@ -42,6 +45,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
   const [notifications, setNotifications] = useState([]);
   const [showWorkspaceModal, setWorkspaceModal] = useState(false);
+  const [logoSrc, setLogoSrc] = useState(`${process.env.PUBLIC_URL}/icons/logo-192x192.png`);
   const classes = useStyles({ mapGridCardActivated });
   const theme = useTheme();
 
@@ -49,6 +53,9 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
     fetchPolicy: "network-only",
   });
   const [getWorkspaceSettings, { data: workspaceSettings }] = useLazyQuery(GET_WORKSPACE_SETTINGS, { fetchPolicy: "network-only" });
+  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "no-cache",
+  });
 
   useEffect(() => {
     let workspaceName = window.sessionStorage.getItem("tenantName");
@@ -74,6 +81,20 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
     }
   }, [notificationsData]);
 
+  useEffect(() => {
+    if (viewFileResult?.viewFile?.uri) {
+      setLogoSrc(viewFileResult?.viewFile?.uri);
+    }
+  }, [viewFileResult]);
+
+  useEffect(() => {
+    if (workspaceSettings?.workspaceSettings?.workspaceSetting?.file?.fileUrl) {
+      viewFile({ variables: { fileId: workspaceSettings.workspaceSettings.workspaceSetting.file._id } });
+    } else {
+      setLogoSrc(`${process.env.PUBLIC_URL}/icons/logo-192x192.png`);
+    }
+  }, [workspaceSettings]);
+
   return (
     <div style={{ zIndex: 1223 }}>
       {" "}
@@ -94,7 +115,14 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
       >
         <div className={classes.toolbar}>
           <div className={classes.drawerOpenLogo} onClick={handleDrawerOpen}>
-            <M1neralLogoWhiteLetters />
+            {!_.isEmpty(workspaceSettings?.workspaceSettings?.workspaceSetting) ? (
+              <div className={classes.workspaceIcon}>
+                <img src={logoSrc} alt="Logo Not Found" />
+                <Typography variant="h3">{workspaceSettings?.workspaceSettings?.workspaceSetting?.title}</Typography>
+              </div>
+            ) : (
+              <M1neralLogoWhiteLetters />
+            )}
           </div>
 
           <Tooltip title="Edit Workspace" className={classes.editWorkspaceIcon}>
@@ -361,7 +389,10 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
         </List>
       </Drawer>
       {showWorkspaceModal && (
-        <WorkspaceEditModal workspaceSettings={workspaceSettings.workspaceSettings} setWorkspaceModal={setWorkspaceModal} />
+        <WorkspaceEditModal
+          workspaceSettings={{ ...workspaceSettings.workspaceSettings?.workspaceSetting, fileUrl: logoSrc }}
+          setWorkspaceModal={setWorkspaceModal}
+        />
       )}
     </div>
   );
