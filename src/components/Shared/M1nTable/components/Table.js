@@ -1791,7 +1791,7 @@ function SubTable(props) {
                               selectedMenuIndexFind: 0,
                               contactFromMap: true,
                             }));
-                            routeChange(`/contact/details/${tableMeta.rowData[1]}/`);
+                            routeChange(`/contact/details/${value}`);
                             setTitle("Contact Details");
                             setSubTitle(" ");
 
