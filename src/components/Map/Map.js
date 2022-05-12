@@ -1649,9 +1649,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
     // USE EFFECT FOR BASEMAP LAYER HANDLING
     const mapLayers = copy(stateApp.layers)
     if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
-      const landLayer = mapLayers.find((layer) => layer.identifier === 'Land Grid')
+      const landLayer = mapLayers?.find((layer) => layer.identifier === 'Land Grid')
       const baseMapLandIndex = stateApp.baseMapLayers.findIndex((layer) => layer.name === 'Land Grid')
-      if (!landLayer.layerSettings.visiable && stateApp.checkedBaseLayers.includes(baseMapLandIndex)) {
+      if (!landLayer?.layerSettings?.visiable && stateApp.checkedBaseLayers.includes(baseMapLandIndex)) {
         setStateApp((state) => ({ ...state, checkedBaseLayers: stateApp.checkedBaseLayers.filter((l) => l !== baseMapLandIndex) }))
         return
       }
