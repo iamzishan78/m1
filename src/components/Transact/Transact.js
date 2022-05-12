@@ -638,7 +638,7 @@ const Transact = () => {
 
   return (
     <div className={classes.root}>
-      <DocViewer width="calc(100vw - 28vw)" />
+      {stateApp.viewDoc && <DocViewer width="calc(100vw - 28vw)" />}
       {stateApp.dealDialog && (
         <AddDealDialog
           open={true}

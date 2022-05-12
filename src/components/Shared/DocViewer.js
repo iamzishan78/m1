@@ -217,6 +217,7 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
                   <IconButton
                     onClick={() => {
                       setStateApp({ ...stateApp, viewDoc: null });
+                      setpdfState([]);
                     }}
                     size="small"
                   >
