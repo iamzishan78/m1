@@ -1741,7 +1741,6 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  value = tableMeta.rowData[1]
                   if ((props.targetLabel === "deal" || props.targetLabel === "activity") && value === null) {
                     return (
                       <p
@@ -1792,9 +1791,6 @@ function SubTable(props) {
                               selectedMenuIndexFind: 0,
                               contactFromMap: true,
                             }));
-                            console.log("value : ", value)
-                            console.log("tablemeta : ", tableMeta)
-                            console.log("updateValue : ", updateValue)
                             routeChange(`/contact/details/${tableMeta.rowData[1]}/`);
                             setTitle("Contact Details");
                             setSubTitle(" ");
@@ -4352,25 +4348,25 @@ function SubTable(props) {
                   ? true
                   : false
               }
-              maxWidth={
-                openDialog === "owner" || openDialog === "wellsPerOwner" || openDialog === "ownerContacts"
-                  ? "xl"
-                  : openDialog === "owner" ||
-                    openDialog === "ownersPerContacts" ||
-                    openDialog === "wellsPerOwner" ||
-                    openDialog === "owner" ||
-                    openDialog === "wellsPerOwner" ||
-                    openDialog === "buyContactsInfo" ||
-                    openDialog === "sendMailers" ||
-                    openDialog === "printLabels" ||
-                    openDialog === "deleteUser" ||
-                    openDialog === "deleteWellInterest" ||
-                    openDialog === "deleteParcelDocument" ||
-                    openDialog === "deleteWellDocument" ||
-                    openDialog === "addParcelInterestsToEntity"
-                    ? true
-                    : false
-              }
+              // maxWidth={
+              //   openDialog === "owner" || openDialog === "wellsPerOwner" || openDialog === "ownerContacts"
+              //     ? "xl"
+              //     : openDialog === "owner" ||
+              //       openDialog === "ownersPerContacts" ||
+              //       openDialog === "wellsPerOwner" ||
+              //       openDialog === "owner" ||
+              //       openDialog === "wellsPerOwner" ||
+              //       openDialog === "buyContactsInfo" ||
+              //       openDialog === "sendMailers" ||
+              //       openDialog === "printLabels" ||
+              //       openDialog === "deleteUser" ||
+              //       openDialog === "deleteWellInterest" ||
+              //       openDialog === "deleteParcelDocument" ||
+              //       openDialog === "deleteWellDocument" ||
+              //       openDialog === "addParcelInterestsToEntity"
+              //       ? true
+              //       : false
+              // }
               maxWidth={
                 openDialog === "owner" || openDialog === "wellsPerOwner" || openDialog === "ownerContacts"
                   ? "xl"
