@@ -94,7 +94,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 
   useEffect(() => {
     if ((type === "layer" || type === "heatMaps" || type === "marketplace") && filteredItems) {
-      setLayerMap(filteredItems.filter((item) => item.identifier !== 'Land Grid'));
+      setLayerMap(filteredItems);
     } else if (type === "base" && filteredItems) {
       setLayerMap(filteredItems.filter((item) => item.name !== "Water" && item.name !== "Land"));
     }
