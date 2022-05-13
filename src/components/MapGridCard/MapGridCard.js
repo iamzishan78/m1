@@ -1,7 +1,6 @@
 import React, { Fragment, useState, useContext, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../AppContext";
-import { useMediaQuery } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
@@ -226,12 +225,6 @@ const TabLabels = ({ labels, value, setValue }) => {
 function MapGridCard(props) {
   // contexts
   const [stateApp] = useContext(AppContext);
-  // const dcreenSizes = {
-  //   "1000": useMediaQuery("(min-height: 1000px)"),
-  //   "1200": useMediaQuery("(min-height: 1200px)"),
-  //   "1400": useMediaQuery("(min-height: 1400px)"),
-  //   "1600": useMediaQuery("(min-height: 1600px)")
-  // }
 
   // function state
   const [searchTapValue, SearchTapValue] = useState(stateApp.layerGridCard ? platformDataInitialData[3] : platformDataInitialData[0]);

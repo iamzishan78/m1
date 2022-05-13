@@ -134,7 +134,7 @@ export const TableESHOC = (Component) => {
                         index: tableMeta.esIndex,
                         pagination: {
                             first: tableMeta.startPaginationAt,
-                            keep_alive: "1micros"
+                            after: null
                         },
                         search: {
                             query: tableMeta.extendSearchQuery,
@@ -191,7 +191,7 @@ export const TableESHOC = (Component) => {
         const setColumnsData = (tableCols) => {
             let { TableHeader, extendSearchQuery, esIndex, filters } = tableMeta
             let appliedFilters = initialFilters;
-            if(filters && filters.length > 0) {
+            if (filters && filters.length > 0) {
                 appliedFilters = [...initialFilters, ...filters]
             }
             tableCols.forEach((column, index) => {
@@ -595,15 +595,21 @@ export const TableESHOC = (Component) => {
                 </div>
             } : undefined,
             customToolbarSelect: ({ data }) => {
-                return props.targetLabel !== "well" && (<div style={{ height: "48px", display: "flex" }}>
-                    <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
-                        <Tooltip title={"Delete"}>
-                            <IconButton size="medium" style={{ margin: "0 5px" }} aria-label="delete" onClick={(e) => { setOpenDialog("delete"); }}>
-                                <DeleteIcon />
-                            </IconButton>
-                        </Tooltip>
-                    </div>
-                </div>)
+                return props.targetLabel !== "well"
+                    && props.targetLabel !== "unit"
+                    && props.targetLabel !== "operator"
+                    && props.targetLabel !== "owner"
+                    && (
+                        <div style={{ height: "48px", display: "flex" }}>
+                            <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
+                                <Tooltip title={"Delete"}>
+                                    <IconButton size="medium" style={{ margin: "0 5px" }} aria-label="delete" onClick={(e) => { setOpenDialog("delete"); }}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </div>
+                        </div>
+                    )
             },
             onRowClick: (rowData, { dataIndex, rowIndex }) => {
                 setAddToTable('update')

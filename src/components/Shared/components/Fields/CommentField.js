@@ -45,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   customTextField: {
+    "& textarea": {
+      zIndex: 99
+    },
     "& textarea::placeholder": {
       color: "black",
     },
@@ -189,8 +192,6 @@ export default function DealComment({
   };
 
   const onInputChange = (event, value, reason) => {
-
-    // value = value.replace(/\s\s/g, ' ');
     if (!isSelected) {
       setCommentValue(value);
     } else {

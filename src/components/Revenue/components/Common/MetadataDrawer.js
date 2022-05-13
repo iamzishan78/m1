@@ -12,7 +12,6 @@ import {
   InputAdornment,
 } from "@material-ui/core";
 import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
-import AddIcon from "@material-ui/icons/Add";
 import CommentComponent from "components/Shared/CommentComponent";
 import AddDialogeUploadZone from "components/ContactDetailCard/components/AddDialogUploadZone";
 import { useLazyQuery } from "@apollo/client";
@@ -476,6 +475,7 @@ export default function MetadataDrawer(props) {
           <CommentComponent
             targetLabel={targetLabel}
             targetSourceId={targetSourceId}
+            commentsHeight={targetLabel === "Contact" ? "580px" : null}
           />
         </div>
       </div>
