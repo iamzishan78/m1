@@ -71,7 +71,6 @@ function MapGridUnitTable(props) {
 
   useEffect(() => {
     setTableMeta({
-      addableName: "Unit",
       extendSearchQuery: searchInput,
       searchFields: ["name", "_all"],
       TableHeader: copy(TableHeader),
