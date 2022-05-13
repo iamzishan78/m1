@@ -149,6 +149,27 @@ export default function SidePanel() {
       });
 
       setToggleFunction(() => ({ index }) => {
+        if (stateApp.baseMapLayers[index]?.name === 'Land Grid') {
+          const currentLayers = [...stateApp.layers];
+          const layer = currentLayers.find((layer) => layer.identifier === 'Land Grid')
+          if (layer) {
+            layer.layerSettings.visiable = !layer.layerSettings.visiable
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              layers: [...currentLayers],
+            }));
+            // saving to mongo
+            updateLayerSettings({
+              variables: {
+                settings: {
+                  _id: layer._id,
+                  layerSettings: layer.layerSettings,
+                },
+              },
+            });
+          }
+        }
+
         const currentIndex = stateApp.checkedBaseLayers.indexOf(index);
         let newChecked = [...stateApp.checkedBaseLayers];
         if (currentIndex === -1) {
@@ -200,7 +221,7 @@ export default function SidePanel() {
               });
             }
             if (!item.groupId) {
-              const showable = item.layerSettings.showable && item.identifier != "Tracked Owners";
+              const showable = item.layerSettings.showable && item.identifier !== "Tracked Owners" && item.identifier !== "Land Grid";
               layerAndGroups.push({
                 ...item,
                 visiable: item.layerSettings.visiable,
