@@ -973,7 +973,7 @@ export default function ContactDetailCard(props) {
               className={classes.border}
             >
               <div className={classes.tags}>
-                <Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" publicLeftBottom />
+                <Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" shareable={false} />
               </div>
             </Grid>
 
