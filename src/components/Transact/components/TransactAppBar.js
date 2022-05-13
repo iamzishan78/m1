@@ -216,7 +216,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
             </Tooltip>
           </div>
 
-          {openPipeDialog && <PipelineCustomDialog />}
+          <PipelineCustomDialog />
           <div className={classes.left}>
             <div>
               <Button onClick={handleClickAddDeal} color="secondary" className={classes.newDealAction} startIcon={<Add />}>
