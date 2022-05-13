@@ -153,7 +153,6 @@ const PipelineCustomDialog = (props) => {
         dispatch(showWarningMessage("There are deals associated to this flowline, please remove them first."));
       else {
         setDeleteDialogOpen("pipe");
-        handleClose();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
