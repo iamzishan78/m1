@@ -101,7 +101,7 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
   };
 
   return (
-    <div>
+    <>
       {divCondition === false ? (
         <Modal
           open={!!stateApp.viewDoc}
@@ -270,7 +270,7 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
           )}
         </>
       )}
-    </div>
+    </>
   );
 };
 

@@ -260,7 +260,8 @@ const useStyles = makeStyles((theme) => ({
     transition: "width 0.3s ease-out",
     webkitTransition: "width 0.3s ease-out",
     overflow: "overlay",
-    maxHeight: "calc(100vh - 139px)"
+    maxHeight: "calc(100vh - 139px)",
+    width: "100%"
   },
   shrinkRightColumn: {
     position: "absolute",
@@ -561,7 +562,7 @@ export default function ContactDetailCard(props) {
   };
   const togglePullout = () => dispatch(toggleRightColumn());
   return contactData ? (
-    <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)" }}>
+    <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)", width: "100%" }}>
       <div className={classes.header}>
         <div
           style={{
@@ -782,277 +783,276 @@ export default function ContactDetailCard(props) {
       <div className={classes.mainGridContainer}>
         {/*/////////// left column //////////// */}
 
-        {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
-          <div className={classes.leftColumn}>
-            {" "}
-            <DocViewer DocStyle={{ backgroundColor: "white !important", width: "70vw" }} divCondition={true}></DocViewer>
-          </div>
-        ) : (
-          <Grid container className={classes.leftColumn}>
-            {/*/////////// section 1 //////////// */}
+        <Grid container className={classes.leftColumn}>
+          {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
+            <DocViewer DocStyle={{ backgroundColor: "white !important", width: "71vw" }} divCondition={true}></DocViewer>
+          ) : (
+            <>
+              {/*/////////// section 1 //////////// */}
 
-            <Grid
-              item
-              xs={12}
-              style={{
-                padding: "20px 25px",
-              }}
-              className={classes.border}
-            >
-              <div className={classes.leftColumnTopRigthCorner}>
-                <Button
-                  className={classes.contactDataButton}
-                  startIcon={<RequestPageIcon color="white" />}
-                  onClick={() => {
-                    handleExpandClick("buyContactsInfo");
-                  }}
-                >
-                  Contact Data
-                </Button>
+              <Grid
+                item
+                xs={12}
+                style={{
+                  padding: "20px 25px",
+                }}
+                className={classes.border}
+              >
+                <div className={classes.leftColumnTopRigthCorner}>
+                  <Button
+                    className={classes.contactDataButton}
+                    startIcon={<RequestPageIcon color="white" />}
+                    onClick={() => {
+                      handleExpandClick("buyContactsInfo");
+                    }}
+                  >
+                    Contact Data
+                  </Button>
 
-                {contactData.primaryEmail ? (
-                  <a href={"mailto:" + contactData.primaryEmail}>
-                    <Button
-                      className={classes.emailButton}
+                  {contactData.primaryEmail ? (
+                    <a href={"mailto:" + contactData.primaryEmail}>
+                      <Button
+                        className={classes.emailButton}
+                        startIcon={<EmailOutlinedIcon />}
+                      >
+                        Email
+                      </Button>
+                    </a>
+                  ) :
+                    (<Button
+                      className={classes.disabledButton}
+                      variant="outlined"
                       startIcon={<EmailOutlinedIcon />}
+                      disabled
                     >
                       Email
-                    </Button>
-                  </a>
-                ) :
-                  (<Button
-                    className={classes.disabledButton}
-                    variant="outlined"
-                    startIcon={<EmailOutlinedIcon />}
-                    disabled
-                  >
-                    Email
-                  </Button>)}
+                    </Button>)}
 
-                <Menu
-                  id="simple-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "center",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "center",
-                  }}
-                >
-                  <FeatureFlag feature={FEATURES.IDICORE}>
+                  <Menu
+                    id="simple-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "center",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "center",
+                    }}
+                  >
+                    <FeatureFlag feature={FEATURES.IDICORE}>
+                      <MenuItem
+                        className={classes.userMenuItem}
+                        onClick={(e) => {
+                          if (!contactData.firstName || !contactData.lastName || !contactData.address1) {
+                            handleExpandClick("contactDataMissing");
+                          } else {
+                            handleExpandClick("buyContactsInfo");
+                          }
+                          handleClose();
+                        }}
+                      >
+                        Purchase contact data
+                      </MenuItem>
+                    </FeatureFlag>
                     <MenuItem
                       className={classes.userMenuItem}
                       onClick={(e) => {
-                        if (!contactData.firstName || !contactData.lastName || !contactData.address1) {
-                          handleExpandClick("contactDataMissing");
-                        } else {
-                          handleExpandClick("buyContactsInfo");
-                        }
                         handleClose();
+                        handleExpandClick("deleteConfirmation");
                       }}
                     >
-                      Purchase contact data
+                      Delete contact
                     </MenuItem>
-                  </FeatureFlag>
-                  <MenuItem
-                    className={classes.userMenuItem}
-                    onClick={(e) => {
-                      handleClose();
-                      handleExpandClick("deleteConfirmation");
-                    }}
-                  >
-                    Delete contact
-                  </MenuItem>
-                </Menu>
-              </div>
-              <div>
-                <div className={classes.userIcon}>
-                  <StyleBadge>
-                    <Avatar
-                      className={classes.grey}
-                      name={
-                        contactData.name ||
-                        `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`
-                      }
-                      size="93"
-                      round
-                    />
-                  </StyleBadge>
+                  </Menu>
                 </div>
-                <div className={classes.userName}>
-                  <h2 style={{ width: "max-content" }}>
-                    <FieldContent
-                      noInputFooter
-                      noMargin
-                      id={contactData._id}
-                      entity={contactData.entity}
-                      content={{ name: getName(contactData) }}
-                      disabled
-                    >
-                      {(contactData.facebook || contactData.twitter || contactData.linkedIn) && (
-                        <span className={classes.socialMediaSection}>
-                          {contactData.facebook && (
-                            <a
-                              href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${contactData.facebook
-                                }`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              <FacebookIcon />
-                            </a>
-                          )}
-                          {contactData.twitter && (
-                            <a
-                              href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${contactData.twitter
-                                }`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              <TwitterIcon className={classes.twitterIcon} />
-                            </a>
-                          )}
-                          {contactData.linkedIn && (
-                            <a
-                              href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${contactData.linkedIn
-                                }`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              <LinkedInIcon />
-                            </a>
-                          )}
-                        </span>
-                      )}
-                    </FieldContent>
-                  </h2>
-                  <h4>
-                    <FieldContent
-                      childrenLeft
-                      noMargin
-                      name="Address"
-                      id={contactData._id}
-                      entity={contactData.entity}
-                      content={{
-                        address1: contactData.address1,
-                        address2: contactData.address2,
-                        city: contactData.city,
-                        state: contactData.state,
-                        zip: contactData.zip,
-                        country: contactData.country,
-                      }}
-                    />
-                  </h4>
-                  <h4>
-                    <FieldContent
-                      childrenLeft
-                      noMargin
-                      name={"Company Name Or Job Title"}
-                      id={contactData._id}
-                      entity={contactData.entity}
-                      content={{
-                        companyName: contactData.companyName,
-                        jobTitle: contactData.jobTitle,
-                      }}
-                    />
-                  </h4>
-                </div>
-              </div>
-            </Grid>
-            {/*/////////// section 2 //////////// */}
-            <Grid
-              item
-              xs={12}
-              style={{
-                padding: "10px 15px 0px 15px",
-              }}
-              className={classes.border}
-            >
-              <div className={classes.tags}>
-                <Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" shareable={false} />
-              </div>
-            </Grid>
-
-            {/*/////////// section 3 //////////// */}
-            <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px" }}>
-              <ContactDetailedInfo user={stateApp.user} purchaseData={purchaseData} contactData={contactData} />
-            </Grid>
-            {/*/////////// new section - lead stage //////////// */}
-            <Grid item xs={12} className={`${classes.border}`}>
-              <div className={classes.SectMargin}>
-                <Grid item xs={12} style={{ minHeight: "33px" }}>
-                  <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
-                    Lead Stage changed:{" "}
-                    <span style={{ fontWeight: "normal" }}>
-                      {anyToDate(
-                        contactData.lastUpdateLeadStageAt ? contactData.lastUpdateLeadStageAt : contactData.lastUpdateAt
-                      ).toLocaleString()}
-                    </span>
-                  </h4>
-                </Grid>
-
-                <Grid item xs={12} style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}>
-                  <LeadStage leadStage={contactData.leadStage ? contactData.leadStage : "New"} id={contactData._id} />
-                </Grid>
-              </div>
-            </Grid>
-
-            {/*/////////// new section -associated interests and deals //////////// */}
-            <Grid container item xs={12} className={`${classes.border}`} style={{ padding: "23px 28px" }} spacing={0}>
-              <Grid item xs={12}>
-                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>Entity Associations</h4>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item xs={3} style={{ minWidth: "250px" }}>
-                    <Card raised style={{ minHeight: "165px", height: "100%" }}>
-                      <WellsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
-                    </Card>
-                  </Grid>
-                  <Grid item xs={3} style={{ minWidth: "250px" }}>
-                    <Card raised style={{ minHeight: "35px", height: "100%" }}>
-                      <ShapeOwnershipCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
-                    </Card>
-                  </Grid>
-                  <Grid item xs={3} style={{ minWidth: "250px" }}>
-                    <Card raised style={{ minHeight: "35px", height: "100%" }}>
-                      <ParcelsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
-                    </Card>
-                  </Grid>
-                  <Grid item xs={3} style={{ minWidth: "250px" }}>
-                    <Card raised style={{ minHeight: "165px", height: "100%" }}>
-                      <DealsNew
-                        handleOpenExpandableCard={handleOpenExpandableCard}
-                        contact={contactData}
-                        transactData={transactData}
-                        transactId={transactId}
+                <div>
+                  <div className={classes.userIcon}>
+                    <StyleBadge>
+                      <Avatar
+                        className={classes.grey}
+                        name={
+                          contactData.name ||
+                          `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`
+                        }
+                        size="93"
+                        round
                       />
-                    </Card>
+                    </StyleBadge>
+                  </div>
+                  <div className={classes.userName}>
+                    <h2 style={{ width: "max-content" }}>
+                      <FieldContent
+                        noInputFooter
+                        noMargin
+                        id={contactData._id}
+                        entity={contactData.entity}
+                        content={{ name: getName(contactData) }}
+                        disabled
+                      >
+                        {(contactData.facebook || contactData.twitter || contactData.linkedIn) && (
+                          <span className={classes.socialMediaSection}>
+                            {contactData.facebook && (
+                              <a
+                                href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${contactData.facebook
+                                  }`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <FacebookIcon />
+                              </a>
+                            )}
+                            {contactData.twitter && (
+                              <a
+                                href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${contactData.twitter
+                                  }`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <TwitterIcon className={classes.twitterIcon} />
+                              </a>
+                            )}
+                            {contactData.linkedIn && (
+                              <a
+                                href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${contactData.linkedIn
+                                  }`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <LinkedInIcon />
+                              </a>
+                            )}
+                          </span>
+                        )}
+                      </FieldContent>
+                    </h2>
+                    <h4>
+                      <FieldContent
+                        childrenLeft
+                        noMargin
+                        name="Address"
+                        id={contactData._id}
+                        entity={contactData.entity}
+                        content={{
+                          address1: contactData.address1,
+                          address2: contactData.address2,
+                          city: contactData.city,
+                          state: contactData.state,
+                          zip: contactData.zip,
+                          country: contactData.country,
+                        }}
+                      />
+                    </h4>
+                    <h4>
+                      <FieldContent
+                        childrenLeft
+                        noMargin
+                        name={"Company Name Or Job Title"}
+                        id={contactData._id}
+                        entity={contactData.entity}
+                        content={{
+                          companyName: contactData.companyName,
+                          jobTitle: contactData.jobTitle,
+                        }}
+                      />
+                    </h4>
+                  </div>
+                </div>
+              </Grid>
+              {/*/////////// section 2 //////////// */}
+              <Grid
+                item
+                xs={12}
+                style={{
+                  padding: "10px 15px 0px 15px",
+                }}
+                className={classes.border}
+              >
+                <div className={classes.tags}>
+                  <Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" shareable={false} />
+                </div>
+              </Grid>
+
+              {/*/////////// section 3 //////////// */}
+              <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px" }}>
+                <ContactDetailedInfo user={stateApp.user} purchaseData={purchaseData} contactData={contactData} />
+              </Grid>
+              {/*/////////// new section - lead stage //////////// */}
+              <Grid item xs={12} className={`${classes.border}`}>
+                <div className={classes.SectMargin}>
+                  <Grid item xs={12} style={{ minHeight: "33px" }}>
+                    <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
+                      Lead Stage changed:{" "}
+                      <span style={{ fontWeight: "normal" }}>
+                        {anyToDate(
+                          contactData.lastUpdateLeadStageAt ? contactData.lastUpdateLeadStageAt : contactData.lastUpdateAt
+                        ).toLocaleString()}
+                      </span>
+                    </h4>
+                  </Grid>
+
+                  <Grid item xs={12} style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}>
+                    <LeadStage leadStage={contactData.leadStage ? contactData.leadStage : "New"} id={contactData._id} />
+                  </Grid>
+                </div>
+              </Grid>
+
+              {/*/////////// new section -associated interests and deals //////////// */}
+              <Grid container item xs={12} className={`${classes.border}`} style={{ padding: "23px 28px" }} spacing={0}>
+                <Grid item xs={12}>
+                  <h4 style={{ margin: "0 0 13px 0", float: "left" }}>Entity Associations</h4>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={3} style={{ minWidth: "250px" }}>
+                      <Card raised style={{ minHeight: "165px", height: "100%" }}>
+                        <WellsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
+                      </Card>
+                    </Grid>
+                    <Grid item xs={3} style={{ minWidth: "250px" }}>
+                      <Card raised style={{ minHeight: "35px", height: "100%" }}>
+                        <ShapeOwnershipCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
+                      </Card>
+                    </Grid>
+                    <Grid item xs={3} style={{ minWidth: "250px" }}>
+                      <Card raised style={{ minHeight: "35px", height: "100%" }}>
+                        <ParcelsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
+                      </Card>
+                    </Grid>
+                    <Grid item xs={3} style={{ minWidth: "250px" }}>
+                      <Card raised style={{ minHeight: "165px", height: "100%" }}>
+                        <DealsNew
+                          handleOpenExpandableCard={handleOpenExpandableCard}
+                          contact={contactData}
+                          transactData={transactData}
+                          transactId={transactId}
+                        />
+                      </Card>
+                    </Grid>
                   </Grid>
                 </Grid>
               </Grid>
-            </Grid>
 
-            {/*/////////// Recent Activities. //////////// */}
-            <Grid item xs={12} className={`${classes.border}`}>
-              <div className={classes.SectMargin}>
-                <RecentActivities
-                  header={"Recent Activities"}
-                  handleOpenExpandableCard={handleOpenExpandableCard}
-                  id={contactData._id}
-                  user_id={stateApp.user.email}
-                  contactData={contactData}
-                  activityLog={contactData.activityLog}
-                />
-              </div>
-            </Grid>
-          </Grid>
-        )}
+              {/*/////////// Recent Activities. //////////// */}
+              <Grid item xs={12} className={`${classes.border}`}>
+                <div className={classes.SectMargin}>
+                  <RecentActivities
+                    header={"Recent Activities"}
+                    handleOpenExpandableCard={handleOpenExpandableCard}
+                    id={contactData._id}
+                    user_id={stateApp.user.email}
+                    contactData={contactData}
+                    activityLog={contactData.activityLog}
+                  />
+                </div>
+              </Grid>
+            </>
+          )}
+        </Grid>
         {/*/////////// rigth column //////////// */}
         <div className={classes.rightColumnGrid}>
           {!shrinkRightColumn && !showShrinkColumnContent && (
