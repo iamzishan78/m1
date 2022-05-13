@@ -457,12 +457,11 @@ export default function Tags(props) {
   const ToggleSharedButton = () => {
     return (
       <FormGroup style={{ display: "block" }}>
-        {!props.publicLeftBottom && <h3 style={{ width: "fit-content", margin: "0", float: "left" }}>Tags</h3>}
+        {!props.publicLeftBottom && <h3 style={{ width: "fit-content", margin: "0 13px", float: "left" }}>Tags</h3>}
         {props.shareable && (
           <FormControlLabel
-            className={`${classes.switchButtom} ${props.publicLeftBottom ? classes.publicLeftBottom : ""} ${
-              !publicTag ? classes.switchTextDeselected : ""
-            }`}
+            className={`${classes.switchButtom} ${props.publicLeftBottom ? classes.publicLeftBottom : ""} ${!publicTag ? classes.switchTextDeselected : ""
+              }`}
             control={
               <React.Fragment>
                 {props.publicLeftBottom && <h4 className="h4Before">Tags</h4>}
