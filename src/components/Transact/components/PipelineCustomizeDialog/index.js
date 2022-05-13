@@ -130,8 +130,6 @@ const PipelineCustomDialog = (props) => {
   const [addPipeline] = useMutation(ADD_PIPELINE);
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
-  // const [updatePipelineDescriptors] = useMutation(UPDATE_PIPELINE_DESCRIPTORS);
-  // const [createPipelineDescriptors] = useMutation(CREATE_PIPELINE_DESCRIPTORS);
 
   const classes = useStyles({ width });
 
@@ -155,7 +153,6 @@ const PipelineCustomDialog = (props) => {
         dispatch(showWarningMessage("There are deals associated to this flowline, please remove them first."));
       else {
         setDeleteDialogOpen("pipe");
-        handleClose();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -356,32 +353,6 @@ const PipelineCustomDialog = (props) => {
             });
           })
         );
-
-      // COMMENTING THIS FOR TEMPORARY REASONS
-      // // attaching project
-      // if (selectedPipe.projectId && !formStates.projectId)
-      //   updatePipelineDescriptors({
-      //     variables: {
-      //       descriptors: [
-      //         {
-      //           relatedObject: selectedPipe.projectId,
-      //           descriptorObject: selectedPipe._id,
-      //           isDeleted: true,
-      //         },
-      //       ],
-      //     },
-      //   });
-      // // removing project
-      // else if (!selectedPipe.projectId && formStates.projectId)
-      //   createPipelineDescriptors({
-      //     variables: {
-      //       descriptor: {
-      //         projectId: formStates.projectId,
-      //         pipelines: [selectedPipe._id],
-      //         userId: stateApp.user.mongoId,
-      //       },
-      //     },
-      //   });
 
       if (stagesToUpdate && stagesToUpdate.length > 0)
         allPromises.push(

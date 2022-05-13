@@ -623,7 +623,7 @@ const ContactsHeadCells = [
   {
     name: "lastUpdateAt",
     label: "Last Updated",
-    esKey: 'lastUpdateAt.keyword',
+    esKey: 'lastUpdateAt',
     noFilter: true,
     options: {
       filter: false,
