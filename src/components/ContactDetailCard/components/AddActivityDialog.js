@@ -16,7 +16,7 @@ import { Dialog, CircularProgress } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
-import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -485,7 +485,8 @@ function AddActivityDialog(props) {
           size="small"
           style={{ float: "right", top: "-5px", right: `${addNew ? -5 : -26}px` }}
         >
-          <ArrowForwardIcon fontSize="medium" aria-controls="simple-menu" aria-haspopup="true" />
+          <KeyboardTabIcon fontSize="large" />
+
         </IconButton>
       </Grid>
       <Grid></Grid>
