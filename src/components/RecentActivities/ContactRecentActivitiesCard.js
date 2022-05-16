@@ -3,14 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Checkbox, Grid } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
-import Link from "@material-ui/core/Link";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 
 import { AppContext } from "../../AppContext";
-import { NavigationContext } from "../Navigation/NavigationContext";
 import { CONTACT } from "graphQL/useQueryContact";
 
 import ActivitiesList from "./components/ActivitiesList";
@@ -39,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     backgroundColor: "#ffffff",
-    height: "88vh",
+    height: "calc(100vh - 72px)",
   },
   textBtn: {
     margin: "0 0 8px 0",
@@ -95,9 +89,9 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
       case "call":
         name = "Calls";
         break;
-        case "text_message":
-          name = "Text Messages";
-           break;
+      case "text_message":
+        name = "Text Messages";
+        break;
       case "email":
         name = "Emails";
         break;
@@ -146,7 +140,6 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
         {getCheckboxItem("meeting")}
         {getCheckboxItem("task")}
         {getCheckboxItem("deadline")}
-
       </div>
     </div>
   );
@@ -156,11 +149,10 @@ export default function ViewActivities() {
   const classes = useStyles();
   let history = useHistory();
   const [stateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
 
   const id = history.location.pathname.split("/")[history.location.pathname.split("/").length - 2];
 
-  const [activitiesFilter, setActivitiesFilter] = useState(["call", "text_message","meeting", "email", "task", "deadline", "mailer"]);
+  const [activitiesFilter, setActivitiesFilter] = useState(["call", "text_message", "meeting", "email", "task", "deadline", "mailer"]);
   const [contactData, setContactData] = useState(null);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
@@ -195,67 +187,17 @@ export default function ViewActivities() {
 
   const filteredActivities = stateApp.currentContatcAtivities.filter((act) => activitiesFilter.includes(act.type));
 
-  const checkModuleHistory = () => {
-    return !!stateNav.contactFromMap;
-  };
-
   return (
     <div style={{ marginTop: "65px" }}>
-      <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-          {checkModuleHistory() && (
-            <Link
-              className={classes.linkClass}
-              style={{
-                marginLeft: "5px",
-                fontSize: "16px",
-                cursor: "pointer",
-              }}
-              color="inherit"
-              onClick={() => {
-                history.push("/");
-                setStateNav((stateApp) => ({
-                  ...stateApp,
-                  contactFromMap: false,
-                }));
-              }}
-            >
-              Map
-            </Link>
-          )}
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => history.push("/contacts")}
-          >
-            Contacts
-          </Link>
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => history.push(`/contact/details/${id}`)}
-          >
-            {contactData?.name}
-          </Link>
-          <Typography
-            style={{
-              color: "#18AADD",
-              fontSize: "16px",
-              marginLeft: "5px",
-            }}
-          >
-            Activities
-          </Typography>
-        </Breadcrumbs>
-      </Toolbar>
+      <div
+        style={{
+          backgroundColor: "#F2F2F2",
+          minHeight: "7px",
+          display: "flex",
+          position: "relative",
+          alignItems: "center",
+        }}
+      />
 
       <RightDialog open={activityModalOpen ? true : false} handleClickDialogClose={() => setActivityModalOpen(false)} width="450px">
         <AddActivityDialog
