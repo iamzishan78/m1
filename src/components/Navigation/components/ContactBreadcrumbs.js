@@ -276,7 +276,7 @@ const ContactBreadcrumbs = () => {
             }}
             color="inherit"
             onClick={() => {
-              history.push(history.pathHistory[1]);
+              history.push("/");
               setStateNav((stateApp) => ({
                 ...stateApp,
                 contactFromMap: false,

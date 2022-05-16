@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     backgroundColor: "#ffffff",
-    height: "88vh",
+    height: "calc(100vh - 72px)",
   },
   textBtn: {
     margin: "0 0 8px 0",

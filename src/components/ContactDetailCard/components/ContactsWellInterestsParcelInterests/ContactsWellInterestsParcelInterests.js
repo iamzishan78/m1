@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
       "&>.MuiPaper-root": {
         display: "flex",
         "flex-direction": "column",
-        height: "calc(100vh - 220px)",
+        height: "calc(100vh - 150px)",
         "align-items": "stretch",
         "&>.MuiPaper-root": {
           display: "contents",
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
         },
         "&> table": {
           bottom: 0,
-        }
+        },
       },
     },
   },
@@ -34,12 +34,9 @@ const useStyles = makeStyles((theme) => ({
 function ContactsWellInterestsParcelInterests(props) {
   const classes = useStyles();
   let history = useHistory();
-  const type =
-    history.location.pathname.split("/")[
-    history.location.pathname.split("/").length - 1
-    ];
+  const type = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
 
-  const [selectedTab, setSelectedTab] = useState(type === 'wells' ? 0 : type === 'parcels' ? 2 : type === 'units' ? 3 : 1);
+  const [selectedTab, setSelectedTab] = useState(type === "wells" ? 0 : type === "parcels" ? 2 : type === "units" ? 3 : 1);
 
   const Header = () => (
     <TabButtons
@@ -87,8 +84,8 @@ function ContactsWellInterestsParcelInterests(props) {
               targetLabel="unit"
               esFilters={[{ field: "contact._id.keyword", value: props.contactData._id }]}
               esIndex="shapeowners_flat"
-              setESFilters={() => { }}
-              onTractCount={() => { }}
+              setESFilters={() => {}}
+              onTractCount={() => {}}
             />,
           ]}
         />
