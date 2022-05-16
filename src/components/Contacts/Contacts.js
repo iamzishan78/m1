@@ -73,7 +73,7 @@ export default function Contacts() {
     const allPaths = JSON.parse(JSON.stringify(contactManagementRoutes));
     const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.CONTACTSUBMENU);
     const allAllowedPaths = {}
-    if(feature.JSON){
+    if(feature?.JSON){
       const data = JSON.parse(feature.JSON)
       Object.keys(allPaths).forEach(path => {
         if(data.options.includes(allPaths[path].value)){
