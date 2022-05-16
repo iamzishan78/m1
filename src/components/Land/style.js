@@ -84,6 +84,7 @@ export const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    left: "8px",
     "& svg": {
       transform: "scaleX(0.5)",
     },
