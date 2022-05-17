@@ -17,7 +17,7 @@ import Badge from "@material-ui/core/Badge";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
-import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
+import EmailOutlinedIcon from "@material-ui/icons/EmailOutlined";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import RequestPageIcon from "components/Shared/svgIcons/request_page";
 import FieldContent from "./components/FieldContent";
@@ -53,13 +53,12 @@ import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Typography from "@material-ui/core/Typography";
 import get from "lodash/get";
 
-import { truncate } from "components/Shared/functions";
 // contexts
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
-import { toggleRightColumn } from 'actions/ContactDetailCard';
+import { toggleRightColumn } from "actions/ContactDetailCard";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -70,9 +69,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   header: {
-    borderBottom: "1px solid rgba(224, 224, 224, 1)",
     backgroundColor: "#F2F2F2",
-    minHeight: "64px",
+    minHeight: "7px",
     display: "flex",
     position: "relative",
     alignItems: "center",
@@ -172,6 +170,7 @@ const useStyles = makeStyles((theme) => ({
   },
   mainGridContainer: {
     display: "flex",
+    marginTop: "10px",
     "& a": { color: "#757575" },
     "& .MuiPopover-paper": {
       zIndex: "1700",
@@ -260,8 +259,8 @@ const useStyles = makeStyles((theme) => ({
     transition: "width 0.3s ease-out",
     webkitTransition: "width 0.3s ease-out",
     overflow: "overlay",
-    maxHeight: "calc(100vh - 139px)",
-    width: "100%"
+    maxHeight: "calc(100vh - 85px)",
+    width: "100%",
   },
   shrinkRightColumn: {
     position: "absolute",
@@ -302,14 +301,14 @@ const useStyles = makeStyles((theme) => ({
 
   emailButton: {
     backgroundColor: "#011133 !important",
-    '& .MuiButton-label': {
-      color: 'white !important'
+    "& .MuiButton-label": {
+      color: "white !important",
     },
   },
   disabledButton: {
     backgroundColor: "white !important",
-    '& .MuiButton-label': {
-      color: 'grey !important'
+    "& .MuiButton-label": {
+      color: "grey !important",
     },
   },
   pulloutBox: {
@@ -338,7 +337,7 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#263451",
       color: "#fff",
     },
-  }
+  },
 }));
 
 export default function ContactDetailCard(props) {
@@ -351,8 +350,6 @@ export default function ContactDetailCard(props) {
   const pathName = history.location.pathname;
   const contactId = pathName.split("contact/details/")[1].replace("/", "");
   const shrinkRightColumn = useSelector(({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn);
-  const { statements } = useSelector(({ Revenue }) => Revenue);
-  const { selectedPipe } = useSelector(({ Flow }) => Flow);
   const classes = useStyles({ ...props, shrinkRightColumn });
   const [openDialog, setOpenDialog] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -368,7 +365,6 @@ export default function ContactDetailCard(props) {
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
-  const [getSecondContact, { data: secondContact }] = useLazyQuery(CONTACT);
   const [getContactPurchaseData, { data: contactPurchaseData }] = useLazyQuery(CONTACT_PURCHASE_DATA);
 
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(TRANSACTIONDATA);
@@ -447,17 +443,6 @@ export default function ContactDetailCard(props) {
   }, [contactPurchaseData]);
 
   useEffect(() => {
-    if (history.location.search.includes("/contact/details")) {
-      const id = history.location.search.split("?return-url=/contact/details/")[1].split("/")[0];
-      getSecondContact({
-        variables: {
-          contactId: id,
-        },
-      });
-    }
-  }, []);
-
-  useEffect(() => {
     if (data && data.contact) {
       setContactData({ ...data.contact, metaOwner: { _id: data.contact.contactOwnerId } });
       setStateApp((stateApp) => ({
@@ -502,8 +487,8 @@ export default function ContactDetailCard(props) {
         ...stateApp,
         dealDialog: false,
         activeDeal: { cardId: null, laneId: null },
-      }))
-    }
+      }));
+    };
   }, []);
 
   const checkModuleHistory = () => {
@@ -514,42 +499,6 @@ export default function ContactDetailCard(props) {
     }
     return !!stateNav.contactFromMap;
   };
-
-  const checkRevenueStatement = () => {
-    if (history.pathHistory[1]?.includes("/revenue/statement/details")) {
-      return true
-    }
-  };
-
-  const checkRevenueProperty = () => {
-    if (history.pathHistory[1]?.includes("/revenue/property/details")) {
-      return true
-    }
-  };
-
-  const getFlowlineReturnUrl = () => {
-    const searchParams = new URLSearchParams(window.location.search?.replace("?", ""));
-    const returnUrl = searchParams.get("return-url");
-    return returnUrl;
-  };
-  const isPrevUrlFlowline = getFlowlineReturnUrl() && stateApp.activeDeal?._id;
-
-  const agreementBreadcrumbsParams = React.useMemo(() => {
-    const { state } = history.location;
-    const params = [];
-    if (state) {
-      const { showAgreementBreadcrumb, agreementBreadcrumbsParams: breadcrumbParams } = state;
-      if (showAgreementBreadcrumb && breadcrumbParams) {
-        Object.keys(breadcrumbParams).forEach((key) => {
-          params.push({
-            text: key,
-            url: breadcrumbParams[key],
-          });
-        });
-      }
-    }
-    return params;
-  }, [history.location]);
 
   const ExtenstionGetter = (name) => {
     let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
@@ -563,223 +512,7 @@ export default function ContactDetailCard(props) {
   const togglePullout = () => dispatch(toggleRightColumn());
   return contactData ? (
     <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)", width: "100%" }}>
-      <div className={classes.header}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "left",
-            paddingLeft: "25px",
-          }}
-        >
-          <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-            {agreementBreadcrumbsParams.map((item, index) => (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => history.push(item.url)}
-                key={index}
-              >
-                {item.text}
-              </Link>
-            ))}
-            {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => history.push("/contacts")}
-              >
-                Contacts
-              </Link>
-            )}
-            {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push(`/contact/details/${get(secondContact, "contact._id", "")}`);
-                  setStateApp((stateApp) => ({
-                    ...stateApp,
-                    selectedContact: get(secondContact, "contact._id", ""),
-                  }));
-                }}
-              >
-                {getName(secondContact.contact)}
-              </Link>
-            )}
-            {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push(history.location.search.split("?return-url=")[1]);
-                }}
-              >
-                Deals
-              </Link>
-            )}
-            {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => history.push(history.location.search.split("?return-url=")[1])}
-              >
-                {truncate(stateApp.activeDeal.name, 30)}
-              </Link>
-            )}
-            {isPrevUrlFlowline && selectedPipe && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => history.push("/flow")}
-              >
-                Flow
-              </Link>
-            )}
-            {isPrevUrlFlowline && selectedPipe && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => history.push(`/flow/${selectedPipe?._id}`)}
-              >
-                {truncate(get(selectedPipe, "name", ""), 30)}
-              </Link>
-            )}
-            {isPrevUrlFlowline && selectedPipe && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => history.push(getFlowlineReturnUrl())}
-              >
-                {truncate(stateApp.activeDeal.name, 30)}
-              </Link>
-            )}
-            {checkModuleHistory() && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push(history.pathHistory[1]);
-                  setStateNav((stateApp) => ({
-                    ...stateApp,
-                    contactFromMap: false,
-                  }));
-                }}
-              >
-                Map
-              </Link>
-            )}
-
-            {checkRevenueStatement() && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push('/revenue/statements');
-                }}
-              >
-                Revenue Statements
-              </Link>
-            )}
-            {checkRevenueStatement() && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push(history.pathHistory[1]);
-                }}
-              >
-                {`${statements?.activeStatement?.checkNumber} - ${statements?.activeStatement?.payor?.["name"]}`}
-              </Link>
-            )}
-
-            {checkRevenueProperty() && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push('/revenue/properties');
-                }}
-              >
-                Revenue Properties
-              </Link>
-            )}
-            {checkRevenueProperty() && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push(history.pathHistory[1]);
-                }}
-              >
-                {get(stateApp.selectedRevenueProperty, 'number', '')}-{get(stateApp.selectedRevenueProperty, 'name', '')}
-              </Link>
-            )}
-
-            <Link
-              style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer" }}
-              color="inherit"
-              onClick={() => history.push("/contacts")}
-            >
-              Contacts
-            </Link>
-
-            <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{getName(contactData)}</Typography>
-          </Breadcrumbs>
-        </div>
-      </div>
+      <div className={classes.header} />
       <div className={classes.mainGridContainer}>
         {/*/////////// left column //////////// */}
 
@@ -811,22 +544,15 @@ export default function ContactDetailCard(props) {
 
                   {contactData.primaryEmail ? (
                     <a href={"mailto:" + contactData.primaryEmail}>
-                      <Button
-                        className={classes.emailButton}
-                        startIcon={<EmailOutlinedIcon />}
-                      >
+                      <Button className={classes.emailButton} startIcon={<EmailOutlinedIcon />}>
                         Email
                       </Button>
                     </a>
-                  ) :
-                    (<Button
-                      className={classes.disabledButton}
-                      variant="outlined"
-                      startIcon={<EmailOutlinedIcon />}
-                      disabled
-                    >
+                  ) : (
+                    <Button className={classes.disabledButton} variant="outlined" startIcon={<EmailOutlinedIcon />} disabled>
                       Email
-                    </Button>)}
+                    </Button>
+                  )}
 
                   <Menu
                     id="simple-menu"
@@ -897,8 +623,9 @@ export default function ContactDetailCard(props) {
                           <span className={classes.socialMediaSection}>
                             {contactData.facebook && (
                               <a
-                                href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${contactData.facebook
-                                  }`}
+                                href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${
+                                  contactData.facebook
+                                }`}
                                 target="_blank"
                                 rel="noreferrer"
                               >
@@ -907,8 +634,9 @@ export default function ContactDetailCard(props) {
                             )}
                             {contactData.twitter && (
                               <a
-                                href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${contactData.twitter
-                                  }`}
+                                href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${
+                                  contactData.twitter
+                                }`}
                                 target="_blank"
                                 rel="noreferrer"
                               >
@@ -917,8 +645,9 @@ export default function ContactDetailCard(props) {
                             )}
                             {contactData.linkedIn && (
                               <a
-                                href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${contactData.linkedIn
-                                  }`}
+                                href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${
+                                  contactData.linkedIn
+                                }`}
                                 target="_blank"
                                 rel="noreferrer"
                               >
@@ -1059,7 +788,7 @@ export default function ContactDetailCard(props) {
             <div
               style={{
                 margin: "0px 15px",
-                height: "calc(100vh - 145px)",
+                height: "calc(100vh - 95px)",
               }}
             >
               <MetadataDrawer
@@ -1109,7 +838,7 @@ export default function ContactDetailCard(props) {
               header="Contact Data Integration"
               onClose={handleCloseDialog}
               rows={[contactData]}
-              setRows={() => { }}
+              setRows={() => {}}
               updateMelissaTable={() => {
                 getLastMelissaRecord({
                   variables: {
