@@ -11,7 +11,7 @@ import TractIcon from "components/Shared/svgIcons/tract";
 import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
 
 import FieldsSection from "./fieldsSection";
-import ProgressBar from "components/Shared/ui/ProgressBar";
+// import ProgressBar from "components/Shared/ui/ProgressBar";
 import Acreage from "./Acreage";
 
 export default function Summary({
@@ -43,7 +43,7 @@ export default function Summary({
                 <ExpandMoreIcon fontSize="large" />
               </IconButton>
             }
-            onClick={(e) => { }}
+            onClick={(e) => {}}
           >
             <Grid container direction="row" justify="space-between" alignItems="center">
               <Grid item className={classes.summaryHeader}>
@@ -51,7 +51,7 @@ export default function Summary({
                   <Typography variant="h5" className={classes.titleText}>
                     Summary
                   </Typography>
-                  <ProgressBar value={35} height="3px" isNumeric />
+                  {/* <ProgressBar value={35} height="3px" isNumeric /> */}
                 </div>
                 <div style={{ width: "40%" }}>
                   <Grid container spacing={2} justify="flex-end" className={classes.summaryHeaderIcons}>
