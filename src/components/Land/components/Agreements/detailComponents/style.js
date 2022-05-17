@@ -35,7 +35,7 @@ export const useStyles = makeStyles((theme) => ({
     padding: 0,
   },
   titleText: {
-    marginRight: "15px",
+    marginRight: "40px",
     textTransform: "uppercase",
     fontWeight: "bold",
   },
