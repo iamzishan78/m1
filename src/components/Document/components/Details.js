@@ -6,7 +6,7 @@ import ListItem from "@material-ui/core/ListItem";
 import { AppContext } from "AppContext";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
-import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+import CustomFieldSelectV2 from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelectV2";
 import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 import { IconButton, TextField, withStyles } from "@material-ui/core";
@@ -27,6 +27,7 @@ import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
+
 const filter = createFilterOptions();
 
 const useStyles = makeStyles({
@@ -505,7 +506,7 @@ export default function DocumentDetails(props) {
                       }}
                     >
                       <h4>{meta.label}</h4>
-                      <CustomFieldSelect
+                      <CustomFieldSelectV2
                         fullWidth
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}
@@ -652,11 +653,11 @@ export default function DocumentDetails(props) {
                             <IconButton
                               disabled={false}
                               size="small"
-                              // onClick={() =>
-                              //   handleViewFile(
-                              //     files?.getFileDescriptors[key].fileId
-                              //   )
-                              // }
+                            // onClick={() =>
+                            //   handleViewFile(
+                            //     files?.getFileDescriptors[key].fileId
+                            //   )
+                            // }
                             >
                               <GetAppIcon />
                             </IconButton>
