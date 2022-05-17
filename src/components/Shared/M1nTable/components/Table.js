@@ -97,7 +97,7 @@ import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 import CustomFieldText from "components/Shared/M1nTable/components/SubComponents/CustomFieldText";
-import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+import CustomFieldSelectV2 from "./SubComponents/CustomFieldSelectV2";
 import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 // queries
@@ -126,6 +126,7 @@ import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
+
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -2472,7 +2473,7 @@ function SubTable(props) {
                     }
                     return (
                       <div style={{ minWidth: "100px" }}>
-                        <CustomFieldSelect
+                        <CustomFieldSelectV2
                           dropdownOptions={column.dropdownOptions}
                           index={tableMeta.rowIndex}
                           column={column}
