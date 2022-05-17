@@ -1,8 +1,9 @@
 import React, { useEffect, useState, Fragment, useContext } from "react";
+import moment from "moment";
 import { useLazyQuery } from "@apollo/client";
 import { Controller } from "react-hook-form";
-import { Grid, TextField, Button, Select, MenuItem, Tooltip } from "@material-ui/core";
-import { KeyboardDatePicker } from "@material-ui/pickers";
+import { Grid, TextField, Button, Select, MenuItem, Tooltip, IconButton } from "@material-ui/core";
+import { Clear } from "@material-ui/icons";
 import { useStyles as summaryStyles } from "../style";
 import AddIcon from "@material-ui/icons/Add";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
@@ -80,7 +81,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
     }
   };
 
-  const offClickHandler = (key, value, isCustom) => updateAgreement(key, value, isCustom);
+  const offClickHandler = (key, value, isCustom) => {
+    updateAgreement(key, value, isCustom);
+  };
 
   const addAgreementCustomData = (data) => {
     const customData = copy(agreementDetails.custom_data) ?? {};
@@ -191,23 +194,32 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                   />
                 )}
                 {field.type === "date" && (
-                  <KeyboardDatePicker
+                  <TextField
                     autoOk
-                    variant="inline"
-                    inputVariant="outlined"
-                    disableToolbar
-                    format="MM/DD/YYYY"
+                    type="date"
+                    variant="outlined"
                     margin="normal"
-                    id={`field-${index}`}
-                    KeyboardButtonProps={{ "aria-label": "change date" }}
-                    InputAdornmentProps={{ position: "start" }}
                     fullWidth
+                    value={agreementDetails?.[field.key] ? moment(agreementDetails[field.key]).format("yyyy-MM-DD") : null}
+                    onChange={(date) => {
+                      offClickHandler(field.key, date ? String(date?.target?.value) : "");
+                    }}
                     InputLabelProps={{
                       shrink: true,
                     }}
-                    value={agreementDetails?.[field.key] ? new Date(agreementDetails[field.key]) : null}
-                    onChange={(date) => {
-                      offClickHandler(field.key, date ? String(date["_d"]) : "");
+                    disableToolbar
+                    KeyboardButtonProps={{ "aria-label": "change date" }}
+                    format="MM/DD/YYYY"
+                    PopoverProps={{ disablePortal: false }}
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton onClick={(event) => offClickHandler(field.key, "")}>
+                          <Clear style={{ height: 22, width: 22 }} />
+                        </IconButton>
+                      ),
+                      classes: {
+                        root: classes.dateRoot,
+                      },
                     }}
                   />
                 )}
@@ -217,7 +229,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     shapeType="Agreement"
                     typeKey={field.key}
                     variant="outlined"
-                    onChange={() => { }}
+                    onChange={() => {}}
                     onBlur={(event) => offClickHandler(field.key, event.target.value)}
                     autoFocus={false}
                     id={`field-${index}`}
