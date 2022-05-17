@@ -9,6 +9,7 @@ import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import WellIcon from "components/Shared/svgIcons/well";
 import TractIcon from "components/Shared/svgIcons/tract";
 import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
 import FieldsSection from "./fieldsSection";
 import Acreage from "./Acreage";
@@ -42,7 +43,7 @@ export default function Summary({
                 <ExpandMoreIcon fontSize="large" />
               </IconButton>
             }
-            onClick={(e) => {}}
+            onClick={(e) => { }}
           >
             <Grid container direction="row" justify="space-between" alignItems="center">
               <Grid item className={classes.summaryHeader}>
@@ -50,6 +51,10 @@ export default function Summary({
                   Summary
                 </Typography>
                 <Grid container spacing={1} justify="flex-start" className={classes.summaryHeaderIcons}>
+                  <Grid item>
+                    <div className={classes.summaryValue}> {shapeSummaryDetails?.relatedParties || 0} </div>
+                    <PeopleAltIcon opacity="1.0" />
+                  </Grid>
                   <Grid item>
                     <div className={classes.summaryValue}> {shapeSummaryDetails?.shapeWells || 0} </div>
                     <WellIcon opacity="1.0" small color="#757575" />
