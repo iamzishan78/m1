@@ -200,7 +200,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     variant="outlined"
                     margin="normal"
                     fullWidth
-                    value={agreementDetails?.[field.key] ? moment(agreementDetails[field.key]).format("yyyy-MM-DD") : null}
+                    value={agreementDetails?.[field.key] ? moment(agreementDetails[field.key]).format("yyyy-MM-DD") : ""}
                     onChange={(date) => {
                       offClickHandler(field.key, date ? String(date?.target?.value) : "");
                     }}
