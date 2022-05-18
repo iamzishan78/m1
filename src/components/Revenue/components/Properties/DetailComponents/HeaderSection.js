@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
   },
   contactCardIcon: {
     position: "absolute",
-    right: "6px !important",
+    right: "12px !important",
     marginTop: "4px !important",
     cursor: "pointer",
   },
@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
       padding: "12px 0px",
     },
     "& .MuiFormControl-marginNormal": {
-      margin: "0px"
+      margin: "0px",
     },
   },
   textField: {
@@ -103,27 +103,26 @@ const useStyles = makeStyles((theme) => ({
   },
   field: {
     "& .MuiAutocomplete-clearIndicator": {
-      marginRight: "10px",
+      marginRight: "15px",
     },
     "& .MuiFormControl-marginNormal": {
-      margin: "0px"
+      margin: "0px",
     },
     "& .MuiFormControl-marginDense": {
-      margin: "0px"
-    }
+      margin: "0px",
+    },
   },
 }));
 
 export default function HeaderSection(props) {
   const classes = useStyles();
   let history = useHistory();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [, setStateApp] = useContext(AppContext);
   const { control, setValue, watch, register, reset } = useForm();
   const { propertyDetails, propertyOwnerContact, setEntityToConvert } = props;
   const [entityType, setEntityType] = useState("");
 
-  const [getContactEntity, { data: contactEntityData }] =
-    useLazyQuery(CONTACT_ENTITY);
+  const [getContactEntity, { data: contactEntityData }] = useLazyQuery(CONTACT_ENTITY);
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
 
   useEffect(() => {
@@ -139,12 +138,8 @@ export default function HeaderSection(props) {
       let owner = {};
       let operator = {};
       if (propertyOwnerContact) {
-        owner = propertyOwnerContact?.find(
-          (owner) => owner.entityId === propertyDetails?.owner?._id
-        );
-        operator = propertyOwnerContact?.find(
-          (owner) => owner.entityId === propertyDetails?.operator?._id
-        );
+        owner = propertyOwnerContact?.find((owner) => owner.entityId === propertyDetails?.owner?._id);
+        operator = propertyOwnerContact?.find((owner) => owner.entityId === propertyDetails?.operator?._id);
       }
       reset({ ...data, owner: { ...owner, number: data.ownerNumber }, operator });
     }
@@ -169,14 +164,11 @@ export default function HeaderSection(props) {
   };
 
   const checkIfContact = (entityId) => {
-    return !!propertyOwnerContact?.find(
-      (contact) => contact.entityId === entityId
-    );
+    return !!propertyOwnerContact?.find((contact) => contact.entityId === entityId);
   };
 
   const setEntity = (entityDetails) => {
-    if (entityDetails && !checkIfContact(entityDetails?._id))
-      setEntityToConvert({ ...entityDetails, isEntity: true });
+    if (entityDetails && !checkIfContact(entityDetails?._id)) setEntityToConvert({ ...entityDetails, isEntity: true });
   };
 
   const updatePropertyData = (key, value) => {
@@ -202,10 +194,9 @@ export default function HeaderSection(props) {
     }
   };
 
-
   const handleUpdate = debounce((key, value) => {
     updatePropertyData(key, value);
-  }, 500)
+  }, 500);
 
   return (
     <Grid container direction="row" justify="space-between" alignItems="center">
@@ -236,8 +227,11 @@ export default function HeaderSection(props) {
                       margin="dense"
                       type="text"
                       fullWidth
-                      onChange={(e) => { params.onChange(e.target.value); handleUpdate("number", e.target.value) }}
-                    // onBlur={(e) => updatePropertyData("number", params.value)}
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                        handleUpdate("number", e.target.value);
+                      }}
+                      // onBlur={(e) => updatePropertyData("number", params.value)}
                     />
                   )}
                 />
@@ -262,9 +256,11 @@ export default function HeaderSection(props) {
                       margin="dense"
                       type="text"
                       fullWidth
-                      onChange={(e) => { params.onChange(e.target.value);}}
-                    // onKeyDown={(e) => onKeyDown(e, "name", params.value)}
-                      onBlur={(e) =>handleUpdate("name", e.target.value) }
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                      }}
+                      // onKeyDown={(e) => onKeyDown(e, "name", params.value)}
+                      onBlur={(e) => handleUpdate("name", e.target.value)}
                     />
                   )}
                 />
@@ -289,9 +285,12 @@ export default function HeaderSection(props) {
                       margin="dense"
                       placeholder=""
                       fullWidth
-                      onChange={(e) => { params.onChange(e.target.value); handleUpdate("ownerNumber", e.target.value) }}
-                    // onKeyDown={(e) => onKeyDown(e, "ownerNumber", params.value)}
-                    // onBlur={() => setValue("ownerNumber", propertyDetails.ownerNumber)}
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                        handleUpdate("ownerNumber", e.target.value);
+                      }}
+                      // onKeyDown={(e) => onKeyDown(e, "ownerNumber", params.value)}
+                      // onBlur={() => setValue("ownerNumber", propertyDetails.ownerNumber)}
                     />
                   )}
                 />
@@ -329,14 +328,11 @@ export default function HeaderSection(props) {
                   name="owner"
                   render={(params) => (
                     <ContactPaginatedAutocomplete
-                      nameAutValue={
-                        params.value ? params.value : { _id: "", name: "" }
-                      }
+                      nameAutValue={params.value ? params.value : { _id: "", name: "" }}
                       className={classes.field}
                       setNameAutValue={(value) => {
-                        if (value)
-                          contactEntity(value?._id, "owner");
-                        else handleUpdate("owner", null)
+                        if (value) contactEntity(value?._id, "owner");
+                        else handleUpdate("owner", null);
                       }}
                       renderInput={(params2) => (
                         <TextField
@@ -363,16 +359,10 @@ export default function HeaderSection(props) {
                                         selectedContact: `${params?.value?._id}`,
                                       }));
                                     }
-                                    setEntity(propertyDetails?.owner)
+                                    setEntity(propertyDetails?.owner);
                                   }}
                                 >
-                                  <ContactCardIcon
-                                    fill={
-                                      !propertyDetails?.owner?._id
-                                        ? "darkgrey"
-                                        : undefined
-                                    }
-                                  />
+                                  <ContactCardIcon fill={!propertyDetails?.owner?._id ? "darkgrey" : undefined} />
                                 </div>
                               </React.Fragment>
                             ),
@@ -389,7 +379,7 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Date</div>
+                <div className={classes.label}>Doc Date</div>
               </Grid>
               <Grid item xs={8} className={classes.datePicker}>
                 <Controller
@@ -406,10 +396,7 @@ export default function HeaderSection(props) {
                       id="date-picker-inline"
                       value={params.value ? params.value : null}
                       onChange={(date) => {
-                        updatePropertyData(
-                          "documentDate",
-                          moment(date).toISOString()
-                        );
+                        updatePropertyData("documentDate", moment(date).toISOString());
                       }}
                       KeyboardButtonProps={{ "aria-label": "change date" }}
                       InputAdornmentProps={{ position: "start" }}
@@ -433,13 +420,10 @@ export default function HeaderSection(props) {
                   render={(params) => (
                     <ContactPaginatedAutocomplete
                       className={classes.field}
-                      nameAutValue={
-                        params.value ? params.value : { _id: "", name: "" }
-                      }
+                      nameAutValue={params.value ? params.value : { _id: "", name: "" }}
                       setNameAutValue={(value) => {
-                        if (value)
-                          contactEntity(value?._id, "operator");
-                        else handleUpdate("operator", null)
+                        if (value) contactEntity(value?._id, "operator");
+                        else handleUpdate("operator", null);
                       }}
                       renderInput={(params2) => (
                         <TextField
@@ -469,15 +453,7 @@ export default function HeaderSection(props) {
                                     }
                                   }}
                                 >
-                                  <ContactCardIcon
-                                    fill={
-                                      !checkIfContact(
-                                        propertyDetails?.operator?._id
-                                      )
-                                        ? "darkgrey"
-                                        : undefined
-                                    }
-                                  />
+                                  <ContactCardIcon fill={!checkIfContact(propertyDetails?.operator?._id) ? "darkgrey" : undefined} />
                                 </div>
                               </React.Fragment>
                             ),
@@ -554,7 +530,7 @@ export default function HeaderSection(props) {
                       {...params}
                       id="source-simple-select-outlined-label"
                       variant="outlined"
-                      value={params.value ? params.value : ''}
+                      value={params.value ? params.value : ""}
                       fullWidth
                       onChange={(e) => {
                         updatePropertyData("source", e.target.value);
@@ -583,7 +559,7 @@ export default function HeaderSection(props) {
                       {...params}
                       id="status-simple-select-outlined-label"
                       variant="outlined"
-                      value={params.value ? params.value : ''}
+                      value={params.value ? params.value : ""}
                       fullWidth
                       onChange={(e) => {
                         updatePropertyData("status", e.target.value);
@@ -599,10 +575,7 @@ export default function HeaderSection(props) {
           </Grid>
 
           <Grid item xs={12}>
-            <Grid
-              container
-              className={`${classes.gridStyle} ${classes.textArea}`}
-            >
+            <Grid container className={`${classes.gridStyle} ${classes.textArea}`}>
               <Grid item style={{ flexBasis: "10.3%" }}>
                 <div className={classes.label}>Legal Description</div>
               </Grid>
@@ -630,11 +603,7 @@ export default function HeaderSection(props) {
         </Grid>
       </Grid>
       <Grid item className={classes.associatedWell}>
-        <AssociatedWellsList
-          title="Associated Wells"
-          relatedObject={props.propertyId}
-          relatedObjectType="Property"
-        />
+        <AssociatedWellsList title="Associated Wells" relatedObject={props.propertyId} relatedObjectType="Property" />
       </Grid>
     </Grid>
   );
