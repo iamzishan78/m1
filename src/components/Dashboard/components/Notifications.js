@@ -107,6 +107,9 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "10px",
     fontSize: "12px",
   },
+  sysNotification: {
+    marginLeft: 0,
+  },
   customTabs: {
     float: "right",
     paddingRight: "30px",
@@ -333,9 +336,8 @@ const Notifications = () => {
                         </Grid>
                         <Grid item xs={11} className={classes.paddingLeft10}>
                           <div>
-                            <span className={classes.bold}>{message}</span>
                             <ReactTimeAgo
-                              className={classes.commentTime}
+                              className={[classes.commentTime, classes.sysNotification]}
                               date={
                                 new Date(
                                   new Intl.DateTimeFormat("en-US", {
@@ -349,6 +351,8 @@ const Notifications = () => {
                               }
                               locale="en-US"
                             />
+                            <br />
+                            <span>{message}</span>
                           </div>
                         </Grid>
                       </Grid>
