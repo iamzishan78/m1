@@ -28,10 +28,10 @@ export const RevenueStatementHeadCells = [
         id: "price", title: "Avg Price", filterKey: 'price', sort: true, width: '100px'
     },
     {
-        id: "grossOwnerVolume", title: "Sales Volume", filterKey: 'grossOwnerVolume', sort: true, width: '125px'
+        id: "grossOwnerVolume", title: "Owner Volume", filterKey: 'grossOwnerVolume', sort: true, width: '125px'
     },
     {
-        id: "grossOwnerValue", title: "Gross Revenue", filterKey: 'grossOwnerValue', sort: true, width: '100px'
+        id: "grossOwnerValue", title: "Owner Gross Revenue", filterKey: 'grossOwnerValue', sort: true, width: '100px'
     },
     {
         id: "ownerTax", title: "Severance Tax", filterKey: 'ownerTax', sort: true, width: '100px'
