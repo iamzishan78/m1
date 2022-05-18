@@ -50,7 +50,7 @@ const AssociateContactWellHeadCells = [
   { name: "mineral_interest", label: "Mineral Interest" },
   { name: "royalty_interest", label: "Royalty Interest" },
   { name: "orri", label: "ORRI" },
-  { name: "unknown_interest", label: "Unknown Interest" },
+  // { name: "unknown_interest", label: "Unknown Interest" },
   { name: "record_title", label: "Record Title" },
   { name: "operating_rights", label: "Operating Rights" },
   { name: "nri", label: "NRI" },
