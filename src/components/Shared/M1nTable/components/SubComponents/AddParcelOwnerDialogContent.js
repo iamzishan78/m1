@@ -402,7 +402,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
           <Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
             <Grid item md={10} xs={10}>
               <DialogTitle id="customized-dialog-title" style={{ fontWeight: "bold" }}>
-                {selectedRow ? "Update" : "Add"} Parcel Ownership
+                {selectedRow ? "Update" : "Add"} Tract Ownership
                 {/* {selectedRow && (
               <IconButton
                 style={{ float: "right", marginRight: "5px" }}
@@ -592,7 +592,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 />
               </Grid>
               <Grid item xs={12}>
-                <h3>Operating Rights</h3>
+                <h3>Working Interest</h3>
                 <TextField
                   type="number"
                   size="small"

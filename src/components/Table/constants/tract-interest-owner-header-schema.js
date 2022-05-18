@@ -87,7 +87,7 @@ const TractInterestOwnerHeadCells = [
   },
   {
     name: "operating_rights",
-    label: "Operating Rights",
+    label: "Working Interest",
     esKey: "operating_rights",
     options: {
       display: true,
