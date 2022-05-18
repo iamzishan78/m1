@@ -22,6 +22,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   const [stateApp, setStateApp] = useContext(AppContext);
   const [fieldsList, setFieldsList] = useState([]);
   const [editIconState, setEditIconState] = useState({});
+  const [agreementDetailCopied, setAgreementCopied] = useState();
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
@@ -31,6 +32,10 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
       console.log("blur triggered");
     });
   }, []);
+
+  useEffect(() => {
+    setAgreementCopied(agreementDetails);
+  }, [agreementDetails]);
 
   useEffect(() => {
     getMetaData({
@@ -200,9 +205,12 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     variant="outlined"
                     margin="normal"
                     fullWidth
-                    value={agreementDetails?.[field.key] ? moment(agreementDetails[field.key]).format("yyyy-MM-DD") : ""}
-                    onChange={(date) => {
-                      offClickHandler(field.key, date ? String(date?.target?.value) : "");
+                    value={agreementDetailCopied?.[field.key] ? moment(agreementDetailCopied[field.key]).format("yyyy-MM-DD") : ""}
+                    onChange={(event) => {
+                      setAgreementCopied({ ...agreementDetailCopied, [field.key]: event ? String(event?.target?.value) : "" })
+                    }}
+                    onBlur={(event) => {
+                      offClickHandler(field.key, event ? String(event?.target?.value) : "");
                     }}
                     InputLabelProps={{
                       shrink: true,
@@ -229,7 +237,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     shapeType="Agreement"
                     typeKey={field.key}
                     variant="outlined"
-                    onChange={() => {}}
+                    onChange={() => { }}
                     onBlur={(event) => offClickHandler(field.key, event.target.value)}
                     autoFocus={false}
                     id={`field-${index}`}
