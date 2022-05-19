@@ -101,13 +101,13 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "grossOwnerVolume",
-    label: "Sales Vol",
+    label: "Owner Volume",
     esKey: "grossOwnerVolume",
     options: { sort: true, filter: true },
   },
   {
     name: "grossOwnerValue",
-    label: "Gross Rev",
+    label: "Owner Gross Revenue",
     esKey: "grossOwnerValue",
     options: { sort: true, filter: true },
   },

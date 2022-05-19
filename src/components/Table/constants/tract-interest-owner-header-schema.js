@@ -74,7 +74,7 @@ const TractInterestOwnerHeadCells = [
     label: "Unknown Interest",
     esKey: "unknown_interest",
     options: {
-      display: true,
+      display: false,
     },
   },
   {
@@ -87,7 +87,7 @@ const TractInterestOwnerHeadCells = [
   },
   {
     name: "operating_rights",
-    label: "Operating Rights",
+    label: "Working Interest",
     esKey: "operating_rights",
     options: {
       display: true,

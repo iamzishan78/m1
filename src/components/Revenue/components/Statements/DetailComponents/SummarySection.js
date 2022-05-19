@@ -309,7 +309,7 @@ const SummarySection = ({ checkId }) => {
       let buckets = [];
       console.log(prodSummary)
       products.forEach((p) => {
-        const mappings = productMapping?.mapping.filter((m) => m.to === p)
+        const mappings = productMapping?.mapping?.filter((m) => m.to === p)
         const bucket = { key: p.includes('NGL') ? 'NGL' : p }
         mappings.forEach((m) => {
           const fundBucket = prodSummary?.product?.buckets.find((b) => b.key === m.from);
