@@ -144,7 +144,7 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
                     }
                   }}
                 >
-                  <CloseIcon className={classes.closeIcon} fontSize="small" />
+                  <CloseIcon />
                 </IconButton>
               </div>
             </Grid>
@@ -204,15 +204,13 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
                 </h4>
 
                 <div style={{ float: "right" }}>
-                  <IconButton size="small" style={{ margin: "0 8px" }}>
-                    {stateApp?.viewDoc?.uri ? (
-                      <IconButton size="small" onClick={() => downloadFile(stateApp?.viewDoc)}>
-                        <GetAppIcon />
-                      </IconButton>
-                    ) : (
-                      <CircularProgress size={20} color="secondary" />
-                    )}
-                  </IconButton>
+                  {stateApp?.viewDoc?.uri ? (
+                    <IconButton size="small" style={{ margin: "0 8px" }} onClick={() => downloadFile(stateApp?.viewDoc)}>
+                      <GetAppIcon />
+                    </IconButton>
+                  ) : (
+                    <CircularProgress size={20} color="secondary" />
+                  )}
 
                   <IconButton
                     onClick={() => {
@@ -221,7 +219,7 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
                     }}
                     size="small"
                   >
-                    <CloseIcon className={classes.closeIcon} fontSize="small" />
+                    <CloseIcon />
                   </IconButton>
                 </div>
               </Grid>
