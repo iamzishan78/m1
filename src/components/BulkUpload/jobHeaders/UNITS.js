@@ -2,6 +2,10 @@ import { copy } from "components/Shared/functions";
 import { addAfterLabel, removeByLabel } from "./helper";
 import SHAPEOWNER from "./SHAPEOWNER";
 
+const fields = JSON.parse(JSON.stringify(SHAPEOWNER))
+fields.splice(SHAPEOWNER.length-1,1)
+
+
 const unit = [
     {
         label: "State",
@@ -81,7 +85,13 @@ const unit = [
         required: true,
         actual_key: "landgrid.name",
     },
-    ...copy(SHAPEOWNER)
+    ...copy(fields),
+    {
+        label: "Tags",
+        mapped_key: "",
+        required: false,
+        actual_key: "landgrid.tags"
+    },
 ];
 
 removeByLabel(unit, 'Shape Type')
