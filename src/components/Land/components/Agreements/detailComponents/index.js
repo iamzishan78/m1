@@ -30,7 +30,6 @@ import RelatedWells from "components/Land/components/Agreements/detailComponents
 import Documents from "components/Land/components/Agreements/detailComponents/documents";
 
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
@@ -305,7 +304,12 @@ export default function DetailComponents(props) {
 
   useEffect(() => {
     if (activeAgreement?._id) {
-      getShapeSummaryDetails({ variables: { shapeId: activeAgreement._id } });
+      getShapeSummaryDetails({
+        variables: {
+          shapeId: activeAgreement._id,
+          shapeType: "Agreement"
+        }
+      });
     }
   }, [activeAgreement, getShapeSummaryDetails]);
 
