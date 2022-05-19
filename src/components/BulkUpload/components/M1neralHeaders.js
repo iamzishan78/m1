@@ -316,33 +316,33 @@ export default function M1neralHeaders(props) {
         }
       }
 
-      if ('CONTACTSWELLINTEREST' === stateApp.jobType &&
-        (return_obj["well.globalWell"] ||
-          return_obj["well.apiNumber"])) {
-        const query = {
-          fields:['name^4', '_all'],
-          query:return_obj["well.globalWell"] || return_obj["well.apiNumber"] ? return_obj["well.apiNumber"].toString() : return_obj["well.apiNumber"]
-        }
-        const { data: wellsGeoms } = await client.query({
-          query: GET_ES_SIMPLE_SEARCH,
-          variables: {
-            index: "platformData:wells",
-            search: query,
-            sort: [],
-          }
-        });
+      // if ('CONTACTSWELLINTEREST' === stateApp.jobType &&
+      //   (return_obj["well.globalWell"] ||
+      //     return_obj["well.apiNumber"])) {
+      //   const query = {
+      //     fields:['name^4', '_all'],
+      //     query:return_obj["well.globalWell"] || return_obj["well.apiNumber"] ? return_obj["well.apiNumber"].toString() : return_obj["well.apiNumber"]
+      //   }
+      //   const { data: wellsGeoms } = await client.query({
+      //     query: GET_ES_SIMPLE_SEARCH,
+      //     variables: {
+      //       index: "platformData:wells",
+      //       search: query,
+      //       sort: [],
+      //     }
+      //   });
 
-        if (wellsGeoms?.getESSimpleSearch?.total > 0) {
-          return_obj["well.globalWell"] = return_obj["well.globalWell"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.id;
-          return_obj["well.apiNumber"] = return_obj["well.apiNumber"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.ApiNumber;
-          return_obj["well.wellName"] = return_obj["well.wellName"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.WellName;
-          return_obj["well.state"] = return_obj["well.state"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.State;
-          return_obj["well.county"] = return_obj["well.county"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.County;
-          return_obj["well.leaseId"] = return_obj["well.leaseId"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.LeaseId;
-          return_obj["well.lease"] = return_obj["well.lease"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.Lease;
-          return_obj["well.leaseAcres"] = return_obj["well.leaseAcres"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.leaseAcres;
-        }
-      }
+      //   if (wellsGeoms?.getESSimpleSearch?.total > 0) {
+      //     return_obj["well.globalWell"] = return_obj["well.globalWell"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.id;
+      //     return_obj["well.apiNumber"] = return_obj["well.apiNumber"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.ApiNumber;
+      //     return_obj["well.wellName"] = return_obj["well.wellName"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.WellName;
+      //     return_obj["well.state"] = return_obj["well.state"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.State;
+      //     return_obj["well.county"] = return_obj["well.county"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.County;
+      //     return_obj["well.leaseId"] = return_obj["well.leaseId"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.LeaseId;
+      //     return_obj["well.lease"] = return_obj["well.lease"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.Lease;
+      //     return_obj["well.leaseAcres"] = return_obj["well.leaseAcres"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.leaseAcres;
+      //   }
+      // }
 
 
 

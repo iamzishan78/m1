@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 const rawJobs = [
   { name: 'Import Contacts', type: 'CONTACTS' },
-  { name: 'Import Contact Well Interests', type: 'CONTACTSWELLINTEREST' },
+  { name: 'Import Contact Well Interests', type: 'CONTACTS_WELL_INTEREST' },
   { name: 'Interest Owner Upload', type: 'PARCELINTERESTS' },
   { name: 'Shape Owner Upload', type: 'SHAPEOWNER' },
   { name: 'Import Tracts', type: 'TRACTS', featureFlag: "TRACTIMPORT" },
