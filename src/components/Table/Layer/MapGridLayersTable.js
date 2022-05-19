@@ -81,7 +81,7 @@ function MapGridLayersTable(props) {
       extendSearchQuery: searchInput,
       searchFields: ["_all"],
       TableHeader: [],
-      filters: [{ field: "file._id", value: stateApp.selectedLayer.file }, { field: "properties.layerGeometry", value: stateApp.selectedLayer.layerGeometry }],
+      filters: [{ field: "file._id", value: stateApp.selectedLayer?.file }, { field: "properties.layerGeometry", value: stateApp.selectedLayer?.layerGeometry }],
       esIndex: "shapefile_flat",
       startPaginationAt: 25,
       formatColumns,
