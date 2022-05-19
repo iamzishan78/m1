@@ -69,14 +69,14 @@ const TractInterestOwnerHeadCells = [
       display: true,
     },
   },
-  // {
-  //   name: "unknown_interest",
-  //   label: "Unknown Interest",
-  //   esKey: "unknown_interest",
-  //   options: {
-  //     display: true,
-  //   },
-  // },
+  {
+    name: "unknown_interest",
+    label: "Unknown Interest",
+    esKey: "unknown_interest",
+    options: {
+      display: false,
+    },
+  },
   {
     name: "record_title",
     label: "Record Title",
