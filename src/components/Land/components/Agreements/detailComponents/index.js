@@ -152,7 +152,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsDetailContainer: ({ metaCollapse }) => ({
     padding: 20,
-    maxWidth: !metaCollapse ? "calc(100% - 644px)" : "100%",
+    width: !metaCollapse ? "calc(100% - 644px)" : "100%",
   }),
   menuIcon: {
     marginLeft: 10,
@@ -459,9 +459,7 @@ export default function DetailComponents(props) {
       </div>
 
       <div className="flex justifyBetween alignStart w-100">
-        <div className={`w-100 ${classes.tabsDetailContainer}`}>
-          {/*** Component for viewing selected pdf file*/}
-
+        <div className={classes.tabsDetailContainer}>
           {/**
            * Detail tabs section
            */}
@@ -511,7 +509,10 @@ export default function DetailComponents(props) {
             </div>
           </div>
 
-          <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 305px)" }} />
+          {/*** Component for viewing selected pdf file*/}
+          {stateApp.viewDoc && (
+            <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
+          )}
         </div>
 
         {!metaCollapse && (
