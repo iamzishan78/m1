@@ -48,7 +48,7 @@ export default [
         actual_key: "parcel.record_title"
     },
     {
-        label: "Operating Rights",
+        label: "Working Interest",
         mapped_key: "",
         required: false,
         actual_key: "parcel.operating_rights"

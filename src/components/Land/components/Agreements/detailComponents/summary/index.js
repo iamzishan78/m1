@@ -9,9 +9,9 @@ import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import WellIcon from "components/Shared/svgIcons/well";
 import TractIcon from "components/Shared/svgIcons/tract";
 import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
 import FieldsSection from "./fieldsSection";
-import ProgressBar from "components/Shared/ui/ProgressBar";
 import Acreage from "./Acreage";
 
 export default function Summary({
@@ -47,28 +47,27 @@ export default function Summary({
           >
             <Grid container direction="row" justify="space-between" alignItems="center">
               <Grid item className={classes.summaryHeader}>
-                <div style={{ display: "flex", width: "55%" }}>
-                  <Typography variant="h5" className={classes.titleText}>
-                    Summary
-                  </Typography>
-                  <ProgressBar value={35} height="3px" isNumeric />
-                </div>
-                <div style={{ width: "40%" }}>
-                  <Grid container spacing={2} justify="flex-end" className={classes.summaryHeaderIcons}>
-                    <Grid item>
-                      <div className={classes.summaryValue}> {shapeSummaryDetails?.shapeWells || 0} </div>
-                      <WellIcon opacity="1.0" small color="#757575" />
-                    </Grid>
-                    <Grid item>
-                      <div className={classes.summaryValue}> {shapeSummaryDetails?.shapeOwners || 0} </div>
-                      <TractIcon opacity="1.0" small />
-                    </Grid>
-                    <Grid item>
-                      <div className={classes.summaryValue}> {shapeSummaryDetails?.documents || 0} </div>
-                      <InsertDriveFileOutlinedIcon opacity="1.0" small />
-                    </Grid>
+                <Typography variant="h5" className={classes.titleText}>
+                  Summary
+                </Typography>
+                <Grid container spacing={1} justify="flex-start" className={classes.summaryHeaderIcons}>
+                  <Grid item>
+                    <div className={classes.summaryValue}> {shapeSummaryDetails?.relatedParties || 0} </div>
+                    <PeopleAltIcon opacity="1.0" />
                   </Grid>
-                </div>
+                  <Grid item>
+                    <div className={classes.summaryValue}> {shapeSummaryDetails?.shapeWells || 0} </div>
+                    <WellIcon opacity="1.0" small color="#757575" />
+                  </Grid>
+                  <Grid item>
+                    <div className={classes.summaryValue}> {shapeSummaryDetails?.shapeOwners || 0} </div>
+                    <TractIcon opacity="1.0" small />
+                  </Grid>
+                  <Grid item>
+                    <div className={classes.summaryValue}> {shapeSummaryDetails?.documents || 0} </div>
+                    <InsertDriveFileOutlinedIcon opacity="1.0" small />
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           </AccordionSummary>
