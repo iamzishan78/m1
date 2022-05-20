@@ -237,9 +237,8 @@ function RelatedDetailsDocumentTable(props) {
             m1nSelectedRowsIds={selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
             setM1nSelectedRowsIndexes={setSelectedRows}
           >
-            {`Do you want to permanently delete the document${
-              selectedRows && selectedRows.length > 1 && selectedRows.length > 1 ? "s" : ""
-            } from  this ${props.name || props.relatedObjectType}?`}
+            {`Do you want to permanently delete the document${selectedRows && selectedRows.length > 1 && selectedRows.length > 1 ? "s" : ""
+              } from  this ${props.name || props.relatedObjectType}?`}
           </DeleteConfirmationDialogContent>
         )}
       </Dialog>
@@ -265,7 +264,7 @@ function RelatedDetailsDocumentTable(props) {
         className={classes.dialogExpCard}
         fullWidth
         maxWidth="xl"
-        open={stateApp.pdfView ? true : false}
+        open={!!stateApp.pdfView && props.isPdfViewer}
         onClose={() => {
           setStateApp((state) => ({
             ...state,
@@ -342,6 +341,7 @@ RelatedDetailsDocumentTable.defaultProps = {
   addAble: {
     type: "relatedDocument",
   },
+  isPdfViewer: true
 };
 
 export default React.memo(TableHOC(RelatedDetailsDocumentTable), deepEqualObjects);
