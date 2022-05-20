@@ -83,7 +83,7 @@ function ContactWellInterestTable(props) {
   useEffect(() => {
     if (tableData?.edges?.length > 0) {
       let wells = tableData.edges.map((el) => el.node)
-      const objectsIdsArray = wells.map((well) => well.wellId);
+      const objectsIdsArray = wells.map((well) => well._id);
       props.initializeGenericData(objectsIdsArray, ['comments', 'tags'])
     }
 
@@ -103,7 +103,7 @@ function ContactWellInterestTable(props) {
         well.amount = addTrailingZeros(well.amount);
         well.nra = addTrailingZeros(well.nra);
 
-        well = props.setGenricData(well, well.wellId, ['comments', 'tracks', 'tags'])
+        well = props.setGenricData(well, well._id, ['comments', 'tracks', 'tags'])
 
         return well;
       });
