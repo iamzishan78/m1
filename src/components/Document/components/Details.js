@@ -27,6 +27,7 @@ import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
+
 const filter = createFilterOptions();
 
 const useStyles = makeStyles({
@@ -254,7 +255,6 @@ export default function DocumentDetails(props) {
 
   const sortFields = (gridViews) => {
     const metaData = [];
-    console.log(stateApp.selectedView);
     if (stateApp.selectedView.columns?.length > 0) {
       for (let i = 0; i < stateApp.selectedView.columns?.length; i++) {
         const data = gridViews.find((view) => view.name === stateApp.selectedView.columns[i].name);
@@ -652,11 +652,11 @@ export default function DocumentDetails(props) {
                             <IconButton
                               disabled={false}
                               size="small"
-                              // onClick={() =>
-                              //   handleViewFile(
-                              //     files?.getFileDescriptors[key].fileId
-                              //   )
-                              // }
+                            // onClick={() =>
+                            //   handleViewFile(
+                            //     files?.getFileDescriptors[key].fileId
+                            //   )
+                            // }
                             >
                               <GetAppIcon />
                             </IconButton>

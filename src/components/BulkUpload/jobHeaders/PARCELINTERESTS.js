@@ -1,7 +1,10 @@
 const CONTACTS_FIELDS = require("./CONTACTS").default
 
+const fields = JSON.parse(JSON.stringify(CONTACTS_FIELDS))
+fields.splice(CONTACTS_FIELDS.length-1,1)
+
 export default [
-    ...CONTACTS_FIELDS,
+    ...fields,
     {
         label: "Parcel Id",
         mapped_key: "",
@@ -45,7 +48,7 @@ export default [
         actual_key: "parcel.record_title"
     },
     {
-        label: "Operating Rights",
+        label: "Working Interest",
         mapped_key: "",
         required: false,
         actual_key: "parcel.operating_rights"
@@ -139,5 +142,11 @@ export default [
         mapped_key: "",
         required: false,
         actual_key: "comment"
+    },
+    {
+        label: "Tags",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.tags"
     },
 ];

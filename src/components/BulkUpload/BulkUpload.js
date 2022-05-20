@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 const rawJobs = [
   { name: 'Import Contacts', type: 'CONTACTS' },
+  { name: 'Import Contact Well Interests', type: 'CONTACTSWELLINTEREST' },
   { name: 'Interest Owner Upload', type: 'PARCELINTERESTS' },
   { name: 'Shape Owner Upload', type: 'SHAPEOWNER' },
   { name: 'Import Tracts', type: 'TRACTS', featureFlag: "TRACTIMPORT" },
@@ -56,6 +57,9 @@ export default function BulkUpload(props) {
     let filter = true;
     switch (job.type) {
       case 'CONTACTS':
+        filter = stateNav.bulkUploadFromMap ? false : true;
+        break;
+      case 'CONTACTSWELLINTEREST':
         filter = stateNav.bulkUploadFromMap ? false : true;
         break;
       case 'PARCELINTERESTS':

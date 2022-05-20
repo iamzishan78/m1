@@ -3,11 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
-import Link from "@material-ui/core/Link";
-import Toolbar from "@material-ui/core/Toolbar";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
-import Typography from "@material-ui/core/Typography";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import { CONTACT_PURCHASE_DATA } from "graphQL/useQueryContactPurchaseData";
 
 import { CONTACT } from "graphQL/useQueryContact";
@@ -15,7 +10,6 @@ import MelissaTable from "./components/MelissaTable";
 import { LASTMELISSARECORD } from "graphQL/useQueryGetMelissaRecords";
 
 import { AppContext } from "../../AppContext";
-import { NavigationContext } from "../Navigation/NavigationContext";
 import {
   getBasicInfoContent,
   getBasicInfoExpContent,
@@ -60,8 +54,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ContactDetailedInfoCard() {
   const classes = useStyles();
   let history = useHistory();
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [, setStateApp] = useContext(AppContext);
 
   const [melissaData, setMelissaData] = useState(null);
   const [contactData, setContactData] = useState(null);
@@ -125,67 +118,17 @@ export default function ContactDetailedInfoCard() {
     update();
   }, [contactData]);
 
-  const checkModuleHistory = () => {
-    return !!stateNav.contactFromMap;
-  };
-
   return contactData ? (
     <div className={classes.root}>
-      <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-          {checkModuleHistory() && (
-            <Link
-              className={classes.linkClass}
-              style={{
-                marginLeft: "5px",
-                fontSize: "16px",
-                cursor: "pointer",
-              }}
-              color="inherit"
-              onClick={() => {
-                history.push("/");
-                setStateNav((stateApp) => ({
-                  ...stateApp,
-                  contactFromMap: false,
-                }));
-              }}
-            >
-              Map
-            </Link>
-          )}
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => history.push("/contacts")}
-          >
-            Contacts
-          </Link>
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => history.push(`/contact/details/${contactId}`)}
-          >
-            {contactData.name}
-          </Link>
-          <Typography
-            style={{
-              color: "#18AADD",
-              fontSize: "16px",
-              marginLeft: "5px",
-            }}
-          >
-            Detailed Information
-          </Typography>
-        </Breadcrumbs>
-      </Toolbar>
+      <div
+        style={{
+          backgroundColor: "#F2F2F2",
+          minHeight: "7px",
+          display: "flex",
+          position: "relative",
+          alignItems: "center",
+        }}
+      />
 
       <MelissaTable
         id={contactData?._id}

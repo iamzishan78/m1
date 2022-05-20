@@ -75,7 +75,7 @@ export const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column)
     }
   } else {
     if (
-      TableHeader.find((col) => col.name === column.name).options.display !==
+      TableHeader.find((col) => col.name === column.name)?.options?.display !==
       false
     ) {
       column.options.display = true;

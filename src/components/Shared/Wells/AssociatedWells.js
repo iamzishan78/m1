@@ -12,7 +12,7 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 
 //Contexts
 import { AppContext } from "AppContext";
-import { DocumentContextProvider, DocumentContext } from "components/Document/DocumentContext";
+import { DocumentContextProvider } from "components/Document/DocumentContext";
 
 //Components
 import WellSearchApiFieldES from "components/Shared/Forms/Fields/WellSearchApiFieldES";
@@ -26,9 +26,10 @@ import { DELETE_WELL_DESCRIPTOR, UPSERT_WELL_DESCRIPTOR } from "graphQL/useMutat
 
 const useStyles = makeStyles((theme) => ({
   rootPadding: {
-    padding: "6px 15px",
+    padding: "6px 30px 6px 15px",
   },
   list: {
+    overflowX: "hidden",
     overflowY: "auto",
     maxHeight: "79vh",
     "& .MuiList-padding": {
@@ -123,7 +124,6 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
   const [wells, setWells] = useState([]);
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  // const { getWellsFromDocument, wells, wellsFromDocument, getWellsLoading, setWells } = React.useContext(DocumentContext);
   const [getWellsDescriptors, { data: associatedWells, loading: getWellsLoading }] = useLazyQuery(GET_WELL_DESCRIPTORS);
 
   // Mutattions
@@ -194,7 +194,7 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
     }
   };
   return (
-    <div style={{ marginRight: "14px" }}>
+    <>
       <Grid container direction="row" justify="space-between" alignItems="center" className={classes.rootPadding}>
         {!addWell && (
           <React.Fragment>
@@ -312,7 +312,7 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
           )}
         </List>
       </div>
-    </div>
+    </>
   );
 };
 
