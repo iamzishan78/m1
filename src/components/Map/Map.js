@@ -4546,7 +4546,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
     const signal = abortController.signal;
 
-    const styleTypes = ["Satellite", "Basic", "Dark", "Light", "Outdoors"];
+    let styleTypes = ["Satellite", "Basic", "Dark", "Light", "Outdoors"];
+    const isDarkMapAllowed = stateApp?.user?.features?.find(f => f.name === 'DarkBaseMap')
+    if (!isDarkMapAllowed)
+      styleTypes = styleTypes.filter((style) => style !== 'Dark')
     let recurseLimit = 5;
 
     let styles = await styleTypes.reduce(async function reduceFunction(styles, styleType) {
