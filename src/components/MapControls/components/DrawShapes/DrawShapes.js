@@ -310,13 +310,12 @@ export default function DrawShapes() {
           drawShapeLayerToggle(state, state.lastSelectedDrawMode === "draw_polygon" ? "visible" : "none");
           if (state.reDrawShape) {
             state.currentFeature.geometry = feature.geometry
-            currentFeature = state.currentFeature
           }
           else if (state.currentFeature && !state.reDrawShape) {
-            currentFeature = union(feature, state.currentFeature);
-            currentFeature.id = state.currentFeature.id
-            currentFeature.properties.id = state.currentFeature.id;
+            const newFeature = union(feature, state.currentFeature);
+            state.currentFeature.geometry = newFeature.geometry
           }
+          currentFeature = state?.currentFeature ? state.currentFeature : feature;
           return { ...state, editDraw: false, showShapeActionsPopup: true, currentFeature, reDrawShape: false }
         });
         setTimeout(() => {

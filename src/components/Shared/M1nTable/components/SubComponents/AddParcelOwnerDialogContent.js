@@ -38,6 +38,7 @@ import { addTrailingZeros } from "components/Shared/functions";
 import { Controller, useForm } from "react-hook-form";
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
 
 const entities = [
   "Corporation",
@@ -401,7 +402,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
           <Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
             <Grid item md={10} xs={10}>
               <DialogTitle id="customized-dialog-title" style={{ fontWeight: "bold" }}>
-                {selectedRow ? "Update" : "Add"} Parcel Ownership
+                {selectedRow ? "Update" : "Add"} Tract Ownership
                 {/* {selectedRow && (
               <IconButton
                 style={{ float: "right", marginRight: "5px" }}
@@ -556,7 +557,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   onWheel={(e) => e.target.blur()}
                 />
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <h3>Unknown Interest</h3>
                 <TextField
                   type="number"
@@ -572,7 +573,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   }}
                   onWheel={(e) => e.target.blur()}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs={12}>
                 <h3>Record Title</h3>
                 <TextField
@@ -591,7 +592,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 />
               </Grid>
               <Grid item xs={12}>
-                <h3>Operating Rights</h3>
+                <h3>Working Interest</h3>
                 <TextField
                   type="number"
                   size="small"
@@ -722,15 +723,18 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     <h3>Cost Free High Value</h3>
                     <TextField
                       id="standard-number"
-                      type="number"
+                      type="text"
                       size="small"
                       className={classes.maxWidth}
                       value={newOwner.cost_free_high_value}
+                      InputProps={{
+                        inputComponent: CurrencyFormatCustom,
+                      }}
                       onChange={(e) => {
                         const value = addTrailingZeros(e.target.value);
                         setNewOwner({
                           ...newOwner,
-                          cost_free_high_value: value || null,
+                          cost_free_high_value: Number(value) || null,
                         });
                       }}
                     />
@@ -739,15 +743,18 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     <h3>Cost Bearing High Value</h3>
                     <TextField
                       id="standard-number"
-                      type="number"
+                      type="text"
                       size="small"
                       className={classes.maxWidth}
+                      InputProps={{
+                        inputComponent: CurrencyFormatCustom,
+                      }}
                       value={newOwner.cost_bearing_high_value}
                       onChange={(e) => {
                         const value = addTrailingZeros(e.target.value);
                         setNewOwner({
                           ...newOwner,
-                          cost_bearing_high_value: value || null,
+                          cost_bearing_high_value: Number(value) || null,
                         });
                       }}
                     />

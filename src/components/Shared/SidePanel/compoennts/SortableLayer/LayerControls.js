@@ -82,16 +82,18 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
   }, [layer.fileName])
 
   const handleColorPicker = (layer) => {
-    setStateApp((state) => ({
-      ...state,
-      selectedLayer: layer,
-    }))
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      selectedLayer: layer,
-      map: stateApp.map,
-      addLayer: false
-    }));
+    setTimeout(() => {
+      setStateApp((state) => ({
+        ...state,
+        selectedLayer: layer,
+      }))
+      setStateMapControls((stateMapControls) => ({
+        ...stateMapControls,
+        selectedLayer: layer,
+        map: stateApp.map,
+        addLayer: false
+      }));
+    }, 0)
   };
 
   const getLayerChecked = ({ layer, index }) => {
@@ -173,7 +175,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
         {/* </Grid> */}
 
         <Grid item xs={4}>
-          <FeatureFlag  feature={FEATURES.SHAPEELASTIC}>
+          <FeatureFlag feature={FEATURES.SHAPEELASTIC}>
             {layer.file && <Tooltip title="Grid">
               <IconButton size="small" aria-label="Grid" style={{ color: '#ffff' }} onClick={() => {
                 setStateApp((state) => ({

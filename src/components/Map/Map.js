@@ -1571,6 +1571,12 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             }
             if (data) {
               beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
+              if (['Land Grid'].includes(layer.identifier)) {
+                setStateApp((stateApp) => ({
+                  ...stateApp,
+                  baseMapLayers: [...stateApp.baseMapLayers],
+                }));
+              }
             }
           }
         } else if (layer.layerType == "file layer") {
@@ -1641,8 +1647,22 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
   useEffect(() => {
     // USE EFFECT FOR BASEMAP LAYER HANDLING
+    const mapLayers = copy(stateApp.layers)
     if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
-      stateApp.baseMapLayers.forEach((l) => {
+      const landLayer = mapLayers?.find((layer) => layer.identifier === 'Land Grid')
+      const baseMapLandIndex = stateApp.baseMapLayers.findIndex((layer) => layer.name === 'Land Grid')
+      if (!landLayer?.layerSettings?.visiable && stateApp.checkedBaseLayers.includes(baseMapLandIndex)) {
+        setStateApp((state) => ({ ...state, checkedBaseLayers: stateApp.checkedBaseLayers.filter((l) => l !== baseMapLandIndex) }))
+        return
+      }
+      stateApp.baseMapLayers.forEach((l, index) => {
+        if (l.name === 'Land Grid' && !stateApp.checkedBaseLayers.includes(index)) {
+          if (landLayer) {
+            landLayer.layerSettings.visiable = false;
+            setStateApp((state) => ({ ...state, layers: [...mapLayers] }))
+          }
+        }
+
         l.id.forEach((k) => {
           if (map.getLayer(k)) {
             map.setLayoutProperty(k, "visibility", "none");
@@ -1659,6 +1679,14 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           let belowlayer = null;
           for (let k = layers.length - 1; k >= 0; k--) {
             let i = layers[k];
+            if (stateApp.baseMapLayers[i].name === 'Land Grid') {
+
+              if (landLayer) {
+                landLayer.layerSettings.visiable = true;
+                setStateApp((state) => ({ ...state, layers: [...mapLayers] }))
+              }
+              continue;
+            }
             let currentLayerArray = stateApp.baseMapLayers[i].id;
             // eslint-disable-next-line no-loop-func
             currentLayerArray.forEach((j) => {
@@ -4518,7 +4546,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
     const signal = abortController.signal;
 
-    const styleTypes = ["Satellite", "Basic", "Dark", "Light", "Outdoors"];
+    let styleTypes = ["Satellite", "Basic", "Dark", "Light", "Outdoors"];
+    const isDarkMapAllowed = stateApp?.user?.features?.find(f => f.name === 'DarkBaseMap')
+    if (!isDarkMapAllowed)
+      styleTypes = styleTypes.filter((style) => style !== 'Dark')
     let recurseLimit = 5;
 
     let styles = await styleTypes.reduce(async function reduceFunction(styles, styleType) {

@@ -274,5 +274,11 @@ export default [
         mapped_key: "",
         required: false,
         actual_key: "comments",
-    }
+    },
+    {
+        label: "Tags",
+        mapped_key: "",
+        required: false,
+        actual_key: "check.tags"
+    },
 ];

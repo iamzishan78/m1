@@ -32,8 +32,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
     height: "calc(100vh - 280px)",
     maxHeight: "calc(100vh - 280px)",
-    maxWidth: 360,
-    width: "100%",
+    maxWidth: "620px",
   },
   metaPanelCloseIcon: {
     "& svg": {
@@ -78,7 +77,7 @@ const InterestDetailForm = (props) => {
   const { selectedInterest } = props;
   let history = useHistory();
 
-  const { control, getValues, reset, setValue } = useForm();
+  const { control, getValues, reset } = useForm();
 
   const [addPropertyInterest] = useMutation(ADD_PROPERTY_INTEREST, {
     onCompleted: () => {
