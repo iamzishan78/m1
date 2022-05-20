@@ -1324,7 +1324,7 @@ function AddDealDialog(props) {
                                                   .find((user) => user?.value === ownerId)
                                                   .text.toString()
                                                   .toUpperCase()
-                                                  .split(" ").length > 1
+                                                  .length > 1
                                                   ? users.find((user) => user?.value === ownerId).text.toString()
                                                   : "Add Owner"
                                               }
