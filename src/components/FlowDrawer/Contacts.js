@@ -426,13 +426,7 @@ export default function Contacts(props) {
                           : null}
                       </div>
                     </AccordionDetails>
-
-
-
                   </Accordion>
-
-
-
                 </ListItem>
                 <Divider key={`divider-${i}`} />
               </>
