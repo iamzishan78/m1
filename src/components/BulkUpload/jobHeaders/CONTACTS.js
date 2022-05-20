@@ -251,6 +251,12 @@ export default [
         required: false,
         actual_key: "comment"
     },
+    {
+        label: "Tags",
+        mapped_key: "",
+        required: false,
+        actual_key: "contact.tags"
+    },
     // {
     //   label: "Comments",
     //   mapped_key: "",

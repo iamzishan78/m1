@@ -35,7 +35,7 @@ export const useStyles = makeStyles((theme) => ({
     padding: 0,
   },
   titleText: {
-    marginRight: "15px",
+    marginRight: "40px",
     textTransform: "uppercase",
     fontWeight: "bold",
   },
@@ -86,7 +86,7 @@ export const useStyles = makeStyles((theme) => ({
   mapSection: {
     height: "382px",
     width: "45%",
-    margin: "10px 10px 0px 0px"
+    margin: "10px 10px 0px 0px",
   },
   adornmentAutocomplete: {
     "& .MuiAutocomplete-endAdornment": {
@@ -110,6 +110,10 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   datePicker: {
+    margin: "5px",
+    "&& span": {
+      pointerEvents: "none",
+    },
     "& .MuiIconButton-root": {
       padding: "12px 0px",
     },

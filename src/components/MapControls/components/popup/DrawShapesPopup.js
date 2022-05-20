@@ -78,7 +78,8 @@ const DrawShapesPopup = (props) => {
       setStateApp((state) => ({
         ...state,
         multiSelectLandGrids: !state.multiSelectLandGrids,
-        editDraw: false,
+        editDraw: true, isDrawing: true,
+        shapeToExtend: state.currentFeature,
         lastSelectedDrawMode: shape.mode,
         changeDrawShapeType: false
       }));
@@ -111,7 +112,7 @@ const DrawShapesPopup = (props) => {
   };
 
   const createMultiSelectedFeature = () => {
-    let { draw, selectedAbstracts } = stateApp,
+    let { draw, selectedAbstracts, shapeToExtend } = stateApp,
       newFeature,
       featureId = hat();
     selectedAbstracts.forEach((abstractFeature, index) => {
@@ -126,6 +127,13 @@ const DrawShapesPopup = (props) => {
     newFeature.id = featureId;
     newFeature.properties.id = featureId;
 
+    if (shapeToExtend) {
+      if (stateApp.shapeEditMode !== 'redraw')
+        newFeature = union(newFeature, shapeToExtend);
+      shapeToExtend.geometry = newFeature.geometry
+      newFeature = shapeToExtend
+    }
+
     // adding new polygon into map instance
     draw.add(newFeature);
 
@@ -134,9 +142,11 @@ const DrawShapesPopup = (props) => {
       ...state,
       selectedAbstracts: [],
       currentFeature: newFeature,
+      shapeToExtend: undefined,
       multiSelectLandGrids: false,
       isAbstractedLayersPolygon: true,
-      showShapeActionsPopup: true
+      showShapeActionsPopup: true,
+      reDrawShape: false,
     }));
     addCustomShapeProperties(newFeature, draw);
 

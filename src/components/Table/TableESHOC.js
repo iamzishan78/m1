@@ -397,7 +397,7 @@ export const TableESHOC = (Component) => {
                             let field = columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
                                 columns.find(el => el.name === tableState.sortOrder?.name)?.name;
                             return {
-                                field: Array.isArray(field) ? field[0].replace('.keyword', "") : field.replace('.keyword', ""),
+                                field: Array.isArray(field) ? field[0] : field,
                                 order: tableState.sortOrder?.direction
                             }
 

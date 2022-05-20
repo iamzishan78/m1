@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
 import { makeStyles } from "@material-ui/core/styles";
+
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="left" ref={ref} {...props} />;
@@ -45,11 +47,22 @@ export default function AlertDialogSlide(props) {
       },
     }),
   }));
-  const { quickActionsPanelState } = useSelector((state) => state.common);
+  const { quickActionsPanelState, activeModule } = useSelector((state) => state.common);
+  const { user } = useSelector((state) => state.app);
   const {
     location: { pathname },
   } = useSelector((state) => state.router);
-  const classes = useStyles({ ...props, quickActionsPanelState: pathname !== "/documents" ? quickActionsPanelState : false });
+
+  const isLeftMargin = useMemo(() => {
+    const isPadding = quickActionsPanelState && !!user?.features?.find((f) => f.name === FEATURES[activeModule.featureFlag]);
+    return isPadding;
+  }, [quickActionsPanelState]);
+
+  const classes = useStyles({
+    ...props,
+    quickActionsPanelState: pathname !== "/documents" ? isLeftMargin : false,
+  });
+
   return (
     <Dialog
       className={classes.dialog}

@@ -99,9 +99,9 @@ export const useStyles = makeStyles((theme) => ({
   },
   content: (props) => ({
     flexGrow: 1,
-    width: props.user ? "calc(100% - 52px)" : "calc(100% - 0px)",
+    width: props.user ? "calc(100% - 60px)" : "calc(100% - 0px)",
     position: "absolute",
-    left: props.user ? "52px" : "0px",
+    left: props.user ? "60px" : "0px",
     height: "100%",
   }),
   grow1: {
