@@ -99,9 +99,9 @@ export const useStyles = makeStyles((theme) => ({
   },
   content: (props) => ({
     flexGrow: 1,
-    width: props.user ? "calc(100% - 52px)" : "calc(100% - 0px)",
+    width: props.user ? "calc(100% - 60px)" : "calc(100% - 0px)",
     position: "absolute",
-    left: props.user ? "52px" : "0px",
+    left: props.user ? "60px" : "0px",
     height: "100%",
   }),
   grow1: {
@@ -482,6 +482,30 @@ export const useStyles = makeStyles((theme) => ({
     // width: "120px",
     fontSize: "15px",
     padding: "10px",
+  },
+  editWorkspaceIcon: {
+    textAlign: "right",
+    margin: "5px 0px 0px 108px",
+    "& svg": {
+      color: "white",
+      fill: "#ffff",
+    },
+  },
+  workspaceIcon: {
+    width: "260px",
+    paddingLeft: "5px",
+    paddingRight: "15px",
+    display: "flex",
+    alignItems: "center",
+    "& img": {
+      width: "50px",
+      height: "52px",
+    },
+    "& .MuiTypography-root": {
+      marginLeft: "10px",
+      fontWeight: "bold",
+      fontSize: "2.6rem !important",
+    },
   },
 }));
 

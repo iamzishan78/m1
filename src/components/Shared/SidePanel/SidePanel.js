@@ -6,6 +6,8 @@ import { AppContext } from "AppContext";
 import Panel from "./compoennts/Panel";
 import { UPDATELAYERSETTINGS } from "graphQL/useMutationUpdateLayerSettings";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
+import { useDispatch } from "react-redux";
+import { setMapGridCardState } from "actions";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -70,6 +72,7 @@ export default function SidePanel() {
   const [panelButton, setPanelButton] = useState();
   const [panelTitle, setPanelTitle] = useState();
   const [headerFilters, setHeaderFilters] = useState();
+  const dispatch = useDispatch();
 
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
 
@@ -87,8 +90,10 @@ export default function SidePanel() {
     }));
     setStateApp((stateApp) => ({
       ...stateApp,
+      layerGridCard: null,
       selectedLayer: null,
     }))
+    dispatch(setMapGridCardState({ mapGridCardActivated: false }));
   };
 
   const panelButtons = {
