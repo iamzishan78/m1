@@ -40,6 +40,9 @@ const RevenueStatementHeadCells = [
         name: "ownerTax", label: "Severance", esKey: 'ownerTax', options: { sort: true, filter: true }
     },
     {
+        name: "taxType", label: "Tax Type", esKey: 'taxType', options: { sort: true, filter: true }
+    },
+    {
         name: "ownerDeducts", label: "Deduct Amt", esKey: 'ownerDeducts', options: { sort: true, filter: true }
     },
     {
