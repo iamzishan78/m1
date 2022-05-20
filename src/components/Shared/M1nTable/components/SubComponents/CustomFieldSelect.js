@@ -123,9 +123,8 @@ const CustomFieldSelect = ({
         padding: "0px",
         height: "50px",
         width: "100%",
-        borderBottom: fullWidth ? "1px solid" : "none",
-        borderRadius: 5,
         border: variant === 'outlined' ? "1px solid rgba(0, 0, 0, 0.23)" : "none",
+        borderBottom: fullWidth ? "1px solid rgba(0, 0, 0, 0.23)" : "none",
       }}
       onClick={(e) => e.stopPropagation()}
       onMouseLeave={(e) => {
