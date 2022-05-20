@@ -446,7 +446,7 @@ export default function DetailComponents(props) {
               targetLabel="Property"
               targetSourceId={propertyId}
               setStateApp={setStateApp}
-              ownerTitle="DO Approver"
+              ownerTitle="Approver"
             />
           </div>
         )}
