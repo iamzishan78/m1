@@ -114,7 +114,7 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "ownerTax",
-    label: "Severance",
+    label: "Owner Tax Amt",
     esKey: "ownerTax",
     options: { sort: true, filter: true },
   },
