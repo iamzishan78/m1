@@ -437,7 +437,8 @@ export default function DetailComponents(props) {
               </StyledTabs>
             </div>
             <div className={classes.metaActions}>
-              <Button
+              {/* temp hide these buttons until we add the functionality -kc 20220520 */}
+              {/* <Button
                 startIcon={<RuleIcon />}
                 className={classes.validationButton}
                 onClick={() => setValidationCollapse(!validationCollapse)}
@@ -446,7 +447,7 @@ export default function DetailComponents(props) {
               </Button>
               <Button startIcon={<FlowIcon />} className={classes.flowlineButton} onClick={() => setFlowlineCollapse(!flowlineCollapse)}>
                 Flowline
-              </Button>
+              </Button> */}
               <Button startIcon={<InfoOutlinedIcon />} className={classes.metaButton} onClick={() => setMetaCollapse(!metaCollapse)}>
                 Metadata
               </Button>
