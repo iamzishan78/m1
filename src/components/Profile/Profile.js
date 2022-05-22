@@ -57,7 +57,7 @@ const Profile = () => {
           textColor="primary"
         >
           <Tab label="Profile" className={classes.tab} />
-          <Tab label="Notificatons" className={classes.tab} />
+          <Tab label="Notifications" className={classes.tab} />
         </Tabs>
 
         <TabPanel value={tab} index={0}>

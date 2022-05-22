@@ -38,7 +38,7 @@ const NotificationSettings = () => {
 
   return (
     <Box p={2}>
-      <p>Send me email notificaitons for:</p>
+      <p>Send me email notifications for the following:</p>
       <dl>
         <dt>
           <FormControlLabel
@@ -64,7 +64,7 @@ const NotificationSettings = () => {
                 name="newDealsAssigned"
               />
             }
-            label="New deals assigned to you"
+            label="New deals assigned to me"
             disabled={stateProfile.isSaving}
           />
         </dd>
@@ -77,7 +77,7 @@ const NotificationSettings = () => {
                 name="dealEntersAssignedLane"
               />
             }
-            label="Deals enters lane assigned to you"
+            label="Deal enters a lane assigned to me"
             disabled={stateProfile.isSaving}
           />
         </dd>
@@ -91,7 +91,7 @@ const NotificationSettings = () => {
               />
             }
             className={classes.boldCheckboxLabel}
-            label="Mentions"
+            label="Comment Mentions"
             disabled={stateProfile.isSaving}
           />
         </dt>
