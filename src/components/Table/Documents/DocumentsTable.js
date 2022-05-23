@@ -108,7 +108,7 @@ function DocumentsTable(props) {
           first: startPaginationAt,
           keep_alive: "1micros",
         },
-        search: props.documentSearchQuery ? props.documentSearchQuery : "",
+        search: props.documentSearchQuery ? `${props.documentSearchQuery}*` : "*",
         filters: getAppliedFilters(filters, columns, stateApp.filtersData),
       },
     });

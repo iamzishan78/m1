@@ -19,6 +19,10 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiIconButton-root": {
       padding: "10px 0px",
     },
+    '& input::-webkit-calendar-picker-indicator': {
+      filter:
+        'invert(1)',
+    },
   },
   blue: {
     "& .MuiInputBase-input": { color: "#17AADD" },
@@ -138,7 +142,7 @@ export default function FilterDatePickerPermit(props) {
         <Controller
           control={control}
           name="permitDateTo"
-          defaultValue={''}
+          defaultValue={""}
           render={(props) => (
             <TextField
               type="date"
@@ -159,7 +163,6 @@ export default function FilterDatePickerPermit(props) {
               autoOk="true"
               format="MM/DD/YYYY"
               PopoverProps={{ disablePortal: false }}
-              fullWidth={true}
               InputProps={{
                 inputProps: { max: moment().format("yyyy-MM-DD") },
                 endAdornment: (

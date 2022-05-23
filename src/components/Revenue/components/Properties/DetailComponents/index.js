@@ -28,6 +28,7 @@ import NavHeader from "components/Revenue/components/Common/NavHeader";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
 import { MultipleOwnerToContactDrawerContainer } from "store/containers";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import DocViewer from "components/Shared/DocViewer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -93,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsDetailContainer: ({ showInterestDetails, collapse }) => ({
     padding: 20,
-    maxWidth: showInterestDetails || !collapse ? "calc(100% - 644px)" : "100%",
+    width: showInterestDetails || !collapse ? "calc(100% - 644px)" : "100%",
   }),
   menuIcon: {
     background: "transparent",
@@ -373,11 +374,11 @@ export default function DetailComponents(props) {
       </div>
 
       <div className="flex justifyBetween alignStart w-100">
-        <div className={`${classes.tabsDetailContainer}`}>
+        <div className={classes.tabsDetailContainer}>
           {/**
            * Detail tabs section
            */}
-          <div className={classes.tabsSection}>
+          <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
             <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
                 <HeaderSection
@@ -397,6 +398,9 @@ export default function DetailComponents(props) {
               </div>
             </div>
           </div>
+          {stateApp.viewDoc && (
+            <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
+          )}
         </div>
         {showOwnerDialog && (
           <ConvertOwnerToContactContainer
@@ -419,9 +423,9 @@ export default function DetailComponents(props) {
           <MultipleOwnerToContactDrawerContainer
             onClose={() => setEntityToConvert(null)}
             rows={[entityToConvert]}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
             onSuccess={() => setRefetchContacts(!refetchContacts)}
-            setRows={() => {}}
+            setRows={() => { }}
           />
         )}
 
@@ -442,7 +446,7 @@ export default function DetailComponents(props) {
               targetLabel="Property"
               targetSourceId={propertyId}
               setStateApp={setStateApp}
-              ownerTitle="DO Approver"
+              ownerTitle="Approver"
             />
           </div>
         )}
@@ -453,7 +457,7 @@ export default function DetailComponents(props) {
           onClose={() => setOpenDeleteDialog(false)}
           deleteFunc={deleteFunc}
           m1nSelectedRowsIds={[propertyDetails?._id]}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={() => { }}
         >
           {`Do you want to delete this property?`}
         </DeleteConfirmationDialogContent>

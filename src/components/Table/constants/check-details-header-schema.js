@@ -31,13 +31,16 @@ const RevenueStatementHeadCells = [
         name: "price", label: "Avg Price", esKey: 'price', options: { sort: true, filter: true }
     },
     {
-        name: "grossOwnerVolume", label: "Sales Vol", esKey: 'grossOwnerVolume', options: { sort: true, filter: true }
+        name: "grossOwnerVolume", label: "Owner Volume", esKey: 'grossOwnerVolume', options: { sort: true, filter: true }
     },
     {
-        name: "grossOwnerValue", label: "Gross Rev", esKey: 'grossOwnerValue', options: { sort: true, filter: true }
+        name: "grossOwnerValue", label: "Owner Gross Revenue", esKey: 'grossOwnerValue', options: { sort: true, filter: true }
     },
     {
-        name: "ownerTax", label: "Severance", esKey: 'ownerTax', options: { sort: true, filter: true }
+        name: "ownerTax", label: "Owner Tax Amt", esKey: 'ownerTax', options: { sort: true, filter: true }
+    },
+    {
+        name: "taxType", label: "Tax Type", esKey: 'taxType', options: { sort: true, filter: true }
     },
     {
         name: "ownerDeducts", label: "Deduct Amt", esKey: 'ownerDeducts', options: { sort: true, filter: true }

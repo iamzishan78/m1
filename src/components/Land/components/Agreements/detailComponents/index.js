@@ -30,7 +30,6 @@ import RelatedWells from "components/Land/components/Agreements/detailComponents
 import Documents from "components/Land/components/Agreements/detailComponents/documents";
 
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
@@ -153,7 +152,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsDetailContainer: ({ metaCollapse }) => ({
     padding: 20,
-    maxWidth: !metaCollapse ? "calc(100% - 644px)" : "100%",
+    width: !metaCollapse ? "calc(100% - 644px)" : "100%",
   }),
   menuIcon: {
     marginLeft: 10,
@@ -305,7 +304,12 @@ export default function DetailComponents(props) {
 
   useEffect(() => {
     if (activeAgreement?._id) {
-      getShapeSummaryDetails({ variables: { shapeId: activeAgreement._id } });
+      getShapeSummaryDetails({
+        variables: {
+          shapeId: activeAgreement._id,
+          shapeType: "Agreement"
+        }
+      });
     }
   }, [activeAgreement, getShapeSummaryDetails]);
 
@@ -433,7 +437,8 @@ export default function DetailComponents(props) {
               </StyledTabs>
             </div>
             <div className={classes.metaActions}>
-              <Button
+              {/* temp hide these buttons until we add the functionality -kc 20220520 */}
+              {/* <Button
                 startIcon={<RuleIcon />}
                 className={classes.validationButton}
                 onClick={() => setValidationCollapse(!validationCollapse)}
@@ -442,7 +447,7 @@ export default function DetailComponents(props) {
               </Button>
               <Button startIcon={<FlowIcon />} className={classes.flowlineButton} onClick={() => setFlowlineCollapse(!flowlineCollapse)}>
                 Flowline
-              </Button>
+              </Button> */}
               <Button startIcon={<InfoOutlinedIcon />} className={classes.metaButton} onClick={() => setMetaCollapse(!metaCollapse)}>
                 Metadata
               </Button>
@@ -455,9 +460,7 @@ export default function DetailComponents(props) {
       </div>
 
       <div className="flex justifyBetween alignStart w-100">
-        <div className={`w-100 ${classes.tabsDetailContainer}`}>
-          {/*** Component for viewing selected pdf file*/}
-
+        <div className={classes.tabsDetailContainer}>
           {/**
            * Detail tabs section
            */}
@@ -507,7 +510,10 @@ export default function DetailComponents(props) {
             </div>
           </div>
 
-          <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 305px)" }} />
+          {/*** Component for viewing selected pdf file*/}
+          {stateApp.viewDoc && (
+            <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
+          )}
         </div>
 
         {!metaCollapse && (

@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
+import _ from "underscore";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
@@ -15,18 +16,23 @@ import DashboardIcon from "@material-ui/icons/Dashboard";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import MenuIcon from "@material-ui/icons/Menu";
+import Typography from "@material-ui/core/Typography";
 import FlowIcon from "@material-ui/icons/Repeat";
 import ActivityIcon from "@material-ui/icons/Event";
 import SearchIcon from "@material-ui/icons/Search";
 import BarChartIcon from "@material-ui/icons/BarChart";
+import EditIcon from "@material-ui/icons/Edit";
 import LandScapeIcon from "components/Shared/svgIcons/LandscapeBlackIcon";
 
 import { AppContext } from "AppContext";
 import { M1neralLogoNavNoAuth, useStyles } from "./Common";
 import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
+import { GET_WORKSPACE_SETTINGS } from "graphQL/useQueryWorkspaceSettings";
+import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
+import WorkspaceEditModal from "components/Navigation/components/WorkSpaceEditModal";
 
 const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   width: 260px;
@@ -35,16 +41,31 @@ const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
 `;
 
 const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handleListItemClick, handleDrawerClose, handleDrawerOpen }) => {
-  const [stateApp, setAppState] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
   const [notifications, setNotifications] = useState([]);
+  const [showWorkspaceModal, setWorkspaceModal] = useState(false);
+  const [logoSrc, setLogoSrc] = useState(`${process.env.PUBLIC_URL}/icons/logo-192x192.png`);
+  const [logoTitle, setLogoTitle] = useState();
   const classes = useStyles({ mapGridCardActivated });
   const theme = useTheme();
 
-  const [getNotifications, { data: notificationsData }] =
-    useLazyQuery(GET_NOTIFICATIONS, {
-      fetchPolicy: 'network-only'
-     });
+  const [getNotifications, { data: notificationsData }] = useLazyQuery(GET_NOTIFICATIONS, {
+    fetchPolicy: "network-only",
+  });
+  const [getWorkspaceSettings, { data: workspaceSettings }] = useLazyQuery(GET_WORKSPACE_SETTINGS, { fetchPolicy: "network-only" });
+  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "no-cache",
+  });
+
+  useEffect(() => {
+    let workspaceName = window.sessionStorage.getItem("tenantName");
+    getWorkspaceSettings({
+      variables: {
+        workspaceName,
+      },
+    });
+  }, [getWorkspaceSettings]);
 
   useEffect(() => {
     getNotifications({
@@ -60,6 +81,23 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
       setNotifications(notificationsData.getNotifications);
     }
   }, [notificationsData]);
+
+  useEffect(() => {
+    if (viewFileResult?.viewFile?.uri) {
+      setLogoSrc(viewFileResult?.viewFile?.uri);
+    }
+  }, [viewFileResult]);
+
+  useEffect(() => {
+    if (workspaceSettings?.workspaceSettings?.workspaceSetting?.title) {
+      setLogoTitle(workspaceSettings?.workspaceSettings?.workspaceSetting?.title);
+    }
+    if (workspaceSettings?.workspaceSettings?.workspaceSetting?.file?.fileUrl) {
+      viewFile({ variables: { fileId: workspaceSettings.workspaceSettings.workspaceSetting.file._id } });
+    } else {
+      setLogoSrc(`${process.env.PUBLIC_URL}/icons/logo-192x192.png`);
+    }
+  }, [workspaceSettings]);
 
   return (
     <div style={{ zIndex: 1223 }}>
@@ -81,14 +119,23 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
       >
         <div className={classes.toolbar}>
           <div className={classes.drawerOpenLogo} onClick={handleDrawerOpen}>
-            <M1neralLogoWhiteLetters />
+            {logoSrc && logoTitle ? (
+              <div className={classes.workspaceIcon}>
+                <img src={logoSrc} alt="Logo Not Found" />
+                <Typography variant="h3">{logoTitle}</Typography>
+              </div>
+            ) : (
+              <M1neralLogoWhiteLetters />
+            )}
           </div>
 
-          <IconButton
-            className={classes.iconArrow}
-            color="secondary"
-            onClick={handleDrawerClose}
-          >
+          <Tooltip title="Edit Workspace" className={classes.editWorkspaceIcon}>
+            <IconButton size="small" aria-label="Edit Workspace" onClick={() => setWorkspaceModal(true)}>
+              <EditIcon fontSize="medium" />
+            </IconButton>
+          </Tooltip>
+
+          <IconButton className={classes.iconArrow} color="secondary" onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
@@ -111,25 +158,15 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="dashboard"
           >
             <div className={classes.tabContent}>
-              <Tooltip
-                title="Dashboard"
-                placement="right"
-                classes={{ tooltip: classes.iconTooltip }}
-              >
+              <Tooltip title="Dashboard" placement="right" classes={{ tooltip: classes.iconTooltip }}>
                 <ListItemIcon className={classes.sideNavIcon}>
                   {/* TODO: Add actual notification count here */}
-                  <Badge
-                    badgeContent={notifications.length}
-                    color="secondary"
-                  >
+                  <Badge badgeContent={notifications.length} color="secondary">
                     <DashboardIcon />
                   </Badge>
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Dashboard"
-              />
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Dashboard" />
             </div>
           </ListItem>
 
@@ -144,19 +181,12 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="home"
           >
             <div className={classes.tabContent}>
-              <Tooltip
-                title="Find"
-                placement="right"
-                classes={{ tooltip: classes.iconTooltip }}
-              >
+              <Tooltip title="Find" placement="right" classes={{ tooltip: classes.iconTooltip }}>
                 <ListItemIcon className={classes.sideNavIcon}>
                   <SearchIcon />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Find"
-              />
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Find" />
             </div>
           </ListItem>
 
@@ -182,19 +212,12 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="contacts"
           >
             <div className={classes.tabContent}>
-              <Tooltip
-                title="Contacts"
-                placement="right"
-                classes={{ tooltip: classes.iconTooltip }}
-              >
+              <Tooltip title="Contacts" placement="right" classes={{ tooltip: classes.iconTooltip }}>
                 <ListItemIcon className={classes.sideNavIcon}>
                   <PersonIcon />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Contacts"
-              />
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Contacts" />
             </div>
           </ListItem>
 
@@ -209,26 +232,14 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="flow"
           >
             <div className={classes.tabContent}>
-              <Tooltip
-                title="Flow"
-                placement="right"
-                classes={{ tooltip: classes.iconTooltip }}
-              >
+              <Tooltip title="Flow" placement="right" classes={{ tooltip: classes.iconTooltip }}>
                 <ListItemIcon className={classes.sideNavIcon}>
                   <FlowIcon />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Flow"
-              />
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Flow" />
               <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button
-                  disabled
-                  className={`${classes.betaSideNav3} uppercase`}
-                  edge="start"
-                  aria-label="beta"
-                >
+                <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
                   beta
                 </Button>
               </ListItemSecondaryAction>
@@ -249,26 +260,14 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               key="land"
             >
               <div className={classes.tabContent}>
-                <Tooltip
-                  title="Land"
-                  placement="right"
-                  classes={{ tooltip: classes.iconTooltip }}
-                >
+                <Tooltip title="Land" placement="right" classes={{ tooltip: classes.iconTooltip }}>
                   <ListItemIcon className={classes.sideNavIcon}>
                     <LandScapeIcon />
                   </ListItemIcon>
                 </Tooltip>
-                <ListItemText
-                  className={`${classes.sideNavText} uppercase`}
-                  primary="Land"
-                />
+                <ListItemText className={`${classes.sideNavText} uppercase`} primary="Land" />
                 <ListItemSecondaryAction className={classes.sideNavAction}>
-                  <Button
-                    disabled
-                    className={`${classes.betaSideNav3} uppercase`}
-                    edge="start"
-                    aria-label="beta"
-                  >
+                  <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
                     beta
                   </Button>
                 </ListItemSecondaryAction>
@@ -290,26 +289,14 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               key="Revenue"
             >
               <div className={classes.tabContent}>
-                <Tooltip
-                  title="Revenue"
-                  placement="right"
-                  classes={{ tooltip: classes.iconTooltip }}
-                >
+                <Tooltip title="Revenue" placement="right" classes={{ tooltip: classes.iconTooltip }}>
                   <ListItemIcon className={classes.sideNavIcon}>
                     <BarChartIcon />
                   </ListItemIcon>
                 </Tooltip>
-                <ListItemText
-                  className={`${classes.sideNavText} uppercase`}
-                  primary="Revenue"
-                />
+                <ListItemText className={`${classes.sideNavText} uppercase`} primary="Revenue" />
                 <ListItemSecondaryAction className={classes.sideNavAction}>
-                  <Button
-                    disabled
-                    className={`${classes.betaSideNav3} uppercase`}
-                    edge="start"
-                    aria-label="beta"
-                  >
+                  <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
                     beta
                   </Button>
                 </ListItemSecondaryAction>
@@ -334,26 +321,14 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="documents"
           >
             <div className={classes.tabContent}>
-              <Tooltip
-                title="Documents"
-                placement="right"
-                classes={{ tooltip: classes.iconTooltip }}
-              >
+              <Tooltip title="Documents" placement="right" classes={{ tooltip: classes.iconTooltip }}>
                 <ListItemIcon className={classes.sideNavIcon}>
                   <DescriptionIcon />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Documents"
-              />
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Documents" />
               <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button
-                  disabled
-                  className={`${classes.betaSideNav3} uppercase`}
-                  edge="start"
-                  aria-label="beta"
-                >
+                <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
                   beta
                 </Button>
               </ListItemSecondaryAction>
@@ -370,26 +345,14 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="calendar"
           >
             <div className={classes.tabContent}>
-              <Tooltip
-                title="Calendar"
-                placement="right"
-                classes={{ tooltip: classes.iconTooltip }}
-              >
+              <Tooltip title="Calendar" placement="right" classes={{ tooltip: classes.iconTooltip }}>
                 <ListItemIcon className={classes.sideNavIcon}>
                   <ActivityIcon />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Calendar"
-              />
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Calendar" />
               <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button
-                  disabled
-                  className={`${classes.betaSideNav3} uppercase`}
-                  edge="start"
-                  aria-label="beta"
-                >
+                <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
                   beta
                 </Button>
               </ListItemSecondaryAction>
@@ -429,6 +392,15 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
           </ListItem> */}
         </List>
       </Drawer>
+      {showWorkspaceModal && (
+        <WorkspaceEditModal
+          workspaceSettings={{ ...workspaceSettings.workspaceSettings?.workspaceSetting, fileUrl: logoSrc }}
+          setWorkspaceModal={setWorkspaceModal}
+          setLogoSrc={setLogoSrc}
+          setLogoTitle={setLogoTitle}
+          logoTitle={logoTitle}
+        />
+      )}
     </div>
   );
 };

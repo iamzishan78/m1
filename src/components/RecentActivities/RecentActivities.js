@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function RecentActivities({
- 
+
   header,
   // dataList,
   ...props
@@ -129,7 +129,7 @@ export default function RecentActivities({
     setSelectedActivity(null);
     setActivityModalOpen(true);
   };
-  
+
   return (
     <div className={classes.root}>
       {/* <AddActivityModal
@@ -139,7 +139,7 @@ export default function RecentActivities({
         activityLog={props.activityLog}
         selectedActivity={selectedActivity}
       /> */}
-      <RightDialog open={activityModalOpen ? true : false} handleClickDialogClose={() => setActivityModalOpen(false)} width="450px">
+      <RightDialog open={activityModalOpen ? true : false} handleClickDialogClose={() => setActivityModalOpen(false)} width="700px">
         <AddActivityDialog
           onClose={() => setActivityModalOpen(false)}
           id={props.id}

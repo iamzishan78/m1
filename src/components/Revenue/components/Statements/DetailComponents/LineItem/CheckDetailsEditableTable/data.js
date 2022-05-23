@@ -1,7 +1,7 @@
 
 export const RevenueStatementHeadCells = [
     {
-        id: "property.number", title: "Property #", filterKey: 'number.keyword', sort: true, type: 'autocomplete', width: '180px'
+        id: "property.number", title: "Property #", filterKey: 'number.keyword', sort: true, type: 'autocomplete', esIndex: 'properties_flat', width: '180px'
     },
     {
         id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', sort: true, width: '210px', disabled: true
@@ -16,31 +16,34 @@ export const RevenueStatementHeadCells = [
         id: "date", title: "Sales Date", filterKey: 'date', sort: true, type: 'date', width: '180px'
     },
     {
-        id: "product", title: "Product", filterKey: 'product.keyword', sort: true, type: 'autocomplete', width: '130px'
+        id: "product", title: "Product", filterKey: 'product.keyword', sort: true, type: 'autocomplete', esIndex: 'checkdetails_flat', width: '130px'
     },
     {
         id: "disbursement", title: "Decimal Interest", filterKey: 'disbursement', sort: true, width: '150px'
     },
     {
-        id: "interestType", title: "Type", filterKey: 'interestType.keyword', sort: true, type: 'autocomplete', width: '100px'
+        id: "interestType", title: "Type", filterKey: 'interestType.keyword', sort: true, type: 'autocomplete', esIndex: 'checkdetails_flat', width: '100px'
     },
     {
         id: "price", title: "Avg Price", filterKey: 'price', sort: true, width: '100px'
     },
     {
-        id: "grossOwnerVolume", title: "Sales Volume", filterKey: 'grossOwnerVolume', sort: true, width: '125px'
+        id: "grossOwnerVolume", title: "Owner Volume", filterKey: 'grossOwnerVolume', sort: true, width: '125px'
     },
     {
-        id: "grossOwnerValue", title: "Gross Revenue", filterKey: 'grossOwnerValue', sort: true, width: '100px'
+        id: "grossOwnerValue", title: "Owner Gross Revenue", filterKey: 'grossOwnerValue', sort: true, width: '100px'
     },
     {
-        id: "ownerTax", title: "Severance Tax", filterKey: 'ownerTax', sort: true, width: '100px'
+        id: "ownerTax", title: "Owner Tax Amt", filterKey: 'ownerTax', sort: true, width: '100px'
+    },
+    {
+        id: "taxType", title: "Tax Type", filterKey: 'taxType.keyword', sort: true, type: 'autocomplete', esIndex: 'checkdetails_flat', width: '200px'
     },
     {
         id: "ownerDeducts", title: "Deduct Amount", filterKey: 'ownerDeducts', sort: true, width: '100px'
     },
     {
-        id: "deductType", title: "Deduct Code", filterKey: 'deductType.keyword', sort: true, type: 'autocomplete', width: '200px'
+        id: "deductType", title: "Deduct Code", filterKey: 'deductType.keyword', sort: true, type: 'autocomplete', esIndex: 'checkdetails_flat', width: '200px'
     },
     {
         id: "netOwnerValue", title: "Owner Net Revenue", filterKey: 'netOwnerValue', sort: true, width: '150px'
