@@ -31,7 +31,7 @@ const ProfileTitle = (props) => {
 
   return (
     <MuiDialogTitle disableTypography className={classes.root}>
-      <Typography variant="h5">Edit your profile</Typography>
+      <Typography variant="h5">My Account Settings</Typography>
       <IconButton
         aria-label="close"
         className={classes.closeButton}

@@ -29,8 +29,8 @@ const RevenueStatementHeadCells = [
               minWidth: "100px",
             }}
             onClick={(e) => {
-                e.stopPropagation();
-                history.push(`/revenue/statement/details/${tableMeta.rowData[1]}`);
+              e.stopPropagation();
+              history.push(`/revenue/statement/details/${tableMeta.rowData[1]}`);
             }}
           >
             {value}
@@ -52,13 +52,14 @@ const RevenueStatementHeadCells = [
     name: "number",
     label: "Property #",
     esKey: "property.number.keyword",
-    options: { 
+    options: {
       customHeadLabelRender: () => (
         <>
           <div style={{ minWidth: 80 }}>Property #</div>
         </>
       ),
-      sort: true, filter: true },
+      sort: true, filter: true
+    },
     style: { minWidth: 150 }
   },
   {
@@ -113,8 +114,14 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "ownerTax",
-    label: "Severance",
+    label: "Owner Tax Amt",
     esKey: "ownerTax",
+    options: { sort: true, filter: true },
+  },
+  {
+    name: "taxType",
+    label: "Tax Type",
+    esKey: "taxType",
     options: { sort: true, filter: true },
   },
   {
