@@ -3,15 +3,13 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
-import { useMutation, useLazyQuery } from "@apollo/client";
-import { Modals } from "../../../../../styles/Modal";
-import { AppContext } from "../../../../../AppContext";
+import { useMutation } from "@apollo/client";
+import { Modals } from "styles/Modal";
+import { AppContext } from "AppContext";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import { ADDUSER } from "../../../../../graphQL/useMutationAddUser";
-import { UPDATEUSER } from "../../../../../graphQL/useMutationUpdateUser";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import FormLabel from "@material-ui/core/FormLabel";
-import {Select, InputLabel, FormControl, MenuItem, TextField, Grid} from "@material-ui/core";
+import { ADDUSER } from "graphQL/useMutationAddUser";
+import { UPDATEUSER } from "graphQL/useMutationUpdateUser";
+import { Select, FormControl, MenuItem, TextField, Grid } from "@material-ui/core";
 
 export default function InviteUserDialog(props) {
 
@@ -20,26 +18,25 @@ export default function InviteUserDialog(props) {
   const [loading, setLoading] = useState(false);
   const [displayName, setName] = useState("");
   const [emails, setEmailAddress] = useState("");
-  const [userType, setUserType] = useState("Member");
   const [role, setUserRole] = useState("USER");
-  const [adminAccess, setAdminAccess] = useState(false);
+  const [rolePrivileges, setRolePrivileges] = useState(false);
   const [lastLogin, setLastLogin] = useState();
-  const [addUser] = useMutation(ADDUSER, { 
+  const [addUser] = useMutation(ADDUSER, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
     },
-    refetchQueries: [   
+    refetchQueries: [
       "getAllUsers",
     ],
     awaitRefetchQueries: true,
   });
-  const [updateUser] = useMutation(UPDATEUSER, { 
+  const [updateUser] = useMutation(UPDATEUSER, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
     },
-    refetchQueries: [   
+    refetchQueries: [
       "getAllUsers",
     ],
     awaitRefetchQueries: true,
@@ -51,6 +48,7 @@ export default function InviteUserDialog(props) {
       setEmailAddress(stateApp.activeUser.emails);
       setUserRole(stateApp.activeUser.role?.toUpperCase());
       setLastLogin(stateApp.activeUser.lastLogin);
+      setRolePrivileges(stateApp.activeUser.rolePrivileges);
     }
   }, [stateApp.activeUser]);
 
@@ -60,22 +58,27 @@ export default function InviteUserDialog(props) {
     // let temp_last_ts = new Date();
     // setLastLogin(temp_last_ts.toString());
     // rowData.push({displayName, emails, userType, role, adminAccess, lastLogin: "Invite sent" });
-    addUser({variables: {user: {
-      displayName,
-      emailAddress: emails,
-      role
-      // identities: [{
-      //     signInType: "emailAddress",
-      //     issuer: "mineralb2c.onmicrosoft.com",
-      //     issuerAssignedId: emails
-      //   },],
-      // passwordProfile : {
-      //   forceChangePasswordNextSignIn: false,
-      //   password: "1"
-      // },
-      // passwordPolicies: "DisablePasswordExpiration,DisableStrongPassword",
-      // extension_ecdc741a6b2c415893d3b5bccc2d7e76_mustResetPassword: true
-    }}});
+    addUser({
+      variables: {
+        user: {
+          displayName,
+          emailAddress: emails,
+          role,
+          rolePrivileges
+          // identities: [{
+          //     signInType: "emailAddress",
+          //     issuer: "mineralb2c.onmicrosoft.com",
+          //     issuerAssignedId: emails
+          //   },],
+          // passwordProfile : {
+          //   forceChangePasswordNextSignIn: false,
+          //   password: "1"
+          // },
+          // passwordPolicies: "DisablePasswordExpiration,DisableStrongPassword",
+          // extension_ecdc741a6b2c415893d3b5bccc2d7e76_mustResetPassword: true
+        }
+      }
+    });
 
     // props.setRows(rowData);
   }
@@ -86,23 +89,28 @@ export default function InviteUserDialog(props) {
     // let temp_last_ts = new Date();
     // setLastLogin(temp_last_ts.toString());
     // rowData.push({displayName, emails, userType, role, adminAccess, lastLogin: "Invite sent" });
-    updateUser({variables: {user: {
-      id: stateApp.activeUser.id,
-      displayName,
-      emailAddress: emails,
-      role
-      // identities: [{
-      //     signInType: "emailAddress",
-      //     issuer: "mineralb2c.onmicrosoft.com",
-      //     issuerAssignedId: emails
-      //   },],
-      // passwordProfile : {
-      //   forceChangePasswordNextSignIn: false,
-      //   password: "1"
-      // },
-      // passwordPolicies: "DisablePasswordExpiration,DisableStrongPassword",
-      // extension_ecdc741a6b2c415893d3b5bccc2d7e76_mustResetPassword: true
-    }}});
+    updateUser({
+      variables: {
+        user: {
+          id: stateApp.activeUser.id,
+          displayName,
+          emailAddress: emails,
+          role,
+          rolePrivileges
+          // identities: [{
+          //     signInType: "emailAddress",
+          //     issuer: "mineralb2c.onmicrosoft.com",
+          //     issuerAssignedId: emails
+          //   },],
+          // passwordProfile : {
+          //   forceChangePasswordNextSignIn: false,
+          //   password: "1"
+          // },
+          // passwordPolicies: "DisablePasswordExpiration,DisableStrongPassword",
+          // extension_ecdc741a6b2c415893d3b5bccc2d7e76_mustResetPassword: true
+        }
+      }
+    });
 
     // props.setRows(rowData);
   }
@@ -119,14 +127,14 @@ export default function InviteUserDialog(props) {
         activeUser: null,
       };
     });
-    
+
     props.onClose();
   }
 
   return (
     <React.Fragment>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
-      {stateApp.activeUser ? "Update User" : "Invite a New User"}
+        {stateApp.activeUser ? "Update User" : "Invite a New User"}
         <HighlightOffIcon
           fontSize="large"
           className={modalClass.titleClose}
@@ -135,28 +143,28 @@ export default function InviteUserDialog(props) {
       </DialogTitle>
       <DialogContent>
 
-      <Grid container spacing={2}>
-        <FormControl style={{minWidth: 350}}>
-          <Grid item xs={12}>
-            <h3>Name</h3>
-            <TextField
-              size="small"
-              fullWidth
-              value={displayName}
-              onChange={e=> setName(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <h3>Email</h3>
-            <TextField
-              size="small"
-              fullWidth
-              disabled={stateApp.activeUser}
-              value={emails}
-              onChange={e=> setEmailAddress(e.target.value)}
-            />
-          </Grid>
-          {/* <Grid item xs={12}>
+        <Grid container spacing={2}>
+          <FormControl style={{ minWidth: 350 }}>
+            <Grid item xs={12}>
+              <h3>Name</h3>
+              <TextField
+                size="small"
+                fullWidth
+                value={displayName}
+                onChange={e => setName(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <h3>Email</h3>
+              <TextField
+                size="small"
+                fullWidth
+                disabled={stateApp.activeUser}
+                value={emails}
+                onChange={e => setEmailAddress(e.target.value)}
+              />
+            </Grid>
+            {/* <Grid item xs={12}>
             <h3>User Type</h3>
             <Select
                 fullWidth
@@ -167,19 +175,31 @@ export default function InviteUserDialog(props) {
                 <MenuItem value="Guest">Guest</MenuItem>
             </Select>
           </Grid> */}
-          <Grid item xs={12}>
-            <h3>User Role</h3>
-            <Select
+            <Grid item xs={12}>
+              <h3>User Role</h3>
+              <Select
                 fullWidth
                 value={role}
-                onChange={e=> setUserRole(e.target.value)}
-            >
+                onChange={e => setUserRole(e.target.value)}
+              >
                 <MenuItem value="OWNER">Owner</MenuItem>
                 <MenuItem value="ADMIN">Admin</MenuItem>
                 <MenuItem value="USER">User</MenuItem>
-            </Select>
-          </Grid>
-        </FormControl>
+              </Select>
+            </Grid>
+
+            <Grid item xs={12}>
+              <h3>User Privileges</h3>
+              <Select
+                fullWidth
+                value={rolePrivileges}
+                onChange={e => setRolePrivileges(e.target.value)}
+              >
+                <MenuItem value="ADD_OR_EDIT">Add/Edit</MenuItem>
+                <MenuItem value="READ_ONLY">Read Only</MenuItem>
+              </Select>
+            </Grid>
+          </FormControl>
         </Grid>
 
       </DialogContent>
