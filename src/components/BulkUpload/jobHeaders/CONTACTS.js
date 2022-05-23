@@ -66,7 +66,7 @@ export default [
         actual_key: "entityDetail.city",
     },
     {
-        label: "State",
+        label: "AddressState",
         mapped_key: "",
         required: false,
         actual_key: "entityDetail.state",

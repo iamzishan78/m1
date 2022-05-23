@@ -96,10 +96,10 @@ const tracts = [
 addAfterLabel(tracts, 'Parcel Name', {
     label: "Description",
     mapped_key: "",
-    actual_key: "shape.description",
+    actual_key: "parcel.description",
 })
 
 
-tracts.find((key) => key.actual_key === 'entityDetail.state').label = 'AddressState'
+// tracts.find((key) => key.actual_key === 'entityDetail.state').label = 'AddressState'
 
 export default tracts
