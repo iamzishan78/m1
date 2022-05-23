@@ -38,7 +38,7 @@ const NotificationSettings = () => {
 
   return (
     <Box p={2}>
-      <p>Send me email notifications for the following:</p>
+      <h3>Send me email notifications for the following:</h3>
       <dl>
         <dt>
           <FormControlLabel
