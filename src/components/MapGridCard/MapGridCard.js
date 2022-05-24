@@ -520,7 +520,7 @@ function MapGridCard(props) {
                         <AgreementsTable
                           dense
                           esIndex={'shapes_flat'}
-                          parent="search"
+                          parent="AgreementsTable"
                           customOptions={options}
                           targetLabel={searchTapValue.value}
                           header={<SearchPanel {...commonProps} />}
