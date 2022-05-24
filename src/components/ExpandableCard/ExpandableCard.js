@@ -10,6 +10,7 @@ import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import FolderIcon from '@material-ui/icons/Folder';
 import { useLazyQuery, useMutation } from "@apollo/client";
 import $ from "jquery";
+import 'material-icons/iconfont/material-icons.css';
 // Components
 import ExpandIcon from "./components/svgIcons/ExpandIcon";
 import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
@@ -635,7 +636,10 @@ function ExpandableCard(props) {
                       }}
                       aria-label={`Edit ${targetLabel}`}
                     >
-                      <DrawPoly className={classes.iconPolygon} />
+                      {/* <DrawPoly className={classes.iconPolygon} /> */}
+                      <span class="material-icons">
+                        draw
+                      </span>
                     </IconButton>
                   </Tooltip>
 
