@@ -20,6 +20,7 @@ import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
 import { AppContext } from "AppContext";
+import { getRandomColor } from "components/Shared/functions/ui";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -344,7 +345,11 @@ export default function MetadataDrawer(props) {
                           startAdornment: (
                             <>
                               <InputAdornment position="start">
-                                <Avatar className={classes.dealOwnerAvatar}>
+                                <Avatar
+                                 style={{
+                                  backgroundColor:users.find((user) => user?.value === ownerId)?getRandomColor(users.find((user) => user?.value === ownerId).text.toString()):""
+                                }}
+                                className={classes.dealOwnerAvatar}>
                                   {users.find(
                                     (user) => user?.value === ownerId
                                   ) ? (
@@ -362,7 +367,7 @@ export default function MetadataDrawer(props) {
                                           )
                                           .text.toString()
                                           .toUpperCase()
-                                          .split(" ").length > 1
+                                          .length > 1
                                           ? users
                                             .find(
                                               (user) =>
