@@ -20,6 +20,7 @@ import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
 import { setColumnsData } from "components/Table/helpers";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   agreementTable: {
@@ -51,6 +52,10 @@ const useStyles = makeStyles((theme) => ({
 function AgreementsTable(props) {
   const { esIndex, setESFilters, esFilters } = props;
   const classes = useStyles();
+
+  const searchInput = useSelector(
+    (state) => state.MapGridCard.searchInputValue
+  );
 
   // function states
   const [filters, setFilters] = useState([]);
@@ -112,6 +117,10 @@ function AgreementsTable(props) {
     setESSearch(props.landSearchQuery ? `${props.landSearchQuery}*` : "");
   }, [props.landSearchQuery]);
 
+  useEffect(() => {
+    setESSearch(searchInput ? `${searchInput}*` : "");
+  }, [searchInput]);
+
   // get paginated data hits from checks_flat table
   useEffect(() => {
     getESPaginatedList({
@@ -160,7 +169,7 @@ function AgreementsTable(props) {
   }, [tableData]);
 
   useEffect(() => {
-    if (esFilters.length === 0) {
+    if (esFilters?.length === 0) {
       setFilters([])
     }
     handleSelectedGridChange(TableHeader, { filters: esFilters }, columns, true)

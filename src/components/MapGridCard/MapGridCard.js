@@ -24,11 +24,14 @@ import MapGridTaxOwnersTable from "components/Table/TaxOwners/MapGridTaxOwnersTa
 import MapGridOperatorTable from "components/Table/Operator/MapGridOperatorTable";
 import MapGridContactTable from "components/Table/Contact/MapGridContactTable";
 import MapGridUnitTable from "components/Table/Unit/MapGridUnitTable";
+import AgreementsTable from "components/Table/Agreement/AgreementsTable";
+import TractsTable from "components/Table/Tract/TractsTable";
 
 import SearchPanel from "./components/SearchPanel";
-import { platformDataInitialData } from "./components/data";
+import { platformDataInitialData, snapGridSideBarData } from "./components/data";
 import MapGridLayersTable from "components/Table/Layer/MapGridLayersTable";
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
+
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -407,26 +410,23 @@ function MapGridCard(props) {
                   </Typography>
 
                   <List component="nav" aria-label="main mailbox folders">
-                    <ListItem
-                      button
-                    // selected={selectedIndex === 0}
-                    // onClick={(event) => handleListItemClick(event, 0)}
-                    >
-                      <ListItemIcon>
-                        <InboxIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Inbox" />
-                    </ListItem>
-                    <ListItem
-                      button
-                    // selected={selectedIndex === 1}
-                    // onClick={(event) => handleListItemClick(event, 1)}
-                    >
-                      <ListItemIcon>
-                        <DraftsIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Drafts" />
-                    </ListItem>
+
+                    {snapGridSideBarData.map((row) => {
+                      const Icon = row.Icon
+                      return (
+                        <ListItem
+                          button
+                          selected={row.value === searchTapValue.value}
+                          onClick={() => handleSearchPanelChange(row)}
+                        >
+                          <ListItemIcon>
+                            <Icon />
+                          </ListItemIcon>
+                          <ListItemText primary={row.label} />
+                        </ListItem>
+                      )
+                    }
+                    )}
                   </List>
                 </Grid>
 
@@ -510,6 +510,26 @@ function MapGridCard(props) {
                       {searchTapValue.value === "unit" && (
                         <MapGridUnitTable
                           dense
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={<SearchPanel {...commonProps} />}
+                        />
+                      )}
+                      {searchTapValue.value === "agreement" && (
+                        <AgreementsTable
+                          dense
+                          esIndex={'shapes_flat'}
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={<SearchPanel {...commonProps} />}
+                        />
+                      )}
+                      {searchTapValue.value === "tract" && (
+                        <TractsTable
+                          dense
+                          esIndex={'shapes_flat'}
                           parent="search"
                           customOptions={options}
                           targetLabel={searchTapValue.value}
