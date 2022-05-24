@@ -129,11 +129,13 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             )}
           </div>
 
-          <Tooltip title="Edit Workspace" className={classes.editWorkspaceIcon}>
-            <IconButton size="small" aria-label="Edit Workspace" onClick={() => setWorkspaceModal(true)}>
-              <EditIcon fontSize="medium" />
-            </IconButton>
-          </Tooltip>
+          <FeatureFlag feature={FEATURES.EDITABLE_WORKSPACE}>
+            <Tooltip title="Edit Workspace" className={classes.editWorkspaceIcon}>
+              <IconButton size="small" aria-label="Edit Workspace" onClick={() => setWorkspaceModal(true)}>
+                <EditIcon fontSize="medium" />
+              </IconButton>
+            </Tooltip>
+          </FeatureFlag>
 
           <IconButton className={classes.iconArrow} color="secondary" onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
