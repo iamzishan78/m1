@@ -98,7 +98,7 @@ export default function SidePanel() {
 
   const panelButtons = {
     layer: {
-      text: "Manager",
+      text: "Add Layer",
       fn: openAddLayer,
       icon: <AddLayerIcon />,
     },

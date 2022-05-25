@@ -367,7 +367,7 @@ export const StyledListItemSecondaryAction = withStyles((theme) => ({
     },
     "& .MuiButton-root": {
       border: "1px solid",
-      width: "115px",
+      width: "129px",
     },
   },
 }))(ListItemSecondaryAction);
