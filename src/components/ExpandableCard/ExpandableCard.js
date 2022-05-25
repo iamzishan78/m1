@@ -34,8 +34,6 @@ import { showInfoMessage } from "actions";
 
 function ExpandableCard(props) {
 
-  console.log("PRops", props)
-
   // initials
   const history = useHistory();
   const dispatch = useDispatch();
