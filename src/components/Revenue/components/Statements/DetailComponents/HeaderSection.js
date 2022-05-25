@@ -62,21 +62,28 @@ export default function HeaderFunction(props) {
         check: { ...check, ...checkKey }
       },
     });
-  }, 500)
+  }, 500);
 
   useEffect(() => {
     if (check) {
+      reset({ ...check })
+      setCheck(check);
+    }
+  }, [props.check]);
+
+  const handleCheckAmount = () => {
+    if (check) {
       let checkAmount = check.checkAmount;
-      if(checkAmount) {
+      if (checkAmount) {
         const data = checkAmount.toString().split(".");
-        if(data[1] && data[1].length === 1) {
-          checkAmount = checkAmount.toFixed(2);
+        if (data[1] && data[1].length === 1 && !/[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(data[1])) {
+          checkAmount = Number(checkAmount).toFixed(2);
         }
       }
       reset({ ...check, checkAmount })
       setCheck(check);
     }
-  }, [props.check]);
+  };
 
   return (
     <div className={classes.root}>
@@ -283,19 +290,20 @@ export default function HeaderFunction(props) {
                 control={control}
                 name="checkAmount"
                 defaultValue={''}
-                render={(props) => (
+                render={(params) => (
                   <TextField
                     margin="dense"
                     type="text"
                     variant="outlined"
                     onChange={(e) => {
-                      props.onChange(e.target.value)
+                      params.onChange(e.target.value)
                       handleUpdateCheck({ checkAmount: e.target.value })
                     }}
                     InputProps={{
                       startAdornment: (< InputAdornment position="start" > $</InputAdornment>)
                     }}
-                    value={props.value || ""}
+                    value={params.value || ""}
+                    onBlur={() => handleCheckAmount()}
                   />
                 )}
               />

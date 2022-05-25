@@ -401,10 +401,11 @@ export default function MetadataDrawer(props) {
                 onChange={(e) => {
                   setDescription(e.target.value);
                 }}
-                onKeyDown={(e) => {
-                  if (e.keyCode === 13) {
-                    setFocusSate(false);
-                    setDescription("");
+                onKeyPress={(event) => {
+                  if (event.key === "Enter") {
+                    document.activeElement.blur();
+                    if (props.onUpdate)
+                      props.onUpdate({ metaDescription: event.target.value });
                   }
                 }}
                 onFocus={() => setFocusSate(true)}
