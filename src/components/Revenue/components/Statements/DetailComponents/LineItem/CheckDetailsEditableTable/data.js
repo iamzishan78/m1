@@ -27,6 +27,12 @@ export const RevenueStatementHeadCells = [
         id: "price", title: "Avg Price", filterKey: 'price', sort: true, width: '100px'
     },
     {
+        id: "grossPropertyVolume", title: "Prop. Volume", filterKey: 'grossPropertyVolume', sort: true, width: '125px'
+    },
+    {
+        id: "grossPropertyValue", title: "Prop. Gross Revenue", filterKey: 'grossPropertyValue', sort: true, width: '100px'
+    },
+    {
         id: "grossOwnerVolume", title: "Owner Volume", filterKey: 'grossOwnerVolume', sort: true, width: '125px'
     },
     {
