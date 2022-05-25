@@ -13,7 +13,7 @@ import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "graphQL/useMutationAddContact";
 import { AppContext } from "../../AppContext";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import DeleteIcon from "@material-ui/icons/Delete";
+import CloseIcon from "@material-ui/icons/Close";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import IconButton from "@material-ui/core/IconButton";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -409,8 +409,8 @@ export default function Contacts(props) {
                           }}
 
                         >
-                          <IconButton edge="end" aria-label="delete" style={{ marginLeft: '20px' }}>
-                            <DeleteIcon />
+                          <IconButton edge="end" aria-label="delete" size="small">
+                            <CloseIcon fontSize="small" />
                           </IconButton>
                         </ListItemSecondaryAction>
 
@@ -426,13 +426,7 @@ export default function Contacts(props) {
                           : null}
                       </div>
                     </AccordionDetails>
-
-
-
                   </Accordion>
-
-
-
                 </ListItem>
                 <Divider key={`divider-${i}`} />
               </>

@@ -229,9 +229,8 @@ export default function HeaderSection(props) {
                       fullWidth
                       onChange={(e) => {
                         params.onChange(e.target.value);
-                        handleUpdate("number", e.target.value);
                       }}
-                      // onBlur={(e) => updatePropertyData("number", params.value)}
+                      onBlur={(e) => handleUpdate("number", e.target.value)}
                     />
                   )}
                 />
@@ -259,7 +258,6 @@ export default function HeaderSection(props) {
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      // onKeyDown={(e) => onKeyDown(e, "name", params.value)}
                       onBlur={(e) => handleUpdate("name", e.target.value)}
                     />
                   )}
@@ -287,10 +285,9 @@ export default function HeaderSection(props) {
                       fullWidth
                       onChange={(e) => {
                         params.onChange(e.target.value);
-                        handleUpdate("ownerNumber", e.target.value);
                       }}
                       // onKeyDown={(e) => onKeyDown(e, "ownerNumber", params.value)}
-                      // onBlur={() => setValue("ownerNumber", propertyDetails.ownerNumber)}
+                      onBlur={(e) => handleUpdate("ownerNumber", e.target.value)}
                     />
                   )}
                 />
@@ -396,11 +393,15 @@ export default function HeaderSection(props) {
                       id="date-picker-inline"
                       value={params.value ? params.value : null}
                       onChange={(date) => {
-                        updatePropertyData("documentDate", moment(date).toISOString());
+                        params.onChange(moment(date).toISOString());
                       }}
                       KeyboardButtonProps={{ "aria-label": "change date" }}
                       InputAdornmentProps={{ position: "start" }}
                       fullWidth
+                      onBlur={(e) => {
+                        debugger;
+                        updatePropertyData("documentDate", moment(e.target.value).toISOString());
+                      }}
                     />
                   )}
                 />

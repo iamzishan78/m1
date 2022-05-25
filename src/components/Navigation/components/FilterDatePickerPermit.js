@@ -19,6 +19,10 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiIconButton-root": {
       padding: "10px 0px",
     },
+    '& input::-webkit-calendar-picker-indicator': {
+      filter:
+        'invert(1)',
+    },
   },
   blue: {
     "& .MuiInputBase-input": { color: "#17AADD" },

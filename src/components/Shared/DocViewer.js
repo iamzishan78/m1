@@ -79,6 +79,13 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
   }
 
   useEffect(() => {
+    return () => {
+      if (stateApp.viewDoc)
+        setStateApp({ ...stateApp, viewDoc: false });
+    }
+  }, []);
+
+  useEffect(() => {
     setPageNumber(1);
     PageView(numPages);
   }, [numPages]);

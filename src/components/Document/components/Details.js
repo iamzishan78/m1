@@ -6,7 +6,7 @@ import ListItem from "@material-ui/core/ListItem";
 import { AppContext } from "AppContext";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
-import CustomFieldSelectV2 from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelectV2";
+import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
 import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 import { IconButton, TextField, withStyles } from "@material-ui/core";
@@ -255,7 +255,6 @@ export default function DocumentDetails(props) {
 
   const sortFields = (gridViews) => {
     const metaData = [];
-    console.log(stateApp.selectedView);
     if (stateApp.selectedView.columns?.length > 0) {
       for (let i = 0; i < stateApp.selectedView.columns?.length; i++) {
         const data = gridViews.find((view) => view.name === stateApp.selectedView.columns[i].name);
@@ -506,7 +505,7 @@ export default function DocumentDetails(props) {
                       }}
                     >
                       <h4>{meta.label}</h4>
-                      <CustomFieldSelectV2
+                      <CustomFieldSelect
                         fullWidth
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}

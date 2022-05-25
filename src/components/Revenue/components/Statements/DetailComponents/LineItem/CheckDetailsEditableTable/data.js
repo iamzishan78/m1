@@ -34,7 +34,7 @@ export const RevenueStatementHeadCells = [
         id: "grossOwnerValue", title: "Owner Gross Revenue", filterKey: 'grossOwnerValue', sort: true, width: '100px'
     },
     {
-        id: "ownerTax", title: "Severance Tax", filterKey: 'ownerTax', sort: true, width: '100px'
+        id: "ownerTax", title: "Owner Tax Amt", filterKey: 'ownerTax', sort: true, width: '100px'
     },
     {
         id: "taxType", title: "Tax Type", filterKey: 'taxType.keyword', sort: true, type: 'autocomplete', esIndex: 'checkdetails_flat', width: '200px'
