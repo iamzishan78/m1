@@ -636,7 +636,6 @@ function ExpandableCard(props) {
                       }}
                       aria-label={`Edit ${targetLabel}`}
                     >
-                      {/* <DrawPoly className={classes.iconPolygon} /> */}
                       <span class="material-icons">
                         draw
                       </span>
