@@ -364,7 +364,7 @@ export default function HeaderSection(props) {
                       value={params.value ? params.value : null}
                       onChange={(date, e) => {
                         params.onChange(moment(date).toISOString());
-                        if (date._isValid) {
+                        if (date?._isValid) {
                           updatePropertyData("documentDate", moment(e).toISOString());
                         }
                       }}
