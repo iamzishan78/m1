@@ -350,7 +350,7 @@ export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFrom
   switch (date) {
     case CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH:
       setFromDate(`${currentYear}-01-01`);
-      setToDate(moment().subtract(1, 'months').startOf('month').format('yyyy-MM-DD'));
+      setToDate(moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD'));
       break;
     case CUSTOM_DATES.THIS_YEAR_TO_DATE:
       setFromDate(`${currentYear}-01-01`);
