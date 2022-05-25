@@ -89,7 +89,7 @@ function AgreementsTable(props) {
   }, [props?.options?.count])
 
   useEffect(() => {
-    setESFilters(props.initialFilters)
+    setESFilters && setESFilters(props.initialFilters)
     // eslint-disable-next-line
   }, [props.initialFilters]);
 
