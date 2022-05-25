@@ -13,5 +13,6 @@ export const FEATURES = {
     TRACTIMPORT: 'tractImport',
     SHAPEELASTIC: 'ShapeFileImport',
     USERSNAP: "userSnap",
-    CONTACTGRIDEXPORT: 'ContactGridExport'
+    CONTACTGRIDEXPORT: 'ContactGridExport',
+    EDITABLE_WORKSPACE: 'editableWorkspaceName'
 }

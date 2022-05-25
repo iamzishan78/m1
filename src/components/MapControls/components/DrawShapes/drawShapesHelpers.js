@@ -125,36 +125,36 @@ export const drawBoundary = (map, selectedUserDefinedLayer) => {
       },
     };
 
-    if (map.getLayer("parcelBoundary")) {
+    if (map?.getLayer("parcelBoundary")) {
       map.removeLayer("parcelBoundary");
     }
 
-    if (map.getSource('boundary-line-source')) {
+    if (map?.getSource('boundary-line-source')) {
       map.getSource('boundary-line-source').setData(geoJson);
       if (map.getLayer('boundary-line')) {
         map.removeLayer('boundary-line')
       }
     } else {
-      map.addSource("boundary-line-source", {
+      map?.addSource("boundary-line-source", {
         type: "geojson",
         data: geoJson
       });
     }
 
-    if (map.getSource('boundary-point-source')) {
-      map.getSource('boundary-point-source').setData(geoJson);
-      if (map.getLayer('boundary-point')) {
+    if (map?.getSource('boundary-point-source')) {
+      map?.getSource('boundary-point-source').setData(geoJson);
+      if (map?.getLayer('boundary-point')) {
         map.removeLayer('boundary-point')
       }
     } else {
-      map.addSource("boundary-point-source", {
+      map?.addSource("boundary-point-source", {
         type: "geojson",
         data: geoJson
       });
     }
 
     if (type === 'Point') {
-      map.addLayer({
+      map?.addLayer({
         id: "boundary-point",
         type: "circle",
         source: "boundary-point-source",
@@ -164,7 +164,7 @@ export const drawBoundary = (map, selectedUserDefinedLayer) => {
         },
       });
     } else {
-      map.addLayer({
+      map?.addLayer({
         id: "boundary-line",
         type: "line",
         source: "boundary-line-source",
