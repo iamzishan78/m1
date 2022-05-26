@@ -53,7 +53,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
   );
 }
 
-export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData }) {
+export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search }) {
   const classes = summaryTableStyles();
   const dispatch = useDispatch();
   const [tableDataState, setTableDataState] = useState({});
@@ -71,7 +71,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
     });
     setTableTempProperties({ ...tableTempProperties });
     setTableDataState({});
-  }, [properties, metaData]);
+  }, [properties]);
 
   useEffect(() => {
     if (search) {
