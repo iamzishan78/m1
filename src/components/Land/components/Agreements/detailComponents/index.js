@@ -219,7 +219,7 @@ export default function DetailComponents(props) {
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
   const [isButtonScroll, setButtonScroll] = useState(false);
-  const [metaCollapse, setMetaCollapse] = useState(false);
+  const [metaCollapse, setMetaCollapse] = useState(true);
   const [validationCollapse, setValidationCollapse] = useState(true);
   const [flowlineCollapse, setFlowlineCollapse] = useState(true);
   const [anchorEl, setAnchorEl] = useState();

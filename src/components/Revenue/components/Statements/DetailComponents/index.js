@@ -197,7 +197,7 @@ export default function DetailComponents(props) {
   const [checksFlatData, setChecksFlatData] = useState({});
   const selectedTabRef = useRef(null);
   const [isButtonScroll, setButtonScroll] = useState(false);
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useState(true);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [anchorEl, setAnchorEl] = useState();
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
