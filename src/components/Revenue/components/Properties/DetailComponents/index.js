@@ -458,7 +458,6 @@ export default function DetailComponents(props) {
               targetSourceId={propertyId}
               setStateApp={setStateApp}
               ownerTitle="Approver"
-              description={propertyDetails?.metaDescription}
             />
           </div>
         )}

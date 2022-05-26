@@ -17,6 +17,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { GETCHECK } from "graphQL/useQueryCheck";
 import { REMOVE_CHECKS } from "graphQL/useMutationRemoveChecks";
 import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
+import { UPDATE_CHECK_DATA } from "graphQL/useMutationUpdateCheck";
 import { AppContext } from "AppContext";
 
 // Components
@@ -211,6 +212,7 @@ export default function DetailComponents(props) {
   const classes = useStyles({ ...props, collapse });
   // queries
   const [updateOwner] = useMutation(UPSERT_USER_DESCRIPTOR);
+  const [updateCheck] = useMutation(UPDATE_CHECK_DATA);
 
   const [getCheck, { data: getCheckResult }] = useLazyQuery(GETCHECK, {
     fetchPolicy: "no-cache",
@@ -293,14 +295,22 @@ export default function DetailComponents(props) {
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
 
   const onUpdateMetaData = (data) => {
-    updateOwner({
-      variables: {
-        descriptorObject: data.owner,
-        userId: stateApp.user.mongoId,
-        relatedObject: checksFlatData._id,
-        relatedObjectType: 'Check'
-      }
-    });
+    if (data.owner)
+      updateOwner({
+        variables: {
+          descriptorObject: data.owner,
+          userId: stateApp.user.mongoId,
+          relatedObject: checksFlatData._id,
+          relatedObjectType: 'Check'
+        }
+      });
+    else {
+      updateCheck({
+        variables: {
+          check: { _id: checksFlatData._id, ...data }
+        },
+      });
+    }
   }
 
   return (
@@ -424,6 +434,7 @@ export default function DetailComponents(props) {
                     setCollapse={setCollapse}
                     targetSourceId={checkId}
                     setStateApp={setStateApp}
+                    descriptionKey="description"
                   />
                 </div>
               )}
@@ -432,8 +443,8 @@ export default function DetailComponents(props) {
             {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
 
             {/**
-       * Menu for meta data
-       */}
+              * Menu for meta data
+              */}
             <Menu
               id="revStatementMenu"
               anchorEl={anchorEl}

@@ -528,8 +528,9 @@ export default function DetailComponents(props) {
             <MetadataDrawer
               setCollapse={setMetaCollapse}
               targetSourceId={agreementId}
-              description={agreementDetails?.description}
+              data={agreementDetails}
               targetLabel="Shape"
+              descriptionKey="description"
             />
           </div>
         )}
