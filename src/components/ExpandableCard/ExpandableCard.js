@@ -635,10 +635,10 @@ function ExpandableCard(props) {
                         handleEditParcelAndShape();
                       }}
                       aria-label={`Edit ${targetLabel}`}
-                    >
-                      <span class="material-icons">
+                    ><DrawPoly className={classes.iconPolygon} />
+                      {/* <span class="material-icons">
                         draw
-                      </span>
+                      </span> */}
                     </IconButton>
                   </Tooltip>
 
