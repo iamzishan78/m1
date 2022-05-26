@@ -58,9 +58,7 @@ export default function FilterCountyName({ value, state, onCountyChange, label, 
   return (
     <FormControl variant="outlined" className={classes.formControl}>
       {loading ? (
-        <div style={{ height: "56px" }}>
-          <CircularProgress color="secondary" className={classes.loader} size={28} />
-        </div>
+        <CircularProgress color="secondary" className={classes.loader} size={28} />
       ) : (
         <Autocomplete
           className={classes.autoC}

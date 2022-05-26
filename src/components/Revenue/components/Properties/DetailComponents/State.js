@@ -1,6 +1,5 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -36,8 +35,6 @@ export default function FilterStateName({ value, onStateChange, label, variant }
         options={statesNames}
         value={value ? statesNames[statesAbbNames.indexOf(value)] : ''}
         getOptionLabel={(option) => option}
-        autoSelect
-
         disableListWrap
         includeInputInList
         onChange={(event, newValue) => {

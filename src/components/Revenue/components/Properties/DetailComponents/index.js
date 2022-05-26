@@ -309,14 +309,25 @@ export default function DetailComponents(props) {
   const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
 
   const onUpdateMetaData = (data) => {
-    updateMetaOwner({
-      variables: {
-        descriptorObject: data.owner,
-        userId: stateApp.user.mongoId,
-        relatedObject: propertyDetails._id,
-        relatedObjectType: "Property",
-      },
-    });
+    if (data.owner)
+      updateMetaOwner({
+        variables: {
+          descriptorObject: data.owner,
+          userId: stateApp.user.mongoId,
+          relatedObject: propertyDetails._id,
+          relatedObjectType: "Property",
+        },
+      });
+    else {
+      updateProperty({
+        variables: {
+          property: {
+            _id: propertyId,
+            ...data
+          },
+        },
+      });
+    }
   };
 
   return (
@@ -447,6 +458,7 @@ export default function DetailComponents(props) {
               targetSourceId={propertyId}
               setStateApp={setStateApp}
               ownerTitle="Approver"
+              description={propertyDetails?.metaDescription}
             />
           </div>
         )}
