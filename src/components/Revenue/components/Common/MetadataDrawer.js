@@ -192,7 +192,7 @@ export default function MetadataDrawer(props) {
 
   useEffect(() => {
     setDescription(props?.data?.[props.descriptionKey]);
-  }, [props.data]);
+  }, [props.data, props.descriptionKey]);
 
   useEffect(() => {
     getAllMongoUsers();
