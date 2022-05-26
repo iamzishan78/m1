@@ -98,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
   textField: {
     margin: "0px",
     "& .MuiOutlinedInput-input": {
-      padding: "5px",
+      padding: "13px",
     },
   },
   field: {
