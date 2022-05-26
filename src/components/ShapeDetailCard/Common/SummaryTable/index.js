@@ -36,7 +36,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
           onKeyDown(e, data, type);
         }
       }}
-      onWheel={onWheel ? onWheel : () => {}}
+      onWheel={onWheel ? onWheel : () => { }}
       onBlur={() => {
         onBlur(data, type);
       }}
@@ -53,7 +53,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
   );
 }
 
-export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search }) {
+export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData }) {
   const classes = summaryTableStyles();
   const dispatch = useDispatch();
   const [tableDataState, setTableDataState] = useState({});
@@ -71,7 +71,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
     });
     setTableTempProperties({ ...tableTempProperties });
     setTableDataState({});
-  }, [properties]);
+  }, [properties, metaData]);
 
   useEffect(() => {
     if (search) {
