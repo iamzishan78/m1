@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { debounce, get, set } from "lodash";
 import { makeStyles, withStyles } from "@material-ui/styles";
@@ -35,6 +35,7 @@ import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 const useStyles = makeStyles((theme) => ({
   detailHeader: {
@@ -210,6 +211,7 @@ const StyledTab = withStyles((theme) => ({
 export default function DetailComponents(props) {
   const { id: agreementId } = useParams();
   const dispatch = useDispatch();
+  const history = useHistory();
   const agreementDetails = useSelector(({ Land }) => Land.agreement?.activeAgreement?.shape)?.properties;
   const activeAgreement = useSelector(({ Land }) => Land.agreement?.activeAgreement);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -222,6 +224,7 @@ export default function DetailComponents(props) {
   const [flowlineCollapse, setFlowlineCollapse] = useState(true);
   const [anchorEl, setAnchorEl] = useState();
   const [uniObj, setUniObj] = useState();
+  const [openDialog, setOpenDialog] = useState(false);
 
   const classes = useStyles({ ...props, metaCollapse, validationCollapse, flowlineCollapse });
   // queries
@@ -387,6 +390,20 @@ export default function DetailComponents(props) {
 
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
 
+  const handleDeleteAgreement = () => {
+    updateCustomLayer({
+      variables: {
+        customLayerId: dataCustomLayer?.customLayer?._id,
+        customLayer: {
+          IsDeleted: true,
+        },
+      }
+    }).then(({ data }) => {
+      if (data.updateCustomLayer?.success)
+        history.push('/land/agreements')
+    });
+  }
+
   return (
     <NavHeader title={`${agreementDetails?.agreementNumber} - ${agreementDetails?.agreementName}`}>
       {/**
@@ -550,13 +567,31 @@ export default function DetailComponents(props) {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <MenuItem>
+        <MenuItem onClick={() => {
+          setOpenDialog(true);
+          setAnchorEl(null);
+        }}>
           <ListItemIcon>
             <DeleteIcon size="medium" />
           </ListItemIcon>
           <ListItemText>Delete</ListItemText>
         </MenuItem>
       </Menu>
+
+      {/**
+       * Delete Custom Layer confirmation dialog
+       * */}
+      {openDialog && (
+        <DeleteConfirmationDialogContent
+          header="Delete Agreement"
+          onClose={() => setOpenDialog(false)}
+          deleteFunc={handleDeleteAgreement}
+          m1nSelectedRowsIds={null}
+          setM1nSelectedRowsIndexes={() => { }}
+        >
+          Are you sure you want to delete this agreement?
+        </DeleteConfirmationDialogContent>
+      )}
     </NavHeader>
   );
 }
