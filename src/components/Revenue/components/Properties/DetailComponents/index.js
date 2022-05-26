@@ -216,7 +216,7 @@ export default function DetailComponents(props) {
   const [tab, setTab] = useState(0);
   const [refetchContacts, setRefetchContacts] = useState(false);
   const selectedTabRef = useRef(null);
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useState(true);
   const [anchorEl, setAnchorEl] = useState();
   const [isButtonScroll, setButtonScroll] = useState(false);
   const [propertyDetails, setProperty] = useState(null);
@@ -458,7 +458,6 @@ export default function DetailComponents(props) {
               targetSourceId={propertyId}
               setStateApp={setStateApp}
               ownerTitle="Approver"
-              description={propertyDetails?.metaDescription}
             />
           </div>
         )}

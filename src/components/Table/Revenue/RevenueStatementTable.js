@@ -131,41 +131,6 @@ function RevenueStatementTable(props) {
     }
   }, [potentialIssues, issues]);
 
-  // useEffect(() => {
-  //   if (validationData?.getRevenueValidationCheck?.hits) {
-  //     const validation = JSON.parse(
-  //       JSON.stringify(validationData.getRevenueValidationCheck.hits)
-  //     );
-  //     const newRows = JSON.parse(JSON.stringify(rows));
-  //     for (let i = 0; i < newRows.length; i++) {
-  //       if (validation[newRows[i]._id]) {
-  //         newRows[i].validation = !(
-  //           parseFloat(
-  //             validation[newRows[i]._id].checkDetailAmt.value.toFixed(2)
-  //           ) === newRows[i].checkAmount
-  //         );
-  //       } else {
-  //         newRows[i].validation = false;
-  //       }
-  //     }
-  //     setRows(newRows);
-  //   }
-  // }, [validationData]);
-
-  // useEffect(() => {
-  //   if (searchedRows?.length > 0) {
-  //     const validationRows = searchedRows.filter(r => typeof r.validation === 'undefined')
-  //     const objectsIdsArray = validationRows.map((check) => check._id);
-  //     if(objectsIdsArray.length > 0){
-  //       getRevenueValidationCheck({
-  //         variables: {
-  //           checkIds: objectsIdsArray,
-  //         },
-  //       });
-  //     }
-  //   }
-  // }, [searchedRows]);
-
   useEffect(() => {
     if (issues?.hits?.length > 0 && searchedRows?.length > 0) {
       const issuesArr = issues?.hits.filter((issue) => {
@@ -233,13 +198,12 @@ function RevenueStatementTable(props) {
             )}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
-            {`Do you want to delete the selected revenue statement${
-              props.selectedRows &&
-              props.selectedRows.length > 1 &&
-              props.selectedRows.length > 1
+            {`Do you want to delete the selected revenue statement${props.selectedRows &&
+                props.selectedRows.length > 1 &&
+                props.selectedRows.length > 1
                 ? "s"
                 : ""
-            }?`}
+              }?`}
           </DeleteConfirmationDialogContent>
         )}
       </Dialog>

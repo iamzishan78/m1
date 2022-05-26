@@ -66,7 +66,6 @@ export default function FilterCountyName({ value, state, onCountyChange, label, 
           value={value ? { county: value } : ''}
           getOptionLabel={(option) => (option && option.county ? option.county : option ? option : "")}
           autoComplete
-          autoSelect
           disableListWrap
           includeInputInList
           onChange={(event, newValue) => {

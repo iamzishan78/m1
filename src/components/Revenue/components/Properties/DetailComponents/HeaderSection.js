@@ -98,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
   textField: {
     margin: "0px",
     "& .MuiOutlinedInput-input": {
-      padding: "5px",
+      padding: "13px",
     },
   },
   field: {
@@ -477,7 +477,8 @@ export default function HeaderSection(props) {
                     <CountyField
                       value={params.value}
                       state={selectedState}
-                      onCountyChange={({ county }) => {
+                      onCountyChange={(selectedCounty) => {
+                        const county = selectedCounty?.county ?? "";
                         updatePropertyData("county", county);
                         setValue("county", county);
                       }}
