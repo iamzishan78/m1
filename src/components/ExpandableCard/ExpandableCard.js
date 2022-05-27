@@ -810,6 +810,7 @@ function ExpandableCard(props) {
 
               {!props.noTrackAvailable &&
                 targetLabel !== "recent_submitted_permits" &&
+                targetLabel !== "parcel" &&
                 targetLabel !== "unit" &&
                 targetLabel !== "agreement" && (
                   <TrackToggleButton
