@@ -821,44 +821,7 @@ function ExpandableCard(props) {
                   />
                 )}
 
-              {stateExpandableCard.expanded &&
-                (["activity", "parcel", "expandedParcel"].includes(
-                  targetLabel
-                ) ||
-                  stateApp.selectedShape) &&
-                title !== "Add Activity" && (
-                  <Tooltip title={`Delete ${targetLabel}`} placement="top">
-                    {isDeletingCustomLayer || deleteLoading ? (
-                      <CircularProgress size={20} color="secondary" />
-                    ) : (
-                      <> {
-                        (targetLabel == 'parcel' || targetLabel == 'unit' || targetLabel == 'agreement')  && <> <IconButton
-                        size="small"
-                        component="span"
-                        onClick={handleMenuClick}
-                      >
-                        <MoreVertIcon size="medium" />
-                      </IconButton>
-                      <Menu
-                        id="dealMenu"
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={handleMenuClose}
-                        className={classes.menu}
-                      >
-                        <MenuItem onClick={openConfirmationDialog}>
-                          <ListItemIcon>
-                            <DeleteIcon size="medium" />
-                          </ListItemIcon>
-                          <ListItemText>Delete</ListItemText>
-                        </MenuItem>
-                      </Menu></>
-                      }
-                        
-                      </>
-                    )}
-                  </Tooltip>
-                )}
+
 
               {stateExpandableCard.expanded &&
               targetLabel !== "activity" &&
@@ -923,7 +886,44 @@ function ExpandableCard(props) {
                   </Tooltip>
                 )
               )}
-
+              {stateExpandableCard.expanded &&
+                (["activity", "parcel", "expandedParcel"].includes(
+                  targetLabel
+                ) ||
+                  stateApp.selectedShape) &&
+                title !== "Add Activity" && (
+                  <Tooltip title={`Delete ${targetLabel}`} placement="top">
+                    {isDeletingCustomLayer || deleteLoading ? (
+                      <CircularProgress size={20} color="secondary" />
+                    ) : (
+                      <> {
+                        (targetLabel == 'parcel' || targetLabel == 'unit' || targetLabel == 'agreement')  && <> <IconButton
+                        size="small"
+                        component="span"
+                        onClick={handleMenuClick}
+                      >
+                        <MoreVertIcon size="medium" />
+                      </IconButton>
+                      <Menu
+                        id="dealMenu"
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={handleMenuClose}
+                        className={classes.menu}
+                      >
+                        <MenuItem onClick={openConfirmationDialog}>
+                          <ListItemIcon>
+                            <DeleteIcon size="medium" />
+                          </ListItemIcon>
+                          <ListItemText>Delete</ListItemText>
+                        </MenuItem>
+                      </Menu></>
+                      }
+                        
+                      </>
+                    )}
+                  </Tooltip>
+                )}
               <Tooltip title={"Close"} placement="top">
                 <IconButton
                   size={stateExpandableCard.expanded ? "medium" : "small"}
