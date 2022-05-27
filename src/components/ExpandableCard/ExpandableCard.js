@@ -637,9 +637,6 @@ function ExpandableCard(props) {
                       }}
                       aria-label={`Edit ${targetLabel}`}
                     ><DrawPoly  />
-                      {/* <span class="material-icons">
-                        draw
-                      </span> */}
                     </IconButton>
                   </Tooltip>
 
