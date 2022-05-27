@@ -231,6 +231,19 @@ export const useStyles = makeStyles((theme) => ({
       height: "2ch",
     },
   },
+  totalFilter: {
+    backgroundColor: "#18AADD",
+    color: "#FFFFFF",
+    height: '1.3rem',
+    width: '1.3rem',
+    marginLeft: '-15px',
+    position: 'relative',
+    zIndex: '1',
+    textAlign: 'center',
+     "& span" : {
+       padding: '0px'
+     }
+  },
 }));
 
 export const StyledMenu = withStyles({})((props) => <Paper elevation={0} variant="elevation" {...props} />);
