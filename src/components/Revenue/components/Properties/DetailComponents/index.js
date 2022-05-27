@@ -348,7 +348,7 @@ export default function DetailComponents(props) {
               <div className={classes.tagsContainer}>
                 <div className={classes.highlighter}>
                   <Typography className={classes.highlight} variant="highlight">
-                    Division Order
+                    Property
                   </Typography>
                 </div>
                 <div className={classes.tags}>
