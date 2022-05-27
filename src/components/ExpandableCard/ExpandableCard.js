@@ -678,6 +678,7 @@ function ExpandableCard(props) {
               {!props.noTrackAvailable
                 && targetLabel !== "recent_submitted_permits"
                 && targetLabel !== "unit"
+                && targetLabel !== "agreement"
                 && (
                   <TrackToggleButton
                     target={target}
