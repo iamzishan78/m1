@@ -10,6 +10,8 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { ADDUSER } from "graphQL/useMutationAddUser";
 import { UPDATEUSER } from "graphQL/useMutationUpdateUser";
 import { Select, FormControl, MenuItem, TextField, Grid } from "@material-ui/core";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 export default function InviteUserDialog(props) {
 
@@ -188,6 +190,7 @@ export default function InviteUserDialog(props) {
               </Select>
             </Grid>
 
+            <FeatureFlag feature={FEATURES.SHOWUSERPRIVILEGES}>
             <Grid item xs={12}>
               <h3>User Privileges</h3>
               <Select
@@ -199,6 +202,8 @@ export default function InviteUserDialog(props) {
                 <MenuItem value="READ_ONLY">Read Only</MenuItem>
               </Select>
             </Grid>
+            </FeatureFlag>
+
           </FormControl>
         </Grid>
 
