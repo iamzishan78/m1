@@ -66,6 +66,7 @@
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "mapbox-gl-draw-rotate-scale-rect-mode": "git+https://github.com/drykovanov/mapbox-gl-draw-rotate-scale-rect-mode#0.1.10",
     "mapbox-gl-draw-scale-rotate-mode": "^0.1.0",
+    "material-icons": "^1.10.11",
     "material-table": "^1.69.2",
     "material-ui": "^0.20.2",
     "material-ui-color": "^1.0.0",

@@ -9,7 +9,7 @@ import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete
 import CircularProgress from '@material-ui/core/CircularProgress';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
-import { Popover, Popper, Typography } from "@material-ui/core";
+import { Popper, Typography } from "@material-ui/core";
 
 const styles = (theme) => ({
     popper: {
@@ -66,7 +66,7 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
                 esIndex,
                 filters,
                 filterKeys: typeof filterKey !== 'string' ? filterKey : undefined,
-                filterKey: typeof filterKey === 'string' ? filterKey : undefined,
+                // filterKey: typeof filterKey === 'string' ? filterKey : undefined,
                 search,
                 extendSearchQuery,
                 size: 50,
@@ -83,12 +83,13 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
             value={value}
             inputValue={search}
             getOptionSelected={(option, value) => option?.key === value.key}
-            getOptionLabel={(option) => option?.key?.toString().replace(/^\,|\,$/gm, "")}
+            getOptionLabel={(option) => option?.key?.join(' - ')}
             onChange={(e, value, reason) => {
                 if (reason === 'clear' || !value?.key) setSearch('')
                 else {
-                    setSearch(value.key)
-                    onChange(value.key)
+                    const key = typeof value.key === "string" ? value.key : value.key[0];
+                    setSearch(key);
+                    onChange(key)
                 }
             }}
             fullWidth
@@ -110,7 +111,7 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
                                         fontWeight: part.highlight ? 700 : 400,
                                     }}
                                 >
-                                    {part.text}
+                                    {typeof part.text === "string" ? part.text : part.text?.join(" - ")}
                                 </span>
                             ))}
                         </div>
@@ -122,7 +123,7 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
                 const filtered = filter(options, { ...params, inputValue });
 
                 const isExist = loadashFilter(filtered, (f) => {
-                    return f.key === inputValue;
+                    return typeof f.key === "string" ? f.key === inputValue : f.key.includes(inputValue);
                 });
                 // Suggest the creation of a new value
                 if (inputValue !== "" && (!isExist || isExist.length === 0)) {

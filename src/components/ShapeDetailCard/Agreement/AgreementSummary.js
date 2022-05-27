@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+// import { useSelector } from "react-redux";
 import { v4 as uuid } from "uuid";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -18,11 +19,13 @@ import CommentComponent from "components/Shared/CommentComponent";
 import SummaryTable from "components/ShapeDetailCard/Common/SummaryTable";
 import agreementDefaultData from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
+// import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { summaryStyles } from "components/ShapeDetailCard/style";
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import Acreage from "components/Land/components/Agreements/detailComponents/summary/Acreage";
 
 export default function AgreementSummary(props) {
+  // const user = useSelector(({ app }) => app.user);
   const [search, setSearch] = useState("");
   const [unitProperties, setProperties] = useState(props.properties);
   const [tableDataState, setTableDataState] = useState({});
@@ -30,9 +33,16 @@ export default function AgreementSummary(props) {
   const classes = summaryStyles({ search });
 
   const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
+  // const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
   useEffect(() => {
     getShapeSummaryDetails({ variables: { shapeId: props.id, shapeType: "Unit" } });
+    // getMetaData({
+    //   variables: {
+    //     user: user?.mongoId,
+    //     category: "Agreement",
+    //   },
+    // });
   }, [props.id]);
 
   const addCustomData = () => {
@@ -86,6 +96,7 @@ export default function AgreementSummary(props) {
               updateProperties={props.updateProperties}
               updateCustomProperties={props.updateCustomProperties}
               search={search}
+            // metaData={metaDataRes?.getMetaData?.metaData}
             />
           </Grid>
           <Grid item>

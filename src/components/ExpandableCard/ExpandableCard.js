@@ -10,13 +10,15 @@ import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import FolderIcon from '@material-ui/icons/Folder';
 import { useLazyQuery, useMutation } from "@apollo/client";
 import $ from "jquery";
+import 'material-icons/iconfont/material-icons.css';
 // Components
 import ExpandIcon from "./components/svgIcons/ExpandIcon";
 import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
 import ReportBugModal from "./components/ReportBugModal";
 import TaggerWithIcon from "../Shared/TaggerWithIcon";
 import CommentsWithIcon from "../Shared/CommentsWithIcon";
-import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
+//import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
+import DrawPoly from "@material-ui/icons/EditLocationOutlined";
 import TrackToggleButton from "../Shared/TrackToggleButton";
 import LinkWithIcon from "../Shared/LinkWithIcon";
 import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
@@ -627,15 +629,14 @@ function ExpandableCard(props) {
             <div className={classes.headerIcons}>
               {
                 (targetLabel === 'parcel' || stateApp.selectedShape) && (
-                  <Tooltip title={`Edit ${targetLabel}`} placement="top">
+                  <Tooltip title={`Edit shape boundary`} placement="top">
                     <IconButton
                       // size="small"
                       onClick={() => {
                         handleEditParcelAndShape();
                       }}
                       aria-label={`Edit ${targetLabel}`}
-                    >
-                      <DrawPoly className={classes.iconPolygon} />
+                    ><DrawPoly  />
                     </IconButton>
                   </Tooltip>
 

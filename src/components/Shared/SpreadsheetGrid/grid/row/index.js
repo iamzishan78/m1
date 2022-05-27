@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import isEqual from 'lodash.isequal';
 
 import SpreadsheetCell from './cell';
-import { Paper, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@material-ui/core";
+import { TableCell } from "@material-ui/core";
 
 class SpreadsheetRow extends React.Component {
 
