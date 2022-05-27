@@ -53,7 +53,6 @@ import { ExpandableCardContext } from "./ExpandableCardContext";
 import { showInfoMessage } from "actions";
 
 function ExpandableCard(props) {
-  console.log("props", props)
   // initials
   const history = useHistory();
   const dispatch = useDispatch();
@@ -835,11 +834,6 @@ function ExpandableCard(props) {
                         targetLabel == 'parcel' && <> <IconButton
                         size="small"
                         component="span"
-                        style={{
-                          background: "transparent",
-                          paddingLeft: "10px",
-                          align: "center",
-                        }}
                         onClick={handleMenuClick}
                       >
                         <MoreVertIcon size="medium" />
