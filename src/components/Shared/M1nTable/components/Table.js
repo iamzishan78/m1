@@ -3972,12 +3972,12 @@ function SubTable(props) {
   // }
 
 
-  if (props.header === "Deals" 
-      || props.header === "Activities"
-      || props.header === "Agreements"
-      || props.parent === "TractTable"
-      || props.parent === "TractInterestsTable"
-      ) {
+  if (props.header === "Deals"
+    || props.header === "Activities"
+    || props.header === "Agreements"
+    || props.parent === "TractTable"
+    || props.parent === "TractInterestsTable"
+  ) {
     // adds the print and export options in the Flow grid and the Activities grid
     if (props.targetLabel !== 'activitiesDashboard') {
       // options.print = true;

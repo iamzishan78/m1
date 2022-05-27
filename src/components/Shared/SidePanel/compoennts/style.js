@@ -102,8 +102,8 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   panelContent: {
-    height: "calc(100vh - 117px)",
-    overflow: "overlay",
+    // height: "calc(100vh - 446px)",
+    overflow: "hidden",
     backgroundColor: "#0e111a",
   },
   heatmapList: {
@@ -165,7 +165,7 @@ export const useStyles = makeStyles((theme) => ({
     // for layer panel
     backgroundColor: "#0e111a",
     overflow: "auto",
-    height: "calc(100vh - 172px)",
+    height: "calc(100vh - 499px)",
     maxheight: "calc(100vh - 172px)",
     paddingTop: 10,
     paddingBottom: 10,

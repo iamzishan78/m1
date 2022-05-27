@@ -230,7 +230,7 @@ const TabLabels = ({ labels, value, setValue }) => {
 
 function MapGridCard(props) {
   // contexts
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   // function state
   const [searchTapValue, SearchTapValue] = useState(stateApp.layerGridCard ? platformDataInitialData[3] : platformDataInitialData[0]);
@@ -358,6 +358,7 @@ function MapGridCard(props) {
             className="cancelDraggableEffect"
             onClick={(e) => {
               e.stopPropagation();
+              setStateApp((state) => ({ ...state, selectedDataset: null }))
               dispatch(
                 setMapGridCardState({
                   mapGridCardActivated: false,

@@ -93,10 +93,11 @@ export default function Navigation(props) {
   const [matchFind, setMatchFind] = useState(false);
   const [matchDocument] = useState(false);
 
-  const classes = useStyles({ mapGridCardActivated, user: stateApp.user });
+
 
   let history = useHistory();
   let location = useLocation();
+  const classes = useStyles({ mapGridCardActivated, user: stateApp.user, isMap: location.pathname === "/" || location.pathname.startsWith("/map/") });
 
   useEffect(() => {
     if (location.pathname === "/" || location.pathname.startsWith("/map/")) {
@@ -395,10 +396,10 @@ export default function Navigation(props) {
           style={
             location.pathname === "/contacts/activityDashboard" || location.pathname.includes("revenue") ? { background: "white" } : null
           }
-          // style={{
-          //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
-          //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
-          // }}
+        // style={{
+        //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
+        //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
+        // }}
         >
           {stateApp.user && (
             <Toolbar>
