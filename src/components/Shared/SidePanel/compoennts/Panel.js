@@ -7,7 +7,7 @@ import { useMutation } from "@apollo/client";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import { Tooltip, Tab, Tabs, InputBase, IconButton } from "@material-ui/core";
+import { Tooltip, Tab, Tabs, InputBase, IconButton, Chip } from "@material-ui/core";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Button from "@material-ui/core/Button";
@@ -50,10 +50,14 @@ import {
 import SortableLayer from "./SortableLayer";
 import { CircularProgress } from "@material-ui/core";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
+// Contexts
+import { NavigationContext } from "components/Navigation/NavigationContext";
 
 function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems }) {
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [totalFilterCount, setTotalFilterCount] = useState(null);
   const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
 
   const classes = useStyles();
@@ -65,6 +69,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   const [search, setSearch] = useState("");
   const [searchState, setSearchState] = useState(false);
   const [tab, setTab] = useState(0);
+
+  useEffect(() => {
+    setTotalFilterCount(stateNav.totalFilterCount)
+  }, [stateNav]);
 
   useEffect(() => {
     if (stateApp.mapStyles && stateApp.mapStyles.length > 0) setMapStyles([...stateApp.mapStyles]);
@@ -347,6 +355,9 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
                         onClick={() => setStateMapControls((stateMapControls) => ({ ...stateMapControls, selectedControl: action.action }))}
                       />
                     ))}
+                    {totalFilterCount != 0 &&
+                      <Chip color="info" label={totalFilterCount} className={classes.totalFilter}/>
+                    }
                   </Tabs>
                 </Grid>
               )}

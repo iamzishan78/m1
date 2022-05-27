@@ -1,6 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
 import { AppContext } from "AppContext";
-import { useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTable";
@@ -73,7 +72,6 @@ export default function Properties() {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   // redux
-  const dispatch = useDispatch();
   const [filterToggle, setFilterToggle] = React.useState(false);
 
 
@@ -98,7 +96,7 @@ export default function Properties() {
         return { ...state, revenueSearchQuery: '' };
       });
     }
-  },[])
+  }, [])
 
   // cards default
   const cardsDefault = [
