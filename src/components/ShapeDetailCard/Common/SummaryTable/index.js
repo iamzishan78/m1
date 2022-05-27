@@ -36,7 +36,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
           onKeyDown(e, data, type);
         }
       }}
-      onWheel={onWheel ? onWheel : () => {}}
+      onWheel={onWheel ? onWheel : () => { }}
       onBlur={() => {
         onBlur(data, type);
       }}
