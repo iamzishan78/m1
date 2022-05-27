@@ -831,7 +831,7 @@ function ExpandableCard(props) {
                       <CircularProgress size={20} color="secondary" />
                     ) : (
                       <> {
-                        targetLabel == 'parcel' && <> <IconButton
+                        (targetLabel == 'parcel' || targetLabel == 'unit' || targetLabel == 'agreement')  && <> <IconButton
                         size="small"
                         component="span"
                         onClick={handleMenuClick}
