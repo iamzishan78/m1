@@ -163,7 +163,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               InputLabelProps={{
                                 shrink: true,
                               }}
-                              multiple={field.type === "multiselect"}
+                              multiple={false}
                               onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
                               value={
                                 !field.isCustom ? agreementDetails?.[field.key] ?? "" : agreementDetails?.custom_data?.[field.key] ?? []

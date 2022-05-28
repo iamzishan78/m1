@@ -53,7 +53,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
   );
 }
 
-export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search }) {
+export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData }) {
   const classes = summaryTableStyles();
   const dispatch = useDispatch();
   const [tableDataState, setTableDataState] = useState({});
@@ -64,14 +64,20 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
   const [tableTempProperties, setTableTempProperties] = useState(properties);
 
   useEffect(() => {
-    setFilteredTableData(tableData.concat(properties?.custom_data_arr || []));
+    let filteredKeys = tableData.concat(properties?.custom_data_arr || []);
+    metaData?.forEach(md => {
+      filteredKeys.push({ type: md.type, key: md.name, label: md.label, options: md.dropdownOptions.map(o => ({ ...o, label: o.value })) });
+      tableTempProperties[md.name] = properties.custom_data[md.name];
+      tableTempProperties[`${md.name}key`] = md.name;
+    });
+    setFilteredTableData(filteredKeys);
     properties?.custom_data_arr?.forEach((data) => {
       tableTempProperties[data.key] = data.value;
       tableTempProperties[`${data.key}key`] = data.key;
     });
     setTableTempProperties({ ...tableTempProperties });
     setTableDataState({});
-  }, [properties]);
+  }, [properties, metaData]);
 
   useEffect(() => {
     if (search) {
@@ -189,7 +195,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
               >
                 {tableDataState[data.key] ? (
                   <>
-                    {data.type === "select" && (
+                    {(data.type === "select" || data.type === "dropdown") && (
                       <FormControl fullWidth margin="dense">
                         <Select
                           margin="dense"
@@ -342,7 +348,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             data.type !== "custom" &&
                             data.type !== "currency" &&
                             data.type !== "comma-number" &&
-                            (data.value || properties[data.key] || "-")}
+                            (data.value || properties[data.key] || properties.custom_data?.[data.key] || "-")}
                           {data.type === "currency" && (vf_currency(data.value) || vf_currency(properties[data.key]) || "-")}
                           {data.type === "comma-number" && (vf_number(data.value) || vf_number(properties[data.key]) || "-")}
                         </Grid>

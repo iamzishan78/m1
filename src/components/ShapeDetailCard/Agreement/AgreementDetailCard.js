@@ -150,6 +150,8 @@ export default function AgreementDetailCard(props) {
         customLayerId: uniObj._id,
         customLayer,
       },
+      refetchQueries: ["getMetaData"],
+      awaitRefetchQueries: true
     });
   };
 
