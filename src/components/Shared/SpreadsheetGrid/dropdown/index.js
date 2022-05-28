@@ -2,8 +2,6 @@ import React from 'react';
 import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
 
-import styles from './styles.css';
-
 class SpreadsheetGridDropdown extends React.PureComponent {
 
     constructor(props) {

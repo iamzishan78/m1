@@ -135,7 +135,7 @@ export default function MetadataDrawer(props) {
   const history = useHistory();
   // States
   const [ownerId, setOwnerId] = useState("");
-  const [description, setDescription] = useState(props.description ?? "");
+  const [description, setDescription] = useState("");
   const [onFocusDescription, setFocusSate] = useState(false);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -191,8 +191,8 @@ export default function MetadataDrawer(props) {
     });
 
   useEffect(() => {
-    setDescription(props.description);
-  }, [props.description]);
+    setDescription(props?.data?.[props.descriptionKey]);
+  }, [props.data, props.descriptionKey]);
 
   useEffect(() => {
     getAllMongoUsers();
@@ -401,10 +401,11 @@ export default function MetadataDrawer(props) {
                 onChange={(e) => {
                   setDescription(e.target.value);
                 }}
-                onKeyDown={(e) => {
-                  if (e.keyCode === 13) {
-                    setFocusSate(false);
-                    setDescription("");
+                onKeyPress={(event) => {
+                  if (event.key === "Enter") {
+                    document.activeElement.blur();
+                    if (props.onUpdate)
+                      props.onUpdate({ [props.descriptionKey]: event.target.value });
                   }
                 }}
                 onFocus={() => setFocusSate(true)}
@@ -490,4 +491,5 @@ MetadataDrawer.defaultProps = {
   commentsWidth: "600px",
   viewAllDocuments: false,
   ownerTitle: "Owner",
+  descriptionKey: "metaDescription"
 }
