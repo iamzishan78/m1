@@ -7,7 +7,7 @@ import UnitIcon from "components/Shared/svgIcons/unit";
 import FolderIcon from "@material-ui/icons/Folder";
 import OperatorIcon from "components/Shared/svgIcons/operator";
 import TaxOwnerIcon from "@material-ui/icons/AccountBalance";
-import ContactIcon from "@material-ui/icons/Group";
+// import ContactIcon from "@material-ui/icons/Group";
 import LayersIcon from "@material-ui/icons/Layers";
 
 
@@ -28,4 +28,9 @@ export const userDefinedInitialData = [
   { index: 8, value: "tract", Icon: TractIcon, label: "Tracts", mapGrid: false },
   { index: 9, value: "unit", Icon: UnitIcon, label: "Units", mapGrid: true },
   // { index: 4, value: "contacts", Icon: ContactIcon, label: "Contacts" },
+];
+
+export const snapGridSideBarData = [
+  ...[platformDataInitialData[0], platformDataInitialData[1], platformDataInitialData[2]],
+  ...userDefinedInitialData
 ];
