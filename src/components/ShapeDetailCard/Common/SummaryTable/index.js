@@ -65,10 +65,15 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
 
   useEffect(() => {
     let filteredKeys = tableData.concat(properties?.custom_data_arr || []);
-    metaData?.forEach(md => {
-      filteredKeys.push({ type: md.type, key: md.name, label: md.label, options: md.dropdownOptions.map(o => ({ ...o, label: o.value })) });
-      tableTempProperties[md.name] = properties.custom_data[md.name];
-      tableTempProperties[`${md.name}key`] = md.name;
+    metaData?.forEach((md) => {
+      filteredKeys.push({
+        type: md.type,
+        key: md.name,
+        label: md.label,
+        options: md.dropdownOptions.map((o) => ({ ...o, label: o.value })),
+        isCustomData: true,
+      });
+      tableTempProperties.custom_data[md.name] = properties.custom_data[md.name];
     });
     setFilteredTableData(filteredKeys);
     properties?.custom_data_arr?.forEach((data) => {
@@ -202,13 +207,14 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           className={classes.select}
                           labelId="demo-simple-select-label"
                           id="demo-simple-select"
-                          value={tableTempProperties[data.key]}
+                          value={data.isCustomData ? tableTempProperties.custom_data[data.key] : tableTempProperties[data.key]}
                           onClick={(e) => e.stopPropagation()}
                           onChange={(e) => {
                             e.keyCode = 13;
-                            tableTempProperties[data.key] = e.target.value;
+                            const key = data.isCustomData ? `custom_data[${data.key}]` : data.key;
+                            tableTempProperties[key] = e.target.value;
                             setTableTempProperties({ ...tableTempProperties });
-                            updateProperties(e, data.key, e.target.value);
+                            updateProperties(e, key, e.target.value);
                           }}
                           onBlur={() => {
                             setTableDataState({});
@@ -348,7 +354,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             data.type !== "custom" &&
                             data.type !== "currency" &&
                             data.type !== "comma-number" &&
-                            (data.value || properties[data.key] || properties.custom_data?.[data.key] || "-")}
+                            (data.isCustomData ? properties.custom_data[data.key] : data.value || properties[data.key] || "-")}
                           {data.type === "currency" && (vf_currency(data.value) || vf_currency(properties[data.key]) || "-")}
                           {data.type === "comma-number" && (vf_number(data.value) || vf_number(properties[data.key]) || "-")}
                         </Grid>
