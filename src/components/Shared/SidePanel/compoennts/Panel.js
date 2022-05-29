@@ -29,6 +29,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import FilterAltIcon from "components/Shared/svgIcons/FilterAltIcon";
 import SecondaryPanel from "components/Shared/SecondaryPanel";
+import Datasets from 'components/Shared/SidePanel/compoennts/Datasets'
 import LayerFilters from "components/Shared/SidePanel/compoennts/Filters/LayerFilters";
 import MapPositions from "components/Shared/SidePanel/compoennts/MapPositions";
 import { showErrorMessage, showSuccessMessage } from "actions";
@@ -380,6 +381,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
               </Grid>
             </Grid>
           </StyledMenuHActionHeader>
+
+          {type === "layer" &&
+            <Datasets layerMap={layerMap} headerButton={headerButton} />
+          }
+
           <div className={classes.panelContent}>
             <StyledMenuSecondaryHeaderItem>
               <ListItemText primary={title} />

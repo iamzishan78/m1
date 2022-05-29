@@ -333,7 +333,7 @@ export default function AddUserGroupData(props) {
 
   return (
     <Dialog maxWidth='xs' fullWidth open={isOpen} onClose={handleCancel}>
-      <DialogTitle>Create a new Group</DialogTitle>
+      <DialogTitle>Create a new Source</DialogTitle>
       <DialogContent dividers>
 
         <TextField
@@ -342,7 +342,7 @@ export default function AddUserGroupData(props) {
           required
           margin="dense"
           id="groupName"
-          label="Group Name"
+          label="Source Name"
           fullWidth
           error={error}
           onChange={handleGroupNameChanges}
@@ -356,7 +356,7 @@ export default function AddUserGroupData(props) {
               margin="dense"
               id="layerName"
               value={layerNames[i]}
-              label={`Layer ${i + 1} ( ${layer} )`}
+              label={`Source Category ${i + 1} ( ${layer} )`}
               fullWidth
               error={error}
               onChange={(e) => handleLayerNameChanges(e.target.value, i)}
@@ -427,7 +427,7 @@ export default function AddUserGroupData(props) {
           onClick={handleApplyChanges}
           color="primary"
         >
-          Create Group
+          Create Source
         </Button>
       </DialogActions>
     </Dialog>

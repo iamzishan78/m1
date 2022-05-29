@@ -336,7 +336,7 @@ export default function AddUserData(props) {
   if (notReturn) return null;
   return (
     <Dialog maxWidth='xs' fullWidth open={isOpen} onClose={handleCancel}>
-      <DialogTitle>Create a new Layer</DialogTitle>
+      <DialogTitle>Create a new Source</DialogTitle>
       <DialogContent dividers>
         <TextField
           defaultValue={stateMapControls.fileUploadedContent.groupName}
@@ -344,7 +344,7 @@ export default function AddUserData(props) {
           required
           margin="dense"
           id="layerName"
-          label="Layer Name"
+          label="Source Name"
           fullWidth
           error={error}
           onChange={handleLayerNameChanges}
@@ -419,7 +419,7 @@ export default function AddUserData(props) {
           onClick={handleApplyChanges}
           color="primary"
         >
-          Create Layer
+          Create Source
         </Button>
       </DialogActions>
     </Dialog>

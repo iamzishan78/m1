@@ -443,7 +443,7 @@ export default function AddLayer(props) {
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Grid item>
-                    <Typography variant="h5">Layer Manager</Typography>
+                    <Typography variant="h5">Source Manager</Typography>
                   </Grid>
                   <Grid item>
                     <IconButton size="small" onClick={handleApplyChange}>
@@ -463,7 +463,7 @@ export default function AddLayer(props) {
                   </div>
                   <div onClick={(e) => e.stopPropagation()}>
                     <StyledListItem2 button onClick={handleClickM1List}>
-                      <ListItemText primary="M1neral Layers" />
+                      <ListItemText primary="M1neral Platform Sources" />
                       {openM1 ? <ExpandLess /> : <ExpandMore />}
                     </StyledListItem2>
                     <Collapse in={openM1} timeout="auto" unmountOnExit>
@@ -485,7 +485,7 @@ export default function AddLayer(props) {
                       </List>
                     </Collapse>
                     <StyledListItem2 button onClick={handleClickUDList}>
-                      <ListItemText primary="User Defined Layers" />
+                      <ListItemText primary="User Defined Sources" />
                       {openUD ? <ExpandLess /> : <ExpandMore />}
                     </StyledListItem2>
                     <Collapse in={openUD} timeout="auto" unmountOnExit>
