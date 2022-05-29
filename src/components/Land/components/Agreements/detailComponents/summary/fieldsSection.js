@@ -70,7 +70,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
         }
       });
     }
-    setFieldsList([...fieldsData, ...customData]);
+    setFieldsList([...fieldsData(stateApp.user), ...customData]);
   }, [metaDataRes, agreementDetails]);
 
   const onGlobalKeyDown = (e) => {
@@ -151,6 +151,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                 shrink: true,
                               }}
                               onBlur={(event) => offClickHandler(field.key, event.target.value)}
+                              disabled={field.disabled}
                             />
                           )}
                           {field.type === "dropdown" && (
@@ -168,6 +169,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               value={
                                 !field.isCustom ? agreementDetails?.[field.key] ?? "" : agreementDetails?.custom_data?.[field.key] ?? []
                               }
+                              disabled={field.disabled}
                             >
                               {field.options.map((option) => (
                                 <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
@@ -249,17 +251,19 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
         </Grid>
       ))}
       {stateApp.showFieldModal && <MetaField columns={[]} category="Agreement" updateColumnSorting={addAgreementCustomData} />}
-      <Grid item>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.addDataButton}
-          startIcon={<AddIcon />}
-          onClick={() => setStateApp((stateApp) => ({ ...stateApp, showFieldModal: true }))}
-        >
-          Add Custom Data
-        </Button>
-      </Grid>
+      {stateApp.user?.rolePrivileges !== "READ_ONLY" && (
+        <Grid item>
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.addDataButton}
+            startIcon={<AddIcon />}
+            onClick={() => setStateApp((stateApp) => ({ ...stateApp, showFieldModal: true }))}
+          >
+            Add Custom Data
+          </Button>
+        </Grid>
+      )}
     </Grid>
   );
 }
