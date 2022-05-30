@@ -14,7 +14,23 @@ const AgreementsHeadCells = [
     label: "Agreement #",
     esKey: "shapeJson.properties.agreementNumber.keyword",
     options: {
-      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      setCellProps: () => ({
+        style: {
+          minWidth: "250px",
+          whiteSpace: "nowrap",
+          position: "sticky",
+          left: "0",
+          background: "white",
+          zIndex: 100
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          position: "sticky",
+          left: 0,
+          zIndex: 101
+        }
+      }),
       dbName: "shapeJson.properties.agreementNumber",
       sort: true,
       filter: true,
@@ -40,7 +56,23 @@ const AgreementsHeadCells = [
     label: "Agreement Name",
     esKey: "shapeJson.properties.agreementName.keyword",
     options: {
-      setCellProps: () => ({ style: { minWidth: "250px" } }),
+      setCellProps: () => ({
+        style: {
+          minWidth: "250px",
+          whiteSpace: "nowrap",
+          position: "sticky",
+          left: "0",
+          background: "white",
+          zIndex: 100
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          position: "sticky",
+          left: 0,
+          zIndex: 101
+        }
+      }),
       dbName: "shapeJson.properties.agreementName",
       sort: true,
       filter: true,
