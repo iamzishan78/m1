@@ -431,7 +431,10 @@ export default function SidePanel() {
   }, [panelType]);
 
   useEffect(() => {
-    if (panelType === "filter") setPanelTitle("Filters");
+    if (panelType === "filter") {
+      setPanelTitle("Filters");
+      setPanelButton(null)
+    }
   }, [panelType]);
 
   return panelItems ? (
