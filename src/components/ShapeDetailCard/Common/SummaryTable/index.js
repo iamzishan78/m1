@@ -66,13 +66,14 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
   useEffect(() => {
     let filteredKeys = tableData.concat(properties?.custom_data_arr || []);
     metaData?.forEach((md) => {
-      filteredKeys.push({
-        type: md.type,
-        key: md.name,
-        label: md.label,
-        options: md.dropdownOptions.map((o) => ({ ...o, label: o.value })),
-        isCustomData: true,
-      });
+      if (md.name in properties["custom_data"])
+        filteredKeys.push({
+          type: md.type,
+          key: md.name,
+          label: md.label,
+          options: md.dropdownOptions.map((o) => ({ ...o, label: o.value })),
+          isCustomData: true,
+        });
       tableTempProperties.custom_data[md.name] = properties.custom_data[md.name];
     });
     setFilteredTableData(filteredKeys);
