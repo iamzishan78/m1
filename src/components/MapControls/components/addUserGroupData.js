@@ -379,7 +379,7 @@ export default function AddUserGroupData(props) {
             <Checkbox
               icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
               checkedIcon={<CheckBoxIcon fontSize="small" />}
-              name="checkedI"
+              color="default"
             />
           }
           label="Auto-Add Source Data to Map Layers"
