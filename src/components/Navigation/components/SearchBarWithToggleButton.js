@@ -70,7 +70,7 @@ function GridIcon({ setStateApp }) {
       <Button
         className={mapGridCardActivated ? classes.selected : classes.gridOnIcon}
         onClick={() => {
-          setStateApp((stateApp) => ({ ...stateApp, selectedDataset: 'M1 Platform' }))
+          setStateApp((stateApp) => ({ ...stateApp, selectedDataset: { name: 'M1 Platform' } }))
           dispatch(toggleMapGridCardAtived());
         }}
       >

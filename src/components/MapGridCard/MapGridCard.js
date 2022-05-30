@@ -403,9 +403,7 @@ function MapGridCard(props) {
                 direction="row"
                 style={{ height: '100%', marginBottom: '20px' }}
               >
-
-
-                <Grid item md={2} style={{ backgroundColor: '#F2F2F2' }}>
+                {stateApp?.selectedDataset?.name === 'M1 Platform' && <Grid item md={2} style={{ backgroundColor: '#F2F2F2' }}>
                   <Typography variant="h6" component="h1" style={{ fontWeight: "bold", padding: '10px 0px 0px 20px' }}>
                     M1 Platform
                   </Typography>
@@ -416,6 +414,7 @@ function MapGridCard(props) {
                       const Icon = row.Icon
                       return (
                         <ListItem
+                          key={row.label}
                           button
                           selected={row.value === searchTapValue.value}
                           onClick={() => handleSearchPanelChange(row)}
@@ -429,9 +428,36 @@ function MapGridCard(props) {
                     }
                     )}
                   </List>
-                </Grid>
+                </Grid>}
 
-                <Grid item md={10}>
+                {stateApp?.selectedDataset && stateApp?.selectedDataset?.name !== 'M1 Platform' && <Grid item md={2} style={{ backgroundColor: '#F2F2F2' }}>
+                  <Typography variant="h6" component="h1" style={{ fontWeight: "bold", padding: '10px 0px 0px 20px' }}>
+                    {stateApp.selectedDataset.name}
+                  </Typography>
+
+                  <List component="nav" aria-label="main mailbox folders">
+
+                    {stateApp.selectedDataset.categories.map((row) => {
+                      const Icon = stateApp.selectedDataset.Icon
+                      return (
+                        <ListItem
+                          key={row.name}
+                          button
+                          selected={row.name === stateApp.selectedLayer.name}
+                          onClick={() => setStateApp((state) => ({ ...state, selectedLayer: row }))}
+                        >
+                          <ListItemIcon>
+                            <Icon />
+                          </ListItemIcon>
+                          <ListItemText primary={row.name} />
+                        </ListItem>
+                      )
+                    }
+                    )}
+                  </List>
+                </Grid>}
+
+                <Grid item md={stateApp?.selectedDataset ? 10 : 12}>
                   <div style={{ position: "relative" }} classes={classes.gridTables}>
                     {/* <TabPanels
                   value={searchTapValue.index}

@@ -17,6 +17,7 @@ import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem, } from ".
 import { AppContext } from "AppContext";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState, toggleMapGridCardAtived } from "actions";
+import { snapGridSideBarData } from "components/MapGridCard/components/data";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -75,31 +76,33 @@ function Datasets({ layerMap, headerButton }) {
   const dispatch = useDispatch();
 
   const datasets = useMemo(() => {
-    console.log(layerMap)
     const groupLayers = groupBy(layerMap, 'groupId')
     const datasets = layerMap.filter((layer) => layer.type === 'group' && layer.name !== 'Agreements')
     datasets.forEach((dataset) => {
-      dataset.name = groupLayers[dataset.id][0].fileName
+      dataset.fileName = groupLayers[dataset.id][0].fileName
+      dataset.categories = groupLayers[dataset.id]
       dataset.categoryCount = groupLayers[dataset.id].length
       dataset.Icon = FileDatasetIcon
     })
-    datasets.unshift({ name: 'M1 Platform', categoryCount: 6, Icon: DatabaseIcon })
+    datasets.unshift({ name: 'M1 Platform', categories: snapGridSideBarData, categoryCount: 6, Icon: DatabaseIcon })
     return datasets
   }, [layerMap])
 
-  const getBorderColor = useCallback((name) => (stateApp.selectedDataset === name ? '#05aff0' : '#263451'), [stateApp.selectedDataset])
+  const getBorderColor = useCallback((name) => (stateApp?.selectedDataset?.name === name ? '#05aff0' : '#263451'), [stateApp.selectedDataset])
 
-  const onItemClick = (name) => {
-    if (name === 'M1 Platform' && stateApp.selectedDataset !== name) {
-      // setStateApp((state) => ({
-      //   ...state,
-      //   layerGridCard: true,
-      // }));
+  const onItemClick = (dataset) => {
+    if (dataset.name === 'M1 Platform' && stateApp?.selectedDataset?.name !== dataset.name) {
       dispatch(toggleMapGridCardAtived());
-      // dispatch(setMapGridCardState({ mapGridCardActivated: true }));
+    } else {
+      setStateApp((state) => ({
+        ...state,
+        selectedLayer: dataset.categories[0],
+        layerGridCard: true,
+      }));
+      dispatch(setMapGridCardState({ mapGridCardActivated: true }));
     }
 
-    setStateApp((state) => ({ ...state, selectedDataset: name }))
+    setStateApp((state) => ({ ...state, selectedDataset: dataset }))
   }
 
   return (
@@ -115,8 +118,8 @@ function Datasets({ layerMap, headerButton }) {
         )}
       </StyledMenuSecondaryHeaderItem>
       <div className={classes.root}>
-        {datasets?.map(({ name, Icon, categoryCount }) => (
-          <Grid className="item" key={name} onClick={() => onItemClick(name)}>
+        {datasets?.map(({ name, Icon, categoryCount, ...rest }) => (
+          <Grid className="item" key={name} onClick={() => onItemClick({ name, Icon, categoryCount, ...rest })}>
             <Box borderColor={getBorderColor(name)} borderLeft={4} margin={1} marginLeft={0}>
               <Grid container direction="column" justifyContent="center" style={{ paddingLeft: '10px' }}>
                 <Grid item md={12}>
