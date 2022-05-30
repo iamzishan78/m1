@@ -75,9 +75,11 @@ function Datasets({ layerMap, headerButton }) {
   const dispatch = useDispatch();
 
   const datasets = useMemo(() => {
+    console.log(layerMap)
     const groupLayers = groupBy(layerMap, 'groupId')
     const datasets = layerMap.filter((layer) => layer.type === 'group' && layer.name !== 'Agreements')
     datasets.forEach((dataset) => {
+      dataset.name = groupLayers[dataset.id][0].fileName
       dataset.categoryCount = groupLayers[dataset.id].length
       dataset.Icon = FileDatasetIcon
     })

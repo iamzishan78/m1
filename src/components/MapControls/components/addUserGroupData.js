@@ -14,6 +14,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import shp from "shpjs";
 import { v4 as uuid } from "uuid";
 import { ADDFILE } from "../../../graphQL/useMutationAddFile";
@@ -27,6 +29,7 @@ import { uploadFileData } from "components/Shared/functions";
 import { BlockBlobClient } from "@azure/storage-blob";
 import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
 import { CREATE_JOB } from "graphQL/useMutationCreateJob";
+import { Box, Checkbox, FormControlLabel } from "@material-ui/core";
 
 const Alert = (props) => {
   return <MuiAlert elevation={5} variant="filled" {...props} />;
@@ -336,6 +339,13 @@ export default function AddUserGroupData(props) {
       <DialogTitle>Create a new Source</DialogTitle>
       <DialogContent dividers>
 
+        <Box fontWeight='bold'>
+          Source File Name
+        </Box>
+        <Typography variant="subtitle1" gutterBottom>
+          {groupName.trim().toLowerCase().replace(" ", "_") + ".geojson"}
+        </Typography>
+
         <TextField
           defaultValue={stateMapControls.fileUploadedContent.groupName}
           focused
@@ -363,6 +373,17 @@ export default function AddUserGroupData(props) {
             />
           )
         }
+
+        <FormControlLabel
+          control={
+            <Checkbox
+              icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+              checkedIcon={<CheckBoxIcon fontSize="small" />}
+              name="checkedI"
+            />
+          }
+          label="Auto-Add Source Data to Map Layers"
+        />
 
         {!stateMapControls.fileUploadedContent && (
           <TextField
