@@ -120,7 +120,7 @@ function Datasets({ layerMap, headerButton }) {
                 <Grid item md={12}>
                   <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ width: '100%' }}>
                     <Grid item style={{ display: 'flex', flexDirection: 'inline' }}>
-                      <Icon />
+                      <Icon fill="#506187" />
                       <Typography style={{ color: '#ffff' }}>{name}</Typography>
                     </Grid>
                     <Grid item className='actionIcons'>
