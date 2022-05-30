@@ -28,6 +28,8 @@ const useStyles = makeStyles(() => ({
   fieldsSection: {
     margin: "0px 0px",
     "& .MuiOutlinedInput-root": {
+      paddingTop: 0,
+      paddingBottom: 0,
       height: `46px !important`,
       borderRadius: "6px !important",
     },

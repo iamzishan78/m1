@@ -130,13 +130,16 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       "& .MuiAutocomplete-endAdornment": {
         right: "50px !important",
         "& .MuiAutocomplete-clearIndicator": {
+          // display: "none"
+        },
+        "& .MuiAutocomplete-popupIndicator": {
           display: "none"
-        }
+        },
       },
     },
     contactCardIcon: {
       position: "absolute",
-      right: "6px !important",
+      right: "12px !important",
       marginTop: "4px !important"
     },
     inputRoot: props.darkCard

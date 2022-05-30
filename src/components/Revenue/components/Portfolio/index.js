@@ -76,6 +76,7 @@ export default function Portfolio() {
               setFromDate={setFromDate}
               toDate={toDate}
               setToDate={setToDate}
+              isProperties={true}
             />
           </Grid>
           <Grid item xs={4} md={4}>

@@ -190,6 +190,7 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#D4E8F1",
       margin: "0 2px",
     },
+    "& .MuiTableHead-root:nth-child(1) .MuiButton-label": { minWidth: '103px' },
     "& .MuiTableHead-root": {
       "& th": {
         backgroundColor: "#F2F2F2",
@@ -3972,12 +3973,12 @@ function SubTable(props) {
   // }
 
 
-  if (props.header === "Deals" 
-      || props.header === "Activities"
-      || props.header === "Agreements"
-      || props.parent === "TractTable"
-      || props.parent === "TractInterestsTable"
-      ) {
+  if (props.header === "Deals"
+    || props.header === "Activities"
+    || props.header === "Agreements"
+    || props.parent === "TractTable"
+    || props.parent === "TractInterestsTable"
+  ) {
     // adds the print and export options in the Flow grid and the Activities grid
     if (props.targetLabel !== 'activitiesDashboard') {
       // options.print = true;

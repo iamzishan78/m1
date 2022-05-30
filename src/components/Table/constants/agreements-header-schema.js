@@ -225,7 +225,7 @@ const AgreementsHeadCells = [
           <IconButton
             size="small"
             color="primary"
-            style={{ backgroundColor: "#efefef" }}
+            style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
             onClick={(e) => {
               history.push(
                 `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,

@@ -44,6 +44,8 @@ export const useStyles = makeStyles((theme) => ({
     "& .MuiOutlinedInput-root": {
       height: `46px !important`,
       borderRadius: "6px !important",
+      paddingTop: `0 !important`,
+      paddingBottom: `0 !important`,
     },
   },
   gridStyle: {
