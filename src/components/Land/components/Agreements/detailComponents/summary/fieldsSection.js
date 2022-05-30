@@ -1,5 +1,6 @@
 import React, { useEffect, useState, Fragment, useContext } from "react";
 import moment from "moment";
+import { get } from "lodash";
 import { useLazyQuery } from "@apollo/client";
 import { Controller } from "react-hook-form";
 import { Grid, TextField, Button, Select, MenuItem, Tooltip, IconButton } from "@material-ui/core";
@@ -56,7 +57,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
           customData.push({
             ...meta,
             title: meta.label,
-            key: meta.name,
+            key: `custom_data.${meta.name}`,
             options: meta.dropdownOptions.map((o) => ({
               label: o.value,
               value: o.value,
@@ -166,9 +167,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               }}
                               multiple={false}
                               onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
-                              value={
-                                !field.isCustom ? agreementDetails?.[field.key] ?? "" : agreementDetails?.custom_data?.[field.key] ?? []
-                              }
                               disabled={field.disabled}
                             >
                               {field.options.map((option) => (
@@ -188,7 +186,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               }}
                               multiple={field.type === "multiselect"}
                               onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
-                              value={agreementDetails?.custom_data?.[field.key] ?? []}
+                              value={get(agreementDetails, `${field.key}`) ?? []}
                             >
                               {field.options.map((option) => (
                                 <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>

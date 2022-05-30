@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { set, get, orderBy } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import moment from "moment";
 import Select from "@material-ui/core/Select";
@@ -53,7 +54,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
   );
 }
 
-export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData }) {
+export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [] }) {
   const classes = summaryTableStyles();
   const dispatch = useDispatch();
   const [tableDataState, setTableDataState] = useState({});
@@ -65,7 +66,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
 
   useEffect(() => {
     let filteredKeys = tableData.concat(properties?.custom_data_arr || []);
-    metaData?.forEach((md) => {
+    orderBy(metaData, ["createdAt"], ["desc"]).forEach((md) => {
       if (md.name in properties["custom_data"])
         filteredKeys.push({
           type: md.type,
@@ -101,28 +102,36 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
     }
   }, [search]);
 
-  const onChange = (e, data, type) => {
+  const getKey = (data, type) => {
     const appendValue = type === "key" ? type : "";
-    setTableTempProperties({ ...tableTempProperties, [`${data.key}${appendValue}`]: e.target.value });
+    if (appendValue)
+      return `${data.key}.${appendValue}`;
+    return `${data.key}`;
+  }
+
+  const onChange = (e, data, type) => {
+    const obj = { ...tableTempProperties };
+    set(obj, getKey(data, type), e.target.value);
+    setTableTempProperties(obj);
   };
 
   const onKeyDown = (e, data, type) => {
     if (type === "value") {
-      if (data.isCustom) {
-        if (!tableTempProperties[`${data.key}key`]) {
+      if (data.isCustom || data.isCustomData) {
+        if (!get(tableTempProperties, `${data.key}key`) && !data.isCustomData) {
           dispatch(showErrorMessage("Please provide key value first"));
           return;
         } else {
-          updateCustomProperties(type, tableTempProperties[data.key], data.id);
+          updateCustomProperties(type, get(tableTempProperties, `${data.key}`), data.key);
         }
-      } else updateProperties(e, data.key, tableTempProperties[data.key], data.isCustom);
+      } else updateProperties(e, data.key, get(tableTempProperties, `${data.key}`), data.isCustom);
     } else {
-      const exists = filteredTableData.find((row) => row.key === tableTempProperties[`${data.key}key`] && row.id !== data.id);
+      const exists = filteredTableData.find((row) => row.key === get(tableTempProperties, `${data.key}key`) && row.id !== data.id);
       if (exists) {
         dispatch(showErrorMessage("Key with this name already exists"));
         return;
       }
-      updateCustomProperties(type, tableTempProperties[`${data.key}key`], data.id);
+      updateCustomProperties(type, get(tableTempProperties, `${data.key}key`), data.key);
     }
   };
 
@@ -132,6 +141,11 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
       setTableTempProperties({ ...tableTempProperties, [data.key]: data.isCustom ? data.value : properties[data.key] });
     } else setTableTempProperties({ ...tableTempProperties, [`${data.key}key`]: data.key });
   };
+
+  const checkFieldChange = (e, data, type, func) => {
+    if (data.isCustomData) func(e, { ...data, key: `custom_data.${data.key}` }, type);
+    else func(e, data, type);
+  }
 
   return (
     <Table className={classes.table} size="small" aria-label="unit table">
@@ -201,7 +215,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
               >
                 {tableDataState[data.key] ? (
                   <>
-                    {(data.type === "select" || data.type === "dropdown") && (
+                    {(data.type === "select" || data.type === "dropdown" || data.type === "multiselect") && (
                       <FormControl fullWidth margin="dense">
                         <Select
                           margin="dense"
@@ -212,15 +226,16 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           onClick={(e) => e.stopPropagation()}
                           onChange={(e) => {
                             e.keyCode = 13;
-                            const key = data.isCustomData ? `custom_data[${data.key}]` : data.key;
-                            tableTempProperties[key] = e.target.value;
-                            setTableTempProperties({ ...tableTempProperties });
+                            const key = data.isCustomData ? `custom_data.${data.key}` : data.key;
+                            set(tableTempProperties, key, e.target.value);
+                            setTableTempProperties(tableTempProperties);
                             updateProperties(e, key, e.target.value);
                           }}
                           onBlur={() => {
                             setTableDataState({});
                             setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] });
                           }}
+                          multiple={data.type === "multiselect"}
                         >
                           {data.options.map((option) => (
                             <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
@@ -231,11 +246,17 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                     {(data.type === "text" || data.type === "number" || data.type === "currency" || data.type === "comma-number") && (
                       <TableTextField
                         data={data}
-                        value={tableTempProperties[data.key]}
+                        value={data.isCustomData ? tableTempProperties.custom_data[data.key] : tableTempProperties[data.key]}
                         showMessage={tableDataState[data.key] === true}
-                        onChange={onChange}
-                        onKeyDown={onKeyDown}
-                        onBlur={onBlur}
+                        onChange={(e, data, type) => {
+                          checkFieldChange(e, data, type, onChange);
+                        }}
+                        onKeyDown={(e, data, type) => {
+                          checkFieldChange(e, data, type, onKeyDown);
+                        }}
+                        onBlur={(e, data, type) => {
+                          checkFieldChange(e, data, type, onBlur);
+                        }}
                         onWheel={(e) => e.target.blur()}
                         type="value"
                         InputProps={data.InputProps}
