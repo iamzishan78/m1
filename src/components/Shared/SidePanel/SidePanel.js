@@ -82,10 +82,11 @@ export default function SidePanel() {
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
-  const openAddLayer = () => {
+  const openManager = (type) => {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
-      addLayer: true,
+      [`${type === 'layer' ? 'addLayer' : 'manageSource'}`]: true,
+      [`${type === 'layer' ? 'manageSource' : 'addLayer'}`]: null,
       selectedLayer: null,
     }));
     setStateApp((stateApp) => ({
@@ -99,7 +100,7 @@ export default function SidePanel() {
   const panelButtons = {
     layer: {
       text: "Add Layer",
-      fn: openAddLayer,
+      fn: (type = 'layer') => openManager(type),
       icon: <AddLayerIcon />,
     },
   };

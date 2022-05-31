@@ -21,6 +21,7 @@ const MapControlsContextProvider = (props) => {
     heatmaps: null,
     selectedBaseMap: "",
     addLayer: false,
+    manageSource: false,
     editDraw: false,
     map: null,
     Draw: null,

@@ -4,6 +4,7 @@ import { get } from "lodash";
 
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import AddALayer from "components/MapControls/components/addALayer";
+import SourceManager from "components/MapControls/components/SourceManager";
 import LayerStyling from "components/MapControls/components/LayerStyling";
 import { AppContext } from "AppContext";
 
@@ -32,6 +33,7 @@ const Secondarypanel = () => {
   const classes = useStyles({ leftPixels });
   return (
     <div className={classes.root}>
+      {stateMapControls.manageSource && <SourceManager />}
       {stateMapControls.addLayer && <AddALayer />}
       {stateMapControls.selectedLayer && <LayerStyling layer={stateApp.selectedLayer} fileName={stateApp.selectedLayer.fileName} />}
     </div>

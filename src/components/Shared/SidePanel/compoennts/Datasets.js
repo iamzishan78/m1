@@ -111,7 +111,7 @@ function Datasets({ layerMap, headerButton }) {
         <ListItemText primary={'Datasets'} />
         {headerButton && (
           <StyledListItemSecondaryAction>
-            <Button onClick={headerButton.fn} color="secondary" variant="outlined" startIcon={headerButton.icon}>
+            <Button onClick={() => headerButton.fn('manageSource')} color="secondary" variant="outlined" startIcon={headerButton.icon}>
               Add Data
             </Button>
           </StyledListItemSecondaryAction>

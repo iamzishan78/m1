@@ -306,10 +306,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     filterLayers(value);
   };
   const secondaryPanelState = React.useMemo(() => {
-    if (stateMapControls.addLayer || stateMapControls.selectedLayer) {
+    if (stateMapControls.addLayer || stateMapControls.selectedLayer || stateMapControls.manageSource) {
       return true;
     } else return false;
-  }, [stateMapControls.addLayer, stateMapControls.selectedLayer]);
+  }, [stateMapControls.addLayer, stateMapControls.manageSource, stateMapControls.selectedLayer]);
 
   return (
     <div>
@@ -391,7 +391,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
               <ListItemText primary={title} />
               {headerButton && (
                 <StyledListItemSecondaryAction>
-                  <Button onClick={headerButton.fn} color="secondary" variant="outlined" startIcon={headerButton.icon}>
+                  <Button onClick={() => headerButton.fn()} color="secondary" variant="outlined" startIcon={headerButton.icon}>
                     {headerButton.text}
                   </Button>
                 </StyledListItemSecondaryAction>
