@@ -17,6 +17,7 @@ import UserList from "components/Shared/UserList";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import vf_currency from "components/Shared/valueformatters/vf_currency";
 import vf_number from "components/Shared/valueformatters/vf_number";
+import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
@@ -65,23 +66,16 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
   const [tableTempProperties, setTableTempProperties] = useState(properties);
 
   useEffect(() => {
-    let filteredKeys = tableData.concat(properties?.custom_data_arr || []);
-    orderBy(metaData, ["createdAt"], ["desc"]).forEach((md) => {
-      if (md.name in properties["custom_data"])
-        filteredKeys.push({
-          type: md.type,
-          key: md.name,
-          label: md.label,
-          options: md.dropdownOptions.map((o) => ({ ...o, label: o.value })),
-          isCustomData: true,
-        });
-      tableTempProperties.custom_data[md.name] = properties.custom_data[md.name];
+    const customMetaData = getCustomMetaFields(properties, metaData);
+    if (customMetaData.length === 0) return;
+    let filteredKeys = tableData.concat(customMetaData);
+    customMetaData.forEach(md => {
+      if (!md.isCustomData) {
+        set(tableTempProperties, md.key, md.value);
+        set(tableTempProperties, [`${md.key}key`], md.key);
+      }
     });
     setFilteredTableData(filteredKeys);
-    properties?.custom_data_arr?.forEach((data) => {
-      tableTempProperties[data.key] = data.value;
-      tableTempProperties[`${data.key}key`] = data.key;
-    });
     setTableTempProperties({ ...tableTempProperties });
     setTableDataState({});
   }, [properties, metaData]);
@@ -143,7 +137,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
   };
 
   const checkFieldChange = (e, data, type, func) => {
-    if (data.isCustomData) func(e, { ...data, key: `custom_data.${data.key}` }, type);
+    if (data.isCustomData) func(e, data, type);
     else func(e, data, type);
   }
 
@@ -222,14 +216,13 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           className={classes.select}
                           labelId="demo-simple-select-label"
                           id="demo-simple-select"
-                          value={data.isCustomData ? tableTempProperties.custom_data[data.key] : tableTempProperties[data.key]}
+                          value={get(tableTempProperties, `${data.key}`)}
                           onClick={(e) => e.stopPropagation()}
                           onChange={(e) => {
                             e.keyCode = 13;
-                            const key = data.isCustomData ? `custom_data.${data.key}` : data.key;
-                            set(tableTempProperties, key, e.target.value);
+                            set(tableTempProperties, data.key, e.target.value);
                             setTableTempProperties(tableTempProperties);
-                            updateProperties(e, key, e.target.value);
+                            updateProperties(e, data.key, e.target.value);
                           }}
                           onBlur={() => {
                             setTableDataState({});
@@ -246,7 +239,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                     {(data.type === "text" || data.type === "number" || data.type === "currency" || data.type === "comma-number") && (
                       <TableTextField
                         data={data}
-                        value={data.isCustomData ? tableTempProperties.custom_data[data.key] : tableTempProperties[data.key]}
+                        value={get(tableTempProperties, `${data.key}`)}
                         showMessage={tableDataState[data.key] === true}
                         onChange={(e, data, type) => {
                           checkFieldChange(e, data, type, onChange);
@@ -376,7 +369,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             data.type !== "custom" &&
                             data.type !== "currency" &&
                             data.type !== "comma-number" &&
-                            (data.isCustomData ? properties.custom_data[data.key] : data.value || properties[data.key] || "-")}
+                            (data.value || get(properties, `${data.key}`, "-"))}
                           {data.type === "currency" && (vf_currency(data.value) || vf_currency(properties[data.key]) || "-")}
                           {data.type === "comma-number" && (vf_number(data.value) || vf_number(properties[data.key]) || "-")}
                         </Grid>

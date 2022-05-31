@@ -100,7 +100,7 @@ export default function AgreementSummary(props) {
                 updateProperties={props.updateProperties}
                 updateCustomProperties={props.updateCustomProperties}
                 search={search}
-                metaData={metaDataRes?.getMetaData?.metaData}
+                metaData={metaDataRes}
               />
             </Grid>
             <Grid item>

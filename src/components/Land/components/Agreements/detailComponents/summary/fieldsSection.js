@@ -14,6 +14,7 @@ import keys from "components/Shared/SpreadsheetGrid/kit/keymap";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import MetaField from "components/Table/helpers/MetaField";
 import { copy } from "utils/helper";
+import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
 
 import { AppContext } from "AppContext";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
@@ -48,29 +49,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   }, []);
 
   useEffect(() => {
-    const metaData = metaDataRes?.getMetaData?.metaData;
-    const customData = [];
-    if (metaData && agreementDetails?.custom_data) {
-      Object.keys(agreementDetails?.custom_data).forEach((key) => {
-        const meta = metaData.find((m) => m.name === key);
-        if (meta) {
-          customData.push({
-            ...meta,
-            title: meta.label,
-            key: `custom_data.${meta.name}`,
-            options: meta.dropdownOptions.map((o) => ({
-              label: o.value,
-              value: o.value,
-            })),
-          });
-        } else if (agreementDetails?.custom_data_arr) {
-          const meta = agreementDetails.custom_data_arr.find((m) => m.key === key);
-          if (meta) {
-            customData.push({ ...meta, title: meta.key, label: meta.key, key: meta.key });
-          }
-        }
-      });
-    }
+    const customData = getCustomMetaFields(agreementDetails, metaDataRes);
     setFieldsList([...fieldsData(stateApp.user), ...customData]);
   }, [metaDataRes, agreementDetails]);
 
@@ -165,9 +144,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               InputLabelProps={{
                                 shrink: true,
                               }}
-                              multiple={false}
                               onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
                               disabled={field.disabled}
+                              value={get(agreementDetails, `${field.key}`, "")}
                             >
                               {field.options.map((option) => (
                                 <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
