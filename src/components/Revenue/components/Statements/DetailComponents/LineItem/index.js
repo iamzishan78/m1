@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import { Grid, Button } from "@material-ui/core";
 
-import NavHeader from "components/Revenue/components/Common/NavHeader";
 import PdfViewer from "components/Revenue/components/Statements/DetailComponents/LineItem/PdfViewer";
 import CheckDetailsEditableTable from "./CheckDetailsEditableTable";
 
@@ -56,16 +55,11 @@ export default function LineItem(props) {
     setSectionState(!showPdfSection);
   };
 
-  // useEffect(() => {
-  //   setCheckId(props.match.params.id)
-  // }, [props.match])
-  // const checkId = window.location.search.replace("?id=", '')
   const redirectHandler = () => {
     history.push(`/revenue/statement/details/${activeStatement?._id}`);
   }
 
   return (
-    // <NavHeader title={`${activeStatement?.checkNumber} - ${activeStatement?.payor["name"]}`} onClickFunc={redirectHandler}>
     <div className={classes.root}>
       <Grid container display="flex" direction="row" alignItems="center" justify="space-between">
         <Grid item>
@@ -88,6 +82,5 @@ export default function LineItem(props) {
         <CheckDetailsEditableTable parent="CheckDetailsTable" header="Check Details" showPdfSection={showPdfSection} checkId={props.checkId} />
       </div>
     </div>
-    // </NavHeader>
   );
 }

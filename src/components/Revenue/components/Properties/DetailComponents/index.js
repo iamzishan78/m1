@@ -216,7 +216,7 @@ export default function DetailComponents(props) {
   const [tab, setTab] = useState(0);
   const [refetchContacts, setRefetchContacts] = useState(false);
   const selectedTabRef = useRef(null);
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useState(true);
   const [anchorEl, setAnchorEl] = useState();
   const [isButtonScroll, setButtonScroll] = useState(false);
   const [propertyDetails, setProperty] = useState(null);
@@ -309,14 +309,25 @@ export default function DetailComponents(props) {
   const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
 
   const onUpdateMetaData = (data) => {
-    updateMetaOwner({
-      variables: {
-        descriptorObject: data.owner,
-        userId: stateApp.user.mongoId,
-        relatedObject: propertyDetails._id,
-        relatedObjectType: "Property",
-      },
-    });
+    if (data.owner)
+      updateMetaOwner({
+        variables: {
+          descriptorObject: data.owner,
+          userId: stateApp.user.mongoId,
+          relatedObject: propertyDetails._id,
+          relatedObjectType: "Property",
+        },
+      });
+    else {
+      updateProperty({
+        variables: {
+          property: {
+            _id: propertyId,
+            ...data
+          },
+        },
+      });
+    }
   };
 
   return (
@@ -337,7 +348,7 @@ export default function DetailComponents(props) {
               <div className={classes.tagsContainer}>
                 <div className={classes.highlighter}>
                   <Typography className={classes.highlight} variant="highlight">
-                    Division Order
+                    Property
                   </Typography>
                 </div>
                 <div className={classes.tags}>

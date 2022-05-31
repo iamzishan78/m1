@@ -226,7 +226,7 @@ export default function SidePanel() {
               });
             }
             if (!item.groupId) {
-              const showable = item.layerSettings.showable && item.identifier !== "Tracked Owners" && item.identifier !== "Land Grid";
+              const showable = item.layerSettings.showable && item.identifier !== "Tracked Owners" && item.identifier !== "Land Grid" && item.identifier !== "Agreement";
               layerAndGroups.push({
                 ...item,
                 visiable: item.layerSettings.visiable,

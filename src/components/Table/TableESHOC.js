@@ -348,7 +348,16 @@ export const TableESHOC = (Component) => {
             if (actions.includes('ifAreContacts')) {
                 const ifAreContacs = checkIfOwnersAreContactsDataRef?.current?.ifAreContacts || []
                 if (ifAreContacs.length > 0) {
-                    const contact = ifAreContacs.find((ifc) => ifc.globalOwner === data.id || ifc.globalOwner === data.globalOwnerId)
+                    let contact;
+                    if (!data.contactId)
+                        contact = ifAreContacs.find((ifc) => {
+                            if (ifc.globalOwner?.replace(/-/g, "") === data.id?.replace(/-/g, "") || ifc.globalOwner?.replace(/-/g, "") === data.globalOwnerId?.replace(/-/g, ""))
+                                return true;
+                            return false;
+                        });
+                    else {
+                        contact = ifAreContacs.find((ifc) => ifc._id === data.contactId);
+                    }
                     if (contact) {
                         data.isContact = contact.isContact;
                         data.entity = contact._id;
