@@ -11,7 +11,10 @@ export const FEATURES = {
     CALENDAR_OBLIGATIONS: 'CALENDAR_OBLIGATIONS',
     LANDGRIDSEARCH: 'landGridSearch',
     TRACTIMPORT: 'tractImport',
+    UNITIMPORT: 'unitImport',
     SHAPEELASTIC: 'ShapeFileImport',
     USERSNAP: "userSnap",
-    CONTACTGRIDEXPORT: 'ContactGridExport'
+    CONTACTGRIDEXPORT: 'ContactGridExport',
+    EDITABLE_WORKSPACE: 'editableWorkspaceName',
+    SHOWUSERPRIVILEGES: 'showUserPrivileges'
 }

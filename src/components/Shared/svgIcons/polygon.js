@@ -32,7 +32,7 @@ export default class DrawPolygon extends Component {
   };
 
   static defaultProps = {
-    height: "16px",
+    height: "20px",
     predefinedClassName: "data-ex-icons-polygon",
     viewBox: "0 0 22 18",
   };

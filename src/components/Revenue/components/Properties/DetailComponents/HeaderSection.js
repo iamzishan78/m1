@@ -98,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
   textField: {
     margin: "0px",
     "& .MuiOutlinedInput-input": {
-      padding: "5px",
+      padding: "13px",
     },
   },
   field: {
@@ -182,16 +182,6 @@ export default function HeaderSection(props) {
       refetchQueries: ["getProperty"],
       awaitRefetchQueries: true,
     });
-  };
-
-  const onKeyDown = (e, key, value) => {
-    if (e.key === "Escape") {
-      setValue(key, propertyDetails[key]);
-    }
-    if (e.key === "Enter") {
-      e.preventDefault();
-      updatePropertyData(key, value);
-    }
   };
 
   const handleUpdate = debounce((key, value) => {
@@ -286,7 +276,6 @@ export default function HeaderSection(props) {
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      // onKeyDown={(e) => onKeyDown(e, "ownerNumber", params.value)}
                       onBlur={(e) => handleUpdate("ownerNumber", e.target.value)}
                     />
                   )}
@@ -301,25 +290,6 @@ export default function HeaderSection(props) {
                 <div className={classes.label}>Owner</div>
               </Grid>
               <Grid item xs={9}>
-                {/* 
-                <Controller
-                  control={control}
-                  name='owner'
-                  defaultValue={{ _id: propertyDetails?.owner } || {}}
-                  render={(
-                    { onChange, value, ref },
-                  ) => (
-                    <AutocompEntityNamesList variant='outlined' margin='' size='' nameAutValue={value} withContactCard={true}
-                      setNameAutValue={(value) => {
-                        if (value?._id)
-                          onChange({ _id: value._id, name: value.name });
-                        else
-                          onChange({});
-                        handleUpdate('owner', { name: value?.name, _id: value?._id })
-                      }} />
-                  )}
-                /> */}
-
                 <Controller
                   control={control}
                   name="owner"
@@ -392,14 +362,16 @@ export default function HeaderSection(props) {
                       margin="normal"
                       id="date-picker-inline"
                       value={params.value ? params.value : null}
-                      onChange={(date) => {
+                      onChange={(date, e) => {
                         params.onChange(moment(date).toISOString());
+                        if (date?._isValid) {
+                          updatePropertyData("documentDate", moment(e).toISOString());
+                        }
                       }}
                       KeyboardButtonProps={{ "aria-label": "change date" }}
                       InputAdornmentProps={{ position: "start" }}
                       fullWidth
                       onBlur={(e) => {
-                        debugger;
                         updatePropertyData("documentDate", moment(e.target.value).toISOString());
                       }}
                     />
@@ -450,7 +422,6 @@ export default function HeaderSection(props) {
                                         ...stateApp,
                                         selectedContact: `${params?.value?._id}`,
                                       }));
-                                      // setEntity(propertyDetails?.owner)
                                     }
                                   }}
                                 >
@@ -506,7 +477,8 @@ export default function HeaderSection(props) {
                     <CountyField
                       value={params.value}
                       state={selectedState}
-                      onCountyChange={({ county }) => {
+                      onCountyChange={(selectedCounty) => {
+                        const county = selectedCounty?.county ?? "";
                         updatePropertyData("county", county);
                         setValue("county", county);
                       }}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Paper, Button, TableContainer, CircularProgress, IconButton, TextField } from "@material-ui/core";
 import SearchIcon from '@material-ui/icons/Search';
-import { Clear } from "@material-ui/icons";
 import CloseIcon from '@material-ui/icons/Close';
 import TableHOC from "components/Table/TableHOC";
 

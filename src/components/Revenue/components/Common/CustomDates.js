@@ -65,7 +65,7 @@ export default function Portfolio({
     if (isProperties) {
       handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
     } else {
-      handleDateTypeChange(CUSTOM_DATES.LAST_YEAR_TO_DATE);
+      handleDateTypeChange(CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH);
     }
     delete CUSTOM_DATES.THIS_WEEK;
     delete CUSTOM_DATES.LAST_WEEK;
@@ -115,7 +115,7 @@ export default function Portfolio({
           renderInput={(params) => (
             <TextField {...params} label="Date Range" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
           )}
-          defaultValue={isProperties ? CUSTOM_DATES.ALL_DATES : CUSTOM_DATES.LAST_YEAR_TO_DATE}
+          defaultValue={isProperties ? CUSTOM_DATES.ALL_DATES : CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH}
           disableListWrap
           id="custom-date-dropdown"
         />

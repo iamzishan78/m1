@@ -16,7 +16,6 @@ import debounce from "lodash/debounce";
 // import value formatters
 import joinAddress from "components/Shared/valueformatters/join-address.js";
 import { AppContext } from "AppContext";
-import { NavigationContext } from "components/Navigation/NavigationContext";
 
 const filter = createFilterOptions();
 
@@ -166,7 +165,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   const classes = useStyles();
   let history = useHistory();
 
-  const [_, setStateApp] = React.useContext(AppContext);
+  const [, setStateApp] = React.useContext(AppContext);
 
   const isItemLoaded = (index) => {
     if (!hasNextPage) {
