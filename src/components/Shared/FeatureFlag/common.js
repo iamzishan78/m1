@@ -15,5 +15,6 @@ export const FEATURES = {
     SHAPEELASTIC: 'ShapeFileImport',
     USERSNAP: "userSnap",
     CONTACTGRIDEXPORT: 'ContactGridExport',
-    EDITABLE_WORKSPACE: 'editableWorkspaceName'
+    EDITABLE_WORKSPACE: 'editableWorkspaceName',
+    SHOWUSERPRIVILEGES: 'showUserPrivileges'
 }

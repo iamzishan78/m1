@@ -11,6 +11,7 @@ export const GET_LOGGED_IN_USER = `
         name
         displayName
         adUserId
+        rolePrivileges
         }
       }
     }
