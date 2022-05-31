@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState, useRef } from "react";
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
@@ -13,16 +13,30 @@ import TableHeader from "components/Table/constants/agreements-header-schema";
 // Utilities
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 
 import debounce from "lodash/debounce";
 import { AppContext } from "AppContext";
 
 import { usetableStyles } from "../Styles";
+import CustomerViewCol from "../helpers/CustomerView";
+import MetaField from "../helpers/MetaField";
+import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
 
 const genericDataActions = ['tags', 'comments', 'tracks']
 function AgreementsTable(props) {
+  const defaultView = {
+    name: "All Agreements",
+    type: "Default",
+  };
+  const dispatch = useDispatch();
+  const Agreements = useSelector(({ session }) => session.userGridViewSettings);
+
+
+  const selectedFilters = useRef([]);
+  const [selectedGridView, setSelectedGridView] = useState(defaultView);
+
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
   const searchInput = useSelector(
@@ -56,6 +70,29 @@ function AgreementsTable(props) {
     });
     return hits
   }
+
+  const updateColumnSorting = (value) => {
+    console.log("selectedGridView : ", selectedGridView)
+    dispatch(
+      updateUserGridViewSettingAction.STARTED({
+        userGridViewSetting: {
+          gridView: selectedGridView._id,
+          gridViewPatch: {
+            filters: selectedFilters.current,
+            columns: value.map((col) => ({ name: col.name, display: col.display === "true" })),
+          },
+          user: stateApp.user?.mongoId,
+        },
+      })
+    );
+
+  };
+  //console.log("stateApp agrement", stateApp);
+
+  useEffect(() => {
+    console.log("here", Agreements);
+    setSelectedGridView(Agreements || defaultView);
+  }, [Agreements]);
 
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : []
@@ -93,16 +130,20 @@ function AgreementsTable(props) {
     // eslint-disable-next-line
   }, [props.initialFilters]);
 
+
+
   return (
     <Container
       maxWidth={false}
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
+      {stateApp.showFieldModal && <MetaField columns={props.columns} category="Agreement" updateColumnSorting={updateColumnSorting} />}
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
         columns={props.columns}
+        viewColumn={CustomerViewCol}
         rows={props.rows}
         total={false}
         addAble={{ type: "Tracts" }}
@@ -124,4 +165,4 @@ function AgreementsTable(props) {
   );
 }
 
-export default React.memo(TableESHOC(AgreementsTable), deepEqualObjects);
+export default React.memo(TableESHOC(AgreementsTable), deepEqualObjects)

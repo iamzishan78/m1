@@ -16,19 +16,20 @@ const AgreementsHeadCells = [
     options: {
       setCellProps: () => ({
         style: {
-          minWidth: "250px",
+          minWidth: "150px",
           whiteSpace: "nowrap",
           position: "sticky",
           left: "0",
           background: "white",
-          zIndex: 100
+          zIndex: 200
         }
       }),
       setCellHeaderProps: () => ({
         style: {
           position: "sticky",
+          minWidth: "150px",
           left: 0,
-          zIndex: 101
+          zIndex: 201
         }
       }),
       dbName: "shapeJson.properties.agreementNumber",
@@ -58,10 +59,10 @@ const AgreementsHeadCells = [
     options: {
       setCellProps: () => ({
         style: {
-          minWidth: "250px",
+          minWidth: "150px",
           whiteSpace: "nowrap",
           position: "sticky",
-          left: "0",
+          left: "149px",
           background: "white",
           zIndex: 100
         }
@@ -69,7 +70,8 @@ const AgreementsHeadCells = [
       setCellHeaderProps: () => ({
         style: {
           position: "sticky",
-          left: 0,
+          minWidth: "150px",
+          left: "149px",
           zIndex: 101
         }
       }),
