@@ -345,7 +345,6 @@ export default function M1neralHeaders(props) {
       // }
 
 
-
       filtered_data_to_send.push(return_obj)
     };
     filtered_data_to_send = filtered_data_to_send.filter((obj) => {

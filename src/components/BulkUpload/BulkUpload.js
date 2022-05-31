@@ -59,7 +59,7 @@ export default function BulkUpload(props) {
       case 'CONTACTS':
         filter = stateNav.bulkUploadFromMap ? false : true;
         break;
-      case 'CONTACTSWELLINTEREST':
+      case 'CONTACTS_WELL_INTEREST':
         filter = stateNav.bulkUploadFromMap ? false : true;
         break;
       case 'PARCELINTERESTS':
