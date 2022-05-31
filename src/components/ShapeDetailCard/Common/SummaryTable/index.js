@@ -212,12 +212,10 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                     {(data.type === "select" || data.type === "dropdown" || data.type === "multiselect") && (
                       <FormControl fullWidth margin="dense">
                         <Select
+                          id={`field-${index}`}
                           margin="dense"
                           className={classes.select}
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          value={get(tableTempProperties, `${data.key}`)}
-                          onClick={(e) => e.stopPropagation()}
+                          multiple={data.type === "multiselect"}
                           onChange={(e) => {
                             e.keyCode = 13;
                             set(tableTempProperties, data.key, e.target.value);
@@ -228,7 +226,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             setTableDataState({});
                             setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] });
                           }}
-                          multiple={data.type === "multiselect"}
+                          value={get(properties, data.key) ?? []}
                         >
                           {data.options.map((option) => (
                             <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
