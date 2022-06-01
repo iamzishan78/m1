@@ -142,6 +142,7 @@ export const setColumnsData = (
       };
     }
   });
+  console.log("columns in helper : ", columns)
   setColumns(columns);
 };
 

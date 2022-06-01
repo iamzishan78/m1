@@ -49,6 +49,8 @@ const CustomerViewCol = (props) => {
   const [items, setItems] = useState([]);
   const { updateColumns, columns, tableColumns, updateColumnSorting, selectedGridView } = props;
 
+  console.log("table columns : ", tableColumns)
+
   const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
 
   useEffect(() => {
