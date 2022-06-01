@@ -13,6 +13,7 @@ import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 // queries
 import { useApolloClient } from "@apollo/client";
 // import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
+// import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
 const useStyles = makeStyles({
   root: {
@@ -272,9 +273,9 @@ export default function M1neralHeaders(props) {
       //   (!return_obj["landgrid._id"] ||
       //     !return_obj["landgrid.name"])) {
       //   const { data: landGridGeoms } = await client.query({
-      //     query: GET_ES_SIMPLE_SEARCH,
+      //     query: GET_ES_PAGINATED_LIST,
       //     variables: {
-      //       index: "platformData:landgrid",
+      //       esIndex: "platformData:landgrid",
       //       filters: [
       //         ...[
       //           "landgrid.level1Type.State",
@@ -300,6 +301,10 @@ export default function M1neralHeaders(props) {
       //         { field: "level9Id.keyword", value: undefined },
       //         { field: "level10Id.keyword", value: undefined }
       //       ],
+      //       pagination: {
+      //         first: 25,
+      //         keep_alive: "1micros"
+      //       },
       //       sort: [],
       //     }
       //   });
