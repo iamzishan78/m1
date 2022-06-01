@@ -16,5 +16,6 @@ export const FEATURES = {
     USERSNAP: "userSnap",
     CONTACTGRIDEXPORT: 'ContactGridExport',
     EDITABLE_WORKSPACE: 'editableWorkspaceName',
-    SHOWUSERPRIVILEGES: 'showUserPrivileges'
+    SHOWUSERPRIVILEGES: 'showUserPrivileges',
+    AGREEMENT_LAYER: 'AgreementLayer'
 }
