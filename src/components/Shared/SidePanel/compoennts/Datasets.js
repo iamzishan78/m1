@@ -76,14 +76,24 @@ function Datasets({ layerMap, headerButton }) {
   const dispatch = useDispatch();
 
   const datasets = useMemo(() => {
-    const groupLayers = groupBy(layerMap, 'groupId')
-    const datasets = layerMap.filter((layer) => layer.type === 'group' && layer.name !== 'Agreements')
-    datasets.forEach((dataset) => {
-      dataset.fileName = groupLayers[dataset.id][0].fileName
-      dataset.categories = groupLayers[dataset.id]
-      dataset.categoryCount = groupLayers[dataset.id].length
-      dataset.Icon = FileDatasetIcon
+    const groupLayers = groupBy(layerMap, 'file')
+    // const groupLayers = groupBy(layerMap, 'id')
+    const datasets = []
+    Object.keys(groupLayers).forEach((file) => {
+      if (!['undefined', 'null'].includes(file)) {
+        const group = layerMap.filter((layer) => layer.type === 'group' && layer.id === groupLayers[file][0].groupId)
+        if (!['Agreements', 'Units'].includes(group.name))
+          datasets.push({ name: group?.name || groupLayers[file][0].name, fileName: groupLayers[file][0].fileName, categories: groupLayers[file], categoryCount: groupLayers[file].length, Icon: FileDatasetIcon })
+      }
     })
+
+    // const datasets = layerMap.filter((layer) => layer.type === 'group' && layer.name !== 'Agreements')
+    // datasets.forEach((dataset) => {
+    //   dataset.fileName = groupLayers[dataset.id][0].fileName
+    //   dataset.categories = groupLayers[dataset.id]
+    //   dataset.categoryCount = groupLayers[dataset.id].length
+    //   dataset.Icon = FileDatasetIcon
+    // })
     datasets.unshift({ name: 'M1 Platform', categories: snapGridSideBarData, categoryCount: 6, Icon: DatabaseIcon })
     return datasets
   }, [layerMap])
