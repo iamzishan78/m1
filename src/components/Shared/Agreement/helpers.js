@@ -32,9 +32,9 @@ export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
             ...meta,
             title: meta.label,
             key: `custom_data.${meta.name}`,
-            options: meta.dropdownOptions.map((o) => ({
-                label: o.value,
-                value: o.value,
+            options: meta.dropdownOptions.map((op) => ({
+                ...op,
+                label: op.value,
             })),
             isCustomData: true
         });
@@ -45,9 +45,9 @@ export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
             ...meta,
             title: meta.label,
             key: `custom_data.${meta.name}`,
-            options: meta.dropdownOptions.map((o) => ({
-                label: o.value,
-                value: o.value,
+            options: meta.dropdownOptions.map((op) => ({
+                ...op,
+                label: op.value,
             })),
             isCustomData: true
         });

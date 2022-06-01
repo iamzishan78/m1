@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { set, get, orderBy } from "lodash";
+import { set, get } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import moment from "moment";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 import { IconButton, Grid, Table, TableCell, TableBody, FormControl } from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -18,6 +16,8 @@ import CampaignNameField from "components/ContactDetailCard/components/FieldCont
 import vf_currency from "components/Shared/valueformatters/vf_currency";
 import vf_number from "components/Shared/valueformatters/vf_number";
 import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
+import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
@@ -209,31 +209,38 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
               >
                 {tableDataState[data.key] ? (
                   <>
-                    {(data.type === "select" || data.type === "dropdown" || data.type === "multiselect") && (
+                    {(data.type === "select" || data.type === "dropdown") && (
                       <FormControl fullWidth margin="dense">
-                        <Select
-                          id={`field-${index}`}
-                          margin="dense"
-                          className={classes.select}
-                          multiple={data.type === "multiselect"}
-                          onChange={(e) => {
-                            e.keyCode = 13;
-                            set(tableTempProperties, data.key, e.target.value);
-                            setTableTempProperties(tableTempProperties);
-                            updateProperties(e, data.key, e.target.value);
-                          }}
-                          onBlur={() => {
-                            setTableDataState({});
-                            setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] });
-                          }}
+                        <CustomFieldSelect
+                          fullWidth
+                          index={`field${index}`}
+                          dropdownOptions={data.options}
+                          column={data}
                           value={get(properties, data.key) ?? []}
-                        >
-                          {data.options.map((option) => (
-                            <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
-                          ))}
-                        </Select>
+                          onCustomKeyChange={(value) => {
+                            set(tableTempProperties, data.key, value);
+                            setTableTempProperties(tableTempProperties);
+                            updateProperties(null, data.key, value);
+                          }}
+                        />
                       </FormControl>
-                    )}{" "}
+                    )}
+                    {(data.type === "multiselect") && (
+                      <FormControl fullWidth margin="dense">
+                        <CustomFieldMultiSelect
+                          fullWidth
+                          index={`field${index}`}
+                          dropdownOptions={data.options}
+                          column={data}
+                          value={get(properties, data.key) ?? []}
+                          onCustomKeyChange={(value) => {
+                            set(tableTempProperties, data.key, value);
+                            setTableTempProperties(tableTempProperties);
+                            updateProperties(null, data.key, value);
+                          }}
+                        />
+                      </FormControl>
+                    )}
                     {(data.type === "text" || data.type === "number" || data.type === "currency" || data.type === "comma-number") && (
                       <TableTextField
                         data={data}
@@ -367,7 +374,9 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             data.type !== "custom" &&
                             data.type !== "currency" &&
                             data.type !== "comma-number" &&
+                            data.type !== "multiselect" &&
                             (data.value || get(properties, `${data.key}`, "-"))}
+                          {data.type === "multiselect" && get(properties, `${data.key}`, []).join(", ")}
                           {data.type === "currency" && (vf_currency(data.value) || vf_currency(properties[data.key]) || "-")}
                           {data.type === "comma-number" && (vf_number(data.value) || vf_number(properties[data.key]) || "-")}
                         </Grid>

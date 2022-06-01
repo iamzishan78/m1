@@ -15,6 +15,8 @@ import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoComple
 import MetaField from "components/Table/helpers/MetaField";
 import { copy } from "utils/helper";
 import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
+import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 import { AppContext } from "AppContext";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
@@ -135,42 +137,32 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                             />
                           )}
                           {field.type === "dropdown" && (
-                            <Select
-                              {...params}
-                              id={`field-${index}`}
-                              variant="outlined"
-                              margin="dense"
+                            <CustomFieldSelect
                               fullWidth
-                              InputLabelProps={{
-                                shrink: true,
+                              variant="outlined"
+                              index={`field-${index}`}
+                              dropdownOptions={field.options}
+                              column={field}
+                              onCustomKeyChange={(value) => {
+                                offClickHandler(field.key, value, field.isCustom)
                               }}
-                              onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
                               disabled={field.disabled}
                               value={get(agreementDetails, `${field.key}`, "")}
-                            >
-                              {field.options.map((option) => (
-                                <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
-                              ))}
-                            </Select>
+                            />
                           )}
                           {field.type === "multiselect" && (
-                            <Select
-                              {...params}
+                            <CustomFieldMultiSelect
                               id={`field-${index}`}
                               variant="outlined"
                               margin="dense"
                               fullWidth
-                              InputLabelProps={{
-                                shrink: true,
-                              }}
-                              multiple={field.type === "multiselect"}
-                              onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
+                              dropdownOptions={field.options}
+                              column={field}
                               value={get(agreementDetails, `${field.key}`) ?? []}
-                            >
-                              {field.options.map((option) => (
-                                <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
-                              ))}
-                            </Select>
+                              onCustomKeyChange={(value) => {
+                                offClickHandler(field.key, value, field.isCustom);
+                              }}
+                            />
                           )}
                         </Fragment>
                       );
