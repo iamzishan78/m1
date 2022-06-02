@@ -6,7 +6,7 @@ import { Controller } from "react-hook-form";
 import AutoCompleteShapeLayer from "components/Shared/Forms/Fields/AutoCompleteShapeLayer";
 
 
-function TractForm({ tract, tractValue, setSelectedShapeLayer, register, control, prefix = '' }) {
+function TractForm({ tract, tractValue, setSelectedShapeLayer, control, prefix = '' }) {
 
   return (
     <>
