@@ -160,7 +160,7 @@ const useStyles = makeStyles((theme) => ({
       alignItems: "center !important",
     },
     "& .MuiButton-text": {
-      padding: "5px 12px",
+      // padding: "5px 12px",
     },
     "& .Mui-disabled": {
       backgroundColor: "transparent",
@@ -197,8 +197,10 @@ const useStyles = makeStyles((theme) => ({
         zIndex: "auto",
         padding: (props) => (props.dense ? "10px 10px 10px 0px" : null),
         "& button": {
+          minWidth: 'max-content',
           "& .MuiButton-label": {
             textAlign: "left",
+            display: 'block'
           },
         },
       },
