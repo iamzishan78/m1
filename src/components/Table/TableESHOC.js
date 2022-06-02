@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useCallback, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import { Button, Tooltip, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -17,12 +17,17 @@ import { TRACKSBYOBJECTTYPE } from "graphQL/useQueryTracksByObjectType";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { AutoCompleteFilter } from "./AutoCompleteFilter";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
+import TableHeader from "components/Table/constants/agreements-header-schema";
 
 import { get } from "lodash";
 
 import { usetableStyles } from "./Styles";
 import { updateUserGridViewSettingAction, updateUserGridViewFiltersAction } from "store/actions/sessionActions";
 import { handleSelectedGridChange, setColumnDisplayAndFilter } from "./helpers";
+import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
+import { formattingGridView, sortColumns } from "utils/helper";
+import { th } from "date-fns/locale";
 
 
 export const TableESHOC = (Component) => {
@@ -30,6 +35,7 @@ export const TableESHOC = (Component) => {
         const dispatch = useDispatch();
         const classes = usetableStyles();
 
+        const [tableMeta, setTableMeta] = useState([]);
         const [columns, Columns] = useState([]);
         const [filters, setFilters] = useState([]);
         const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
@@ -38,7 +44,22 @@ export const TableESHOC = (Component) => {
         const [openDialog, setOpenDialog] = useState(null);
         const [clickedRow, setClickedRow] = useState();
 
-        const [tableMeta, setTableMeta] = useState([]);
+        const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
+        const GridViewModule = userGridViewSettings[`${tableMeta?.gridView?.category}s`]
+        const defaultView = {
+            name: `All ${tableMeta?.gridView?.category}`,
+            type: "Default",
+        };
+
+        const [selectedGridView, setSelectedGridView] = useState(defaultView);
+        const [gridViews, setGridViews] = useState(null);
+        const [metaDatas, setMetaDatas] = useState(null);
+        const [stateApp, setStateApp] = useContext(AppContext);
+
+        const selectedFilters = useRef([]);
+
+
+
 
         const [rows, setRows] = useState([]);
         // const [rows, Rows] = useState([]);
@@ -79,6 +100,10 @@ export const TableESHOC = (Component) => {
         const checkIfOwnersAreContactsDataRef = useRef();
         checkIfOwnersAreContactsDataRef.current = checkIfOwnersAreContactsData;
 
+        //Get Meta data to update Gridview for add custom fields
+        const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
+        const [getGridViews, { data: gridViewsData }] = useLazyQuery(GET_GRID_VIEWS);
+
         const activeSearchRef = useRef();
         const activeFiltersRef = useRef();
         const tableStateRef = useRef();
@@ -86,10 +111,94 @@ export const TableESHOC = (Component) => {
 
         const [dependencyUpdate, SetDependencyUpdate] = useState(false);
 
-        const [stateApp, setStateApp] = useContext(AppContext);
         const history = useHistory();
 
         const tableData = elasticData?.getESSimpleSearch || {}
+
+        useEffect(() => {
+            setSelectedGridView(GridViewModule || defaultView);
+        }, [GridViewModule]);
+
+        useEffect(() => {
+            if (tableMeta?.gridView) {
+                const category = tableMeta?.gridView.category
+                getMetaData({
+                    variables: {
+                        user: stateApp.user?.mongoId,
+                        category,
+                    },
+                });
+            }
+        }, [getMetaData, getGridViews, tableMeta]);
+
+        useEffect(() => {
+            if (gridViewsData?.getGridViews?.gridViews) {
+                setGridViews(gridViewsData.getGridViews.gridViews);
+
+            }
+        }, [gridViewsData]);
+
+
+        useEffect(() => {
+            if (metaDataRes?.getMetaData?.metaData) {
+                setMetaDatas(metaDataRes?.getMetaData?.metaData);
+
+            }
+        }, [metaDataRes]);
+
+        useEffect(() => {
+            if (selectedGridView && metaDatas) {
+                const interval = setInterval(() => {
+                    Columns((cols) => {
+                        if (cols?.length > 0) {
+                            const selectedData = JSON.parse(JSON.stringify(selectedGridView));
+                            setStateApp((state) => ({ ...state, selectedView: selectedData }));
+                            let filterColumns = cols.filter((col) => !metaDatas.find((meta) => meta.name === col.name) && col.label !== " ");
+                            let actionColumns = cols.filter((col) => col.label === " ");
+                            let columnsData = [...filterColumns, ...copy(metaDatas), ...actionColumns]
+                            let view = JSON.parse(JSON.stringify(selectedData));
+                            let viewColumns = view.columns.filter((col) => !actionColumns.find((aC) => aC.name === col.name));
+                            let viewActionColumns = view.columns.filter((col) => actionColumns.find((aC) => aC.name === col.name));
+                            view.columns = [...viewColumns, ...viewActionColumns]
+                            if (!isEmpty(view)) {
+                                view = formattingGridView(JSON.parse(JSON.stringify(view)));
+                                columnsData = handleSelectedGridChange(TableHeader, view, columnsData);
+                            }
+                            columnsData = sortColumns(columnsData, view);
+                            setColumnsData(columnsData)
+                            clearInterval(interval);
+                        }
+                        return cols
+                    })
+                }, 500)
+            }
+        }, [selectedGridView, metaDatas]);
+
+        useEffect(() => {
+            setSelectedGridView(GridViewModule || defaultView);
+        }, [GridViewModule]);
+
+        const updateColumnSorting = (value) => {
+            dispatch(
+                updateUserGridViewSettingAction.STARTED({
+                    userGridViewSetting: {
+                        module: `${tableMeta?.gridView.category}s`,
+                        gridView: selectedGridView._id,
+                        gridViewPatch: {
+                            filters: selectedFilters.current,
+                            columns: value.map((col) => ({ name: col.name, display: col.display === "true" })),
+                        },
+                        user: stateApp.user?.mongoId,
+                    },
+                })
+            );
+        };
+
+        const viewColumnProps = {
+            selectedGridView,
+            updateColumnSorting,
+        };
+        ////////Grid View Code ended
 
         useEffect(() => {
             if (constDataTracks?.tracksByObjectType) {
@@ -649,7 +758,7 @@ export const TableESHOC = (Component) => {
 
                 tableMeta={tableMeta}
                 setTableMeta={setTableMeta}
-
+                setFilters={setFilters}
                 options={options}
                 clickedRow={clickedRow}
 
@@ -665,6 +774,9 @@ export const TableESHOC = (Component) => {
                 onTableChange={onTableChange}
                 columns={columns}
                 setColumns={setColumns}
+
+                updateColumnSorting={updateColumnSorting}
+                viewColumnProps={viewColumnProps}
 
                 activeSearchRef={activeSearchRef}
                 activeFiltersRef={activeFiltersRef}

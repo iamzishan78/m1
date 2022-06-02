@@ -75,6 +75,7 @@ function AgreementsTable(props) {
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
       startPaginationAt: 10,
+      gridView: { category: "Agreement" },
       filters: [
         {
           field: "shapeJson.properties.type.keyword",
@@ -102,7 +103,7 @@ function AgreementsTable(props) {
   }, [props.initialFilters]);
 
 
-
+  console.log("columsn : ", props.columns)
 
   return (
     <Container
@@ -110,11 +111,11 @@ function AgreementsTable(props) {
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
-      {stateApp.showFieldModal && <MetaField columns={props.gridViewColumns} category="Agreement" updateColumnSorting={props.updateColumnSorting} />}
+      {stateApp.showFieldModal && <MetaField columns={props.columns} category="Agreement" updateColumnSorting={props.updateColumnSorting} />}
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
-        columns={props.gridViewColumns}
+        columns={props.columns}
         viewColumn={CustomerViewCol}
         viewColumnProps={props.viewColumnProps}
         rows={props.rows}
@@ -138,4 +139,4 @@ function AgreementsTable(props) {
   );
 }
 
-export default React.memo(TableESHOC(GridViewHOC(AgreementsTable, "Agreement")), deepEqualObjects)
+export default React.memo(TableESHOC(AgreementsTable, "Agreement"), deepEqualObjects)
