@@ -551,15 +551,19 @@ export const TableESHOC = (Component) => {
 
         const viewColumnsChange = (tableColumns) => {
             for (let i = 0; i < tableColumns.length; i++) {
-                if (tableColumns[i].display === "true" || tableColumns[i].display === true) {
-                    columns[i].options.display = true;
-                    if (columns[i].esKey && !columns[i].noFilter) {
-                        columns[i].options.filter = true;
+                if (columns[i]) {
+                    if (tableColumns[i].display === "true" || tableColumns[i].display === true) {
+                        columns[i].options.display = true;
+                        if (columns[i].esKey && !columns[i].noFilter) {
+                            columns[i].options.filter = true;
+                        }
+
+                    } else {
+                        columns[i].options.display = false;
+                        columns[i].options.filter = false;
+                        delete columns[i]?.options.filterOptions;
+
                     }
-                } else {
-                    columns[i].options.display = false;
-                    columns[i].options.filter = false;
-                    delete columns[i].options.filterOptions;
                 }
             }
             setColumnsData(columns);

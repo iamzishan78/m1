@@ -1,11 +1,11 @@
-import React, { useEffect, useContext, useState, useRef } from "react";
+import React, { useEffect, useContext } from "react";
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import moment from "moment";
 
 
-import { deepEqualObjects, copy, setStateIfDeepEqual } from "components/Shared/functions";
+import { deepEqualObjects, copy } from "components/Shared/functions";
 
 // Header Schemas
 import TableHeader from "components/Table/constants/agreements-header-schema";
@@ -13,7 +13,7 @@ import TableHeader from "components/Table/constants/agreements-header-schema";
 // Utilities
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 
 import debounce from "lodash/debounce";
@@ -22,32 +22,13 @@ import { AppContext } from "AppContext";
 import { usetableStyles } from "../Styles";
 import CustomerViewCol from "../helpers/CustomerView";
 import MetaField from "../helpers/MetaField";
-import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
-import { useLazyQuery } from "@apollo/client";
-import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
-import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
-import { isEmpty } from "lodash-es";
-import { formattingGridView, sortColumns } from "utils/helper";
-import { handleSelectedGridChange } from "../helpers";
+import GridViewHOC from "../../Shared/GridViewHOC";
 
 const genericDataActions = ['tags', 'comments', 'tracks']
 function AgreementsTable(props) {
-  const defaultView = {
-    name: "All Agreements",
-    type: "Default",
-  };
-  const dispatch = useDispatch();
-  const { Agreements } = useSelector(({ session }) => session.userGridViewSettings);
 
 
-  const selectedFilters = useRef([]);
-
-  const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
-
-  const [selectedGridView, setSelectedGridView] = useState(defaultView);
-  const [gridViews, setGridViews] = useState(null);
-  const [metaDatas, setMetaDatas] = useState(null);
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
 
   const classes = usetableStyles();
 
@@ -57,89 +38,6 @@ function AgreementsTable(props) {
   const { setESFilters } = props;
 
   const esFilters = props.esFilters ? props.esFilters : []
-
-  const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
-  const [getGridViews, { data: gridViewsData }] = useLazyQuery(GET_GRID_VIEWS);
-
-  const setColumns = (newState) => {
-    setStateIfDeepEqual(Columns, newState);
-  };
-
-  useEffect(() => {
-    return () => {
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        documentSearchQuery: "",
-      }));
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log("here", Agreements);
-    setSelectedGridView(Agreements || defaultView);
-  }, [Agreements]);
-
-  useEffect(() => {
-    getMetaData({
-      variables: {
-        user: stateApp.user?.mongoId,
-        category: "Agreement",
-      },
-    });
-
-  }, [getMetaData, getGridViews]);
-
-  useEffect(() => {
-    if (gridViewsData?.getGridViews?.gridViews) {
-      setGridViews(gridViewsData.getGridViews.gridViews);
-
-    }
-  }, [gridViewsData]);
-
-
-  useEffect(() => {
-    if (metaDataRes?.getMetaData?.metaData) {
-      setMetaDatas(metaDataRes?.getMetaData?.metaData);
-
-    }
-  }, [metaDataRes]);
-  // console.log("columns : ", columns)
-  console.log("propscolumns outside : ", props.columns)
-  useEffect(() => {
-    if (selectedGridView && metaDatas) {
-      const selectedData = JSON.parse(JSON.stringify(selectedGridView));
-      setStateApp((state, props) => {
-        return {
-          ...state,
-          selectedView: selectedData,
-        };
-      });
-
-      let filterColumns = props.columns.filter((col) => !metaDatas.find((meta) => meta.name === col.name));
-      console.log("propscolumns : ", props.columns)
-
-      let columnsData = JSON.parse(JSON.stringify([...filterColumns, ...metaDatas]));
-      for (let i = 0; i < metaDatas.length; i++) {
-        TableHeader.push(metaDatas[i]);
-      }
-
-      let view = JSON.parse(JSON.stringify(selectedData));
-      if (!isEmpty(view)) {
-        view = formattingGridView(JSON.parse(JSON.stringify(view)));
-        columnsData = handleSelectedGridChange(TableHeader, view, columnsData);
-      }
-
-      columnsData = sortColumns(columnsData, view);
-
-      setColumns(columnsData)
-
-
-
-      //console.log("columnsData : ", columnsData)
-      // setSelectedGridView(selectedData);
-    }
-  }, [selectedGridView, metaDatas, props.columns]);
-
 
   const setTableMeta = React.useMemo(
     () =>
@@ -166,33 +64,6 @@ function AgreementsTable(props) {
     return hits
   }
 
-  const updateColumnSorting = (value) => {
-    console.log("selectedGridView : ", selectedGridView)
-    dispatch(
-      updateUserGridViewSettingAction.STARTED({
-        userGridViewSetting: {
-          gridView: selectedGridView._id,
-          gridViewPatch: {
-            filters: selectedFilters.current,
-            columns: value.map((col) => ({ name: col.name, display: col.display === "true" })),
-          },
-          user: stateApp.user?.mongoId,
-        },
-      })
-    );
-
-  };
-
-  const viewColumnProps = {
-    selectedGridView,
-    updateColumnSorting,
-  };
-  //console.log("stateApp agrement", stateApp);
-
-  useEffect(() => {
-    console.log("here", Agreements);
-    setSelectedGridView(Agreements || defaultView);
-  }, [Agreements]);
 
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : []
@@ -239,13 +110,13 @@ function AgreementsTable(props) {
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
-      {stateApp.showFieldModal && <MetaField columns={props.columns} category="Agreement" updateColumnSorting={updateColumnSorting} />}
+      {stateApp.showFieldModal && <MetaField columns={props.gridViewColumns} category="Agreement" updateColumnSorting={props.updateColumnSorting} />}
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
-        columns={columns}
+        columns={props.gridViewColumns}
         viewColumn={CustomerViewCol}
-        viewColumnProps={viewColumnProps}
+        viewColumnProps={props.viewColumnProps}
         rows={props.rows}
         total={false}
         addAble={{ type: "Tracts" }}
@@ -267,4 +138,4 @@ function AgreementsTable(props) {
   );
 }
 
-export default React.memo(TableESHOC(AgreementsTable), deepEqualObjects)
+export default React.memo(TableESHOC(GridViewHOC(AgreementsTable, "Agreement")), deepEqualObjects)

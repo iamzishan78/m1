@@ -4105,7 +4105,6 @@ function SubTable(props) {
   };
 
   const CustomTableViewCol = (columnsProps) => {
-    console.log("columnsProps : ", columnsProps)
     if (props.header === "Documents" || props.header === 'Agreements') {
       const ViewColumn = props.viewColumn;
       return <ViewColumn {...columnsProps} {...props.viewColumnProps} tableColumns={props.columns} />;
