@@ -25,6 +25,7 @@ import {
   Typography,
   InputAdornment,
 } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useForm, Controller } from "react-hook-form";
@@ -84,9 +85,12 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: "normal !important",
     },
   },
+  qtrCalls: {
+    margin: "5px 0px"
+  }
 }));
 
-// const qtrOptions = ["E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
+const qtrOptions = ["E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
 
 function AddAgreementOwnerAndTractDialog(props) {
   const classes = useStyles();
@@ -321,6 +325,13 @@ function AddAgreementOwnerAndTractDialog(props) {
     return value && Number(value) !== Number(acres);
   };
 
+  const handleChangeQtr = (value, index) => {
+    const qtr = JSON.parse(JSON.stringify(tract?.qtrQtrSelection?.selectedQtr));
+    qtr[index] = value ?? "";
+    const newTract = { ...tract, qtrQtrSelection: { ...tract.qtrQtrSelection, selectedQtr: qtr } };
+    reset({ ...getValues(), tract: newTract });
+  }
+
   const autoCompleteList = dataAutoCompleteList?.autoCompleteList || [];
   return (
     <>
@@ -388,6 +399,53 @@ function AddAgreementOwnerAndTractDialog(props) {
 
             <TextField id="tractName" name="tract.tractName" style={{ display: "none" }} inputRef={register()} />
             <TextField id="tractId" name="tract.tractId" style={{ display: "none" }} inputRef={register()} />
+            <Grid container direction="row" spacing={1} className={classes.qtrCalls}>
+              <Grid item xs={3}>
+                <Autocomplete
+                  options={qtrOptions}
+                  getOptionLabel={(option) => option}
+                  value={tract?.qtrQtrSelection?.selectedQtr?.[0] ?? ""}
+
+                  onChange={(e, newInputValue) => {
+                    handleChangeQtr(newInputValue, 0);
+                  }}
+                  renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 1" size="small" className={classes.maxWidth} />}
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <Autocomplete
+                  options={qtrOptions}
+                  getOptionLabel={(option) => option}
+                  value={tract?.qtrQtrSelection?.selectedQtr?.[1] ?? ""}
+                  onChange={(e, newInputValue) => {
+                    handleChangeQtr(newInputValue, 1);
+                  }}
+                  renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 2" size="small" className={classes.maxWidth} />}
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <Autocomplete
+                  options={qtrOptions}
+                  getOptionLabel={(option) => option}
+                  value={tract?.qtrQtrSelection?.selectedQtr?.[2] ?? ""}
+                  onChange={(e, newInputValue) => {
+                    handleChangeQtr(newInputValue, 2);
+                  }}
+                  renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 3" size="small" className={classes.maxWidth} />}
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <Autocomplete
+                  options={qtrOptions}
+                  getOptionLabel={(option) => option}
+                  value={tract?.qtrQtrSelection?.selectedQtr?.[3] ?? ""}
+                  onChange={(e, newInputValue) => {
+                    handleChangeQtr(newInputValue, 3);
+                  }}
+                  renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 4" size="small" className={classes.maxWidth} />}
+                />
+              </Grid>
+            </Grid>
             <Controller
               as={TextField}
               control={control}
