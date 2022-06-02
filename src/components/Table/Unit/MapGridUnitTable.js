@@ -73,7 +73,7 @@ function MapGridUnitTable(props) {
     setTableMeta({
       addableName: "Unit",
       extendSearchQuery: searchInput,
-      searchFields: ["name", "_all"],
+      searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
       startPaginationAt: 25,
