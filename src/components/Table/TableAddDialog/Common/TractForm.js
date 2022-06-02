@@ -49,7 +49,7 @@ function TractForm({ tract, tractValue, setSelectedShapeLayer, control, prefix =
           InputLabelProps={{ shrink: true }} fullWidth disabled />
       </>}
 
-      <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}legalDescription`} label={"Full Legal Description"}
+      <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}legalDescription`} label={"Tract Legal Description"}
         InputLabelProps={{ shrink: true }} multiline rows={4} fullWidth disabled defaultValue={tract?.legalDescription || ''} />
     </>
   );
