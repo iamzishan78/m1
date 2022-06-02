@@ -17,7 +17,8 @@ import { setStateIfDeepEqual } from "components/Shared/functions";
 export const GridViewHOC = (Component, category = "") => {
     return function HOC(props) {
         const dispatch = useDispatch();
-        const { Agreements } = useSelector(({ session }) => session.userGridViewSettings);
+        const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
+        const GridViewModule = userGridViewSettings[`${category}s`]
         const defaultView = {
             name: `All ${category}`,
             type: "Default",
@@ -49,8 +50,8 @@ export const GridViewHOC = (Component, category = "") => {
         }, []);
 
         useEffect(() => {
-            setSelectedGridView(Agreements || defaultView);
-        }, [Agreements]);
+            setSelectedGridView(GridViewModule || defaultView);
+        }, [GridViewModule]);
 
         useEffect(() => {
             getMetaData({
@@ -110,8 +111,8 @@ export const GridViewHOC = (Component, category = "") => {
 
 
         useEffect(() => {
-            setSelectedGridView(Agreements || defaultView);
-        }, [Agreements]);
+            setSelectedGridView(GridViewModule || defaultView);
+        }, [GridViewModule]);
 
         const updateColumnSorting = (value) => {
             dispatch(
