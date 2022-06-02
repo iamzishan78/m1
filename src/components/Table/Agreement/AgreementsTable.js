@@ -32,6 +32,9 @@ function AgreementsTable(props) {
 
   const classes = usetableStyles();
 
+  const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
+  const GridViewModule = userGridViewSettings[`Agreements`]
+
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
   );
@@ -71,7 +74,8 @@ function AgreementsTable(props) {
     setTableMeta({
       // addableName: "Unit",
       extendSearchQuery: props.landSearchQuery || searchInput || '',
-      searchFields: ["name", "_all"],
+      selectedGridView: GridViewModule,
+      searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
       startPaginationAt: 10,
@@ -92,6 +96,11 @@ function AgreementsTable(props) {
     });
     // eslint-disable-next-line
   }, [searchInput, props.landSearchQuery, props.filterToggle]);
+
+  useEffect(() => {
+    props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView: GridViewModule, filters: [] }));
+    // eslint-disable-next-line
+  }, [GridViewModule]);
 
   useEffect(() => {
     props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);

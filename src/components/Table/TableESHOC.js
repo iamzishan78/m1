@@ -153,13 +153,21 @@ export const TableESHOC = (Component) => {
                         if (cols?.length > 0) {
                             const selectedData = JSON.parse(JSON.stringify(selectedGridView));
                             setStateApp((state) => ({ ...state, selectedView: selectedData }));
+                            // let metaColumns = cols.filter((col) => metaDatas.find((meta) => meta.name === col.name) && col.label !== " ");
+                            // debugger
+                            // if (metaColumns.length === metaDatas.length) {
+                            //     clearInterval(interval);
+                            //     return cols
+                            // }
                             let filterColumns = cols.filter((col) => !metaDatas.find((meta) => meta.name === col.name) && col.label !== " ");
                             let actionColumns = cols.filter((col) => col.label === " ");
                             let columnsData = [...filterColumns, ...copy(metaDatas), ...actionColumns]
                             let view = JSON.parse(JSON.stringify(selectedData));
-                            let viewColumns = view.columns.filter((col) => !actionColumns.find((aC) => aC.name === col.name));
-                            let viewActionColumns = view.columns.filter((col) => actionColumns.find((aC) => aC.name === col.name));
-                            view.columns = [...viewColumns, ...viewActionColumns]
+                            if (view.columns) {
+                                let viewColumns = view.columns.filter((col) => !actionColumns.find((aC) => aC.name === col.name));
+                                let viewActionColumns = view.columns.filter((col) => actionColumns.find((aC) => aC.name === col.name));
+                                view.columns = [...viewColumns, ...viewActionColumns]
+                            }
                             if (!isEmpty(view)) {
                                 view = formattingGridView(JSON.parse(JSON.stringify(view)));
                                 columnsData = handleSelectedGridChange(TableHeader, view, columnsData);
@@ -651,7 +659,7 @@ export const TableESHOC = (Component) => {
                     tableActions.changeESPage();
                     break;
                 case "viewColumnsChange":
-                    updateGridViewRedux(tableState)
+                    // updateGridViewRedux(tableState)
                     viewColumnsChange(tableState.columns);
                     break;
                 default:
