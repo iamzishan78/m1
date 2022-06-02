@@ -22,6 +22,7 @@ const MapControlsContextProvider = (props) => {
     selectedBaseMap: "",
     addLayer: false,
     manageSource: false,
+    manageLayer: false,
     editDraw: false,
     map: null,
     Draw: null,

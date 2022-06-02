@@ -95,6 +95,7 @@ function Datasets({ layerMap, headerButton }) {
     //   dataset.Icon = FileDatasetIcon
     // })
     datasets.unshift({ name: 'M1 Platform', categories: snapGridSideBarData, categoryCount: 6, Icon: DatabaseIcon })
+    setStateApp((state) => ({ ...state, datasets }));
     return datasets
   }, [layerMap])
 
@@ -136,7 +137,12 @@ function Datasets({ layerMap, headerButton }) {
                   <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ width: '100%' }}>
                     <Grid item style={{ display: 'flex', flexDirection: 'inline' }}>
                       <Icon fill="#506187" />
-                      <Typography style={{ color: '#ffff' }}>{name}</Typography>
+                      <Typography style={{
+                        color: '#ffff', textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        width: '254px'
+                      }}>{name}</Typography>
                     </Grid>
                     <Grid item className='actionIcons'>
                       <GridOnIcon className='actionIcon' />

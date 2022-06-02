@@ -7,6 +7,7 @@ import AddALayer from "components/MapControls/components/addALayer";
 import SourceManager from "components/MapControls/components/SourceManager";
 import LayerStyling from "components/MapControls/components/LayerStyling";
 import { AppContext } from "AppContext";
+import LayerManager from "components/MapControls/components/LayerManager";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -33,6 +34,7 @@ const Secondarypanel = () => {
   const classes = useStyles({ leftPixels });
   return (
     <div className={classes.root}>
+      {stateMapControls.manageLayer && <LayerManager />}
       {stateMapControls.manageSource && <SourceManager />}
       {stateMapControls.addLayer && <AddALayer />}
       {stateMapControls.selectedLayer && <LayerStyling layer={stateApp.selectedLayer} fileName={stateApp.selectedLayer.fileName} />}

@@ -91,7 +91,9 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
         ...stateMapControls,
         selectedLayer: layer,
         map: stateApp.map,
-        addLayer: false
+        addLayer: false,
+        manageSource: false,
+        manageLayer: false,
       }));
     }, 0)
   };

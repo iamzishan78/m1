@@ -136,6 +136,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
       ...stateMapControls,
       expandedPanel: !stateMapControls.expandedPanel,
       addLayer: false,
+      manageSource: false,
+      manageLayer: false,
     }));
   };
 
@@ -306,10 +308,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     filterLayers(value);
   };
   const secondaryPanelState = React.useMemo(() => {
-    if (stateMapControls.addLayer || stateMapControls.selectedLayer || stateMapControls.manageSource) {
+    if (stateMapControls.addLayer || stateMapControls.selectedLayer || stateMapControls.manageSource || stateMapControls.manageLayer) {
       return true;
     } else return false;
-  }, [stateMapControls.addLayer, stateMapControls.manageSource, stateMapControls.selectedLayer]);
+  }, [stateMapControls.addLayer, stateMapControls.manageSource, stateMapControls.selectedLayer, stateMapControls.manageLayer]);
 
   return (
     <div>

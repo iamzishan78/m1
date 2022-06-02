@@ -168,6 +168,8 @@ export default function SourceManager(props) {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       addLayer: false,
+      manageSource: false,
+      manageLayer: false,
     }));
   };
 

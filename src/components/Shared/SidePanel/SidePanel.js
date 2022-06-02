@@ -85,8 +85,8 @@ export default function SidePanel() {
   const openManager = (type) => {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
-      [`${type === 'layer' ? 'addLayer' : 'manageSource'}`]: true,
-      [`${type === 'layer' ? 'manageSource' : 'addLayer'}`]: null,
+      [`${type === 'manageLayer' ? 'manageLayer' : 'manageSource'}`]: true,
+      [`${type === 'manageLayer' ? 'manageSource' : 'manageLayer'}`]: null,
       selectedLayer: null,
     }));
     setStateApp((stateApp) => ({
@@ -100,7 +100,7 @@ export default function SidePanel() {
   const panelButtons = {
     layer: {
       text: "Add Layer",
-      fn: (type = 'layer') => openManager(type),
+      fn: (type = 'manageLayer') => openManager(type),
       icon: <AddLayerIcon />,
     },
   };
