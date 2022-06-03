@@ -32,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#FFFFF",
     color: "black",
   },
+  progress: {
+    marginLeft: "30px",
+    verticalAlign: "middle",
+  },
   listitem: {
     padding: "10px",
     backgroundColor: "#F6F8F9",
@@ -47,14 +51,6 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiPaper-elevation1": {
       boxShadow: "none !important",
     },
-  },
-  thumb: {
-    height: "16px",
-    maxWidth: "16px",
-  },
-  source: {
-    fontSize: "12px",
-    marginLeft: "0px",
   },
   title: {
     fontSize: "15px",
@@ -72,22 +68,10 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: "underline",
     },
   },
-  content: {
-    fontSize: "12px",
-    marginBottom: "2px",
-  },
-  date: {
-    fontSize: "10px",
-  },
   paper: {
     margin: "12px 8px",
     cursor: "pointer",
     boxShadow: 'none !important'
-  },
-  image: {
-    maxHeight: "72px",
-    maxWidth: "65px !important",
-    borderRadius: "4px",
   },
   gridStyle: {
     padding: "8px 0px",
@@ -95,16 +79,6 @@ const useStyles = makeStyles((theme) => ({
   paddingLeft10: {
     paddingLeft: "10px !important",
     paddingTop: "3px !important",
-  },
-  bold: {
-    fontWeight: "bold",
-  },
-  commentTime: {
-    marginLeft: "10px",
-    fontSize: "12px",
-  },
-  sysNotification: {
-    marginLeft: 0,
   },
   customTabs: {
     float: "right",
@@ -250,16 +224,17 @@ const Tasks = () => {
                         </Grid>
                       </Grid>
                       <Grid item xs={2} style={{ textAlign: "-webkit-center" }}>
-                        <Tooltip title="Archive notification">
+                        <Tooltip title="Task details">
                           <IconButton
                             onClick={(e) => {
                               e.stopPropagation();
+                              history.push(`/calendar/activities/${activity._id}`)
                             }}
                           >
                             <EventCalendarIcon />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title="Mark as unread">
+                        <Tooltip title="Close task">
                           <IconButton
                             onClick={(e) => {
                               e.stopPropagation();
