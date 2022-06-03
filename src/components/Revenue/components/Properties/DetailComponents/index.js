@@ -326,6 +326,8 @@ export default function DetailComponents(props) {
             ...data
           },
         },
+        refetchQueries: ["getProperty"],
+        awaitRefetchQueries: true,
       });
     }
   };
@@ -458,6 +460,7 @@ export default function DetailComponents(props) {
               targetSourceId={propertyId}
               setStateApp={setStateApp}
               ownerTitle="Approver"
+              isApproval={true}
             />
           </div>
         )}

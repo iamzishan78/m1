@@ -8,7 +8,7 @@ import CustomDates from "components/Revenue/components/Common/CustomDates";
 import DetailTabsSection from "components/Revenue/components/Portfolio/DetailTabsSection";
 import { useLazyQuery } from "@apollo/client";
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
-
+import moment from 'moment';
 const useStyles = makeStyles((theme) => ({
   actionBar: {
     backgroundColor: "#f7f7f7",
@@ -37,6 +37,10 @@ export default function Portfolio() {
   const [toDate, setToDate] = React.useState(null);
   const [monthsInterval, setMonths] = useState([]);
 
+  useEffect(() => {
+    setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
+    setToDate(moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD'));
+  }, []);
   const onChangeDates = (fromDate, toDate) => {
     const months = [];
     if (fromDate && toDate) {

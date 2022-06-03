@@ -114,7 +114,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
               }}
               style={{ display: "flex" }}
             >
-              <div className={classes.fieldLabel}>{field.label}</div>
+              <div className={classes.fieldLabel}>{field.key !== 'approvalStatus' && field.label}</div>
               {field.isCustom && editIconState[`${field.key}key`] && (
                 <Tooltip title={"Edit"} placement="top">
                   <CreateTwoToneIcon
@@ -233,7 +233,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     }}
                   />
                 )}
-                {field.type === "autocomplete" && (
+                {field.type === "autocomplete" && field.key !== 'approvalStatus' && (
                   <AutoCompleteTypeComponent
                     value={agreementDetails?.[field.key]}
                     shapeType="Agreement"
