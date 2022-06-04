@@ -554,7 +554,7 @@ function AddAgreementOwnerAndTractDialog(props) {
               InputLabelProps={{ shrink: true }} fullWidth onWheel={(e) => e.target.blur()} />
           </Grid>
 
-          <Grid container direction="row" spacing={2}>
+          {/* <Grid container direction="row" spacing={2}>
             <Grid item xs={3}>
               <Autocomplete
                 options={qtrOptions}
@@ -600,7 +600,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                 renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 4" size="small" className={classes.maxWidth} />}
               />
             </Grid>
-          </Grid>
+          </Grid> */}
 
           <Grid container direction="row" spacing={2} >
             <Grid item xs={6} >

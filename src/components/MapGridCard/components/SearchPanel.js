@@ -2,7 +2,7 @@ import React from "react";
 
 import Grid from '@material-ui/core/Grid';
 import MapGridCardSearch from "./MapGridCardSearch";
-import SearchByTypeSelectField from "./SearchByTypeSelectField";
+// import SearchByTypeSelectField from "./SearchByTypeSelectField";
 
 
 const SearchPanel = ({ value, ativateSearchPanel, ...rest }) => {
@@ -10,9 +10,9 @@ const SearchPanel = ({ value, ativateSearchPanel, ...rest }) => {
     return (
         <>
             <Grid container direction="row" spacing={2}>
-                <Grid item>
+                {/* <Grid item>
                     <SearchByTypeSelectField value={value}  {...rest} backgroundColor='#ffffff' />
-                </Grid>
+                </Grid> */}
                 <Grid item>
                     <MapGridCardSearch
                         ativateSearchPanel={ativateSearchPanel}
