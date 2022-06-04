@@ -21,7 +21,7 @@ export default function InviteUserDialog(props) {
   const [displayName, setName] = useState("");
   const [emails, setEmailAddress] = useState("");
   const [role, setUserRole] = useState("USER");
-  const [rolePrivileges, setRolePrivileges] = useState(false);
+  const [rolePrivileges, setRolePrivileges] = useState("ADD_OR_EDIT");
   const [lastLogin, setLastLogin] = useState();
   const [addUser] = useMutation(ADDUSER, {
     onCompleted: () => {
@@ -191,17 +191,17 @@ export default function InviteUserDialog(props) {
             </Grid>
 
             <FeatureFlag feature={FEATURES.SHOWUSERPRIVILEGES}>
-            <Grid item xs={12}>
-              <h3>User Privileges</h3>
-              <Select
-                fullWidth
-                value={rolePrivileges}
-                onChange={e => setRolePrivileges(e.target.value)}
-              >
-                <MenuItem value="ADD_OR_EDIT">Add/Edit</MenuItem>
-                <MenuItem value="READ_ONLY">Read Only</MenuItem>
-              </Select>
-            </Grid>
+              <Grid item xs={12}>
+                <h3>User Privileges</h3>
+                <Select
+                  fullWidth
+                  value={rolePrivileges}
+                  onChange={e => setRolePrivileges(e.target.value)}
+                >
+                  <MenuItem value="ADD_OR_EDIT">Add/Edit</MenuItem>
+                  <MenuItem value="READ_ONLY">Read Only</MenuItem>
+                </Select>
+              </Grid>
             </FeatureFlag>
 
           </FormControl>
