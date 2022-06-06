@@ -4105,7 +4105,7 @@ function SubTable(props) {
   };
 
   const CustomTableViewCol = (columnsProps) => {
-    if (props.header === "Documents" || props.header === 'Agreements' || props.parent === 'TractTable') {
+    if (props.viewColumn) {
       const ViewColumn = props.viewColumn;
       return <ViewColumn {...columnsProps} {...props.viewColumnProps} tableColumns={props.columns} />;
     } else {
