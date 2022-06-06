@@ -527,7 +527,7 @@ MetadataDrawer.defaultProps = {
   commentsWidth: "600px",
   viewAllDocuments: false,
   ownerTitle: "Owner",
-  ownerPlaceHolder: "Assign Owner",
+  ownerPlaceHolder: "Assign Approver",
   descriptionKey: "metaDescription",
   isApproval: false,
   data: {}
