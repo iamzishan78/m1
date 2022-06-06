@@ -50,7 +50,8 @@ export default function AgreementDetailCard(props) {
   useEffect(() => {
     return history.listen((location) => {
       console.log(`You changed the page to: ${location.pathname}`);
-      if (!properties?.agreementNumber && !location.pathname.includes(uniObj._id)) {
+      if (!properties?.agreementNumber && !location.
+        includes(uniObj._id)) {
         setStateApp((state) => ({
           ...state,
           selectedShape: null,
@@ -163,7 +164,7 @@ export default function AgreementDetailCard(props) {
     // }
     properties[type] = value;
     properties.custom_data = {};
-    properties.custom_data_arr.forEach((data) => {
+    properties.custom_data_arr?.forEach((data) => {
       properties.custom_data[data.key] = data.value;
     });
     const customLayer = {};
