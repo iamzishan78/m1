@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     margin: "12px 8px",
     cursor: "pointer",
-    boxShadow: 'none !important'
+    boxShadow: "none !important",
   },
   gridStyle: {
     padding: "8px 0px",
@@ -112,13 +112,10 @@ const Tasks = () => {
   const [getAllActivities, { data, loading }] = useLazyQuery(GETALLACTIVITIES, {
     fetchPolicy: `network-only`,
   });
-  const [updateActivityMutation] = useMutation(
-    UPDATEACTIVITY,
-    {
-      refetchQueries: ["getAllActivities"],
-      awaitRefetchQueries: true,
-    }
-  );
+  const [updateActivityMutation] = useMutation(UPDATEACTIVITY, {
+    refetchQueries: ["getAllActivities"],
+    awaitRefetchQueries: true,
+  });
   const classes = useStyles();
   const [tab, setTab] = useState(0);
 
@@ -217,7 +214,7 @@ const Tasks = () => {
                               {activity.dateTime
                                 ? moment
                                     .parseZone(new Date(+activity.dateTime))
-                                    .format("mm/DD/YYYY hh:mm:ssa")
+                                    .format("M/DD/YYYY hh:mm:ssa")
                                 : "N/A"}
                             </span>
                           </Grid>
@@ -228,7 +225,9 @@ const Tasks = () => {
                           <IconButton
                             onClick={(e) => {
                               e.stopPropagation();
-                              history.push(`/calendar/activities/${activity._id}`)
+                              history.push(
+                                `/calendar/activities/${activity._id}`
+                              );
                             }}
                           >
                             <EventCalendarIcon />
