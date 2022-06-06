@@ -36,6 +36,7 @@ const AgreementsHeadCells = [
       sort: true,
       filter: true,
       customRender: (value, tableMeta, updateValue) => {
+        console.log("tableMeta rowdata : ", tableMeta.rowData)
         return (
           <p
             onClick={(e) => {

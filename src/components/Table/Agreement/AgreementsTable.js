@@ -15,6 +15,8 @@ import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/a
 
 import { useSelector } from "react-redux";
 
+import { useMutation } from "@apollo/client";
+
 
 import debounce from "lodash/debounce";
 import { AppContext } from "AppContext";
@@ -22,12 +24,15 @@ import { AppContext } from "AppContext";
 import { usetableStyles } from "../Styles";
 import CustomerViewCol from "../helpers/CustomerView";
 import MetaField from "../helpers/MetaField";
+import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 
 const genericDataActions = ['tags', 'comments', 'tracks']
 function AgreementsTable(props) {
 
 
   const [stateApp] = useContext(AppContext);
+
+  const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
   const classes = usetableStyles();
 
@@ -114,6 +119,36 @@ function AgreementsTable(props) {
     // eslint-disable-next-line
   }, [props.initialFilters]);
 
+  const onCustomKeyChange = (value = null, index, key) => {
+    debugger
+    const rows = JSON.parse(JSON.stringify(props.rows));
+    rows[index].custom_data = {
+      ...props.rows[index].custom_data,
+      [`${key}`]: value,
+    };
+    props.setRows(rows);
+
+    const customLayer = {
+      shapeJson: {
+        ...props.rows[index].shapeJson,
+        properties: {
+          ...props.rows[index].shapeJson.properties,
+          custom_data: { [`${key}`]: value },
+        }
+      }
+    }
+
+    console.log(customLayer)
+    // updateCustomLayer({
+    //   variables: {
+    //     customLayerId: props.rows[index]._id,
+    //     customLayer: customLayer
+    //   },
+    //   refetchQueries: ["customLayer"],
+    // });
+
+  };
+
 
   console.log("columsn : ", props.columns)
 
@@ -140,6 +175,7 @@ function AgreementsTable(props) {
         orderByTracks={false}
         startPaginationAt={null}
         onTableChange={props.onTableChange}
+        onCustomKeyChange={onCustomKeyChange}
         options={{
           ...props.options,
           ...props.customOptions,

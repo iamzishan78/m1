@@ -141,7 +141,6 @@ export const TableESHOC = (Component) => {
                         const selectedData = JSON.parse(JSON.stringify(selectedGridView));
                         setStateApp((state) => ({ ...state, selectedView: selectedData }));
 
-                        debugger
                         let filterColumns = cols.filter((col) => !metaDatas.find((meta) => meta.name === col.name) && ![" ", "Tags", "Comments"].includes(col.label));
                         let actionColumns = cols.filter((col) => [" ", "Tags", "Comments"].includes(col.label));
 
@@ -149,9 +148,11 @@ export const TableESHOC = (Component) => {
                         actionColumns = actionColumns.map(aC => ({ ...aC, options: { ...aC.options, viewColumns: false } }))
 
                         let columnsData = [...filterColumns, ...copy(metaDatas), ...actionColumns]
+
+
+
                         let view = JSON.parse(JSON.stringify(selectedData));
                         if (view.columns) {
-                            debugger
                             let viewColumns = view.columns.filter((col) => !actionColumns.find((aC) => aC.name === col.name));
                             let viewActionColumns = view.columns.filter((col) => actionColumns.find((aC) => aC.name === col.name));
                             // if (viewActionColumns.length === 0) {
@@ -169,7 +170,11 @@ export const TableESHOC = (Component) => {
                         columnsData = sortColumns(columnsData, view);
                         setColumnsData(columnsData)
                         // clearInterval(interval);
+
                     }
+
+
+
                     return cols
                 })
             }
@@ -365,6 +370,15 @@ export const TableESHOC = (Component) => {
             }
 
             console.log(tableCols)
+
+            // shift _id to the first Place
+
+            if (tableCols[0].name !== "_id") {
+                let iD = tableCols.find(cD => cD.name === '_id')
+                tableCols = tableCols.filter(cD => cD.name !== "_id");
+                tableCols.unshift(iD);
+
+            }
             setColumns(tableCols);
         };
 
