@@ -38,6 +38,8 @@ import proj4 from "proj4";
 import conus from "../../Shared/constants/nadgrids/conus.png";
 import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 import { useHistory } from "react-router-dom";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 
 const GCS_North_American_1927 =
   'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
@@ -585,12 +587,25 @@ export default function AddLayer(props) {
                                 )}
 
                                 {
-                                  (layer.layerName === 'Parcels' || layer.layerName === 'Units') &&
-                                  <ListItemSecondaryAction>
-                                    <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/${layer.layerName === 'Parcels' ? 'tracts' : 'units'}`); }}>
-                                      <UploadIcon opacity="1.0" small />
-                                    </IconButton>
-                                  </ListItemSecondaryAction>
+                                  (layer.layerName === 'Units') &&
+                                  <FeatureFlag feature={FEATURES.UNITIMPORT} >
+                                    <ListItemSecondaryAction>
+                                      <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/units`); }}>
+                                        <UploadIcon opacity="1.0" small />
+                                      </IconButton>
+                                    </ListItemSecondaryAction>
+                                  </FeatureFlag>
+                                }
+
+                                {
+                                  (layer.layerName === 'Parcels') &&
+                                  <FeatureFlag feature={FEATURES.TRACTIMPORT} >
+                                    <ListItemSecondaryAction>
+                                      <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/tracts`); }}>
+                                        <UploadIcon opacity="1.0" small />
+                                      </IconButton>
+                                    </ListItemSecondaryAction>
+                                  </FeatureFlag>
                                 }
 
                                 {layer.layerType === "file layer" && (
