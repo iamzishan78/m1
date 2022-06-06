@@ -63,7 +63,7 @@ function AgreementsTable(props) {
     setTableMeta({
       // addableName: "Unit",
       extendSearchQuery: props.landSearchQuery || searchInput || '',
-      searchFields: ["name", "_all"],
+      searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
       startPaginationAt: 10,
