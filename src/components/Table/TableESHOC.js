@@ -315,7 +315,10 @@ export const TableESHOC = (Component) => {
                         },
                         filterOptions: {
                             display: (filterList, onChange, index, column) => {
-                                column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
+                                if (!TableHeader.find((el) => el.name === column.name)) {
+                                    column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
+                                } else
+                                    column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
                                 return (
                                     <AutoCompleteFilter
                                         esIndex={esIndex}
@@ -368,8 +371,6 @@ export const TableESHOC = (Component) => {
                     }
                 });
             }
-
-            console.log(tableCols)
 
             // shift _id to the first Place
 
@@ -537,7 +538,7 @@ export const TableESHOC = (Component) => {
                 },
             };
             tableState.filterList.forEach((val, index) => {
-                if (val.length > 0) {
+                if (val.length > 0 && columns[index]) {
                     if (columns[index].custom?.isDate) {
                         const filterData = stateApp.filtersData[columns[index].name];
                         const data = filterData.find(f => f.key === val[0] || f.key_as_string === val[0])

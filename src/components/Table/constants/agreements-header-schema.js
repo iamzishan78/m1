@@ -36,7 +36,6 @@ const AgreementsHeadCells = [
       sort: true,
       filter: true,
       customRender: (value, tableMeta, updateValue) => {
-        console.log("tableMeta rowdata : ", tableMeta.rowData)
         return (
           <p
             onClick={(e) => {
@@ -142,11 +141,15 @@ const AgreementsHeadCells = [
   {
     name: "agreementDate",
     label: "Agmt Date",
-    esKey: "shapeJson.properties.agreementDate.keyword",
+    esKey: "shapeJson.properties.agreementDate",
     options: {
       dbName: "shapeJson.properties.agreementDate",
       sort: true,
       filter: true,
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
     },
   },
   {
@@ -246,7 +249,7 @@ const AgreementsHeadCells = [
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
-    options: { sort: true, filter: true },
+    options: { display: true, sort: true, filter: true },
   },
   {
     name: "mapFlyTo",

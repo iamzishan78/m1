@@ -147,7 +147,7 @@ const iconOptions = [
   }
 ];
 
-const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
+const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPrefix = 'custom_data', customDataPostfix = '' }) => {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState("new");
   const [metaData, setMetaData] = useState(null);
@@ -186,8 +186,8 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
     }
   }, [stateApp.selectedMeta]);
 
-  const [addMetaData, {}] = useMutation(ADD_META_DATA);
-  const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
+  const [addMetaData, { }] = useMutation(ADD_META_DATA);
+  const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
   const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(
     GET_ALL_LIBRARY_META_DATA
   );
@@ -249,8 +249,8 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
             esKey: esKey
               ? esKey
               : values.type === "dropdown"
-              ? `custom_data.${name}`
-              : `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}`,
+                ? `${customDataPrefix}.${name}${customDataPostfix}`
+                : `${customDataPrefix}.${values.title.replace(/ /g, "_").toLowerCase()}${customDataPostfix}`,
             options: {
               display: false,
               filter: true,

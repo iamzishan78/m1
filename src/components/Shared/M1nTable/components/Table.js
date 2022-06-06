@@ -4043,7 +4043,8 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    if (props.header === "Contacts" || props.header === "Documents") {
+    console.log("header : ", props.header)
+    if (props.header === "Contacts" || props.header === "Documents" || props.header === "Agreements") {
       const HeaderComponent = props.headerComponent;
       return <HeaderComponent {...props.headerProps} />;
     }
@@ -4105,7 +4106,7 @@ function SubTable(props) {
   };
 
   const CustomTableViewCol = (columnsProps) => {
-    if (props.viewColumn) {
+    if (props.header === "Documents" || props.header === 'Agreements' || props.parent === 'TractTable') {
       const ViewColumn = props.viewColumn;
       return <ViewColumn {...columnsProps} {...props.viewColumnProps} tableColumns={props.columns} />;
     } else {

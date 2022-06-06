@@ -3,9 +3,11 @@ import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import moment from "moment";
+import Agreements from "components/Shared/svgIcons/agreements";
 
 
 import { deepEqualObjects, copy } from "components/Shared/functions";
+import { HeaderComponent } from "components/Table/helpers";
 
 // Header Schemas
 import TableHeader from "components/Table/constants/agreements-header-schema";
@@ -83,6 +85,7 @@ function AgreementsTable(props) {
       // addableName: "Unit",
       extendSearchQuery: props.landSearchQuery || searchInput || '',
       selectedGridView: GridViewModule || defaultView,
+      customDataESKey: 'shapeJson.properties.custom_data',
       searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
@@ -120,7 +123,6 @@ function AgreementsTable(props) {
   }, [props.initialFilters]);
 
   const onCustomKeyChange = (value = null, index, key) => {
-    debugger
     const rows = JSON.parse(JSON.stringify(props.rows));
     rows[index].custom_data = {
       ...props.rows[index].custom_data,
@@ -138,19 +140,21 @@ function AgreementsTable(props) {
       }
     }
 
-    console.log(customLayer)
-    // updateCustomLayer({
-    //   variables: {
-    //     customLayerId: props.rows[index]._id,
-    //     customLayer: customLayer
-    //   },
-    //   refetchQueries: ["customLayer"],
-    // });
+    updateCustomLayer({
+      variables: {
+        customLayerId: props.rows[index]._id,
+        customLayer: customLayer
+      },
+      refetchQueries: ["customLayer"],
+    });
 
   };
 
 
-  console.log("columsn : ", props.columns)
+  const headerProps = {
+    Icon: Agreements,
+    label: "Agreements",
+  };
 
   return (
     <Container
@@ -158,11 +162,13 @@ function AgreementsTable(props) {
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
-      {stateApp.showFieldModal && <MetaField columns={props.columns} category="Agreement" updateColumnSorting={props.updateColumnSorting} />}
+      {stateApp.showFieldModal && <MetaField customDataPrefix='shapeJson.properties.custom_data' customDataPostfix='.keyword' columns={props.columns} category="Agreement" updateColumnSorting={props.updateColumnSorting} />}
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
         columns={props.columns}
+        headerProps={headerProps}
+        headerComponent={HeaderComponent}
         viewColumn={CustomerViewCol}
         viewColumnProps={props.viewColumnProps}
         rows={props.rows}
