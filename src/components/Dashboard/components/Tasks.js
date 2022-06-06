@@ -214,7 +214,7 @@ const Tasks = () => {
                               {activity.dateTime
                                 ? moment
                                     .parseZone(new Date(+activity.dateTime))
-                                    .format("M/DD/YYYY hh:mm:ssa")
+                                    .format("MM/DD/YYYY hh:mm:ssa")
                                 : "N/A"}
                             </span>
                           </Grid>
