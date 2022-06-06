@@ -105,15 +105,15 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
             inputValue={search?.toString()}
             getOptionSelected={(option, value) => option.key === value.key}
             getOptionLabel={(option) => option?.key?.toString().replace(/^\,|\,$/gm, "")}
-            onChange={(e, value, reason) => {
-                if (reason === 'clear' || !value?.key) {
+            onChange={(e, value2, reason) => {
+                if (reason === 'clear' || !value2?.key) {
                     filterList[index].pop()
                     setSearch('')
                     setValue({})
                 } else {
-                    filterList[index][0] = typeof value.key === 'string' ? value.key.replace(/^\,|\,$/gm, "") : value.key
-                    setSearch(value.key)
-                    setValue(value)
+                    filterList[index][0] = typeof value2.key === 'string' ? value2.key.replace(/^\,|\,$/gm, "") : value2.key
+                    setSearch(value2.key)
+                    setValue(value2)
                 }
                 if (setFilters) setFilters(filterList)
                 onChange(filterList[index], index, column);
