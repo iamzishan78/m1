@@ -92,7 +92,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   adornmentAutocomplete: {
     "& .MuiAutocomplete-endAdornment": {
-      right: "50px !important",
+      right: "60px !important",
       "& .MuiAutocomplete-clearIndicator": {
         display: "none",
       },
