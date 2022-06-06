@@ -253,6 +253,7 @@ const AgreementsHeadCells = [
     options: {
       sort: true,
       filter: true,
+      display: true,
       viewColumns: false,
       customRender: (value, tableMeta) => {
         return (
@@ -279,6 +280,7 @@ const AgreementsHeadCells = [
     label: " ",
     options: {
       dbName: "comments.comment",
+      display: true,
       filter: false,
       searchable: false,
       sort: true,
@@ -295,6 +297,7 @@ const AgreementsHeadCells = [
       dbName: "shapeJson.properties.approvalStatus",
       sort: true,
       filter: true,
+      display: true,
       viewColumns: false,
       customRender: (value, tableMeta, updateValue) => {
         return (

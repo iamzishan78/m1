@@ -22,7 +22,6 @@ import { AppContext } from "AppContext";
 import { usetableStyles } from "../Styles";
 import CustomerViewCol from "../helpers/CustomerView";
 import MetaField from "../helpers/MetaField";
-import GridViewHOC from "../../Shared/GridViewHOC";
 
 const genericDataActions = ['tags', 'comments', 'tracks']
 function AgreementsTable(props) {
@@ -33,6 +32,10 @@ function AgreementsTable(props) {
   const classes = usetableStyles();
 
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
+  const defaultView = {
+    name: `All Agreements`,
+    type: "Default",
+  };
   const GridViewModule = userGridViewSettings[`Agreements`]
 
   const searchInput = useSelector(
@@ -74,7 +77,7 @@ function AgreementsTable(props) {
     setTableMeta({
       // addableName: "Unit",
       extendSearchQuery: props.landSearchQuery || searchInput || '',
-      selectedGridView: GridViewModule,
+      selectedGridView: GridViewModule || defaultView,
       searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
@@ -98,7 +101,7 @@ function AgreementsTable(props) {
   }, [searchInput, props.landSearchQuery, props.filterToggle]);
 
   useEffect(() => {
-    props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView: GridViewModule, filters: [] }));
+    props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView: GridViewModule || defaultView }));
     // eslint-disable-next-line
   }, [GridViewModule]);
 

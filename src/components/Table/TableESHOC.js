@@ -27,7 +27,6 @@ import { handleSelectedGridChange, setColumnDisplayAndFilter } from "./helpers";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 import { formattingGridView, sortColumns } from "utils/helper";
-import { th } from "date-fns/locale";
 
 
 export const TableESHOC = (Component) => {
@@ -44,14 +43,6 @@ export const TableESHOC = (Component) => {
         const [openDialog, setOpenDialog] = useState(null);
         const [clickedRow, setClickedRow] = useState();
 
-        const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
-        const GridViewModule = userGridViewSettings[`${tableMeta?.gridView?.category}s`]
-        const defaultView = {
-            name: `All ${tableMeta?.gridView?.category}`,
-            type: "Default",
-        };
-
-        const [selectedGridView, setSelectedGridView] = useState(defaultView);
         const [gridViews, setGridViews] = useState(null);
         const [metaDatas, setMetaDatas] = useState(null);
         const [stateApp, setStateApp] = useContext(AppContext);
@@ -116,10 +107,6 @@ export const TableESHOC = (Component) => {
         const tableData = elasticData?.getESSimpleSearch || {}
 
         useEffect(() => {
-            setSelectedGridView(GridViewModule || defaultView);
-        }, [GridViewModule]);
-
-        useEffect(() => {
             if (tableMeta?.gridView) {
                 const category = tableMeta?.gridView.category
                 getMetaData({
@@ -147,51 +134,54 @@ export const TableESHOC = (Component) => {
         }, [metaDataRes]);
 
         useEffect(() => {
+            const { selectedGridView } = tableMeta
             if (selectedGridView && metaDatas) {
-                const interval = setInterval(() => {
-                    Columns((cols) => {
-                        if (cols?.length > 0) {
-                            const selectedData = JSON.parse(JSON.stringify(selectedGridView));
-                            setStateApp((state) => ({ ...state, selectedView: selectedData }));
-                            // let metaColumns = cols.filter((col) => metaDatas.find((meta) => meta.name === col.name) && col.label !== " ");
-                            // debugger
-                            // if (metaColumns.length === metaDatas.length) {
-                            //     clearInterval(interval);
-                            //     return cols
-                            // }
-                            let filterColumns = cols.filter((col) => !metaDatas.find((meta) => meta.name === col.name) && col.label !== " ");
-                            let actionColumns = cols.filter((col) => col.label === " ");
-                            let columnsData = [...filterColumns, ...copy(metaDatas), ...actionColumns]
-                            let view = JSON.parse(JSON.stringify(selectedData));
-                            if (view.columns) {
-                                let viewColumns = view.columns.filter((col) => !actionColumns.find((aC) => aC.name === col.name));
-                                let viewActionColumns = view.columns.filter((col) => actionColumns.find((aC) => aC.name === col.name));
-                                view.columns = [...viewColumns, ...viewActionColumns]
-                            }
-                            if (!isEmpty(view)) {
-                                view = formattingGridView(JSON.parse(JSON.stringify(view)));
-                                columnsData = handleSelectedGridChange(TableHeader, view, columnsData);
-                            }
-                            columnsData = sortColumns(columnsData, view);
-                            setColumnsData(columnsData)
-                            clearInterval(interval);
-                        }
-                        return cols
-                    })
-                }, 500)
-            }
-        }, [selectedGridView, metaDatas]);
+                Columns((cols) => {
+                    if (cols?.length > 0) {
+                        const selectedData = JSON.parse(JSON.stringify(selectedGridView));
+                        setStateApp((state) => ({ ...state, selectedView: selectedData }));
 
-        useEffect(() => {
-            setSelectedGridView(GridViewModule || defaultView);
-        }, [GridViewModule]);
+                        debugger
+                        let filterColumns = cols.filter((col) => !metaDatas.find((meta) => meta.name === col.name) && ![" ", "Tags", "Comments"].includes(col.label));
+                        let actionColumns = cols.filter((col) => [" ", "Tags", "Comments"].includes(col.label));
+
+                        // Excluding actionColumns from veiw Columns 
+                        actionColumns = actionColumns.map(aC => ({ ...aC, options: { ...aC.options, viewColumns: false } }))
+
+                        let columnsData = [...filterColumns, ...copy(metaDatas), ...actionColumns]
+                        let view = JSON.parse(JSON.stringify(selectedData));
+                        if (view.columns) {
+                            debugger
+                            let viewColumns = view.columns.filter((col) => !actionColumns.find((aC) => aC.name === col.name));
+                            let viewActionColumns = view.columns.filter((col) => actionColumns.find((aC) => aC.name === col.name));
+                            // if (viewActionColumns.length === 0) {
+                            //     actionColumns.forEach((aC) => {
+                            //         viewActionColumns.push({ name: aC.name, display: true })
+                            //     })
+                            // }
+                            // viewActionColumns.forEach((vAC) => (vAC.display = true))
+                            view.columns = [...viewColumns, ...viewActionColumns]
+                        }
+                        if (!isEmpty(view)) {
+                            view = formattingGridView(JSON.parse(JSON.stringify(view)));
+                            columnsData = handleSelectedGridChange(TableHeader, view, columnsData);
+                        }
+                        columnsData = sortColumns(columnsData, view);
+                        setColumnsData(columnsData)
+                        // clearInterval(interval);
+                    }
+                    return cols
+                })
+            }
+        }, [tableMeta.selectedGridView, columns.length, metaDatas]);
+
 
         const updateColumnSorting = (value) => {
             dispatch(
                 updateUserGridViewSettingAction.STARTED({
                     userGridViewSetting: {
                         module: `${tableMeta?.gridView.category}s`,
-                        gridView: selectedGridView._id,
+                        gridView: tableMeta.selectedGridView._id,
                         gridViewPatch: {
                             filters: selectedFilters.current,
                             columns: value.map((col) => ({ name: col.name, display: col.display === "true" })),
@@ -202,10 +192,6 @@ export const TableESHOC = (Component) => {
             );
         };
 
-        const viewColumnProps = {
-            selectedGridView,
-            updateColumnSorting,
-        };
         ////////Grid View Code ended
 
         useEffect(() => {
@@ -377,6 +363,8 @@ export const TableESHOC = (Component) => {
                     }
                 });
             }
+
+            console.log(tableCols)
             setColumns(tableCols);
         };
 
@@ -604,23 +592,34 @@ export const TableESHOC = (Component) => {
         }
 
         const updateGridViewRedux = (tableState) => {
-            if (tableMeta?.selectedGridView?._id)
-                dispatch(updateUserGridViewSettingAction.STARTED({
-                    userGridViewSetting: {
-                        gridView: tableMeta.selectedGridView._id,
-                        gridViewPatch: {
-                            filters: activeFiltersRef.current,
-                            columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
-                        },
-                        user: props.userId
-                    }
-                }));
-            let filters = activeFiltersRef.current;
-            if (props.targetLabel === "well") {
-                filters = filters.filter(f => f.type !== "geo_intersects");
-            }
-            dispatch(updateUserGridViewFiltersAction(filters));
+            setTableMeta((tableMeta) => {
+                if (tableMeta?.selectedGridView)
+                    dispatch(updateUserGridViewSettingAction.STARTED({
+                        userGridViewSetting: {
+                            module: `${tableMeta?.gridView.category}s`,
+                            gridView: tableMeta.selectedGridView._id,
+                            gridViewPatch: {
+                                filters: activeFiltersRef.current,
+                                columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
+                            },
+                            user: stateApp.user?.mongoId,
+                        }
+                    }));
+                let filters = activeFiltersRef.current;
+                if (props.targetLabel === "well") {
+                    filters = filters.filter(f => f.type !== "geo_intersects");
+                }
+                dispatch(updateUserGridViewFiltersAction(filters));
+
+                return tableMeta
+            })
         }
+
+        const viewColumnProps = {
+            selectedGridView: tableMeta.selectedGridView,
+            // updateColumnSorting
+            updateColumnSorting: (columns) => updateGridViewRedux({ columns }),
+        };
 
         const onTableChange = (action, tableState, rows, meta) => {
             tableState.esIndex = tableMeta.esIndex;
@@ -659,7 +658,7 @@ export const TableESHOC = (Component) => {
                     tableActions.changeESPage();
                     break;
                 case "viewColumnsChange":
-                    // updateGridViewRedux(tableState)
+                    updateGridViewRedux(tableState)
                     viewColumnsChange(tableState.columns);
                     break;
                 default:
@@ -669,7 +668,7 @@ export const TableESHOC = (Component) => {
         const viewColumnsChange = (tableColumns) => {
             for (let i = 0; i < tableColumns.length; i++) {
                 if (columns[i]) {
-                    if (tableColumns[i].display === "true" || tableColumns[i].display === true) {
+                    if ((tableColumns[i].display === "true" || tableColumns[i].display === true) && tableColumns[i].display !== false) {
                         columns[i].options.display = true;
                         if (columns[i].esKey && !columns[i].noFilter) {
                             columns[i].options.filter = true;
