@@ -346,6 +346,13 @@ export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFrom
   if(onChange){
     onChange(date)
   }
+  let minDateValue;
+  if(minDate === undefined || minDate === ''){
+    minDateValue = moment().startOf('year').format('yyyy-MM-DD');
+  } else {
+    minDateValue = `${moment(minDate).startOf('month').format("yyyy-MM-DD")}`;
+  }
+  console.log(minDateValue);
   const currentYear = Math.round(new Date().getFullYear());
   switch (date) {
     case CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH:
@@ -382,7 +389,7 @@ export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFrom
       setToDate(`${currentYear - 1}-12-31`);
       break;
     case CUSTOM_DATES.ALL_DATES:
-      setFromDate(`${moment(minDate).startOf('month').format("yyyy-MM-DD")}`);
+      setFromDate(minDateValue);
       setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
       break;
     case CUSTOM_DATES.THIS_WEEK:

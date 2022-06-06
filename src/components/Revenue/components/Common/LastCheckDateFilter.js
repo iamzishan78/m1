@@ -38,6 +38,7 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
             if (data?.getESMinValue) {
                 setLastCheckMinDate(data?.getESMinValue);
                 setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
+                setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
             }
         },
     });
