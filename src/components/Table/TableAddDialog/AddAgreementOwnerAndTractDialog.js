@@ -326,7 +326,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   };
 
   const handleChangeQtr = (value, index) => {
-    const qtr = JSON.parse(JSON.stringify(tract?.qtrQtrSelection?.selectedQtr));
+    const qtr = tract?.qtrQtrSelection?.selectedQtr ? JSON.parse(JSON.stringify(tract.qtrQtrSelection.selectedQtr)) : ["", "", "", ""];
     qtr[index] = value ?? "";
     const newTract = { ...tract, qtrQtrSelection: { ...tract.qtrQtrSelection, selectedQtr: qtr } };
     reset({ ...getValues(), tract: newTract });
