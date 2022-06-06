@@ -51,6 +51,7 @@ import "./dialog.css";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
 
 import MapProvider from "components/Map/MapProvider";
+import { getRandomColor } from "components/Shared/functions/ui";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -1314,7 +1315,9 @@ function AddDealDialog(props) {
                                   startAdornment: (
                                     <>
                                       <InputAdornment position="start">
-                                        <Avatar className={classes.dealOwnerAvatar}>
+                                        <Avatar   style={{
+                                          backgroundColor:users.find((user) => user?.value === ownerId)?getRandomColor(users.find((user) => user?.value === ownerId).text.toString()):""
+                                        }} className={classes.dealOwnerAvatar}>
                                           {users.find((user) => user?.value === ownerId) ? (
                                             <CustomAvatar
                                               diglog={true}
