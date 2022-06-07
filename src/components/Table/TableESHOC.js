@@ -644,6 +644,7 @@ export const TableESHOC = (Component) => {
             const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch)
             activeSearchRef.current = tableActions.pageESVariables.variables.search;
             activeFiltersRef.current = handleMultiFieldFilter(tableActions.pageESVariables.variables.filters.concat(tableMeta.filters));
+            selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
             tableStateRef.current = tableState
 
 
@@ -803,6 +804,7 @@ export const TableESHOC = (Component) => {
 
                     activeSearchRef={activeSearchRef}
                     activeFiltersRef={activeFiltersRef}
+                    selectedFilters={selectedFilters}
 
                     initialFilters={initialFilters}
                     setInitialFilters={setInitialFilters}

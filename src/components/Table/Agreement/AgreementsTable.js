@@ -187,7 +187,7 @@ function AgreementsTable(props) {
     setShowViewModal,
     Icon: Agreements,
     label: "Agreements",
-    selectedFilters: selectedFilters.current,
+    selectedFilters: props.selectedFilters.current,
   };
 
   return (
@@ -207,7 +207,7 @@ function AgreementsTable(props) {
           setShowViewModal={setShowViewModal}
           setShowSaveAsNew={setShowSaveAsNew}
           showSaveAsNew={showSaveAsNew}
-          selectedFilters={selectedFilters.current}
+          selectedFilters={props.selectedFilters.current}
         />
       )}
 
