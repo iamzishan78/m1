@@ -170,7 +170,7 @@ export default function AgreementSummary(props) {
           </Grid>
         </Grid>
       </Grid>
-      {stateApp.showFieldModal && <MetaField columns={[]} category="Agreement" updateColumnSorting={addAgreementCustomData} />}
+      {stateApp.showFieldModal && <MetaField customDataPrefix='shapeJson.properties.custom_data' customDataPostfix='.keyword' columns={[]} category="Agreement" updateColumnSorting={addAgreementCustomData} />}
     </>
   );
 }

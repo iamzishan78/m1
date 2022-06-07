@@ -4043,7 +4043,6 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    console.log("header : ", props.header)
     if (props.header === "Contacts" || props.header === "Documents" || props.header === "Agreements") {
       const HeaderComponent = props.headerComponent;
       return <HeaderComponent {...props.headerProps} />;

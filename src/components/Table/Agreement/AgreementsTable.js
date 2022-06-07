@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState, useRef } from "react";
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
@@ -27,22 +27,32 @@ import { usetableStyles } from "../Styles";
 import CustomerViewCol from "../helpers/CustomerView";
 import MetaField from "../helpers/MetaField";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
+import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
+import GridView from "components/Shared/GridView";
 
 const genericDataActions = ['tags', 'comments', 'tracks']
 function AgreementsTable(props) {
-
-
-  const [stateApp] = useContext(AppContext);
-
-  const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
-
-  const classes = usetableStyles();
-
-  const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
   const defaultView = {
     name: `All Agreements`,
     type: "Default",
   };
+
+  const [showSaveAsNew, setShowSaveAsNew] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedGridView, setSelectedGridView] = useState(defaultView);
+  const [gridViews, setGridViews] = useState(null);
+
+  const selectedFilters = useRef([]);
+  const [stateApp] = useContext(AppContext);
+
+  // queries
+  const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
+  const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
+
+  const classes = usetableStyles();
+
+  const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
+
   const GridViewModule = userGridViewSettings[`Agreements`]
 
   const searchInput = useSelector(
@@ -76,6 +86,11 @@ function AgreementsTable(props) {
     });
     return hits
   }
+
+  useEffect(() => {
+    console.log("here", GridViewModule);
+    setSelectedGridView(GridViewModule || defaultView);
+  }, [GridViewModule]);
 
 
   useEffect(() => {
@@ -150,10 +165,29 @@ function AgreementsTable(props) {
 
   };
 
+  const handleDefaultView = (view, user) => {
+    if (view.name === "My Agreements") {
+      view.filters[0].value = user._id;
+    }
+    if (view.name === "Recently Modified" || view.name === "Recently Added") {
+      view.filters[0].type = "range";
+      view.filters[0].value.range[view.filters[0].field].gte = moment().subtract(30, "days").toISOString();
+      view.filters[0].value.range[view.filters[0].field].lte = moment().toISOString();
+    }
+    return view;
+  };
+
 
   const headerProps = {
+    columns: props.columns,
+    showViewModal,
+    selectedGridView,
+    updateGridView,
+    setShowSaveAsNew,
+    setShowViewModal,
     Icon: Agreements,
     label: "Agreements",
+    selectedFilters: selectedFilters.current,
   };
 
   return (
@@ -162,6 +196,21 @@ function AgreementsTable(props) {
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
+      {showViewModal && (
+        <GridView
+          columns={props.columns}
+          module="Agreements"
+          handleDefaultView={handleDefaultView}
+          handleClose={() => setShowViewModal(false)}
+          setSelectedGridView={setSelectedGridView}
+          selectedGridView={selectedGridView}
+          setShowViewModal={setShowViewModal}
+          setShowSaveAsNew={setShowSaveAsNew}
+          showSaveAsNew={showSaveAsNew}
+          selectedFilters={selectedFilters.current}
+        />
+      )}
+
       {stateApp.showFieldModal && <MetaField customDataPrefix='shapeJson.properties.custom_data' customDataPostfix='.keyword' columns={props.columns} category="Agreement" updateColumnSorting={props.updateColumnSorting} />}
       <Table
         style={{ backgroundColor: "#fff" }}

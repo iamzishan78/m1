@@ -219,7 +219,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
           </Grid>
         </Grid>
       ))}
-      {stateApp.showFieldModal && <MetaField columns={[]} category="Agreement" updateColumnSorting={addAgreementCustomData} />}
+      {stateApp.showFieldModal && <MetaField customDataPrefix='shapeJson.properties.custom_data' customDataPostfix='.keyword' columns={[]} category="Agreement" updateColumnSorting={addAgreementCustomData} />}
       {stateApp.user?.rolePrivileges !== "READ_ONLY" && (
         <Grid item>
           <Button
