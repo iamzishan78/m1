@@ -32,7 +32,7 @@ import { formattingGridView, sortColumns } from "utils/helper";
 export const TableESHOC = (Component) => {
     return function HOC(props) {
         const dispatch = useDispatch();
-        const classes = usetableStyles();
+        const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky })
 
         const [tableMeta, setTableMeta] = useState([]);
         const [columns, Columns] = useState([]);
@@ -762,50 +762,52 @@ export const TableESHOC = (Component) => {
         }
 
         return (
-            <Component
-                {...props}
-                rows={rows}
-                searchedRows={searchedRows}
-                setSearchedRows={setSearchedRows}
-                total={tableData?.total}
-                loading={loading}
-                dataTracks={dataTracksIds}
-                setRows={setRows}
-                setLoading={setLoading}
-                initializeGenericData={initializeGenericData}
-                ifAreContacts={ifAreContacts}
-                setGenricData={setGenricData}
-                dependencyUpdate={dependencyUpdate}
-                initializeTableActions={initializeTableActions}
+            <div className={classes.container}>
+                <Component
+                    {...props}
+                    rows={rows}
+                    searchedRows={searchedRows}
+                    setSearchedRows={setSearchedRows}
+                    total={tableData?.total}
+                    loading={loading}
+                    dataTracks={dataTracksIds}
+                    setRows={setRows}
+                    setLoading={setLoading}
+                    initializeGenericData={initializeGenericData}
+                    ifAreContacts={ifAreContacts}
+                    setGenricData={setGenricData}
+                    dependencyUpdate={dependencyUpdate}
+                    initializeTableActions={initializeTableActions}
 
-                tableMeta={tableMeta}
-                setTableMeta={setTableMeta}
-                setFilters={setFilters}
-                options={options}
-                clickedRow={clickedRow}
+                    tableMeta={tableMeta}
+                    setTableMeta={setTableMeta}
+                    setFilters={setFilters}
+                    options={options}
+                    clickedRow={clickedRow}
 
-                addToTable={addToTable}
-                setAddToTable={setAddToTable}
+                    addToTable={addToTable}
+                    setAddToTable={setAddToTable}
 
-                openDialog={openDialog}
-                setOpenDialog={setOpenDialog}
+                    openDialog={openDialog}
+                    setOpenDialog={setOpenDialog}
 
-                selectedRows={selectedRows}
-                setSelectedRows={setSelectedRows}
+                    selectedRows={selectedRows}
+                    setSelectedRows={setSelectedRows}
 
-                onTableChange={onTableChange}
-                columns={columns}
-                setColumns={setColumns}
+                    onTableChange={onTableChange}
+                    columns={columns}
+                    setColumns={setColumns}
 
-                updateColumnSorting={updateColumnSorting}
-                viewColumnProps={viewColumnProps}
+                    updateColumnSorting={updateColumnSorting}
+                    viewColumnProps={viewColumnProps}
 
-                activeSearchRef={activeSearchRef}
-                activeFiltersRef={activeFiltersRef}
+                    activeSearchRef={activeSearchRef}
+                    activeFiltersRef={activeFiltersRef}
 
-                initialFilters={initialFilters}
-                setInitialFilters={setInitialFilters}
-            />
+                    initialFilters={initialFilters}
+                    setInitialFilters={setInitialFilters}
+                />
+            </div>
         );
     };
 };

@@ -35,6 +35,7 @@ export default function ReportingGroups() {
       <div className={classes.propertyTableContainer}>
         <AgreementsTable
           esIndex={esIndex}
+          isCheckboxSticky={true}
           header="Agreements"
           esFilters={esFilters}
           filterToggle={filterToggle}

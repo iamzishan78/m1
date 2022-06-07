@@ -522,6 +522,7 @@ function MapGridCard(props) {
                       )}
                       {searchTapValue.value === "agreement" && (
                         <AgreementsTable
+                          isCheckboxSticky={true}
                           dense
                           esIndex={'shapes_flat'}
                           parent="AgreementsTable"

@@ -19,7 +19,7 @@ const AgreementsHeadCells = [
           minWidth: "150px",
           whiteSpace: "nowrap",
           position: "sticky",
-          left: "0",
+          left: "77px",
           background: "white",
           zIndex: 200
         }
@@ -28,13 +28,15 @@ const AgreementsHeadCells = [
         style: {
           position: "sticky",
           minWidth: "150px",
-          left: 0,
+          left: "77px",
           zIndex: 201
         }
       }),
       dbName: "shapeJson.properties.agreementNumber",
       sort: true,
       filter: true,
+      viewColumns: false,
+      display: true,
       customRender: (value, tableMeta, updateValue) => {
         return (
           <p
@@ -62,7 +64,7 @@ const AgreementsHeadCells = [
           minWidth: "150px",
           whiteSpace: "nowrap",
           position: "sticky",
-          left: "149px",
+          left: "227px",
           background: "white",
           zIndex: 100
         }
@@ -71,13 +73,15 @@ const AgreementsHeadCells = [
         style: {
           position: "sticky",
           minWidth: "150px",
-          left: "149px",
+          left: "227px",
           zIndex: 101
         }
       }),
       dbName: "shapeJson.properties.agreementName",
       sort: true,
       filter: true,
+      viewColumns: false,
+      display: true,
     },
   },
   {
