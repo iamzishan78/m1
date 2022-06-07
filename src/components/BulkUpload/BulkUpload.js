@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const rawJobs = [
+export const rawJobs = [
   { name: 'Import Contacts', type: 'CONTACTS' },
   { name: 'Import Contact Well Interests', type: 'CONTACTS_WELL_INTEREST' },
   { name: 'Interest Owner Upload', type: 'PARCELINTERESTS' },
