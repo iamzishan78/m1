@@ -372,14 +372,11 @@ export const TableESHOC = (Component) => {
                 });
             }
 
-            // shift _id to the first Place
+            // shift _id and sticky Colums to the first Place
 
-            if (tableCols[0].name !== "_id") {
-                let iD = tableCols.find(cD => cD.name === '_id')
-                tableCols = tableCols.filter(cD => cD.name !== "_id");
-                tableCols.unshift(iD);
-
-            }
+            let stickyColumns = tableCols.filter(cD => cD.name === '_id' || cD?.options?.stickyColumn)
+            tableCols = tableCols.filter(cD => cD.name !== "_id" && !cD.options?.stickyColumn);
+            tableCols.unshift(...stickyColumns);
             setColumns(tableCols);
         };
 

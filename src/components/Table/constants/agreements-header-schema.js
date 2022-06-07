@@ -33,7 +33,8 @@ const AgreementsHeadCells = [
         }
       }),
       dbName: "shapeJson.properties.agreementNumber",
-      sort: true,
+      stickyColumn: true,
+      sort: false,
       filter: true,
       viewColumns: false,
       display: true,
@@ -78,7 +79,8 @@ const AgreementsHeadCells = [
         }
       }),
       dbName: "shapeJson.properties.agreementName",
-      sort: true,
+      stickyColumn: true,
+      sort: false,
       filter: true,
       viewColumns: false,
       display: true,
