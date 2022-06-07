@@ -91,6 +91,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
             },
         });
     };
+
     return (
         <Autocomplete
             id={`filter-autocomplete-${custom?.filterLabel || label}`}

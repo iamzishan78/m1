@@ -332,7 +332,7 @@ function AddDealDialog(props) {
     fetchPolicy: "no-cache",
   });
 
-  const [addContact, { data: addContactData, called: addContactCalled, loading: addContactLoading }] = useMutation(ADDCONTACT);
+  const [addContact, { data: addContactData, loading: addContactLoading }] = useMutation(ADDCONTACT);
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
@@ -1228,7 +1228,7 @@ function AddDealDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
+            setM1nSelectedRowsIndexes={() => {}}
           >
             Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
@@ -1268,7 +1268,7 @@ function AddDealDialog(props) {
             <div className={classes.contentRoot}>
               <Drawer dealSettingsNumber={getSubtaskNumber()} mapSettings={mapSettings} />
               {!["Deal", "Map"].includes(stateApp.transactBarView) &&
-                (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
+              (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>
               ) : (
                 <div className={classes.inputFieldRoot}>
@@ -1315,9 +1315,14 @@ function AddDealDialog(props) {
                                   startAdornment: (
                                     <>
                                       <InputAdornment position="start">
-                                        <Avatar   style={{
-                                          backgroundColor:users.find((user) => user?.value === ownerId)?getRandomColor(users.find((user) => user?.value === ownerId).text.toString()):""
-                                        }} className={classes.dealOwnerAvatar}>
+                                        <Avatar
+                                          style={{
+                                            backgroundColor: users.find((user) => user?.value === ownerId)
+                                              ? getRandomColor(users.find((user) => user?.value === ownerId).text.toString())
+                                              : "",
+                                          }}
+                                          className={classes.dealOwnerAvatar}
+                                        >
                                           {users.find((user) => user?.value === ownerId) ? (
                                             <CustomAvatar
                                               diglog={true}
@@ -1326,8 +1331,7 @@ function AddDealDialog(props) {
                                                 users
                                                   .find((user) => user?.value === ownerId)
                                                   .text.toString()
-                                                  .toUpperCase()
-                                                  .length > 1
+                                                  .toUpperCase().length > 1
                                                   ? users.find((user) => user?.value === ownerId).text.toString()
                                                   : "Add Owner"
                                               }
