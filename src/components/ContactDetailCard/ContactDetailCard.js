@@ -417,7 +417,7 @@ export default function ContactDetailCard(props) {
   }, [shrinkRightColumn]);
 
   useEffect(() => {
-    if (stateApp.selectedContact) {
+    if (stateApp.selectedContact && (stateApp.selectedContact === contactId)) {
       getContact({
         variables: {
           contactId: stateApp.selectedContact,

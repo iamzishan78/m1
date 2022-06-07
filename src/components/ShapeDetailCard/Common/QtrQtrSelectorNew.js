@@ -207,9 +207,10 @@ export default function QtrQtrSelectorNew({ layerData }) {
     layerDataCopy.qtrQtrSelection.qtrQtr = qtrQtr;
     layerDataCopy.qtrQtrSelection.selectedQtr = qtr;
     newShape = turf.intersect(layerDataCopy.shape.geometry, newShape.geometry);
-    layerDataCopy.shape.geometry = newShape.geometry;
-    layerDataCopy.shape.properties.shapeArea = calculateLandArea(newShape);
-
+    if (newShape) {
+      layerDataCopy.shape.geometry = newShape.geometry;
+      layerDataCopy.shape.properties.shapeArea = calculateLandArea(newShape);
+    }
     const customLayer = {
       shapeJson: layerDataCopy.shape,
       qtrQtrSelection: layerDataCopy.qtrQtrSelection,

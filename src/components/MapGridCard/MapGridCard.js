@@ -31,6 +31,8 @@ import SearchPanel from "./components/SearchPanel";
 import { platformDataInitialData, snapGridSideBarData } from "./components/data";
 import MapGridLayersTable from "components/Table/Layer/MapGridLayersTable";
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 
 
 const useStyles = makeStyles((theme) => {
@@ -413,17 +415,18 @@ function MapGridCard(props) {
                     {snapGridSideBarData.map((row) => {
                       const Icon = row.Icon
                       return (
-                        <ListItem
-                          key={row.label}
-                          button
-                          selected={row.value === searchTapValue.value}
-                          onClick={() => handleSearchPanelChange(row)}
-                        >
-                          <ListItemIcon>
-                            <Icon />
-                          </ListItemIcon>
-                          <ListItemText primary={row.label} />
-                        </ListItem>
+                        <FeatureFlag feature={FEATURES[row.featureFlag]} noCheck={!FEATURES[row.featureFlag]}>
+                          <ListItem
+                            button
+                            selected={row.value === searchTapValue.value}
+                            onClick={() => handleSearchPanelChange(row)}
+                          >
+                            <ListItemIcon>
+                              <Icon />
+                            </ListItemIcon>
+                            <ListItemText primary={row.label} />
+                          </ListItem>
+                        </FeatureFlag>
                       )
                     }
                     )}

@@ -76,7 +76,7 @@ export default function AddUserGroupData(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const client = useApolloClient();
   const [addFile] = useMutation(ADDFILE);
-  const [addDataset] = useMutation(ADD_DATASET);
+  const [addDataset] = useMutation(ADD_DATASET, { refetchQueries: ["getDatasets"], awaitRefetchQueries: true });
 
   const [addLayer] = useMutation(ADDLAYER);
 
