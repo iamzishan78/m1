@@ -6,7 +6,7 @@ import Paper from "@material-ui/core/Paper";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import DragIndicatorOutlinedIcon from "@material-ui/icons/DragIndicatorOutlined";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import { sortableHandle } from "react-sortable-hoc";
 import Tooltip from "@material-ui/core/Tooltip";
 import Tabs from "@material-ui/core/Tabs";
@@ -25,6 +25,7 @@ import DefaultIcon from "@material-ui/icons/Event";
 import moment from "moment";
 import { useHistory } from "react-router-dom";
 import { UPDATEACTIVITY } from "../../../graphQL/useMutationActivity";
+import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -109,23 +110,58 @@ const activityIcons = {
 
 const Tasks = () => {
   const history = useHistory();
-  const [getAllActivities, { data, loading }] = useLazyQuery(GETALLACTIVITIES, {
-    fetchPolicy: `network-only`,
-  });
+  const [getAllActivities, { data: orginalData, loading }] = useLazyQuery(
+    GETALLACTIVITIES,
+    {
+      fetchPolicy: `network-only`,
+    }
+  );
   const [updateActivityMutation] = useMutation(UPDATEACTIVITY, {
     refetchQueries: ["getAllActivities"],
     awaitRefetchQueries: true,
   });
   const classes = useStyles();
   const [tab, setTab] = useState(0);
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    getAllActivities({
-      variables: {
-        category: "CRM",
-      },
-    });
-  }, []);
+    if (orginalData && Array.isArray(orginalData.activities)) {
+      const sortCallBack = (a, b) => Number(a.dateTime) - Number(b.dateTime)
+      const filterDate = tab === 0 ? moment().add(7, "days") : moment();
+      if (tab === 0) {
+        setData(
+          orginalData.activities.filter(
+            (activity) =>
+              !activity.isClosed &&
+              stateApp.user._id === activity.ownerId &&
+              moment
+                .parseZone(new Date(+activity.dateTime))
+                .isBetween(moment(), filterDate)
+          ).sort(sortCallBack)
+        );
+      } else {
+        setData(
+          orginalData.activities.filter(
+            (activity) =>
+              !activity.isClosed &&
+              stateApp.user._id === activity.ownerId &&
+              moment.parseZone(new Date(+activity.dateTime)).isBefore(moment())
+          ).sort(sortCallBack)
+        );
+      }
+    }
+  }, [orginalData, tab]);
+
+  useEffect(() => {
+    if (stateApp && stateApp.user) {
+      getAllActivities({
+        variables: {
+          category: "CRM",
+        },
+      });
+    }
+  }, [stateApp]);
 
   const completeActivity = async (activityData) => {
     await updateActivityMutation({
@@ -177,77 +213,68 @@ const Tasks = () => {
         ></CircularProgress>
       ) : (
         <List style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
-          {data &&
-            data.activities &&
-            Array.isArray(data.activities) &&
-            data.activities
-              .filter((activity) => !activity.isClosed)
-              .map((activity, i) => {
-                return (
-                  <Paper key={i} className={classes.paper}>
-                    <Grid
-                      container
-                      direction="row"
-                      justify="space-between"
-                      alignItems="center"
-                      className={classes.listitem}
-                      spacing={1}
+          {data.map((activity, i) => {
+            return (
+              <Paper key={i} className={classes.paper}>
+                <Grid
+                  container
+                  direction="row"
+                  justify="space-between"
+                  alignItems="center"
+                  className={classes.listitem}
+                  spacing={1}
+                >
+                  <Grid item xs={10} zeroMinWidth>
+                    <span
+                      className={classes.title}
+                      onClick={() =>
+                        history.push(`/calendar/activities/${activity._id}`)
+                      }
                     >
-                      <Grid item xs={10} zeroMinWidth>
-                        <span
-                          className={classes.title}
-                          onClick={() =>
-                            history.push(`/calendar/activities/${activity._id}`)
-                          }
-                        >
-                          {activityIcons[activity.type] || <DefaultIcon />}
-                          {activity?.name || "N/A"}
+                      {activityIcons[activity.type] || <DefaultIcon />}
+                      {activity?.name || "N/A"}
+                    </span>
+                    <Grid container className={classes.gridStyle}>
+                      <Grid item xs={11} className={classes.paddingLeft10}>
+                        <span>Contact: {activity?.contactName || "N/A"}</span>
+                        <br />
+                        <span>
+                          Date:{" "}
+                          {activity.dateTime
+                            ? moment
+                                .parseZone(new Date(+activity.dateTime))
+                                .format("MM/DD/YYYY hh:mm:ssa")
+                            : "N/A"}
                         </span>
-                        <Grid container className={classes.gridStyle}>
-                          <Grid item xs={11} className={classes.paddingLeft10}>
-                            <span>
-                              Contact: {activity?.contactName || "N/A"}
-                            </span>
-                            <br />
-                            <span>
-                              Date:{" "}
-                              {activity.dateTime
-                                ? moment
-                                    .parseZone(new Date(+activity.dateTime))
-                                    .format("MM/DD/YYYY hh:mm:ssa")
-                                : "N/A"}
-                            </span>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                      <Grid item xs={2} style={{ textAlign: "-webkit-center" }}>
-                        <Tooltip title="Task details">
-                          <IconButton
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              history.push(
-                                `/calendar/activities/${activity._id}`
-                              );
-                            }}
-                          >
-                            <EventCalendarIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Close task">
-                          <IconButton
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              completeActivity(activity);
-                            }}
-                          >
-                            <CheckCircleIcon />
-                          </IconButton>
-                        </Tooltip>
                       </Grid>
                     </Grid>
-                  </Paper>
-                );
-              })}
+                  </Grid>
+                  <Grid item xs={2} style={{ textAlign: "-webkit-center" }}>
+                    <Tooltip title="Activity details">
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          history.push(`/calendar/activities/${activity._id}`);
+                        }}
+                      >
+                        <EventCalendarIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Close task">
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          completeActivity(activity);
+                        }}
+                      >
+                        <CheckCircleIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Grid>
+                </Grid>
+              </Paper>
+            );
+          })}
         </List>
       )}
     </Fragment>
