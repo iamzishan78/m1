@@ -5,9 +5,9 @@ import { get } from "lodash";
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import AddALayer from "components/MapControls/components/addALayer";
 import SourceManager from "components/MapControls/components/SourceManager";
-import LayerStyling from "components/MapControls/components/LayerStyling";
+import LayerStyling from "components/MapControls/components/Layer/LayerStyling";
+import LayerManager from "components/MapControls/components/Layer/LayerManager";
 import { AppContext } from "AppContext";
-import LayerManager from "components/MapControls/components/LayerManager";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({

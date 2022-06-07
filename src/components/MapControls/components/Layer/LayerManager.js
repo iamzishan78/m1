@@ -1,0 +1,221 @@
+import React, { useContext, useState, useEffect, useMemo } from "react";
+import { useMutation } from "@apollo/client";
+import { v4 as uuid } from "uuid";
+import { MapControlsContext } from "../../MapControlsContext";
+import { Typography, Paper, Grid, Button, IconButton, Divider, FormControlLabel, Switch, ClickAwayListener, TextField, Select, MenuItem, InputLabel } from "@material-ui/core";
+import { Close as CloseIcon } from "@material-ui/icons";
+import FormControl from "@material-ui/core/FormControl";
+import { getDefaultSettings } from "../addUserHelper";
+import { ADDLAYER } from "graphQL/useMutationAddLayer";
+import { AppContext } from "AppContext";
+import { ColorPickerStyledBox, useLayerStyle, useStyles, WidthPicker } from "./Common";
+
+function LayerManager(props) {
+  const classes = useStyles();
+  const [stateApp] = useContext(AppContext);
+  const sourceProps = "" + uuid() + "_source"
+
+  const [layer, setLayer] = useState({
+    createBy: stateApp.user.mongoId,
+    ...getDefaultSettings("Polygon", '', sourceProps)
+  });
+
+  const [addLayer] = useMutation(ADDLAYER);
+
+  const layerType = layer.layerPaintProps[0]?.paintType;
+
+  const { layerName, setLayerName, width, setWidth, fillColor, setFillColor, layerLabelVisibility, setLayerLabelVisibility, layerClickability, setLayerClickability, strokeColor, setStrokeColor, handleLayerChange
+  } = useLayerStyle(layer)
+  const [, setStateMapControls] = useContext(MapControlsContext);
+
+  const [source, setSource] = useState()
+  const [selectCategory, setCategory] = useState()
+
+  // const setLayerHandler = (layerName, layerGeoType) => {
+  //   setLayer({
+  //     ...layer,
+  //     layerName: layerName,
+  //     identifier: layerName + uuid(),
+  //     layerGeometry: layerGeoType || 'Polygon',
+  //   })
+  // }
+
+  const createLayer = () => {
+
+    const dataset = stateApp.datasets.find((dataset) => dataset.name === source)
+    const category = dataset.categories.find((category) => category._id === selectCategory)
+    addLayer({
+      variables: {
+        layer: {
+          ...layer,
+          groupId: null,
+          groupName: null,
+          file: dataset.file,
+          layerName: layerName,
+          identifier: layerName + uuid(),
+          layerType: "file layer",
+          layerGeometry: category.layerGeometry,
+          layerCategory: category.name,
+          originalFile: dataset.originalFile,
+          defaultSettings: handleLayerChange(),
+          layerPaintProps: undefined,
+          layerSettings: undefined,
+          public: true,
+
+        },
+      },
+      refetchQueries: ["getAllLayerSettingsByUser"],
+      awaitRefetchQueries: true,
+    }).then(() => {
+      handleClose()
+    });
+  }
+
+  const handleClose = () => {
+    setStateMapControls((stateMapControls) => ({ ...stateMapControls, manageLayer: false }));
+  }
+
+  // useEffect(() => {
+  //   setLayerHandler(layerName, selectCategory)
+  // }, [layerName, selectCategory])
+
+  const layerCategories = useMemo(() => {
+
+    const dataset = stateApp.datasets.find((dataset) => dataset.name === source)
+
+    return dataset?.categories || []
+
+  }, [source])
+
+  return (
+    <ClickAwayListener >
+      <div style={{ width: '100%' }}>
+        <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "15px" }}>
+          <Grid item>
+            <Typography variant="h5">Layer Manager</Typography>
+          </Grid>
+          <Grid item>
+            <IconButton size="small" onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
+        <Divider />
+        <div style={{ height: 'calc(100vh - 125px)', overflowY: 'scroll', overflowX: 'hidden' }}>
+          <Grid container spacing={3} style={{ padding: "20px" }}>
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel className={classes.label}>
+                  Select Source
+                </InputLabel>
+                <Select onChange={(evt) => setSource(evt.target.value)}>
+                  {stateApp.datasets.map((dataset) => <MenuItem value={dataset.name}>{dataset.name}</MenuItem>)}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel className={classes.label}>
+                  Select Category
+                </InputLabel>
+                <Select onChange={(evt) => setCategory(evt.target.value)}>
+                  {layerCategories?.map((layerCategory) => <MenuItem value={layerCategory._id}>{`${layerCategory.name}(${layerCategory.layerGeometry})`}</MenuItem>)}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField margin="dense" id="layerName" label="Layer Name" fullWidth onChange={(e) => setLayerName(e.target.value)} />
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={3} style={{ padding: "20px" }}>
+            {layer.layerSettings?.colorable &&
+              <Grid item xs={12}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <Typography variant="h6">Layer label visibility</Typography>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={layerLabelVisibility === 'visible'}
+                        onChange={() => setLayerLabelVisibility(layerLabelVisibility === 'visible' ? 'none' : 'visible')}
+                        size="small"
+                      />
+                    }
+                  />
+                </div>
+              </Grid>
+            }
+
+            {(layer.layerSettings?.interaction?.interactionAble || layer.layerType === 'file layer') &&
+              <Grid item xs={12}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <Typography variant="h6">Layer clickable</Typography>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={layerClickability}
+                        onChange={(e) => setLayerClickability(!layerClickability)}
+                        size="small"
+                      />
+                    }
+                  />
+                </div>
+              </Grid>
+            }
+
+            {layer.layerSettings?.colorable &&
+              <>
+                <Grid item xs={12}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Typography variant="h6">Fill Color</Typography>
+                    {layerType === "line" && <WidthPicker width={width} setWidth={setWidth} layerType={layerType} />}
+                  </div>
+                  <Paper>
+                    <ColorPickerStyledBox value={fillColor} onChange={(color) => setFillColor(color)} />
+                  </Paper>
+                </Grid>
+                {strokeColor && (
+                  <Grid item xs={12}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Typography variant="h6">Stroke Color</Typography>
+                      {layerType === "circle" && <WidthPicker width={width} setWidth={setWidth} layerType={layerType} />}
+                    </div>
+                    <Paper>
+                      <ColorPickerStyledBox value={strokeColor} onChange={(color) => setStrokeColor(color)} />
+                    </Paper>
+                  </Grid>
+                )}
+              </>}
+
+            <div style={{ position: "absolute", bottom: '0px', width: '100%' }}>
+              <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "20px" }}>
+                <Grid item>
+                  <Button autoFocus onClick={handleClose} color="primary">
+                    Cancel
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button autoFocus onClick={createLayer} color="primary">
+                    Create layer
+                  </Button>
+                </Grid>
+              </Grid>
+            </div>
+          </Grid>
+        </div>
+      </div >
+    </ClickAwayListener >
+  );
+}
+
+export default LayerManager;

@@ -391,7 +391,8 @@ export default function SourceManager(props) {
     if (fileContent?.featureTypes)
       setStateMapControls({
         ...stateMapControls,
-        layerAddControl: fileContent.featureTypes?.length > 1 ? "addGroup" : "add",
+        // layerAddControl: fileContent.featureTypes?.length > 1 ? "addGroup" : "add",
+        layerAddControl: "addGroup",
         fileUploadedContent: fileContent,
         fileUploadedOriginalContent: originalData,
       });
