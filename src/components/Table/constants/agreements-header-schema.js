@@ -107,11 +107,15 @@ const AgreementsHeadCells = [
   {
     name: "agreementDate",
     label: "Agmt Date",
-    esKey: "shapeJson.properties.agreementDate.keyword",
+    esKey: "shapeJson.properties.agreementDate",
     options: {
       dbName: "shapeJson.properties.agreementDate",
       sort: true,
       filter: true,
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
     },
   },
   {
