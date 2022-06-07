@@ -62,7 +62,7 @@ const AgreementsHeadCells = [
     options: {
       setCellProps: () => ({
         style: {
-          minWidth: "150px",
+          minWidth: "300px",
           whiteSpace: "nowrap",
           position: "sticky",
           left: "227px",
@@ -123,6 +123,7 @@ const AgreementsHeadCells = [
     label: "Grantor (Party 1)",
     esKey: "shapeJson.properties.grantor.keyword",
     options: {
+      setCellProps: () => ({ style: { minWidth: "225px" } }),
       dbName: "shapeJson.properties.grantor",
       sort: true,
       filter: true,
@@ -133,12 +134,13 @@ const AgreementsHeadCells = [
     label: "Grantee (Party 2)",
     esKey: "shapeJson.properties.grantee.keyword",
     options: {
-      customHeadLabelRender: () => (
-        <>
-          <div>Grantee</div>
-          <div>(Party 2)</div>
-        </>
-      ),
+      setCellProps: () => ({ style: { minWidth: "225px" } }),
+      // customHeadLabelRender: () => (
+      //   <>
+      //     <div>Grantee</div>
+      //     <div>(Party 2)</div>
+      //   </>
+      // ),
       dbName: "shapeJson.properties.grantee",
       sort: true,
       filter: true,
@@ -149,6 +151,7 @@ const AgreementsHeadCells = [
     label: "Agmt Date",
     esKey: "shapeJson.properties.agreementDate",
     options: {
+      setCellProps: () => ({ style: { minWidth: "175px" } }),
       dbName: "shapeJson.properties.agreementDate",
       sort: true,
       filter: true,
@@ -183,6 +186,7 @@ const AgreementsHeadCells = [
     label: "Ext Date",
     esKey: "shapeJson.properties.extensionDate.keyword",
     options: {
+      setCellProps: () => ({ style: { minWidth: "175px" } }),
       dbName: "shapeJson.properties.extensionDate",
       sort: true,
       filter: true,
@@ -193,7 +197,7 @@ const AgreementsHeadCells = [
     label: "Status",
     esKey: "shapeJson.properties.agreementStatus.keyword",
     options: {
-      setCellProps: () => ({ style: { minWidth: "250px" } }),
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
       dbName: "shapeJson.properties.agreementStatus",
       sort: true,
       filter: true,
@@ -204,6 +208,7 @@ const AgreementsHeadCells = [
     label: "Report GRS",
     esKey: "shapeJson.properties.reportGrossAcres.keyword",
     options: {
+      setCellProps: () => ({ style: { minWidth: "175px" } }),
       dbName: "shapeJson.properties.reportGrossAcres",
       sort: true,
       filter: true,
