@@ -145,7 +145,7 @@ function DocumentsTable(props) {
         };
       });
 
-      let filterColumns = columns.filter((col) => !metaDatas.find((meta) => meta.name === col.name));
+      let filterColumns = columns.filter((col) => !col._id);
 
       let columnsData = JSON.parse(JSON.stringify([...filterColumns, ...metaDatas]));
       for (let i = 0; i < metaDatas.length; i++) {

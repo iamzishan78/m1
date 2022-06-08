@@ -21,7 +21,7 @@ const fieldsList = (activeUser) => {
     },
     {
       label: "Agreement Type",
-      type: "dropdown",
+      type: "select",
       options: agreementTypes,
       formatValue: (value) => agreementTypes.find((at) => at.value === value)?.label || "",
       key: "agreementType",
