@@ -47,7 +47,7 @@ export default function BulkUpload(props) {
   const [, setStateApp] = React.useContext(AppContext);
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
   const history = useHistory();
-  const previousRoute = matchRoutes(props.routes, history.pathHistory[1]);
+  const previousRoute = matchRoutes(props.routes, typeof history.pathHistory[1] === "string" ? history.pathHistory[1] : history?.pathHistory[1]?.pathname ?? "");
 
   const jobs = rawJobs.filter((job) => {
     let filter = true;
