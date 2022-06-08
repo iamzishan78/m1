@@ -47,7 +47,7 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
     term: 0,
     expirationDate: "",
   });
-  const [extensionExpirationDate, setExtensionDate] = useState("");
+  const [extensionExpirationDate, setExtensionDate] = useState(null);
   const [isExtendable, setExtendable] = useState(false);
 
   const [updateAgreement] = useMutation(UPDATE_AGREEMENT);
@@ -294,7 +294,7 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
                 value={extensionExpirationDate || null}
                 onChange={(date) => {
                   setExtensionDate(String(date["_d"]));
-                  handleUpdateAgreement({ extensionExpirationDate: date ? String(date["_d"]) : "" });
+                  handleUpdateAgreement({ extensionExpirationDate: date ? String(date["_d"]) : null });
                 }}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
