@@ -4,6 +4,8 @@ import { AppContext } from "../../AppContext";
 import Card from "@material-ui/core/Card";
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
+import InboxIcon from '@material-ui/icons/Inbox';
+import DraftsIcon from '@material-ui/icons/Drafts';
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import Button from "@material-ui/core/Button";
@@ -22,10 +24,16 @@ import MapGridTaxOwnersTable from "components/Table/TaxOwners/MapGridTaxOwnersTa
 import MapGridOperatorTable from "components/Table/Operator/MapGridOperatorTable";
 import MapGridContactTable from "components/Table/Contact/MapGridContactTable";
 import MapGridUnitTable from "components/Table/Unit/MapGridUnitTable";
+import AgreementsTable from "components/Table/Agreement/AgreementsTable";
+import TractsTable from "components/Table/Tract/TractsTable";
 
 import SearchPanel from "./components/SearchPanel";
-import { platformDataInitialData } from "./components/data";
+import { platformDataInitialData, snapGridSideBarData } from "./components/data";
 import MapGridLayersTable from "components/Table/Layer/MapGridLayersTable";
+import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -382,6 +390,7 @@ function MapGridCard(props) {
         {selectedOwner ? (
           <OwnersSummaryCard />
         ) : (
+
           <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: "relative" }}>
             {/* //// search panel //// */}
             <TabPanel
@@ -390,92 +399,148 @@ function MapGridCard(props) {
               className={classes.tapsPanelsPadding}
               style={{ position: "absolute", width: "100%" }}
             >
-              <div style={{ position: "relative" }} classes={classes.gridTables}>
-                {/* <TabPanels
+              <Grid
+                container
+                direction="row"
+                style={{ height: '100%', marginBottom: '20px' }}
+              >
+
+
+                <Grid item md={2} style={{ backgroundColor: '#F2F2F2' }}>
+                  <Typography variant="h6" component="h1" style={{ fontWeight: "bold", padding: '10px 0px 0px 20px' }}>
+                    M1 Platform
+                  </Typography>
+
+                  <List component="nav" aria-label="main mailbox folders">
+
+                    {snapGridSideBarData.map((row) => {
+                      const Icon = row.Icon
+                      return (
+                        <FeatureFlag feature={FEATURES[row.featureFlag]} noCheck={!FEATURES[row.featureFlag]}>
+                          <ListItem
+                            button
+                            selected={row.value === searchTapValue.value}
+                            onClick={() => handleSearchPanelChange(row)}
+                          >
+                            <ListItemIcon>
+                              <Icon />
+                            </ListItemIcon>
+                            <ListItemText primary={row.label} />
+                          </ListItem>
+                        </FeatureFlag>
+                      )
+                    }
+                    )}
+                  </List>
+                </Grid>
+
+                <Grid item md={10}>
+                  <div style={{ position: "relative" }} classes={classes.gridTables}>
+                    {/* <TabPanels
                   value={searchTapValue.index}
                   panels={getTaps.map((tab, index) => {
                     return ( */}
-                <Fragment>
-                  {searchTapValue.value === "well" && (
-                    <MapGridWellsTable
-                      dense
-                      parent="search"
-                      customOptions={options}
-                      targetLabel={searchTapValue.value}
-                      header={<SearchPanel {...commonProps} />}
-                      showTags
-                      showComments
-                      showTracks
-                    />
-                  )}
-                  {searchTapValue.value === "owner" && stateApp.gridPolygonString && (
-                    <ShapeGridTaxOwnersTable
-                      parent="boundary_grid_owners"
-                      header={<SearchPanel {...commonProps} />}
-                      customOptions={options}
-                      targetLabel="owner"
-                      showTracks
-                    />
-                  )}
-                  {searchTapValue.value === "owner" && !stateApp.gridPolygonString && (
-                    <MapGridTaxOwnersTable
-                      dense
-                      parent="search"
-                      customOptions={options}
-                      targetLabel={searchTapValue.value}
-                      header={<SearchPanel {...commonProps} />}
-                      showTags
-                      showComments
-                      showTracks
-                    />
-                  )}
-                  {searchTapValue.value === "operator" && (
-                    <MapGridOperatorTable
-                      dense
-                      parent="search"
-                      customOptions={options}
-                      targetLabel={searchTapValue.value}
-                      header={<SearchPanel {...commonProps} />}
-                      showTags
-                      showComments
-                      showTracks
-                    />
-                  )}
-                  {searchTapValue.value === "layer" && (
-                    <MapGridLayersTable
-                      dense
-                      parent="search"
-                      customOptions={options}
-                      targetLabel={"operator"}
-                      header={<SearchPanel {...commonProps} />}
-                    />
-                  )}
-                  {searchTapValue.value === "contacts" && (
-                    <MapGridContactTable
-                      dense
-                      parent="search"
-                      customOptions={options}
-                      targetLabel={searchTapValue.value}
-                      header={
-                        <SearchPanel
-                          isShapeGridOnly={stateApp.gridPolygonString}
-                          handleChange={handleSearchPanelChange}
-                          value={searchTapValue}
-                          ativateSearchPanel={ativateSearchPanel}
+                    <Fragment>
+                      {searchTapValue.value === "well" && (
+                        <MapGridWellsTable
+                          dense
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={<SearchPanel {...commonProps} />}
+                          showTags
+                          showComments
+                          showTracks
                         />
-                      }
-                    />
-                  )}
-                  {searchTapValue.value === "unit" && (
-                    <MapGridUnitTable
-                      dense
-                      parent="search"
-                      customOptions={options}
-                      targetLabel={searchTapValue.value}
-                      header={<SearchPanel {...commonProps} />}
-                    />
-                  )}
-                  {/* <M1nTable
+                      )}
+                      {searchTapValue.value === "owner" && stateApp.gridPolygonString && (
+                        <ShapeGridTaxOwnersTable
+                          parent="boundary_grid_owners"
+                          header={<SearchPanel {...commonProps} />}
+                          customOptions={options}
+                          targetLabel="owner"
+                          showTracks
+                        />
+                      )}
+                      {searchTapValue.value === "owner" && !stateApp.gridPolygonString && (
+                        <MapGridTaxOwnersTable
+                          dense
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={<SearchPanel {...commonProps} />}
+                          showTags
+                          showComments
+                          showTracks
+                        />
+                      )}
+                      {searchTapValue.value === "operator" && (
+                        <MapGridOperatorTable
+                          dense
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={<SearchPanel {...commonProps} />}
+                          showTags
+                          showComments
+                          showTracks
+                        />
+                      )}
+                      {searchTapValue.value === "layer" && (
+                        <MapGridLayersTable
+                          dense
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={"operator"}
+                          header={<SearchPanel {...commonProps} />}
+                        />
+                      )}
+                      {searchTapValue.value === "contacts" && (
+                        <MapGridContactTable
+                          dense
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={
+                            <SearchPanel
+                              isShapeGridOnly={stateApp.gridPolygonString}
+                              handleChange={handleSearchPanelChange}
+                              value={searchTapValue}
+                              ativateSearchPanel={ativateSearchPanel}
+                            />
+                          }
+                        />
+                      )}
+                      {searchTapValue.value === "unit" && (
+                        <MapGridUnitTable
+                          dense
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={<SearchPanel {...commonProps} />}
+                        />
+                      )}
+                      {searchTapValue.value === "agreement" && (
+                        <AgreementsTable
+                          dense
+                          esIndex={'shapes_flat'}
+                          parent="AgreementsTable"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={<SearchPanel {...commonProps} />}
+                        />
+                      )}
+                      {searchTapValue.value === "tract" && (
+                        <TractsTable
+                          dense
+                          esIndex={'shapes_flat'}
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={<SearchPanel {...commonProps} />}
+                        />
+                      )}
+                      {/* <M1nTable
                             dense
                             options={options}
                             parent="search"
@@ -492,11 +557,14 @@ function MapGridCard(props) {
                             showComments={tab.showComments}
                             showTracks={tab.showTracks}
                           /> */}
-                </Fragment>
-                {/* )
+                    </Fragment>
+                    {/* )
                   })}
                 /> */}
-              </div>
+                  </div>
+
+                </Grid>
+              </Grid >
             </TabPanel>
 
             {/* //// tracked panel //// */}
@@ -587,8 +655,11 @@ function MapGridCard(props) {
               </div>
             </TabPanel>
           </div>
-        )}
-      </Card>
+
+
+        )
+        }
+      </Card >
     );
   };
 

@@ -4,10 +4,9 @@ const UNITS = require("./UNITS").default;
 const PARCELINTERESTS = require("./PARCELINTERESTS").default;
 const SHAPEOWNER = require("./SHAPEOWNER").default;
 const CHECKDETAILS = require("./CHECKDETAILS").default;
+const CONTACTSWELLINTEREST = require("./CONTACTSWELLINTEREST").default;
 
-
-
-const eportData = { CONTACTS, TRACTS, UNITS, PARCELINTERESTS, SHAPEOWNER, CHECKDETAILS }
+const eportData = { CONTACTS, TRACTS, UNITS, PARCELINTERESTS, SHAPEOWNER, CHECKDETAILS, CONTACTSWELLINTEREST }
 export default eportData
 
 

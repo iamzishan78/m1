@@ -72,7 +72,7 @@ function MapGridUnitTable(props) {
   useEffect(() => {
     setTableMeta({
       extendSearchQuery: searchInput,
-      searchFields: ["name", "_all"],
+      searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
       startPaginationAt: 25,
@@ -85,7 +85,7 @@ function MapGridUnitTable(props) {
       defaultSort: { field: '_ts', order: 'desc' },
       polygon: stateApp?.currentFeature?.geometry && {
         type: "geo_intersects",
-        field: "geoJSON",
+        field: "shapeGeometry",
         value: stateApp?.currentFeature?.geometry
       },
       formatHits,
@@ -96,14 +96,14 @@ function MapGridUnitTable(props) {
   useEffect(() => {
     if (owners?.getShapeOwnerDataById && get(status, "getESFilterList.hits", [])) {
       const rows = JSON.parse(JSON.stringify(props.rows));
-      const contactStatuses = get(status, "getESFilterList.hits", []).map(s => ({ name:s.key, data:[] }));
+      const contactStatuses = get(status, "getESFilterList.hits", []).map(s => ({ name: s.key, data: [] }));
 
       for (let i = 0; i < rows.length; i++) {
-        for(let j=0; j<contactStatuses.length; j++){
+        for (let j = 0; j < contactStatuses.length; j++) {
           const data = owners?.getShapeOwnerDataById[rows[i]._id].status[contactStatuses[j].name]
-          contactStatuses[j].data = data ?[data] : [0]
+          contactStatuses[j].data = data ? [data] : [0]
         }
-        rows[i].unitStatus = {series: contactStatuses, xaxis:['']}
+        rows[i].unitStatus = { series: contactStatuses, xaxis: [''] }
       }
       props.setRows(rows);
     }
@@ -123,7 +123,7 @@ function MapGridUnitTable(props) {
       }
     }
   }, [props.rows]);
-  
+
   useEffect(() => {
     getStatus({
       variables: {
@@ -132,7 +132,7 @@ function MapGridUnitTable(props) {
         size: 50,
       }
     });
-  },[]);
+  }, []);
 
   return (
     <Container

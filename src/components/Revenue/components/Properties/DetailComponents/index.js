@@ -26,8 +26,9 @@ import { ConvertOwnerToContactContainer } from "store/containers/entity";
 import HeaderSection from "./HeaderSection";
 import NavHeader from "components/Revenue/components/Common/NavHeader";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
-import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
+import { MultipleOwnerToContactDrawerContainer } from "store/containers";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import DocViewer from "components/Shared/DocViewer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -93,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsDetailContainer: ({ showInterestDetails, collapse }) => ({
     padding: 20,
-    maxWidth: showInterestDetails || !collapse ? "calc(100% - 644px)" : "100%",
+    width: showInterestDetails || !collapse ? "calc(100% - 644px)" : "100%",
   }),
   menuIcon: {
     background: "transparent",
@@ -215,7 +216,7 @@ export default function DetailComponents(props) {
   const [tab, setTab] = useState(0);
   const [refetchContacts, setRefetchContacts] = useState(false);
   const selectedTabRef = useRef(null);
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useState(true);
   const [anchorEl, setAnchorEl] = useState();
   const [isButtonScroll, setButtonScroll] = useState(false);
   const [propertyDetails, setProperty] = useState(null);
@@ -244,9 +245,8 @@ export default function DetailComponents(props) {
     if (getPropertyResult) setProperty(getPropertyResult?.getProperty.property);
     setStateApp((state) => ({
       ...state,
-      selectedRevenueProperty: getPropertyResult?.getProperty.property
-    }
-    ))
+      selectedRevenueProperty: getPropertyResult?.getProperty.property,
+    }));
   }, [getPropertyResult]);
 
   useEffect(() => {
@@ -270,11 +270,13 @@ export default function DetailComponents(props) {
 
   useEffect(() => {
     if (checkIfOwnersAreContactsData?.ifAreContacts?.length > 0) {
-      setPropertyOwnerContacts(checkIfOwnersAreContactsData?.ifAreContacts.map(c => ({
-        _id: c.isContact,
-        name: c.name,
-        entityId: c._id
-      })));
+      setPropertyOwnerContacts(
+        checkIfOwnersAreContactsData?.ifAreContacts.map((c) => ({
+          _id: c.isContact,
+          name: c.name,
+          entityId: c._id,
+        }))
+      );
     }
   }, [checkIfOwnersAreContactsData]);
 
@@ -296,29 +298,40 @@ export default function DetailComponents(props) {
               _id: propertyDetails._id,
               IsDeleted: true,
             },
-          }
+          },
         }).then((res) => {
-          history.push('/revenue/properties')
-        });;
+          history.push("/revenue/properties");
+        });
       }
     }
-  }
+  };
 
   const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
 
   const onUpdateMetaData = (data) => {
-    updateMetaOwner({
-      variables: {
-        descriptorObject: data.owner,
-        userId: stateApp.user.mongoId,
-        relatedObject: propertyDetails._id,
-        relatedObjectType: 'Property'
-      }
-    });
-  }
+    if (data.owner)
+      updateMetaOwner({
+        variables: {
+          descriptorObject: data.owner,
+          userId: stateApp.user.mongoId,
+          relatedObject: propertyDetails._id,
+          relatedObjectType: "Property",
+        },
+      });
+    else {
+      updateProperty({
+        variables: {
+          property: {
+            _id: propertyId,
+            ...data
+          },
+        },
+      });
+    }
+  };
 
   return (
-    <NavHeader title={`${get(propertyDetails, 'number', '')}-${get(propertyDetails, 'name', '')}`}>
+    <NavHeader title={`${get(propertyDetails, "number", "")}-${get(propertyDetails, "name", "")}`}>
       {/**
        * Detail title section
        */}
@@ -335,7 +348,7 @@ export default function DetailComponents(props) {
               <div className={classes.tagsContainer}>
                 <div className={classes.highlighter}>
                   <Typography className={classes.highlight} variant="highlight">
-                    Division Order
+                    Property
                   </Typography>
                 </div>
                 <div className={classes.tags}>
@@ -372,14 +385,19 @@ export default function DetailComponents(props) {
       </div>
 
       <div className="flex justifyBetween alignStart w-100">
-        <div className={`${classes.tabsDetailContainer}`}>
+        <div className={classes.tabsDetailContainer}>
           {/**
            * Detail tabs section
            */}
-          <div className={classes.tabsSection}>
+          <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
             <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
               <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-                <HeaderSection propertyId={propertyId} propertyDetails={propertyDetails} propertyOwnerContact={propertyOwnerContact} setEntityToConvert={setEntityToConvert} />
+                <HeaderSection
+                  propertyId={propertyId}
+                  propertyDetails={propertyDetails}
+                  propertyOwnerContact={propertyOwnerContact}
+                  setEntityToConvert={setEntityToConvert}
+                />
               </div>
               <div ref={tab === 1 ? selectedTabRef : null}>
                 <PropertyInterestDetailsSection
@@ -391,6 +409,9 @@ export default function DetailComponents(props) {
               </div>
             </div>
           </div>
+          {stateApp.viewDoc && (
+            <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
+          )}
         </div>
         {showOwnerDialog && (
           <ConvertOwnerToContactContainer
@@ -404,7 +425,7 @@ export default function DetailComponents(props) {
             propertyDetails={propertyDetails}
             selectedInterest={selectedInterest}
             setShowOwnerDialog={setShowOwnerDialog}
-            propertyOwnerContact={propertyOwnerContact?.find(owner => owner.entityId === propertyDetails?.owner?._id)}
+            propertyOwnerContact={propertyOwnerContact?.find((owner) => owner.entityId === propertyDetails?.owner?._id)}
             onClose={() => setShowInterestDetails(false)}
           />
         )}
@@ -433,19 +454,15 @@ export default function DetailComponents(props) {
               data={propertyDetails}
               onUpdate={onUpdateMetaData}
               setCollapse={setCollapse}
-              targetLabel='Property'
+              targetLabel="Property"
               targetSourceId={propertyId}
               setStateApp={setStateApp}
+              ownerTitle="Approver"
             />
           </div>
         )}
       </div>
-      <Dialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-        fullWidth={true}
-        maxWidth={"sm"}
-      >
+      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)} fullWidth={true} maxWidth={"sm"}>
         <DeleteConfirmationDialogContent
           header={`Delete Property`}
           onClose={() => setOpenDeleteDialog(false)}

@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import set from 'lodash/set';
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
@@ -19,6 +19,7 @@ import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "actions";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent.js";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
+import { LAYERS_FEATURES_COUNT } from "graphQL/useQueryLayerFeaturesCount";
 
 function trim(str) {
   return str.replace(/^\s+|\s+$/gm, "");
@@ -124,6 +125,7 @@ function LayerStyling(props) {
   const [strokeColor, setStrokeColor] = useState(initialStrokeColor);
   const [, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [layerFeaturesCount, { data: layerDataCount }] = useLazyQuery(LAYERS_FEATURES_COUNT);
 
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
@@ -133,24 +135,17 @@ function LayerStyling(props) {
     setStrokeColor(initialStrokeColor);
   }, [initialFillColor, initialStrokeColor, initialWidth, layer]);
 
-  const setRowsCount = () => {
-    const rows = stateApp.map.querySourceFeatures(layer.layerPaintProps[0].sourceProps, {
-      sourceLayer: layer.identifier
-    });
-    if (rows) {
-      setRows(vf_number(rows.length));
-    }
-    return rows
-  }
+  useEffect(() => {
+    setRows(layerDataCount?.layerFeaturesCount || 0)
+  }, [layerDataCount])
+
 
   useEffect(() => {
+    setRows(0)
     if (layer.file) {
-      setRowsCount()
-      const interval = setInterval(() => {
-        if (setRowsCount().length > 0) clearInterval(interval);
-      }, 1000);
+      layerFeaturesCount({ variables: { fileId: layer.file } })
     }
-  }, [layer, stateApp.map])
+  }, [layer.file, layerFeaturesCount])
 
   const handleClose = () => {
     setStateMapControls((stateMapControls) => ({

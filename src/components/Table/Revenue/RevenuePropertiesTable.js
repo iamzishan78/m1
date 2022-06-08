@@ -33,8 +33,8 @@ function RevenuePropertiesTable(props) {
         genericDataActions
       );
       hit.payorName = hit?.operator?.name;
-      hit.wellApiNumber = hit?.well?.apiNumber
-      hit.wellName = hit?.well?.wellName;
+      hit.wellApiNumber = hit?.wells?.length > 1 ? 'MULTIPLE' : hit?.wells && hit?.wells[0] ? hit?.wells[0].apiNumber : '';
+      hit.wellName = hit?.wells?.length > 1 ? 'MULTIPLE' : hit?.wells && hit?.wells[0] ? hit?.wells[0].wellName : '';
       hit.checkNumber = hit?.lastCheck?.checkNumber;
       hit.amount = hit?.lastCheck?.netOwnerValue;
       hit.type = hit?.lastCheck?.interestType[0];
@@ -110,10 +110,7 @@ function RevenuePropertiesTable(props) {
         orderByTracks={false}
         startPaginationAt={props.startPaginationAt}
         onTableChange={props.onTableChange}
-        options={{
-          ...props.options,
-          ...props.customOptions,
-        }}
+        options={{ ...props.options, ...props.customOptions }}
         parent={props.parent}
         setColumnsBase={[]}
         setRefetchData={setRefetchData}

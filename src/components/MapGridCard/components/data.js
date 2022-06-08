@@ -7,7 +7,7 @@ import UnitIcon from "components/Shared/svgIcons/unit";
 import FolderIcon from "@material-ui/icons/Folder";
 import OperatorIcon from "components/Shared/svgIcons/operator";
 import TaxOwnerIcon from "@material-ui/icons/AccountBalance";
-import ContactIcon from "@material-ui/icons/Group";
+// import ContactIcon from "@material-ui/icons/Group";
 import LayersIcon from "@material-ui/icons/Layers";
 
 
@@ -18,14 +18,19 @@ export const platformDataInitialData = [
 
   { index: 3, value: "layer", Icon: LayersIcon, label: "Layer", isLayer: true },
   // { index: 3, value: "lease", Icon: LeaseIcon, label: "Leases" },
-  { index: 4, value: "landgrid", Icon: LeaseIcon, label: "Land Grid", shapeGrid: false, featureFlag: "LANDGRIDSEARCH" },
+  { index: 4, value: "landgrid", Icon: LeaseIcon, label: "Land Grid", shapeGrid: false, featureFlag: 'LANDGRIDSEARCH' },
   // { index: 4, value: "contacts", Icon: ContactIcon, label: "Contacts", shapeGrid: false },
 ];
 
 
 export const userDefinedInitialData = [
-  { index: 7, value: "agreement", Icon: FolderIcon, label: "Agreements", mapGrid: false },
+  { index: 7, value: "agreement", Icon: FolderIcon, label: "Agreements", mapGrid: false, featureFlag: 'AGREEMENT_LAYER' },
   { index: 8, value: "tract", Icon: TractIcon, label: "Tracts", mapGrid: false },
   { index: 9, value: "unit", Icon: UnitIcon, label: "Units", mapGrid: true },
   // { index: 4, value: "contacts", Icon: ContactIcon, label: "Contacts" },
+];
+
+export const snapGridSideBarData = [
+  ...[platformDataInitialData[0], platformDataInitialData[1], platformDataInitialData[2]],
+  ...userDefinedInitialData
 ];

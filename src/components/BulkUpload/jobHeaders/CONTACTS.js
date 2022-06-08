@@ -66,7 +66,7 @@ export default [
         actual_key: "entityDetail.city",
     },
     {
-        label: "State",
+        label: "AddressState",
         mapped_key: "",
         required: false,
         actual_key: "entityDetail.state",
@@ -250,6 +250,12 @@ export default [
         mapped_key: "",
         required: false,
         actual_key: "comment"
+    },
+    {
+        label: "Tags",
+        mapped_key: "",
+        required: false,
+        actual_key: "contact.tags"
     },
     // {
     //   label: "Comments",

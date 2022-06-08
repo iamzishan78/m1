@@ -18,6 +18,7 @@ import Tab from "@material-ui/core/Tab";
 import { CircularProgress } from "@material-ui/core";
 import TractIcon from "components/Shared/svgIcons/tract";
 import UnitIcon from "components/Shared/svgIcons/unit";
+import NotificationsIcon from "@material-ui/icons/Notifications";
 import FolderIcon from "@material-ui/icons/Folder";
 import ContactIcon from "@material-ui/icons/Group";
 import FlowIcon from "@material-ui/icons/Repeat";
@@ -69,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     display: "flex",
     "& svg": {
-      color: "#9d9d9d",
+      color: "#000000",
       marginRight: "7px",
     },
     "&:hover": {
@@ -105,6 +106,9 @@ const useStyles = makeStyles((theme) => ({
   commentTime: {
     marginLeft: "10px",
     fontSize: "12px",
+  },
+  sysNotification: {
+    marginLeft: 0,
   },
   customTabs: {
     float: "right",
@@ -250,7 +254,7 @@ const Notifications = () => {
         <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
       ) : (
         <List style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
-          {notifications.map(({ _id, state, source, parent, notificationType, parentType, pipelineId, stageId }, i) => {
+          {notifications.map(({ _id, state, source, parent, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
             const user = users.find((user) => source.user === user._id);
             return (
               <Paper key={i} className={classes.paper}>
@@ -259,7 +263,11 @@ const Notifications = () => {
                   direction="row"
                   justify="space-between"
                   alignItems="center"
-                  style={state === "UNREAD" ? { borderLeft: "4px solid #01B0F0" } : { borderLeft: "4px solid #BFBFBF" }}
+                  style={
+                    state === "UNREAD"
+                      ? { borderLeft: "4px solid #01B0F0" }
+                      : { borderLeft: "4px solid #BFBFBF" }
+                  }
                   className={classes.listitem}
                   spacing={1}
                   onClick={() => {
@@ -272,9 +280,16 @@ const Notifications = () => {
                       awaitRefetchQueries: false,
                     });
                     if (parentType === "DEAL") {
-                      history.push(`/flow/${pipelineId}/lane/${stageId}/card/${parent._id}/`);
-                    } else if (parentType === "PARCEL" || parentType === "UNIT") {
-                      history.push(`/map/${parentType.toLowerCase()}s/${parent._id}`);
+                      history.push(
+                        `/flow/${pipelineId}/lane/${stageId}/card/${parent._id}/`
+                      );
+                    } else if (
+                      parentType === "PARCEL" ||
+                      parentType === "UNIT"
+                    ) {
+                      history.push(
+                        `/map/${parentType.toLowerCase()}s/${parent._id}`
+                      );
                     } else if (parentType === "AGREEMENT") {
                       history.push(`/map/${parent.layer}s/${parent._id}`);
                     } else if (parentType === "CHECK") {
@@ -310,12 +325,50 @@ const Notifications = () => {
                         {parent.number}-{parent.name}
                       </span>
                     )}
+                    {notificationType === "SYSTEM" && (
+                      <Grid container className={classes.gridStyle}>
+                        <Grid item xs={1}>
+                          <IconButton
+                            style={{ marginTop: "0px", marginLeft: "14px" }}
+                          >
+                            <NotificationsIcon />
+                          </IconButton>
+                        </Grid>
+                        <Grid item xs={11} className={classes.paddingLeft10}>
+                          <div>
+                            <ReactTimeAgo
+                              className={[classes.commentTime, classes.sysNotification]}
+                              date={
+                                new Date(
+                                  new Intl.DateTimeFormat("en-US", {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "2-digit",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }).format(Date.parse(dateTimeAdded))
+                                )
+                              }
+                              locale="en-US"
+                            />
+                            <br />
+                            <span>{message}</span>
+                          </div>
+                        </Grid>
+                      </Grid>
+                    )}
                     {notificationType === "MENTION" && (
                       <Grid container className={classes.gridStyle}>
                         <Grid item xs={1}>
-                          <IconButton style={{ marginTop: "0px", marginLeft: "14px" }}>
+                          <IconButton
+                            style={{ marginTop: "0px", marginLeft: "14px" }}
+                          >
                             {profilesInfo[user?.email]?.profileImage ? (
-                              <Avatar src={profilesInfo[user?.email].profileImage} size="38" round />
+                              <Avatar
+                                src={profilesInfo[user?.email].profileImage}
+                                size="38"
+                                round
+                              />
                             ) : (
                               <Avatar name={user?.name} size="38" round />
                             )}

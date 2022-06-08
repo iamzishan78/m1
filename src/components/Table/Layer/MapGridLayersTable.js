@@ -79,9 +79,9 @@ function MapGridLayersTable(props) {
   useEffect(() => {
     props.setTableMeta({
       extendSearchQuery: searchInput,
-      searchFields: ["_all"],
+      searchFields: ['*'],
       TableHeader: [],
-      filters: [{ field: "file._id", value: stateApp.selectedLayer.file }, { field: "properties.layerGeometry", value: stateApp.selectedLayer.layerGeometry }],
+      filters: [{ field: "file._id", value: stateApp.selectedLayer?.file }, { field: "properties.layerGeometry", value: stateApp.selectedLayer?.layerGeometry }],
       esIndex: "shapefile_flat",
       startPaginationAt: 25,
       formatColumns,

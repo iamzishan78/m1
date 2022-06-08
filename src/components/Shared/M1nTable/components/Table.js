@@ -97,7 +97,7 @@ import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 import CustomFieldText from "components/Shared/M1nTable/components/SubComponents/CustomFieldText";
-import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+import CustomFieldSelectV2 from "./SubComponents/CustomFieldSelectV2";
 import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 // queries
@@ -126,6 +126,7 @@ import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
+
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -1741,7 +1742,6 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  value = tableMeta.rowData[1]
                   if ((props.targetLabel === "deal" || props.targetLabel === "activity") && value === null) {
                     return (
                       <p
@@ -1792,10 +1792,7 @@ function SubTable(props) {
                               selectedMenuIndexFind: 0,
                               contactFromMap: true,
                             }));
-                            console.log("value : ", value)
-                            console.log("tablemeta : ", tableMeta)
-                            console.log("updateValue : ", updateValue)
-                            routeChange(`/contact/details/${tableMeta.rowData[1]}/`);
+                            routeChange(`/contact/details/${value}`);
                             setTitle("Contact Details");
                             setSubTitle(" ");
 
@@ -2476,7 +2473,7 @@ function SubTable(props) {
                     }
                     return (
                       <div style={{ minWidth: "100px" }}>
-                        <CustomFieldSelect
+                        <CustomFieldSelectV2
                           dropdownOptions={column.dropdownOptions}
                           index={tableMeta.rowIndex}
                           column={column}
@@ -3974,10 +3971,16 @@ function SubTable(props) {
   //   //options.export = true;
   // }
 
-  if (props.header === "Deals" || props.header === "Activities") {
+
+  if (props.header === "Deals" 
+      || props.header === "Activities"
+      || props.header === "Agreements"
+      || props.parent === "TractTable"
+      || props.parent === "TractInterestsTable"
+      ) {
     // adds the print and export options in the Flow grid and the Activities grid
     if (props.targetLabel !== 'activitiesDashboard') {
-      options.print = true;
+      // options.print = true;
       options.download = true;
     }
   }
@@ -4352,25 +4355,25 @@ function SubTable(props) {
                   ? true
                   : false
               }
-              maxWidth={
-                openDialog === "owner" || openDialog === "wellsPerOwner" || openDialog === "ownerContacts"
-                  ? "xl"
-                  : openDialog === "owner" ||
-                    openDialog === "ownersPerContacts" ||
-                    openDialog === "wellsPerOwner" ||
-                    openDialog === "owner" ||
-                    openDialog === "wellsPerOwner" ||
-                    openDialog === "buyContactsInfo" ||
-                    openDialog === "sendMailers" ||
-                    openDialog === "printLabels" ||
-                    openDialog === "deleteUser" ||
-                    openDialog === "deleteWellInterest" ||
-                    openDialog === "deleteParcelDocument" ||
-                    openDialog === "deleteWellDocument" ||
-                    openDialog === "addParcelInterestsToEntity"
-                    ? true
-                    : false
-              }
+              // maxWidth={
+              //   openDialog === "owner" || openDialog === "wellsPerOwner" || openDialog === "ownerContacts"
+              //     ? "xl"
+              //     : openDialog === "owner" ||
+              //       openDialog === "ownersPerContacts" ||
+              //       openDialog === "wellsPerOwner" ||
+              //       openDialog === "owner" ||
+              //       openDialog === "wellsPerOwner" ||
+              //       openDialog === "buyContactsInfo" ||
+              //       openDialog === "sendMailers" ||
+              //       openDialog === "printLabels" ||
+              //       openDialog === "deleteUser" ||
+              //       openDialog === "deleteWellInterest" ||
+              //       openDialog === "deleteParcelDocument" ||
+              //       openDialog === "deleteWellDocument" ||
+              //       openDialog === "addParcelInterestsToEntity"
+              //       ? true
+              //       : false
+              // }
               maxWidth={
                 openDialog === "owner" || openDialog === "wellsPerOwner" || openDialog === "ownerContacts"
                   ? "xl"

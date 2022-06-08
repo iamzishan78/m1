@@ -48,9 +48,11 @@ export default function InitializeProfile() {
             employerAddress,
             investingEntities,
             investingPreferences,
+            notificationPreferences
           },
         },
       } = data;
+      const { __typename, ...restNotificationSettings } = notificationPreferences || {};
 
       setStateProfile({
         ...stateProfile,
@@ -85,6 +87,7 @@ export default function InitializeProfile() {
           employerAddress,
           investingEntities,
           investingPreferences,
+          notificationPreferences: { ...restNotificationSettings},
         },
       });
     };

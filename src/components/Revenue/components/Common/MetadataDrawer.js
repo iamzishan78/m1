@@ -20,6 +20,7 @@ import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
 import { AppContext } from "AppContext";
+import { getRandomColor } from "components/Shared/functions/ui";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -135,7 +136,7 @@ export default function MetadataDrawer(props) {
   const history = useHistory();
   // States
   const [ownerId, setOwnerId] = useState("");
-  const [description, setDescription] = useState(props.description ?? "");
+  const [description, setDescription] = useState("");
   const [onFocusDescription, setFocusSate] = useState(false);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -191,8 +192,8 @@ export default function MetadataDrawer(props) {
     });
 
   useEffect(() => {
-    setDescription(props.description);
-  }, [props.description]);
+    setDescription(props?.data?.[props.descriptionKey]);
+  }, [props.data, props.descriptionKey]);
 
   useEffect(() => {
     getAllMongoUsers();
@@ -344,7 +345,11 @@ export default function MetadataDrawer(props) {
                           startAdornment: (
                             <>
                               <InputAdornment position="start">
-                                <Avatar className={classes.dealOwnerAvatar}>
+                                <Avatar
+                                 style={{
+                                  backgroundColor:users.find((user) => user?.value === ownerId)?getRandomColor(users.find((user) => user?.value === ownerId).text.toString()):""
+                                }}
+                                className={classes.dealOwnerAvatar}>
                                   {users.find(
                                     (user) => user?.value === ownerId
                                   ) ? (
@@ -362,7 +367,7 @@ export default function MetadataDrawer(props) {
                                           )
                                           .text.toString()
                                           .toUpperCase()
-                                          .split(" ").length > 1
+                                          .length > 1
                                           ? users
                                             .find(
                                               (user) =>
@@ -401,10 +406,11 @@ export default function MetadataDrawer(props) {
                 onChange={(e) => {
                   setDescription(e.target.value);
                 }}
-                onKeyDown={(e) => {
-                  if (e.keyCode === 13) {
-                    setFocusSate(false);
-                    setDescription("");
+                onKeyPress={(event) => {
+                  if (event.key === "Enter") {
+                    document.activeElement.blur();
+                    if (props.onUpdate)
+                      props.onUpdate({ [props.descriptionKey]: event.target.value });
                   }
                 }}
                 onFocus={() => setFocusSate(true)}
@@ -490,4 +496,5 @@ MetadataDrawer.defaultProps = {
   commentsWidth: "600px",
   viewAllDocuments: false,
   ownerTitle: "Owner",
+  descriptionKey: "metaDescription"
 }
