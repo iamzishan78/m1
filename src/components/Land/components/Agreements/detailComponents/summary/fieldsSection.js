@@ -87,7 +87,8 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   };
 
   const offClickHandler = (key, value, isCustom) => {
-    updateAgreement(key, value, isCustom);
+    console.log(key, value)
+    // updateAgreement(key, value, isCustom);
   };
 
   const addAgreementCustomData = (data) => {
@@ -150,6 +151,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               InputLabelProps={{
                                 shrink: true,
                               }}
+                              InputProps={field.InputProps}
                               onBlur={(event) => offClickHandler(field.key, event.target.value)}
                               disabled={field.disabled}
                             />
