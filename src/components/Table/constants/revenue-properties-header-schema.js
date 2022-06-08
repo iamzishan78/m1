@@ -7,7 +7,7 @@ const RevenuePropertiesHeadCells = [
 
   {
     name: "number",
-    label: "Property#",
+    label: "Property",
     esKey: "number.keyword",
     options: {
       customRender: (value, tableMeta) => {
@@ -26,7 +26,8 @@ const RevenuePropertiesHeadCells = [
             }}
             style={styles}
           >
-            {splitNumber?.[0]}
+            {/* {splitNumber?.[0]} */}
+            {splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]}
           </p>
         );
       },
@@ -34,12 +35,12 @@ const RevenuePropertiesHeadCells = [
       filter: true,
     },
   },
-  {
-    name: "name",
-    label: "Property Name",
-    esKey: "name.keyword",
-    options: { sort: true, filter: true },
-  },
+  // {
+  //   name: "name",
+  //   label: "Property Name",
+  //   esKey: "name.keyword",
+  //   options: { sort: true, filter: true },
+  // },
   {
     name: "payorName",
     label: "Operator",
