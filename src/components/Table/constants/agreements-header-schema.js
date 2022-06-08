@@ -262,6 +262,21 @@ const AgreementsHeadCells = [
     esKey: "tags.tag.keyword",
     options: { display: true, sort: true, filter: true },
   },
+
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      dbName: "comments.comment",
+      display: true,
+      filter: false,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
   {
     name: "mapFlyTo",
     label: " ",
@@ -273,7 +288,7 @@ const AgreementsHeadCells = [
       customRender: (value, tableMeta) => {
         return (
           <IconButton
-            size="small"
+            size="medium"
             color="primary"
             style={{ backgroundColor: "#efefef" }}
             onClick={(e) => {
@@ -288,20 +303,6 @@ const AgreementsHeadCells = [
           </IconButton>
         );
       },
-    },
-  },
-  {
-    name: "commentsCounter",
-    label: " ",
-    options: {
-      dbName: "comments.comment",
-      display: true,
-      filter: false,
-      searchable: false,
-      sort: true,
-      download: false,
-      print: false,
-      viewColumns: false,
     },
   },
   {
