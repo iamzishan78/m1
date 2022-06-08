@@ -13,6 +13,7 @@ import RigsCard from "./RigsCard"
 import RSSFeed from "./RssFeed"
 import Notifications from "./Notifications"
 import PermitsCard from "./PermitsCard"
+import Tasks from "./Tasks";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -88,6 +89,7 @@ const CardGrid = () => {
   const [stateDashboard, setStateDashboard] = useContext(DashboardContext);
   const [items, setItems] = useState([
     { el: <Notifications title={7} />, size: "2x", key: 1 },
+    { el: <Tasks title={8} />, size: "2x", key: 8 },
     { el: <RigsCard title={5} />, size: "2x", key: 2 },
     { el: <PermitsCard title={6} />, size: "2x", key: 3 },
     { el: <ProdCard title={1} />, size: "2x", key: 4 }, 
