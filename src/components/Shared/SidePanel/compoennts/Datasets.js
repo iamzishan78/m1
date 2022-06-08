@@ -20,6 +20,7 @@ import { useDispatch } from "react-redux";
 import { setMapGridCardState, toggleMapGridCardAtived } from "actions";
 import { snapGridSideBarData } from "components/MapGridCard/components/data";
 import { GET_DATASETS } from "graphQL/useQueryDataset";
+import { USER_MAP_SETTINGS_QUERY } from "graphQL/useQueryUserMapSettings";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -79,28 +80,29 @@ function Datasets({ layerMap, headerButton }) {
   const dispatch = useDispatch();
 
   const [getDatasets, { data: _datasets }] = useLazyQuery(GET_DATASETS);
+  const [userMapSettings, { data: mapSettings }] = useLazyQuery(USER_MAP_SETTINGS_QUERY);
 
   useEffect(() => {
+    userMapSettings({ variables: { user: stateApp.user._id, type: 'DatasetVisibility' } })
     getDatasets({ variables: { userId: stateApp.user._id } })
   }, [])
 
-  console.log(_datasets)
-
   const datasets = useMemo(() => {
-    const groupLayers = groupBy(layerMap, 'file')
-    // const groupLayers = groupBy(layerMap, 'id')
-    if (_datasets?.getDatasets?.length && layerMap.length) {
+    if (_datasets?.getDatasets?.length && layerMap.length && mapSettings?.userMapSettings?.message) {
       const datasets = copy(_datasets.getDatasets)
+      const settings = mapSettings?.userMapSettings?.settings?.settings || {}
 
       datasets.forEach((dataset) => {
         dataset.name = dataset.sourceName
         if (dataset.sourceName === 'M1 Platform') {
           dataset.Icon = DatabaseIcon
+          dataset.visibility = true
           dataset.categoryCount = snapGridSideBarData.length
           dataset.categories = snapGridSideBarData
         } else {
           dataset.Icon = FileDatasetIcon
           dataset.categoryCount = dataset.categories.length
+          dataset.visibility = typeof settings[dataset._id] === 'undefined' ? true : settings[dataset._id]
           dataset.categories.forEach((category) => {
             category.file = dataset.file
             category.layerName = category.name
@@ -108,10 +110,10 @@ function Datasets({ layerMap, headerButton }) {
         }
       })
       setStateApp((state) => ({ ...state, datasets }));
-      return datasets
+      return datasets.filter((dataset) => dataset.visibility)
     } else
       return []
-  }, [_datasets, layerMap])
+  }, [_datasets, layerMap, mapSettings])
 
   const getBorderColor = useCallback((name) => (stateApp?.selectedDataset?.sourceName === name ? '#05aff0' : '#263451'), [stateApp.selectedDataset])
 

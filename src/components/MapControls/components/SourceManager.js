@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, Fragment } from "react";
 import update from "immutability-helper";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
@@ -39,6 +39,7 @@ import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 import { useHistory } from "react-router-dom";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 
 const GCS_North_American_1927 =
   'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
@@ -149,6 +150,7 @@ export default function SourceManager(props) {
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [openM1, setOpenM1] = React.useState(true);
+  const [openDataSets, setOpenDataSets] = React.useState({});
   const [openUD, setOpenUD] = React.useState(true);
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -156,6 +158,7 @@ export default function SourceManager(props) {
 
   const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
+  const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, { refetchQueries: ["getUserMapSettings"], awaitRefetchQueries: true });
 
   useEffect(() => {
     if (stateApp.layers) {
@@ -397,6 +400,18 @@ export default function SourceManager(props) {
       });
   }
 
+  const handleDatasetChange = (dataset, value) => {
+    updateUserMapSettings({
+      variables: {
+        settings: {
+          user: stateApp.user.mongoId,
+          type: 'DatasetVisibility',
+          settings: { [dataset._id]: value },
+        },
+      },
+    });
+  }
+
   const checkIfDeleteAllow = (layer) => {
     if (layer.name === 'Agreements' || layer.groupName === 'Agreements')
       return false;
@@ -404,11 +419,7 @@ export default function SourceManager(props) {
   }
 
   const M1Layers = React.useMemo(() => {
-    return currentLayers.filter((layer) => layer.layerCategory === "M1 Layer");
-  }, [currentLayers]);
-
-  const UdLayers = React.useMemo(() => {
-    const layers = currentLayers.filter((layer) => layer.layerType === "file layer");
+    const layers = currentLayers.filter((layer) => layer.layerCategory === "M1 Layer" || ['Parcels', 'Agreements', 'Units', 'Area of Interest'].includes(layer.groupName || layer.layerName));
     const groupHandled = [];
     for (let index = 0; index < layers.length; index++) {
       const UdLayer = layers[index];
@@ -419,7 +430,7 @@ export default function SourceManager(props) {
         index = 0;
       }
     }
-    return layers.filter((UdLayer) => !((UdLayer.layerType === "file layer" || UdLayer.groupName === "Agreements") && UdLayer.groupId));
+    return layers.filter((UdLayer) => !((layer.layerCategory === "M1 Layer" || UdLayer.groupName === "Agreements") && UdLayer.groupId));
   }, [currentLayers]);
 
   return (
@@ -479,28 +490,7 @@ export default function SourceManager(props) {
                       <List className={classes.list}>
                         {M1Layers.map((layer, index) => {
                           const labelId = `m1layer-list-label-${index}`;
-                          return (
-                            <StyledListItem key={index} ContainerComponent="li">
-                              <Checkbox
-                                checked={layer.layerSettings.showable}
-                                color="dark gray"
-                                onChange={() => changeShowAble(layer)}
-                                inputProps={{ "aria-label": "primary checkbox" }}
-                              />
-                              <ListItemText id={labelId} primary={truncate(layer.layerName, 30)} />
-                            </StyledListItem>
-                          );
-                        })}
-                      </List>
-                    </Collapse>
-                    <StyledListItem2 button onClick={handleClickUDList}>
-                      <ListItemText primary="User Defined Sources" />
-                      {openUD ? <ExpandLess /> : <ExpandMore />}
-                    </StyledListItem2>
-                    <Collapse in={openUD} timeout="auto" unmountOnExit>
-                      <List className={classes.list}>
-                        {UdLayers.map((layer, index) => {
-                          const labelId = `udlayer-list-label-${index}`;
+
                           if (layer.type === "group") {
                             return (
                               <Accordion>
@@ -516,7 +506,7 @@ export default function SourceManager(props) {
                                   }}
                                 >
                                   <Checkbox
-                                    checked={!!layer.layers.find((l) => l.layerSettings.showable)}
+                                    checked={!!layer.layers.find((l) => l.layerSettings?.showable)}
                                     color="dark gray"
                                     onClick={(event) => event.stopPropagation()}
                                     onChange={(e) => changeShowAble(layer)}
@@ -551,7 +541,7 @@ export default function SourceManager(props) {
                                     {layer.layers.map((groupLayer, index) => (
                                       <StyledListItem key={index} ContainerComponent="li">
                                         <Checkbox
-                                          checked={groupLayer.layerSettings.showable}
+                                          checked={groupLayer?.layerSettings?.showable}
                                           color="dark gray"
                                           onChange={() => changeShowAble(groupLayer)}
                                           inputProps={{ "aria-label": "primary checkbox" }}
@@ -579,65 +569,77 @@ export default function SourceManager(props) {
                               </Accordion>
                             );
                           }
-                          //// remove the (layer.identifier!="Tracked Owners") if statement to show the tracked owers layer
-                          if (layer.identifier !== "Tracked Owners") {
-                            return (
-                              <StyledListItem key={index} ContainerComponent="li">
-                                <Checkbox
-                                  checked={layer.layerSettings.showable}
-                                  color="dark gray"
-                                  onChange={() => changeShowAble(layer)}
-                                  inputProps={{ "aria-label": "primary checkbox" }}
-                                />
-                                {layer.layerType === "file layer" ? (
-                                  <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} />
-                                ) : (
-                                  <ListItemText id={labelId} primary={layer.layerName === "Parcels" ? "Tracts" : layer.layerName} />
-                                )}
 
-                                {
-                                  (layer.layerName === 'Units') &&
-                                  <FeatureFlag feature={FEATURES.UNITIMPORT} >
-                                    <ListItemSecondaryAction>
-                                      <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/units`); }}>
-                                        <UploadIcon opacity="1.0" small />
-                                      </IconButton>
-                                    </ListItemSecondaryAction>
-                                  </FeatureFlag>
-                                }
+                          return (
+                            <StyledListItem key={index} ContainerComponent="li">
+                              <Checkbox
+                                checked={layer.layerSettings.showable}
+                                color="dark gray"
+                                onChange={() => changeShowAble(layer)}
+                                inputProps={{ "aria-label": "primary checkbox" }}
+                              />
 
-                                {
-                                  (layer.layerName === 'Parcels') &&
-                                  <FeatureFlag feature={FEATURES.TRACTIMPORT} >
-                                    <ListItemSecondaryAction>
-                                      <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/tracts`); }}>
-                                        <UploadIcon opacity="1.0" small />
-                                      </IconButton>
-                                    </ListItemSecondaryAction>
-                                  </FeatureFlag>
-                                }
+                              <ListItemText id={labelId} primary={layer.layerName === "Parcels" ? "Tracts" : truncate(layer.layerName, 30)} />
 
-                                {layer.layerType === "file layer" && (
+                              {
+                                (layer.layerName === 'Units') &&
+                                <FeatureFlag feature={FEATURES.UNITIMPORT} >
                                   <ListItemSecondaryAction>
-                                    <Tooltip title="Delete" placement="top">
-                                      <IconButton
-                                        edge="end"
-                                        size="small"
-                                        onClick={() => {
-                                          setOpenDeleteDialog(layer);
-                                        }}
-                                      >
-                                        <DeleteIcon />
-                                      </IconButton>
-                                    </Tooltip>
+                                    <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/units`); }}>
+                                      <UploadIcon opacity="1.0" small />
+                                    </IconButton>
                                   </ListItemSecondaryAction>
-                                )}
-                              </StyledListItem>
-                            );
-                          }
+                                </FeatureFlag>
+                              }
+
+                              {
+                                (layer.layerName === 'Parcels') &&
+                                <FeatureFlag feature={FEATURES.TRACTIMPORT} >
+                                  <ListItemSecondaryAction>
+                                    <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/tracts`); }}>
+                                      <UploadIcon opacity="1.0" small />
+                                    </IconButton>
+                                  </ListItemSecondaryAction>
+                                </FeatureFlag>
+                              }
+                            </StyledListItem>
+                          );
                         })}
                       </List>
                     </Collapse>
+
+                    {
+                      stateApp.datasets.map((dataset) => (
+                        <Fragment key={dataset.sourceName}>
+                          {
+                            dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 style={{ paddingLeft: '0px' }} button onClick={() => setOpenDataSets({ ...openDataSets, [dataset.sourceName]: !openDataSets[dataset.sourceName] })}>
+                              <Checkbox
+                                checked={dataset.visibility}
+                                color="dark gray"
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={() => { handleDatasetChange(dataset, !dataset.visibility); }}
+                                inputProps={{ "aria-label": "primary checkbox" }}
+                              />
+                              <ListItemText primary={dataset.sourceName} />
+                              {openDataSets[dataset.sourceName] ? <ExpandLess /> : <ExpandMore />}
+                            </StyledListItem2>
+                              <Collapse in={openDataSets[dataset.sourceName]} timeout="auto" unmountOnExit>
+                                <List className={classes.list}>
+                                  {dataset.categories.map((layer, index) => {
+                                    const labelId = `m1layer-list-label-${index}`;
+                                    return (
+                                      <StyledListItem key={index} ContainerComponent="li">
+
+                                        <ListItemText style={{ padding: '5px 0px 5px 40px' }} id={labelId} primary={truncate(layer.layerName || layer.name, 30)} />
+                                      </StyledListItem>
+                                    );
+                                  })}
+                                </List>
+                              </Collapse></> : <></>
+                          }
+
+                        </Fragment>))
+                    }
                   </div>
                 </div>
               </div>
