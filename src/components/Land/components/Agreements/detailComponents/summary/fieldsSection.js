@@ -87,8 +87,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   };
 
   const offClickHandler = (key, value, isCustom) => {
-    console.log(key, value)
-    // updateAgreement(key, value, isCustom);
+    updateAgreement(key, value, isCustom);
   };
 
   const addAgreementCustomData = (data) => {
