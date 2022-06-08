@@ -220,7 +220,7 @@ const ActivitiesToolbar = ({
             onChange={(_, value) => {
               setActivityFilterByOwner(value?.value ?? "all");
             }}
-            renderInput={(params) => <TextField {...params} label="Activity Owner" variant="outlined" value={activityFilterByOwner} />}
+            renderInput={(params) => <TextField {...params} label="Owner" variant="outlined" value={activityFilterByOwner} />}
           />
         </div>
       </div>

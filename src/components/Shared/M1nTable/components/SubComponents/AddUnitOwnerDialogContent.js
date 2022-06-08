@@ -452,16 +452,15 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 <Controller
                   control={control}
                   name="nra"
-                  render={(props) => (
+                  render={(params) => (
                     <TextField
                       size="small"
                       type="number"
-                      value={props.value}
-                      inputRef={props.ref}
+                      value={params.value}
+                      inputRef={params.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        props.onChange(e.target.value);
-                        setValue("nra", calculateNRA(e.target.value, getValues().orri));
+                        params.onChange(e.target.value);
                       }}
                       InputProps={{
                         endAdornment: (
