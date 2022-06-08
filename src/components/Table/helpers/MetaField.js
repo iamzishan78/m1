@@ -559,7 +559,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
         ) : (
           <>
             <div style={{ padding: "20px 40px" }}>
-              <div style={{ width: "80%" }}>
+              <div style={{ width: "80%", height: "300px" }}>
                 <Select
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 9999 }),

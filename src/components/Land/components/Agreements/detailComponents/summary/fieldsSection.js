@@ -114,7 +114,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
             </Grid>
             <Grid item xs={8}>
               <Fragment key={index}>
-                {(field.type === "text" || field.type === "dropdown" || field.type === "multiselect") && (
+                {(field.type === "text" || field.type === "dropdown" || field.type === "multiselect" || field.type === "select") && (
                   <Controller
                     control={control}
                     name={field.key}
@@ -149,6 +149,25 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               disabled={field.disabled}
                               value={get(agreementDetails, `${field.key}`, "")}
                             />
+                          )}
+                          {field.type === "select" && (
+                            <Select
+                              {...params}
+                              id={`field-${index}`}
+                              variant="outlined"
+                              margin="dense"
+                              fullWidth
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
+                              disabled={field.disabled}
+                              value={get(agreementDetails, `${field.key}`, "")}
+                            >
+                              {field.options.map((option) => (
+                                <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
+                              ))}
+                            </Select>
                           )}
                           {field.type === "multiselect" && (
                             <CustomFieldMultiSelect
