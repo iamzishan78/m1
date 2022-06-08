@@ -411,7 +411,7 @@ export default function MetadataDrawer(props) {
                         value={data.approvalStatus ? data.approvalStatus : data.status ? data.status : ""}
                         fullWidth
                         onChange={(e) => {
-                          props.onUpdate({ 'status': e.target.value });
+                          props.onUpdate({ 'approvalStatus': e.target.value });
                         }}
                       >
                         <MenuItem value="Approved">Approved</MenuItem>

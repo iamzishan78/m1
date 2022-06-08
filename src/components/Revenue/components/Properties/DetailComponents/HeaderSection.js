@@ -172,6 +172,7 @@ export default function HeaderSection(props) {
   };
 
   const updatePropertyData = (key, value) => {
+    console.log(key, value)
     updateProperty({
       variables: {
         property: {
@@ -566,8 +567,8 @@ export default function HeaderSection(props) {
                         updatePropertyData("status", e.target.value);
                       }}
                     >
-                      <MenuItem value="Approved">In Pay</MenuItem>
-                      <MenuItem value="Unapproved">Not in Pay</MenuItem>
+                      <MenuItem value="InPay">In Pay</MenuItem>
+                      <MenuItem value="NotInPay">Not in Pay</MenuItem>
                     </Select>
                   )}
                 />

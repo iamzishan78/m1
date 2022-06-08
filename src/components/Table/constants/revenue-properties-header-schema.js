@@ -35,12 +35,12 @@ const RevenuePropertiesHeadCells = [
       filter: true,
     },
   },
-  // {
-  //   name: "name",
-  //   label: "Property Name",
-  //   esKey: "name.keyword",
-  //   options: { sort: true, filter: true },
-  // },
+  {
+    name: "name",
+    label: "Property Name",
+    esKey: "name.keyword",
+    options: { sort: true, filter: true, display: false },
+  },
   {
     name: "payorName",
     label: "Operator",
