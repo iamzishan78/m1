@@ -88,7 +88,6 @@ function AgreementsTable(props) {
   }
 
   useEffect(() => {
-    console.log("here", GridViewModule);
     setSelectedGridView(GridViewModule || defaultView);
   }, [GridViewModule]);
 

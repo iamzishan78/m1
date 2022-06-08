@@ -135,21 +135,20 @@ export const TableESHOC = (Component) => {
 
         useEffect(() => {
             const { selectedGridView } = tableMeta
+
             if (selectedGridView && metaDatas) {
                 Columns((cols) => {
                     if (cols?.length > 0) {
                         const selectedData = JSON.parse(JSON.stringify(selectedGridView));
                         setStateApp((state) => ({ ...state, selectedView: selectedData }));
 
-                        let filterColumns = cols.filter((col) => !metaDatas.find((meta) => meta.name === col.name) && ![" ", "Tags", "Comments"].includes(col.label));
+                        let filterColumns = cols.filter((col) => !col._id && ![" ", "Tags", "Comments"].includes(col.label));
                         let actionColumns = cols.filter((col) => [" ", "Tags", "Comments"].includes(col.label));
 
                         // Excluding actionColumns from veiw Columns 
                         actionColumns = actionColumns.map(aC => ({ ...aC, options: { ...aC.options, viewColumns: false } }))
 
                         let columnsData = [...filterColumns, ...copy(metaDatas), ...actionColumns]
-
-
 
                         let view = JSON.parse(JSON.stringify(selectedData));
                         if (view.columns) {
@@ -172,8 +171,6 @@ export const TableESHOC = (Component) => {
                         // clearInterval(interval);
 
                     }
-
-
 
                     return cols
                 })
