@@ -32,7 +32,7 @@ const styles = () => ({
     alignItems: "center"
   }
 });
-
+  
 const useStyles = makeStyles(styles);
 
 export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes, showSuccessMessage, getContactCampaignAction, campaignList }) {
@@ -46,12 +46,16 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const [isDisabled, setIsDisabled] = useState(true);
 
   const fieldsToUpdate = [
-    { title: 'Campaign Name', value: "campaignName" },
-    { title: 'Contact Owner', value: "contactOwner" },
-    { title: 'Entity Type', value: "ownerType" },
-    { title: 'Stage', value: "status" },
-    { title: 'Status', value: "contactStatus" },
-
+    { title: "Campaign Name", value: "campaignName" },
+    { title: "Contact Owner", value: "contactOwner" },
+    { title: "Entity Type", value: "ownerType" },
+    { title: "Stage", value: "status" },
+    { title: "Status", value: "contactStatus" },
+    { title: "Industry Type", value: "contactStatus" },
+    { title: "Lead Source", value: "contactStatus" },
+    { title: "Territory", value: "contactStatus" },
+    { title: "Time Zone", value: "contactStatus" },
+    { title: "Tags", value: "contactStatus" },
   ];
 
   useEffect(() => {
@@ -170,6 +174,10 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
         break
       case 'Entity Type':
         filterKey = 'ownerType.keyword'
+      case 'Entity Type':
+        filterKey = 'ownerType.keyword'
+      case 'Entity Type':
+        filterKey = 'ownerType.keyword'
       // .. etc
       default:
 
@@ -187,8 +195,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       />
     }
     else return ''
-
-
   }
 
   return (
@@ -201,7 +207,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           aria-label="close"
           onClick={onClose}
           size="medium"
-        >
+        > 
           <KeyboardTabIcon fontSize="large" />
         </IconButton>
       </MuiDialogTitle>
