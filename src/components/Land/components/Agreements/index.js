@@ -41,7 +41,7 @@ function Agreements(props) {
 
   return (
     <div style={{ marginTop: 56, padding: "75px 56px" }}>
-      <AnalyticsCards
+      {/* <AnalyticsCards
         parent={"Agreements"}
         esIndex={esIndex}
         esFilters={esFilters}
@@ -49,8 +49,8 @@ function Agreements(props) {
         totalCount={agreementCount}
         setESFilters={setESFilters}
         landSearchQuery={stateApp.landSearchQuery}
-      />
-      <div style={{ marginTop: "40px" }}>
+      /> */}
+      <div style={{ marginTop: "0px" }}>
         <AgreementsTable
           esIndex={esIndex}
           isCheckboxSticky={true}
