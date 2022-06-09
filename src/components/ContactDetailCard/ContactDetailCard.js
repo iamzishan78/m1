@@ -4,7 +4,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 // mui core components
-import { Grid, Menu, MenuItem, IconButton, Tabs, Tab } from "@material-ui/core";
+import { Grid, IconButton, Tabs, Tab } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { useHistory } from "react-router-dom";
@@ -17,7 +17,6 @@ import Badge from "@material-ui/core/Badge";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
-import EmailOutlinedIcon from "@material-ui/icons/EmailOutlined";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import RequestPageIcon from "components/Shared/svgIcons/request_page";
 import FieldContent from "./components/FieldContent";
@@ -57,8 +56,6 @@ import get from "lodash/get";
 // contexts
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
-import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
-import { FEATURES } from "components/Shared/FeatureFlag/common";
 import { toggleRightColumn } from "actions/ContactDetailCard";
 import { getAddressUrl } from "utils/helper";
 
@@ -69,13 +66,6 @@ const useStyles = makeStyles((theme) => ({
       cursor: "pointer",
       color: "rgb(18, 150, 194)",
     },
-  },
-  header: {
-    backgroundColor: "#F2F2F2",
-    minHeight: "7px",
-    display: "flex",
-    position: "relative",
-    alignItems: "center",
   },
   topBar: {
     color: "#12ABE0",
@@ -617,7 +607,7 @@ export default function ContactDetailCard(props) {
   };
   const togglePullout = () => dispatch(toggleRightColumn());
   return contactData ? (
-    <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)", width: "100%" }}>
+    <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)", width: "100%", backgroundColor: "#F2F2F2" }}>
       {/**
        * Detail title section
        */}
