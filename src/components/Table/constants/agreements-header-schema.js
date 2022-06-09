@@ -166,9 +166,12 @@ const AgreementsHeadCells = [
     label: "Efftv Date",
     esKey: "shapeJson.properties.effectiveDate.keyword",
     options: {
-      dbName: "shapeJson.properties.effectiveDate",
+      dbName: "shapeJson.properties.effectiveDate.keyword",
       sort: true,
       filter: true,
+    },
+    custom: {
+      isDate: true,
     },
   },
   {
@@ -180,6 +183,9 @@ const AgreementsHeadCells = [
       sort: true,
       filter: true,
     },
+    custom: {
+      isDate: true,
+    },
   },
   {
     name: "extensionDate",
@@ -190,6 +196,9 @@ const AgreementsHeadCells = [
       dbName: "shapeJson.properties.extensionDate",
       sort: true,
       filter: true,
+    },
+    custom: {
+      isDate: true,
     },
   },
   {
