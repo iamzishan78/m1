@@ -720,7 +720,7 @@ export default function ContactDetailCard(props) {
               <div className={classes.tagsContainer}>
                 <div className={classes.highlighter}>
                   <Typography className={classes.highlight} variant="highlight">
-                    {get(contactData, "status", "-")}
+                    {get(contactData, "status", "Contact")}
                   </Typography>
                 </div>
                 <div className={classes.tags}>
