@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-export const usetableStyles = makeStyles((theme) => ({
+export const usetableStyles = makeStyles(() => ({
   container: {
     padding: "0 !important",
 
@@ -23,7 +23,7 @@ export const usetableStyles = makeStyles((theme) => ({
           },
           "@media (max-height:1200px)": {
             maxHeight: "58vh",
-            minHeight: "58vh",
+            minHeight: (p) => p.isFullHeight ? '79vh' : '58vh',
           },
           "@media (max-height:1100px)": {
             maxHeight: "51vh",

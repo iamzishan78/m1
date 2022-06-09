@@ -40,7 +40,11 @@ function Agreements(props) {
   ];
 
   return (
-    <div style={{ marginTop: 56, padding: "75px 56px" }}>
+    <div style={{
+      padding: "0px 30px 30px",
+      marginTop: "90px",
+      height: "calc(100vh - 90px)"
+    }}>
       {/* <AnalyticsCards
         parent={"Agreements"}
         esIndex={esIndex}
@@ -50,19 +54,17 @@ function Agreements(props) {
         setESFilters={setESFilters}
         landSearchQuery={stateApp.landSearchQuery}
       /> */}
-      <div style={{ marginTop: "0px" }}>
-        <AgreementsTable
-          esIndex={esIndex}
-          isCheckboxSticky={true}
-          header="Agreements"
-          esFilters={esFilters}
-          targetLabel="agreement"
-          parent="AgreementsTable"
-          setESFilters={setESFilters}
-          onAgreementCount={onAgreementCount}
-          landSearchQuery={stateApp.landSearchQuery}
-        />
-      </div>
+      <AgreementsTable
+        esIndex={esIndex}
+        isCheckboxSticky={true}
+        header="Agreements"
+        esFilters={esFilters}
+        targetLabel="agreement"
+        parent="AgreementsTable"
+        setESFilters={setESFilters}
+        onAgreementCount={onAgreementCount}
+        landSearchQuery={stateApp.landSearchQuery}
+      />
     </div>
   );
 }

@@ -40,16 +40,13 @@ function AgreementsTable(props) {
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState(defaultView);
-  const [gridViews, setGridViews] = useState(null);
-
-  const selectedFilters = useRef([]);
   const [stateApp] = useContext(AppContext);
 
   // queries
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
   const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
 
-  const classes = usetableStyles();
+  const classes = usetableStyles({ isFullHeight: true });
 
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
