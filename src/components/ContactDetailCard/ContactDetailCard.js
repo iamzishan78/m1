@@ -621,16 +621,16 @@ export default function ContactDetailCard(props) {
     return relativePos.top;
   }
 
-  const handleEndScroll = React.useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
-  const handleScroll = (e) => {
+  const handleEndScroll = React.useCallback(() => setButtonScroll(false), []);
+  const handleScroll = debounce(() => {
     if (!isButtonScroll) {
       let activeTab = 0;
       if (getRelativePosition("summary-div") < 5) activeTab = 0;
-      if (getRelativePosition("detail-div") < 30) activeTab = 1;
+      if (getRelativePosition("detail-div") < 50) activeTab = 1;
       if (tab !== activeTab) setTab(activeTab);
     }
     handleEndScroll();
-  };
+  }, 500);
 
   return contactData ? (
     <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)", width: "100%", backgroundColor: "#F2F2F2" }}>
