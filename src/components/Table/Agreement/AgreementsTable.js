@@ -171,7 +171,7 @@ function AgreementsTable(props) {
   };
 
   const modifySelectedGridView = (selectedGridView) => {
-    if (selectedGridView?.filters.length > 0)
+    if (selectedGridView?.name === 'My Agreements' && selectedGridView?.filters?.length)
       selectedGridView.filters[0].value = stateApp.user._id;
   };
 
