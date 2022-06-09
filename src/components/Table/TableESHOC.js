@@ -763,7 +763,7 @@ export const TableESHOC = (Component) => {
         }
 
         return (
-            <div className={classes.container2}>
+            <span className={classes.container2}>
                 <Component
                     {...props}
                     rows={rows}
@@ -809,7 +809,7 @@ export const TableESHOC = (Component) => {
                     initialFilters={initialFilters}
                     setInitialFilters={setInitialFilters}
                 />
-            </div>
+            </span>
         );
     };
 };
