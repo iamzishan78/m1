@@ -7,6 +7,8 @@ import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Grid, IconButton, Tabs, Tab } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import AddIcCallIcon from '@material-ui/icons/AddIcCall';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import { useHistory } from "react-router-dom";
 
 // internal components
@@ -319,13 +321,7 @@ const useStyles = makeStyles((theme) => ({
   contactDataButton: {
     margin: "0px 5px",
     fontWeight: "600",
-    // backgroundColor: "rgba(1, 17, 51, 1) !important",
-    // color: "#fff !important",
-    border: "1px solid #B3B3B3",
-    "&:hover": {
-      backgroundColor: "#263451",
-      color: "#fff",
-    },
+    border: "3px solid #eeebeb",
   },
   detailHeader: {
     backgroundColor: "#fff",
@@ -380,7 +376,6 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   metaActions: {
-    marginTop: "2px",
     "& button": {
       margin: "0px 5px",
       color: "grey",
@@ -720,7 +715,7 @@ export default function ContactDetailCard(props) {
             <div className={classes.metaActions}>
               <Button
                 className={classes.contactDataButton}
-                startIcon={<RequestPageIcon />}
+                startIcon={<RequestPageIcon color="grey" />}
                 onClick={() => {
                   handleExpandClick("buyContactsInfo");
                 }}
@@ -729,7 +724,7 @@ export default function ContactDetailCard(props) {
               </Button>
               <Button
                 className={classes.contactDataButton}
-                startIcon={<RequestPageIcon />}
+                startIcon={<MonetizationOnIcon color="grey" />}
                 onClick={(e) => {
                   e.stopPropagation();
                   setStateApp((stateApp) => ({
@@ -742,7 +737,7 @@ export default function ContactDetailCard(props) {
               </Button>
               <Button
                 className={classes.contactDataButton}
-                startIcon={<RequestPageIcon />}
+                startIcon={<AddIcCallIcon color="grey" />}
                 onClick={() => setActivityDialog(true)}
               >
                 Add Activity
