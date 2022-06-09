@@ -108,7 +108,7 @@ export const TableESHOC = (Component) => {
 
         useEffect(() => {
             if (tableMeta?.gridView) {
-                const category = tableMeta?.gridView.category
+                const category = tableMeta?.typeKeyword?.metaModule
                 getMetaData({
                     variables: {
                         user: stateApp.user?.mongoId,
@@ -182,7 +182,7 @@ export const TableESHOC = (Component) => {
             dispatch(
                 updateUserGridViewSettingAction.STARTED({
                     userGridViewSetting: {
-                        module: `${tableMeta?.gridView.category}s`,
+                        module: tableMeta?.typeKeyword?.gridViewCategory,
                         gridView: tableMeta.selectedGridView._id,
                         gridViewPatch: {
                             filters: selectedFilters.current,
@@ -611,7 +611,7 @@ export const TableESHOC = (Component) => {
                 if (tableMeta?.selectedGridView)
                     dispatch(updateUserGridViewSettingAction.STARTED({
                         userGridViewSetting: {
-                            module: `${tableMeta?.gridView?.category}s`,
+                            module: tableMeta?.typeKeyword?.gridViewCategory,
                             gridView: tableMeta.selectedGridView._id,
                             gridViewPatch: {
                                 filters: activeFiltersRef.current,

@@ -104,7 +104,7 @@ function AgreementsTable(props) {
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
       startPaginationAt: 10,
-      gridView: { category: "Agreement" },
+      typeKeyword: { gridViewCategory: "Agreements", metaModule: "Agreement" },
       filters: [
         {
           field: "shapeJson.properties.type.keyword",
