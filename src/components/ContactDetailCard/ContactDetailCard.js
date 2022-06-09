@@ -53,7 +53,7 @@ import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Link from "@material-ui/core/Link";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Typography from "@material-ui/core/Typography";
-import get from "lodash/get";
+import { debounce, get } from "lodash";
 
 // contexts
 import { AppContext } from "../../AppContext";
@@ -452,6 +452,8 @@ export default function ContactDetailCard(props) {
   const [showActivityDialog, setActivityDialog] = useState(null);
   const [purchaseData, setPurchaseData] = useState([]);
   const [tab, setTab] = useState(0);
+  const [isButtonScroll, setButtonScroll] = useState(false);
+  const selectedTabRef = React.useRef(null);
 
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
 
@@ -468,11 +470,6 @@ export default function ContactDetailCard(props) {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleClickRightDialogClose = (e) => {
     e.preventDefault();
     setRightDialogOpen(false);
@@ -506,6 +503,16 @@ export default function ContactDetailCard(props) {
       setShowShrinkColumnContent(shrinkRightColumn);
     }, 300);
   }, [shrinkRightColumn]);
+
+  useEffect(() => {
+    if (selectedTabRef?.current && isButtonScroll) {
+      selectedTabRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "start",
+      });
+    }
+  }, [tab, isButtonScroll]);
 
   useEffect(() => {
     if (stateApp.selectedContact && stateApp.selectedContact === contactId) {
@@ -601,6 +608,30 @@ export default function ContactDetailCard(props) {
     return contact.name || `${get(contact, "firstName", "")} ${get(contact, "lastName", "")}`;
   };
   const togglePullout = () => dispatch(toggleRightColumn());
+
+  const getRelativePosition = (childDivId) => {
+    const parentPos = document.getElementById('parent-div').getBoundingClientRect();
+    const childPos = document.getElementById(childDivId).getBoundingClientRect();
+    const relativePos = {};
+
+    relativePos.top = childPos.top - parentPos.top;
+    relativePos.right = childPos.right - parentPos.right;
+    relativePos.bottom = childPos.bottom - parentPos.bottom;
+    relativePos.left = childPos.left - parentPos.left;
+    return relativePos.top;
+  }
+
+  const handleEndScroll = React.useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
+  const handleScroll = (e) => {
+    if (!isButtonScroll) {
+      let activeTab = 0;
+      if (getRelativePosition("summary-div") < 5) activeTab = 0;
+      if (getRelativePosition("detail-div") < 30) activeTab = 1;
+      if (tab !== activeTab) setTab(activeTab);
+    }
+    handleEndScroll();
+  };
+
   return contactData ? (
     <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)", width: "100%", backgroundColor: "#F2F2F2" }}>
       {/**
@@ -704,6 +735,7 @@ export default function ContactDetailCard(props) {
               <StyledTabs
                 value={tab}
                 onChange={(event, tab) => {
+                  setButtonScroll(true);
                   setTab(tab);
                 }}
                 aria-label="ant example"
@@ -748,16 +780,22 @@ export default function ContactDetailCard(props) {
       </div>
 
       <div className={classes.mainGridContainer}>
-        <Grid container className={classes.leftColumn}>
+        <Grid container className={classes.leftColumn} onScroll={handleScroll} id="parent-div">
           {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
             <DocViewer DocStyle={{ backgroundColor: "white !important", width: "71vw" }} divCondition={true}></DocViewer>
           ) : (
             <>
-
+              <div id="summary-div" ref={tab === 0 ? selectedTabRef : null}>
+                <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px", minHeight: "600px", textAlign: "center", marginBottom: "15px" }}>
+                  <p>Contact Summary Here</p>
+                </Grid>
+              </div>
               {/*/////////// section 3 //////////// */}
-              <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px" }}>
-                <ContactDetailedInfo user={stateApp.user} purchaseData={purchaseData} contactData={contactData} />
-              </Grid>
+              <div id="detail-div" ref={tab === 1 ? selectedTabRef : null}>
+                <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px" }}>
+                  <ContactDetailedInfo user={stateApp.user} purchaseData={purchaseData} contactData={contactData} />
+                </Grid>
+              </div>
               {/*/////////// new section - lead stage //////////// */}
               <Grid item xs={12} className={`${classes.border}`}>
                 <div className={classes.SectMargin}>
