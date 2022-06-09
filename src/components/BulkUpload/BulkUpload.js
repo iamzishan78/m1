@@ -12,7 +12,7 @@ import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Stepper from "./components/stepper";
 import { Menu, MenuItem } from "@material-ui/core";
-import M1neral_headers from "./jobHeaders"
+import M1neral_headers from "./jobHeaders";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
@@ -33,49 +33,45 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const rawJobs = [
-  { name: 'Import Contacts', type: 'CONTACTS' },
-  { name: 'Import Contact Well Interests', type: 'CONTACTSWELLINTEREST' },
-  { name: 'Interest Owner Upload', type: 'PARCELINTERESTS' },
-  { name: 'Shape Owner Upload', type: 'SHAPEOWNER' },
-  { name: 'Import Tracts', type: 'TRACTS', featureFlag: "TRACTIMPORT" },
-  { name: 'Import Units', type: 'UNITS', featureFlag: "UNITIMPORT" },
-  { name: 'Check Detail Upload', type: 'CHECKDETAILS' }
-]
+  { name: "Import Contacts", type: "CONTACTS" },
+  { name: "Import Contact Well Interests", type: "CONTACTSWELLINTEREST" },
+  { name: "Interest Owner Upload", type: "PARCELINTERESTS" },
+  { name: "Shape Owner Upload", type: "SHAPEOWNER" },
+  { name: "Import Tracts", type: "TRACTS", featureFlag: "TRACTIMPORT" },
+  { name: "Import Units", type: "UNITS", featureFlag: "UNITIMPORT" },
+  { name: "Check Detail Upload", type: "CHECKDETAILS" },
+];
 
 export default function BulkUpload(props) {
-  console.log(props)
-  const [stateApp, setStateApp] = React.useContext(AppContext);
+  console.log(props);
+  const [, setStateApp] = React.useContext(AppContext);
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
   const history = useHistory();
-  const previousRoute = matchRoutes(props.routes, history.pathHistory[1]);
-
-  const checkModuleHistory = () => {
-    return !!stateNav.bulkUploadFromMap && 'Map' || !!stateNav.bulkUploadFromContacts && 'Contacts';
-  };
+  const previousRoute = matchRoutes(props.routes, typeof history.pathHistory[1] === "string" ? history.pathHistory[1] : history?.pathHistory[1]?.pathname ?? "");
 
   const jobs = rawJobs.filter((job) => {
     let filter = true;
     switch (job.type) {
-      case 'CONTACTS':
+      case "CONTACTS":
         filter = stateNav.bulkUploadFromMap ? false : true;
         break;
-      case 'CONTACTSWELLINTEREST':
+      case "CONTACTSWELLINTEREST":
         filter = stateNav.bulkUploadFromMap ? false : true;
         break;
-      case 'PARCELINTERESTS':
+      case "PARCELINTERESTS":
         filter = stateNav.bulkUploadParcel ? true : false;
         break;
-      case 'SHAPEOWNER':
+      case "SHAPEOWNER":
         filter = stateNav.bulkUploadShape ? true : false;
         break;
       default:
         break;
     }
-    return filter
-  })
-  let initialJob = jobs[0]
+    return filter;
+  });
+  let initialJob = jobs[0];
   if (props?.match?.params?.type) {
-    initialJob = jobs.find((job) => job.name.toLowerCase().includes(props.match.params.type)) || jobs[0]
+    initialJob = jobs.find((job) => job.type.toLowerCase().includes(props.match.params.type)) || jobs[0];
   }
 
   const [selectedJob, setSelectedJob] = useState(initialJob);
@@ -95,7 +91,7 @@ export default function BulkUpload(props) {
         ...state,
         bulkUploadFromMap: false,
         bulkUploadFromContacts: false,
-        bulkUploadParcel: null
+        bulkUploadParcel: null,
       }));
     };
   }, []);
@@ -128,66 +124,66 @@ export default function BulkUpload(props) {
             paddingLeft: "25px",
           }}
         ></div>
-        <Breadcrumbs
-          separator={<NavigateNextIcon fontSize="small" />}
-          aria-label="breadcrumb"
-        >
-          {previousRoute[0] && <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => {
-              setStateNav((stateApp) => ({
-                ...stateApp,
-                bulkUploadFromMap: false,
-              }));
-              history.push(previousRoute[0]?.match?.url);
-            }}
-          >
-            {previousRoute[0]?.route?.title}
-          </Link>
-          }
-          {stateNav.bulkUploadParcel?.shapeLabel && <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => {
-              setStateNav((stateApp) => ({
-                ...stateApp,
-                bulkUploadFromMap: false,
-              }));
+        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+          {previousRoute[0] && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => {
+                setStateNav((stateApp) => ({
+                  ...stateApp,
+                  bulkUploadFromMap: false,
+                }));
+                history.push(previousRoute[0]?.match?.url);
+              }}
+            >
+              {previousRoute[0]?.route?.title}
+            </Link>
+          )}
+          {stateNav.bulkUploadParcel?.shapeLabel && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => {
+                setStateNav((stateApp) => ({
+                  ...stateApp,
+                  bulkUploadFromMap: false,
+                }));
 
-              history.push(previousRoute[0]?.match?.url);
-            }}
-          >
-            {stateNav.bulkUploadParcel?.shapeLabel}
-          </Link>
-          }
-          {stateNav.bulkUploadShape?.shapeLabel && <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => {
-              setStateNav((stateApp) => ({
-                ...stateApp,
-                bulkUploadFromMap: false,
-              }));
+                history.push(previousRoute[0]?.match?.url);
+              }}
+            >
+              {stateNav.bulkUploadParcel?.shapeLabel}
+            </Link>
+          )}
+          {stateNav.bulkUploadShape?.shapeLabel && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => {
+                setStateNav((stateApp) => ({
+                  ...stateApp,
+                  bulkUploadFromMap: false,
+                }));
 
-              history.push(previousRoute[0]?.match?.url);
-            }}
-          >
-            {stateNav.bulkUploadShape?.shapeLabel}
-          </Link>
-          }
+                history.push(previousRoute[0]?.match?.url);
+              }}
+            >
+              {stateNav.bulkUploadShape?.shapeLabel}
+            </Link>
+          )}
           <div>
             <div
               style={{
@@ -197,14 +193,12 @@ export default function BulkUpload(props) {
                 cursor: "pointer",
               }}
               onClick={(event) => {
-                handleClick(event)
+                handleClick(event);
               }}
               onMouseOver={() => setShowIcon(true)}
               onMouseLeave={() => setShowIcon(false)}
             >
-              <Typography
-                style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}
-              >
+              <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>
                 {selectedJob.name}
                 <span
                   style={{
@@ -212,7 +206,7 @@ export default function BulkUpload(props) {
                     color: "#18AADD",
                     fontSize: "16px",
                     cursor: "pointer",
-                    "vertical-align": "middle"
+                    "vertical-align": "middle",
                   }}
                 >
                   {showIcon && <ExpandMoreIcon />}
@@ -225,26 +219,26 @@ export default function BulkUpload(props) {
                 keepMounted
                 open={Boolean(anchorEl)}
                 onClose={(e) => {
-                  e.stopPropagation()
-                  handleClose()
+                  e.stopPropagation();
+                  handleClose();
                 }}
                 getContentAnchorEl={null}
                 anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
                 transformOrigin={{ vertical: "top", horizontal: "center" }}
               >
-                {jobs.map((job) =>
+                {jobs.map((job) => (
                   <FeatureFlag feature={FEATURES[job.featureFlag]} noCheck={!FEATURES[job.featureFlag]}>
-                    < MenuItem
+                    <MenuItem
                       onClick={(e) => {
-                        e.stopPropagation()
+                        e.stopPropagation();
                         handleClose();
-                        setSelectedJob(job)
+                        setSelectedJob(job);
                       }}
                     >
                       {job.name}
                     </MenuItem>
                   </FeatureFlag>
-                )}
+                ))}
               </Menu>
             </div>
           </div>

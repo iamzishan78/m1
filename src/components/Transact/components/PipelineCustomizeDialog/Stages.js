@@ -26,7 +26,7 @@ import { AppContext } from "AppContext";
 import { DEALSCOUNTINANSTAGE } from "graphQL/useQueryNonDeletedDealsCountInAnStageByPipeline";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   lanesRoot: {
     padding: "25px",
   },

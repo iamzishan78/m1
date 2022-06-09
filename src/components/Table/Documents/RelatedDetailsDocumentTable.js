@@ -27,6 +27,7 @@ import RelatedFile from "components/Document/components/RelatedFile";
 // Header Schemas
 import TableHeader from "components/Table/constants/parcel-documents-header-schema.js";
 import { handleTagColumn } from "../helpers";
+// import { handleSelectedGridChange, setColumnsData } from "components/Table/helpers";
 
 import { AppContext } from "AppContext";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
@@ -82,6 +83,16 @@ function RelatedDetailsDocumentTable(props) {
       const cleanAvailableTags = [];
       const columns = handleTagColumn(TableHeader, cleanAvailableTags);
       setColumns(columns);
+      // setColumnsData(
+      //   TableHeader,
+      //   filters,
+      //   JSON.parse(JSON.stringify(updatedColumns)),
+      //   setColumns,
+      //   setFilters,
+      //   GET_ES_FILTER_LIST,
+      //   "documents_flat",
+      //   props.documentSearchQuery
+      // );
       props.setLoading(false);
     }
     // else if (dataParcelFiles?.getParcelFiles?.length === 0) {

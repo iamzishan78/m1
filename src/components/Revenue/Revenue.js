@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Switch, Route, useLocation } from "react-router-dom";
+import { Switch, Route, useLocation, Redirect } from "react-router-dom";
 import RevenueActionsPanel from "./QuickActionsPanel";
 import * as Components from "components/Revenue/components";
 
@@ -82,15 +82,16 @@ export default function Revenue() {
 
   return (
     <RevenueActionsPanel handlePanelStateChange={handlePanelStateChange} expandedPanel={quickActionsPanelState} activeModule={activeModule}>
-      {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
-        <Switch>
+      <Switch>
+        {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
           <Route
             exact
             path={SIDE_PANEL_MENU_ITEMS_LIST[option].link}
             component={Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component]}
           />
-        </Switch>
-      ))}
+        ))}
+        <Redirect to={`/revenue/statements`} />
+      </Switch>
     </RevenueActionsPanel>
   );
 }
