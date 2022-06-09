@@ -23,6 +23,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   const [fieldsList, setFieldsList] = useState([]);
   const [editIconState, setEditIconState] = useState({});
   const [agreementDetailCopied, setAgreementCopied] = useState();
+  const [bonusValue, setBonusValue] = useState('');
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
@@ -137,9 +138,37 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     control={control}
                     name={field.key}
                     render={(params) => {
+                      
                       return (
                         <Fragment>
-                          {field.type === "text" && (
+                          {field.type === "text" && field.key === 'bounusPayment' && (
+                            <TextField
+                              {...params}
+                              id={`field-${index}`}
+                              variant="outlined"
+                              margin="dense"
+                              type="text"
+                              fullWidth
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              value={bonusValue ? bonusValue : params.value}
+                              InputProps={field.InputProps}
+                              onFocus={() => {
+                                setBonusValue(params.value.replace(/,/g, ''));
+                              }}
+                              onChange={(e) => {
+                                setBonusValue(e.target.value);
+                              }}
+                              onBlur={(event) => {
+                                const value = event.target.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                setBonusValue(value);
+                                offClickHandler(field.key, value);
+                              }}
+                              disabled={field.disabled}
+                            />
+                          )}
+                          {field.type === "text" && field.key !== 'bounusPayment' && (
                             <TextField
                               {...params}
                               id={`field-${index}`}

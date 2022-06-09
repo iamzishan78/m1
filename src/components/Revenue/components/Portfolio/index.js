@@ -9,6 +9,8 @@ import DetailTabsSection from "components/Revenue/components/Portfolio/DetailTab
 import { useLazyQuery } from "@apollo/client";
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
 import moment from 'moment';
+import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
+
 const useStyles = makeStyles((theme) => ({
   actionBar: {
     backgroundColor: "#f7f7f7",
@@ -36,6 +38,28 @@ export default function Portfolio() {
   const [fromDate, setFromDate] = React.useState(null);
   const [toDate, setToDate] = React.useState(null);
   const [monthsInterval, setMonths] = useState([]);
+  const [lastCheckMinDate, setLastCheckMinDate] = useState('');
+
+  const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
+    fetchPolicy: "no-cache",
+    onCompleted: (data) => {
+        if (data?.getESMinValue) {
+            setLastCheckMinDate(data?.getESMinValue);
+            // setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
+            // setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
+        }
+    },
+  });
+  
+  useEffect(() => {
+    getESMinValue({
+        variables: {
+            esIndex: 'checks_flat',
+            field: 'checkDate',
+            value_as_string: true
+        }
+    })
+  }, [getESMinValue]) 
 
   useEffect(() => {
     setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
@@ -81,6 +105,7 @@ export default function Portfolio() {
               toDate={toDate}
               setToDate={setToDate}
               isProperties={true}
+              lastCheckMinDate={lastCheckMinDate}
             />
           </Grid>
           <Grid item xs={4} md={4}>

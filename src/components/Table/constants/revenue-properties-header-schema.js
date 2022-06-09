@@ -159,9 +159,9 @@ const RevenuePropertiesHeadCells = [
     },
   },
   {
-    name: "status",
+    name: "approvalStatus",
     label: "Status",
-    esKey: "status.keyword",
+    esKey: "approvalStatus.keyword",
     options: {
       customHeadLabelRender: () => (
         <>
