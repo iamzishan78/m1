@@ -43,7 +43,6 @@ import ActivitySearch from "./components/ActivitySearch";
 import ActivityDashboardSearch from "./components/ActivityDashboardSearch";
 import DocumentSearch from "./components/DocumentSearch";
 import ContactSearch from "./components/ContactSearch";
-import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
 import ContactBreadcrumbs from "./components/ContactBreadcrumbs";
 import SideNavigation from "./SideNavigation";
 import ProfileMenu from "components/Profile/ProfileMenu";
@@ -395,10 +394,10 @@ export default function Navigation(props) {
           style={
             location.pathname === "/contacts/activityDashboard" || location.pathname.includes("revenue") ? { background: "white" } : null
           }
-          // style={{
-          //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
-          //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
-          // }}
+        // style={{
+        //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
+        //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
+        // }}
         >
           {stateApp.user && (
             <Toolbar>
