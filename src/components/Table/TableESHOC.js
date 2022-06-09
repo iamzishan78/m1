@@ -234,6 +234,11 @@ export const TableESHOC = (Component) => {
 
         useEffect(() => {
             if (tableMeta?.esIndex) {
+
+                if (tableMeta.modifySelectedGridView) {
+                    tableMeta.modifySelectedGridView(tableMeta.selectedGridView)
+                }
+
                 getESSimpleSearch({
                     variables: {
                         index: tableMeta.esIndex,
@@ -559,6 +564,7 @@ export const TableESHOC = (Component) => {
                 }
             })
             if (selectedGridView?.filters && selectedGridView.type === 'Default') {
+
                 selectedGridView.filters.forEach(filter => {
                     pageESVariables.variables.filters.push(filter)
                 })
@@ -605,7 +611,7 @@ export const TableESHOC = (Component) => {
                 if (tableMeta?.selectedGridView)
                     dispatch(updateUserGridViewSettingAction.STARTED({
                         userGridViewSetting: {
-                            module: `${tableMeta?.gridView.category}s`,
+                            module: `${tableMeta?.gridView?.category}s`,
                             gridView: tableMeta.selectedGridView._id,
                             gridViewPatch: {
                                 filters: activeFiltersRef.current,
@@ -757,7 +763,7 @@ export const TableESHOC = (Component) => {
         }
 
         return (
-            <div className={classes.container}>
+            <div className={classes.container2}>
                 <Component
                     {...props}
                     rows={rows}

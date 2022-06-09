@@ -118,6 +118,8 @@ function AgreementsTable(props) {
         value: stateApp?.currentFeature?.geometry
       },
       formatHits,
+
+      modifySelectedGridView: modifySelectedGridView
     });
     // eslint-disable-next-line
   }, [searchInput, props.landSearchQuery, props.filterToggle]);
@@ -165,15 +167,12 @@ function AgreementsTable(props) {
   };
 
   const handleDefaultView = (view, user) => {
-    if (view.name === "My Agreements") {
-      view.filters[0].value = user._id;
-    }
-    if (view.name === "Recently Modified" || view.name === "Recently Added") {
-      view.filters[0].type = "range";
-      view.filters[0].value.range[view.filters[0].field].gte = moment().subtract(30, "days").toISOString();
-      view.filters[0].value.range[view.filters[0].field].lte = moment().toISOString();
-    }
     return view;
+  };
+
+  const modifySelectedGridView = (selectedGridView) => {
+    if (selectedGridView?.filters.length > 0)
+      selectedGridView.filters[0].value = stateApp.user._id;
   };
 
 
