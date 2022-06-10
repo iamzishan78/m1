@@ -107,7 +107,7 @@ export const TableESHOC = (Component) => {
         const tableData = elasticData?.getESSimpleSearch || {}
 
         useEffect(() => {
-            if (tableMeta?.gridView) {
+            if (tableMeta?.selectedGridView) {
                 const category = tableMeta?.typeKeyword?.metaModule
                 getMetaData({
                     variables: {
