@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { set, get } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import moment from "moment";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 import { IconButton, Grid, Table, TableCell, TableBody, FormControl } from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -16,6 +15,9 @@ import UserList from "components/Shared/UserList";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import vf_currency from "components/Shared/valueformatters/vf_currency";
 import vf_number from "components/Shared/valueformatters/vf_number";
+import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
+import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
@@ -53,7 +55,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
   );
 }
 
-export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search }) {
+export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [] }) {
   const classes = summaryTableStyles();
   const dispatch = useDispatch();
   const [tableDataState, setTableDataState] = useState({});
@@ -64,14 +66,19 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
   const [tableTempProperties, setTableTempProperties] = useState(properties);
 
   useEffect(() => {
-    setFilteredTableData(tableData.concat(properties?.custom_data_arr || []));
-    properties?.custom_data_arr?.forEach((data) => {
-      tableTempProperties[data.key] = data.value;
-      tableTempProperties[`${data.key}key`] = data.key;
+    const customMetaData = getCustomMetaFields(properties, metaData);
+    if (customMetaData.length === 0) return;
+    let filteredKeys = tableData.concat(customMetaData);
+    customMetaData.forEach(md => {
+      if (!md.isCustomData) {
+        set(tableTempProperties, md.key, md.value);
+        set(tableTempProperties, [`${md.key}key`], md.key);
+      }
     });
+    setFilteredTableData(filteredKeys);
     setTableTempProperties({ ...tableTempProperties });
     setTableDataState({});
-  }, [properties]);
+  }, [properties, metaData]);
 
   useEffect(() => {
     if (search) {
@@ -89,28 +96,36 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
     }
   }, [search]);
 
-  const onChange = (e, data, type) => {
+  const getKey = (data, type) => {
     const appendValue = type === "key" ? type : "";
-    setTableTempProperties({ ...tableTempProperties, [`${data.key}${appendValue}`]: e.target.value });
+    if (appendValue)
+      return `${data.key}.${appendValue}`;
+    return `${data.key}`;
+  }
+
+  const onChange = (e, data, type) => {
+    const obj = { ...tableTempProperties };
+    set(obj, getKey(data, type), e.target.value);
+    setTableTempProperties(obj);
   };
 
   const onKeyDown = (e, data, type) => {
     if (type === "value") {
-      if (data.isCustom) {
-        if (!tableTempProperties[`${data.key}key`]) {
+      if (data.isCustom || data.isCustomData) {
+        if (!get(tableTempProperties, `${data.key}key`) && !data.isCustomData) {
           dispatch(showErrorMessage("Please provide key value first"));
           return;
         } else {
-          updateCustomProperties(type, tableTempProperties[data.key], data.id);
+          updateCustomProperties(type, get(tableTempProperties, `${data.key}`), data.key);
         }
-      } else updateProperties(e, data.key, tableTempProperties[data.key], data.isCustom);
+      } else updateProperties(e, data.key, get(tableTempProperties, `${data.key}`), data.isCustom);
     } else {
-      const exists = filteredTableData.find((row) => row.key === tableTempProperties[`${data.key}key`] && row.id !== data.id);
+      const exists = filteredTableData.find((row) => row.key === get(tableTempProperties, `${data.key}key`) && row.id !== data.id);
       if (exists) {
         dispatch(showErrorMessage("Key with this name already exists"));
         return;
       }
-      updateCustomProperties(type, tableTempProperties[`${data.key}key`], data.id);
+      updateCustomProperties(type, get(tableTempProperties, `${data.key}key`), data.key);
     }
   };
 
@@ -120,6 +135,11 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
       setTableTempProperties({ ...tableTempProperties, [data.key]: data.isCustom ? data.value : properties[data.key] });
     } else setTableTempProperties({ ...tableTempProperties, [`${data.key}key`]: data.key });
   };
+
+  const checkFieldChange = (e, data, type, func) => {
+    if (data.isCustomData) func(e, data, type);
+    else func(e, data, type);
+  }
 
   return (
     <Table className={classes.table} size="small" aria-label="unit table">
@@ -189,40 +209,52 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
               >
                 {tableDataState[data.key] ? (
                   <>
-                    {data.type === "select" && (
+                    {(data.type === "select" || data.type === "dropdown") && (
                       <FormControl fullWidth margin="dense">
-                        <Select
-                          margin="dense"
-                          className={classes.select}
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          value={tableTempProperties[data.key]}
-                          onClick={(e) => e.stopPropagation()}
-                          onChange={(e) => {
-                            e.keyCode = 13;
-                            tableTempProperties[data.key] = e.target.value;
-                            setTableTempProperties({ ...tableTempProperties });
-                            updateProperties(e, data.key, e.target.value);
+                        <CustomFieldSelect
+                          fullWidth
+                          index={`field${index}`}
+                          dropdownOptions={data.options}
+                          column={data}
+                          value={get(properties, data.key) ?? []}
+                          onCustomKeyChange={(value) => {
+                            set(tableTempProperties, data.key, value);
+                            setTableTempProperties(tableTempProperties);
+                            updateProperties(null, data.key, value);
                           }}
-                          onBlur={() => {
-                            setTableDataState({});
-                            setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] });
-                          }}
-                        >
-                          {data.options.map((option) => (
-                            <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
-                          ))}
-                        </Select>
+                        />
                       </FormControl>
-                    )}{" "}
+                    )}
+                    {(data.type === "multiselect") && (
+                      <FormControl fullWidth margin="dense">
+                        <CustomFieldMultiSelect
+                          fullWidth
+                          index={`field${index}`}
+                          dropdownOptions={data.options}
+                          column={data}
+                          value={get(properties, data.key) ?? []}
+                          onCustomKeyChange={(value) => {
+                            set(tableTempProperties, data.key, value);
+                            setTableTempProperties(tableTempProperties);
+                            updateProperties(null, data.key, value);
+                          }}
+                        />
+                      </FormControl>
+                    )}
                     {(data.type === "text" || data.type === "number" || data.type === "currency" || data.type === "comma-number") && (
                       <TableTextField
                         data={data}
-                        value={tableTempProperties[data.key]}
+                        value={get(tableTempProperties, `${data.key}`)}
                         showMessage={tableDataState[data.key] === true}
-                        onChange={onChange}
-                        onKeyDown={onKeyDown}
-                        onBlur={onBlur}
+                        onChange={(e, data, type) => {
+                          checkFieldChange(e, data, type, onChange);
+                        }}
+                        onKeyDown={(e, data, type) => {
+                          checkFieldChange(e, data, type, onKeyDown);
+                        }}
+                        onBlur={(e, data, type) => {
+                          checkFieldChange(e, data, type, onBlur);
+                        }}
                         onWheel={(e) => e.target.blur()}
                         type="value"
                         InputProps={data.InputProps}
@@ -342,7 +374,9 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             data.type !== "custom" &&
                             data.type !== "currency" &&
                             data.type !== "comma-number" &&
-                            (data.value || properties[data.key] || "-")}
+                            data.type !== "multiselect" &&
+                            (data.value || get(properties, `${data.key}`, "-"))}
+                          {data.type === "multiselect" && get(properties, `${data.key}`, []).join(", ")}
                           {data.type === "currency" && (vf_currency(data.value) || vf_currency(properties[data.key]) || "-")}
                           {data.type === "comma-number" && (vf_number(data.value) || vf_number(properties[data.key]) || "-")}
                         </Grid>
