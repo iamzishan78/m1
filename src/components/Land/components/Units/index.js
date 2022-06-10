@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { AppContext } from "AppContext";
 import { makeStyles } from "@material-ui/core/styles";
-import AnalyticsCards from "components/Land/components/Common/AnalyticsCards";
+// import AnalyticsCards from "components/Land/components/Common/AnalyticsCards";
 import MapGridUnitTable from "components/Table/Unit/MapGridUnitTable";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 
@@ -14,15 +14,15 @@ const useStyles = makeStyles((theme) => ({
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
-          maxHeight: "48vh",
+          maxHeight: "72vh",
           "@media (max-height:900px)": {
-            maxHeight: "45vh",
+            maxHeight: "72vh",
           },
           "@media (max-height:800px)": {
-            maxHeight: "41vh",
+            maxHeight: "70vh",
           },
           "@media (max-height:768px)": {
-            maxHeight: "38vh",
+            maxHeight: "65vh",
           },
         },
       },
@@ -67,8 +67,8 @@ function Units(props) {
   ];
 
   return (
-    <div style={{ marginTop: 56, padding: "75px 56px" }}>
-      <AnalyticsCards
+    <div style={{ marginTop: 20, padding: "75px 20px" }}>
+      {/* <AnalyticsCards
         parent={"Agreements"}
         esIndex={esIndex}
         esFilters={esFilters}
@@ -76,11 +76,11 @@ function Units(props) {
         totalCount={agreementCount}
         setESFilters={setESFilters}
         landSearchQuery={stateApp.landSearchQuery}
-      />
-      <div className={classes.custom} style={{ marginTop: "40px" }}>
+      /> */}
+      <div className={classes.custom} >
         <MapGridUnitTable
           dense
-          parent="search"
+          parent="UnitsTable"
           targetLabel="unit"
           header="Units"
         />

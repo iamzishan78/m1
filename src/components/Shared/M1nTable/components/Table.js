@@ -2466,6 +2466,12 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  if(column.name === 'name' && props.parent === 'UnitsTable'){
+                    const row_line = Object.assign({},...tableMeta.rowData.map((item, index) => ({[props.columns[index]?.name]: item,})));
+                    return(
+                      <span style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }} onClick={() => history.push(`/map/units/${row_line._id}`)}>{row_line.name}</span>
+                    )
+                  }
                   if (column.isCustom && column.type === "dropdown") {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
