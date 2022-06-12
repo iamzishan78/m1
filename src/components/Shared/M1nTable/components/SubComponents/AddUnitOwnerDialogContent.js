@@ -98,8 +98,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerType
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
-
-      reset({
+      const owner = {
         working_interest: working_interest || null,
         royalty_interest: royalty_interest || null,
         orri: orri || null,
@@ -111,7 +110,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         contactStatus: contactStatus || null,
         ownerType,
         customLayer,
-      });
+      }
+
+      setNewOwner({ ...newOwner, ...owner });
+      reset(owner);
     }
   }, [selectedRow]);
 
