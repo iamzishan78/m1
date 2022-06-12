@@ -19,6 +19,7 @@ import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 // contexts
 import { AppContext } from "AppContext";
 import { NavigationContext } from "components/Navigation/NavigationContext";
+import LinkWithIcon from "components/Shared/LinkWithIcon";
 
 const ContactBreadcrumbs = () => {
   const history = useHistory();
@@ -145,6 +146,7 @@ const ContactBreadcrumbs = () => {
   }, [history.location]);
 
   return (
+  <div style={{ display: "flex", width: "100%", justifyContent: "space-between" }}>
     <div
       style={{
         display: "flex",
@@ -437,6 +439,8 @@ const ContactBreadcrumbs = () => {
         )}
       </Breadcrumbs>
     </div>
+      <LinkWithIcon objectId={contactId.toLowerCase()} iconZiseSmall={false} />
+      </div>
   );
 };
 
