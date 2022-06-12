@@ -17,12 +17,16 @@ const DocumentsHeadCells = [
   {
     name: "fileName",
     label: "File Name",
+    esKey: 'name.keyword',
+    options: {
+      filter: true
+    }
   },
   {
     name: "fileId",
     options: {
       display: false,
-      filter: false,
+      filter: true,
       searchable: false,
       sort: false,
       download: false,
@@ -37,18 +41,34 @@ const DocumentsHeadCells = [
   {
     name: "documentNumber",
     label: "Document Number",
+    esKey: "documentNumber.keyword",
+    options: {
+      filter: true
+    }
   },
   {
     name: "documentName",
     label: "Document Name",
+    esKey: 'documentName.keyword',
+    options: {
+      filter: true
+    }
   },
   {
     name: "documentType",
     label: "Document Type",
+    esKey: 'documentType.keyword',
+    options: {
+      filter: true
+    }
   },
   {
     name: "documentDate",
     label: "Document Date",
+    esKey: 'documentDate',
+    options: {
+      filter: true
+    }
   },
   {
     name: "uploadedDate",
@@ -79,6 +99,10 @@ const DocumentsHeadCells = [
   {
     name: "recordingInfo",
     label: "Recording Info",
+    esKey: 'recordingInfo.keyword',
+    options: {
+      filter: true
+    }
   },
   {
     name: " ",
@@ -102,9 +126,9 @@ const DocumentsHeadCells = [
       viewColumns: false,
     }
   },
-  
 
- 
+
+
 
 ];
 
