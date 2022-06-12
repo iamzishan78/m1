@@ -27,6 +27,7 @@ import { handleSelectedGridChange, setColumnDisplayAndFilter } from "./helpers";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 import { formattingGridView, sortColumns } from "utils/helper";
+import moment from "moment";
 
 
 export const TableESHOC = (Component) => {
@@ -348,10 +349,17 @@ export const TableESHOC = (Component) => {
                     let value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
                     let filterList = Array.isArray(column.esKey) ? undefined : [];
                     if (value && typeof value !== "object") {
-                        if (column.custom?.isDate) {
-                            const filterData = stateApp.filtersData[columns[index].name];
-                            const data = filterData?.find(f => f.key_as_string === value)
-                            if (data) value = data.key
+                        if (column.custom?.isDate && columns?.length) {
+                            if (stateApp?.filtersData[columns[index].name]) {
+                                const filterData = stateApp.filtersData[columns[index].name];
+                                const data = filterData?.find(f => (column.custom.key_as_string && f.key_as_string === value) || (!column.custom.key_as_string && f.key === value))
+                                if (data) value = data.key
+                            }
+                            else {
+                                if (value !== "")
+                                    value = moment(new Date(value)).format("MM/DD/YYYY")
+                            }
+
                         }
                         filterList = [value];
                     }
@@ -535,8 +543,10 @@ export const TableESHOC = (Component) => {
                 if (val.length > 0 && columns[index]) {
                     if (columns[index].custom?.isDate) {
                         const filterData = stateApp.filtersData[columns[index].name];
-                        const data = filterData.find(f => f.key === val[0] || f.key_as_string === val[0])
-                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
+                        if (filterData) {
+                            const data = filterData.find(f => f.key === val[0] || f.key_as_string === val[0])
+                            pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
+                        }
                     } else if (columns[index].custom?.filterOptions?.length > 0) {
                         pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0] })
                     } else if (columns[index].custom?.formatedFilterOptions?.length > 0) {
