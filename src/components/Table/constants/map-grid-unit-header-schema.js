@@ -30,6 +30,7 @@ const unitsColumnHeaders = [
       options: {
         sort: true,
         filter: true,
+        setCellProps: () => ({ style: { minWidth: "230px" } }),
       },
     },
     {
@@ -39,6 +40,7 @@ const unitsColumnHeaders = [
       options: {
         sort: true,
         filter: true,
+        setCellProps: () => ({ style: { minWidth: "125px" } }),
       },
     },
     {
@@ -141,7 +143,7 @@ const unitsColumnHeaders = [
     },
     {
       name: "ownersCount",
-      label: "Owners",
+      label: "Owner Count",
       esKey: "interestSummary.unitInterestCount",
       options: {
         sort: true,
@@ -154,6 +156,7 @@ const unitsColumnHeaders = [
       esKey: "shapeJson.properties.campaignName",
       options: {
         customRender: (value) => value?.map((v, index) => `${v}${index < value?.length - 1 ? ',' : ''}`),
+        setCellProps: () => ({ style: { minWidth: "200px" } }),
         sort: true,
         filter: true,
       },
@@ -165,6 +168,7 @@ const unitsColumnHeaders = [
       options: {
         sort: true,
         filter: true,
+        setCellProps: () => ({ style: { minWidth: "125px" } }),
       },
     },
     //hiding temporarily until we get the chart fixed -kc 20220327
