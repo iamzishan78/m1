@@ -55,6 +55,13 @@ export default function HeaderFunction(props) {
 
   const { control, reset } = useForm();
 
+  useEffect(() => {
+    if (check) {
+      reset({ ...check })
+      setCheck(check);
+    }
+  }, [props.check]);
+
   const handleUpdateCheck = debounce((checkKey) => {
     setCheck({ ...check, ...checkKey })
     updateCheck({
@@ -63,13 +70,6 @@ export default function HeaderFunction(props) {
       },
     });
   }, 500);
-
-  useEffect(() => {
-    if (check) {
-      reset({ ...check })
-      setCheck(check);
-    }
-  }, [props.check]);
 
   const handleCheckAmount = () => {
     if (check) {

@@ -53,6 +53,7 @@ function Agreements(props) {
       <div style={{ marginTop: "40px" }}>
         <AgreementsTable
           esIndex={esIndex}
+          isCheckboxSticky={true}
           header="Agreements"
           esFilters={esFilters}
           targetLabel="agreement"
