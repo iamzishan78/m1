@@ -32,15 +32,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const rawJobs = [
-  { name: "Import Contacts", type: "CONTACTS" },
-  { name: "Import Contact Well Interests", type: "CONTACTSWELLINTEREST" },
-  { name: "Interest Owner Upload", type: "PARCELINTERESTS" },
-  { name: "Shape Owner Upload", type: "SHAPEOWNER" },
-  { name: "Import Tracts", type: "TRACTS", featureFlag: "TRACTIMPORT" },
-  { name: "Import Units", type: "UNITS", featureFlag: "UNITIMPORT" },
-  { name: "Check Detail Upload", type: "CHECKDETAILS" },
-];
+export const rawJobs = [
+  { name: 'Import Contacts', type: 'CONTACTS' },
+  { name: 'Import Contact Well Interests', type: 'CONTACTS_WELL_INTEREST' },
+  { name: 'Interest Owner Upload', type: 'PARCELINTERESTS' },
+  { name: 'Shape Owner Upload', type: 'SHAPEOWNER' },
+  { name: 'Import Tracts', type: 'TRACTS', featureFlag: "TRACTIMPORT" },
+  { name: 'Import Units', type: 'UNITS', featureFlag: "UNITIMPORT" },
+  { name: 'Check Detail Upload', type: 'CHECKDETAILS' }
+]
 
 export default function BulkUpload(props) {
   console.log(props);
@@ -55,7 +55,7 @@ export default function BulkUpload(props) {
       case "CONTACTS":
         filter = stateNav.bulkUploadFromMap ? false : true;
         break;
-      case "CONTACTSWELLINTEREST":
+      case 'CONTACTS_WELL_INTEREST':
         filter = stateNav.bulkUploadFromMap ? false : true;
         break;
       case "PARCELINTERESTS":
