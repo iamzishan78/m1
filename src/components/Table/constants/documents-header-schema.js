@@ -16,12 +16,12 @@ const DocumentsHeadCells = [
   },
   {
     name: "fileName",
-    esKey: 'name.keyword',
+    esKey: "name.keyword",
     dbName: "name",
     label: "File Name",
     options: {
       filter: true,
-    }
+    },
   },
   // {
   //   name: "fileState",
@@ -33,35 +33,36 @@ const DocumentsHeadCells = [
   // },
   {
     name: "documentNumber",
-    esKey: 'documentNumber.keyword',
+    esKey: "documentNumber.keyword",
     label: "Document Number",
     options: {
       filter: true,
-    }
+    },
   },
   {
     name: "documentName",
-    esKey: 'documentName.keyword',
+    esKey: "documentName.keyword",
     label: "Document Name",
     options: {
       filter: true,
-    }
+    },
   },
   {
     name: "documentType",
-    esKey: 'documentType.keyword',
+    esKey: "documentType.keyword",
     label: "Document Type",
     options: {
       filter: true,
-    }
+    },
   },
   {
     name: "dateTime",
-    esKey: 'documentDate',
+    esKey: "documentDate",
     label: "Document Date",
     options: {
       filter: false,
-    }
+    },
+    custom: { isDate: true, key_as_string: true },
   },
   {
     name: "uploadedDate",
@@ -89,11 +90,11 @@ const DocumentsHeadCells = [
 
   {
     name: "recordingInfo",
-    esKey: 'recordingInfo.keyword',
+    esKey: "recordingInfo.keyword",
     label: "Recording Info",
     options: {
       filter: true,
-    }
+    },
   },
   {
     name: " ",
@@ -104,7 +105,7 @@ const DocumentsHeadCells = [
       searchable: false,
       sort: false,
       viewColumns: false,
-    }
+    },
   },
   {
     name: "custom_data",
@@ -115,7 +116,7 @@ const DocumentsHeadCells = [
       searchable: false,
       sort: false,
       viewColumns: false,
-    }
+    },
   },
   {
     name: "viewToken",
@@ -126,12 +127,8 @@ const DocumentsHeadCells = [
       searchable: false,
       sort: false,
       viewColumns: false,
-    }
+    },
   },
-
-
-
-
 ];
 
 
