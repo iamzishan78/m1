@@ -1373,7 +1373,7 @@ function SubTable(props) {
                   } = tableMeta;
                   return (
                     <>
-                      {label === "Property #" && <span style={{ padding: 10 }}>{rowData[1].number}</span>}
+                      {label === "property #" && <span style={{ padding: 10 }}>{rowData[1]}</span>}
 
                       {label === "Property Name" && <span style={{ padding: 10 }}>{rowData[1].name}</span>}
 
@@ -3972,12 +3972,12 @@ function SubTable(props) {
   // }
 
 
-  if (props.header === "Deals" 
-      || props.header === "Activities"
-      || props.header === "Agreements"
-      || props.parent === "TractTable"
-      || props.parent === "TractInterestsTable"
-      ) {
+  if (props.header === "Deals"
+    || props.header === "Activities"
+    || props.header === "Agreements"
+    || props.parent === "TractTable"
+    || props.parent === "TractInterestsTable"
+  ) {
     // adds the print and export options in the Flow grid and the Activities grid
     if (props.targetLabel !== 'activitiesDashboard') {
       // options.print = true;
@@ -4043,7 +4043,7 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    if (props.header === "Contacts" || props.header === "Documents") {
+    if (props.header === "Contacts" || props.header === "Documents" || props.header === "Agreements") {
       const HeaderComponent = props.headerComponent;
       return <HeaderComponent {...props.headerProps} />;
     }
@@ -4105,7 +4105,7 @@ function SubTable(props) {
   };
 
   const CustomTableViewCol = (columnsProps) => {
-    if (props.header === "Documents") {
+    if (props.viewColumn) {
       const ViewColumn = props.viewColumn;
       return <ViewColumn {...columnsProps} {...props.viewColumnProps} tableColumns={props.columns} />;
     } else {

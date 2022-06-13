@@ -25,6 +25,7 @@ import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_JOB_UPLOAD_URI } from "graphQL/useQueryGetJobUploadUri";
 import { showSuccessMessage } from "../../../actions";
 import { BlockBlobClient } from "@azure/storage-blob";
+import jobHeaders from '../jobHeaders'
 
 const QontoConnector = withStyles({
   alternativeLabel: {
@@ -258,8 +259,10 @@ export default function CustomizedSteppers(props) {
         }
         delete element.tableData;
       });
+
       getJobUploadUri({
         variables: {
+          requestPayload: { sampleCsv: jobHeaders[props.selectedJob.type] },
           jobName: props.selectedJob.name,
           jobType: props.selectedJob.type,
           userId: userID,

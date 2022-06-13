@@ -15,6 +15,12 @@ const SIDE_PANEL_MENU_ITEMS_LIST = {
     component: "Activities",
     noCheck: true
   },
+  EXPIRATIONS: {
+    featureFlag: "CALENDAR_EXPIRATIONS",
+    title: "Expirations",
+    link: "/calendar/expirations",
+    component: "Expirations",
+  },
   OBLIGATIONS: {
     featureFlag: "CALENDAR_OBLIGATIONS",
     title: "Obligations",
@@ -26,12 +32,6 @@ const SIDE_PANEL_MENU_ITEMS_LIST = {
     title: "Payments",
     link: "/calendar/payments",
     component: "Payments",
-  },
-  EXPIRATIONS: {
-    featureFlag: "CALENDAR_EXPIRATIONS",
-    title: "Expirations",
-    link: "/calendar/expirations",
-    component: "Expirations",
   },
   APPROVAL_MANAGEMENT: {
     featureFlag: "CALENDAR_APPROVAL_MANAGEMENT",

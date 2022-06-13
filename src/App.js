@@ -376,7 +376,7 @@ function App() {
                         <PrivateRoute exact path="/studio" component={StudioProvider} />
                         <PrivateRoute title="Bulk Upload" exact path={["/bulkupload", "/bulkupload/:type"]} component={BulkUpload} />
                         <PrivateRoute exact path="/agreement" component={AgreementProvider} />
-                        <PrivateRoute path="/revenue" component={RevenueProvider} />
+                        <PrivateRoute title="Revenue Statements" path="/revenue" component={RevenueProvider} />
                         <PrivateRoute path="/land" component={Land} />
                         <PrivateRoute exact path="/agreements" component={AgreementProvider} />
                         <PrivateRoute exact path="/agreement/details/:agreementId?" component={AgreementDetailProvider} />

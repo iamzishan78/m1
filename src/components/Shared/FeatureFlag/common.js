@@ -9,6 +9,7 @@ export const FEATURES = {
     LANDREPORTINGGROUPS: 'landReportingGroups',
     CONTACTSUBMENU: 'ContactsSubMenu',
     CALENDAR_OBLIGATIONS: 'CALENDAR_OBLIGATIONS',
+    CALENDAR_EXPIRATIONS: 'CALENDAR_EXPIRATIONS',
     LANDGRIDSEARCH: 'landGridSearch',
     TRACTIMPORT: 'tractImport',
     UNITIMPORT: 'unitImport',
