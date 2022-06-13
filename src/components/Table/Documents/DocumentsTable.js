@@ -102,6 +102,11 @@ function DocumentsTable(props) {
   }, [Documents]);
 
   useEffect(() => {
+    let sort
+    if (selectedSorts.current) {
+      const field = Object.keys(selectedSorts.current)[0]
+      sort = { field, ...selectedSorts.current[field] }
+    }
     getESDocuments({
       variables: {
         pagination: {
@@ -110,7 +115,7 @@ function DocumentsTable(props) {
         },
         search: props.documentSearchQuery ? `${props.documentSearchQuery}*` : "*",
         filters: getAppliedFilters(filters, columns, stateApp.filtersData),
-        sort: selectedSorts.current
+        sort
       },
     });
   }, [getESDocuments, props.parent, props.documentSearchQuery, Documents]);
