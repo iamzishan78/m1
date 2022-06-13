@@ -23,7 +23,7 @@ export const usetableStyles = makeStyles(() => ({
           },
           "@media (max-height:1200px)": {
             maxHeight: "58vh",
-            minHeight: (p) => p.isFullHeight ? '79vh' : '58vh',
+            minHeight: (p) => p.isFullHeight ? '75vh' : '58vh',
           },
           "@media (max-height:1100px)": {
             maxHeight: "51vh",
