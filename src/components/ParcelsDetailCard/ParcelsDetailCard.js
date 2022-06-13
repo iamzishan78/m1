@@ -639,7 +639,7 @@ export default function ParcelsDetailCard(props) {
                 customLayer={copy(parcelObj)}
                 relatedObjectType='Parcel'
                 parent="associatedDocumentsPerParcel"
-                targetLabel="parcelDocument"
+                targetLabel="documents"
                 header={<DocumentHeader />}
                 dense
               />
