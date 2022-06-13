@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import AddLayerIcon from "@material-ui/icons/Queue";
 import { MapControlsContext } from "../../MapControls/MapControlsContext";
 import { AppContext } from "AppContext";
@@ -8,6 +8,7 @@ import { UPDATELAYERSETTINGS } from "graphQL/useMutationUpdateLayerSettings";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "actions";
+import { GET_LAYER_GROUPS } from "graphQL/useQueryLayerGroup";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -79,6 +80,7 @@ export default function SidePanel() {
   const { selectedControl: panelType } = stateMapControls;
 
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [getLayerGroups, { data: layerGroupData }] = useLazyQuery(GET_LAYER_GROUPS);
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
@@ -104,6 +106,10 @@ export default function SidePanel() {
       icon: <AddLayerIcon />,
     },
   };
+
+  useEffect(() => {
+    getLayerGroups(stateApp.user.mongoId)
+  }, [getLayerGroups])
 
   //   for BaseMap Panel
   useEffect(() => {
@@ -193,7 +199,8 @@ export default function SidePanel() {
 
   //   for Layer Panel
   useEffect(() => {
-    if (panelType === "layer" || panelType === null) {
+    if ((panelType === "layer" || panelType === null) && layerGroupData?.getLayerGroups) {
+      const layerGroups = layerGroupData?.getLayerGroups
       const groupHandled = [];
       const layerAndGroups = [];
       stateApp.layers &&
@@ -240,6 +247,28 @@ export default function SidePanel() {
             }
           }
         });
+
+      layerAndGroups.push({
+        depth: 0,
+        type: "group",
+        collapsed: true,
+        showable: true,
+        visiable: true,
+        name: 'Testing Group',
+        id: '17aa1134-6452-48d9-99ac-3e6f23cdd5ed',
+      });
+
+      layerAndGroups.push({
+        emptyLayer: true,
+        groupName: 'Testing Group',
+        groupId: '17aa1134-6452-48d9-99ac-3e6f23cdd5ed',
+        visiable: true,
+        showable: true,
+        name: "",
+        depth: 1,
+        type: "layer",
+        id: '17aa1134-6452-48d9-99ac-3e6f23cdd5eg',
+      });
 
       setPanelItems(layerAndGroups);
       setPanelTitle("Layers");
@@ -356,7 +385,7 @@ export default function SidePanel() {
         });
       });
     }
-  }, [panelType, stateApp.layers]);
+  }, [panelType, stateApp.layers, layerGroupData?.getLayerGroups]);
 
   //   for HeatMap Panel
   useEffect(() => {

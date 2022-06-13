@@ -1,7 +1,7 @@
 import * as React from "react"
 
-const DatabaseIcon = ({ fill = "#686868" }) => (
-  <svg height="24px" width="24px" version="1.1" viewBox="100 80 600 600" xmlns="http://www.w3.org/2000/svg">
+const DatabaseIcon = ({ className, fill }) => (
+  <svg className={className} height="24px" width="24px" version="1.1" viewBox="100 80 600 600" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <clipPath id="a">
         <path d="m197 139.21h364v473.58h-364z" />

@@ -1,5 +1,4 @@
 import React, { useCallback, useContext, useEffect, useMemo } from "react";
-import { groupBy } from "lodash";
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/styles";
 import { Typography } from "@material-ui/core";
@@ -35,11 +34,18 @@ const useStyles = makeStyles((theme) => ({
         background: "#506187",
         "& .actionIcon": {
           color: '#FFFF'
-        }
+        },
+        "& .dIcon": {
+          fill: '#ffff ',
+        },
       },
       cursor: "pointer",
       paddingLeft: '10px',
       marginBottom: '15px',
+    },
+
+    "& .dIcon": {
+      fill: '#506187',
     },
 
     "& .actionIcons": {
@@ -152,7 +158,7 @@ function Datasets({ layerMap, headerButton }) {
                 <Grid item md={12}>
                   <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ width: '100%' }}>
                     <Grid item style={{ display: 'flex', flexDirection: 'inline' }}>
-                      <Icon fill="#506187" />
+                      <Icon className='dIcon' />
                       <Typography style={{
                         color: '#ffff', textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',

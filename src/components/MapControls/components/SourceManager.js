@@ -430,7 +430,7 @@ export default function SourceManager(props) {
         index = 0;
       }
     }
-    return layers.filter((UdLayer) => !((layer.layerCategory === "M1 Layer" || UdLayer.groupName === "Agreements") && UdLayer.groupId));
+    return layers.filter((UdLayer) => !((UdLayer.layerCategory === "M1 Layer" || UdLayer.groupName === "Agreements") && UdLayer.groupId));
   }, [currentLayers]);
 
   return (
