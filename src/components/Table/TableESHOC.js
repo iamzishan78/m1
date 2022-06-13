@@ -355,15 +355,8 @@ export const TableESHOC = (Component) => {
                     let filterList = Array.isArray(column.esKey) ? undefined : [];
                     if (value && typeof value !== "object") {
                         if (column.custom?.isDate && columns?.length) {
-                            if (stateApp?.filtersData[columns[index].name]) {
-                                const filterData = stateApp.filtersData[columns[index].name];
-                                const data = filterData?.find(f => (column.custom.key_as_string && f.key_as_string === value) || (!column.custom.key_as_string && f.key === value))
-                                if (data) value = data.key
-                            }
-                            else {
-                                if (value !== "")
-                                    value = moment(new Date(value)).format("MM/DD/YYYY")
-                            }
+                            if (value !== "")
+                                value = moment(new Date(value)).format("MM/DD/YYYY")
 
                         }
                         filterList = [value];
