@@ -538,8 +538,8 @@ export default function HeaderSection(props) {
                         updatePropertyData("status", e.target.value);
                       }}
                     >
-                      <MenuItem value="Approved">Approved</MenuItem>
-                      <MenuItem value="Unapproved">Unapproved</MenuItem>
+                      <MenuItem value="In Pay">In Pay</MenuItem>
+                      <MenuItem value="Not in Pay">Not in Pay</MenuItem>
                     </Select>
                   )}
                 />
