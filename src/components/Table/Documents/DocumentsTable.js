@@ -53,6 +53,7 @@ function DocumentsTable(props) {
   const { Documents } = useSelector(({ session }) => session.userGridViewSettings);
 
   const selectedFilters = useRef([]);
+  const selectedSorts = useRef([]);
   const [stateApp, setStateApp] = useContext(AppContext);
 
   // function states
@@ -109,9 +110,10 @@ function DocumentsTable(props) {
         },
         search: props.documentSearchQuery ? `${props.documentSearchQuery}*` : "*",
         filters: getAppliedFilters(filters, columns, stateApp.filtersData),
+        sort: selectedSorts.current
       },
     });
-  }, [getESDocuments, props.parent, props.documentSearchQuery]);
+  }, [getESDocuments, props.parent, props.documentSearchQuery, Documents]);
 
   useEffect(() => {
     getMetaData({
@@ -270,6 +272,8 @@ function DocumentsTable(props) {
   const onTableChange = (action, tableState, rows, meta) => {
     const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESDocuments, selectedGridView);
     selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
+    selectedSorts.current = tableActions?.pageESVariables?.variables?.sort
+
     if (action === "filterChange") {
       setFilters(tableState.filterList);
     }
