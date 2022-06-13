@@ -2659,11 +2659,11 @@ function SubTable(props) {
                           <div className={classes.companyName}>{tableMeta.rowData[14]}</div>
                         </p>
                       )}
-                      {props.targetLabel === "contact" && column.name === "name" && (
+                      {/* {props.targetLabel !== "contact" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
                           <span>{tableMeta.rowData[getIndexofColumn(columns, "isPurchased")] && <RequestPageIcon color="grey" fontSize="8px" />} </span>
                         </FeatureFlag>
-                      )}
+                      )} */}
 
                       {props.targetLabel === "Unit Ownership" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
@@ -2684,9 +2684,12 @@ function SubTable(props) {
                           (val) => val.name === "isPurchased"
                         )
                         ] && (
-                          <MonetizationOnIcon
-                            className={classes.monetizationIcon}
-                          />
+                          <FeatureFlag feature={FEATURES.IDICORE}>
+                            <MonetizationOnIcon
+                              className={classes.monetizationIcon}
+
+                            />
+                          </FeatureFlag>
                         )}
                     </div>
                   );
