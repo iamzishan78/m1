@@ -120,7 +120,7 @@ function TractInterestsTable(props) {
   const count = tableData?.total || 0;
   const options = {
     rowsPerPageOptions: [10, 25, 50, 100],
-    rowsPerPage: 10,
+    // rowsPerPage: 10,
     count: count,
     serverSide: true,
     search: false,
@@ -344,6 +344,7 @@ function TractInterestsTable(props) {
   // }, [pIssuesArr]);
 
   const onTableChange = (action, tableState, rows, meta) => {
+
     tableState.esIndex = esIndex;
     tableState.esFilters = esStaticFilters;
     // setESSearch(tableState.searchText ? `${tableState.searchText}*` : '')
