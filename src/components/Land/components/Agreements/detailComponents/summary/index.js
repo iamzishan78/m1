@@ -31,7 +31,6 @@ export default function Summary({
   standardProvisions,
   updateAgreement,
   shapeSummaryDetails,
-  updateDescription,
 }) {
   const [description, setDescription] = useState("");
   const [onFocusDescription, setFocusSate] = useState(false);
@@ -45,10 +44,10 @@ export default function Summary({
   }, [reset, agreementDetails]);
 
   useEffect(() => {
-    const description = _.get(agreementProvisions, "[0].description", "");
+    const description = agreementDetails?.metaDescription || "";
 
     setDescription(description);
-  }, [agreementProvisions]);
+  }, [agreementDetails]);
 
   const hasCustomProvision = agreementProvisions.find(
     (provision) => !provision.templateRef
@@ -195,9 +194,9 @@ export default function Summary({
                     onKeyPress={(event) => {
                       if (event.key === "Enter") {
                         document.activeElement.blur();
-                        updateDescription({
-                          description: event.target.value,
-                        });
+                        updateAgreement(
+                          "metaDescription", event.target.value,
+                        );
                       }
                     }}
                     onFocus={() => setFocusSate(true)}

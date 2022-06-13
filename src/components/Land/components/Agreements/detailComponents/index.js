@@ -345,6 +345,7 @@ export default function DetailComponents(props) {
     customLayer.shape = JSON.stringify(shape);
     customLayer.shapeJson = shape;
 
+    console.log("-*-* called updateCustomLayer *-*-*", customLayer);
     updateCustomLayer({
       variables: {
         customLayerId: activeAgreement._id,
@@ -399,17 +400,6 @@ export default function DetailComponents(props) {
     });
   }
 
-   const onUpdateMetaDataDescription = (data) => {
-    if(_.get(agreementProvisions, "[0]._id"))
-      updateMetaData({
-        variables: {
-          descriptorObject: data.owner, // Find descriptorObject
-          userId: stateApp.user.mongoId,
-          relatedObject: agreementProvisions[0]._id, // Find relatedObject
-          relatedObjectType: "Agreement",
-        },
-      });
-   };
 
   return (
     <NavHeader
@@ -541,7 +531,6 @@ export default function DetailComponents(props) {
                     []
                   )}
                   updateAgreement={updateAgreement}
-                  updateDescription={onUpdateMetaDataDescription}
                   shapeSummaryDetails={
                     dataShapeSummaryDetails?.shapeSummaryDetails
                   }
@@ -649,7 +638,6 @@ export default function DetailComponents(props) {
               targetSourceId={agreementId}
               data={agreementDetails}
               targetLabel="Shape"
-              descriptionKey="description"
               showDescription={false}
             />
           </div>
