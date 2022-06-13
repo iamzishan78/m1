@@ -21,6 +21,8 @@ import Loader from "components/Loaders";
 import TextField from "@material-ui/core/TextField";
 import { UPDATEBULKCONTACT } from "graphQL/useMutationUpdateBulkContact";
 import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+import { timeZoneOptions } from "components/ContactDetailCard/components/FieldContent/timeZoneList";
+import Tags from "components/Shared/Tagger";
 
 const styles = () => ({
   topHeading: { fontWeight: "bold" },
@@ -30,6 +32,9 @@ const styles = () => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center"
+  },
+  fullWidth: {
+    width: '100%'
   }
 });
   
@@ -43,7 +48,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const [field, setField] = useState('');
   const [fieldKey, setFieldKey] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(true);
 
   const fieldsToUpdate = [
     { title: "Campaign Name", value: "campaignName" },
@@ -51,17 +55,26 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     { title: "Entity Type", value: "ownerType" },
     { title: "Stage", value: "status" },
     { title: "Status", value: "contactStatus" },
-    { title: "Industry Type", value: "contactStatus" },
-    { title: "Lead Source", value: "contactStatus" },
-    { title: "Territory", value: "contactStatus" },
-    { title: "Time Zone", value: "contactStatus" },
+    { title: "Industry Type", value: "industryType" },
+    { title: "Lead Source", value: "leadSource" },
+    { title: "Territory", value: "territory" },
+    { title: "Time Zone", value: "timeZone" },
     { title: "Tags", value: "contactStatus" },
   ];
 
   useEffect(() => {
-    getContactCampaignAction({
-      search: fieldKey ? `${fieldKey}*` : "*",
-    });
+    if (
+      ![
+        "Industry Type",
+        "Lead Source",
+        "Territory",
+        "Time Zone",
+        "Tags",
+      ].includes(field)
+    )
+      getContactCampaignAction({
+        search: fieldKey ? `${fieldKey}*` : "*",
+      });
     // eslint-disable-next-line
   }, [fieldKey]);
 
@@ -73,8 +86,8 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   };
 
   const onFieldToUpdateChange = (field) => {
-    setIsDisabled(true)
-    setField(field)
+    setField(field);
+    setFieldKey('');
   }
 
   const onAssign = () => {
@@ -141,46 +154,84 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   };
 
   function SelectedField() {
+    let contactIds = rows.map((row) => row._id);
     let filterKey = ''
     switch (field) {
-      case 'Contact Owner':
-        return <ContactAutoComplete
-          value={contactOwner}
-          onChange={(e, user) => {
-            setIsDisabled(false)
-            setContactOwner(user.value);
-          }}
-        />
-      case 'Campaign Name':
+      case "Contact Owner":
+        return (
+          <ContactAutoComplete
+            value={contactOwner}
+            onChange={(e, user) => {
+              setContactOwner(user.value);
+            }}
+          />
+        );
+      case "Campaign Name":
         // filterKey = 'campaignName.keyword'
-        return <AutoCompleteWithAddNew
-          value={fieldKey}
-          onSearch={(value) => {
-            setIsDisabled(false)
-            setFieldKey(value);
-          }}
-          setValue={(value) => {
-          }}
-          options={campaignList.map((campaign) => ({
-            _id: campaign,
-            name: campaign,
-          }))}
-        />
-      case 'Stage':
-        filterKey = 'status.keyword'
-        break
-      case 'Status':
-        filterKey = 'contactStatus.keyword'
-        break
-      case 'Entity Type':
-        filterKey = 'ownerType.keyword'
-      case 'Entity Type':
-        filterKey = 'ownerType.keyword'
-      case 'Entity Type':
-        filterKey = 'ownerType.keyword'
+        return (
+          <AutoCompleteWithAddNew
+            value={fieldKey}
+            onSearch={(value) => {
+              setFieldKey(value);
+            }}
+            setValue={(value) => {}}
+            options={campaignList.map((campaign) => ({
+              _id: campaign,
+              name: campaign,
+            }))}
+          />
+        );
+      case "Stage":
+        filterKey = "status.keyword";
+        break;
+      case "Status":
+        filterKey = "contactStatus.keyword";
+        break;
+      case "Entity Type":
+        filterKey = "ownerType.keyword";
+      case "Industry Type":
+      case "Lead Source":
+      case "Territory":
+        return (
+          <TextField
+            placeholder={"Type something..."}
+            onChange={({ target }) => {
+              console.log("target is ", target)
+              setFieldKey(target.value)
+            }}
+            className={classes.fullWidth}
+          />
+        );
+      case "Time Zone":
+        return (
+          <Autocomplete
+            id="combo-box-demo"
+            options={timeZoneOptions}
+            getOptionLabel={(option) => option.title}
+            setValue={(value) => {}}
+            onChange={(e, fieldKey) => {
+              setFieldKey(fieldKey.title);
+            }}
+            renderInput={(params) => (
+              <TextField
+                size="small"
+                placeholder={"Select Timezone"}
+                {...params}
+              />
+            )}
+          />
+        );
+      case "Tags": 
+        return (
+          <Tags
+            width="100%"
+            multipleIds={contactIds}
+            targetLabel="contact"
+            shareable={false}
+          />
+        );
       // .. etc
       default:
-
     }
 
     if (filterKey) {
@@ -189,7 +240,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
         placeholder={`Select ${field}`}
         filterKey={filterKey}
         onChange={(e, fieldKey) => {
-          setIsDisabled(false)
           setFieldKey(fieldKey.value);
         }}
       />
@@ -198,28 +248,39 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   }
 
   return (
-    <RightDialog open={true} width={'700px'}>
+    <RightDialog open={true} width={"700px"}>
       <MuiDialogTitle disableTypography className={classes.dialogTitle}>
         <Typography className={classes.topHeading} variant="h5" component="h1">
           Bulk Update
         </Typography>
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          size="medium"
-        > 
+        <IconButton aria-label="close" onClick={onClose} size="medium">
           <KeyboardTabIcon fontSize="large" />
         </IconButton>
       </MuiDialogTitle>
       <DialogContent>
         <Box p={0} pt={2} pb={2}>
           {rows.map((row) => (
-            <Grid container direction="row" spacing={2} alignItems="center" key={row.id}>
+            <Grid
+              container
+              direction="row"
+              spacing={2}
+              alignItems="center"
+              key={row.id}
+            >
               <Grid item md={11}>
                 <Typography style={{ backgroundColor: "#edfbff" }}>
-                  <Grid container alignItems='center' style={{ paddingLeft: 10 }}>
-                    <Grid item md={4}>{row.name}</Grid>
-                    <Grid item md={8}>{row.address1} {row.address2} {row.city}, {row.state} {row.zip}</Grid>
+                  <Grid
+                    container
+                    alignItems="center"
+                    style={{ paddingLeft: 10 }}
+                  >
+                    <Grid item md={4}>
+                      {row.name}
+                    </Grid>
+                    <Grid item md={8}>
+                      {row.address1} {row.address2} {row.city}, {row.state}{" "}
+                      {row.zip}
+                    </Grid>
                   </Grid>
                 </Typography>
               </Grid>
@@ -232,30 +293,32 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           ))}
         </Box>
         <Box p={0} pt={2} pb={2}>
-          <Grid container direction="column"  >
+          <Grid container direction="column">
             <Grid item>
-              <Typography style={{ fontWeight: "bold", paddingBottom: "10px" }}>Search for the field you would like to update from the list below</Typography>
+              <Typography style={{ fontWeight: "bold", paddingBottom: "10px" }}>
+                Search for the field you would like to update from the list
+                below
+              </Typography>
             </Grid>
-            <Grid item >
+            <Grid item>
               <Autocomplete
                 freeSolo
                 id="free-solo-2-demo"
                 disableClearable
                 options={fieldsToUpdate.map((field) => field.title)}
                 onChange={(e, field) => {
-                  setFieldKey("")
-                  onFieldToUpdateChange(field)
+                  console.log(" field selected ", field);
+                  setFieldKey("");
+                  onFieldToUpdateChange(field);
                 }}
-
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     placeholder="Select field to update"
                     variant="outlined"
-
                     InputProps={{
                       ...params.InputProps,
-                      type: 'search',
+                      type: "search",
                       startAdornment: (
                         <InputAdornment position="start">
                           <SearchIcon htmlColor="#757575" />
@@ -267,7 +330,9 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
               />
             </Grid>
             <Grid item>
-              <Typography style={{ fontWeight: "bold", marginTop: "30px" }}>{field}</Typography>
+              <Typography style={{ fontWeight: "bold", marginTop: "30px" }}>
+                {field}
+              </Typography>
             </Grid>
             <Grid item>
               <SelectedField />
@@ -277,19 +342,17 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       </DialogContent>
 
       <DialogActions className={modalClass.actionButtons}>
-
         <Button onClick={onClose}>Cancel</Button>
         <Button
           variant="contained"
           component="span"
-          disabled={isDisabled}
-          style={isDisabled ? {} : { backgroundColor: "#00abed", color: "white" }}
+          disabled={!fieldKey}
+          style={!fieldKey ? {} : { backgroundColor: "#00abed", color: "white" }}
           onClick={onAssign}
         >
           Update
         </Button>
       </DialogActions>
-
 
       {loading && (
         <div className={classes.loading}>
