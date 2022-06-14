@@ -68,7 +68,8 @@ const DocumentsHeadCells = [
     esKey: 'documentDate',
     options: {
       filter: true
-    }
+    },
+    custom: { isDate: true, key_as_string: true },
   },
   {
     name: "uploadedDate",
