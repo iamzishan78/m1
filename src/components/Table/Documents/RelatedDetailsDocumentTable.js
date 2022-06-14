@@ -20,6 +20,7 @@ import GetAppIcon from "@material-ui/icons/GetApp";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { GET_PARCELS_FILES } from "graphQL/useQueryGetParcelFiles";
 import { DELETEDESCRIPTORFILE } from "graphQL/useMutationDeleteDescriptorFile";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 import RelatedFile from "components/Document/components/RelatedFile";
@@ -27,6 +28,7 @@ import RelatedFile from "components/Document/components/RelatedFile";
 // Header Schemas
 import TableHeader from "components/Table/constants/parcel-documents-header-schema.js";
 import { handleTagColumn } from "../helpers";
+import { setColumnsData } from "components/Table/helpers";
 
 import { AppContext } from "AppContext";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
@@ -39,6 +41,7 @@ function RelatedDetailsDocumentTable(props) {
 
   // function states
   let [zoom, setzoom] = useState(2.0);
+  const [filters, setFilters] = useState([]);
   const [columns, Columns] = useState([]);
   const [openDialog, setOpenDialog] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -81,7 +84,17 @@ function RelatedDetailsDocumentTable(props) {
       props.setRows(documents);
       const cleanAvailableTags = [];
       const columns = handleTagColumn(TableHeader, cleanAvailableTags);
-      setColumns(columns);
+      // setColumns(columns);
+      setColumnsData(
+        TableHeader,
+        filters,
+        JSON.parse(JSON.stringify(columns)),
+        setColumns,
+        setFilters,
+        GET_ES_FILTER_LIST,
+        "documents_flat",
+        props.documentSearchQuery
+      );
       props.setLoading(false);
     }
     // else if (dataParcelFiles?.getParcelFiles?.length === 0) {

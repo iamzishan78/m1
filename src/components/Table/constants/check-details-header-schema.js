@@ -4,7 +4,7 @@ const RevenueStatementHeadCells = [
         name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
     },
     {
-        name: "number", label: "Property #", esKey: 'property.number.keyword', options: { sort: true, filter: true }
+        name: "number", label: "property #", esKey: 'property.number.keyword', options: { sort: true, filter: true }
     },
     {
         name: "name", label: "Property Name", esKey: 'property.name.keyword', options: { sort: true, filter: true }

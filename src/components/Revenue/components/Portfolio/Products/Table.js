@@ -106,7 +106,7 @@ export default function OilTable({ monthsInterval, netRevenueTotals, item, title
                     Gross Volume ({grossVolumeType})
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                  { vf_number(totalGrossVolume) }
+                    {vf_number(totalGrossVolume)}
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -114,7 +114,7 @@ export default function OilTable({ monthsInterval, netRevenueTotals, item, title
                     Owner Volume
                   </TableCell>
                   <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                   { vf_number(totalOwnerVolume) }
+                    {vf_number(totalOwnerVolume)}
                   </TableCell>
                 </TableRow>
                 <TableRow className={classes.highlightedRows}>
@@ -133,7 +133,7 @@ export default function OilTable({ monthsInterval, netRevenueTotals, item, title
                     scope="row"
                     className={`${classes.leftRightColoredBorderCell} ${classes.bottomColoredBorderCell} ${classes.totalColCell}`}
                   >
-                    { vf_number(totalOwnerNetRevenue) }
+                    {vf_number(totalOwnerNetRevenue)}
                   </TableCell>
                 </TableRow>
                 <TableRow></TableRow>

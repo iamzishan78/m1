@@ -14,10 +14,30 @@ const AgreementsHeadCells = [
     label: "Agreement #",
     esKey: "shapeJson.properties.agreementNumber.keyword",
     options: {
-      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      setCellProps: () => ({
+        style: {
+          minWidth: "150px",
+          whiteSpace: "nowrap",
+          position: "sticky",
+          left: "77px",
+          background: "white",
+          zIndex: 200
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          position: "sticky",
+          minWidth: "150px",
+          left: "77px",
+          zIndex: 201
+        }
+      }),
       dbName: "shapeJson.properties.agreementNumber",
-      sort: true,
+      stickyColumn: true,
+      sort: false,
       filter: true,
+      viewColumns: false,
+      display: true,
       customRender: (value, tableMeta, updateValue) => {
         return (
           <p
@@ -40,10 +60,30 @@ const AgreementsHeadCells = [
     label: "Agreement Name",
     esKey: "shapeJson.properties.agreementName.keyword",
     options: {
-      setCellProps: () => ({ style: { minWidth: "250px" } }),
+      setCellProps: () => ({
+        style: {
+          minWidth: "300px",
+          whiteSpace: "nowrap",
+          position: "sticky",
+          left: "227px",
+          background: "white",
+          zIndex: 100
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          position: "sticky",
+          minWidth: "150px",
+          left: "227px",
+          zIndex: 101
+        }
+      }),
       dbName: "shapeJson.properties.agreementName",
-      sort: true,
+      stickyColumn: true,
+      sort: false,
       filter: true,
+      viewColumns: false,
+      display: true,
     },
   },
   {
@@ -83,6 +123,7 @@ const AgreementsHeadCells = [
     label: "Grantor (Party 1)",
     esKey: "shapeJson.properties.grantor.keyword",
     options: {
+      setCellProps: () => ({ style: { minWidth: "225px" } }),
       dbName: "shapeJson.properties.grantor",
       sort: true,
       filter: true,
@@ -93,12 +134,13 @@ const AgreementsHeadCells = [
     label: "Grantee (Party 2)",
     esKey: "shapeJson.properties.grantee.keyword",
     options: {
-      customHeadLabelRender: () => (
-        <>
-          <div>Grantee</div>
-          <div>(Party 2)</div>
-        </>
-      ),
+      setCellProps: () => ({ style: { minWidth: "225px" } }),
+      // customHeadLabelRender: () => (
+      //   <>
+      //     <div>Grantee</div>
+      //     <div>(Party 2)</div>
+      //   </>
+      // ),
       dbName: "shapeJson.properties.grantee",
       sort: true,
       filter: true,
@@ -109,6 +151,7 @@ const AgreementsHeadCells = [
     label: "Agmt Date",
     esKey: "shapeJson.properties.agreementDate",
     options: {
+      setCellProps: () => ({ style: { minWidth: "175px" } }),
       dbName: "shapeJson.properties.agreementDate",
       sort: true,
       filter: true,
@@ -123,9 +166,12 @@ const AgreementsHeadCells = [
     label: "Efftv Date",
     esKey: "shapeJson.properties.effectiveDate.keyword",
     options: {
-      dbName: "shapeJson.properties.effectiveDate",
+      dbName: "shapeJson.properties.effectiveDate.keyword",
       sort: true,
       filter: true,
+    },
+    custom: {
+      isDate: true,
     },
   },
   {
@@ -137,15 +183,22 @@ const AgreementsHeadCells = [
       sort: true,
       filter: true,
     },
+    custom: {
+      isDate: true,
+    },
   },
   {
     name: "extensionDate",
     label: "Ext Date",
     esKey: "shapeJson.properties.extensionDate.keyword",
     options: {
+      setCellProps: () => ({ style: { minWidth: "175px" } }),
       dbName: "shapeJson.properties.extensionDate",
       sort: true,
       filter: true,
+    },
+    custom: {
+      isDate: true,
     },
   },
   {
@@ -153,7 +206,7 @@ const AgreementsHeadCells = [
     label: "Status",
     esKey: "shapeJson.properties.agreementStatus.keyword",
     options: {
-      setCellProps: () => ({ style: { minWidth: "250px" } }),
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
       dbName: "shapeJson.properties.agreementStatus",
       sort: true,
       filter: true,
@@ -164,6 +217,7 @@ const AgreementsHeadCells = [
     label: "Report GRS",
     esKey: "shapeJson.properties.reportGrossAcres.keyword",
     options: {
+      setCellProps: () => ({ style: { minWidth: "175px" } }),
       dbName: "shapeJson.properties.reportGrossAcres",
       sort: true,
       filter: true,
@@ -215,7 +269,22 @@ const AgreementsHeadCells = [
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
-    options: { sort: true, filter: true },
+    options: { display: true, sort: true, filter: true },
+  },
+
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      dbName: "comments.comment",
+      display: true,
+      filter: false,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
   },
   {
     name: "mapFlyTo",
@@ -223,11 +292,12 @@ const AgreementsHeadCells = [
     options: {
       sort: true,
       filter: true,
+      display: true,
       viewColumns: false,
       customRender: (value, tableMeta) => {
         return (
           <IconButton
-            size="small"
+            size="medium"
             color="primary"
             style={{ backgroundColor: "#efefef" }}
             onClick={(e) => {
@@ -245,19 +315,6 @@ const AgreementsHeadCells = [
     },
   },
   {
-    name: "commentsCounter",
-    label: " ",
-    options: {
-      dbName: "comments.comment",
-      filter: false,
-      searchable: false,
-      sort: true,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-  {
     name: "approvalStatus",
     label: " ",
     esKey: "shapeJson.properties.approvalStatus.keyword",
@@ -265,6 +322,7 @@ const AgreementsHeadCells = [
       dbName: "shapeJson.properties.approvalStatus",
       sort: true,
       filter: true,
+      display: true,
       viewColumns: false,
       customRender: (value, tableMeta, updateValue) => {
         return (

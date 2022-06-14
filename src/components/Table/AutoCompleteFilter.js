@@ -38,7 +38,8 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
             const keys = Object.keys(filtersData)
             if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits) {
                 if (custom?.isDate) {
-                    const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key: moment(new Date(hit.key)).format("MM/DD/YYYY") }))
+                    filtersData[keys[0]].hits = filtersData[keys[0]]?.hits.filter((hit) => hit.key)
+                    const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key: moment(new Date(hit.key)).format("MM/DD/YYYY"), key_as_string: hit.key_as_string || hit.key }))
                     setOptions(hits)
                     setStateApp((state, props) => {
                         return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
@@ -91,6 +92,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
             },
         });
     };
+
     return (
         <Autocomplete
             id={`filter-autocomplete-${custom?.filterLabel || label}`}
@@ -140,4 +142,4 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
             )}
         />
     );
-})  
+})

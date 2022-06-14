@@ -195,6 +195,7 @@ export const TableHOC = (Component) => {
         }
 
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
+
             let pageESVariables = {
                 variables: {
                     esIndex: tableState.esIndex,
@@ -283,6 +284,7 @@ export const TableHOC = (Component) => {
             //         pageESVariables.variables.filters.push(filter)
             //     })
             // }
+
             return {
                 pageESVariables,
                 genericESAction: () => {
