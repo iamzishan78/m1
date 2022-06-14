@@ -316,6 +316,7 @@ export const formattingGridView = (view) => {
   return view;
 }
 
+// This function will return the index of column 
 export const getIndexofColumn = (columns, columnName) => {
   return columns.indexOf(columns.find(c => c.name === columnName));
 }
