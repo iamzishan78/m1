@@ -391,7 +391,7 @@ const useStyles = makeStyles((theme) => ({
   },
   detailCardSection: {
     backgroundColor: "#fff",
-    marginTop: "10px",
+    marginTop: "20px",
   },
 }));
 
