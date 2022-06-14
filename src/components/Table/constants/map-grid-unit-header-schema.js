@@ -28,9 +28,11 @@ const unitsColumnHeaders = [
       label: "Unit Name",
       esKey: "name.keyword",
       options: {
+        setCellProps: () => ({ style: { minWidth: "200px" } }),
         sort: true,
         filter: true,
       },
+      style: { minWidth: 185 }
     },
     {
       name: "uNumber",
@@ -151,7 +153,7 @@ const unitsColumnHeaders = [
     {
       name: "campaignName",
       label: "Campaign Name",
-      esKey: "shapeJson.properties.campaignName",
+      esKey: "shapeJson.properties.campaignName.keyword",
       options: {
         customRender: (value) => value?.map((v, index) => `${v}${index < value?.length - 1 ? ',' : ''}`),
         sort: true,
@@ -182,28 +184,25 @@ const unitsColumnHeaders = [
       esKey: "_ts",
       options: {
         sort: true,
-        filter: false,
-      }
+        filter: true,
+      },
+      custom: {
+        key_as_string: true,
+        isDate: true,
+      },
     },
     {
       name: "tags",
       label: "Tags ",
+      esKey: 'tags.tag.keyword',
       options: {
-        sort: false,
-        filter: false,
+        dbName: "tags.tag",
+        sort: true,
         download: false,
         print: false,
+        filter: true,
         filterOptions: {
           names: [],
-          logic(rowVal, pickedTags) {
-            let containIts = true;
-            pickedTags.map((pickedTag) => {
-              if (rowVal[0].indexOf(pickedTag) === -1) {
-                containIts = false;
-              }
-            });
-            return !containIts;
-          },
         },
       },
     },

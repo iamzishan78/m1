@@ -72,7 +72,7 @@ function MapGridUnitTable(props) {
   useEffect(() => {
     setTableMeta({
       extendSearchQuery: searchInput || stateApp.landSearchQuery,
-      searchFields: ["name", "_all"],
+      searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
       startPaginationAt: 25,
