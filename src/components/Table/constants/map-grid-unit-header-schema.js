@@ -28,7 +28,6 @@ const unitsColumnHeaders = [
       label: "Unit Name",
       esKey: "name.keyword",
       options: {
-        setCellProps: () => ({ style: { minWidth: "200px" } }),
         sort: true,
         filter: true,
         setCellProps: () => ({ style: { minWidth: "230px" } }),
