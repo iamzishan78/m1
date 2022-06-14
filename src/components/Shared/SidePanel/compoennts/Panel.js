@@ -53,6 +53,7 @@ import { CircularProgress } from "@material-ui/core";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 // Contexts
 import { NavigationContext } from "components/Navigation/NavigationContext";
+import AddGroup from "./AddGroup";
 
 function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems }) {
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
@@ -61,7 +62,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   const [totalFilterCount, setTotalFilterCount] = useState(null);
   const [totalHitMapCount, setTotalHitMapCount] = useState(null);
   const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
-  
+
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -76,7 +77,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     setTotalFilterCount(stateNav.totalFilterCount)
   }, [stateNav]);
 
-  useEffect(()=> {
+  useEffect(() => {
     setTotalHitMapCount(stateApp.checkedHeats.length)
   }, [stateApp]);
 
@@ -365,7 +366,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
                     ))}
                     {totalHitMapCount != 0 && <Chip color="info" label={totalHitMapCount} className={classes.totalHitMap} />}
                     {totalFilterCount != 0 &&
-                      <Chip color="info" label={totalFilterCount} className={classes.totalFilter}/>
+                      <Chip color="info" label={totalFilterCount} className={classes.totalFilter} />
                     }
                   </Tabs>
                 </Grid>
@@ -406,16 +407,22 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           }
 
           <div className={classes.panelContent}>
+
             <StyledMenuSecondaryHeaderItem>
               <ListItemText primary={title} />
               {headerButton && (
                 <StyledListItemSecondaryAction>
-                  <Button onClick={() => headerButton.fn()} color="secondary" variant="outlined" startIcon={headerButton.icon}>
-                    {headerButton.text}
-                  </Button>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} />
+
+                    <Button onClick={() => headerButton.fn()} color="secondary" variant="outlined" startIcon={headerButton.icon}>
+                      {headerButton.text}
+                    </Button>
+                  </div>
                 </StyledListItemSecondaryAction>
               )}
             </StyledMenuSecondaryHeaderItem>
+
             {/* base Stuff */}
             {type === "base" && getBasemapImageBox()}
 

@@ -91,7 +91,6 @@ const LayerItem = React.memo((props) => {
     muted: useIsClosestDragging() || isDragging,
   });
 
-  console.log(props)
   return (
     <Flipped flipId={id}>
       <div ref={(ref) => drop(preview(ref))} onMouseEnter={() => setHoverItem(id)} onMouseLeave={() => setHoverItem(null)}>

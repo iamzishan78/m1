@@ -108,7 +108,7 @@ export default function SidePanel() {
   };
 
   useEffect(() => {
-    getLayerGroups(stateApp.user.mongoId)
+    getLayerGroups({ variables: { userId: stateApp.user.mongoId } })
   }, [getLayerGroups])
 
   //   for BaseMap Panel
@@ -197,6 +197,33 @@ export default function SidePanel() {
     }
   }, [panelType, stateApp.baseMapLayers, stateApp.checkedBaseLayers]);
 
+  const getEmptyGroupAndLayer = (group, type) => {
+    if (type === 'layer')
+      return {
+        emptyLayer: true,
+        collapsed: true,
+        groupName: group.name,
+        groupId: group.groupId,
+        visiable: true,
+        showable: true,
+        name: "",
+        depth: 1,
+        type: "layer",
+        id: group.groupId + 'layer',
+      }
+
+    if (type === 'group')
+      return {
+        depth: 0,
+        type: "group",
+        collapsed: true,
+        showable: true,
+        visiable: true,
+        name: group.name,
+        id: group.groupId,
+      }
+  }
+
   //   for Layer Panel
   useEffect(() => {
     if ((panelType === "layer" || panelType === null) && layerGroupData?.getLayerGroups) {
@@ -248,27 +275,33 @@ export default function SidePanel() {
           }
         });
 
-      layerAndGroups.push({
-        depth: 0,
-        type: "group",
-        collapsed: true,
-        showable: true,
-        visiable: true,
-        name: 'Testing Group',
-        id: '17aa1134-6452-48d9-99ac-3e6f23cdd5ed',
-      });
+      if (layerAndGroups.length > 0) {
+        const emptyGroups = layerGroups.filter((layerGroup) => !groupHandled.includes(layerGroup.groupId))
+        emptyGroups.forEach((emptyGroup) => {
+          if (!emptyGroup.above) {
+            layerAndGroups.unshift(getEmptyGroupAndLayer(emptyGroup, 'layer'));
+            layerAndGroups.unshift(getEmptyGroupAndLayer(emptyGroup, 'group'));
+            return
+          }
+          if (!emptyGroup.below) {
+            layerAndGroups.push(getEmptyGroupAndLayer(emptyGroup, 'group'));
+            layerAndGroups.push(getEmptyGroupAndLayer(emptyGroup, 'layer'));
+            return
+          }
 
-      layerAndGroups.push({
-        emptyLayer: true,
-        groupName: 'Testing Group',
-        groupId: '17aa1134-6452-48d9-99ac-3e6f23cdd5ed',
-        visiable: true,
-        showable: true,
-        name: "",
-        depth: 1,
-        type: "layer",
-        id: '17aa1134-6452-48d9-99ac-3e6f23cdd5eg',
-      });
+          const index = layerAndGroups.findIndex((layerAndGroup) => layerAndGroup.id === emptyGroup.above)
+          if (index && layerAndGroups[index].type === 'layer') {
+            layerAndGroups.splice(index + 1, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
+            layerAndGroups.splice(index + 2, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
+            return
+          }
+          if (index && layerAndGroups[index].type === 'group') {
+            layerAndGroups.splice(index + 2, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
+            layerAndGroups.splice(index + 3, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
+            return
+          }
+        })
+      }
 
       setPanelItems(layerAndGroups);
       setPanelTitle("Layers");
@@ -331,11 +364,11 @@ export default function SidePanel() {
 
           setStateApp({ ...stateApp, layers: [...reorderedLayers] });
 
-          updateManyUserLayerSettings({
-            variables: {
-              manySettings: layersToUpdate,
-            },
-          });
+          // updateManyUserLayerSettings({
+          //   variables: {
+          //     manySettings: layersToUpdate,
+          //   },
+          // });
         } else if (result.destination.droppableId !== result.source.droppableId) {
           const layerIndex = stateApp.layers.findIndex((layer) => layer.position === result.source.index);
           if (result.destination.droppableId !== "droppableM1") {
@@ -346,14 +379,14 @@ export default function SidePanel() {
             stateApp.layers[layerIndex] = { ...stateApp.layers[layerIndex], groupId: null, groupName: null };
           }
           setStateApp({ ...stateApp, layers: [...stateApp.layers] });
-          updateLayerSettings({
-            variables: {
-              settings: {
-                _id: stateApp.layers[layerIndex]._id,
-                layerSettings: stateApp.layers[layerIndex].layerSettings,
-              },
-            },
-          });
+          // updateLayerSettings({
+          //   variables: {
+          //     settings: {
+          //       _id: stateApp.layers[layerIndex]._id,
+          //       layerSettings: stateApp.layers[layerIndex].layerSettings,
+          //     },
+          //   },
+          // });
         }
       });
 
