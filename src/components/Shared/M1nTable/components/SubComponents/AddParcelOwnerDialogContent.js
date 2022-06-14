@@ -6,10 +6,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
@@ -29,15 +26,12 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import AutocompEntityNamesVirtualizeList from "./AutocompEntityNamesVirtualizeList";
-import { ALLENTITYNAMESFORPARCEL } from "../../../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginatedContacts";
 import { setStateIfDeepEqual } from "../../../functions";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { addTrailingZeros } from "components/Shared/functions";
 import { Controller, useForm } from "react-hook-form";
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
-import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
 
 const entities = [

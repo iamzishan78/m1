@@ -123,7 +123,7 @@ const ContactBulkProgress = () => {
         } else {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Export successfully completed" : "Export Failed";
         }
-
+        if(status === 'Completed with errors') message = status
       }
 
       if (state === "create") {
@@ -131,7 +131,7 @@ const ContactBulkProgress = () => {
           Loader.createToast(dataJobs.getJobsStatus.jobs[i]._id, message, progress, onCloseToast);
         }
       } else {
-        if (dataJobs.getJobsStatus.jobs[i].status === "Completed") {
+        if (dataJobs.getJobsStatus.jobs[i].status === "Completed" || dataJobs.getJobsStatus.jobs[i].status === "Completed with errors") {
           Loader.successToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
           downloadResults(dataJobs.getJobsStatus.jobs[i], onCloseToast);
           if (dataJobs.getJobsStatus.jobs[i].type === "contacts")

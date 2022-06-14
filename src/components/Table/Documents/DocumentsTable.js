@@ -53,6 +53,7 @@ function DocumentsTable(props) {
   const { Documents } = useSelector(({ session }) => session.userGridViewSettings);
 
   const selectedFilters = useRef([]);
+  const selectedSorts = useRef([]);
   const [stateApp, setStateApp] = useContext(AppContext);
 
   // function states
@@ -96,10 +97,17 @@ function DocumentsTable(props) {
   }, []);
 
   useEffect(() => {
-    console.log("here", Documents);
     setSelectedGridView(Documents || defaultView);
   }, [Documents]);
 
+  const getSort = () => {
+    let sort
+    if (selectedSorts.current) {
+      const field = Object.keys(selectedSorts.current)[0]
+      sort = { field, ...selectedSorts.current[field] }
+    }
+    return sort
+  }
   useEffect(() => {
     getESDocuments({
       variables: {
@@ -109,9 +117,10 @@ function DocumentsTable(props) {
         },
         search: props.documentSearchQuery ? `${props.documentSearchQuery}*` : "*",
         filters: getAppliedFilters(filters, columns, stateApp.filtersData),
+        sort: getSort()
       },
     });
-  }, [getESDocuments, props.parent, props.documentSearchQuery]);
+  }, [getESDocuments, props.parent, props.documentSearchQuery, Documents]);
 
   useEffect(() => {
     getMetaData({
@@ -209,6 +218,7 @@ function DocumentsTable(props) {
             },
             search: props.documentSearchQuery ? props.documentSearchQuery : "",
             filters: selectedGridView?.filters ? selectedGridView?.filters : [],
+            sort: getSort()
           },
         });
       } else {
@@ -270,6 +280,8 @@ function DocumentsTable(props) {
   const onTableChange = (action, tableState, rows, meta) => {
     const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESDocuments, selectedGridView);
     selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
+    selectedSorts.current = tableActions?.pageESVariables?.variables?.sort
+
     if (action === "filterChange") {
       setFilters(tableState.filterList);
     }
@@ -280,6 +292,7 @@ function DocumentsTable(props) {
         dispatch(
           updateUserGridViewSettingAction.STARTED({
             userGridViewSetting: {
+              module: "Documents",
               gridView: selectedGridView._id,
               gridViewPatch: {
                 filters: selectedFilters.current,
@@ -294,6 +307,7 @@ function DocumentsTable(props) {
         dispatch(
           updateUserGridViewSettingAction.STARTED({
             userGridViewSetting: {
+              module: "Documents",
               gridView: selectedGridView._id,
               gridViewPatch: {
                 filters: selectedFilters.current,
@@ -314,6 +328,7 @@ function DocumentsTable(props) {
         dispatch(
           updateUserGridViewSettingAction.STARTED({
             userGridViewSetting: {
+              module: "Documents",
               gridView: selectedGridView._id,
               gridViewPatch: {
                 filters: selectedFilters.current,
@@ -362,6 +377,7 @@ function DocumentsTable(props) {
     dispatch(
       updateUserGridViewSettingAction.STARTED({
         userGridViewSetting: {
+          module: "Documents",
           gridView: selectedGridView._id,
           gridViewPatch: {
             filters: selectedFilters.current,
