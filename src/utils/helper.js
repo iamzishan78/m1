@@ -329,6 +329,10 @@ export const formattingGridView = (view) => {
   return view;
 }
 
+export const getIndexofColumn = (columns, columnName) => {
+  return columns.indexOf(columns.find(c => c.name === columnName));
+}
+
 export const getAppliedFilters = (filters, columns, filtersData) => {
   const appliedFilters = []
   filters.forEach((val, index) => {
