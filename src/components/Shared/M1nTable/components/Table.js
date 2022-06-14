@@ -2318,7 +2318,13 @@ function SubTable(props) {
                     )}
                     {props.parent === "RevenuePropertiesTable" && (
                       <>
-                        {value?.toLowerCase() === 'approved' && (
+                        {value?.toLowerCase() === 'notinpay' && (
+                            'Not in Pay'
+                        )}
+                        {value?.toLowerCase() === 'inpay' && (
+                            'In Pay'
+                        )}
+                        {/* {value?.toLowerCase() === 'approved' && (
                           <div className="flex justifyCenter alignCenter success w-100">
                             <CheckCircle size={20} />
                           </div>
@@ -2327,7 +2333,7 @@ function SubTable(props) {
                           <div className={`flex justifyCenter alignCenter w-100 ${classes.customWarning}`}>
                             <WarningIcon size={20} />
                           </div>
-                        )}
+                        )} */}
                       </>
                     )}
                     {props.parent === "AgreementsTable" && (

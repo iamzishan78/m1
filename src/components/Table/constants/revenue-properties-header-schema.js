@@ -92,6 +92,12 @@ const RevenuePropertiesHeadCells = [
       setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }),
     },
   },
+  {
+    name: "status",
+    label: "Pay Status",
+    esKey: "status.keyword",
+    options: { sort: true, filter: true },
+  },
   // {
   //   name: "type",
   //   label: "Type",
