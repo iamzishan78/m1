@@ -20,7 +20,6 @@ import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
 
 import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
 import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
-import MailOutlineOutlinedIcon from '@material-ui/icons/MailOutlineOutlined';
 import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import TextSMS from '@material-ui/icons/TextsmsOutlined';
@@ -37,7 +36,6 @@ import Button from "@material-ui/core/Button";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
 import EditIcon from '@material-ui/icons/Edit';
 import MergeTypeIcon from "@material-ui/icons/MergeType";
-import AssignmentIndOutlinedIcon from "@material-ui/icons/AssignmentIndOutlined";
 import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
 import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
 import SendMailersDialogContent from "./SubComponents/SendMailersDialogContent";
@@ -99,7 +97,7 @@ import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 import CustomFieldText from "components/Shared/M1nTable/components/SubComponents/CustomFieldText";
-import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+import CustomFieldSelectV2 from "./SubComponents/CustomFieldSelectV2";
 import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 // queries
@@ -128,104 +126,13 @@ import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
-import ConfirmationDialog from "components/ContactDetailCard/components/ConfirmationDialog";
+import { getIndexofColumn } from "utils/helper";
+
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
-// const customStyles = makeStyles((theme) => ({
-//   table: {
-//     "& .MuiTableCell-body": {
-//       padding: (props) =>
-//         props.dense ? "0 !important" : "0px 16px !important",
-//     },
-//     "& .MuiTableHead-root": {
-//       "& th": {
-//         backgroundColor: "#F2F2F2",
-//         zIndex: "auto",
-//         padding: (props) => (props.dense ? "10px" : null),
-//       },
-//       "& .MuiTableCell-paddingCheckbox": {
-//         padding: (props) => (props.dense ? "0 !important" : "16px"),
-//       },
-//     },
-//     "& tr": {
-//       paddingRight: (props) => (props.dense ? "12px" : null),
-//       "& td": {
-//         "& div": {
-//           padding: 0,
-//         },
-//       },
-//       "& td:nth-child(3)": {
-//         "& div": {
-//           width: 300,
-//         },
-//       },
-//       "& td:nth-child(13)": {
-//         "& div": {
-//           width: 300,
-//           "& span": {
-//             maxWidth: 300,
-//           },
-//         },
-//       },
-//     },
-//     "& thead": {
-//       opacity: "1",
-//       transition: "opacity 1s ease-out",
-//       webkitTransition: "opacity 1s ease-out",
-//     },
-//     "& tbody": {
-//       opacity: "1",
-//       transition: "opacity 1s ease-out",
-//       webkitTransition: "opacity 1s ease-out",
-//     },
-//   },
-// }));
-
-// const productionStyle = makeStyles((theme) => ({
-//   table: {
-//     "& .MuiTableCell-body": {
-//       padding: (props) =>
-//         props.dense ? "0 !important" : "0px 16px !important",
-//     },
-//     "& .MuiTableCell-head": {
-//       "& span": {
-//         justifyContent: "center",
-//       },
-//     },
-//     "& .MuiTableHead-root": {
-//       "& th": {
-//         backgroundColor: "#F2F2F2",
-//         zIndex: "auto",
-//         padding: (props) => (props.dense ? "10px" : null),
-//       },
-//       "& .MuiTableCell-paddingCheckbox": {
-//         padding: (props) => (props.dense ? "0 !important" : "16px"),
-//       },
-//     },
-//     "& tr": {
-//       paddingRight: (props) => (props.dense ? "12px" : null),
-//       "& td": {
-//         textAlign: "center",
-//         "& div": {
-//           justifyContent: "center",
-//         },
-//       },
-//     },
-//     "& thead": {
-//       opacity: "1",
-//       transition: "opacity 1s ease-out",
-//       webkitTransition: "opacity 1s ease-out",
-//     },
-//     "& tbody": {
-//       opacity: "1",
-//       transition: "opacity 1s ease-out",
-//       webkitTransition: "opacity 1s ease-out",
-//     },
-//   },
-// }));
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -270,9 +177,9 @@ const useStyles = makeStyles((theme) => ({
       marginRight: (props) => props.toolbarActionMarginRight ?? "inherit",
       flex: "0 1 auto",
     },
-    "& .MuiInput-root": {
-      left: "100px !important"
-    },
+    // "& .MuiInput-root": props => ({
+    //   left: props.header !== "Tax Roll Ownership" ? "100px !important" : "0px !important",
+    // }),
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
       backgroundColor: "#fff",
@@ -430,15 +337,14 @@ const useStyles = makeStyles((theme) => ({
     color: "gray",
   },
   blue: { color: theme.palette.secondary.main, fontWeight: "bold" },
-  customDropDown: {
+  customDropDown: props => ({
     height: "31px",
-    // border: "1px solid red",
     display: "inline",
-    left: "223px",
     position: "absolute",
     top: "19px",
     zIndex: "88889 !important",
-  },
+    left: props.parent === "OwnersPerWell" ? "205px !important" : "325px !important",
+  }),
   selectPopover: {
     zIndex: "88890 !important",
   },
@@ -741,19 +647,18 @@ function SubTable(props) {
     }
   }, [viewFileResult]);
 
-  useEffect(() => {
-    console.log("console from table component");
-  }, [activeRowIndex]);
-
   // handlers
   const handleWellFlyTo = (value) => {
-    let unitId = history.location.pathname.split("/");
+    const shapeId = history.location.pathname.split("/");
+    const shapeType = stateApp.selectedShape.type;
     history.push(
       `/map/wells/${value?.wellId.toUpperCase()}`,
       {
-        fromUnitDetail: true,
-        unitName: stateApp.selectedShape.shapeLabel,
-        unitId: unitId[unitId.length - 1]
+        fromShapeDetail: true,
+        shapeName: stateApp.selectedShape.shapeLabel,
+        shapeId: shapeId[shapeId.length - 1],
+        shapeType: shapeType === "agreement" ? "Agreements" : "Units",
+        link: shapeType === "agreement" ? `/land/agreement/details/${stateApp.selectedShape.id}` : `/map/units/${shapeId[shapeId.length - 1]}`
       }
     );
     setStateApp((stateApp) => ({
@@ -886,7 +791,7 @@ function SubTable(props) {
   useEffect(() => {
     setM1nSelectedRowsIndexes([]);
     setM1nSelectedRowsIds([]);
-  },[props.resetSelectedRow])
+  }, [props.resetSelectedRow])
   //// opening the well detail card after fetch the extra well data needed
   useEffect(() => {
     if (
@@ -1208,12 +1113,6 @@ function SubTable(props) {
         open={true}
         onClose={closeMenu}
       >
-
-        {/* <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(null, null, null, "")}>
-          <MailOutlineOutlinedIcon className={classes.menuIcons} />
-         Send email
-        </MenuItem>
-        <Divider /> */}
         <MenuItem className={classes.actionMenuItem} onClick={(e) => handleActivity(contactId, "call", null)}>
           <CallOutlinedIcon className={classes.menuIcons} />
           Add call log
@@ -1313,6 +1212,7 @@ function SubTable(props) {
         // WARNING! this can break components that depend on updated component state in callbacks
         // without using refs we HAVE to re-create customBodyRender callback functions every render
         // or component state is stale
+
         if (column?.options?.customRender) {
           column.options = {
             ...column.options,
@@ -1475,7 +1375,7 @@ function SubTable(props) {
                   } = tableMeta;
                   return (
                     <>
-                      {label === "Property #" && <span style={{ padding: 10 }}>{rowData[1].number}</span>}
+                      {label === "property #" && <span style={{ padding: 10 }}>{rowData[1]}</span>}
 
                       {label === "Property Name" && <span style={{ padding: 10 }}>{rowData[1].name}</span>}
 
@@ -1620,6 +1520,7 @@ function SubTable(props) {
 
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
+
 
                   return (
                     // this whole implementation is a mesteban patch
@@ -1894,8 +1795,7 @@ function SubTable(props) {
                               selectedMenuIndexFind: 0,
                               contactFromMap: true,
                             }));
-
-                            routeChange(`/contact/details/${value}/`);
+                            routeChange(`/contact/details/${value}`);
                             setTitle("Contact Details");
                             setSubTitle(" ");
 
@@ -2569,6 +2469,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+
                   if (column.isCustom && column.type === "dropdown") {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
@@ -2576,7 +2477,7 @@ function SubTable(props) {
                     }
                     return (
                       <div style={{ minWidth: "100px" }}>
-                        <CustomFieldSelect
+                        <CustomFieldSelectV2
                           dropdownOptions={column.dropdownOptions}
                           index={tableMeta.rowIndex}
                           column={column}
@@ -2758,11 +2659,11 @@ function SubTable(props) {
                           <div className={classes.companyName}>{tableMeta.rowData[14]}</div>
                         </p>
                       )}
-                      {props.targetLabel === "contact" && column.name === "name" && (
+                      {/* {props.targetLabel !== "contact" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span>{tableMeta.rowData[51] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span>{tableMeta.rowData[getIndexofColumn(columns, "isPurchased")] && <RequestPageIcon color="grey" fontSize="8px" />} </span>
                         </FeatureFlag>
-                      )}
+                      )} */}
 
                       {props.targetLabel === "Unit Ownership" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
@@ -2783,9 +2684,12 @@ function SubTable(props) {
                           (val) => val.name === "isPurchased"
                         )
                         ] && (
-                          <MonetizationOnIcon
-                            className={classes.monetizationIcon}
-                          />
+                          <FeatureFlag feature={FEATURES.IDICORE}>
+                            <MonetizationOnIcon
+                              className={classes.monetizationIcon}
+
+                            />
+                          </FeatureFlag>
                         )}
                     </div>
                   );
@@ -2910,7 +2814,7 @@ function SubTable(props) {
           const rowdata = filteredRows[i][columns[j].name];
           const filter = tableState.filterList[j][0];
           if (isFiltered && rowdata !== filter) {
-            filteredRows[i].isFiltered = false;          
+            filteredRows[i].isFiltered = false;
           }
         }
       }
@@ -3491,7 +3395,6 @@ function SubTable(props) {
       }
       if (props.addAble.type === "document") {
         buttonLabel = "ADD DOCUMENT";
-        // menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
       }
       if (props.addAble.type === "revenueStatementDetails") {
         buttonLabel = "INPUT MODE";
@@ -4075,10 +3978,16 @@ function SubTable(props) {
   //   //options.export = true;
   // }
 
-  if (props.header === "Deals" || props.header === "Activities") {
+
+  if (props.header === "Deals"
+    || props.header === "Activities"
+    || props.header === "Agreements"
+    || props.parent === "TractTable"
+    || props.parent === "TractInterestsTable"
+  ) {
     // adds the print and export options in the Flow grid and the Activities grid
     if (props.targetLabel !== 'activitiesDashboard') {
-      options.print = true;
+      // options.print = true;
       options.download = true;
     }
   }
@@ -4141,7 +4050,7 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    if (props.header === "Contacts" || props.header === "Documents") {
+    if (props.header === "Contacts" || props.header === "Documents" || props.header === "Agreements") {
       const HeaderComponent = props.headerComponent;
       return <HeaderComponent {...props.headerProps} />;
     }
@@ -4203,7 +4112,7 @@ function SubTable(props) {
   };
 
   const CustomTableViewCol = (columnsProps) => {
-    if (props.header === "Documents") {
+    if (props.viewColumn) {
       const ViewColumn = props.viewColumn;
       return <ViewColumn {...columnsProps} {...props.viewColumnProps} tableColumns={props.columns} />;
     } else {
@@ -4453,25 +4362,25 @@ function SubTable(props) {
                   ? true
                   : false
               }
-              maxWidth={
-                openDialog === "owner" || openDialog === "wellsPerOwner" || openDialog === "ownerContacts"
-                  ? "xl"
-                  : openDialog === "owner" ||
-                    openDialog === "ownersPerContacts" ||
-                    openDialog === "wellsPerOwner" ||
-                    openDialog === "owner" ||
-                    openDialog === "wellsPerOwner" ||
-                    openDialog === "buyContactsInfo" ||
-                    openDialog === "sendMailers" ||
-                    openDialog === "printLabels" ||
-                    openDialog === "deleteUser" ||
-                    openDialog === "deleteWellInterest" ||
-                    openDialog === "deleteParcelDocument" ||
-                    openDialog === "deleteWellDocument" ||
-                    openDialog === "addParcelInterestsToEntity"
-                    ? true
-                    : false
-              }
+              // maxWidth={
+              //   openDialog === "owner" || openDialog === "wellsPerOwner" || openDialog === "ownerContacts"
+              //     ? "xl"
+              //     : openDialog === "owner" ||
+              //       openDialog === "ownersPerContacts" ||
+              //       openDialog === "wellsPerOwner" ||
+              //       openDialog === "owner" ||
+              //       openDialog === "wellsPerOwner" ||
+              //       openDialog === "buyContactsInfo" ||
+              //       openDialog === "sendMailers" ||
+              //       openDialog === "printLabels" ||
+              //       openDialog === "deleteUser" ||
+              //       openDialog === "deleteWellInterest" ||
+              //       openDialog === "deleteParcelDocument" ||
+              //       openDialog === "deleteWellDocument" ||
+              //       openDialog === "addParcelInterestsToEntity"
+              //       ? true
+              //       : false
+              // }
               maxWidth={
                 openDialog === "owner" || openDialog === "wellsPerOwner" || openDialog === "ownerContacts"
                   ? "xl"

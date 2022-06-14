@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import set from "lodash/set";
+import { set } from "lodash";
 import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
@@ -50,7 +50,8 @@ export default function AgreementDetailCard(props) {
   useEffect(() => {
     return history.listen((location) => {
       console.log(`You changed the page to: ${location.pathname}`);
-      if (!properties?.agreementNumber && !location.pathname.includes(uniObj._id)) {
+      if (!properties?.agreementNumber && !location
+        .includes(uniObj._id)) {
         setStateApp((state) => ({
           ...state,
           selectedShape: null,
@@ -120,8 +121,7 @@ export default function AgreementDetailCard(props) {
     }
 
     const shape = uniObj.shape;
-    set(shape.properties, field, value);
-    shape.properties[field] = value;
+    set(shape, `properties.${field}`, value);
 
     const customLayer = {};
     let shapeLabel = shape.properties.shapeLabel;
@@ -150,10 +150,12 @@ export default function AgreementDetailCard(props) {
         customLayerId: uniObj._id,
         customLayer,
       },
+      refetchQueries: ["getMetaData"],
+      awaitRefetchQueries: true
     });
   };
 
-  const updateCustomProperties = (type, value, id) => {
+  const updateCustomProperties = (type, value, key) => {
     const shape = uniObj.shape;
     // const customRow = properties.custom_data_arr.find((p) => p.id === id);
     // if (type === "key") {
@@ -161,9 +163,8 @@ export default function AgreementDetailCard(props) {
     // } else {
     //   customRow.value = value;
     // }
-    properties[type] = value;
-    properties.custom_data = {};
-    properties.custom_data_arr.forEach((data) => {
+    set(properties, `${key}`, value);
+    properties.custom_data_arr?.forEach((data) => {
       properties.custom_data[data.key] = data.value;
     });
     const customLayer = {};

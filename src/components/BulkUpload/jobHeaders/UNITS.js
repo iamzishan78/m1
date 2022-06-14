@@ -2,6 +2,10 @@ import { copy } from "components/Shared/functions";
 import { addAfterLabel, removeByLabel } from "./helper";
 import SHAPEOWNER from "./SHAPEOWNER";
 
+const fields = JSON.parse(JSON.stringify(SHAPEOWNER))
+fields.splice(SHAPEOWNER.length-1,1)
+
+
 const unit = [
     {
         label: "State",
@@ -81,7 +85,13 @@ const unit = [
         required: true,
         actual_key: "landgrid.name",
     },
-    ...copy(SHAPEOWNER)
+    ...copy(fields),
+    {
+        label: "Tags",
+        mapped_key: "",
+        required: false,
+        actual_key: "landgrid.tags"
+    },
 ];
 
 removeByLabel(unit, 'Shape Type')
@@ -119,6 +129,28 @@ addAfterLabel(unit, 'Unit Acres', {
     actual_key: "shape.uUnitPricing",
 })
 
-console.log(unit)
+addAfterLabel(unit, 'Unit Pricing', {
+    label: "Unit Campaign",
+    mapped_key: "",
+    actual_key: "shape.campaignName",
+})
+
+addAfterLabel(unit, 'Unit Campaign', {
+    label: "Qualifier",
+    mapped_key: "",
+    actual_key: "shape.qualifier",
+})
+
+addAfterLabel(unit, 'Qualifier', {
+    label: "Description",
+    mapped_key: "",
+    actual_key: "shape.description",
+})
+
+addAfterLabel(unit, 'Overriding Royalty', {
+    label: "Net Revenue Interest",
+    mapped_key: "",
+    actual_key: "shape.nri"
+})
 
 export default unit;

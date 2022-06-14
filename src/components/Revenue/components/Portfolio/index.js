@@ -85,9 +85,9 @@ export default function Portfolio() {
                   Save View
                 </Button>
               </Grid> */}
-              <Grid item>
+              {/* <Grid item>
                 <Button variant="contained" color="secondary">Run Report</Button>
-              </Grid>
+              </Grid> */}
             </Grid>
           </Grid>
         </Grid>

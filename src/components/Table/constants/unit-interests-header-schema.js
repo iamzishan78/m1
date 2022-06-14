@@ -202,6 +202,15 @@ const UnitInterestsHeadCells = [
             filter: true 
         }
     },
+
+    {
+        name: "nri", label: "NRI", esKey: 'nri', 
+        options: { 
+            dbName: "nri",
+            sort: true, 
+            filter: true 
+        }
+    },
     // {
     //     name: "net_acres", label: "Net Acres", esKey: 'net_acres', 
     //     options: { 

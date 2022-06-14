@@ -35,6 +35,11 @@ const ProfileContextProvider = (props) => {
       isSameFromAbove: false,
       investingEntities: [],
       investingPreferences: [],
+      notificationPreferences: {
+        newDeals: false,
+        dealEntersAssignedLane: false,
+        mentions: false,
+      },
     },
     isImageModalOpen: false,
     isSaving: false,

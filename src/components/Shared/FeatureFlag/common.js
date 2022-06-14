@@ -9,9 +9,14 @@ export const FEATURES = {
     LANDREPORTINGGROUPS: 'landReportingGroups',
     CONTACTSUBMENU: 'ContactsSubMenu',
     CALENDAR_OBLIGATIONS: 'CALENDAR_OBLIGATIONS',
+    CALENDAR_EXPIRATIONS: 'CALENDAR_EXPIRATIONS',
     LANDGRIDSEARCH: 'landGridSearch',
     TRACTIMPORT: 'tractImport',
+    UNITIMPORT: 'unitImport',
     SHAPEELASTIC: 'ShapeFileImport',
     USERSNAP: "userSnap",
-    CONTACTGRIDEXPORT: 'ContactGridExport'
+    CONTACTGRIDEXPORT: 'ContactGridExport',
+    EDITABLE_WORKSPACE: 'editableWorkspaceName',
+    SHOWUSERPRIVILEGES: 'showUserPrivileges',
+    AGREEMENT_LAYER: 'AgreementLayer'
 }

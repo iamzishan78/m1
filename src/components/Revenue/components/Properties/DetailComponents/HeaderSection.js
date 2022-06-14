@@ -5,7 +5,15 @@ import { useHistory } from "react-router-dom";
 
 import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, TextField, Button, Select, MenuItem } from "@material-ui/core";
+import {
+  Grid,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  IconButton,
+} from "@material-ui/core";
+import { Clear } from "@material-ui/icons";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import StateField from "./State";
@@ -76,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
   },
   contactCardIcon: {
     position: "absolute",
-    right: "6px !important",
+    right: "12px !important",
     marginTop: "4px !important",
     cursor: "pointer",
   },
@@ -92,38 +100,37 @@ const useStyles = makeStyles((theme) => ({
       padding: "12px 0px",
     },
     "& .MuiFormControl-marginNormal": {
-      margin: "0px"
+      margin: "0px",
     },
   },
   textField: {
     margin: "0px",
     "& .MuiOutlinedInput-input": {
-      padding: "5px",
+      padding: "13px",
     },
   },
   field: {
     "& .MuiAutocomplete-clearIndicator": {
-      marginRight: "10px",
+      marginRight: "15px",
     },
     "& .MuiFormControl-marginNormal": {
-      margin: "0px"
+      margin: "0px",
     },
     "& .MuiFormControl-marginDense": {
-      margin: "0px"
-    }
+      margin: "0px",
+    },
   },
 }));
 
 export default function HeaderSection(props) {
   const classes = useStyles();
   let history = useHistory();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [, setStateApp] = useContext(AppContext);
   const { control, setValue, watch, register, reset } = useForm();
   const { propertyDetails, propertyOwnerContact, setEntityToConvert } = props;
   const [entityType, setEntityType] = useState("");
 
-  const [getContactEntity, { data: contactEntityData }] =
-    useLazyQuery(CONTACT_ENTITY);
+  const [getContactEntity, { data: contactEntityData }] = useLazyQuery(CONTACT_ENTITY);
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
 
   useEffect(() => {
@@ -139,12 +146,8 @@ export default function HeaderSection(props) {
       let owner = {};
       let operator = {};
       if (propertyOwnerContact) {
-        owner = propertyOwnerContact?.find(
-          (owner) => owner.entityId === propertyDetails?.owner?._id
-        );
-        operator = propertyOwnerContact?.find(
-          (owner) => owner.entityId === propertyDetails?.operator?._id
-        );
+        owner = propertyOwnerContact?.find((owner) => owner.entityId === propertyDetails?.owner?._id);
+        operator = propertyOwnerContact?.find((owner) => owner.entityId === propertyDetails?.operator?._id);
       }
       reset({ ...data, owner: { ...owner, number: data.ownerNumber }, operator });
     }
@@ -169,14 +172,11 @@ export default function HeaderSection(props) {
   };
 
   const checkIfContact = (entityId) => {
-    return !!propertyOwnerContact?.find(
-      (contact) => contact.entityId === entityId
-    );
+    return !!propertyOwnerContact?.find((contact) => contact.entityId === entityId);
   };
 
   const setEntity = (entityDetails) => {
-    if (entityDetails && !checkIfContact(entityDetails?._id))
-      setEntityToConvert({ ...entityDetails, isEntity: true });
+    if (entityDetails && !checkIfContact(entityDetails?._id)) setEntityToConvert({ ...entityDetails, isEntity: true });
   };
 
   const updatePropertyData = (key, value) => {
@@ -192,20 +192,9 @@ export default function HeaderSection(props) {
     });
   };
 
-  const onKeyDown = (e, key, value) => {
-    if (e.key === "Escape") {
-      setValue(key, propertyDetails[key]);
-    }
-    if (e.key === "Enter") {
-      e.preventDefault();
-      updatePropertyData(key, value);
-    }
-  };
-
-
   const handleUpdate = debounce((key, value) => {
     updatePropertyData(key, value);
-  }, 500)
+  }, 500);
 
   return (
     <Grid container direction="row" justify="space-between" alignItems="center">
@@ -236,8 +225,10 @@ export default function HeaderSection(props) {
                       margin="dense"
                       type="text"
                       fullWidth
-                      onChange={(e) => { params.onChange(e.target.value); handleUpdate("number", e.target.value) }}
-                    // onBlur={(e) => updatePropertyData("number", params.value)}
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                      }}
+                      onBlur={(e) => handleUpdate("number", e.target.value)}
                     />
                   )}
                 />
@@ -262,9 +253,10 @@ export default function HeaderSection(props) {
                       margin="dense"
                       type="text"
                       fullWidth
-                      onChange={(e) => { params.onChange(e.target.value);}}
-                    // onKeyDown={(e) => onKeyDown(e, "name", params.value)}
-                      onBlur={(e) =>handleUpdate("name", e.target.value) }
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                      }}
+                      onBlur={(e) => handleUpdate("name", e.target.value)}
                     />
                   )}
                 />
@@ -289,9 +281,12 @@ export default function HeaderSection(props) {
                       margin="dense"
                       placeholder=""
                       fullWidth
-                      onChange={(e) => { params.onChange(e.target.value); handleUpdate("ownerNumber", e.target.value) }}
-                    // onKeyDown={(e) => onKeyDown(e, "ownerNumber", params.value)}
-                    // onBlur={() => setValue("ownerNumber", propertyDetails.ownerNumber)}
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                      }}
+                      onBlur={(e) =>
+                        handleUpdate("ownerNumber", e.target.value)
+                      }
                     />
                   )}
                 />
@@ -305,25 +300,6 @@ export default function HeaderSection(props) {
                 <div className={classes.label}>Owner</div>
               </Grid>
               <Grid item xs={9}>
-                {/* 
-                <Controller
-                  control={control}
-                  name='owner'
-                  defaultValue={{ _id: propertyDetails?.owner } || {}}
-                  render={(
-                    { onChange, value, ref },
-                  ) => (
-                    <AutocompEntityNamesList variant='outlined' margin='' size='' nameAutValue={value} withContactCard={true}
-                      setNameAutValue={(value) => {
-                        if (value?._id)
-                          onChange({ _id: value._id, name: value.name });
-                        else
-                          onChange({});
-                        handleUpdate('owner', { name: value?.name, _id: value?._id })
-                      }} />
-                  )}
-                /> */}
-
                 <Controller
                   control={control}
                   name="owner"
@@ -334,9 +310,8 @@ export default function HeaderSection(props) {
                       }
                       className={classes.field}
                       setNameAutValue={(value) => {
-                        if (value)
-                          contactEntity(value?._id, "owner");
-                        else handleUpdate("owner", null)
+                        if (value) contactEntity(value?._id, "owner");
+                        else handleUpdate("owner", null);
                       }}
                       renderInput={(params2) => (
                         <TextField
@@ -357,13 +332,15 @@ export default function HeaderSection(props) {
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     if (params?.value?._id) {
-                                      history.push(`/contact/details/${params?.value?._id}`);
+                                      history.push(
+                                        `/contact/details/${params?.value?._id}`
+                                      );
                                       setStateApp((stateApp) => ({
                                         ...stateApp,
                                         selectedContact: `${params?.value?._id}`,
                                       }));
                                     }
-                                    setEntity(propertyDetails?.owner)
+                                    setEntity(propertyDetails?.owner);
                                   }}
                                 >
                                   <ContactCardIcon
@@ -389,31 +366,50 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Date</div>
+                <div className={classes.label}>Doc Date</div>
               </Grid>
               <Grid item xs={8} className={classes.datePicker}>
                 <Controller
                   control={control}
                   name="documentDate"
                   render={(params) => (
-                    <KeyboardDatePicker
+                    <TextField
                       autoOk
-                      disableToolbar
-                      variant="inline"
-                      inputVariant="outlined"
-                      format="MM/DD/YYYY"
+                      type="date"
+                      variant="outlined"
                       margin="normal"
-                      id="date-picker-inline"
-                      value={params.value ? params.value : null}
-                      onChange={(date) => {
+                      fullWidth
+                      value={moment(params?.value || "").format("yyyy-MM-DD")}
+                      onChange={(e) => {
+                        params.onChange(moment(e.target.value).toISOString());
+                      }}
+                      onBlur={(e) => {
                         updatePropertyData(
                           "documentDate",
-                          moment(date).toISOString()
+                          moment(e.target.value).toISOString()
                         );
                       }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      disableToolbar
                       KeyboardButtonProps={{ "aria-label": "change date" }}
-                      InputAdornmentProps={{ position: "start" }}
-                      fullWidth
+                      format="MM/DD/YYYY"
+                      PopoverProps={{ disablePortal: false }}
+                      InputProps={{
+                        endAdornment: (
+                          <IconButton
+                            onClick={(event) =>
+                              updatePropertyData("documentDate", null)
+                            }
+                          >
+                            <Clear style={{ height: 22, width: 22 }} />
+                          </IconButton>
+                        ),
+                        classes: {
+                          root: classes.dateRoot,
+                        },
+                      }}
                     />
                   )}
                 />
@@ -437,9 +433,8 @@ export default function HeaderSection(props) {
                         params.value ? params.value : { _id: "", name: "" }
                       }
                       setNameAutValue={(value) => {
-                        if (value)
-                          contactEntity(value?._id, "operator");
-                        else handleUpdate("operator", null)
+                        if (value) contactEntity(value?._id, "operator");
+                        else handleUpdate("operator", null);
                       }}
                       renderInput={(params2) => (
                         <TextField
@@ -460,12 +455,13 @@ export default function HeaderSection(props) {
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     if (params?.value?._id) {
-                                      history.push(`/contact/details/${params?.value?._id}`);
+                                      history.push(
+                                        `/contact/details/${params?.value?._id}`
+                                      );
                                       setStateApp((stateApp) => ({
                                         ...stateApp,
                                         selectedContact: `${params?.value?._id}`,
                                       }));
-                                      // setEntity(propertyDetails?.owner)
                                     }
                                   }}
                                 >
@@ -529,7 +525,8 @@ export default function HeaderSection(props) {
                     <CountyField
                       value={params.value}
                       state={selectedState}
-                      onCountyChange={({ county }) => {
+                      onCountyChange={(selectedCounty) => {
+                        const county = selectedCounty?.county ?? "";
                         updatePropertyData("county", county);
                         setValue("county", county);
                       }}
@@ -554,7 +551,7 @@ export default function HeaderSection(props) {
                       {...params}
                       id="source-simple-select-outlined-label"
                       variant="outlined"
-                      value={params.value ? params.value : ''}
+                      value={params.value ? params.value : ""}
                       fullWidth
                       onChange={(e) => {
                         updatePropertyData("source", e.target.value);
@@ -583,7 +580,7 @@ export default function HeaderSection(props) {
                       {...params}
                       id="status-simple-select-outlined-label"
                       variant="outlined"
-                      value={params.value ? params.value : ''}
+                      value={params.value ? params.value : ""}
                       fullWidth
                       onChange={(e) => {
                         updatePropertyData("status", e.target.value);
@@ -620,7 +617,9 @@ export default function HeaderSection(props) {
                       fullWidth
                       multiline
                       rows={5}
-                      onBlur={(e) => updatePropertyData("legalDescription", params.value)}
+                      onBlur={(e) =>
+                        updatePropertyData("legalDescription", params.value)
+                      }
                     />
                   )}
                 />

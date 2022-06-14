@@ -6,10 +6,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
@@ -29,12 +26,13 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import AutocompEntityNamesVirtualizeList from "./AutocompEntityNamesVirtualizeList";
-import { ALLENTITYNAMESFORPARCEL } from "../../../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginatedContacts";
 import { setStateIfDeepEqual } from "../../../functions";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { addTrailingZeros } from "components/Shared/functions";
+import { Controller, useForm } from "react-hook-form";
+import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
+import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
 
 const entities = [
   "Corporation",
@@ -97,16 +95,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const toNumber = (value) => {
-  return value ? parseInt(value.replace(/\$/g, "").replace(/\,/g, "")): null
+  return value ? parseInt(value.replace(/\$/g, "").replace(/\,/g, "")) : null
 }
 
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
   let tenantName = window.sessionStorage.getItem("tenantName");
   const [stateApp, setStateApp] = useContext(AppContext);
+  const { control } = useForm();
   const [newOwner, setNewOwner] = useState({
     surface_interest: null,
+    ownerType: null,
     cost_bearing: null,
+    ownerType: null,
     cost_bearing_high_value: null,
     cost_free_high_value: null,
     mineral_interest: null,
@@ -142,6 +143,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         cost_bearing_high_value,
         cost_free_high_value,
         surface_interest,
+        ownershipType,
         mineral_interest,
         royalty_interest,
         orri,
@@ -162,6 +164,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
       setNewOwner({
         surface_interest: surface_interest || null,
+        ownershipType: ownershipType || null,
         cost_bearing: cost_bearing || null,
         cost_bearing_high_value: toNumber(cost_bearing_high_value) || null,
         cost_free_high_value: toNumber(cost_free_high_value) || null,
@@ -270,6 +273,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const emptyStates = () => {
     setNewOwner({
       surface_interest: null,
+      ownershipType: null,
       cost_bearing: null,
       cost_bearing_high_value: null,
       cost_free_high_value: null,
@@ -392,7 +396,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
           <Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
             <Grid item md={10} xs={10}>
               <DialogTitle id="customized-dialog-title" style={{ fontWeight: "bold" }}>
-                {selectedRow ? "Update" : "Add"} Parcel Ownership
+                {selectedRow ? "Update" : "Add"} Tract Ownership
                 {/* {selectedRow && (
               <IconButton
                 style={{ float: "right", marginRight: "5px" }}
@@ -453,6 +457,26 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       awaitRefetchQueries: true,
                     });
                   }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Entity Type</h3>
+                <Controller
+                  control={control}
+                  name="ownershipType"
+                  render={(props) => (
+                    <EntityType
+                      className={classes.maxWidth}
+                      setDocumentType={(value) => {
+                        console.log("value : ", value.name)
+                        setNewOwner({
+                          ...newOwner,
+                          ownerType: value ? addTrailingZeros(value.name) : null,
+                        });
+                      }}
+                      value={newOwner.ownershipType || ""}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -527,7 +551,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   onWheel={(e) => e.target.blur()}
                 />
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <h3>Unknown Interest</h3>
                 <TextField
                   type="number"
@@ -543,7 +567,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   }}
                   onWheel={(e) => e.target.blur()}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs={12}>
                 <h3>Record Title</h3>
                 <TextField
@@ -562,7 +586,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 />
               </Grid>
               <Grid item xs={12}>
-                <h3>Operating Rights</h3>
+                <h3>Working Interest</h3>
                 <TextField
                   type="number"
                   size="small"
@@ -693,15 +717,18 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     <h3>Cost Free High Value</h3>
                     <TextField
                       id="standard-number"
-                      type="number"
+                      type="text"
                       size="small"
-                      className={ classes.maxWidth}
+                      className={classes.maxWidth}
                       value={newOwner.cost_free_high_value}
+                      InputProps={{
+                        inputComponent: CurrencyFormatCustom,
+                      }}
                       onChange={(e) => {
                         const value = addTrailingZeros(e.target.value);
                         setNewOwner({
                           ...newOwner,
-                          cost_free_high_value: value || null,
+                          cost_free_high_value: Number(value) || null,
                         });
                       }}
                     />
@@ -710,15 +737,18 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     <h3>Cost Bearing High Value</h3>
                     <TextField
                       id="standard-number"
-                      type="number"
+                      type="text"
                       size="small"
-                      className={ classes.maxWidth}
+                      className={classes.maxWidth}
+                      InputProps={{
+                        inputComponent: CurrencyFormatCustom,
+                      }}
                       value={newOwner.cost_bearing_high_value}
                       onChange={(e) => {
                         const value = addTrailingZeros(e.target.value);
                         setNewOwner({
                           ...newOwner,
-                          cost_bearing_high_value: value || null,
+                          cost_bearing_high_value: Number(value) || null,
                         });
                       }}
                     />

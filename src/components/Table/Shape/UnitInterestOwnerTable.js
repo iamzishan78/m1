@@ -78,13 +78,13 @@ function UnitInterestOwnerTable(props) {
           }
         }
       });
-      if(hit?.tags?.length > 0){
+      if (hit?.tags?.length > 0) {
         const tags = hit.tags.map((tag) => tag.tag)
-        if(tags[0]){
+        if (tags[0]) {
           hit.tags = [[tags], hit.tags.length]
         }
 
-      }else{
+      } else {
         hit.tags = [[], 0];
       }
       hit = props.setGenricData(
@@ -114,6 +114,14 @@ function UnitInterestOwnerTable(props) {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.activitySearchQuery, props.filterToggle]);
+
+  useEffect(() => {
+    if (props.initialFilters.length > 2) {
+      props.setIsFiltered(true)
+    } else {
+      props.setIsFiltered(false)
+    }
+  }, [props.initialFilters])
 
   useEffect(() => {
     if (clickedRow) {
@@ -298,7 +306,7 @@ function UnitInterestOwnerTable(props) {
       )}
       {openCustomDialog === "deleteOwner" && (
         <DeleteConfirmationDialogContent
-          header="Delete Tract Owner(s)"
+          header="Delete Unit Owner(s)"
           onClose={() => setOpenCustomDialog("")}
           deleteFunc={deleteFunc}
           m1nSelectedRowsIds={props.selectedRows.map(
@@ -306,7 +314,7 @@ function UnitInterestOwnerTable(props) {
           )}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
-          {`Do you want to permanently delete the tract owner${props.selectedRows &&
+          {`Do you want to permanently delete the unit owner${props.selectedRows &&
             props.selectedRows.length > 1 &&
             props.selectedRows.length > 1
             ? "s"

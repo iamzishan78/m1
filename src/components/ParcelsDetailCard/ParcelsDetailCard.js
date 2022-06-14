@@ -7,7 +7,7 @@ import GavelIcon from '@material-ui/icons/Gavel';
 import LocationIcon from '@material-ui/icons/Place';
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Box, IconButton } from "@material-ui/core";
@@ -240,6 +240,8 @@ export default function ParcelsDetailCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [onChangeFooterLabel, setChangeFooterLabel] = useState({ parcelName: false, grossAcres: false, legalDescription: false });
   const [showSummary, setShowSummary] = useState(true);
+
+  const contactsAdded = useSelector((state) => state?.common?.contactsAdded)
   const [updateCustomLayer, { data: updatedParcel }] = useMutation(
     UPDATECUSTOMLAYER,
   );
@@ -247,6 +249,11 @@ export default function ParcelsDetailCard(props) {
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
     CUSTOMLAYER,
   );
+
+  useEffect(() => {
+    if (contactsAdded)
+      setSelectedTab(0)
+  }, [contactsAdded]);
 
   useEffect(() => {
     if (props.id) {
@@ -589,9 +596,9 @@ export default function ParcelsDetailCard(props) {
                   {/* <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense header={<Header />} /> */}
                   <TractInterestOwnerTable
                     esIndex='shapeowners_flat'
-                    parent="ownersPerParcel" 
+                    parent="ownersPerParcel"
                     targetLabel="Parcel Ownership"
-                    customLayer={copy(parcelObj)} 
+                    customLayer={copy(parcelObj)}
                     dense
                     header={<Header />}
                   />

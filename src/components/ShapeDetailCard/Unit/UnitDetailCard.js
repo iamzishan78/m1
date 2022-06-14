@@ -4,7 +4,7 @@ import set from "lodash/set";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
 import GavelIcon from "@material-ui/icons/Gavel";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Taps from "components/Shared/Taps";
 import TabPanels from "components/Shared/TabPanels";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
@@ -43,6 +43,13 @@ export default function UnitDetailCard(props) {
   const [isFiltered, setIsFiltered] = useState(false);
 
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
+
+  const contactsAdded = useSelector((state) => state?.common?.contactsAdded)
+
+  useEffect(() => {
+    if (contactsAdded)
+      setSelectedTab(0)
+  }, [contactsAdded]);
 
   useEffect(() => {
     if (props.id) {
@@ -225,6 +232,7 @@ export default function UnitDetailCard(props) {
                     parent="ownersPerUnit"
                     shapeType="Unit"
                     targetLabel="Unit Ownership"
+                    setIsFiltered={setIsFiltered}
                     header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
                     dense
                   />

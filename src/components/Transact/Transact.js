@@ -26,9 +26,9 @@ import { getRandomColor } from "components/Shared/functions/ui.js";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
 import DocViewer from "../Shared/DocViewer";
 import { validateEmail } from "components/Login/loginHelpers";
-import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import { GETPIPELINE } from "graphQL/useQueryPipeline";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
+import PipelinesFetchHoc from "components/Transact/components/Common/PipelinesFetchHoc";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -159,7 +159,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Transact() {
+const Transact = () => {
   let history = useHistory();
   const dispatch = useDispatch();
   const { pipeToShow, pipeToShowTab, selectedPipe } = useSelector(({ Flow }) => Flow);
@@ -173,7 +173,7 @@ export default function Transact() {
   const classes = useStyles({ dealDialog: stateApp.dealDialog });
   const cardColors = useRef({});
 
-  const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
+  // const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
   const [getPipeline, { data: pipelineData, loading: pipelineLoading }] = useLazyQuery(GETPIPELINE, {
     fetchPolicy: "cache-and-network",
   });
@@ -217,62 +217,10 @@ export default function Transact() {
   }, [getProfilesImages]);
 
   useEffect(() => {
-    getPipelines();
-  }, [getPipelines]);
-
-  useEffect(() => {
     if (selectedPipe) {
       getPipeline({ variables: { id: selectedPipe._id } });
     }
   }, [selectedPipe, getPipeline]);
-
-  useEffect(() => {
-    if (pipelinesData) {
-      //// select first one as default
-      const pipelineId = history.location.pathname.split("/")[2];
-      let laneId = "";
-      let cardId = "";
-      if (history.location.pathname.includes("lane")) {
-        laneId = history.location.pathname.split("/")[4];
-      }
-      if (history.location.pathname.includes("card")) {
-        cardId = history.location.pathname.split("/")[6];
-      }
-
-      if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
-        let activePipeline = undefined;
-
-        if (pipelineId) {
-          activePipeline = pipelinesData.pipelines.find((p) => p._id === pipelineId);
-        }
-        if (!activePipeline) {
-          const isExist = !!pipelinesData.pipelines.find((p) => p._id === selectedPipe?._id);
-          if (selectedPipe && isExist) {
-            activePipeline = pipelinesData.pipelines.find((p) => p._id === selectedPipe._id);
-          } else activePipeline = pipelinesData.pipelines[0];
-        }
-        if (activePipeline && laneId && cardId) {
-          history.push(`/flow/${activePipeline._id}/lane/${laneId}/card/${cardId}`);
-        } else if (activePipeline) {
-          history.push(`/flow/${activePipeline._id}`);
-        }
-
-        dispatch(
-          setFlowState({
-            selectedPipe: activePipeline,
-            pipelines: pipelinesData.pipelines,
-          })
-        );
-      } else
-        dispatch(
-          setFlowState({
-            selectedPipe: null,
-            pipelines: [],
-            pipeToShow: false,
-          })
-        );
-    }
-  }, [pipelinesData]);
 
   useEffect(() => {
     if (pipelineData) {
@@ -414,12 +362,11 @@ export default function Transact() {
       setStateApp((stateApp) => ({
         ...stateApp,
         dealDialog: false,
-        activeDeal: { cardId: null, laneId: null },
       }));
     };
   }, []);
 
-  const handleDataChange = (newData) => {};
+  const handleDataChange = (newData) => { };
 
   const handleCardClick = (cardId, metadata, laneId) => {
     history.push(`/flow/${selectedPipe._id}/lane/${laneId}/card/${cardId}`);
@@ -459,14 +406,14 @@ export default function Transact() {
     let movedCardDescriptor =
       sourceLaneId === targetLaneId
         ? {
-            _id: cardDetails.metadata.descriptorId,
-            relatedObject: targetLaneId,
-            position: unfilteredTargetPosition,
-          }
+          _id: cardDetails.metadata.descriptorId,
+          relatedObject: targetLaneId,
+          position: unfilteredTargetPosition,
+        }
         : {
-            _id: cardDetails.metadata.descriptorId,
-            isCurrent: false,
-          };
+          _id: cardDetails.metadata.descriptorId,
+          isCurrent: false,
+        };
 
     // update unfilteredSourceLane descriptors
     // including dragging down in same lane
@@ -690,7 +637,7 @@ export default function Transact() {
 
   return (
     <div className={classes.root}>
-      <DocViewer width="calc(100vw - 28vw)" />
+      {stateApp.viewDoc && <DocViewer width="calc(100vw - 28vw)" />}
       {stateApp.dealDialog && (
         <AddDealDialog
           open={true}
@@ -754,22 +701,22 @@ export default function Transact() {
                   Card: (cardProps) => <GetCard {...cardProps} />,
                 }}
 
-                //onCardAdd = {handleCardAdd}
-                //onCardDelete = {handleCardDelete}
-                // handleDragStart = {}
-                // handleDragEnd={}
-                // handleLaneDragStart
-                // onDataChange
-                // onCardAdd
-                // onBeforeCardDelete
-                // onCardDelete
-                // onCardMoveAcrossLanes
-                // onLaneAdd
-                // onLaneDelete
-                // onLaneUpdate
-                // onLaneClick
-                // onLaneScroll
-                //onCardMoveAcrossLanes
+              //onCardAdd = {handleCardAdd}
+              //onCardDelete = {handleCardDelete}
+              // handleDragStart = {}
+              // handleDragEnd={}
+              // handleLaneDragStart
+              // onDataChange
+              // onCardAdd
+              // onBeforeCardDelete
+              // onCardDelete
+              // onCardMoveAcrossLanes
+              // onLaneAdd
+              // onLaneDelete
+              // onLaneUpdate
+              // onLaneClick
+              // onLaneScroll
+              //onCardMoveAcrossLanes
               />
             )}
             {stateApp.dealDisplayType === "table" && (
@@ -784,4 +731,6 @@ export default function Transact() {
       </main>
     </div>
   );
-}
+};
+
+export default PipelinesFetchHoc(Transact);

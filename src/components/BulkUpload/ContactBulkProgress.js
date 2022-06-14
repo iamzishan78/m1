@@ -2,21 +2,24 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "AppContext";
 import { useQuery, useApolloClient } from "@apollo/client";
 import { useMutation } from "@apollo/client";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_JOBS_STATUS } from "graphQL/useQueryGetJobStatus";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import Loader from "components/Loaders/serverLoader";
+import { setReduxKey } from "store/actions/commonActions";
 
 const ContactBulkProgress = () => {
   const [stateApp] = useContext(AppContext);
   const bulkUpload = useSelector((state) => state.common.bulkUpload);
 
+  const dispatch = useDispatch();
+
   const [pollingStarted, setPollingStarted] = useState(false);
 
   const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB, {
-    refetchQueries: [ GET_JOBS_STATUS ]
+    refetchQueries: [GET_JOBS_STATUS]
   });
 
   const {
@@ -40,7 +43,7 @@ const ContactBulkProgress = () => {
     })
     return matching
   }
-  
+
   const refetchQueryByName = (name) => {
     return Promise.all(findQueries(client.queryManager, name).map(q => q.observableQuery.refetch()))
   }
@@ -58,6 +61,7 @@ const ContactBulkProgress = () => {
       const pendingJobs = dataJobs.getJobsStatus.jobs.find(
         (job) => job.status === "Created" || job.status === "Pending" || job.status === "Started"
       );
+
       if (pendingJobs && !pollingStarted) {
         startPolling(3000);
         setPollingStarted(true);
@@ -111,13 +115,15 @@ const ContactBulkProgress = () => {
         message = dataJobs.getJobsStatus.jobs[i].activitiesStatus[dataJobs.getJobsStatus.jobs[i].activitiesStatus.length - 1];
       } else {
         const status = dataJobs.getJobsStatus.jobs[i].status;
+        if (status === "Completed")
+          dispatch(setReduxKey("contactsAdded", true))
         const type = dataJobs.getJobsStatus.jobs[i].type;
-        if(type === 'contacts'){
+        if (type === 'contacts') {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Contacts creation completed" : "Contacts creation failed";
-        }else{
+        } else {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Export successfully completed" : "Export Failed";
         }
-
+        if(status === 'Completed with errors') message = status
       }
 
       if (state === "create") {
@@ -125,10 +131,10 @@ const ContactBulkProgress = () => {
           Loader.createToast(dataJobs.getJobsStatus.jobs[i]._id, message, progress, onCloseToast);
         }
       } else {
-        if (dataJobs.getJobsStatus.jobs[i].status === "Completed") {
+        if (dataJobs.getJobsStatus.jobs[i].status === "Completed" || dataJobs.getJobsStatus.jobs[i].status === "Completed with errors") {
           Loader.successToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
           downloadResults(dataJobs.getJobsStatus.jobs[i], onCloseToast);
-          if ( dataJobs.getJobsStatus.jobs[i].type === "contacts")
+          if (dataJobs.getJobsStatus.jobs[i].type === "contacts")
             refetchQueryByName("checkIfOwnersAreContacts");
         } else if (dataJobs.getJobsStatus.jobs[i].status === "Failed") {
           Loader.errorToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);

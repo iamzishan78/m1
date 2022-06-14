@@ -163,7 +163,6 @@ function ContactWellInterestTable(props) {
             }
             return column;
           })),
-        //flyToColumn,
       ]);
       setLoading(false);
     }

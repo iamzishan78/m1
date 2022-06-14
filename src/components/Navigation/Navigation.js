@@ -23,7 +23,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { contactManagementRoutes } from 'utils/data';
+import { contactManagementRoutes } from "utils/data";
 import SupportCenterModal from "./components/SupportCenter";
 import { useStyles } from "./Common";
 
@@ -43,7 +43,7 @@ import ActivitySearch from "./components/ActivitySearch";
 import ActivityDashboardSearch from "./components/ActivityDashboardSearch";
 import DocumentSearch from "./components/DocumentSearch";
 import ContactSearch from "./components/ContactSearch";
-import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
+import ContactBreadcrumbs from "./components/ContactBreadcrumbs";
 import SideNavigation from "./SideNavigation";
 import ProfileMenu from "components/Profile/ProfileMenu";
 
@@ -391,11 +391,13 @@ export default function Navigation(props) {
           className={clsx(classes.appBar, {
             [classes.appBarShift]: openDrawer,
           })}
-          style={(location.pathname === "/contacts/activityDashboard" || location.pathname.includes('revenue')) ? { background: 'white' } : null}
-        // style={{
-        //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
-        //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
-        // }}
+          style={
+            location.pathname === "/contacts/activityDashboard" || location.pathname.includes("revenue") ? { background: "white" } : null
+          }
+          // style={{
+          //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
+          //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
+          // }}
         >
           {stateApp.user && (
             <Toolbar>
@@ -404,7 +406,7 @@ export default function Navigation(props) {
                   <ActivitySearch />
                 </>
               )}
-              {(location.pathname === "/contacts/activityDashboard") && (
+              {location.pathname === "/contacts/activityDashboard" && (
                 <>
                   <ActivityDashboardSearch showLabel={location.pathname === "/contacts/activityDashboard"} />
                 </>
@@ -416,8 +418,8 @@ export default function Navigation(props) {
               )}
               {(location.pathname === "/contacts" ||
                 location.pathname === "/contacts/" ||
-                Object.values(contactManagementRoutes).find((item) => (item.link === location.pathname && item.search))) && <ContactSearch />}
-              {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
+                Object.values(contactManagementRoutes).find((item) => item.link === location.pathname && item.search)) && <ContactSearch />}
+              {location.pathname.includes("/contact/details") && <ContactBreadcrumbs />}
 
               {location.pathname.startsWith("/flow") && <DealSearch />}
               {location.pathname === "/dashboard" && (

@@ -1,8 +1,10 @@
 import React, { useEffect, useState, Fragment, useContext } from "react";
+import moment from "moment";
+import { get } from "lodash";
 import { useLazyQuery } from "@apollo/client";
 import { Controller } from "react-hook-form";
-import { Grid, TextField, Button, Select, MenuItem, Tooltip } from "@material-ui/core";
-import { KeyboardDatePicker } from "@material-ui/pickers";
+import { Grid, TextField, Button, Select, MenuItem, Tooltip, IconButton } from "@material-ui/core";
+import { Clear } from "@material-ui/icons";
 import { useStyles as summaryStyles } from "../style";
 import AddIcon from "@material-ui/icons/Add";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
@@ -12,6 +14,9 @@ import keys from "components/Shared/SpreadsheetGrid/kit/keymap";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import MetaField from "components/Table/helpers/MetaField";
 import { copy } from "utils/helper";
+import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
+import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 import { AppContext } from "AppContext";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
@@ -21,6 +26,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   const [stateApp, setStateApp] = useContext(AppContext);
   const [fieldsList, setFieldsList] = useState([]);
   const [editIconState, setEditIconState] = useState({});
+  const [agreementDetailCopied, setAgreementCopied] = useState();
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
@@ -32,6 +38,10 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   }, []);
 
   useEffect(() => {
+    setAgreementCopied(agreementDetails);
+  }, [agreementDetails]);
+
+  useEffect(() => {
     getMetaData({
       variables: {
         user: stateApp.user?.mongoId,
@@ -41,30 +51,8 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   }, []);
 
   useEffect(() => {
-    const metaData = metaDataRes?.getMetaData?.metaData;
-    const customData = [];
-    if (metaData && agreementDetails?.custom_data) {
-      Object.keys(agreementDetails?.custom_data).forEach((key) => {
-        const meta = metaData.find((m) => m.name === key);
-        if (meta) {
-          customData.push({
-            ...meta,
-            title: meta.label,
-            key: meta.name,
-            options: meta.dropdownOptions.map((o) => ({
-              label: o.value,
-              value: o.value,
-            })),
-          });
-        } else if (agreementDetails?.custom_data_arr) {
-          const meta = agreementDetails.custom_data_arr.find((m) => m.key === key);
-          if (meta) {
-            customData.push({ ...meta, title: meta.key, label: meta.key, key: meta.key });
-          }
-        }
-      });
-    }
-    setFieldsList([...fieldsData, ...customData]);
+    const customData = getCustomMetaFields(agreementDetails, metaDataRes);
+    setFieldsList([...fieldsData(stateApp.user), ...customData]);
   }, [metaDataRes, agreementDetails]);
 
   const onGlobalKeyDown = (e) => {
@@ -80,7 +68,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
     }
   };
 
-  const offClickHandler = (key, value, isCustom) => updateAgreement(key, value, isCustom);
+  const offClickHandler = (key, value, isCustom) => {
+    updateAgreement(key, value, isCustom);
+  };
 
   const addAgreementCustomData = (data) => {
     const customData = copy(agreementDetails.custom_data) ?? {};
@@ -124,7 +114,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
             </Grid>
             <Grid item xs={8}>
               <Fragment key={index}>
-                {(field.type === "text" || field.type === "dropdown" || field.type === "multiselect") && (
+                {(field.type === "text" || field.type === "dropdown" || field.type === "multiselect" || field.type === "select") && (
                   <Controller
                     control={control}
                     name={field.key}
@@ -143,9 +133,24 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                 shrink: true,
                               }}
                               onBlur={(event) => offClickHandler(field.key, event.target.value)}
+                              disabled={field.disabled}
                             />
                           )}
                           {field.type === "dropdown" && (
+                            <CustomFieldSelect
+                              fullWidth
+                              variant="outlined"
+                              index={`field-${index}`}
+                              dropdownOptions={field.options}
+                              column={field}
+                              onCustomKeyChange={(value) => {
+                                offClickHandler(field.key, value, field.isCustom)
+                              }}
+                              disabled={field.disabled}
+                              value={get(agreementDetails, `${field.key}`, "")}
+                            />
+                          )}
+                          {field.type === "select" && (
                             <Select
                               {...params}
                               id={`field-${index}`}
@@ -155,11 +160,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               InputLabelProps={{
                                 shrink: true,
                               }}
-                              multiple={field.type === "multiselect"}
                               onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
-                              value={
-                                !field.isCustom ? agreementDetails?.[field.key] ?? "" : agreementDetails?.custom_data?.[field.key] ?? []
-                              }
+                              disabled={field.disabled}
+                              value={get(agreementDetails, `${field.key}`, "")}
                             >
                               {field.options.map((option) => (
                                 <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
@@ -167,23 +170,18 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                             </Select>
                           )}
                           {field.type === "multiselect" && (
-                            <Select
-                              {...params}
+                            <CustomFieldMultiSelect
                               id={`field-${index}`}
                               variant="outlined"
                               margin="dense"
                               fullWidth
-                              InputLabelProps={{
-                                shrink: true,
+                              dropdownOptions={field.options}
+                              column={field}
+                              value={get(agreementDetails, `${field.key}`) ?? []}
+                              onCustomKeyChange={(value) => {
+                                offClickHandler(field.key, value, field.isCustom);
                               }}
-                              multiple={field.type === "multiselect"}
-                              onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
-                              value={agreementDetails?.custom_data?.[field.key] ?? []}
-                            >
-                              {field.options.map((option) => (
-                                <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
-                              ))}
-                            </Select>
+                            />
                           )}
                         </Fragment>
                       );
@@ -191,23 +189,35 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                   />
                 )}
                 {field.type === "date" && (
-                  <KeyboardDatePicker
+                  <TextField
                     autoOk
-                    variant="inline"
-                    inputVariant="outlined"
-                    disableToolbar
-                    format="MM/DD/YYYY"
+                    type="date"
+                    variant="outlined"
                     margin="normal"
-                    id={`field-${index}`}
-                    KeyboardButtonProps={{ "aria-label": "change date" }}
-                    InputAdornmentProps={{ position: "start" }}
                     fullWidth
+                    value={agreementDetailCopied?.[field.key] ? moment(agreementDetailCopied[field.key]).format("yyyy-MM-DD") : ""}
+                    onChange={(event) => {
+                      setAgreementCopied({ ...agreementDetailCopied, [field.key]: event ? String(event?.target?.value) : null })
+                    }}
+                    onBlur={(event) => {
+                      offClickHandler(field.key, event ? String(event?.target?.value) : null);
+                    }}
                     InputLabelProps={{
                       shrink: true,
                     }}
-                    value={agreementDetails?.[field.key] ? new Date(agreementDetails[field.key]) : null}
-                    onChange={(date) => {
-                      offClickHandler(field.key, date ? String(date["_d"]) : "");
+                    disableToolbar
+                    KeyboardButtonProps={{ "aria-label": "change date" }}
+                    format="MM/DD/YYYY"
+                    PopoverProps={{ disablePortal: false }}
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton onClick={(event) => offClickHandler(field.key, null)}>
+                          <Clear style={{ height: 22, width: 22 }} />
+                        </IconButton>
+                      ),
+                      classes: {
+                        root: classes.dateRoot,
+                      },
                     }}
                   />
                 )}
@@ -228,18 +238,20 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
           </Grid>
         </Grid>
       ))}
-      {stateApp.showFieldModal && <MetaField columns={[]} category="Agreement" updateColumnSorting={addAgreementCustomData} />}
-      <Grid item>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.addDataButton}
-          startIcon={<AddIcon />}
-          onClick={() => setStateApp((stateApp) => ({ ...stateApp, showFieldModal: true }))}
-        >
-          Add Custom Data
-        </Button>
-      </Grid>
+      {stateApp.showFieldModal && <MetaField customDataPrefix='shapeJson.properties.custom_data' customDataPostfix='.keyword' columns={[]} category="Agreement" updateColumnSorting={addAgreementCustomData} />}
+      {stateApp.user?.rolePrivileges !== "READ_ONLY" && (
+        <Grid item>
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.addDataButton}
+            startIcon={<AddIcon />}
+            onClick={() => setStateApp((stateApp) => ({ ...stateApp, showFieldModal: true }))}
+          >
+            Add Custom Data
+          </Button>
+        </Grid>
+      )}
     </Grid>
   );
 }

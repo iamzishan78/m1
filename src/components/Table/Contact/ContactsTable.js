@@ -150,14 +150,14 @@ function ContactsTable(props) {
     props.setTableMeta({
       // filters: uniqBy(props.customAppliedFilters, "field") || [],
       addableName: "Contact",
-      extendSearchQuery: props.contactSearchQuery,
+      extendSearchQuery: props.contactSearchQuery ? props.contactSearchQuery : null,
       searchFields: ["name^4", "_all"],
       TableHeader: copy(TableHeader),
       esIndex,
       // filters: Contacts?.filters ? getFilters() : [],
       selectedGridView: Contacts || defaultView,
       startPaginationAt: 25,
-      defaultSort: { field: "lastUpdateAt", order: "desc" },
+      defaultSort: { field: "lastUpdateAt", order: "desc", unmapped_type: 'date' },
       formatHits,
       initializeGenericData: { key: "id", actions: genericDataActions },
     });

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { debounce, get, set } from "lodash";
 import { makeStyles, withStyles } from "@material-ui/styles";
@@ -30,12 +30,12 @@ import RelatedWells from "components/Land/components/Agreements/detailComponents
 import Documents from "components/Land/components/Agreements/detailComponents/documents";
 
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 const useStyles = makeStyles((theme) => ({
   detailHeader: {
@@ -153,7 +153,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsDetailContainer: ({ metaCollapse }) => ({
     padding: 20,
-    maxWidth: !metaCollapse ? "calc(100% - 644px)" : "100%",
+    width: !metaCollapse ? "calc(100% - 644px)" : "100%",
   }),
   menuIcon: {
     marginLeft: 10,
@@ -211,6 +211,7 @@ const StyledTab = withStyles((theme) => ({
 export default function DetailComponents(props) {
   const { id: agreementId } = useParams();
   const dispatch = useDispatch();
+  const history = useHistory();
   const agreementDetails = useSelector(({ Land }) => Land.agreement?.activeAgreement?.shape)?.properties;
   const activeAgreement = useSelector(({ Land }) => Land.agreement?.activeAgreement);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -218,11 +219,12 @@ export default function DetailComponents(props) {
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
   const [isButtonScroll, setButtonScroll] = useState(false);
-  const [metaCollapse, setMetaCollapse] = useState(false);
+  const [metaCollapse, setMetaCollapse] = useState(true);
   const [validationCollapse, setValidationCollapse] = useState(true);
   const [flowlineCollapse, setFlowlineCollapse] = useState(true);
   const [anchorEl, setAnchorEl] = useState();
   const [uniObj, setUniObj] = useState();
+  const [openDialog, setOpenDialog] = useState(false);
 
   const classes = useStyles({ ...props, metaCollapse, validationCollapse, flowlineCollapse });
   // queries
@@ -305,7 +307,12 @@ export default function DetailComponents(props) {
 
   useEffect(() => {
     if (activeAgreement?._id) {
-      getShapeSummaryDetails({ variables: { shapeId: activeAgreement._id } });
+      getShapeSummaryDetails({
+        variables: {
+          shapeId: activeAgreement._id,
+          shapeType: "Agreement"
+        }
+      });
     }
   }, [activeAgreement, getShapeSummaryDetails]);
 
@@ -318,15 +325,7 @@ export default function DetailComponents(props) {
   const updateAgreement = (field, value, isCustom) => {
     if (agreementDetails[field] === value) return;
     const shape = activeAgreement.shape;
-    if (!isCustom) {
-      set(shape.properties, field, value);
-      shape.properties[field] = value;
-    } else {
-      const customData = { ...agreementDetails.custom_data };
-      customData[field] = value;
-      shape.properties.custom_data = customData;
-    }
-
+    set(shape, `properties.${field}`, value);
     const customLayer = {};
     let shapeLabel = shape.properties.shapeLabel;
     if (field === "agreementNumber") shapeLabel = `${value}${shape.properties.agreementName ? `-${shape.properties.agreementName}` : ""}`;
@@ -383,6 +382,20 @@ export default function DetailComponents(props) {
 
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
 
+  const handleDeleteAgreement = () => {
+    updateCustomLayer({
+      variables: {
+        customLayerId: dataCustomLayer?.customLayer?._id,
+        customLayer: {
+          IsDeleted: true,
+        },
+      }
+    }).then(({ data }) => {
+      if (data.updateCustomLayer?.success)
+        history.push('/land/agreements')
+    });
+  }
+
   return (
     <NavHeader title={`${agreementDetails?.agreementNumber} - ${agreementDetails?.agreementName}`}>
       {/**
@@ -433,7 +446,8 @@ export default function DetailComponents(props) {
               </StyledTabs>
             </div>
             <div className={classes.metaActions}>
-              <Button
+              {/* temp hide these buttons until we add the functionality -kc 20220520 */}
+              {/* <Button
                 startIcon={<RuleIcon />}
                 className={classes.validationButton}
                 onClick={() => setValidationCollapse(!validationCollapse)}
@@ -442,7 +456,7 @@ export default function DetailComponents(props) {
               </Button>
               <Button startIcon={<FlowIcon />} className={classes.flowlineButton} onClick={() => setFlowlineCollapse(!flowlineCollapse)}>
                 Flowline
-              </Button>
+              </Button> */}
               <Button startIcon={<InfoOutlinedIcon />} className={classes.metaButton} onClick={() => setMetaCollapse(!metaCollapse)}>
                 Metadata
               </Button>
@@ -455,9 +469,7 @@ export default function DetailComponents(props) {
       </div>
 
       <div className="flex justifyBetween alignStart w-100">
-        <div className={`w-100 ${classes.tabsDetailContainer}`}>
-          {/*** Component for viewing selected pdf file*/}
-
+        <div className={classes.tabsDetailContainer}>
           {/**
            * Detail tabs section
            */}
@@ -507,7 +519,10 @@ export default function DetailComponents(props) {
             </div>
           </div>
 
-          <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 305px)" }} />
+          {/*** Component for viewing selected pdf file*/}
+          {stateApp.viewDoc && (
+            <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
+          )}
         </div>
 
         {!metaCollapse && (
@@ -522,8 +537,9 @@ export default function DetailComponents(props) {
             <MetadataDrawer
               setCollapse={setMetaCollapse}
               targetSourceId={agreementId}
-              description={agreementDetails?.description}
+              data={agreementDetails}
               targetLabel="Shape"
+              descriptionKey="description"
             />
           </div>
         )}
@@ -543,13 +559,31 @@ export default function DetailComponents(props) {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <MenuItem>
+        <MenuItem onClick={() => {
+          setOpenDialog(true);
+          setAnchorEl(null);
+        }}>
           <ListItemIcon>
             <DeleteIcon size="medium" />
           </ListItemIcon>
           <ListItemText>Delete</ListItemText>
         </MenuItem>
       </Menu>
+
+      {/**
+       * Delete Custom Layer confirmation dialog
+       * */}
+      {openDialog && (
+        <DeleteConfirmationDialogContent
+          header="Delete Agreement"
+          onClose={() => setOpenDialog(false)}
+          deleteFunc={handleDeleteAgreement}
+          m1nSelectedRowsIds={null}
+          setM1nSelectedRowsIndexes={() => { }}
+        >
+          Are you sure you want to delete this agreement?
+        </DeleteConfirmationDialogContent>
+      )}
     </NavHeader>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useCallback, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import { Button, Tooltip, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -17,19 +17,25 @@ import { TRACKSBYOBJECTTYPE } from "graphQL/useQueryTracksByObjectType";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { AutoCompleteFilter } from "./AutoCompleteFilter";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
+import TableHeader from "components/Table/constants/agreements-header-schema";
 
 import { get } from "lodash";
 
 import { usetableStyles } from "./Styles";
 import { updateUserGridViewSettingAction, updateUserGridViewFiltersAction } from "store/actions/sessionActions";
 import { handleSelectedGridChange, setColumnDisplayAndFilter } from "./helpers";
+import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
+import { formattingGridView, sortColumns } from "utils/helper";
+import moment from "moment";
 
 
 export const TableESHOC = (Component) => {
     return function HOC(props) {
         const dispatch = useDispatch();
-        const classes = usetableStyles();
+        const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky })
 
+        const [tableMeta, setTableMeta] = useState([]);
         const [columns, Columns] = useState([]);
         const [filters, setFilters] = useState([]);
         const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
@@ -38,7 +44,14 @@ export const TableESHOC = (Component) => {
         const [openDialog, setOpenDialog] = useState(null);
         const [clickedRow, setClickedRow] = useState();
 
-        const [tableMeta, setTableMeta] = useState([]);
+        const [gridViews, setGridViews] = useState(null);
+        const [metaDatas, setMetaDatas] = useState(null);
+        const [stateApp, setStateApp] = useContext(AppContext);
+
+        const selectedFilters = useRef([]);
+
+
+
 
         const [rows, setRows] = useState([]);
         // const [rows, Rows] = useState([]);
@@ -79,6 +92,10 @@ export const TableESHOC = (Component) => {
         const checkIfOwnersAreContactsDataRef = useRef();
         checkIfOwnersAreContactsDataRef.current = checkIfOwnersAreContactsData;
 
+        //Get Meta data to update Gridview for add custom fields
+        const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
+        const [getGridViews, { data: gridViewsData }] = useLazyQuery(GET_GRID_VIEWS);
+
         const activeSearchRef = useRef();
         const activeFiltersRef = useRef();
         const tableStateRef = useRef();
@@ -86,10 +103,99 @@ export const TableESHOC = (Component) => {
 
         const [dependencyUpdate, SetDependencyUpdate] = useState(false);
 
-        const [stateApp, setStateApp] = useContext(AppContext);
         const history = useHistory();
 
         const tableData = elasticData?.getESSimpleSearch || {}
+
+        useEffect(() => {
+            if (tableMeta?.selectedGridView) {
+                const category = tableMeta?.typeKeyword?.metaModule
+                getMetaData({
+                    variables: {
+                        user: stateApp.user?.mongoId,
+                        category,
+                    },
+                });
+            }
+        }, [getMetaData, getGridViews, tableMeta]);
+
+        useEffect(() => {
+            if (gridViewsData?.getGridViews?.gridViews) {
+                setGridViews(gridViewsData.getGridViews.gridViews);
+
+            }
+        }, [gridViewsData]);
+
+
+        useEffect(() => {
+            if (metaDataRes?.getMetaData?.metaData) {
+                setMetaDatas(metaDataRes?.getMetaData?.metaData);
+
+            }
+        }, [metaDataRes]);
+
+        useEffect(() => {
+            const { selectedGridView } = tableMeta
+
+            if (selectedGridView && metaDatas) {
+                Columns((cols) => {
+                    if (cols?.length > 0) {
+                        const selectedData = JSON.parse(JSON.stringify(selectedGridView));
+                        setStateApp((state) => ({ ...state, selectedView: selectedData }));
+
+                        let filterColumns = cols.filter((col) => !col._id && ![" ", "Tags", "Comments"].includes(col.label));
+                        let actionColumns = cols.filter((col) => [" ", "Tags", "Comments"].includes(col.label));
+
+                        // Excluding actionColumns from veiw Columns 
+                        actionColumns = actionColumns.map(aC => ({ ...aC, options: { ...aC.options, viewColumns: false } }))
+
+                        let columnsData = [...filterColumns, ...copy(metaDatas), ...actionColumns]
+
+                        let view = JSON.parse(JSON.stringify(selectedData));
+                        if (view.columns) {
+                            let viewColumns = view.columns.filter((col) => !actionColumns.find((aC) => aC.name === col.name));
+                            let viewActionColumns = view.columns.filter((col) => actionColumns.find((aC) => aC.name === col.name));
+                            // if (viewActionColumns.length === 0) {
+                            //     actionColumns.forEach((aC) => {
+                            //         viewActionColumns.push({ name: aC.name, display: true })
+                            //     })
+                            // }
+                            // viewActionColumns.forEach((vAC) => (vAC.display = true))
+                            view.columns = [...viewColumns, ...viewActionColumns]
+                        }
+                        if (!isEmpty(view)) {
+                            view = formattingGridView(JSON.parse(JSON.stringify(view)));
+                            columnsData = handleSelectedGridChange(TableHeader, view, columnsData);
+                        }
+                        columnsData = sortColumns(columnsData, view);
+                        setColumnsData(columnsData)
+                        // clearInterval(interval);
+
+                    }
+
+                    return cols
+                })
+            }
+        }, [tableMeta.selectedGridView, columns.length, metaDatas]);
+
+
+        const updateColumnSorting = (value) => {
+            dispatch(
+                updateUserGridViewSettingAction.STARTED({
+                    userGridViewSetting: {
+                        module: tableMeta?.typeKeyword?.gridViewCategory,
+                        gridView: tableMeta.selectedGridView._id,
+                        gridViewPatch: {
+                            filters: selectedFilters.current,
+                            columns: value.map((col) => ({ name: col.name, display: col.display === "true" })),
+                        },
+                        user: stateApp.user?.mongoId,
+                    },
+                })
+            );
+        };
+
+        ////////Grid View Code ended
 
         useEffect(() => {
             if (constDataTracks?.tracksByObjectType) {
@@ -129,12 +235,17 @@ export const TableESHOC = (Component) => {
 
         useEffect(() => {
             if (tableMeta?.esIndex) {
+
+                if (tableMeta.modifySelectedGridView) {
+                    tableMeta.modifySelectedGridView(tableMeta.selectedGridView)
+                }
+
                 getESSimpleSearch({
                     variables: {
                         index: tableMeta.esIndex,
                         pagination: {
                             first: tableMeta.startPaginationAt,
-                            keep_alive: "1micros"
+                            after: null
                         },
                         search: {
                             query: tableMeta.extendSearchQuery,
@@ -191,7 +302,7 @@ export const TableESHOC = (Component) => {
         const setColumnsData = (tableCols) => {
             let { TableHeader, extendSearchQuery, esIndex, filters } = tableMeta
             let appliedFilters = initialFilters;
-            if(filters && filters.length > 0) {
+            if (filters && filters.length > 0) {
                 appliedFilters = [...initialFilters, ...filters]
             }
             tableCols.forEach((column, index) => {
@@ -207,7 +318,10 @@ export const TableESHOC = (Component) => {
                         },
                         filterOptions: {
                             display: (filterList, onChange, index, column) => {
-                                column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
+                                if (!TableHeader.find((el) => el.name === column.name)) {
+                                    column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
+                                } else
+                                    column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
                                 return (
                                     <AutoCompleteFilter
                                         esIndex={esIndex}
@@ -240,10 +354,10 @@ export const TableESHOC = (Component) => {
                     let value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
                     let filterList = Array.isArray(column.esKey) ? undefined : [];
                     if (value && typeof value !== "object") {
-                        if (column.custom?.isDate) {
-                            const filterData = stateApp.filtersData[columns[index].name];
-                            const data = filterData?.find(f => f.key_as_string === value)
-                            if (data) value = data.key
+                        if (column.custom?.isDate && columns?.length) {
+                            if (value !== "")
+                                value = moment(new Date(value)).format("MM/DD/YYYY")
+
                         }
                         filterList = [value];
                     }
@@ -260,6 +374,12 @@ export const TableESHOC = (Component) => {
                     }
                 });
             }
+
+            // shift _id and sticky Colums to the first Place
+
+            let stickyColumns = tableCols.filter(cD => cD.name === '_id' || cD?.options?.stickyColumn)
+            tableCols = tableCols.filter(cD => cD.name !== "_id" && !cD.options?.stickyColumn);
+            tableCols.unshift(...stickyColumns);
             setColumns(tableCols);
         };
 
@@ -348,7 +468,16 @@ export const TableESHOC = (Component) => {
             if (actions.includes('ifAreContacts')) {
                 const ifAreContacs = checkIfOwnersAreContactsDataRef?.current?.ifAreContacts || []
                 if (ifAreContacs.length > 0) {
-                    const contact = ifAreContacs.find((ifc) => ifc.globalOwner === data.id || ifc.globalOwner === data.globalOwnerId)
+                    let contact;
+                    if (!data.contactId)
+                        contact = ifAreContacs.find((ifc) => {
+                            if (ifc.globalOwner?.replace(/-/g, "") === data.id?.replace(/-/g, "") || ifc.globalOwner?.replace(/-/g, "") === data.globalOwnerId?.replace(/-/g, ""))
+                                return true;
+                            return false;
+                        });
+                    else {
+                        contact = ifAreContacs.find((ifc) => ifc._id === data.contactId);
+                    }
                     if (contact) {
                         data.isContact = contact.isContact;
                         data.entity = contact._id;
@@ -409,11 +538,13 @@ export const TableESHOC = (Component) => {
                 },
             };
             tableState.filterList.forEach((val, index) => {
-                if (val.length > 0) {
+                if (val.length > 0 && columns[index]) {
                     if (columns[index].custom?.isDate) {
                         const filterData = stateApp.filtersData[columns[index].name];
-                        const data = filterData.find(f => f.key === val[0] || f.key_as_string === val[0])
-                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
+                        if (filterData) {
+                            const data = filterData.find(f => f.key === val[0] || f.key_as_string === val[0])
+                            pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
+                        }
                     } else if (columns[index].custom?.filterOptions?.length > 0) {
                         pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0] })
                     } else if (columns[index].custom?.formatedFilterOptions?.length > 0) {
@@ -436,6 +567,7 @@ export const TableESHOC = (Component) => {
                 }
             })
             if (selectedGridView?.filters && selectedGridView.type === 'Default') {
+
                 selectedGridView.filters.forEach(filter => {
                     pageESVariables.variables.filters.push(filter)
                 })
@@ -478,23 +610,34 @@ export const TableESHOC = (Component) => {
         }
 
         const updateGridViewRedux = (tableState) => {
-            if (tableMeta?.selectedGridView?._id)
-                dispatch(updateUserGridViewSettingAction.STARTED({
-                    userGridViewSetting: {
-                        gridView: tableMeta.selectedGridView._id,
-                        gridViewPatch: {
-                            filters: activeFiltersRef.current,
-                            columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
-                        },
-                        user: props.userId
-                    }
-                }));
-            let filters = activeFiltersRef.current;
-            if (props.targetLabel === "well") {
-                filters = filters.filter(f => f.type !== "geo_intersects");
-            }
-            dispatch(updateUserGridViewFiltersAction(filters));
+            setTableMeta((tableMeta) => {
+                if (tableMeta?.selectedGridView)
+                    dispatch(updateUserGridViewSettingAction.STARTED({
+                        userGridViewSetting: {
+                            module: tableMeta?.typeKeyword?.gridViewCategory,
+                            gridView: tableMeta.selectedGridView._id,
+                            gridViewPatch: {
+                                filters: activeFiltersRef.current,
+                                columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
+                            },
+                            user: stateApp.user?.mongoId,
+                        }
+                    }));
+                let filters = activeFiltersRef.current;
+                if (props.targetLabel === "well") {
+                    filters = filters.filter(f => f.type !== "geo_intersects");
+                }
+                dispatch(updateUserGridViewFiltersAction(filters));
+
+                return tableMeta
+            })
         }
+
+        const viewColumnProps = {
+            selectedGridView: tableMeta.selectedGridView,
+            // updateColumnSorting
+            updateColumnSorting: (columns) => updateGridViewRedux({ columns }),
+        };
 
         const onTableChange = (action, tableState, rows, meta) => {
             tableState.esIndex = tableMeta.esIndex;
@@ -504,6 +647,7 @@ export const TableESHOC = (Component) => {
             const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch)
             activeSearchRef.current = tableActions.pageESVariables.variables.search;
             activeFiltersRef.current = handleMultiFieldFilter(tableActions.pageESVariables.variables.filters.concat(tableMeta.filters));
+            selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
             tableStateRef.current = tableState
 
 
@@ -542,15 +686,19 @@ export const TableESHOC = (Component) => {
 
         const viewColumnsChange = (tableColumns) => {
             for (let i = 0; i < tableColumns.length; i++) {
-                if (tableColumns[i].display === "true" || tableColumns[i].display === true) {
-                    columns[i].options.display = true;
-                    if (columns[i].esKey && !columns[i].noFilter) {
-                        columns[i].options.filter = true;
+                if (columns[i]) {
+                    if ((tableColumns[i].display === "true" || tableColumns[i].display === true) && tableColumns[i].display !== false) {
+                        columns[i].options.display = true;
+                        if (columns[i].esKey && !columns[i].noFilter) {
+                            columns[i].options.filter = true;
+                        }
+
+                    } else {
+                        columns[i].options.display = false;
+                        columns[i].options.filter = false;
+                        delete columns[i]?.options.filterOptions;
+
                     }
-                } else {
-                    columns[i].options.display = false;
-                    columns[i].options.filter = false;
-                    delete columns[i].options.filterOptions;
                 }
             }
             setColumnsData(columns);
@@ -595,15 +743,21 @@ export const TableESHOC = (Component) => {
                 </div>
             } : undefined,
             customToolbarSelect: ({ data }) => {
-                return props.targetLabel !== "well" && (<div style={{ height: "48px", display: "flex" }}>
-                    <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
-                        <Tooltip title={"Delete"}>
-                            <IconButton size="medium" style={{ margin: "0 5px" }} aria-label="delete" onClick={(e) => { setOpenDialog("delete"); }}>
-                                <DeleteIcon />
-                            </IconButton>
-                        </Tooltip>
-                    </div>
-                </div>)
+                return props.targetLabel !== "well"
+                    && props.targetLabel !== "unit"
+                    && props.targetLabel !== "operator"
+                    && props.targetLabel !== "owner"
+                    && (
+                        <div style={{ height: "48px", display: "flex" }}>
+                            <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
+                                <Tooltip title={"Delete"}>
+                                    <IconButton size="medium" style={{ margin: "0 5px" }} aria-label="delete" onClick={(e) => { setOpenDialog("delete"); }}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </div>
+                        </div>
+                    )
             },
             onRowClick: (rowData, { dataIndex, rowIndex }) => {
                 setAddToTable('update')
@@ -612,47 +766,53 @@ export const TableESHOC = (Component) => {
         }
 
         return (
-            <Component
-                {...props}
-                rows={rows}
-                searchedRows={searchedRows}
-                setSearchedRows={setSearchedRows}
-                total={tableData?.total}
-                loading={loading}
-                dataTracks={dataTracksIds}
-                setRows={setRows}
-                setLoading={setLoading}
-                initializeGenericData={initializeGenericData}
-                ifAreContacts={ifAreContacts}
-                setGenricData={setGenricData}
-                dependencyUpdate={dependencyUpdate}
-                initializeTableActions={initializeTableActions}
+            <span className={classes.container2}>
+                <Component
+                    {...props}
+                    rows={rows}
+                    searchedRows={searchedRows}
+                    setSearchedRows={setSearchedRows}
+                    total={tableData?.total}
+                    loading={loading}
+                    dataTracks={dataTracksIds}
+                    setRows={setRows}
+                    setLoading={setLoading}
+                    initializeGenericData={initializeGenericData}
+                    ifAreContacts={ifAreContacts}
+                    setGenricData={setGenricData}
+                    dependencyUpdate={dependencyUpdate}
+                    initializeTableActions={initializeTableActions}
 
-                tableMeta={tableMeta}
-                setTableMeta={setTableMeta}
+                    tableMeta={tableMeta}
+                    setTableMeta={setTableMeta}
+                    setFilters={setFilters}
+                    options={options}
+                    clickedRow={clickedRow}
 
-                options={options}
-                clickedRow={clickedRow}
+                    addToTable={addToTable}
+                    setAddToTable={setAddToTable}
 
-                addToTable={addToTable}
-                setAddToTable={setAddToTable}
+                    openDialog={openDialog}
+                    setOpenDialog={setOpenDialog}
 
-                openDialog={openDialog}
-                setOpenDialog={setOpenDialog}
+                    selectedRows={selectedRows}
+                    setSelectedRows={setSelectedRows}
 
-                selectedRows={selectedRows}
-                setSelectedRows={setSelectedRows}
+                    onTableChange={onTableChange}
+                    columns={columns}
+                    setColumns={setColumns}
 
-                onTableChange={onTableChange}
-                columns={columns}
-                setColumns={setColumns}
+                    updateColumnSorting={updateColumnSorting}
+                    viewColumnProps={viewColumnProps}
 
-                activeSearchRef={activeSearchRef}
-                activeFiltersRef={activeFiltersRef}
+                    activeSearchRef={activeSearchRef}
+                    activeFiltersRef={activeFiltersRef}
+                    selectedFilters={selectedFilters}
 
-                initialFilters={initialFilters}
-                setInitialFilters={setInitialFilters}
-            />
+                    initialFilters={initialFilters}
+                    setInitialFilters={setInitialFilters}
+                />
+            </span>
         );
     };
 };

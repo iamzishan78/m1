@@ -58,9 +58,7 @@ export default function FilterCountyName({ value, state, onCountyChange, label, 
   return (
     <FormControl variant="outlined" className={classes.formControl}>
       {loading ? (
-        <div style={{ height: "56px" }}>
-          <CircularProgress color="secondary" className={classes.loader} size={28} />
-        </div>
+        <CircularProgress color="secondary" className={classes.loader} size={28} />
       ) : (
         <Autocomplete
           className={classes.autoC}
@@ -68,7 +66,6 @@ export default function FilterCountyName({ value, state, onCountyChange, label, 
           value={value ? { county: value } : ''}
           getOptionLabel={(option) => (option && option.county ? option.county : option ? option : "")}
           autoComplete
-          autoSelect
           disableListWrap
           includeInputInList
           onChange={(event, newValue) => {

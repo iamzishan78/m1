@@ -1,4 +1,9 @@
+import { addAfterLabel } from "./helper";
+
 const PARCELINTERESTS_FIELDS = require("./PARCELINTERESTS").default
+
+const fields = JSON.parse(JSON.stringify(PARCELINTERESTS_FIELDS))
+fields.splice(PARCELINTERESTS_FIELDS.length-1,1)
 
 const tracts = [
     {
@@ -79,9 +84,22 @@ const tracts = [
         required: true,
         actual_key: "landgrid.name",
     },
-    ...PARCELINTERESTS_FIELDS
+    ...fields,
+    {
+        label: "Tags",
+        mapped_key: "",
+        required: false,
+        actual_key: "landgrid.tags"
+    },
 ];
 
-tracts.find((key) => key.actual_key === 'entityDetail.state').label = 'AddressState'
+addAfterLabel(tracts, 'Parcel Name', {
+    label: "Description",
+    mapped_key: "",
+    actual_key: "parcel.description",
+})
+
+
+// tracts.find((key) => key.actual_key === 'entityDetail.state').label = 'AddressState'
 
 export default tracts

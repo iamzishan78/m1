@@ -95,7 +95,9 @@ export const contactManagementRoutes = {
     title: "All Entities",
     link: "/contacts",
     component: "ContactsTable",
+    value: 'All',
     search: true,
+    isDefault: true
   },
   LEADS: {
     featureFlag: "CONTACTSUBMENU",
@@ -104,7 +106,9 @@ export const contactManagementRoutes = {
     component: "ContactsTable",
     filterValue: "Lead",
     showAnalytics: true,
+    value: 'Leads',
     search: true,
+    isDefault: true
   },
   PROSPECTS: {
     featureFlag: "CONTACTSUBMENU",
@@ -113,7 +117,9 @@ export const contactManagementRoutes = {
     component: "ContactsTable",
     filterValue: "Prospect",
     showAnalytics: true,
+    value: 'Prospects',
     search: true,
+    isDefault: true
   },
   CONTACTS: {
     featureFlag: "CONTACTSUBMENU",
@@ -122,14 +128,18 @@ export const contactManagementRoutes = {
     component: "ContactsTable",
     filterValue: "Contact",
     showAnalytics: true,
+    value: 'Contacts',
     search: true,
+    isDefault: true
   },
   ACTIVITY: {
     featureFlag: "CONTACTSUBMENU",
     title: "Activity Dashboard",
     link: "/contacts/activityDashboard",
     component: "ActivitiesDashboard",
+    value: 'Activities',
     search: false,
+    isDefault: true
   },
   // temporarily hide until campaign management is built (removed isExcluded when we want to turn back on)
   CAMPAIGNS: {
@@ -203,7 +213,7 @@ export const activityTypes = [
 
 export const CUSTOM_DATES = {
   ALL_DATES: "All Dates",
-  THIS_YEAR_TO_LAST_MONTH: "This year-to-last-month",
+  THIS_YEAR_TO_LAST_MONTH: "This year to last month",
   THIS_YEAR_TO_DATE: "This year to date",
   LAST_YEAR_TO_DATE: "Last year to date",
   LAST_MONTH: "Last Month",

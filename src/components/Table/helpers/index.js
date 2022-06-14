@@ -70,12 +70,19 @@ export const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column)
         column.options.filter = true;
       }
     } else if (column.name !== ' ') {
-      column.options.display = false;
-      column.options.filter = false;
+      const tableHeaderCol = TableHeader.find(tH => tH.name === column.name)
+      if (tableHeaderCol) {
+        column.options.display = tableHeaderCol.options.display;
+        column.options.filter = tableHeaderCol.options.filter;
+      }
+      else {
+        column.options.display = false;
+        column.options.filter = false;
+      }
     }
   } else {
     if (
-      TableHeader.find((col) => col.name === column.name).options.display !==
+      TableHeader.find((col) => col.name === column.name)?.options?.display !==
       false
     ) {
       column.options.display = true;

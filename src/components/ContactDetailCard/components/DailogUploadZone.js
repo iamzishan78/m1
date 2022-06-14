@@ -5,7 +5,7 @@ import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { CircularProgress } from "@material-ui/core";
 import { showErrorMessage, showWarningMessage } from "../../../actions";
-import { ADDDESCRIPTORFILE } from "../../../graphQL/useMutationAddDescriptorFile";
+import { ADDDESCRIPTORFILE } from "graphQL/useMutationAddDescriptorFile";
 import { BlockBlobClient } from "@azure/storage-blob";
 
 const useStyles = makeStyles((theme) => ({
