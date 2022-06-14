@@ -331,11 +331,11 @@ export default function DetailInfo(props) {
                   } else {
                     let objName = Object.keys(row.data)[0];
                     if (
-                      row.data[objName] != undefined &&
-                      row.data[objName] != `""` &&
-                      row.data[objName] != "" &&
-                      row.data[objName] != "" &&
-                      row.data[objName].length != 0 &&
+                      row.data[objName] !== undefined &&
+                      row.data[objName] !== `""` &&
+                      row.data[objName] !== "" &&
+                      row.data[objName] !== "" &&
+                      row.data[objName].length !== 0 &&
                       row.data[objName] != null
                     ) {
                       return (

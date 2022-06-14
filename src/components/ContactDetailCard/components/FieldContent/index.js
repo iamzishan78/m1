@@ -315,7 +315,7 @@ export default function FieldContent({
                   key={"fieldContentInput" + fieldName}
                   options={timeZoneOptions}
                   getOptionLabel={(option) => option.title || editContent[fieldName]}
-                  style={{ width: 300 }}
+                  // style={{ width: 300 }}
                   onChange={(e, data) => {
                     e.persist();
                     setEditContent((editContent) => ({

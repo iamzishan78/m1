@@ -7,8 +7,8 @@ import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Grid, IconButton, Tabs, Tab } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import AddIcCallIcon from '@material-ui/icons/AddIcCall';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
+import AddIcCallIcon from "@material-ui/icons/AddIcCall";
+import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import { useHistory } from "react-router-dom";
 
 // internal components
@@ -48,6 +48,7 @@ import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
 import DocViewer from "../Shared/DocViewer";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
 import AddActivityDialog from "../ContactDetailCard/components/AddActivityDialog";
+import SummaryFields from "../ContactDetailedInfo/components/SummaryFields";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Link from "@material-ui/core/Link";
@@ -245,7 +246,7 @@ const useStyles = makeStyles((theme) => ({
   },
   leftColumn: {
     MinHeight: "100%",
-    backgroundColor: "#fff",
+    backgroundColor: "#f2f2f2",
     flexGrow: "1",
     transition: "width 0.3s ease-out",
     webkitTransition: "width 0.3s ease-out",
@@ -337,7 +338,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 16,
     width: "100%",
     display: "flex !important",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   highlighter: {
     background: "#263451",
@@ -383,6 +384,14 @@ const useStyles = makeStyles((theme) => ({
       textTransform: "capitalize",
       padding: "6px 12px",
     },
+  },
+  summarySection: {
+    width: "100%",
+    backgroundColor: "#fff",
+  },
+  detailCardSection: {
+    backgroundColor: "#fff",
+    marginTop: "10px",
   },
 }));
 
@@ -610,7 +619,7 @@ export default function ContactDetailCard(props) {
   const togglePullout = () => dispatch(toggleRightColumn());
 
   const getRelativePosition = (childDivId) => {
-    const parentPos = document.getElementById('parent-div').getBoundingClientRect();
+    const parentPos = document.getElementById("parent-div").getBoundingClientRect();
     const childPos = document.getElementById(childDivId).getBoundingClientRect();
     const relativePos = {};
 
@@ -619,7 +628,7 @@ export default function ContactDetailCard(props) {
     relativePos.bottom = childPos.bottom - parentPos.bottom;
     relativePos.left = childPos.left - parentPos.left;
     return relativePos.top;
-  }
+  };
 
   const handleEndScroll = React.useCallback(() => setButtonScroll(false), []);
   const handleScroll = debounce(() => {
@@ -666,8 +675,9 @@ export default function ContactDetailCard(props) {
                       <span className={classes.socialMediaSection}>
                         {contactData.facebook && (
                           <a
-                            href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${contactData.facebook
-                              }`}
+                            href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${
+                              contactData.facebook
+                            }`}
                             target="_blank"
                             rel="noreferrer"
                           >
@@ -676,8 +686,9 @@ export default function ContactDetailCard(props) {
                         )}
                         {contactData.twitter && (
                           <a
-                            href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${contactData.twitter
-                              }`}
+                            href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${
+                              contactData.twitter
+                            }`}
                             target="_blank"
                             rel="noreferrer"
                           >
@@ -686,8 +697,9 @@ export default function ContactDetailCard(props) {
                         )}
                         {contactData.linkedIn && (
                           <a
-                            href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${contactData.linkedIn
-                              }`}
+                            href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${
+                              contactData.linkedIn
+                            }`}
                             target="_blank"
                             rel="noreferrer"
                           >
@@ -698,7 +710,7 @@ export default function ContactDetailCard(props) {
                     )}
                   </FieldContent>
                 </h2>
-                <Link onClick={() => window.open(getAddressUrl(contactData), '_blank')}>
+                <Link onClick={() => window.open(getAddressUrl(contactData), "_blank")}>
                   <FieldContent
                     childrenLeft
                     noMargin
@@ -785,13 +797,13 @@ export default function ContactDetailCard(props) {
             <DocViewer DocStyle={{ backgroundColor: "white !important", width: "71vw" }} divCondition={true}></DocViewer>
           ) : (
             <>
-              <div id="summary-div" ref={tab === 0 ? selectedTabRef : null}>
-                <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px", minHeight: "600px", textAlign: "center", marginBottom: "15px" }}>
-                  <p>Contact Summary Here</p>
+              <div id="summary-div" className={classes.summarySection} ref={tab === 0 ? selectedTabRef : null}>
+                <Grid item xs={12} container spacing={0} style={{ padding: "23px 28px", minHeight: "600px", textAlign: "center" }}>
+                  <SummaryFields contactData={contactData} />
                 </Grid>
               </div>
               {/*/////////// section 3 //////////// */}
-              <div id="detail-div" ref={tab === 1 ? selectedTabRef : null}>
+              <div id="detail-div" className={classes.detailCardSection} ref={tab === 1 ? selectedTabRef : null}>
                 <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px" }}>
                   <ContactDetailedInfo user={stateApp.user} purchaseData={purchaseData} contactData={contactData} />
                 </Grid>
@@ -841,11 +853,7 @@ export default function ContactDetailCard(props) {
                     </Grid>
                     <Grid item xs={3} style={{ minWidth: "250px" }}>
                       <Card raised style={{ minHeight: "165px", height: "100%" }}>
-                        <DealsNew
-                          contact={contactData}
-                          transactData={transactData}
-                          transactId={transactId}
-                        />
+                        <DealsNew contact={contactData} transactData={transactData} transactId={transactId} />
                       </Card>
                     </Grid>
                   </Grid>
@@ -923,7 +931,7 @@ export default function ContactDetailCard(props) {
               header="Contact Data Integration"
               onClose={handleCloseDialog}
               rows={[contactData]}
-              setRows={() => { }}
+              setRows={() => {}}
               updateMelissaTable={() => {
                 getLastMelissaRecord({
                   variables: {
@@ -1038,11 +1046,7 @@ export default function ContactDetailCard(props) {
         )}
         {showActivityDialog && (
           <RightDialog open={true} handleClickDialogClose={() => setActivityDialog(false)} width="700px">
-            <AddActivityDialog
-              onClose={() => setActivityDialog(false)}
-              id={props.id}
-              contactData={props.contactData}
-            />
+            <AddActivityDialog onClose={() => setActivityDialog(false)} id={props.id} contactData={props.contactData} />
           </RightDialog>
         )}
       </div>
