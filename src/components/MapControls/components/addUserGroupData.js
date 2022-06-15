@@ -184,7 +184,7 @@ export default function AddUserGroupData(props) {
         .then((response) => {
           return response._response.bodyAsText
         })
-        .then(() => {
+        .then(async () => {
           // if iscreate layer is selected only then create the layers 
           if (isCreateLayers)
             fileContent.featureTypes.forEach(async (type, index) => {
@@ -218,6 +218,7 @@ export default function AddUserGroupData(props) {
               }
             })
           else {
+            await SimpleOrShapeFileImport({ stateApp, setStateApp, client, file_id, sourceProps })
             setStateApp((stateApp) => ({
               ...stateApp,
               universalCircularLoaderAct: false,
@@ -277,7 +278,7 @@ export default function AddUserGroupData(props) {
           dataset: {
             fileName: inputOriginalFile.fileName,
             sourceName: groupName,
-            categories: layerNames,
+            categories: layerNames.map((layerName, index) => ({ name: layerName, layerGeometry: stateMapControls.fileUploadedContent.featureTypes[index] })),
             types: stateMapControls.fileUploadedContent.featureTypes,
             file: file.data.addFile.file.id,
             originalFile: originalFileId,

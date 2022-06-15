@@ -271,7 +271,7 @@ export default function AddLayer(props) {
         feature.properties = {};
       }
       feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type };
-      if (!layerTypes.includes(feature.geometry.type)) {
+      if (!layerTypes.includes(feature.geometry.type) && feature.geometry.type !== 'MultiPolygon') {
         layerTypes.push(feature.geometry.type);
       }
     });

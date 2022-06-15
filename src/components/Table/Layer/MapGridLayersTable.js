@@ -80,9 +80,29 @@ function MapGridLayersTable(props) {
   useEffect(() => {
     props.setTableMeta({
       extendSearchQuery: searchInput,
+      advanceSearch: stateApp.selectedLayer?.layerGeometry === 'Polygon' ? [{
+        "bool": {
+          "should": [
+            {
+              "term": { "properties.layerGeometry.keyword": "Polygon" }
+            },
+            {
+              "term": { "properties.layerGeometry.keyword": "MultiPolygon" }
+            }
+          ]
+        }
+      }] : [{
+        "bool": {
+          "should": [
+            {
+              "term": { "properties.layerGeometry.keyword": stateApp.selectedLayer?.layerGeometry }
+            }
+          ]
+        }
+      }],
       searchFields: ['*'],
       TableHeader: [],
-      filters: [{ field: "file._id", value: stateApp.selectedLayer?.file }, { field: "properties.layerGeometry", value: stateApp.selectedLayer?.layerGeometry }],
+      filters: [{ field: "file._id", value: stateApp.selectedLayer?.file }],
       esIndex: "shapefile_flat",
       startPaginationAt: 25,
       formatColumns,

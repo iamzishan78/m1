@@ -11,14 +11,14 @@ import { ifLayerHaveData } from "../common.js";
 import { AppContext } from "AppContext.js";
 
 import { Grid } from "@material-ui/core";
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import GridOnIcon from "@material-ui/icons/GridOn";
-import { setMapGridCardState } from "actions";
+// import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+// import GridOnIcon from "@material-ui/icons/GridOn";
+// import { setMapGridCardState } from "actions";
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 
 import { IconButton } from '@material-ui/core';
-import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent.js";
-import { FEATURES } from "components/Shared/FeatureFlag/common";
+// import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent.js";
+// import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const useStyles = makeStyles(() => ({
   disabledLayerTitle: {

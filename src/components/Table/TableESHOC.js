@@ -249,7 +249,8 @@ export const TableESHOC = (Component) => {
                         },
                         search: {
                             query: tableMeta.extendSearchQuery,
-                            fields: tableMeta.searchFields
+                            fields: tableMeta.searchFields,
+                            advanceSearch: tableMeta.advanceSearch,
                         },
                         sort: tableMeta.defaultSort,
                         filters: handleMultiFieldFilter([
@@ -514,7 +515,8 @@ export const TableESHOC = (Component) => {
                     index: tableMeta.esIndex,
                     search: {
                         query: tableState.searchText,
-                        fields: tableMeta.searchFields
+                        fields: tableMeta.searchFields,
+                        advanceSearch: tableMeta.advanceSearch,
                     },
                     pagination: {
                         // pit: tableData?.before_pit,

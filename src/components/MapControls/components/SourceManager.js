@@ -273,16 +273,18 @@ export default function SourceManager(props) {
         feature.properties = {};
       }
       feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type };
-      if (!layerTypes.includes(feature.geometry.type)) {
+      if (!layerTypes.includes(feature.geometry.type) && feature.geometry.type !== 'MultiPolygon') {
         layerTypes.push(feature.geometry.type);
       }
     });
     layerTypes.forEach((layerType) => {
-      if (layerTypes.length > 1) {
-        fileNames.push(`${geo.fileName || name} - ${layerType}`);
-      } else {
-        fileNames.push(`${geo.fileName || name} `);
-      }
+      fileNames.push(`${geo.fileName || name} - ${layerType}`);
+
+      // if (layerTypes.length > 1) {
+      //   fileNames.push(`${geo.fileName || name} - ${layerType}`);
+      // } else {
+      //   fileNames.push(`${geo.fileName || name} `);
+      // }
     });
     return { layerTypes, fileNames };
   };
