@@ -320,7 +320,7 @@ export const SUMMARY_FIELDS = (contactData) => [
   },
   {
     label: "Total NRA",
-    key: "",
+    key: "contactInterests.nraSum",
     type: "text",
     position: "right",
     disabled: true,
@@ -333,7 +333,7 @@ export const SUMMARY_FIELDS = (contactData) => [
   },
   {
     label: "Total Price",
-    key: "",
+    key: "contactInterests.offerPriceSum",
     type: "text",
     position: "right",
     disabled: true,
