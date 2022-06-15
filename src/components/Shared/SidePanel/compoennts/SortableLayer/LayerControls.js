@@ -176,7 +176,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
         {/* {layerClickabilityControl} */}
         {/* </Grid> */}
 
-        <Grid item xs={4}>
+        {/* <Grid item xs={4}>
           <FeatureFlag feature={FEATURES.SHAPEELASTIC}>
             {layer.file && <Tooltip title="Grid">
               <IconButton size="small" aria-label="Grid" style={{ color: '#ffff' }} onClick={() => {
@@ -191,7 +191,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
               </IconButton>
             </Tooltip>}
           </FeatureFlag>
-        </Grid>
+        </Grid> */}
         <Grid item xs={4} className={classes.formControl}>
           <FormControlLabel
             control={
