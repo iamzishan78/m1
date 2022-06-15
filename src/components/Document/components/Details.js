@@ -168,6 +168,9 @@ const LightTooltip = withStyles((theme) => ({
 
 const documentInitial = {
   documentName: "",
+  book: "",
+  page: "",
+  instrument: "",
   recordingInfo: "",
   dateTime: null,
   documentNumber: "",
@@ -281,6 +284,9 @@ export default function DocumentDetails(props) {
       updateDocument({
         variables: {
           document: {
+            book: newDocument.book,
+            page: newDocument.page,
+            instrument: newDocument.instrument,
             recordingInfo: newDocument.recordingInfo,
             documentName: newDocument.documentName,
             dateTime: newDocument.dateTime,
@@ -441,7 +447,10 @@ export default function DocumentDetails(props) {
                   <h4>Party 2 Name</h4>
                   <ContactPaginatedDropdown nameAutValue={nameAutValueParty2} setNameAutValue={setNameAutValueParty2} />
                 </ListItem> */}
-          <ListItem
+
+          {/* Hiding Recording info */}
+
+          {/* <ListItem
             style={{
               flexDirection: "column",
               justifyContent: "start",
@@ -460,6 +469,62 @@ export default function DocumentDetails(props) {
                 });
               }}
             />
+          </ListItem> */}
+
+          <ListItem
+            style={{
+              flexDirection: "row",
+              justifyContent: "start",
+              alignItems: "start",
+            }}
+          >
+            <div style={{
+              marginRight: "15px",
+            }}>
+              <h4>Book</h4>
+              <TextField
+                className={classes.maxWidth}
+                multiline
+                value={newDocument?.book}
+                onChange={(e) => {
+                  setNewDocument({
+                    ...newDocument,
+                    book: e.target.value,
+                  });
+                }}
+              />
+            </div>
+
+            <div style={{
+              marginRight: "30px",
+            }}>
+              <h4>Page</h4>
+              <TextField
+                className={classes.maxWidth}
+                multiline
+                value={newDocument?.page}
+                onChange={(e) => {
+                  setNewDocument({
+                    ...newDocument,
+                    page: e.target.value,
+                  });
+                }}
+              />
+            </div>
+            <div>
+              <h4>Instrument #</h4>
+              <TextField
+                className={classes.maxWidth}
+                multiline
+                value={newDocument?.instrument}
+                onChange={(e) => {
+                  setNewDocument({
+                    ...newDocument,
+                    instrument: e.target.value,
+                  });
+                }}
+              />
+            </div>
           </ListItem>
 
           {metaData.map((meta) => {
@@ -748,68 +813,10 @@ export default function DocumentDetails(props) {
           </Button>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 
-const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
-  const classes = useStyles();
-  const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-  const [hasNextPage, setHasNextPage] = useState(true);
-  const [isNextPageLoading, setIsNextPageLoading] = useState(false);
-  const [nameAutInputValue, NameAutInputValue] = useState("");
-  const setNameAutInputValue = (newState) => {
-    setStateIfDeepEqual(NameAutInputValue, newState);
-  };
-
-  const [getPaginatedContacts, { data: allContacts, loading: contactsLoading, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-      nextFetchPolicy: "cache-first",
-    }
-  );
-
-  useEffect(() => {
-    if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
-      setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
-    }
-    setIsNextPageLoading(false);
-  }, [allContacts]);
-
-  useEffect(() => {
-    //will also run during initial mount
-    setIsNextPageLoading(true);
-    getPaginatedContacts({
-      variables: {
-        search: nameAutInputValue,
-      },
-    });
-  }, [nameAutInputValue]);
-
-  const loadNextPage = async (pageVariables) => {
-    setIsNextPageLoading(true);
-    fetchMorePaginatedContacts(pageVariables);
-    return null;
-  };
-
-  return (
-    <AutocompEntityNamesVirtualizeList
-      className={classes.maxWidth}
-      mongoEntitiesArray={mongoEntitiesArray}
-      setMongoEntitiesArray={setMongoEntitiesArray}
-      nameAutValue={nameAutValue}
-      setNameAutValue={setNameAutValue}
-      nameAutInputValue={nameAutInputValue}
-      setNameAutInputValue={setNameAutInputValue}
-      hasNextPage={hasNextPage}
-      isNextPageLoading={isNextPageLoading}
-      loadNextPage={loadNextPage}
-      addNew={true}
-    />
-  );
-};
 
 const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
   const useStyles = makeStyles({

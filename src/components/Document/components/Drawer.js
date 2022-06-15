@@ -165,6 +165,9 @@ export default function DocumentDrawer() {
 
   const documentInitial = {
     documentName: "",
+    book: "",
+    page: "",
+    instrument: "",
     recordingInfo: "",
     dateTime: null,
     documentNumber: "",
@@ -254,7 +257,7 @@ export default function DocumentDrawer() {
         variables: { fileIds: ID },
       });
       if (stateApp.selectedDocument) {
-        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, recordingInfo, custom_data } =
+        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, book, page, instrument, recordingInfo, custom_data } =
           stateApp.selectedDocument;
         setNameAutValueParty1({
           name: partyName1?.entityDetail?.name,
@@ -266,6 +269,9 @@ export default function DocumentDrawer() {
         });
 
         setNewDocument({
+          book,
+          page,
+          instrument,
           recordingInfo,
           documentName,
           dateTime,
@@ -404,7 +410,7 @@ export default function DocumentDrawer() {
             onClose={handleDeleteCancel}
             deleteFunc={handleDeleteAccept}
             m1nSelectedRowsIds={[document._id]}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected documents?
           </DeleteConfirmationDialogContent>
