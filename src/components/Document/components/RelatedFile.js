@@ -762,7 +762,7 @@ export default function RelatedFile(props) {
           </div>
 
           <div style={{
-            marginRight: "30px",
+            marginRight: "15px",
           }}>
             <h4>Page</h4>
             <TextField
