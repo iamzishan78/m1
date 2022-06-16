@@ -49,6 +49,7 @@ import DocViewer from "../Shared/DocViewer";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
 import AddActivityDialog from "../ContactDetailCard/components/AddActivityDialog";
 import SummaryFields from "../ContactDetailedInfo/components/SummaryFields";
+import ContactDetailedSelector from "./components/ContactDetailSelector";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Link from "@material-ui/core/Link";
@@ -392,6 +393,7 @@ const useStyles = makeStyles((theme) => ({
   detailCardSection: {
     backgroundColor: "#fff",
     marginTop: "20px",
+    width: "100%",
   },
 }));
 
@@ -805,11 +807,11 @@ export default function ContactDetailCard(props) {
               {/*/////////// section 3 //////////// */}
               <div id="detail-div" className={classes.detailCardSection} ref={tab === 1 ? selectedTabRef : null}>
                 <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px" }}>
-                  <ContactDetailedInfo user={stateApp.user} purchaseData={purchaseData} contactData={contactData} />
+                  <ContactDetailedSelector purchaseData={purchaseData} contactData={contactData} />
                 </Grid>
               </div>
               {/*/////////// new section - lead stage //////////// */}
-              <Grid item xs={12} className={`${classes.border}`}>
+              {/* <Grid item xs={12} className={`${classes.border}`}>
                 <div className={classes.SectMargin}>
                   <Grid item xs={12} style={{ minHeight: "33px" }}>
                     <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
@@ -826,10 +828,10 @@ export default function ContactDetailCard(props) {
                     <LeadStage leadStage={contactData.leadStage ? contactData.leadStage : "New"} id={contactData._id} />
                   </Grid>
                 </div>
-              </Grid>
+              </Grid> */}
 
               {/*/////////// new section -associated interests and deals //////////// */}
-              <Grid container item xs={12} className={`${classes.border}`} style={{ padding: "23px 28px" }} spacing={0}>
+              {/* <Grid container item xs={12} className={`${classes.border}`} style={{ padding: "23px 28px" }} spacing={0}>
                 <Grid item xs={12}>
                   <h4 style={{ margin: "0 0 13px 0", float: "left" }}>Entity Associations</h4>
                 </Grid>
@@ -858,10 +860,10 @@ export default function ContactDetailCard(props) {
                     </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
+              </Grid> */}
 
               {/*/////////// Recent Activities. //////////// */}
-              <Grid item xs={12} className={`${classes.border}`}>
+              {/* <Grid item xs={12} className={`${classes.border}`}>
                 <div className={classes.SectMargin}>
                   <RecentActivities
                     header={"Recent Activities"}
@@ -871,7 +873,7 @@ export default function ContactDetailCard(props) {
                     activityLog={contactData.activityLog}
                   />
                 </div>
-              </Grid>
+              </Grid> */}
             </>
           )}
         </Grid>
