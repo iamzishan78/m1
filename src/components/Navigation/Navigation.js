@@ -43,7 +43,6 @@ import ActivitySearch from "./components/ActivitySearch";
 import ActivityDashboardSearch from "./components/ActivityDashboardSearch";
 import DocumentSearch from "./components/DocumentSearch";
 import ContactSearch from "./components/ContactSearch";
-import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
 import ContactBreadcrumbs from "./components/ContactBreadcrumbs";
 import SideNavigation from "./SideNavigation";
 import ProfileMenu from "components/Profile/ProfileMenu";
