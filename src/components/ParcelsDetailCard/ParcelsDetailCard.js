@@ -605,6 +605,8 @@ export default function ParcelsDetailCard(props) {
                 </div>,
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <SuggestedTaxOwnersTable
+                    jobType="PARCELINTERESTS"
+                    jobName="Converting potential owner to parcel owner"
                     customLayer={copy(parcelObj)}
                     parent="potentialOwnersPerParcel"
                     targetLabel="well"
