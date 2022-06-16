@@ -1,6 +1,7 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, Fragment } from "react";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import { isEmpty } from "lodash";
 
 import { AppContext } from "AppContext";
 import Drawer from "./components/Drawer";
@@ -64,7 +65,7 @@ export default function DocumentComponent() {
       {stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0 ? (
         <DocViewer width="calc(100vw - 515px)" onCloseHandler={onCloseHandler} />
       ) : (
-        <DocViewer width="calc(100vw)" onCloseHandler={onCloseHandler} />
+        !isEmpty(stateApp.viewDoc) && <DocViewer width="calc(100vw)" onCloseHandler={onCloseHandler} />
       )}
     </div>
   );
