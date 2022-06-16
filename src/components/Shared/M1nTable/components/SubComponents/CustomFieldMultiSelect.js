@@ -82,7 +82,7 @@ const CustomFieldMultiSelect = ({
     if (reason === "clear") {
       e.stopPropagation();
     }
-    if (act?.value !== "editOption") {
+    if (act?.value !== "editOption" && act?.value !== "search") {
       let newValue = value ? copy(value) : [];
       const selectedValue =
         act?.value !== defaultValue.value ? act?.value : null;
