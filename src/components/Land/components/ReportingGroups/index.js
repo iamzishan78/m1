@@ -1,9 +1,11 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { AppContext } from "AppContext";
 import { makeStyles } from "@material-ui/styles";
 import AgreementsTable from "components/Table/Agreement/AgreementsTable";
 // actions
 import ReportGroupHeader from "components/Shared/ReportGroupHeader";
+import { useDispatch } from "react-redux";
+import { setMapGridCardState } from "actions";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -21,12 +23,15 @@ const useStyles = makeStyles((theme) => ({
 export default function ReportingGroups() {
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
+  const dispatch = useDispatch();
   // redux
 
   const [filterToggle, setFilterToggle] = React.useState(false);
   // props to pass in table
   const esIndex = "shapes_flat";
   const [esFilters, setESFilters] = useState([]);
+
+  useEffect(() => { dispatch(setMapGridCardState({ searchInputValue: '' })) }, [])
 
   return (
     <div className={classes.root}>
@@ -35,6 +40,7 @@ export default function ReportingGroups() {
       <div className={classes.propertyTableContainer}>
         <AgreementsTable
           esIndex={esIndex}
+          isCheckboxSticky={true}
           header="Agreements"
           esFilters={esFilters}
           filterToggle={filterToggle}

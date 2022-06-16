@@ -126,6 +126,7 @@ import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
+import { getIndexofColumn } from "utils/helper";
 
 
 // suppress debug console logs
@@ -142,6 +143,7 @@ const useStyles = makeStyles((theme) => ({
       height: "50px",
       "& .MuiTableCell-paddingCheckbox": {
         zIndex: (props) => (typeof props.headerZIndex !== 'undefined' ? props.headerZIndex : 100),
+        paddingRight: (props) => props.dense ? '32px !important' : 'inherit',
       },
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
@@ -1211,6 +1213,7 @@ function SubTable(props) {
         // WARNING! this can break components that depend on updated component state in callbacks
         // without using refs we HAVE to re-create customBodyRender callback functions every render
         // or component state is stale
+
         if (column?.options?.customRender) {
           column.options = {
             ...column.options,
@@ -1373,7 +1376,7 @@ function SubTable(props) {
                   } = tableMeta;
                   return (
                     <>
-                      {label === "Property #" && <span style={{ padding: 10 }}>{rowData[1].number}</span>}
+                      {label === "property #" && <span style={{ padding: 10 }}>{rowData[1]}</span>}
 
                       {label === "Property Name" && <span style={{ padding: 10 }}>{rowData[1].name}</span>}
 
@@ -1518,6 +1521,7 @@ function SubTable(props) {
 
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
+
 
                   return (
                     // this whole implementation is a mesteban patch
@@ -2466,6 +2470,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+
                   if (column.isCustom && column.type === "dropdown") {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
@@ -2655,11 +2660,11 @@ function SubTable(props) {
                           <div className={classes.companyName}>{tableMeta.rowData[14]}</div>
                         </p>
                       )}
-                      {props.targetLabel === "contact" && column.name === "name" && (
+                      {/* {props.targetLabel !== "contact" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span>{tableMeta.rowData[51] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span>{tableMeta.rowData[getIndexofColumn(columns, "isPurchased")] && <RequestPageIcon color="grey" fontSize="8px" />} </span>
                         </FeatureFlag>
-                      )}
+                      )} */}
 
                       {props.targetLabel === "Unit Ownership" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
@@ -2680,9 +2685,12 @@ function SubTable(props) {
                           (val) => val.name === "isPurchased"
                         )
                         ] && (
-                          <MonetizationOnIcon
-                            className={classes.monetizationIcon}
-                          />
+                          <FeatureFlag feature={FEATURES.IDICORE}>
+                            <MonetizationOnIcon
+                              className={classes.monetizationIcon}
+
+                            />
+                          </FeatureFlag>
                         )}
                     </div>
                   );
@@ -3972,12 +3980,12 @@ function SubTable(props) {
   // }
 
 
-  if (props.header === "Deals" 
-      || props.header === "Activities"
-      || props.header === "Agreements"
-      || props.parent === "TractTable"
-      || props.parent === "TractInterestsTable"
-      ) {
+  if (props.header === "Deals"
+    || props.header === "Activities"
+    || props.header === "Agreements"
+    || props.parent === "TractTable"
+    || props.parent === "TractInterestsTable"
+  ) {
     // adds the print and export options in the Flow grid and the Activities grid
     if (props.targetLabel !== 'activitiesDashboard') {
       // options.print = true;
@@ -4043,7 +4051,7 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    if (props.header === "Contacts" || props.header === "Documents") {
+    if (props.header === "Contacts" || props.header === "Documents" || props.header === "Agreements") {
       const HeaderComponent = props.headerComponent;
       return <HeaderComponent {...props.headerProps} />;
     }
@@ -4105,7 +4113,7 @@ function SubTable(props) {
   };
 
   const CustomTableViewCol = (columnsProps) => {
-    if (props.header === "Documents") {
+    if (props.viewColumn) {
       const ViewColumn = props.viewColumn;
       return <ViewColumn {...columnsProps} {...props.viewColumnProps} tableColumns={props.columns} />;
     } else {

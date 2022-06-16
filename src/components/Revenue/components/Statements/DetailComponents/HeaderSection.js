@@ -1,6 +1,14 @@
 import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, TextField, InputAdornment, Select, MenuItem } from "@material-ui/core";
+import {
+  Grid,
+  TextField,
+  InputAdornment,
+  Select,
+  MenuItem,
+  IconButton,
+} from "@material-ui/core";
+import { Clear } from "@material-ui/icons";
 import moment from "moment";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import debounce from "lodash/debounce";
@@ -55,6 +63,13 @@ export default function HeaderFunction(props) {
 
   const { control, reset } = useForm();
 
+  useEffect(() => {
+    if (check) {
+      reset({ ...check })
+      setCheck(check);
+    }
+  }, [props.check]);
+
   const handleUpdateCheck = debounce((checkKey) => {
     setCheck({ ...check, ...checkKey })
     updateCheck({
@@ -63,13 +78,6 @@ export default function HeaderFunction(props) {
       },
     });
   }, 500);
-
-  useEffect(() => {
-    if (check) {
-      reset({ ...check })
-      setCheck(check);
-    }
-  }, [props.check]);
 
   const handleCheckAmount = () => {
     if (check) {
@@ -102,21 +110,19 @@ export default function HeaderFunction(props) {
               <div className={classes.boldLabel}>Check Number</div>
             </Grid>
             <Grid item xs={5}>
-
               <Controller
                 control={control}
                 name="checkNumber"
-                defaultValue={''}
+                defaultValue={""}
                 render={(props) => (
                   <TextField
                     margin="dense"
                     type="text"
                     variant="outlined"
                     onChange={(e) => {
-                      props.onChange(e.target.value)
-                      handleUpdateCheck({ checkNumber: e.target.value })
-                    }
-                    }
+                      props.onChange(e.target.value);
+                      handleUpdateCheck({ checkNumber: e.target.value });
+                    }}
                     value={props.value || ""}
                   />
                 )}
@@ -132,22 +138,30 @@ export default function HeaderFunction(props) {
             <Grid item xs={9}>
               <Controller
                 control={control}
-                name='payor'
+                name="payor"
                 defaultValue={check?.payor || {}}
-                render={(
-                  { onChange, value, ref },
-                ) => (
-                  <AutocompEntityNamesList variant='outlined' margin='' size='' nameAutValue={value} withContactCard={true}
+                render={({ onChange, value, ref }) => (
+                  <AutocompEntityNamesList
+                    variant="outlined"
+                    margin=""
+                    size=""
+                    nameAutValue={value}
+                    withContactCard={true}
                     setNameAutValue={(value) => {
                       if (value?._id)
                         onChange({ _id: value._id, name: value.name });
-                      else
-                        onChange({});
-                      handleUpdateCheck({ payor: { ...check.payor, name: value?.name, _id: value?._id } })
-                    }} />
+                      else onChange({});
+                      handleUpdateCheck({
+                        payor: {
+                          ...check.payor,
+                          name: value?.name,
+                          _id: value?._id,
+                        },
+                      });
+                    }}
+                  />
                 )}
               />
-
             </Grid>
           </Grid>
         </Grid>
@@ -159,30 +173,50 @@ export default function HeaderFunction(props) {
               <div className={classes.boldLabel}>Check Date</div>
             </Grid>
             <Grid item xs={6} className={classes.datePicker}>
-
               <Controller
                 control={control}
                 name="checkDate"
-                defaultValue={null}
+                defaultValue={moment(props?.value || "").format("MM/DD/YYYY")}
                 render={(props) => (
-                  <KeyboardDatePicker
-                    autoOk
-                    variant="inline"
-                    inputVariant="outlined"
-                    disableToolbar
-                    format="MM/DD/YYYY"
-                    margin="normal"
-                    id="date-picker-inline"
-                    value={props.value ? moment.utc(props.value).format("MM/DD/YYYY") : null}
-                    onChange={(date) => {
-                      props.onChange(date)
-                      handleUpdateCheck({ checkDate: date ? String(date["_d"]) : "" });
-                    }}
-                    KeyboardButtonProps={{ "aria-label": "change date" }}
-                    InputAdornmentProps={{ position: "start" }}
-                    fullWidth
-                  />
-                )}
+                    <TextField
+                      type="date"
+                      variant="outlined"
+                      margin="normal"
+                      fullWidth
+                      value={moment(props?.value || "").format("yyyy-MM-DD")}
+                      onChange={(e) => {
+                        props.onChange(e.target.value);
+                      }}
+                      onBlur={(e) => {
+                        handleUpdateCheck({
+                          checkDate: moment(e.target.value).toISOString(),
+                        });
+                      }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      disableToolbar
+                      KeyboardButtonProps={{ "aria-label": "change date" }}
+                      format="MM/DD/YYYY"
+                      PopoverProps={{ disablePortal: false }}
+                      InputProps={{
+                        endAdornment: (
+                          <IconButton
+                            onClick={(event) =>
+                              handleUpdateCheck({
+                                checkDate: null,
+                              })
+                            }
+                          >
+                            <Clear style={{ height: 22, width: 22 }} />
+                          </IconButton>
+                        ),
+                        classes: {
+                          root: classes.dateRoot,
+                        },
+                      }}
+                      />
+                  )}
               />
             </Grid>
           </Grid>
@@ -198,15 +232,17 @@ export default function HeaderFunction(props) {
               <Controller
                 control={control}
                 name="payee.number"
-                defaultValue={''}
+                defaultValue={""}
                 render={(props) => (
                   <TextField
                     margin="dense"
                     type="text"
                     variant="outlined"
                     onChange={(e) => {
-                      props.onChange(e.target.value)
-                      handleUpdateCheck({ payee: { ...check.payee, number: e.target.value } })
+                      props.onChange(e.target.value);
+                      handleUpdateCheck({
+                        payee: { ...check.payee, number: e.target.value },
+                      });
                     }}
                     value={props.value || ""}
                   />
@@ -225,19 +261,28 @@ export default function HeaderFunction(props) {
             <Grid item xs={9}>
               <Controller
                 control={control}
-                name='payee'
+                name="payee"
                 defaultValue={check?.payee || {}}
-                render={(
-                  { onChange, value, ref },
-                ) => (
-                  <AutocompEntityNamesList variant='outlined' margin='' size='' nameAutValue={value} withContactCard={true}
+                render={({ onChange, value, ref }) => (
+                  <AutocompEntityNamesList
+                    variant="outlined"
+                    margin=""
+                    size=""
+                    nameAutValue={value}
+                    withContactCard={true}
                     setNameAutValue={(value) => {
                       if (value?._id)
                         onChange({ _id: value._id, name: value.name });
-                      else
-                        onChange({});
-                      handleUpdateCheck({ payee: { ...check.payee, name: value?.name, _id: value?._id } })
-                    }} />
+                      else onChange({});
+                      handleUpdateCheck({
+                        payee: {
+                          ...check.payee,
+                          name: value?.name,
+                          _id: value?._id,
+                        },
+                      });
+                    }}
+                  />
                 )}
               />
             </Grid>
@@ -256,22 +301,43 @@ export default function HeaderFunction(props) {
                 name="depositDate"
                 defaultValue={null}
                 render={(props) => (
-                  <KeyboardDatePicker
-                    autoOk
-                    variant="inline"
-                    inputVariant="outlined"
-                    disableToolbar
-                    format="MM/DD/YYYY"
+                  <TextField
+                    type="date"
+                    variant="outlined"
                     margin="normal"
-                    id="date-picker-inline"
-                    value={props.value ? moment.utc(props.value).format("MM/DD/YYYY") : null}
-                    onChange={(date) => {
-                      props.onChange(date)
-                      handleUpdateCheck({ depositDate: date ? String(date["_d"]) : "" });
-                    }}
-                    KeyboardButtonProps={{ "aria-label": "change date" }}
-                    InputAdornmentProps={{ position: "start" }}
                     fullWidth
+                    value={moment(props?.value || "").format("yyyy-MM-DD")}
+                    onChange={(e) => {
+                      props.onChange(e.target.value);
+                    }}
+                    onBlur={(e) => {
+                      handleUpdateCheck({
+                        depositDate: moment(e.target.value).toISOString(),
+                      });
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    disableToolbar
+                    KeyboardButtonProps={{ "aria-label": "change date" }}
+                    format="MM/DD/YYYY"
+                    PopoverProps={{ disablePortal: false }}
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton
+                          onClick={(event) =>
+                            handleUpdateCheck({
+                              depositDate: null,
+                            })
+                          }
+                        >
+                          <Clear style={{ height: 22, width: 22 }} />
+                        </IconButton>
+                      ),
+                      classes: {
+                        root: classes.dateRoot,
+                      },
+                    }}
                   />
                 )}
               />
@@ -289,18 +355,20 @@ export default function HeaderFunction(props) {
               <Controller
                 control={control}
                 name="checkAmount"
-                defaultValue={''}
+                defaultValue={""}
                 render={(params) => (
                   <TextField
                     margin="dense"
                     type="text"
                     variant="outlined"
                     onChange={(e) => {
-                      params.onChange(e.target.value)
-                      handleUpdateCheck({ checkAmount: e.target.value })
+                      params.onChange(e.target.value);
+                      handleUpdateCheck({ checkAmount: e.target.value });
                     }}
                     InputProps={{
-                      startAdornment: (< InputAdornment position="start" > $</InputAdornment>)
+                      startAdornment: (
+                        <InputAdornment position="start"> $</InputAdornment>
+                      ),
                     }}
                     value={params.value || ""}
                     onBlur={() => handleCheckAmount()}
@@ -320,20 +388,19 @@ export default function HeaderFunction(props) {
               <Controller
                 control={control}
                 name="source"
-                defaultValue={''}
+                defaultValue={""}
                 render={(props) => (
-
                   <Select
                     fullWidth
                     variant="outlined"
                     value={props.value || ""}
                     onChange={(value) => {
-                      props.onChange(value)
-                      handleUpdateCheck({ source: value })
+                      props.onChange(value);
+                      handleUpdateCheck({ source: value });
                     }}
                   >
-                    <MenuItem value={'Manual Entry'}>Manual Entry</MenuItem>
-                    <MenuItem value={'Imported'}>Imported</MenuItem>
+                    <MenuItem value={"Manual Entry"}>Manual Entry</MenuItem>
+                    <MenuItem value={"Imported"}>Imported</MenuItem>
                   </Select>
                 )}
               />
@@ -347,19 +414,18 @@ export default function HeaderFunction(props) {
               <div className={classes.boldLabel}>Source ID</div>
             </Grid>
             <Grid item xs={6}>
-
               <Controller
                 control={control}
                 name="sourceId"
-                defaultValue={''}
+                defaultValue={""}
                 render={(props) => (
                   <TextField
                     margin="dense"
                     type="text"
                     variant="outlined"
                     onChange={(e) => {
-                      props.onChange(e.target.value)
-                      handleUpdateCheck({ sourceId: e.target.value })
+                      props.onChange(e.target.value);
+                      handleUpdateCheck({ sourceId: e.target.value });
                     }}
                     value={props.value || ""}
                     fullWidth

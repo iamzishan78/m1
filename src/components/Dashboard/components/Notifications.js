@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     display: "flex",
     "& svg": {
-      color: "#9d9d9d",
+      color: "#000000",
       marginRight: "7px",
     },
     "&:hover": {
