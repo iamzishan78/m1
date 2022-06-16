@@ -181,7 +181,6 @@ function MapGridCardSearch(props) {
       );
     }
     return () => {
-      debugger
       dispatch(
         setMapGridCardState({
           searchInputValue: '',
