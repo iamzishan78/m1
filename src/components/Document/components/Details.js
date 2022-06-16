@@ -11,7 +11,7 @@ import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubCom
 
 import { IconButton, TextField, withStyles } from "@material-ui/core";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
-import { KeyboardDatePicker } from "@material-ui/pickers";
+import { Clear } from "@material-ui/icons";
 import UploadZone from "../../Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
 import GetAppIcon from "@material-ui/icons/GetApp";
@@ -27,6 +27,7 @@ import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
+import moment from "moment";
 
 const filter = createFilterOptions();
 
@@ -70,6 +71,12 @@ const useStyles = makeStyles({
     color: "#757575",
     fontWeight: "normal",
     marginBottom: "8px",
+  },
+  dateRoot: {
+    color: "grey",
+    "& input": {
+      marginLeft: "20px",
+    },
   },
   uploadSubtext: {
     color: "rgb(176, 176, 176)",
@@ -406,24 +413,36 @@ export default function DocumentDetails(props) {
             }}
           >
             <h4>Document Date</h4>
-            <KeyboardDatePicker
-              className={classes.maxWidth}
-              disableToolbar
-              variant="inline"
-              format="MM/DD/YYYY"
+            <TextField
+              autoOk
+              type="date"
+              variant="outlined"
               margin="normal"
-              id="date-picker-inline"
-              value={newDocument?.dateTime ? new Date(newDocument.dateTime) : null}
-              onChange={(date) => {
-                setNewDocument({
-                  ...newDocument,
-                  dateTime: date ? String(date["_d"]) : "",
-                });
+              fullWidth
+              value={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
+              onChange={(event) => {
+                setNewDocument({ ...newDocument, dateTime: event ? String(event?.target?.value) : null })
               }}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
+
+              InputLabelProps={{
+                shrink: true,
+              }}
+              disableToolbar
+              KeyboardButtonProps={{ "aria-label": "change date" }}
+              format="MM/DD/YYYY"
+              PopoverProps={{ disablePortal: false }}
+              InputProps={{
+                endAdornment: (
+                  <IconButton onClick={(event) => setNewDocument({ ...newDocument, dateTime: null })}>
+                    <Clear style={{ height: 22, width: 22 }} />
+                  </IconButton>
+                ),
+                classes: {
+                  root: classes.dateRoot,
+                },
               }}
             />
+
           </ListItem>
 
           {/* TEMPORARY COMMENT OUT UNTIL FEATURE IS FIXED */}

@@ -2470,24 +2470,24 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
 
-                  if (column.isCustom && column.type === "dropdown") {
-                    let value = null;
-                    if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
-                      value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
-                    }
-                    return (
-                      <div style={{ minWidth: "100px" }}>
-                        <CustomFieldSelectV2
-                          dropdownOptions={column.dropdownOptions}
-                          index={tableMeta.rowIndex}
-                          column={column}
-                          value={value}
-                          onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)}
-                        />
-                      </div>
-                    );
-                  }
-                  if (column.isCustom && column.type === "multiselect") {
+                  // if (column.isCustom && column.type === "dropdown") {
+                  //   let value = null;
+                  //   if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
+                  //     value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
+                  //   }
+                  //   return (
+                  //     <div style={{ minWidth: "100px" }}>
+                  //       <CustomFieldSelectV2
+                  //         dropdownOptions={column.dropdownOptions}
+                  //         index={tableMeta.rowIndex}
+                  //         column={column}
+                  //         value={value}
+                  //         onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)}
+                  //       />
+                  //     </div>
+                  //   );
+                  // }
+                  if (column.isCustom && (column.type === "multiselect" || column.type === 'dropdown')) {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
