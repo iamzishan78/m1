@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button, Grid, Box, CircularProgress, InputAdornment, IconButton } from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -8,6 +8,7 @@ import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import { Modals } from "styles/Modal";
+import _ from "lodash";
 
 import CloseSharp from "@material-ui/icons/CloseSharp";
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
@@ -22,20 +23,64 @@ import TextField from "@material-ui/core/TextField";
 import { UPDATEBULKCONTACT } from "graphQL/useMutationUpdateBulkContact";
 import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 import { timeZoneOptions } from "components/ContactDetailCard/components/FieldContent/timeZoneList";
-import Tags from "components/Shared/Tagger";
+import { PUBLICTAGSQUERY } from "graphQL/useQueryPublicTags";
+import { BULKUPSERTTAG } from "graphQL/useMutationBulkUpsertTagOnContacts";
 
 const styles = () => ({
   topHeading: { fontWeight: "bold" },
-  loading: { position: "absolute", left: "250px", bottom: "148px", zIndex: "150" },
+  loading: {
+    position: "absolute",
+    left: "250px",
+    bottom: "148px",
+    zIndex: "150",
+  },
   dialogTitle: {
     padding: "25px",
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
   },
   fullWidth: {
-    width: '100%'
-  }
+    width: "100%",
+  },
+  chip: {
+    "& .MuiAutocomplete-inputRoot": { minHeight: "56px" },
+    "& .MuiChip-root": {
+      backgroundColor: "#ECEDED",
+      color: "#606060",
+    },
+  },
+  input: {
+    "& input": {
+      caretColor: ({ showPlusAddIcon }) =>
+        !showPlusAddIcon ? "" : "transparent",
+      color: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "#008ebf"),
+      backgroundColor: ({ showPlusAddIcon }) =>
+        !showPlusAddIcon ? "" : "#D5F4FF",
+      maxWidth: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "33px"),
+      width: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "33px"),
+      height: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "32px"),
+      fontSize: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "25px"),
+      margin: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "3px"),
+      padding: ({ showPlusAddIcon }) =>
+        !showPlusAddIcon ? "" : "0px !important",
+      borderRadius: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "50%"),
+      textAlign: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "center"),
+      cursor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "pointer"),
+      "&:hover": {
+        boxShadow: ({ showPlusAddIcon }) =>
+          !showPlusAddIcon
+            ? ""
+            : "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
+        backgroundColor: ({ showPlusAddIcon }) =>
+          !showPlusAddIcon ? "" : "rgba(0, 0, 0, 0.08)",
+      },
+      transition: ({ showPlusAddIcon }) =>
+        !showPlusAddIcon
+          ? ""
+          : "background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+    },
+  },
 });
   
 const useStyles = makeStyles(styles);
@@ -46,8 +91,15 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const modalClass = Modals();
   const [contactOwner, setContactOwner] = useState('');
   const [field, setField] = useState('');
-  const [fieldKey, setFieldKey] = useState('');
+  const [fieldKey, setFieldKey] = useState();
   const [loading, setLoading] = useState(false);
+  const [inputFocused, _setFocused] = useState(false);
+  const { laoding, error, data: publicTags } = useQuery(
+    PUBLICTAGSQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
 
   const fieldsToUpdate = [
     { title: "Campaign Name", value: "campaignName" },
@@ -77,9 +129,12 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       });
     // eslint-disable-next-line
   }, [fieldKey]);
+  
+
 
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT);
   const [updateBulkContact] = useMutation(UPDATEBULKCONTACT);
+  const [updateBulkTags] = useMutation(BULKUPSERTTAG);
 
   const onDelete = (row) => {
     setRows(rows.filter((r) => r._id !== row._id));
@@ -116,6 +171,38 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           }
         },
         err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) }
+      );
+    }
+    else if(field === "Tags"){
+      let contactIds = rows.map((row) => row._id);
+
+      updateBulkTags({
+        variables: {
+          tags: fieldKey,
+          user: stateApp.user.mongoId,
+          contactIds,
+        },
+        refetchQueries: ["getESContacts", "getESSimpleSearch"],
+        awaitRefetchQueries: true,
+      }).then(
+        (res) => {
+          if (res.data && res.data.bulkUpsertTagOnContacts) {
+            const {success, message} = res.data.bulkUpsertTagOnContacts;
+
+            if (success) {
+              Loader.successToast("contact-creation", message);
+              showSuccessMessage("Contacts Updated Successfuly");
+            } else {
+              Loader.errorToast("contact-creation", message);
+            }
+          } else {
+            Loader.errorToast("contact-creation", errorMsg);
+          }
+        },
+        (err) => {
+          console.log(err);
+          Loader.errorToast("contact-creation", errorMsg);
+        }
       );
     }
     else {
@@ -195,10 +282,13 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
         return (
           <TextField
             placeholder={"Type something..."}
+            value={fieldKey}
             onChange={({ target }) => {
-              console.log("target is ", target)
               setFieldKey(target.value)
             }}
+            autoFocus={inputFocused}
+            onFocus={() => _setFocused(true)}
+            onBlur={() => _setFocused}
             className={classes.fullWidth}
           />
         );
@@ -223,11 +313,23 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
         );
       case "Tags": 
         return (
-          <Tags
-            width="100%"
-            multipleIds={contactIds}
-            targetLabel="contact"
-            shareable={false}
+          <Autocomplete
+            multiple
+            className={classes.chip}
+            id="update-contacts-tags"
+            options={publicTags?.publicTags || []}
+            getOptionLabel={(option) => {
+              return option;
+            }}
+            value={fieldKey || []}
+            onChange={(e, newTagsArr) => setFieldKey(newTagsArr)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                className={classes.input}
+              />
+            )}
           />
         );
       // .. etc
@@ -307,7 +409,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                 disableClearable
                 options={fieldsToUpdate.map((field) => field.title)}
                 onChange={(e, field) => {
-                  console.log(" field selected ", field);
                   setFieldKey("");
                   onFieldToUpdateChange(field);
                 }}
