@@ -76,7 +76,9 @@ TabPanel.propTypes = {
 };
 
 export default function Navigation(props) {
-  const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
+  const mapGridCardActivated = useSelector(
+    ({ MapGridCard }) => MapGridCard.mapGridCardActivated
+  );
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -308,7 +310,7 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (location.pathname.startsWith("/calendar")) {
+    if (location.pathname.startsWith("/calendar/activities")) {
       setMatchActivities(true);
     } else {
       setMatchActivities(false);
@@ -350,7 +352,10 @@ export default function Navigation(props) {
   };
 
   const requestDemo = () => {
-    window.open("mailto:sales@m1neral.com?subject=Request for demo of premium features", "_blank");
+    window.open(
+      "mailto:sales@m1neral.com?subject=Request for demo of premium features",
+      "_blank"
+    );
   };
 
   const handleClickAddActivity = () => {
@@ -383,6 +388,9 @@ export default function Navigation(props) {
     return location.pathname === "/landmanagement/agreements";
   };
 
+  console.log("matchActivities", matchActivities);
+  console.log("stateApp", stateApp);
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -393,7 +401,10 @@ export default function Navigation(props) {
             [classes.appBarShift]: openDrawer,
           })}
           style={
-            location.pathname === "/contacts/activityDashboard" || location.pathname.includes("revenue") ? { background: "white" } : null
+            location.pathname === "/contacts/activityDashboard" ||
+            location.pathname.includes("revenue")
+              ? { background: "white" }
+              : null
           }
           // style={{
           //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
@@ -409,7 +420,11 @@ export default function Navigation(props) {
               )}
               {location.pathname === "/contacts/activityDashboard" && (
                 <>
-                  <ActivityDashboardSearch showLabel={location.pathname === "/contacts/activityDashboard"} />
+                  <ActivityDashboardSearch
+                    showLabel={
+                      location.pathname === "/contacts/activityDashboard"
+                    }
+                  />
                 </>
               )}
               {location.pathname === "/documents" && (
@@ -419,33 +434,49 @@ export default function Navigation(props) {
               )}
               {(location.pathname === "/contacts" ||
                 location.pathname === "/contacts/" ||
-                Object.values(contactManagementRoutes).find((item) => item.link === location.pathname && item.search)) && <ContactSearch />}
-              {location.pathname.includes("/contact/details") && <ContactBreadcrumbs />}
-
+                Object.values(contactManagementRoutes).find(
+                  (item) => item.link === location.pathname && item.search
+                )) && <ContactSearch />}
+              {location.pathname.includes("/contact/details") && (
+                <ContactBreadcrumbs />
+              )}
               {location.pathname.startsWith("/flow") && <DealSearch />}
               {location.pathname === "/dashboard" && (
-                <Typography variant="h4" style={{ color: "black", fontWeight: "bold", marginLeft: 15 }}>
+                <Typography
+                  variant="h4"
+                  style={{ color: "black", fontWeight: "bold", marginLeft: 15 }}
+                >
                   Dashboard
                 </Typography>
               )}
-
-              {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
-              {location.pathname.startsWith("/revenue") && <RevenueAppBar classes={classes} />}
-
-              {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
-
+              {location.pathname.startsWith("/land") && (
+                <LandAppBar classes={classes} />
+              )}
+              {location.pathname.startsWith("/revenue") && (
+                <RevenueAppBar classes={classes} />
+              )}
+              {matchTrack ? (
+                <CardHeader className={classes.trackHeader} />
+              ) : null}
               {(matchFind || matchDocument) && (
                 <div className={classes.search} id="searchBarDivParent">
                   <SearchBarWithToggleButton />
                 </div>
               )}
-
               <div className={classes.grow1} />
 
               {matchActivities ? (
                 <div>
-                  <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-                    <Button onClick={handleClickAddActivity} color="primary" variant="contained" startIcon={<Add />}>
+                  <div
+                    className={classes.filterTabs}
+                    style={{ paddingRight: "10px" }}
+                  >
+                    <Button
+                      onClick={handleClickAddActivity}
+                      color="primary"
+                      variant="contained"
+                      startIcon={<Add />}
+                    >
                       Add Activity
                     </Button>
                   </div>
@@ -460,7 +491,6 @@ export default function Navigation(props) {
                 </Button>
               </div>
             )} */}
-
               <ProfileMenu />
             </Toolbar>
           )}
@@ -500,10 +530,17 @@ export default function Navigation(props) {
       )}
 
       <ClickAwayListener onClickAway={() => setOpenSupportCenter(false)}>
-        <SupportCenterModal open={openSupportCenter} openContactForm={handleOpenContactForm} onClose={() => setOpenSupportCenter(false)} />
+        <SupportCenterModal
+          open={openSupportCenter}
+          openContactForm={handleOpenContactForm}
+          onClose={() => setOpenSupportCenter(false)}
+        />
       </ClickAwayListener>
 
-      <ContactFormModal open={openContactForm} onClose={() => setOpenContactForm(false)} />
+      <ContactFormModal
+        open={openContactForm}
+        onClose={() => setOpenContactForm(false)}
+      />
 
       <main className={classes.content}>
         <div className={classes.toolbar} />
