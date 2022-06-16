@@ -44,6 +44,8 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 
   useEffect(() => {
     setAgreementCopied(agreementDetails);
+    if (agreementDetails?._id && !agreementDetails?.agreementNumber)
+      dispatch(showInfoMessage("Agreement Number is required"));
   }, [agreementDetails]);
 
   useEffect(() => {
@@ -53,8 +55,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
         category: "Agreement",
       },
     });
-    if (!agreementDetails?.agreementNumber)
-      dispatch(showInfoMessage("Agreement Number is required"));
   }, []);
 
   useEffect(() => {
