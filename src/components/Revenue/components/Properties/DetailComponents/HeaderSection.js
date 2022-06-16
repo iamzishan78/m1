@@ -26,7 +26,9 @@ import { AppContext } from "AppContext";
 
 import { CONTACT_ENTITY } from "graphQL/useQueryContactEntity";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
-import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
+// import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -129,9 +131,27 @@ export default function HeaderSection(props) {
   const { control, setValue, watch, register, reset } = useForm();
   const { propertyDetails, propertyOwnerContact, setEntityToConvert } = props;
   const [entityType, setEntityType] = useState("");
+  const [searchOperator, setSearchOperator] = useState("");
 
+  const [getOperatorList, { data: operatorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
   const [getContactEntity, { data: contactEntityData }] = useLazyQuery(CONTACT_ENTITY);
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
+
+  // console.log('operatorList', operatorList, get(operatorList,'getESFilterList.hits',[])?.map((campaign) => ({
+  //   _id: campaign.key,
+  //   name: campaign.key,
+  // })))
+
+  useEffect(() => {
+    getOperatorList({
+      variables: {
+        search: searchOperator ? `${searchOperator}*` : "*",
+        filterKey: "operator.name.keyword",
+        esIndex: "properties_flat",
+        size: 50,
+      }
+    })
+  },[getOperatorList, searchOperator])
 
   useEffect(() => {
     register("state");
@@ -144,12 +164,13 @@ export default function HeaderSection(props) {
       delete data.owner;
       delete data.operator;
       let owner = {};
-      let operator = {};
+      // let operator = {};
       if (propertyOwnerContact) {
         owner = propertyOwnerContact?.find((owner) => owner.entityId === propertyDetails?.owner?._id);
-        operator = propertyOwnerContact?.find((owner) => owner.entityId === propertyDetails?.operator?._id);
+        // operator = propertyOwnerContact?.find((owner) => owner.entityId === propertyDetails?.operator?._id);
       }
-      reset({ ...data, owner: { ...owner, number: data.ownerNumber }, operator });
+      setSearchOperator(propertyDetails?.operator?.name)
+      reset({ ...data, owner: { ...owner, number: data.ownerNumber }, operator: propertyDetails?.operator?.name });
     }
   }, [propertyDetails, propertyOwnerContact]);
 
@@ -426,6 +447,27 @@ export default function HeaderSection(props) {
                 <Controller
                   control={control}
                   name="operator"
+                  render={(props) => (
+                    <AutoCompleteWithAddNew
+                      value={searchOperator}
+                      variant="outlined"
+                      onSearch={(value) => {
+                        setSearchOperator(value);
+                      }}
+                      setValue={(value) => {
+                        handleUpdate("operator", {name: value?.name});
+                        props.onChange(value);
+                      }}
+                      options={get(operatorList,'getESFilterList.hits',[])?.map((campaign) => ({
+                        _id: campaign.key,
+                        name: campaign.key,
+                      }))}
+                    />
+                  )}
+                />
+                {/* <Controller
+                  control={control}
+                  name="operator"
                   render={(params) => (
                     <ContactPaginatedAutocomplete
                       className={classes.field}
@@ -482,7 +524,7 @@ export default function HeaderSection(props) {
                       )}
                     />
                   )}
-                />
+                /> */}
               </Grid>
             </Grid>
           </Grid>

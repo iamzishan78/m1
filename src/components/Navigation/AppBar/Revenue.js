@@ -53,6 +53,33 @@ export default function RevenueAppBar(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeModule]);
 
+  const PropertyStatementAction = React.useMemo(() => {
+    return [
+      {
+        isShow: false,
+        text: `+ Add Property`,
+        action: () => {
+          addProperty({
+            variables: {
+              property: {
+                source: "Manual Entry",
+                status: "Not in Pay",
+              },
+            },
+          });
+        },
+      },
+      {
+        isShow: true,
+        text: "Import Properties",
+        action: () => {
+          history.push("/bulkupload/properties", { title: 'Properties', previousRoute: '/revenue/properties' });
+        },
+      },
+    ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeModule]);
+
   return (
     <Grid
       container
@@ -101,25 +128,30 @@ export default function RevenueAppBar(props) {
       {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title && (
         <Grid item>
           <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-            <Button
-              color="primary"
-              variant="contained"
-              startIcon={<Add />}
-              onClick={() => {
-                addProperty({
-                  variables: {
-                    property: {
-                      source: "Manual Entry",
-                      status: "Not in Pay",
-                    },
-                  },
-                });
-              }}
-            >
-              Add New Property
-            </Button>
+            <ButtonDropDown variant="contained" color="primary" options={PropertyStatementAction} />
           </div>
         </Grid>
+        // <Grid item>
+        //   <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+        //     <Button
+        //       color="primary"
+        //       variant="contained"
+        //       startIcon={<Add />}
+        //       onClick={() => {
+        //         addProperty({
+        //           variables: {
+        //             property: {
+        //               source: "Manual Entry",
+        //               status: "Not in Pay",
+        //             },
+        //           },
+        //         });
+        //       }}
+        //     >
+        //       Add New Property
+        //     </Button>
+        //   </div>
+        // </Grid>
       )}
     </Grid>
   );
