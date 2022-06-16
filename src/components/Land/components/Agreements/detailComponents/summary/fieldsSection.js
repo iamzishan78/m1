@@ -43,9 +43,13 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   }, []);
 
   useEffect(() => {
-    setAgreementCopied(agreementDetails);
+    console.log(agreementDetails)
     if (agreementDetails?._id && !agreementDetails?.agreementNumber)
       dispatch(showInfoMessage("Agreement Number is required"));
+  }, [agreementDetails?._id]);
+
+  useEffect(() => {
+    setAgreementCopied(agreementDetails);
   }, [agreementDetails]);
 
   useEffect(() => {
