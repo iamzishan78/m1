@@ -20,6 +20,9 @@ import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubCom
 
 import { AppContext } from "AppContext";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { showInfoMessage } from "actions";
 
 export default function FieldsSection({ updateAgreement, control, agreementDetails }) {
   const classes = summaryStyles();
@@ -27,6 +30,8 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   const [fieldsList, setFieldsList] = useState([]);
   const [editIconState, setEditIconState] = useState({});
   const [agreementDetailCopied, setAgreementCopied] = useState();
+  const history = useHistory();
+  const dispatch = useDispatch();
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
@@ -48,7 +53,22 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
         category: "Agreement",
       },
     });
+    if (!agreementDetails?.agreementNumber)
+      dispatch(showInfoMessage("Agreement Number is required"));
   }, []);
+
+  useEffect(() => {
+    return history.listen((location) => {
+      console.log(`You changed the page to: ${location.pathname}`);
+      if (!agreementDetails?.agreementNumber) {
+        setStateApp((state) => ({
+          ...state,
+          selectedShape: null,
+        }));
+        history.goBack();
+      }
+    });
+  }, [history, agreementDetails]);
 
   useEffect(() => {
     const customData = getCustomMetaFields(agreementDetails, metaDataRes);
