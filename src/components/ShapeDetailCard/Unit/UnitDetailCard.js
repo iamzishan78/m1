@@ -330,6 +330,7 @@ export default function UnitDetailCard(props) {
                 header={<DocumentHeader />}
                 addAble={{ type: "UnitDocument" }}
                 dense
+                targetLabel="documents"
               />
             </div>,
           ]}

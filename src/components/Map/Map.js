@@ -1570,6 +1570,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                 data = stateApp.customLayers;
             }
             if (data) {
+              if (data.length > 0)
+                if (data[0].__typename === "CustomLayer")
+                  data = data.filter((layer) => layer?.shapeJson?.geometry?.type)
               beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
               if (['Land Grid'].includes(layer.identifier)) {
                 setStateApp((stateApp) => ({
@@ -1579,7 +1582,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
               }
             }
           }
-        } else if (layer.layerType == "file layer") {
+        } else if (layer.layerType === "file layer") {
           let layerData = layersData.find((l) => l.file === layer.file);
           if (layerData.fileUrl) {
             if (layerData.layerPaintProps[0].sourceProps) {
