@@ -90,6 +90,7 @@ export default function ReportingGroups() {
           setESFilters={setESFilters}
           startPaginationAt={startPaginationAt}
           revenueSearchQuery={stateApp.revenueSearchQuery}
+          actionColumns={[" ", "Tags", "Comments", "Status"]}
         />
       </div>
     </div>

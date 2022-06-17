@@ -662,6 +662,7 @@ export default function HeaderSection(props) {
           title="Associated Wells"
           relatedObject={props.propertyId}
           relatedObjectType="Property"
+          details={propertyDetails}
         />
       </Grid>
     </Grid>
