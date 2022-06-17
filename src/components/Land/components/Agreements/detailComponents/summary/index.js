@@ -1,6 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Grid, Typography, Box, Accordion, AccordionSummary, AccordionDetails, IconButton } from "@material-ui/core";
+import _ from "lodash";
+import {
+  Grid,
+  Typography,
+  Box,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  IconButton,
+  TextField,
+} from "@material-ui/core";
 import { useStyles as summaryStyles } from "../style";
 
 import CheckIcon from "@material-ui/icons/Check";
@@ -22,6 +32,8 @@ export default function Summary({
   updateAgreement,
   shapeSummaryDetails,
 }) {
+  const [description, setDescription] = useState("");
+  const [onFocusDescription, setFocusSate] = useState(false);
   const classes = summaryStyles();
   const { control, reset } = useForm();
 
@@ -31,7 +43,15 @@ export default function Summary({
     }
   }, [reset, agreementDetails]);
 
-  const hasCustomProvision = agreementProvisions.find((provision) => !provision.templateRef);
+  useEffect(() => {
+    const description = agreementDetails?.metaDescription || "";
+
+    setDescription(description);
+  }, [agreementDetails]);
+
+  const hasCustomProvision = agreementProvisions.find(
+    (provision) => !provision.templateRef
+  );
 
   return (
     <>
@@ -43,28 +63,50 @@ export default function Summary({
                 <ExpandMoreIcon fontSize="large" />
               </IconButton>
             }
-            onClick={(e) => { }}
+            onClick={(e) => {}}
           >
-            <Grid container direction="row" justify="space-between" alignItems="center">
+            <Grid
+              container
+              direction="row"
+              justify="space-between"
+              alignItems="center"
+            >
               <Grid item className={classes.summaryHeader}>
                 <Typography variant="h5" className={classes.titleText}>
                   Summary
                 </Typography>
-                <Grid container spacing={1} justify="flex-start" className={classes.summaryHeaderIcons}>
+                <Grid
+                  container
+                  spacing={1}
+                  justify="flex-start"
+                  className={classes.summaryHeaderIcons}
+                >
                   <Grid item>
-                    <div className={classes.summaryValue}> {shapeSummaryDetails?.relatedParties || 0} </div>
+                    <div className={classes.summaryValue}>
+                      {" "}
+                      {shapeSummaryDetails?.relatedParties || 0}{" "}
+                    </div>
                     <PeopleAltIcon opacity="1.0" />
                   </Grid>
                   <Grid item>
-                    <div className={classes.summaryValue}> {shapeSummaryDetails?.shapeWells || 0} </div>
+                    <div className={classes.summaryValue}>
+                      {" "}
+                      {shapeSummaryDetails?.shapeWells || 0}{" "}
+                    </div>
                     <WellIcon opacity="1.0" small color="#757575" />
                   </Grid>
                   <Grid item>
-                    <div className={classes.summaryValue}> {shapeSummaryDetails?.shapeOwners || 0} </div>
+                    <div className={classes.summaryValue}>
+                      {" "}
+                      {shapeSummaryDetails?.shapeOwners || 0}{" "}
+                    </div>
                     <TractIcon opacity="1.0" small />
                   </Grid>
                   <Grid item>
-                    <div className={classes.summaryValue}> {shapeSummaryDetails?.documents || 0} </div>
+                    <div className={classes.summaryValue}>
+                      {" "}
+                      {shapeSummaryDetails?.documents || 0}{" "}
+                    </div>
                     <InsertDriveFileOutlinedIcon opacity="1.0" small />
                   </Grid>
                 </Grid>
@@ -72,10 +114,18 @@ export default function Summary({
             </Grid>
           </AccordionSummary>
           <AccordionDetails className={classes.accordionDetails}>
-            <Grid container direction="row" justify="space-between" style={{ padding: "10px 0px" }}>
+            <Grid
+              container
+              direction="row"
+              justify="space-between"
+              style={{ padding: "10px 0px" }}
+            >
               <Grid item className={classes.infoSection}>
                 <FieldsSection
-                  agreementDetails={{ ...agreementDetails, _id: activeAgreement?._id }}
+                  agreementDetails={{
+                    ...agreementDetails,
+                    _id: activeAgreement?._id,
+                  }}
                   updateAgreement={updateAgreement}
                   control={control}
                 />
@@ -85,25 +135,81 @@ export default function Summary({
                   <Typography className="heading">Provisions</Typography>
                   <Grid container direction="row">
                     {standardProvisions.map((provision) => {
-                      const found = agreementProvisions.find((p) => p.type === provision.type);
+                      const found = agreementProvisions.find(
+                        (p) => p.type === provision.type
+                      );
                       return (
                         <Grid item md={6} className="provisionRow">
-                          <Box display="inline-flex" className={found ? "" : "uncheck"}>
-                            {found ? <CheckIcon fontSize="medium" style={{ color: "#00b050" }} /> : <CloseIcon />}
-                            <Typography className="text">{provision.type}</Typography>
+                          <Box
+                            display="inline-flex"
+                            className={found ? "" : "uncheck"}
+                          >
+                            {found ? (
+                              <CheckIcon
+                                fontSize="medium"
+                                style={{ color: "#00b050" }}
+                              />
+                            ) : (
+                              <CloseIcon />
+                            )}
+                            <Typography className="text">
+                              {provision.type}
+                            </Typography>
                           </Box>
                         </Grid>
                       );
                     })}
                     <Grid item md={6} className="provisionRow">
-                      <Box display="inline-flex" className={hasCustomProvision ? "" : "uncheck"}>
-                        {hasCustomProvision ? <CheckIcon fontSize="medium" style={{ color: "#00b050" }} /> : <CloseIcon />}
+                      <Box
+                        display="inline-flex"
+                        className={hasCustomProvision ? "" : "uncheck"}
+                      >
+                        {hasCustomProvision ? (
+                          <CheckIcon
+                            fontSize="medium"
+                            style={{ color: "#00b050" }}
+                          />
+                        ) : (
+                          <CloseIcon />
+                        )}
                         <Typography className="text">Other</Typography>
                       </Box>
                     </Grid>
                   </Grid>
                 </Grid>
                 <Acreage properties={agreementDetails} />
+
+                <Grid item className={classes.descriptionInput}>
+                  <TextField
+                    id="outlined-multiline-static"
+                    label="Description"
+                    value={description}
+                    multiline
+                    fullWidth
+                    rows={5}
+                    variant="outlined"
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                    }}
+                    onKeyPress={(event) => {
+                      if (event.key === "Enter") {
+                        document.activeElement.blur();
+                        updateAgreement(
+                          "metaDescription", event.target.value,
+                        );
+                      }
+                    }}
+                    onFocus={() => setFocusSate(true)}
+                    onBlur={() => setFocusSate(false)}
+                    InputProps={{
+                      endAdornment: onFocusDescription === true && (
+                        <p className={classes.foodText}>
+                          <span>Return</span> to save
+                        </p>
+                      ),
+                    }}
+                  />
+                </Grid>
               </Grid>
             </Grid>
           </AccordionDetails>

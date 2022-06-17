@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
   },
   adornmentAutocomplete: {
     "& .MuiAutocomplete-endAdornment": {
-      right: "50px !important",
+      right: "60px !important",
       "& .MuiAutocomplete-clearIndicator": {
         display: "none",
       },
@@ -201,6 +201,7 @@ export default function HeaderSection(props) {
   };
 
   const updatePropertyData = (key, value) => {
+    console.log(key, value)
     updateProperty({
       variables: {
         property: {
@@ -608,7 +609,7 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-          <Grid item xs={7}>
+          {/* <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
                 <div className={classes.label}>Status</div>
@@ -630,6 +631,34 @@ export default function HeaderSection(props) {
                     >
                       <MenuItem value="In Pay">In Pay</MenuItem>
                       <MenuItem value="Not in Pay">Not in Pay</MenuItem>
+                    </Select>
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Grid> */}
+          <Grid item xs={7}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={2}>
+                <div className={classes.label}>Pay Status</div>
+              </Grid>
+              <Grid item xs={9}>
+                <Controller
+                  control={control}
+                  name="status"
+                  render={(params) => (
+                    <Select
+                      {...params}
+                      id="status-simple-select-outlined-label"
+                      variant="outlined"
+                      value={params.value ? params.value : ""}
+                      fullWidth
+                      onChange={(e) => {
+                        updatePropertyData("status", e.target.value);
+                      }}
+                    >
+                      <MenuItem value="InPay">In Pay</MenuItem>
+                      <MenuItem value="NotInPay">Not in Pay</MenuItem>
                     </Select>
                   )}
                 />

@@ -10,6 +10,8 @@ import {
   Avatar,
   FormControl,
   InputAdornment,
+  Select,
+  MenuItem
 } from "@material-ui/core";
 import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import CommentComponent from "components/Shared/CommentComponent";
@@ -20,6 +22,7 @@ import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
 import { AppContext } from "AppContext";
+import { useForm, Controller } from "react-hook-form";
 import { getRandomColor } from "components/Shared/functions/ui";
 
 const useStyles = makeStyles((theme) => ({
@@ -134,6 +137,7 @@ const useStyles = makeStyles((theme) => ({
 export default function MetadataDrawer(props) {
   const classes = useStyles();
   const history = useHistory();
+  const { control } = useForm();
   // States
   const [ownerId, setOwnerId] = useState("");
   const [description, setDescription] = useState("");
@@ -144,8 +148,7 @@ export default function MetadataDrawer(props) {
   const [, setStateApp] = useContext(AppContext);
 
   // Props
-  const { setCollapse, targetSourceId, targetLabel, viewAllDocuments, ownerTitle } = props;
-
+  const { setCollapse, targetSourceId, targetLabel, viewAllDocuments, ownerTitle, ownerPlaceHolder, isApproval, data } = props;
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
   });
@@ -339,7 +342,7 @@ export default function MetadataDrawer(props) {
                             root: classes.dealOwnerLabel,
                           },
                         }}
-                        placeholder="Assign Owner"
+                        placeholder={ownerPlaceHolder}
                         InputProps={{
                           ...params.InputProps,
                           startAdornment: (
@@ -391,6 +394,34 @@ export default function MetadataDrawer(props) {
                   />
                 </Grid>
               </Grid>
+              { isApproval &&
+                <Grid container className={classes.gridStyle}>
+                  <Grid item xs={3}>
+                    <div>Approval Status</div>
+                  </Grid>
+                  <Grid item xs={9}>
+                  <Controller
+                    control={control}
+                    name="status"
+                    render={(params) => (
+                      <Select
+                        {...params}
+                        id="status-simple-select-outlined-label"
+                        variant="outlined"
+                        value={data.approvalStatus ? data.approvalStatus : data.status ? data.status : ""}
+                        fullWidth
+                        onChange={(e) => {
+                          props.onUpdate({ 'approvalStatus': e.target.value });
+                        }}
+                      >
+                        <MenuItem value="Approved">Approved</MenuItem>
+                        <MenuItem value="Unapproved">Unapproved</MenuItem>
+                      </Select>
+                    )}
+                  />
+                  </Grid>
+                </Grid>
+              }
             </FormControl>
           </div>
           {props.showDescription && (
@@ -496,5 +527,8 @@ MetadataDrawer.defaultProps = {
   commentsWidth: "600px",
   viewAllDocuments: false,
   ownerTitle: "Owner",
-  descriptionKey: "metaDescription"
+  ownerPlaceHolder: "Assign Approver",
+  descriptionKey: "metaDescription",
+  isApproval: false,
+  data: {}
 }
