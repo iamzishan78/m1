@@ -2,13 +2,19 @@ import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Controller, useForm } from "react-hook-form";
 import Select from "react-select";
-import Grid from "@material-ui/core/Grid";
-import Dialog from "@material-ui/core/Dialog";
+
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Menu from "@material-ui/core/Menu";
+import {
+  Grid,
+  Dialog,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@material-ui/core";
 import CheckIcon from "@material-ui/icons/Check";
 import AddIcon from "@material-ui/icons/Add";
 import { arrayMoveImmutable } from "array-move";
@@ -17,6 +23,7 @@ import { AppContext } from "AppContext";
 import omit from "lodash/omit";
 
 import CloseIcon from "@material-ui/icons/Close";
+import { Delete as DeleteIcon, MoreHoriz as MoreHorizIcon } from "@material-ui/icons/";
 import IconButton from "@material-ui/core/IconButton";
 
 import List from "@material-ui/core/List";
@@ -32,12 +39,34 @@ import { GET_ALL_LIBRARY_META_DATA } from "graphQL/useQueryGetMetaData";
 import { ADD_META_DATA } from "graphQL/useMutationAddMetaData";
 import { UPDATE_META_DATA } from "graphQL/useMutationUpdateMetaData";
 import { colorPallete } from "components/Table/helpers";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 const useStyles = makeStyles((theme) => ({
   header: {
     display: "flex",
     justifyContent: "space-between",
     padding: "15px 30px",
+  },
+  dialogActions: {
+    display: "flex",
+    justifyContent: "flex-end",
+    "& svg": {
+      fill: "#d9d9d9",
+      "&:hover": {
+        fill: "#b5b2b2",
+      },
+    },
+  },
+  menu: {
+    "& .MuiListItem-root": {
+      height: "35px",
+      "& .MuiListItemIcon-root": {
+        minWidth: "30px",
+        "& .MuiSvgIcon-root": {
+          fill: "red !important",
+        },
+      },
+    },
   },
   selectedType: {
     borderBottom: "4px solid #01B0F0",
@@ -147,11 +176,14 @@ const iconOptions = [
   }
 ];
 
-const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
+const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPrefix = 'custom_data', customDataPostfix = '' }) => {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState("new");
   const [metaData, setMetaData] = useState(null);
   const [filteredMetaData, setFilteredMetaData] = useState(null);
+  const [anchorEl, setAnchorEl] = useState();
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectFilter, setSelectFilter] = useState(
     categoryOptions[categoryOptions.length - 1].value
   );
@@ -186,8 +218,12 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
     }
   }, [stateApp.selectedMeta]);
 
-  const [addMetaData, {}] = useMutation(ADD_META_DATA);
-  const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
+  const [addMetaData, { }] = useMutation(ADD_META_DATA);
+  const [updateMetaData, { }] = useMutation(UPDATE_META_DATA, {
+    refetchQueries: ["getMetaData"],
+    awaitRefetchQueries: true,
+  });
+
   const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(
     GET_ALL_LIBRARY_META_DATA
   );
@@ -235,8 +271,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
             isAddedToLibrary: values.isAddedToLibrary,
           },
         },
-        refetchQueries: ["getMetaData"],
-        awaitRefetchQueries: true,
+
       });
     } else {
       const name = values.title.replace(/ /g, "_").toLowerCase();
@@ -249,8 +284,8 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
             esKey: esKey
               ? esKey
               : values.type === "dropdown"
-              ? `custom_data.${name}`
-              : `custom_data.${values.title.replace(/ /g, "_").toLowerCase()}`,
+                ? `${customDataPrefix}.${name}${customDataPostfix}`
+                : `${customDataPrefix}.${values.title.replace(/ /g, "_").toLowerCase()}${customDataPostfix}`,
             options: {
               display: false,
               filter: true,
@@ -284,6 +319,26 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
       selectedMeta: null,
     }));
   };
+
+  const handleDeleteMetaData = () => {
+    updateMetaData({
+      variables: {
+        metaData: {
+          _id: stateApp.selectedMeta._id,
+          isDeleted: true
+        },
+      }
+    }).then((res) => {
+      handleClose()
+    });;
+  };
+
+
+  const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
+  const handleDeleteDialog = () => {
+    setAnchorEl(null);
+    setDeleteDialogOpen(true)
+  }
 
   const rippleEffectCall = (data) => {
     if (updateColumnSorting) {
@@ -324,7 +379,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
     rippleEffectCall(data);
   };
 
-  return (
+  return (<>
     <Dialog
       fullWidth
       maxWidth="md"
@@ -338,10 +393,50 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
     >
       <div>
         <div className={classes.header}>
-          {stateApp.selectedMeta ? <h3>Edit Field</h3> : <h3>Add Field</h3>}
-          <IconButton onClick={handleClose}>
-            <CloseIcon />
-          </IconButton>
+          <Grid container justify="space-between" direction="row" display="flex">
+            <Grid item>
+              {stateApp.selectedMeta ? <h3>Edit Field</h3> : <h3>Add Field</h3>}
+            </Grid>
+            <Grid item xs={6} className={classes.dialogActions}>
+              {stateApp.selectedMeta && (
+                <IconButton
+                  size="small"
+                  component="span"
+                  onClick={handleMenuClick}
+                  style={{
+                    background: "transparent",
+                    paddingLeft: "10px",
+                    align: "center",
+                  }}
+
+                >
+                  <MoreHorizIcon size="medium" />
+                </IconButton>
+              )}
+
+              <IconButton onClick={handleClose}>
+                <CloseIcon />
+              </IconButton>
+              <Menu
+                id="dealMenu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={() => setAnchorEl(null)}
+                className={classes.menu}
+                getContentAnchorEl={null}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                transformOrigin={{ vertical: "top", horizontal: "center" }}
+              >
+                <MenuItem onClick={() => handleDeleteDialog()}>
+                  <ListItemIcon>
+                    <DeleteIcon size="medium" />
+                  </ListItemIcon>
+                  <ListItemText>Delete</ListItemText>
+                </MenuItem>
+              </Menu>
+            </Grid>
+          </Grid>
         </div>
         <div className={classes.tabs}>
           {!stateApp.selectedMeta && (
@@ -559,7 +654,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
         ) : (
           <>
             <div style={{ padding: "20px 40px" }}>
-              <div style={{ width: "80%" }}>
+              <div style={{ width: "80%", height: "300px" }}>
                 <Select
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -666,6 +761,29 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey }) => {
         )}
       </div>
     </Dialog>
+    {deleteDialogOpen && (
+      <Dialog
+        className={classes.dialog}
+        open={deleteDialogOpen ? true : false}
+        onClose={() => setDeleteDialogOpen(false)}
+        fullWidth={false}
+        maxWidth="sm"
+      >
+        <DeleteConfirmationDialogContent
+          header={"Delete Metadata Field"}
+          onClose={() => setDeleteDialogOpen(false)}
+          deleteFunc={() => handleDeleteMetaData()}
+          m1nSelectedRowsIds={null}
+          setM1nSelectedRowsIndexes={() => { }}
+        >
+          <p>This will permanently delete the selected metadata field and remove it from the application.
+          </p>
+          <p>  Note: This action cannot be undone.</p>
+
+        </DeleteConfirmationDialogContent>
+      </Dialog>
+    )}
+  </>
   );
 };
 
@@ -773,104 +891,106 @@ const SortableItem = SortableElement(
     };
 
     return (
-      <ListItem
-        ContainerComponent="div"
-        style={{ zIndex: 1300, padding: 0 }}
-        onMouseOver={() => setShowDrag(true)}
-        onMouseLeave={() => setShowDrag(false)}
-      >
-        <DragHandle display={showDrag} />
-        <div className={classes.itemContainer}>
-          <div style={{ width: "100%" }}>
-            <div
-              style={{
-                marginTop: 4,
-                marginLeft: 10,
-                marginRight: 10,
-                width: 15,
-                height: 15,
-                backgroundColor: colorPallete.find(
-                  (pallete) => pallete.id === item.palleteId
-                ).color,
-                display: "inline-block",
-                borderRadius: 10,
-              }}
-              onClick={handleClick}
-            ></div>
+      <>
+        <ListItem
+          ContainerComponent="div"
+          style={{ zIndex: 1300, padding: 0 }}
+          onMouseOver={() => setShowDrag(true)}
+          onMouseLeave={() => setShowDrag(false)}
+        >
+          <DragHandle display={showDrag} />
+          <div className={classes.itemContainer}>
+            <div style={{ width: "100%" }}>
+              <div
+                style={{
+                  marginTop: 4,
+                  marginLeft: 10,
+                  marginRight: 10,
+                  width: 15,
+                  height: 15,
+                  backgroundColor: colorPallete.find(
+                    (pallete) => pallete.id === item.palleteId
+                  ).color,
+                  display: "inline-block",
+                  borderRadius: 10,
+                }}
+                onClick={handleClick}
+              ></div>
 
-            <Menu
-              id="simple-menu"
-              anchorEl={anchorEl}
-              keepMounted
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "center",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "center",
-              }}
-            >
-              <div style={{ width: "220px", padding: "0px 10px" }}>
-                {colorPallete?.map((pallet) => {
-                  return (
-                    <div
-                      style={{ display: "inline-block" }}
-                      onClick={() => {
-                        handleClose();
-                        updateIndex(itemIndex, {
-                          ...item,
-                          palleteId: pallet.id,
-                        });
-                      }}
-                    >
+              <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "center",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "center",
+                }}
+              >
+                <div style={{ width: "220px", padding: "0px 10px" }}>
+                  {colorPallete?.map((pallet) => {
+                    return (
                       <div
-                        style={{
-                          marginTop: 4,
-                          marginLeft: 5,
-                          marginRight: 5,
-                          width: 15,
-                          height: 15,
-                          backgroundColor: pallet.color,
-                          display: "inline-block",
+                        style={{ display: "inline-block" }}
+                        onClick={() => {
+                          handleClose();
+                          updateIndex(itemIndex, {
+                            ...item,
+                            palleteId: pallet.id,
+                          });
                         }}
                       >
-                        {item.color === pallet.color && (
-                          <CheckIcon style={{ fontSize: 13 }} />
-                        )}
+                        <div
+                          style={{
+                            marginTop: 4,
+                            marginLeft: 5,
+                            marginRight: 5,
+                            width: 15,
+                            height: 15,
+                            backgroundColor: pallet.color,
+                            display: "inline-block",
+                          }}
+                        >
+                          {item.color === pallet.color && (
+                            <CheckIcon style={{ fontSize: 13 }} />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </Menu>
-            <TextField
-              type="text"
-              variant="standard"
-              placeholder="Enter option"
-              style={{ width: "95%", marginTop: 3 }}
-              value={itemValue}
-              onChange={(e) => {
-                setItemValue(e.target.value);
-              }}
-              onBlur={() =>
-                updateIndex(itemIndex, { ...item, value: itemValue })
-              }
-              InputProps={{
-                disableUnderline: true,
-              }}
-            />
+                    );
+                  })}
+                </div>
+              </Menu>
+              <TextField
+                type="text"
+                variant="standard"
+                placeholder="Enter option"
+                style={{ width: "95%", marginTop: 3 }}
+                value={itemValue}
+                onChange={(e) => {
+                  setItemValue(e.target.value);
+                }}
+                onBlur={() =>
+                  updateIndex(itemIndex, { ...item, value: itemValue })
+                }
+                InputProps={{
+                  disableUnderline: true,
+                }}
+              />
+            </div>
+            <IconButton
+              style={{ padding: "4px" }}
+              onClick={() => removeIndex(itemIndex)}
+            >
+              <CloseIcon style={{ fontSize: 16, alignSelf: "center" }} />
+            </IconButton>
           </div>
-          <IconButton
-            style={{ padding: "4px" }}
-            onClick={() => removeIndex(itemIndex)}
-          >
-            <CloseIcon style={{ fontSize: 16, alignSelf: "center" }} />
-          </IconButton>
-        </div>
-      </ListItem>
+        </ListItem>
+      </>
     );
   }
 );

@@ -16,7 +16,7 @@ export default function AlertDialogSlide(props) {
     dialog: ({ quickActionsPanelState }) => ({
       "& .MuiDialog-paper": {
         position: "fixed",
-        top: "128px !important",
+        top: props.top ? props.top : '',
         left: quickActionsPanelState ? "485px !important" : "52px !important",
         width: props.width ? String(props.width) : null,
         maxWidth: "100% !important",

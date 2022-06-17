@@ -50,12 +50,12 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "number",
-    label: "Property #",
+    label: "property #",
     esKey: "property.number.keyword",
     options: {
       customHeadLabelRender: () => (
         <>
-          <div style={{ minWidth: 80 }}>Property #</div>
+          <div style={{ minWidth: 80 }}>property #</div>
         </>
       ),
       sort: true, filter: true

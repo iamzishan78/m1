@@ -167,7 +167,8 @@ const TractInterestsHeadCells = [
         options: { 
             dbName: "contact.entityDetail.name",
             sort: true, 
-            filter: true 
+            filter: true, 
+            setCellProps: () => ({ style: { minWidth: "225px" } }),
         }
     },
     {

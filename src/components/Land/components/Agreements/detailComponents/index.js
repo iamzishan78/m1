@@ -325,15 +325,7 @@ export default function DetailComponents(props) {
   const updateAgreement = (field, value, isCustom) => {
     if (agreementDetails[field] === value) return;
     const shape = activeAgreement.shape;
-    if (!isCustom) {
-      set(shape.properties, field, value);
-      shape.properties[field] = value;
-    } else {
-      const customData = { ...agreementDetails.custom_data };
-      customData[field] = value;
-      shape.properties.custom_data = customData;
-    }
-
+    set(shape, `properties.${field}`, value);
     const customLayer = {};
     let shapeLabel = shape.properties.shapeLabel;
     if (field === "agreementNumber") shapeLabel = `${value}${shape.properties.agreementName ? `-${shape.properties.agreementName}` : ""}`;

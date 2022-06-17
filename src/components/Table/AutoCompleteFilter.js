@@ -38,7 +38,8 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
             const keys = Object.keys(filtersData)
             if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits) {
                 if (custom?.isDate) {
-                    const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key: moment(new Date(hit.key)).format("MM/DD/YYYY") }))
+                    filtersData[keys[0]].hits = filtersData[keys[0]]?.hits.filter((hit) => hit.key)
+                    const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key: moment(new Date(hit.key)).format("MM/DD/YYYY"), key_as_string: hit.key_as_string || hit.key }))
                     setOptions(hits)
                     setStateApp((state, props) => {
                         return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
@@ -91,6 +92,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
             },
         });
     };
+
     return (
         <Autocomplete
             id={`filter-autocomplete-${custom?.filterLabel || label}`}
@@ -105,15 +107,15 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
             inputValue={search?.toString()}
             getOptionSelected={(option, value) => option.key === value.key}
             getOptionLabel={(option) => option?.key?.toString().replace(/^\,|\,$/gm, "")}
-            onChange={(e, value, reason) => {
-                if (reason === 'clear' || !value?.key) {
+            onChange={(e, value2, reason) => {
+                if (reason === 'clear' || !value2?.key) {
                     filterList[index].pop()
                     setSearch('')
                     setValue({})
                 } else {
-                    filterList[index][0] = typeof value.key === 'string' ? value.key.replace(/^\,|\,$/gm, "") : value.key
-                    setSearch(value.key)
-                    setValue(value)
+                    filterList[index][0] = typeof value2.key === 'string' ? value2.key.replace(/^\,|\,$/gm, "") : value2.key
+                    setSearch(value2.key)
+                    setValue(value2)
                 }
                 if (setFilters) setFilters(filterList)
                 onChange(filterList[index], index, column);
@@ -140,4 +142,4 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
             )}
         />
     );
-})  
+})

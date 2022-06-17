@@ -1,5 +1,6 @@
 import React, { useEffect, useState, Fragment, useContext } from "react";
 import moment from "moment";
+import { get } from "lodash";
 import { useLazyQuery } from "@apollo/client";
 import { Controller } from "react-hook-form";
 import { Grid, TextField, Button, Select, MenuItem, Tooltip, IconButton } from "@material-ui/core";
@@ -13,9 +14,15 @@ import keys from "components/Shared/SpreadsheetGrid/kit/keymap";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import MetaField from "components/Table/helpers/MetaField";
 import { copy } from "utils/helper";
+import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
+import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 import { AppContext } from "AppContext";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { showInfoMessage } from "actions";
 
 export default function FieldsSection({ updateAgreement, control, agreementDetails }) {
   const classes = summaryStyles();
@@ -24,6 +31,8 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   const [editIconState, setEditIconState] = useState({});
   const [agreementDetailCopied, setAgreementCopied] = useState();
   const [bonusValue, setBonusValue] = useState('');
+  const history = useHistory();
+  const dispatch = useDispatch();
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
@@ -33,6 +42,12 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
       console.log("blur triggered");
     });
   }, []);
+
+  useEffect(() => {
+    console.log(agreementDetails)
+    if (agreementDetails?._id && !agreementDetails?.agreementNumber)
+      dispatch(showInfoMessage("Agreement Number is required"));
+  }, [agreementDetails?._id]);
 
   useEffect(() => {
     setAgreementCopied(agreementDetails);
@@ -48,29 +63,20 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   }, []);
 
   useEffect(() => {
-    const metaData = metaDataRes?.getMetaData?.metaData;
-    const customData = [];
-    if (metaData && agreementDetails?.custom_data) {
-      Object.keys(agreementDetails?.custom_data).forEach((key) => {
-        const meta = metaData.find((m) => m.name === key);
-        if (meta) {
-          customData.push({
-            ...meta,
-            title: meta.label,
-            key: meta.name,
-            options: meta.dropdownOptions.map((o) => ({
-              label: o.value,
-              value: o.value,
-            })),
-          });
-        } else if (agreementDetails?.custom_data_arr) {
-          const meta = agreementDetails.custom_data_arr.find((m) => m.key === key);
-          if (meta) {
-            customData.push({ ...meta, title: meta.key, label: meta.key, key: meta.key });
-          }
-        }
-      });
-    }
+    return history.listen((location) => {
+      console.log(`You changed the page to: ${location.pathname}`);
+      if (!agreementDetails?.agreementNumber) {
+        setStateApp((state) => ({
+          ...state,
+          selectedShape: null,
+        }));
+        history.goBack();
+      }
+    });
+  }, [history, agreementDetails]);
+
+  useEffect(() => {
+    const customData = getCustomMetaFields(agreementDetails, metaDataRes);
     setFieldsList([...fieldsData(stateApp.user), ...customData]);
   }, [metaDataRes, agreementDetails]);
 
@@ -133,7 +139,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
             </Grid>
             <Grid item xs={8}>
               <Fragment key={index}>
-                {(field.type === "text" || field.type === "dropdown" || field.type === "multiselect") && (
+                {(field.type === "text" || field.type === "dropdown" || field.type === "multiselect" || field.type === "select") && (
                   <Controller
                     control={control}
                     name={field.key}
@@ -185,6 +191,20 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                             />
                           )}
                           {field.type === "dropdown" && (
+                            <CustomFieldSelect
+                              fullWidth
+                              variant="outlined"
+                              index={`field-${index}`}
+                              dropdownOptions={field.options}
+                              column={field}
+                              onCustomKeyChange={(value) => {
+                                offClickHandler(field.key, value, field.isCustom)
+                              }}
+                              disabled={field.disabled}
+                              value={get(agreementDetails, `${field.key}`, "")}
+                            />
+                          )}
+                          {field.type === "select" && (
                             <Select
                               {...params}
                               id={`field-${index}`}
@@ -194,12 +214,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               InputLabelProps={{
                                 shrink: true,
                               }}
-                              multiple={field.type === "multiselect"}
                               onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
-                              value={
-                                !field.isCustom ? agreementDetails?.[field.key] ?? "" : agreementDetails?.custom_data?.[field.key] ?? []
-                              }
                               disabled={field.disabled}
+                              value={get(agreementDetails, `${field.key}`, "")}
                             >
                               {field.options.map((option) => (
                                 <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
@@ -207,23 +224,18 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                             </Select>
                           )}
                           {field.type === "multiselect" && (
-                            <Select
-                              {...params}
+                            <CustomFieldMultiSelect
                               id={`field-${index}`}
                               variant="outlined"
                               margin="dense"
                               fullWidth
-                              InputLabelProps={{
-                                shrink: true,
+                              dropdownOptions={field.options}
+                              column={field}
+                              value={get(agreementDetails, `${field.key}`) ?? []}
+                              onCustomKeyChange={(value) => {
+                                offClickHandler(field.key, value, field.isCustom);
                               }}
-                              multiple={field.type === "multiselect"}
-                              onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
-                              value={agreementDetails?.custom_data?.[field.key] ?? []}
-                            >
-                              {field.options.map((option) => (
-                                <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
-                              ))}
-                            </Select>
+                            />
                           )}
                         </Fragment>
                       );
@@ -239,10 +251,10 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     fullWidth
                     value={agreementDetailCopied?.[field.key] ? moment(agreementDetailCopied[field.key]).format("yyyy-MM-DD") : ""}
                     onChange={(event) => {
-                      setAgreementCopied({ ...agreementDetailCopied, [field.key]: event ? String(event?.target?.value) : "" })
+                      setAgreementCopied({ ...agreementDetailCopied, [field.key]: event ? String(event?.target?.value) : null })
                     }}
                     onBlur={(event) => {
-                      offClickHandler(field.key, event ? String(event?.target?.value) : "");
+                      offClickHandler(field.key, event ? String(event?.target?.value) : null);
                     }}
                     InputLabelProps={{
                       shrink: true,
@@ -253,7 +265,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     PopoverProps={{ disablePortal: false }}
                     InputProps={{
                       endAdornment: (
-                        <IconButton onClick={(event) => offClickHandler(field.key, "")}>
+                        <IconButton onClick={(event) => offClickHandler(field.key, null)}>
                           <Clear style={{ height: 22, width: 22 }} />
                         </IconButton>
                       ),
@@ -280,7 +292,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
           </Grid>
         </Grid>
       ))}
-      {stateApp.showFieldModal && <MetaField columns={[]} category="Agreement" updateColumnSorting={addAgreementCustomData} />}
+      {stateApp.showFieldModal && <MetaField customDataPrefix='shapeJson.properties.custom_data' customDataPostfix='.keyword' columns={[]} category="Agreement" updateColumnSorting={addAgreementCustomData} />}
       {stateApp.user?.rolePrivileges !== "READ_ONLY" && (
         <Grid item>
           <Button

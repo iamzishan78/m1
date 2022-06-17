@@ -56,7 +56,7 @@ export const formatTaxOwners = (owners, formData) => {
       // contact
       ...(owners[i].isContact)
         ? { _id: owners[i].isContact }
-        : { 
+        : {
           isPrimary: owners[i].isPrimary,
           "entityDetail.name": newFullName,
           "entityDetail.firstName": firstName,
@@ -119,7 +119,7 @@ export const getSearchQuery = (extendSearchQuery, filters) => {
 };
 
 export const getTermsFilters = (filters) => {
- return Object.entries(filters).filter(([key, value]) => {
+  return Object.entries(filters).filter(([key, value]) => {
     return Array.isArray(value) && value.length > 0
   }).map(([key, value]) => {
     return {
@@ -195,7 +195,7 @@ export const getMapFilters = (stateNav, searchInput, gridPolygonString, format) 
     state: stateNav.stateName ? [stateNav.stateName] : [],
     county: stateNav.countyName ? [stateNav.countyName] : [],
   });
-  
+
   const termsFilters = (format === "simple")
     ? getTermsFilters({
       wellType: stateNav.typeName,
@@ -316,17 +316,21 @@ export const formattingGridView = (view) => {
   return view;
 }
 
+export const getIndexofColumn = (columns, columnName) => {
+  return columns.indexOf(columns.find(c => c.name === columnName));
+}
+
 export const getAppliedFilters = (filters, columns, filtersData) => {
   const appliedFilters = []
   filters.forEach((val, index) => {
     if (val.length > 0) {
-      if(columns[index].custom?.isDate){
+      if (columns[index].custom?.isDate) {
         const filterData = filtersData[columns[index].name];
         const data = filterData.find(f => f.key === val[0])
         appliedFilters.push({ field: columns[index].esKey, value: data.key_as_string });
-      }else{
+      } else {
         appliedFilters.push({ field: columns[index].esKey, value: val[0] })
-      }  
+      }
     }
   })
   return appliedFilters
@@ -335,7 +339,7 @@ export const getAppliedFilters = (filters, columns, filtersData) => {
 export const getFilterList = (columns) => {
   const filterList = [];
   columns.forEach((column) => {
-    if(column.options.filterList) {
+    if (column.options.filterList) {
       filterList.push(column.options.filterList)
     }
   })
@@ -343,8 +347,7 @@ export const getFilterList = (columns) => {
 }
 
 export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFromDate, setToDate, minDate) => {
-  console.log(minDate);
-  if(onChange){
+  if (onChange) {
     onChange(date)
   }
   // let minDateValue;
@@ -398,8 +401,8 @@ export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFrom
       setToDate(`${moment().format('yyyy-MM-DD')}`);
       break;
     case CUSTOM_DATES.LAST_WEEK:
-      setFromDate(`${moment().startOf('week').subtract(7,'days').format("yyyy-MM-DD")}`);
-      setToDate(`${moment().startOf('week').subtract(1,'days').format('yyyy-MM-DD')}`);
+      setFromDate(`${moment().startOf('week').subtract(7, 'days').format("yyyy-MM-DD")}`);
+      setToDate(`${moment().startOf('week').subtract(1, 'days').format('yyyy-MM-DD')}`);
       break;
     default:
       setFromDate(`${moment().startOf('month').format('yyyy-MM-DD')}`);

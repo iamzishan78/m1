@@ -98,8 +98,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerType
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
-
-      reset({
+      const owner = {
         working_interest: working_interest || null,
         royalty_interest: royalty_interest || null,
         orri: orri || null,
@@ -111,7 +110,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         contactStatus: contactStatus || null,
         ownerType,
         customLayer,
-      });
+      }
+
+      setNewOwner({ ...newOwner, ...owner });
+      reset(owner);
     }
   }, [selectedRow]);
 
@@ -167,7 +169,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     }
   }, [nameAutValue])
 
-  console.log('values', getValues());
   const emptyStates = () => {
     setNewOwner({
       working_interest: null,
@@ -278,13 +279,13 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   };
 
   const isNetAcresChanged = (netAcres, stateUpdate = true) => {
-    const isChanged = calculateNetAcres(newOwner.mineral_interest) !== netAcres;
+    const isChanged = calculateNetAcres(getValues().mineral_interest) !== netAcres;
     if (stateUpdate) {
       setChangedKeys({ ...changedKeys, netAcres: isChanged });
     } else return isChanged;
   };
   const isNRAChanged = (nra, stateUpdate = true) => {
-    let calculatedNRA = calculateNRA(newOwner.royalty_interest, newOwner.orri);
+    let calculatedNRA = calculateNRA(getValues().royalty_interest, getValues().orri);
     if (nra === "NaN") nra = null;
     if (stateUpdate) {
       setChangedKeys({ ...changedKeys, nra: calculatedNRA !== nra });
@@ -452,17 +453,22 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 <Controller
                   control={control}
                   name="nra"
-                  render={(props) => (
+                  render={(params) => (
                     <TextField
                       size="small"
                       type="number"
-                      value={props.value}
-                      inputRef={props.ref}
+                      value={params.value}
+                      inputRef={params.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        props.onChange(e.target.value);
-                        setValue("nra", calculateNRA(e.target.value, getValues().orri));
+                        const value = addTrailingZeros(e.target.value);
+                        params.onChange(e.target.value);
+                        setNewOwner({
+                          ...newOwner,
+                          nra: value || null,
+                        });
                       }}
+                      className={changedKeys.nra ? classes.baseValueChanged : classes.maxWidth}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
@@ -470,7 +476,12 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                               <IconButton
                                 aria-label="toggle royality-acres"
                                 onClick={() => {
-                                  setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri));
+                                  const nra = calculateNRA(getValues().royalty_interest, getValues().orri);
+                                  setValue("nra", nra);
+                                  setNewOwner({
+                                    ...newOwner,
+                                    nra,
+                                  });
                                 }}
                               >
                                 <AutorenewIcon />
