@@ -2296,7 +2296,8 @@ function SubTable(props) {
               },
             };
             break;
-          case "status":
+
+          case "status" && props.parent !== "Documents":
             column.options = {
               ...column.options,
               customBodyRender: (value, tableMeta) => {
