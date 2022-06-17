@@ -111,10 +111,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descriptorObject, relatedObjectType }) => {
+const AssociatedWellsList = ({
+  title,
+  relatedObject,
+  relatedObjectType,
+  details
+}) => {
   // Initials
   let history = useHistory();
   const classes = useStyles();
+
+  const moduleName = details?.name ?? "";
 
   // States
   const [search, setSearch] = useState("");
@@ -177,7 +184,14 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
 
   // sending to wells page
   const goToWell = (well) => {
-    history.push(`/map/wells/${well?.id.toUpperCase()}`, { showWellBreadcrumb: true });
+    const id = well?.id ?? well.globalWell;
+    history.push(`/map/wells/${id.toUpperCase()}`, {
+      showWellBreadcrumb: true,
+      breadcrumbs: [
+        { title: "Properties", url: "/revenue/properties" },
+        { title: moduleName, url: `/revenue/property/details/${relatedObject}` },
+      ],
+    });
     setStateApp({ ...stateApp, DocumentDrawer: false, selectedDocument: {} });
   };
 
@@ -193,6 +207,7 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
       setWells(wells);
     }
   };
+
   return (
     <>
       <Grid container direction="row" justify="space-between" alignItems="center" className={classes.rootPadding}>
@@ -324,6 +339,7 @@ export default function AssociatedWellsProvider(props) {
   );
 }
 
-AssociatedWellsProvider.defaultProps = {
+AssociatedWellsList.defaultProps = {
   title: "Wells",
+  details: {}
 };

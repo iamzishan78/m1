@@ -1582,7 +1582,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
               }
             }
           }
-        } else if (layer.layerType == "file layer") {
+        } else if (layer.layerType === "file layer") {
           let layerData = layersData.find((l) => l.file === layer.file);
           if (layerData.fileUrl) {
             if (layerData.layerPaintProps[0].sourceProps) {
