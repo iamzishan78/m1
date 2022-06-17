@@ -540,6 +540,10 @@ export default function DetailComponents(props) {
               data={agreementDetails}
               targetLabel="Shape"
               descriptionKey="description"
+              ownerPlaceHolder='Assign Approver'
+              ownerTitle="Approver"
+              isApproval={true}
+              onUpdate={(data) => updateAgreement('approvalStatus', data.status)}
             />
           </div>
         )}
