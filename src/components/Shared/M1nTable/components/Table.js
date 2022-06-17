@@ -126,6 +126,7 @@ import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
+import { getIndexofColumn } from "utils/helper";
 
 
 // suppress debug console logs
@@ -142,6 +143,7 @@ const useStyles = makeStyles((theme) => ({
       height: "50px",
       "& .MuiTableCell-paddingCheckbox": {
         zIndex: (props) => (typeof props.headerZIndex !== 'undefined' ? props.headerZIndex : 100),
+        paddingRight: (props) => props.dense ? '32px !important' : 'inherit',
       },
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
@@ -160,7 +162,7 @@ const useStyles = makeStyles((theme) => ({
       alignItems: "center !important",
     },
     "& .MuiButton-text": {
-      padding: "5px 12px",
+      // padding: "5px 12px",
     },
     "& .Mui-disabled": {
       backgroundColor: "transparent",
@@ -190,14 +192,17 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#D4E8F1",
       margin: "0 2px",
     },
+    "& .MuiTableHead-root:nth-child(1) .MuiButton-label": { minWidth: '103px' },
     "& .MuiTableHead-root": {
       "& th": {
         backgroundColor: "#F2F2F2",
         zIndex: "auto",
         padding: (props) => (props.dense ? "10px 10px 10px 0px" : null),
         "& button": {
+          minWidth: 'max-content',
           "& .MuiButton-label": {
             textAlign: "left",
+            display: 'block'
           },
         },
       },
@@ -1211,6 +1216,7 @@ function SubTable(props) {
         // WARNING! this can break components that depend on updated component state in callbacks
         // without using refs we HAVE to re-create customBodyRender callback functions every render
         // or component state is stale
+
         if (column?.options?.customRender) {
           column.options = {
             ...column.options,
@@ -1518,6 +1524,7 @@ function SubTable(props) {
 
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
+
 
                   return (
                     // this whole implementation is a mesteban patch
@@ -2315,7 +2322,13 @@ function SubTable(props) {
                     )}
                     {props.parent === "RevenuePropertiesTable" && (
                       <>
-                        {value?.toLowerCase() === 'approved' && (
+                        {value?.toLowerCase() === 'notinpay' && (
+                            'Not in Pay'
+                        )}
+                        {value?.toLowerCase() === 'inpay' && (
+                            'In Pay'
+                        )}
+                        {/* {value?.toLowerCase() === 'approved' && (
                           <div className="flex justifyCenter alignCenter success w-100">
                             <CheckCircle size={20} />
                           </div>
@@ -2324,7 +2337,7 @@ function SubTable(props) {
                           <div className={`flex justifyCenter alignCenter w-100 ${classes.customWarning}`}>
                             <WarningIcon size={20} />
                           </div>
-                        )}
+                        )} */}
                       </>
                     )}
                     {props.parent === "AgreementsTable" && (
@@ -2342,6 +2355,31 @@ function SubTable(props) {
               },
             };
             break;
+          case "approvalStatus":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value, tableMeta) => {
+                return (
+                  <>
+                    {props.parent === "RevenuePropertiesTable" && (
+                      <>
+                        {value?.toLowerCase() === 'approved' && (
+                          <div className="flex justifyCenter alignCenter success w-100">
+                            <CheckCircle size={20} />
+                          </div>
+                        )}
+                        {value?.toLowerCase() === 'unapproved' && (
+                          <div className={`flex justifyCenter alignCenter w-100 ${classes.customWarning}`}>
+                            <WarningIcon size={20} />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </>
+                );
+              },
+            };
+          break;
           case "tractName":
             column.options = {
               ...column.options,
@@ -2466,6 +2504,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+
                   if (column.isCustom && column.type === "dropdown") {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
@@ -2655,11 +2694,11 @@ function SubTable(props) {
                           <div className={classes.companyName}>{tableMeta.rowData[14]}</div>
                         </p>
                       )}
-                      {props.targetLabel === "contact" && column.name === "name" && (
+                      {/* {props.targetLabel !== "contact" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span>{tableMeta.rowData[51] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span>{tableMeta.rowData[getIndexofColumn(columns, "isPurchased")] && <RequestPageIcon color="grey" fontSize="8px" />} </span>
                         </FeatureFlag>
-                      )}
+                      )} */}
 
                       {props.targetLabel === "Unit Ownership" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
@@ -2680,9 +2719,12 @@ function SubTable(props) {
                           (val) => val.name === "isPurchased"
                         )
                         ] && (
-                          <MonetizationOnIcon
-                            className={classes.monetizationIcon}
-                          />
+                          <FeatureFlag feature={FEATURES.IDICORE}>
+                            <MonetizationOnIcon
+                              className={classes.monetizationIcon}
+
+                            />
+                          </FeatureFlag>
                         )}
                     </div>
                   );

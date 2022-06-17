@@ -253,6 +253,8 @@ export default function UnitDetailCard(props) {
                     parent="potentialOwnersPerUnit"
                     shapeType="Unit"
                     targetLabel="well"
+                    jobType="SHAPEOWNER"
+                    jobName="Convert potential owner to unit owner"
                     header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
                     setSelectedTab={setSelectedTab}
                     setIsFiltered={setIsFiltered}

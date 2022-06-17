@@ -91,7 +91,7 @@ export default function DealsDetailCard(props) {
 
   return (
     <Grid container className={classes.gridWidthScroll} spacing={0}>
-      <DocViewer />
+      <DocViewer width="72vw" />
       <div className={classes.dealContainer}>
         <DealDisplay dealSum={activeSum} dealType="ACTIVE" dealLength={activeDeals.length} color="rgb(143,229,210)" />
         <DealDisplay dealSum={wonSum} dealType="CLOSED" dealLength={wonDeals.length} color="rgb(223,168,89)" />

@@ -128,15 +128,18 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   const useStyles = makeStyles({
     adornmentAutocomplete: {
       "& .MuiAutocomplete-endAdornment": {
-        right: "50px !important",
+        right: "60px !important",
         "& .MuiAutocomplete-clearIndicator": {
+          // display: "none"
+        },
+        "& .MuiAutocomplete-popupIndicator": {
           display: "none"
-        }
+        },
       },
     },
     contactCardIcon: {
       position: "absolute",
-      right: "6px !important",
+      right: "12px !important",
       marginTop: "4px !important"
     },
     inputRoot: props.darkCard
