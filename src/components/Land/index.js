@@ -8,6 +8,7 @@ import { replaceLinkId } from "components/Shared/functions";
 
 //Actions
 import { toggleQuickActionsPanel, setActiveModule } from "store/actions/commonActions";
+import { padEnd } from "lodash";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
   // PORTFOLIO: {
@@ -83,3 +84,4 @@ export default function Revenue() {
     </QuickActionPanel>
   );
 }
+
