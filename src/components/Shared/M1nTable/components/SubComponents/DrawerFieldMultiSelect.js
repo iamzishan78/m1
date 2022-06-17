@@ -11,13 +11,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import { AppContext } from "AppContext";
 import { copy } from "components/Shared/functions";
 
-import { useTheme, alpha } from '@material-ui/core/styles';
-import Popper from '@material-ui/core/Popper';
-import SettingsIcon from '@material-ui/icons/Settings';
-import DoneIcon from '@material-ui/icons/Done';
-import ButtonBase from '@material-ui/core/ButtonBase';
-import InputBase from '@material-ui/core/InputBase';
-
+import { useTheme } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   noBorder: {
@@ -54,11 +48,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const TestFieldMultiSelect = ({
+const DrawerFieldMultiSelect = ({
   index,
   onCustomKeyChange,
   dropdownOptions,
   column,
+  value,
   fullWidth,
   variant
 }) => {
@@ -76,7 +71,6 @@ const TestFieldMultiSelect = ({
   // related to menu
   const [anchorEl, setAnchorEl] = useState(null);
   const anchorRef = React.useRef(null);
-  const [value, setValue] = useState([labels[1], labels[11]]);
   const [pendingValue, setPendingValue] = useState([]);
   const theme = useTheme();
 
@@ -113,7 +107,7 @@ const TestFieldMultiSelect = ({
     }
   };
 
-
+  console.log("showOptions : ", showOptions)
   const handleClick = (event) => {
     //setPendingValue(value);
     if (anchorEl === null)
@@ -121,45 +115,52 @@ const TestFieldMultiSelect = ({
     else setAnchorEl(null);
   };
 
-  const handleClose = (event, reason) => {
-    if (reason === 'toggleInput') {
-      return;
-    }
-    setValue(pendingValue);
-    if (anchorEl) {
-      anchorEl.focus();
-    }
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-  console.log("open : ", open)
-  const id = 'simple-menu'
-
+  const params = {}
   return (
     <React.Fragment>
       <div className={classes.root}>
-        <ButtonBase
-          disableRipple
-          className={classes.button}
-          aria-describedby={id}
+        <div
+          style={{
+            height: "100%",
+            display: "flex",
+            width: "409px",
+            "align-items": "center",
+          }}
+          // ref={params.InputProps.ref}
+          className={`${classes.textDiv}`}
           onClick={handleClick}
         >
-          <span>Labels</span>
-          <SettingsIcon />
-        </ButtonBase>
-        {/* {value.map((label) => (
-          <div
-            key={label.name}
-            className={classes.tag}
-            style={{
-              backgroundColor: label.color,
-              color: theme.palette.getContrastText(label.color),
-            }}
+          <Grid container spacing={0} {...params.inputProps}>
+            {/* <Grid container item xs={10}>
+                  <span
+                    id={`colorText_${index}_${column.name}`}
+                    style={{
+                      display: "flex",
+                      width: "max-content",
+                      flexWrap: "wrap",
+                    }}
+                  ></span>
+                </Grid> */}
+            {/* <Grid container item xs={10}> */}
+            <MultSelectValues
+              value={value}
+              dropdownOptions={dropdownOptions}
+              onCustomKeyChange={onCustomKeyChange}
+            />
+            {/* </Grid> */}
+          </Grid>
+          <InputAdornment
+            style={{ "margin-left": -4, "margin-right": 8, cursor: "pointer" }}
+            position="end"
+            visibility={showIcon ? "visible" : "hidden"}
           >
-            {label.name}
-          </div>
-        ))} */}
+
+            <ArrowDropDownIcon
+              visibility={fullWidth || showIcon ? "visible" : "hidden"}
+            />
+            {/* {params.InputProps.endAdornment.props.children[1]} */}
+          </InputAdornment>
+        </div>
       </div>
 
       <Menu
@@ -172,16 +173,19 @@ const TestFieldMultiSelect = ({
           horizontal: "middle",
         }}
         PaperProps={{
-          // style: {
-          //   left: "10%",
-          //   transform: "translateX(105%) translateY(-10%)",
-          // },
+          style: {
+            width: "409px",
+            height: "400px",
+            marginTop: '120px',
+            // left: "10%",
+            // transform: "translateX(105%) translateY(-10%)",
+          },
         }}
         open={Boolean(anchorEl)}
         // onClose={() => setAgreementAnchorEl(null)}
         className={classes.parcelPopover}
       >
-        <div className={classes.header}>Apply labels to this pull request</div>
+        {/* <div className={classes.header}>Apply labels to this pull request</div> */}
 
         <div
           style={{
@@ -238,9 +242,6 @@ const TestFieldMultiSelect = ({
                 value: op.value,
               }))}
 
-            onChange={(event, newValue) => {
-              setPendingValue(newValue);
-            }}
             getOptionLabel={(option) => (option?.label ? option.label : "")}
             getOptionSelected={(option) => {
               return option.value === value || option.value === value?.value;
@@ -391,116 +392,59 @@ const TestFieldMultiSelect = ({
             }}
 
             renderInput={(params) => (
-              <InputBase
+
+              <div
+                style={{
+                  height: "100%",
+                  display: "flex",
+                  "align-items": "center",
+                }}
                 ref={params.InputProps.ref}
-                inputProps={params.inputProps}
-                autoFocus
-                className={classes.inputBase}
-              />
+                className={`${classes.textDiv}`}
+                onClick={() => setShowOptions(!showOptions)}
+              >
+                <Grid container spacing={0} {...params.inputProps}>
+                  {/* <Grid container item xs={10}>
+                  <span
+                    id={`colorText_${index}_${column.name}`}
+                    style={{
+                      display: "flex",
+                      width: "max-content",
+                      flexWrap: "wrap",
+                    }}
+                  ></span>
+                </Grid> */}
+                  {/* <Grid container item xs={10}> */}
+                  <MultSelectValues
+                    value={value}
+                    dropdownOptions={dropdownOptions}
+                    onCustomKeyChange={onCustomKeyChange}
+                  />
+                  {/* </Grid> */}
+                </Grid>
+                <InputAdornment
+                  style={{ "margin-left": -4, "margin-right": 8 }}
+                  position="end"
+                  visibility={showIcon ? "visible" : "visible"}
+                  onClick={() => setAnchorEl(null)}
+                >
+                  {params.InputProps.endAdornment.props.children[1]}
+                </InputAdornment>
+              </div>
             )}
+
+            onChange={onChange}
           />
 
         </div>
       </Menu>
 
-    </React.Fragment>
+    </React.Fragment >
   );
 };
 
-export default TestFieldMultiSelect;
+export default DrawerFieldMultiSelect;
 
-const labels = [
-  {
-    name: 'good first issue',
-    color: '#7057ff',
-    description: 'Good for newcomers',
-  },
-  {
-    name: 'help wanted',
-    color: '#008672',
-    description: 'Extra attention is needed',
-  },
-  {
-    name: 'priority: critical',
-    color: '#b60205',
-    description: '',
-  },
-  {
-    name: 'priority: high',
-    color: '#d93f0b',
-    description: '',
-  },
-  {
-    name: 'priority: low',
-    color: '#0e8a16',
-    description: '',
-  },
-  {
-    name: 'priority: medium',
-    color: '#fbca04',
-    description: '',
-  },
-  {
-    name: "status: can't reproduce",
-    color: '#fec1c1',
-    description: '',
-  },
-  {
-    name: 'status: confirmed',
-    color: '#215cea',
-    description: '',
-  },
-  {
-    name: 'status: duplicate',
-    color: '#cfd3d7',
-    description: 'This issue or pull request already exists',
-  },
-  {
-    name: 'status: needs information',
-    color: '#fef2c0',
-    description: '',
-  },
-  {
-    name: 'status: wont do/fix',
-    color: '#eeeeee',
-    description: 'This will not be worked on',
-  },
-  {
-    name: 'type: bug',
-    color: '#d73a4a',
-    description: "Something isn't working",
-  },
-  {
-    name: 'type: discussion',
-    color: '#d4c5f9',
-    description: '',
-  },
-  {
-    name: 'type: documentation',
-    color: '#006b75',
-    description: '',
-  },
-  {
-    name: 'type: enhancement',
-    color: '#84b6eb',
-    description: '',
-  },
-  {
-    name: 'type: epic',
-    color: '#3e4b9e',
-    description: 'A theme of work that contain sub-tasks',
-  },
-  {
-    name: 'type: feature request',
-    color: '#fbca04',
-    description: 'New feature or request',
-  },
-  {
-    name: 'type: question',
-    color: '#d876e3',
-    description: 'Further information is requested',
-  },
-];
 
 const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange }) => {
   return (

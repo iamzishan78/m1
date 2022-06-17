@@ -28,7 +28,7 @@ import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
 import moment from "moment";
-import TestFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/TestFieldMultiSelect";
+import DrawerFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/DrawerFieldMultiSelect";
 
 const filter = createFilterOptions();
 
@@ -608,7 +608,7 @@ export default function DocumentDetails(props) {
                     </ListItem>
                   )}
                   {meta.type === "multiselect" && (
-                    <span
+                    <ListItem
                       style={{
                         flexDirection: "column",
                         justifyContent: "start",
@@ -616,7 +616,7 @@ export default function DocumentDetails(props) {
                       }}
                     >
                       <h4>{meta.label}</h4>
-                      <TestFieldMultiSelect
+                      <CustomFieldMultiSelect
                         fullWidth
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}
@@ -631,7 +631,23 @@ export default function DocumentDetails(props) {
                           });
                         }}
                       />
-                    </span>
+
+                      {/* <DrawerFieldMultiSelect
+                        fullWidth
+                        index={"documentTable"}
+                        dropdownOptions={meta.dropdownOptions}
+                        column={meta}
+                        value={value}
+                        onCustomKeyChange={(value) => {
+                          const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
+                          custom_data[meta.name] = value ? value : null; // empty string is falsey so null
+                          setNewDocument({
+                            ...newDocument,
+                            custom_data,
+                          });
+                        }}
+                      /> */}
+                    </ListItem>
                   )}
                 </Fragment>
               );
