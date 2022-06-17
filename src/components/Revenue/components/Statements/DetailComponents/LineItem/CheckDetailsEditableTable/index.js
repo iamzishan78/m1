@@ -201,7 +201,7 @@ function CheckDetailsEditableTable(props) {
                     variables: {
                         property: {
                             source: 'Manual Entry',
-                            status: 'Unapproved',
+                            approvalStatus: 'Unapproved',
                             number: value
                         }
                     },

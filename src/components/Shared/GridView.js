@@ -214,7 +214,7 @@ function GridView({
     setShowViewModal(false);
   };
   return (
-    <LeftDialog open width="325px" top={`${module === 'Agreements' ? '382px !important' : '138px !important'}`} handleClickDialogClose={handleClose}>
+    <LeftDialog open width="325px" top="138px !important" handleClickDialogClose={handleClose}>
       {!loading ? (
         <div className={classes.container}>
           <div style={{ flex: "0 1 auto" }}>

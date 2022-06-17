@@ -639,6 +639,11 @@ export default function DetailComponents(props) {
               data={agreementDetails}
               targetLabel="Shape"
               showDescription={false}
+              descriptionKey="description"
+              ownerPlaceHolder='Assign Approver'
+              ownerTitle="Approver"
+              isApproval={true}
+              onUpdate={(data) => updateAgreement('approvalStatus', data.status)}
             />
           </div>
         )}

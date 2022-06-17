@@ -108,8 +108,8 @@ export const TableESHOC = (Component) => {
         const tableData = elasticData?.getESSimpleSearch || {}
 
         useEffect(() => {
-            if (tableMeta?.gridView) {
-                const category = tableMeta?.gridView.category
+            if (tableMeta?.selectedGridView) {
+                const category = tableMeta?.typeKeyword?.metaModule
                 getMetaData({
                     variables: {
                         user: stateApp.user?.mongoId,
@@ -183,7 +183,7 @@ export const TableESHOC = (Component) => {
             dispatch(
                 updateUserGridViewSettingAction.STARTED({
                     userGridViewSetting: {
-                        module: `${tableMeta?.gridView.category}s`,
+                        module: tableMeta?.typeKeyword?.gridViewCategory,
                         gridView: tableMeta.selectedGridView._id,
                         gridViewPatch: {
                             filters: selectedFilters.current,
@@ -235,6 +235,11 @@ export const TableESHOC = (Component) => {
 
         useEffect(() => {
             if (tableMeta?.esIndex) {
+
+                if (tableMeta.modifySelectedGridView) {
+                    tableMeta.modifySelectedGridView(tableMeta.selectedGridView)
+                }
+
                 getESSimpleSearch({
                     variables: {
                         index: tableMeta.esIndex,
@@ -350,15 +355,8 @@ export const TableESHOC = (Component) => {
                     let filterList = Array.isArray(column.esKey) ? undefined : [];
                     if (value && typeof value !== "object") {
                         if (column.custom?.isDate && columns?.length) {
-                            if (stateApp?.filtersData[columns[index].name]) {
-                                const filterData = stateApp.filtersData[columns[index].name];
-                                const data = filterData?.find(f => (column.custom.key_as_string && f.key_as_string === value) || (!column.custom.key_as_string && f.key === value))
-                                if (data) value = data.key
-                            }
-                            else {
-                                if (value !== "")
-                                    value = moment(new Date(value)).format("MM/DD/YYYY")
-                            }
+                            if (value !== "")
+                                value = moment(new Date(value)).format("MM/DD/YYYY")
 
                         }
                         filterList = [value];
@@ -569,6 +567,7 @@ export const TableESHOC = (Component) => {
                 }
             })
             if (selectedGridView?.filters && selectedGridView.type === 'Default') {
+
                 selectedGridView.filters.forEach(filter => {
                     pageESVariables.variables.filters.push(filter)
                 })
@@ -615,7 +614,7 @@ export const TableESHOC = (Component) => {
                 if (tableMeta?.selectedGridView)
                     dispatch(updateUserGridViewSettingAction.STARTED({
                         userGridViewSetting: {
-                            module: `${tableMeta?.gridView.category}s`,
+                            module: tableMeta?.typeKeyword?.gridViewCategory,
                             gridView: tableMeta.selectedGridView._id,
                             gridViewPatch: {
                                 filters: activeFiltersRef.current,
@@ -767,7 +766,7 @@ export const TableESHOC = (Component) => {
         }
 
         return (
-            <div className={classes.container}>
+            <span className={classes.container2}>
                 <Component
                     {...props}
                     rows={rows}
@@ -813,7 +812,7 @@ export const TableESHOC = (Component) => {
                     initialFilters={initialFilters}
                     setInitialFilters={setInitialFilters}
                 />
-            </div>
+            </span>
         );
     };
 };
