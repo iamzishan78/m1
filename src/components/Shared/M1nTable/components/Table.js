@@ -143,6 +143,7 @@ const useStyles = makeStyles((theme) => ({
       height: "50px",
       "& .MuiTableCell-paddingCheckbox": {
         zIndex: (props) => (typeof props.headerZIndex !== 'undefined' ? props.headerZIndex : 100),
+        paddingRight: (props) => props.dense ? '32px !important' : 'inherit',
       },
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
