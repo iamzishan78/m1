@@ -387,9 +387,6 @@ export default function Navigation(props) {
     return location.pathname === "/landmanagement/agreements";
   };
 
-  console.log("matchActivities", matchActivities);
-  console.log("stateApp", stateApp);
-
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -401,14 +398,14 @@ export default function Navigation(props) {
           })}
           style={
             location.pathname === "/contacts/activityDashboard" ||
-            location.pathname.includes("revenue")
+              location.pathname.includes("revenue")
               ? { background: "white" }
               : null
           }
-          // style={{
-          //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
-          //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
-          // }}
+        // style={{
+        //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
+        //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
+        // }}
         >
           {stateApp.user && (
             <Toolbar>
@@ -449,7 +446,7 @@ export default function Navigation(props) {
                 </Typography>
               )}
               {location.pathname.startsWith("/land") && (
-                <LandAppBar classes={classes} />
+                <LandAppBar classes={classes} user={stateApp.user} />
               )}
               {location.pathname.startsWith("/revenue") && (
                 <RevenueAppBar classes={classes} />
