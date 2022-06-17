@@ -28,6 +28,7 @@ import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
 import moment from "moment";
+import TestFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/TestFieldMultiSelect";
 
 const filter = createFilterOptions();
 
@@ -546,7 +547,7 @@ export default function DocumentDetails(props) {
             </div>
           </ListItem>
 
-          {metaData.map((meta) => {
+          {metaData.map((meta, index) => {
             const value = newDocument.custom_data[meta.name];
             let isInView = false;
             if (stateApp.selectedView && stateApp.selectedView?.columns?.length > 0) {
@@ -607,7 +608,7 @@ export default function DocumentDetails(props) {
                     </ListItem>
                   )}
                   {meta.type === "multiselect" && (
-                    <ListItem
+                    <span
                       style={{
                         flexDirection: "column",
                         justifyContent: "start",
@@ -615,7 +616,7 @@ export default function DocumentDetails(props) {
                       }}
                     >
                       <h4>{meta.label}</h4>
-                      <CustomFieldMultiSelect
+                      <TestFieldMultiSelect
                         fullWidth
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}
@@ -630,7 +631,7 @@ export default function DocumentDetails(props) {
                           });
                         }}
                       />
-                    </ListItem>
+                    </span>
                   )}
                 </Fragment>
               );
