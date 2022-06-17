@@ -45,8 +45,10 @@ const RevenuePropertiesHeadCells = [
     name: "payorName",
     label: "Operator",
     esKey: "operator.name.keyword",
-    options: { sort: true, filter: true ,
-      setCellProps: () => ({ style: { minWidth: "225px" } }),},
+    options: {
+      sort: true, filter: true,
+      setCellProps: () => ({ style: { minWidth: "225px" } }),
+    },
 
   },
   {

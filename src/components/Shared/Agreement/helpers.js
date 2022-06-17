@@ -20,6 +20,10 @@ export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
     //? Meta data which is attached to this agreement
     metaData.forEach(md => {
         const { isCustom, ...meta } = md;
+        // Checking if meta data key exists in agreement detail
+        // then it should be ignored from meta data
+        // e.g. internal_company
+        if (md.name.replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase()) in agreementDetails) return;
         if (md.name in get(agreementDetails, "custom_data", [])) {
             attachedMetaData.push(meta);
         } else {

@@ -141,7 +141,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function DocumentDrawer() {
+export default function DocumentDrawer(props) {
   const classes = useStyles();
   const [activePanel, setPanel] = useState("Home");
   const [fileData, setFileData] = useState(null);
@@ -155,11 +155,12 @@ export default function DocumentDrawer() {
 
   // Fetching wells from descriptor
   useEffect(() => {
-    getWellsFromDocument({
-      variables: {
-        descriptorObject: stateApp.selectedDocument._id,
-      },
-    });
+    if (!props.isRelatedDocuments)
+      getWellsFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument._id,
+        },
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.selectedDocument._id]);
 
@@ -366,8 +367,8 @@ export default function DocumentDrawer() {
           </div>
         </div>
         <div className={classes.contentRoot}>
-          <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} />
-          <div style={{ marginRight: "60px" }}>
+          {!props.isRelatedDocuments && <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} />}
+          <div style={{ marginRight: !props.isRelatedDocuments ? "60px" : "" }}>
             {activePanel === "Home" && (
               <DetailsPanel
                 newDocument={newDocument}
@@ -404,7 +405,7 @@ export default function DocumentDrawer() {
             onClose={handleDeleteCancel}
             deleteFunc={handleDeleteAccept}
             m1nSelectedRowsIds={[document._id]}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected documents?
           </DeleteConfirmationDialogContent>
@@ -420,3 +421,7 @@ export default function DocumentDrawer() {
     </div>
   );
 }
+
+Drawer.defaultProps = {
+  isRelatedDocuments: false,
+};
