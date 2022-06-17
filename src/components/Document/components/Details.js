@@ -416,7 +416,7 @@ export default function DocumentDetails(props) {
             <TextField
               autoOk
               type="date"
-              variant="outlined"
+              //variant="outlined"
               margin="normal"
               fullWidth
               value={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}

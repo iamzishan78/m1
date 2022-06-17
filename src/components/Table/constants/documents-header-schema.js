@@ -99,6 +99,7 @@ const DocumentsHeadCells = [
     label: "Instrument #",
     options: {
       filter: true,
+      setCellProps: () => ({ style: { minWidth: "175px" } }),
     },
   },
   // TEMPORARY COMMENT OUT UNTIL FEATURE IS FIXED
