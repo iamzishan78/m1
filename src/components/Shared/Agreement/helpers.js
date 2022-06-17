@@ -1,4 +1,3 @@
-import hr from "date-fns/esm/locale/hr/index.js";
 import { get } from "lodash";
 
 export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
