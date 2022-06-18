@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container } from "@material-ui/core";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHeader from "components/Table/constants/revenue-properties-header-schema";
 
@@ -19,12 +19,7 @@ function RevenuePropertiesTable(props) {
   const { esIndex, setESFilters } = props;
   // redux
   const dispatch = useDispatch();
-  const propertiesReportGroup = useSelector(
-    ({ Revenue }) => Revenue.propertiesReportGroup
-  );
   const [refetchData, setRefetchData] = useState(false)
-
-  console.log("-*-*-* propertiesReportGroup -*-*-*-*", propertiesReportGroup);
 
   const esFilters = props.esFilters ? props.esFilters : []
 

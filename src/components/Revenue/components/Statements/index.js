@@ -2,9 +2,7 @@ import React, { useState, useEffect, useContext, useCallback } from "react";
 import { AppContext } from "AppContext";
 import AnalyticsCards from "components/Revenue/components/Statements/AnalyticsCards";
 import RevenueStatementTable from "components/Table/Revenue/RevenueStatementTable";
-import { ADD_CHECK_DATA } from "graphQL/useMutationAddCheck";
 import LastCheckDateFilter from "../Common/LastCheckDateFilter";
-import { useMutation } from "@apollo/client";
 
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -49,6 +47,10 @@ export default function RevenueStatements() {
     }
   }, []);
 
+   const setESFilters = (newFilter) => {
+    ESFilters(newFilter);
+   };
+
   const onGettingStatements = useCallback((statementsList) => {
     setStatements(statementsList);
   }, []);
@@ -59,7 +61,13 @@ export default function RevenueStatements() {
 
   return (
     <>
-      <LastCheckDateFilter field={"checkDate"} esIndex={'checks_flat'} setESFilters={ESFilters} setFilterToggle={setFilterToggle} filterToggle={filterToggle} />
+      <LastCheckDateFilter
+        field={"checkDate"}
+        esIndex={"checks_flat"}
+        setESFilters={setESFilters}
+        setFilterToggle={setFilterToggle}
+        filterToggle={filterToggle}
+      />
 
       <div style={{ padding: 40 }}>
         <AnalyticsCards
