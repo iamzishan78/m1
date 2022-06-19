@@ -29,6 +29,10 @@ const useStyles = makeStyles((theme) => ({
         },
       },
     },
+
+    '& .MuiDrawer-paperAnchorRight': {
+      overflow: "hidden",
+    }
   },
 }));
 

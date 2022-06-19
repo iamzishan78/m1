@@ -593,6 +593,8 @@ export default function DocumentDetails(props) {
                       <ReactSelectField
                         isSingleSelect={true}
                         fullWidth
+                        showUnderline
+                        showChevron={true}
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}
                         column={meta}
@@ -635,6 +637,8 @@ export default function DocumentDetails(props) {
 
                       <ReactSelectField
                         fullWidth
+                        showUnderline
+                        showChevron={true}
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}
                         column={meta}

@@ -145,9 +145,7 @@ export default function DocumentDrawer() {
   const classes = useStyles();
   const [activePanel, setPanel] = useState("Home");
   const [fileData, setFileData] = useState(null);
-  const [state, setState] = React.useState({
-    right: false,
-  });
+  // const [state, setState] = useState({right: false});
   const [anchorEl, setAnchorEl] = useState();
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
@@ -289,11 +287,8 @@ export default function DocumentDrawer() {
   }, [stateApp.selectedDocument]);
 
   const toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
-      return;
-    }
-
-    setState({ ...state, [anchor]: open });
+    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) { return; }
+    // setState({ ...state, [anchor]: open });
   };
 
   const handleMenuClick = (event) => {

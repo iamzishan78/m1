@@ -15,6 +15,11 @@ import { Grid } from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    "&:hover": {
+      borderBottom: ({ showUnderline }) => showUnderline ? '2px solid rgba(0, 0, 0, 0.87) !important' : 'inherit'
+    },
+  },
   noBorder: {
     border: "none",
   },
@@ -47,6 +52,9 @@ const useStyles = makeStyles((theme) => ({
       padding: "0px !important",
     },
   },
+  reactSelect: {
+    '& .react-select__option': { backgroundColor: 'red' }
+  }
 }));
 
 const ReactSelectField = ({
@@ -57,10 +65,13 @@ const ReactSelectField = ({
   column,
   value,
   fullWidth,
+  showUnderline,
+  showChevron,
   variant
 }) => {
-  const classes = useStyles();
+  const classes = useStyles({ showUnderline, showChevron });
   const [isOpen, setIsOpen] = useState(false);
+  const [showIcon, setShowIcon] = useState(showChevron);
 
   const [options, setOptions] = useState([]);
   const [, setStateApp] = useContext(AppContext);
@@ -199,6 +210,7 @@ const ReactSelectField = ({
 
 
   const { colors } = defaultTheme;
+
   useEffect(() => {
     onFilterChange("");
   }, [dropdownOptions]);
@@ -267,14 +279,6 @@ const ReactSelectField = ({
       </Svg>
     </div>
   );
-  const ChevronDown = () => (
-    <Svg style={{ marginRight: -6 }}>
-      <path
-        d="M8.292 10.293a1.009 1.009 0 0 0 0 1.419l2.939 2.965c.218.215.5.322.779.322s.556-.107.769-.322l2.93-2.955a1.01 1.01 0 0 0 0-1.419.987.987 0 0 0-1.406 0l-2.298 2.317-2.307-2.327a.99.99 0 0 0-1.406 0z"
-        fill="currentColor"
-        fillRule="evenodd"
-      />
-    </Svg>)
 
   const toggleOpen = () => {
 
@@ -310,26 +314,33 @@ const ReactSelectField = ({
     menu: () => ({ boxShadow: 'inset 0 1px 0 rgba(0, 0, 0, 0.1)' }),
     menuPortal: base => ({ ...base, zIndex: 9999, backgroundColor: "white" })
   };
+
+
+  const filterOptions = (candidate, input
+  ) => {
+    if (candidate.value === "editOption") {
+      return true;
+    }
+    return candidate.value.toLowerCase().includes(input)
+  };
   return (
     <>
       <div
+        className={classes.root}
         style={{
           padding: "0px",
           minHeight: "50px",
           width: "100%",
           border: variant === 'outlined' ? "1px solid rgba(0, 0, 0, 0.23)" : "none",
           borderBottom: fullWidth ? "1px solid rgba(0, 0, 0, 0.23)" : "none",
-          borderRadius: "6px"
         }}
+        onMouseLeave={(e) => { setIsOpen(false); setShowIcon(showChevron || false) }}
+        onMouseEnter={(e) => { setShowIcon(true) }}
         onClick={(e) => e.stopPropagation()}
-        onMouseLeave={(e) => {
-          setIsOpen(false);
-        }}
       >
-
-
         <Dropdown
           isOpen={isOpen}
+
           onClose={() => toggleOpen()}
           target={
             <div
@@ -350,14 +361,23 @@ const ReactSelectField = ({
                   isSingleSelect={isSingleSelect}
                 />
               </span>
-              {
-                isOpen ? (<ArrowDropUpIcon style={{ cursor: "pointer" }} />) : (<ArrowDropDownIcon style={{ cursor: "pointer" }} />)
-              }
+              <>
+                {
+                  showIcon && <>
+                    {
+                      isOpen ? (<ArrowDropUpIcon style={{ cursor: "pointer", color: 'rgba(0, 0, 0, 0.54)' }} />) : (<ArrowDropDownIcon style={{ cursor: "pointer", color: 'rgba(0, 0, 0, 0.54)' }} />)
+                    }
+                  </>
+                }
+              </>
+
             </div>
 
           }
         >
           <Select
+            classNamePrefix='react-select'
+            className='react-select-container'
             autoFocus
             backspaceRemovesValue={false}
             controlShouldRenderValue={false}
@@ -372,12 +392,12 @@ const ReactSelectField = ({
                 value: op.value,
                 label: op.value,
               }))}
+            filterOption={filterOptions}
             components={{ DropdownIndicator, IndicatorSeparator: null, Option }}
             placeholder="Search..."
             styles={selectStyles}
             tabSelectsValue={false}
             value={value}
-
             menuPortalTarget={document.body}
           />
 
