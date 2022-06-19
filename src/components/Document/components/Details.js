@@ -266,7 +266,7 @@ export default function DocumentDetails(props) {
 
   const sortFields = (gridViews) => {
     const metaData = [];
-    if (stateApp.selectedView.columns?.length > 0) {
+    if (stateApp.selectedView?.columns?.length > 0) {
       for (let i = 0; i < stateApp.selectedView.columns?.length; i++) {
         const data = gridViews.find((view) => view.name === stateApp.selectedView.columns[i].name);
         if (data) {
@@ -306,7 +306,7 @@ export default function DocumentDetails(props) {
             custom_data: newDocument.custom_data,
           },
         },
-        refetchQueries: ["getESDocuments"],
+        refetchQueries: ["getESDocuments", "getParcelFiles", "getParcelFilesCount"],
         awaitRefetchQueries: true,
       }).then(() => {
         setFileData(null);

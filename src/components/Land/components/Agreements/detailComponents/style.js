@@ -44,6 +44,8 @@ export const useStyles = makeStyles((theme) => ({
     "& .MuiOutlinedInput-root": {
       height: `46px !important`,
       borderRadius: "6px !important",
+      paddingTop: `0 !important`,
+      paddingBottom: `0 !important`,
     },
   },
   gridStyle: {
@@ -90,7 +92,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   adornmentAutocomplete: {
     "& .MuiAutocomplete-endAdornment": {
-      right: "50px !important",
+      right: "60px !important",
       "& .MuiAutocomplete-clearIndicator": {
         display: "none",
       },
@@ -179,6 +181,37 @@ export const useStyles = makeStyles((theme) => ({
       marginTop: "20px",
     },
   },
+
+  descriptionInput: {
+    width: "100%",
+    margin: "20px 0 0",
+    "& .MuiTextField-root": {
+      backgroundColor: "#fffcdc",
+      borderRadius: 4,
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "none",
+    },
+    "& textarea": {
+      height: "323px",
+    },
+  },
+
+  foodText: {
+    position: "absolute",
+    bottom: "20px",
+    right: "0px",
+    fontSize: "10px",
+    color: "#6e6e6e",
+    margin: "0 !important",
+    textAlign: "right",
+    height: "0",
+    paddingRight: "10px",
+    "& span": {
+      fontWeight: "bold",
+    },
+  },
+
   pencilIcon: {
     cursor: "pointer",
   },

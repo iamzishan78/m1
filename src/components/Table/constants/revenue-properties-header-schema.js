@@ -7,13 +7,13 @@ const RevenuePropertiesHeadCells = [
 
   {
     name: "number",
-    label: "Property#",
+    label: "Property",
     esKey: "number.keyword",
     options: {
       customRender: (value, tableMeta) => {
         const splitNumber = value?.split("_");
         const styles = {
-          minWidth: 150,
+          minWidth: 225,
           fontWeight: 600,
           color: "#17aadd",
           cursor: "pointer",
@@ -26,7 +26,8 @@ const RevenuePropertiesHeadCells = [
             }}
             style={styles}
           >
-            {splitNumber?.[0]}
+            {/* {splitNumber?.[0]} */}
+            {splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]}
           </p>
         );
       },
@@ -38,14 +39,17 @@ const RevenuePropertiesHeadCells = [
     name: "name",
     label: "Property Name",
     esKey: "name.keyword",
-    options: { sort: true, filter: true },
+    options: { sort: true, filter: true, display: false },
   },
   {
     name: "payorName",
     label: "Operator",
     esKey: "operator.name.keyword",
-    options: { sort: true, filter: true },
-    style: { minWidth: 150 },
+    options: {
+      sort: true, filter: true,
+      setCellProps: () => ({ style: { minWidth: "225px" } }),
+    },
+
   },
   {
     name: "state",
@@ -87,8 +91,14 @@ const RevenuePropertiesHeadCells = [
     options: {
       sort: true,
       filter: true,
-      setCellProps: () => ({ style: { minWidth: "230px", maxWidth: "230px" } }),
+      setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }),
     },
+  },
+  {
+    name: "status",
+    label: "Pay Status",
+    esKey: "status.keyword",
+    options: { sort: true, filter: true },
   },
   // {
   //   name: "type",
@@ -158,9 +168,9 @@ const RevenuePropertiesHeadCells = [
     },
   },
   {
-    name: "status",
+    name: "approvalStatus",
     label: "Status",
-    esKey: "status.keyword",
+    esKey: "approvalStatus.keyword",
     options: {
       customHeadLabelRender: () => (
         <>
