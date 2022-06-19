@@ -394,7 +394,7 @@ const ReactSelectField = ({
               }))}
             filterOption={filterOptions}
             components={{ DropdownIndicator, IndicatorSeparator: null, Option }}
-            placeholder="Search..."
+            placeholder="Search for value"
             styles={selectStyles}
             tabSelectsValue={false}
             value={value}
