@@ -616,23 +616,7 @@ export default function DocumentDetails(props) {
                       }}
                     >
                       <h4>{meta.label}</h4>
-                      <CustomFieldMultiSelect
-                        fullWidth
-                        index={"documentTable"}
-                        dropdownOptions={meta.dropdownOptions}
-                        column={meta}
-                        value={value}
-                        onCustomKeyChange={(value) => {
-                          const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
-                          custom_data[meta.name] = value ? value : null; // empty string is falsey so null
-                          setNewDocument({
-                            ...newDocument,
-                            custom_data,
-                          });
-                        }}
-                      />
-
-                      {/* <DrawerFieldMultiSelect
+                      {/* <CustomFieldMultiSelect
                         fullWidth
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}
@@ -647,6 +631,22 @@ export default function DocumentDetails(props) {
                           });
                         }}
                       /> */}
+
+                      <DrawerFieldMultiSelect
+                        fullWidth
+                        index={"documentTable"}
+                        dropdownOptions={meta.dropdownOptions}
+                        column={meta}
+                        value={value}
+                        onCustomKeyChange={(value) => {
+                          const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
+                          custom_data[meta.name] = value ? value : null; // empty string is falsey so null
+                          setNewDocument({
+                            ...newDocument,
+                            custom_data,
+                          });
+                        }}
+                      />
                     </ListItem>
                   )}
                 </Fragment>

@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
+import { colorPallete } from "components/Table/helpers";
+import CloseIcon from "@material-ui/icons/Close";
+import ArrowDropDownIcon from "@material-ui/lab/es/internal/svg-icons/ArrowDropDown";
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+
 import ReactDOM from "react-dom";
 import { Component } from 'react';
 
@@ -6,6 +11,7 @@ import Button from "@material-ui/core/Button";
 
 import Select from 'react-select';
 import { defaultTheme } from 'react-select';
+import { copy } from "components/Shared/functions";
 
 
 const DrawerFieldMultiSelect = ({
@@ -19,18 +25,27 @@ const DrawerFieldMultiSelect = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [sValue, setsValue] = useState(undefined);
+  const [options, setOptions] = useState([]);
+  const [search, setSearch] = useState("");
 
-  const options = [
-    { value: '1', label: 'Item 1' },
-    { value: '2', label: 'Item 2' },
-    { value: '3', label: 'Item 3' },
-    { value: '4', label: 'Item 4' },
-    { value: '5', label: 'Item 5' },
-    { value: '6', label: 'Item 6' },
-    { value: '7', label: 'Item 7' },
-  ]
+  const defaultValue = {
+    label: "----",
+    value: "----",
+  };
 
   const { colors } = defaultTheme;
+
+  useEffect(() => {
+    onFilterChange("");
+  }, [dropdownOptions]);
+
+  const onFilterChange = (search) => {
+    const options = JSON.parse(JSON.stringify(dropdownOptions.filter(op => op.value?.toLowerCase()?.includes(search.toLowerCase()))));
+    options.unshift(defaultValue);
+    options.push({ label: "edit", value: "editOption" });
+    setOptions(options);
+    setSearch(search);
+  }
 
   const Menu = props => {
     const shadow = 'hsla(218, 50%, 10%, 0.1)';
@@ -111,6 +126,7 @@ const DrawerFieldMultiSelect = ({
   const selectStyles = {
     control: provided => ({ ...provided, minWidth: 240, margin: 8 }),
     menu: () => ({ boxShadow: 'inset 0 1px 0 rgba(0, 0, 0, 0.1)' }),
+    menuPortal: base => ({ ...base, zIndex: 9999, backgroundColor: "white" })
   };
   return (
     <>
@@ -118,13 +134,36 @@ const DrawerFieldMultiSelect = ({
         isOpen={isOpen}
         onClose={() => toggleOpen()}
         target={
-          <Button
-            iconAfter={<ChevronDown />}
+          <div
             onClick={() => toggleOpen()}
-            isSelected={isOpen}
+            style={{
+              width: "393px",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
           >
-            {sValue ? `State: ${sValue.label}` : 'Select a State'}
-          </Button>
+            <span class="colorText">
+              <MultSelectValues
+                value={value}
+                dropdownOptions={dropdownOptions}
+                onCustomKeyChange={onCustomKeyChange}
+              />
+            </span>
+            {
+              isOpen ? (<ArrowDropUpIcon style={{ cursor: "pointer" }} />) : (<ArrowDropDownIcon style={{ cursor: "pointer" }} />)
+            }
+
+
+            {/* <Item>Item 3</Item> */}
+          </div>
+          // <Button
+          //  
+          // >
+          //   <span class="colorText">----</span>
+          //   <ArrowDropDownIcon />
+          // </Button>
         }
       >
         <Select
@@ -136,11 +175,19 @@ const DrawerFieldMultiSelect = ({
           isClearable={false}
           menuIsOpen
           onChange={onSelectChange}
-          options={options}
+          options={options
+            .filter((op) => typeof op.value === "string")
+            .map((op) => ({
+              ...op,
+              label: op.value,
+              value: op.value,
+            }))}
           placeholder="Search..."
           styles={selectStyles}
           tabSelectsValue={false}
           value={sValue}
+
+          menuPortalTarget={document.body}
         />
       </Dropdown>
     </>
@@ -149,4 +196,50 @@ const DrawerFieldMultiSelect = ({
 
 export default DrawerFieldMultiSelect;
 
+const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange }) => {
+  return (
+    <span
+      style={{
+        display: "flex",
+        width: "max-content",
+        flexWrap: "wrap",
+        maxWidth: "380px"
+      }}
+    >
+      {value && value.length > 0 && Array.isArray(value) ? (
+        value.map((v, index) => {
+          const opt = dropdownOptions.find((opt) => opt.value === v);
+          const pallete = colorPallete.find(
+            (pallete) => pallete.id === opt?.palleteId
+          );
+          return (
+            <span
+              class="colorText"
+              style={{
+                whiteSpace: "nowrap",
+                backgroundColor: pallete?.color,
+                color: pallete?.textColor,
+                display: "flex",
+                margin: '0px 2px'
+              }}
+            >
+              <span>{v}</span>
+              <CloseIcon
+                style={{ fontSize: 13, marginLeft: 10 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const newValue = copy(value)
+                  newValue.splice(index, 1);
 
+                  onCustomKeyChange(newValue);
+                }}
+              />
+            </span>
+          );
+        })
+      ) : (
+        <span class="colorText">----</span>
+      )}
+    </span>
+  );
+};
