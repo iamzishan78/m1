@@ -373,7 +373,7 @@ const ReactSelectField = ({
                 label: op.value,
               }))}
             components={{ DropdownIndicator, IndicatorSeparator: null, Option }}
-            placeholder="Search..."
+            placeholder="Search for value"
             styles={selectStyles}
             tabSelectsValue={false}
             value={value}
