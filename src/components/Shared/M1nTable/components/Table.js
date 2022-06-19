@@ -127,6 +127,7 @@ import AddActivityDialog from "components/ContactDetailCard/components/AddActivi
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
 import { getIndexofColumn } from "utils/helper";
+import ReactSelectField from "./SubComponents/ReactSelectField";
 
 
 // suppress debug console logs
@@ -2472,31 +2473,39 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
 
-                  // if (column.isCustom && column.type === "dropdown") {
-                  //   let value = null;
-                  //   if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
-                  //     value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
-                  //   }
-                  //   return (
-                  //     <div style={{ minWidth: "100px" }}>
-                  //       <CustomFieldSelectV2
-                  //         dropdownOptions={column.dropdownOptions}
-                  //         index={tableMeta.rowIndex}
-                  //         column={column}
-                  //         value={value}
-                  //         onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)}
-                  //       />
-                  //     </div>
-                  //   );
-                  // }
-                  if (column.isCustom && (column.type === "multiselect" || column.type === 'dropdown')) {
+                  if (column.isCustom && column.type === "dropdown") {
+                    let value = null;
+                    if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
+                      value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
+                    }
+                    return (
+                      <div style={{ minWidth: "100px" }}>
+                        {/* <CustomFieldSelectV2
+                          dropdownOptions={column.dropdownOptions}
+                          index={tableMeta.rowIndex}
+                          column={column}
+                          value={value}
+                          onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)}
+                        /> */}
+                        <ReactSelectField
+                          isSingleSelect={true}
+                          dropdownOptions={column.dropdownOptions}
+                          index={tableMeta.rowIndex}
+                          column={column}
+                          value={value}
+                          onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)}
+                        />
+                      </div>
+                    );
+                  }
+                  if (column.isCustom && (column.type === "multiselect" || column.type === 'dropsdown')) {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
                     }
                     return (
                       <div style={{ minWidth: "100px", maxWidth: "400px" }}>
-                        <CustomFieldMultiSelect
+                        <ReactSelectField
                           dropdownOptions={column.dropdownOptions}
                           index={tableMeta.rowIndex}
                           column={column}

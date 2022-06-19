@@ -28,7 +28,7 @@ import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
 import moment from "moment";
-import DrawerFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/DrawerFieldMultiSelect";
+import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
 
 const filter = createFilterOptions();
 
@@ -590,7 +590,8 @@ export default function DocumentDetails(props) {
                       }}
                     >
                       <h4>{meta.label}</h4>
-                      <CustomFieldSelect
+                      <ReactSelectField
+                        isSingleSelect={true}
                         fullWidth
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}
@@ -632,7 +633,7 @@ export default function DocumentDetails(props) {
                         }}
                       /> */}
 
-                      <DrawerFieldMultiSelect
+                      <ReactSelectField
                         fullWidth
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}
