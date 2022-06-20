@@ -145,9 +145,7 @@ export default function DocumentDrawer(props) {
   const classes = useStyles();
   const [activePanel, setPanel] = useState("Home");
   const [fileData, setFileData] = useState(null);
-  const [state, setState] = React.useState({
-    right: false,
-  });
+  // const [state, setState] = useState({right: false});
   const [anchorEl, setAnchorEl] = useState();
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
@@ -166,6 +164,9 @@ export default function DocumentDrawer(props) {
 
   const documentInitial = {
     documentName: "",
+    book: "",
+    page: "",
+    instrument: "",
     recordingInfo: "",
     dateTime: null,
     documentNumber: "",
@@ -255,7 +256,7 @@ export default function DocumentDrawer(props) {
         variables: { fileIds: ID },
       });
       if (stateApp.selectedDocument) {
-        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, recordingInfo, custom_data } =
+        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, book, page, instrument, recordingInfo, custom_data } =
           stateApp.selectedDocument;
         setNameAutValueParty1({
           name: partyName1?.entityDetail?.name,
@@ -267,6 +268,9 @@ export default function DocumentDrawer(props) {
         });
 
         setNewDocument({
+          book,
+          page,
+          instrument,
           recordingInfo,
           documentName,
           dateTime,
@@ -284,11 +288,8 @@ export default function DocumentDrawer(props) {
   }, [stateApp.selectedDocument]);
 
   const toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
-      return;
-    }
-
-    setState({ ...state, [anchor]: open });
+    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) { return; }
+    // setState({ ...state, [anchor]: open });
   };
 
   const handleMenuClick = (event) => {
