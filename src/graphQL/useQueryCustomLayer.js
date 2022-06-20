@@ -14,7 +14,6 @@ export const CUSTOMLAYER = gql`
         _id
       }
       ownerCount
-      prospectID
     }
   }
 `;
