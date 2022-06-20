@@ -123,6 +123,7 @@ export default function LagalDescription({ uniObj }) {
                   addAble={{ type: "AgreementDocument" }}
                   dense
                   isPdfViewer={false}
+                  targetLabel={"documents"}
                 />
               </Grid>
             )}

@@ -88,6 +88,8 @@ const MultipleOwnerToContactDrawer = ({
   convertMultipleOwnerToContactAction,
   campaignList,
   isEntities,
+  jobName,
+  jobType,
   onSuccess
 }) => {
   const [stateApp] = React.useContext(AppContext);
@@ -183,9 +185,9 @@ const MultipleOwnerToContactDrawer = ({
     const values = getValues();
 
     if (entitiesIds.length === 0) {
-      convertMultipleOwnerToContactAction({ ...values, rows, existingContactId, actionType: action, userId: userId, tags: newTagsIds });
+      convertMultipleOwnerToContactAction({ ...values, rows, existingContactId, actionType: action, userId: userId, tags: newTagsIds, jobType, jobName });
     } else {
-      convertMultipleOwnerToContactAction({ ...values, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds });
+      convertMultipleOwnerToContactAction({ ...values, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds, jobType, jobName  });
     }
     onClose();
     setLoading(false);

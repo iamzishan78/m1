@@ -363,6 +363,13 @@ export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFrom
   if (onChange) {
     onChange(date)
   }
+  // let minDateValue;
+  // if(minDate === undefined || minDate === ''){
+  //   minDateValue = moment('2021-11-01').startOf('month').format("yyyy-MM-DD");
+  // } else {
+  //   minDateValue = `${moment(minDate).startOf('month').format("yyyy-MM-DD")}`;
+  // }
+  // console.log(minDateValue);
   const currentYear = Math.round(new Date().getFullYear());
   switch (date) {
     case CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH:

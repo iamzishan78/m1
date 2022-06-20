@@ -86,6 +86,11 @@ const fieldsList = (activeUser) => {
       type: "autocomplete",
       key: "approvalStatus",
     },
+    {
+      label: "Internal Company",
+      type: "autocomplete",
+      key: "internalCompany",
+    },
   ];
 }
 export default fieldsList;

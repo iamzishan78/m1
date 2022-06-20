@@ -647,16 +647,19 @@ function ExpandableCard(props) {
             separator={<NavigateNextIcon fontSize="small" />}
             aria-label="breadcrumb"
           >
-            <Typography
-              className={classes.prevlocation}
-              color="inherit"
-              onClick={() => {
-                setStateApp({ ...stateApp, DocumentDrawer: false });
-                history.push("/documents");
-              }}
-            >
-              Documents
-            </Typography>
+            {history.location.state.breadcrumbs.map((breadcrumb, index) => (
+              <Typography
+                key={index}
+                className={classes.prevlocation}
+                color="inherit"
+                onClick={() => {
+                  // setStateApp({ ...stateApp, DocumentDrawer: false });
+                  history.push(breadcrumb.url);
+                }}
+              >
+                {breadcrumb.title}
+              </Typography>
+            ))}
             <Typography
               className={classes.prevlocation}
               color="inherit"
@@ -689,13 +692,12 @@ function ExpandableCard(props) {
           maxWidth="sm"
         >
           <DeleteConfirmationDialogContent
-            header={`Delete ${
-              targetLabel === "expandedParcel" ? "parcel" : targetLabel
-            }`}
+            header={`Delete ${targetLabel === "expandedParcel" ? "parcel" : targetLabel
+              }`}
             onClose={() => setOpenDialog(false)}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Are you sure you want to delete the selected{" "}
             {targetLabel === "expandedParcel" ? "parcel" : targetLabel}?
@@ -714,52 +716,52 @@ function ExpandableCard(props) {
 
         {(history.location?.state?.showAgreementBreadcrumb ||
           history.location?.state?.showTractsBreadcrumb) && (
-          <Grid
-            container
-            spacing={2}
-            alignItems="center"
-            className={classes.breadcrumb}
-          >
-            <Breadcrumbs
-              separator={<NavigateNextIcon fontSize="small" />}
-              aria-label="breadcrumb"
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              className={classes.breadcrumb}
             >
-              <Typography
-                style={{
-                  marginLeft: "10px",
-                  fontSize: "16px",
-                }}
-                color="inherit"
+              <Breadcrumbs
+                separator={<NavigateNextIcon fontSize="small" />}
+                aria-label="breadcrumb"
               >
-                {history.location?.state?.showAgreementBreadcrumb && (
-                  <div
-                    className={classes.agreementLink}
-                    onClick={() => history.push("/land/agreements")}
-                  >
-                    Agreements
-                  </div>
-                )}
-                {history.location?.state?.showTractsBreadcrumb && (
-                  <div
-                    className={classes.agreementLink}
-                    onClick={() => history.push("/land/tracts")}
-                  >
-                    Tracts
-                  </div>
-                )}
-              </Typography>
-              <Typography
-                style={{
-                  marginLeft: "10px",
-                  fontSize: "16px",
-                }}
-                color="inherit"
-              >
-                <div className={classes.breadcrumbDiv}>{title}</div>
-              </Typography>
-            </Breadcrumbs>
-          </Grid>
-        )}
+                <Typography
+                  style={{
+                    marginLeft: "10px",
+                    fontSize: "16px",
+                  }}
+                  color="inherit"
+                >
+                  {history.location?.state?.showAgreementBreadcrumb && (
+                    <div
+                      className={classes.agreementLink}
+                      onClick={() => history.push("/land/agreements")}
+                    >
+                      Agreements
+                    </div>
+                  )}
+                  {history.location?.state?.showTractsBreadcrumb && (
+                    <div
+                      className={classes.agreementLink}
+                      onClick={() => history.push("/land/tracts")}
+                    >
+                      Tracts
+                    </div>
+                  )}
+                </Typography>
+                <Typography
+                  style={{
+                    marginLeft: "10px",
+                    fontSize: "16px",
+                  }}
+                  color="inherit"
+                >
+                  <div className={classes.breadcrumbDiv}>{title}</div>
+                </Typography>
+              </Breadcrumbs>
+            </Grid>
+          )}
         <CardHeader
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
@@ -824,16 +826,16 @@ function ExpandableCard(props) {
 
 
               {stateExpandableCard.expanded &&
-              targetLabel !== "activity" &&
-              targetLabel !== "contact" &&
-              parent !== "table" ? (
+                targetLabel !== "activity" &&
+                targetLabel !== "contact" &&
+                parent !== "table" ? (
                 parent !== "table" &&
-                targetLabel !== "well" &&
-                targetLabel !== "expandedWell" &&
-                targetLabel !== "parcel" &&
-                !stateApp.selectedShape &&
-                targetLabel !== "expandedParcel" &&
-                targetLabel !== "recent_submitted_permits" ? (
+                  targetLabel !== "well" &&
+                  targetLabel !== "expandedWell" &&
+                  targetLabel !== "parcel" &&
+                  !stateApp.selectedShape &&
+                  targetLabel !== "expandedParcel" &&
+                  targetLabel !== "recent_submitted_permits" ? (
                   <Tooltip title={"Shrink"} placement="top">
                     <IconButton
                       color="secondary"
@@ -897,29 +899,29 @@ function ExpandableCard(props) {
                       <CircularProgress size={20} color="secondary" />
                     ) : (
                       <> {
-                        (targetLabel == 'parcel' || targetLabel == 'unit' || targetLabel == 'agreement')  && <> <IconButton
-                        size="small"
-                        component="span"
-                        onClick={handleMenuClick}
-                      >
-                        <MoreVertIcon size="medium" />
-                      </IconButton>
-                      <Menu
-                        id="dealMenu"
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={handleMenuClose}
-                        className={classes.menu}
-                      >
-                        <MenuItem onClick={openConfirmationDialog}>
-                          <ListItemIcon>
-                            <DeleteIcon size="medium" />
-                          </ListItemIcon>
-                          <ListItemText>Delete</ListItemText>
-                        </MenuItem>
-                      </Menu></>
+                        (targetLabel == 'parcel' || targetLabel == 'unit' || targetLabel == 'agreement') && <> <IconButton
+                          size="small"
+                          component="span"
+                          onClick={handleMenuClick}
+                        >
+                          <MoreVertIcon size="medium" />
+                        </IconButton>
+                          <Menu
+                            id="dealMenu"
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleMenuClose}
+                            className={classes.menu}
+                          >
+                            <MenuItem onClick={openConfirmationDialog}>
+                              <ListItemIcon>
+                                <DeleteIcon size="medium" />
+                              </ListItemIcon>
+                              <ListItemText>Delete</ListItemText>
+                            </MenuItem>
+                          </Menu></>
                       }
-                        
+
                       </>
                     )}
                   </Tooltip>

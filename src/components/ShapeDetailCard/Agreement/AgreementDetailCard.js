@@ -304,6 +304,7 @@ export default function AgreementDetailCard(props) {
                 header={<DocumentHeader />}
                 addAble={{ type: "AgreementDocument" }}
                 dense
+                targetLabel="documents"
               />
             </div>,
           ]}
