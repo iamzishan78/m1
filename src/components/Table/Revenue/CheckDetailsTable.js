@@ -14,10 +14,10 @@ function CheckDetailsTable(props) {
 
     const formatHits = (hits) => {
         return hits.map((hit) => {
-            hit.number = hit.property.number;
-            hit.name = hit.property.name;
-            hit.state = hit.property.state;
-            hit.county = hit.property.county;
+            hit.number = hit?.property?.number;
+            hit.name = hit?.property?.name;
+            hit.state = hit.property?.state;
+            hit.county = hit.property?.county;
             return hit;
         });
     };
