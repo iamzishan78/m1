@@ -187,7 +187,7 @@ function MapGridCard(props) {
   const [stateApp] = useContext(AppContext);
 
   // function state
-  const [searchTapValue, SearchTapValue] = useState(contactDetailInitialData[0]);
+  const [searchTapValue, SearchTapValue] = useState(contactDetailInitialData[5]);
   const [viewportTapValue, ViewportTapValue] = useState(0);
   const [dockMenu, SetDockMenu] = useState("bottom");
   const [trackedTapValue, TrackedTapValue] = useState(0);
@@ -355,14 +355,14 @@ function MapGridCard(props) {
                         <ActivitiesTable
                           esIndex={"activities_flat"}
                           searchFields={["name", "_all"]}
-                          filtersChange={() => {}}
+                          filtersChange={() => { }}
                           appliedFilters={[
                             {
                               field: "contactName.keyword",
                               value: props.contactData?.name,
                             },
                           ]}
-                          filterToggle={() => {}}
+                          filterToggle={() => { }}
                           targetLabel={"activitiesDashboard"}
                           header="Activities"
                         />

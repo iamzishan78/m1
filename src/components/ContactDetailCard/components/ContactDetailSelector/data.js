@@ -11,13 +11,12 @@ import ContactIcon from "@material-ui/icons/Group";
 import LayersIcon from "@material-ui/icons/Layers";
 
 export const contactDetailInitialData = [
-  { index: 0, value: "contactInformation", Icon: WellIcon, label: "Contact Information" },
-  { index: 1, value: "activities", Icon: TaxOwnerIcon, label: "Activities" },
-  { index: 2, value: "taxRollInterest", Icon: OperatorIcon, label: "Tax Roll Interests" },
-
-  { index: 3, value: "wellInterest", Icon: LayersIcon, label: "Well Interests" },
   { index: 4, value: "unitInterests", Icon: LeaseIcon, label: "Unit Interests" },
-  { index: 5, value: "parcelInterests", Icon: LeaseIcon, label: "Parcel Interests" },
-  { index: 6, value: "deals", Icon: ContactIcon, label: "Deals" },
+  { index: 3, value: "wellInterest", Icon: LayersIcon, label: "Well Interests" },
+  { index: 5, value: "parcelInterests", Icon: LeaseIcon, label: "Tract Interests" },
+  { index: 2, value: "taxRollInterest", Icon: OperatorIcon, label: "Tax Roll Interests" },
+  { index: 1, value: "activities", Icon: TaxOwnerIcon, label: "Activities" },
+  { index: 0, value: "contactInformation", Icon: WellIcon, label: "Contact Information" },
   { index: 7, value: "documents", Icon: ContactIcon, label: "Documents" },
+  { index: 6, value: "deals", Icon: ContactIcon, label: "Deals" },
 ];
