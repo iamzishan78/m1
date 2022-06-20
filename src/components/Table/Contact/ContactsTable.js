@@ -155,6 +155,7 @@ function ContactsTable(props) {
       TableHeader: copy(TableHeader),
       esIndex,
       // filters: Contacts?.filters ? getFilters() : [],
+      typeKeyword: { gridViewCategory: "Contacts" },
       selectedGridView: Contacts || defaultView,
       startPaginationAt: 25,
       defaultSort: { field: "lastUpdateAt", order: "desc", unmapped_type: 'date' },
