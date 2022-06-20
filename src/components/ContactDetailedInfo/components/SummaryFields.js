@@ -7,6 +7,7 @@ import { Grid, TextField, InputAdornment, CircularProgress } from "@material-ui/
 import EmailOutlinedIcon from "@material-ui/icons/EmailOutlined";
 import { makeStyles } from "@material-ui/core/styles";
 
+import ContactStatus from 'components/ContactDetailCard/components/ContactStatus'
 import { SUMMARY_FIELDS } from "components/ContactDetailedInfo/helper";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 
@@ -92,38 +93,49 @@ export default function SummaryFields({ contactData }) {
                 render={(params) => {
                   return (
                     <Fragment>
-                      <TextField
-                        {...params}
-                        id={`field-${key}`}
-                        variant="outlined"
-                        margin="dense"
-                        type="text"
-                        fullWidth
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                        onBlur={(event) => updateFieldData(field.key, event.target.value)}
-                        disabled={field.disabled}
-                        className={classes.field}
-                        value={field.value ?? params.value}
-                        // If field type = "email", show msg icon adornment
-                        // If field info is updating, show loading as adornment
-                        // else show nothing
-                        InputProps={{
-                          endAdornment:
-                            field.type === "email" && contactData[field.key] ? (
-                              <a href={"mailto:" + contactData.primaryEmail} className={classes.emailAdornment}>
-                                <InputAdornment position="end">
-                                  <EmailOutlinedIcon htmlColor="#757575" />
-                                </InputAdornment>
-                              </a>
-                            ) : activeLoadingField === field.key ? (
-                              <CircularProgress className={classes.loader} size={22} color="secondary" />
-                            ) : (
-                              <Fragment />
-                            ),
-                        }}
-                      />
+                      {field.type !== "autocomplete" ? (
+                        <TextField
+                          {...params}
+                          id={`field-${key}`}
+                          variant="outlined"
+                          margin="dense"
+                          type="text"
+                          fullWidth
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          onBlur={(event) => updateFieldData(field.key, event.target.value)}
+                          disabled={field.disabled}
+                          className={classes.field}
+                          value={field.value ?? params.value}
+                          // If field type = "email", show msg icon adornment
+                          // If field info is updating, show loading as adornment
+                          // else show nothing
+                          InputProps={{
+                            endAdornment:
+                              field.type === "email" && contactData[field.key] ? (
+                                <a href={"mailto:" + contactData.primaryEmail} className={classes.emailAdornment}>
+                                  <InputAdornment position="end">
+                                    <EmailOutlinedIcon htmlColor="#757575" />
+                                  </InputAdornment>
+                                </a>
+                              ) : activeLoadingField === field.key ? (
+                                <CircularProgress className={classes.loader} size={22} color="secondary" />
+                              ) : (
+                                <Fragment />
+                              ),
+                          }}
+                        />
+                      ) : (
+                        <ContactStatus
+                          className={classes.maxWidth}
+                          setValue={(value) => {
+                            updateFieldData(field.key, value.name)
+                          }}
+                          value={contactData[field.key]}
+                          variant="outlined"
+                        />
+                      )}
                     </Fragment>
                   );
                 }}

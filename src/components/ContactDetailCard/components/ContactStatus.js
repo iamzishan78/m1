@@ -49,7 +49,7 @@ const ContactStatus = ({ setValue, value, ...other }) => {
 
   useEffect(() => {
     setSearch(value);
-  },[value])
+  }, [value])
 
   useEffect(() => {
     if (contactStatusFiltersData?.getESFilterList?.hits) {
@@ -138,10 +138,14 @@ const ContactStatus = ({ setValue, value, ...other }) => {
         if (newValue && newValue._id) {
           if (newValue._id !== "newEntity") setValue(newValue);
           else setValue({ _id: "newEntity", name: newValue.name });
-        } else setSearch("");
+        } else {
+          setSearch("");
+          setValue({ _id: "", name: "" });
+        }
       }}
       renderInput={(params) => (
         <TextField
+          variant={other.variant}
           margin="dense"
           {...params}
           InputProps={{

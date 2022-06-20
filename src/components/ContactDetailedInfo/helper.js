@@ -311,121 +311,6 @@ export const getBasicInfoContent = (contactData) => {
   };
 };
 
-export const SUMMARY_FIELDS = (contactData) => [
-  {
-    label: "Full Name",
-    key: "name",
-    type: "text",
-    position: "left",
-  },
-  {
-    label: "Total NRA",
-    key: "contactInterests.nraSum",
-    type: "text",
-    position: "right",
-    disabled: true,
-  },
-  {
-    label: "First Name",
-    key: "firstName",
-    type: "text",
-    position: "left",
-  },
-  {
-    label: "Total Price",
-    key: "contactInterests.offerPriceSum",
-    type: "text",
-    position: "right",
-    disabled: true,
-  },
-  {
-    label: "Middle Name",
-    key: "middleName",
-    type: "text",
-    position: "left",
-  },
-  {
-    label: "Home Phone",
-    key: "homePhone",
-    type: "text",
-    position: "right",
-  },
-  {
-    label: "Last Name",
-    key: "lastName",
-    type: "text",
-    position: "left",
-  },
-  {
-    label: "Mobile Phone 1",
-    key: "mobilePhone",
-    type: "text",
-    position: "right",
-  },
-  {
-    label: "Primary Address 1",
-    key: "address1",
-    type: "text",
-    position: "left",
-  },
-  {
-    label: "Mobile Phone 2",
-    key: "mobilephone2",
-    type: "text",
-    position: "right",
-  },
-  {
-    label: "Primary Address 2",
-    key: "address2",
-    type: "text",
-    position: "left",
-  },
-  {
-    label: "Work Phone",
-    key: "AltPhone",
-    type: "text",
-    position: "right",
-  },
-  {
-    label: "City",
-    key: "city",
-    type: "text",
-    position: "left",
-  },
-  {
-    label: "Email 1",
-    key: "primaryEmail",
-    type: "email",
-    position: "right",
-  },
-  {
-    label: "State",
-    key: "state",
-    type: "text",
-    position: "left",
-  },
-  {
-    label: "Email 2",
-    key: "secondaryEmail",
-    type: "email",
-    position: "right",
-  },
-  {
-    label: "Zip Code",
-    key: "zip",
-    type: "text",
-    position: "left",
-  },
-  {
-    label: "Last Updated",
-    key: "",
-    type: "text",
-    position: "right",
-    value: getLastUpdatedByValue(contactData),
-    disabled: true,
-  },
-];
-
 export const getBasicPurchaseInfoExpContent = (contactData) => {
   return {
     "Full Name": {
@@ -710,6 +595,122 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
     },
   };
 };
+
+export const SUMMARY_FIELDS = (contactData) => [
+  {
+    label: "Full Name",
+    key: "name",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Total NRA",
+    key: "contactInterests.nraSum",
+    type: "text",
+    position: "right",
+    disabled: true,
+  },
+  {
+    label: "First Name",
+    key: "firstName",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Total Price",
+    key: "contactInterests.offerPriceSum",
+    type: "text",
+    position: "right",
+    disabled: true,
+  },
+  {
+    label: "Middle Name",
+    key: "middleName",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Home Phone",
+    key: "homePhone",
+    type: "text",
+    position: "right",
+  },
+  {
+    label: "Last Name",
+    key: "lastName",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Mobile Phone 1",
+    key: "mobilePhone",
+    type: "text",
+    position: "right",
+  },
+  {
+    label: "Primary Address 1",
+    key: "address1",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Mobile Phone 2",
+    key: "mobilephone2",
+    type: "text",
+    position: "right",
+  },
+  {
+    label: "Primary Address 2",
+    key: "address2",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Work Phone",
+    key: "AltPhone",
+    type: "text",
+    position: "right",
+  },
+  {
+    label: "City",
+    key: "city",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Email",
+    key: "primaryEmail",
+    type: "email",
+    position: "right",
+  },
+  {
+    label: "State",
+    key: "state",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Status",
+    key: "contactStatus",
+    type: "autocomplete",
+    position: "right",
+    value: { contactStatus: contactData?.contactStatus },
+  },
+  {
+    label: "Zip Code",
+    key: "zip",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Last Updated",
+    key: "",
+    type: "text",
+    position: "right",
+    value: getLastUpdatedByValue(contactData),
+    disabled: true,
+  },
+];
 
 export const getBasicPurchaseInfoContent = (contactData) => {
   return {
