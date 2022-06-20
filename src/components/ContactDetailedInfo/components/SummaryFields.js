@@ -2,6 +2,7 @@ import React, { useEffect, useState, Fragment } from "react";
 import { isEmpty } from "lodash";
 import { useMutation } from "@apollo/client";
 import { Controller, useForm } from "react-hook-form";
+import { useSelector } from 'react-redux';
 
 import { Grid, TextField, InputAdornment, CircularProgress } from "@material-ui/core";
 import EmailOutlinedIcon from "@material-ui/icons/EmailOutlined";
@@ -49,13 +50,36 @@ export default function SummaryFields({ contactData }) {
   const { control, reset } = useForm();
   const [activeLoadingField, setLoading] = useState();
 
+  const { user } = useSelector(state => state.app);
+
   const [updateContact] = useMutation(UPDATECONTACT);
+
+  const showGenericPhones = React.useMemo(() => {
+    return user.features?.find(f => f.name === "showGenericPhones")
+  }, [user]);
 
   useEffect(() => {
     if (!isEmpty(contactData)) {
       reset(contactData);
     }
   }, [contactData, reset]);
+
+  const featureFlagChanges = (field) => {
+    if (showGenericPhones) {
+      switch (field.key) {
+        case "homePhone":
+          return "Phone 1"
+        case "mobilePhone":
+          return "Phone 2"
+        case "mobilephone2":
+          return "Phone 3"
+        case "AltPhone":
+          return "Phone 4"
+        default:
+      }
+    }
+    return field.label;
+  }
 
   const updateFieldData = (key, value) => {
     setLoading(key);
@@ -84,7 +108,7 @@ export default function SummaryFields({ contactData }) {
         <Grid item xs={5} key={key} style={{ width: "100%", marginRight: "30px" }}>
           <Grid container className={classes.gridStyle}>
             <Grid item style={{ display: "flex" }}>
-              <div className={classes.fieldLabel}>{field.label}</div>
+              <div className={classes.fieldLabel}>{featureFlagChanges(field)}</div>
             </Grid>
             <Grid item xs={8}>
               <Controller
