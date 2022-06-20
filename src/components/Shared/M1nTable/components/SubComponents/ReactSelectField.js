@@ -331,8 +331,8 @@ const ReactSelectField = ({
           padding: "0px",
           minHeight: "50px",
           width: "100%",
-          border: variant === 'outlined' ? "1px solid rgba(0, 0, 0, 0.23)" : "none",
-          borderBottom: fullWidth ? "1px solid rgba(0, 0, 0, 0.23)" : "none",
+          border: variant === 'outlined' ? "1px solid rgba(0, 0, 0, 0.42)" : "none",
+          borderBottom: fullWidth ? "1px solid rgba(0, 0, 0, 0.42)" : "none",
         }}
         onMouseLeave={(e) => { setIsOpen(false); setShowIcon(showChevron || false) }}
         onMouseEnter={(e) => { setShowIcon(true) }}
