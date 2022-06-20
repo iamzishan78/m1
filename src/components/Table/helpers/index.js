@@ -9,6 +9,7 @@ import { AutoCompleteFilter } from "../AutoCompleteFilter";
 import get from "lodash/get";
 
 import { setCurrentUserGridViewAction } from "store/actions/sessionActions"
+import moment from "moment";
 
 export const handleTagColumn = (TableHeader, cleanAvailableTags) => {
   return cleanAvailableTags.length > 0
@@ -148,7 +149,21 @@ export const setColumnsData = (
         // },
       };
     }
+
+    //Convert format of isotype date to MM/DD/YYYY format
+    if (column.custom?.isDate && columns?.length) {
+      let filterList = Array.isArray(column.esKey) ? undefined : [];
+      if (column?.options?.filter && column?.options?.filterList?.length > 0) {
+        let value = column.options.filterList
+        value = value.map(v => moment(new Date(v)).format("MM/DD/YYYY"))
+        filterList = value;
+
+        column.options.filterList = filterList;
+      }
+    }
   });
+
+
   setColumns(columns);
 };
 
