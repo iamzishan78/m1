@@ -65,11 +65,11 @@ const DocumentsHeadCells = [
   //   name: "partyName2",
   //   label: "Party 2 Name",
   // },
-  
-  {
-    name: "recordingInfo",
-    label: "Recording Info",
-  },
+
+  // {
+  //   name: "recordingInfo",
+  //   label: "Recording Info",
+  // },
   {
     name: " ",
     label: " ",
@@ -92,9 +92,9 @@ const DocumentsHeadCells = [
       viewColumns: false,
     }
   },
-  
 
- 
+
+
 
 ];
 

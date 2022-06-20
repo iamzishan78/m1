@@ -24,6 +24,7 @@ import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 import RelatedFile from "components/Document/components/RelatedFile";
+import DocumentDetailDrawer from "components/Document/components/Drawer";
 
 // Header Schemas
 import TableHeader from "components/Table/constants/parcel-documents-header-schema.js";
@@ -273,6 +274,9 @@ function RelatedDetailsDocumentTable(props) {
         setColumnsBase={[]}
         onTableChange={onTableChange}
       />
+      {stateApp.selectedDocument && (
+        <DocumentDetailDrawer isRelatedDocuments />
+      )}
       <Dialog
         className={classes.dialogExpCard}
         fullWidth

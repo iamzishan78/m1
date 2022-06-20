@@ -11,7 +11,7 @@ import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubCom
 
 import { IconButton, TextField, withStyles } from "@material-ui/core";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
-import { KeyboardDatePicker } from "@material-ui/pickers";
+import { Clear } from "@material-ui/icons";
 import UploadZone from "../../Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
 import GetAppIcon from "@material-ui/icons/GetApp";
@@ -27,6 +27,8 @@ import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
+import moment from "moment";
+import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
 
 const filter = createFilterOptions();
 
@@ -70,6 +72,12 @@ const useStyles = makeStyles({
     color: "#757575",
     fontWeight: "normal",
     marginBottom: "8px",
+  },
+  dateRoot: {
+    color: "grey",
+    "& input": {
+      marginLeft: "20px",
+    },
   },
   uploadSubtext: {
     color: "rgb(176, 176, 176)",
@@ -168,6 +176,9 @@ const LightTooltip = withStyles((theme) => ({
 
 const documentInitial = {
   documentName: "",
+  book: "",
+  page: "",
+  instrument: "",
   recordingInfo: "",
   dateTime: null,
   documentNumber: "",
@@ -255,7 +266,7 @@ export default function DocumentDetails(props) {
 
   const sortFields = (gridViews) => {
     const metaData = [];
-    if (stateApp.selectedView.columns?.length > 0) {
+    if (stateApp.selectedView?.columns?.length > 0) {
       for (let i = 0; i < stateApp.selectedView.columns?.length; i++) {
         const data = gridViews.find((view) => view.name === stateApp.selectedView.columns[i].name);
         if (data) {
@@ -281,6 +292,9 @@ export default function DocumentDetails(props) {
       updateDocument({
         variables: {
           document: {
+            book: newDocument.book,
+            page: newDocument.page,
+            instrument: newDocument.instrument,
             recordingInfo: newDocument.recordingInfo,
             documentName: newDocument.documentName,
             dateTime: newDocument.dateTime,
@@ -292,7 +306,7 @@ export default function DocumentDetails(props) {
             custom_data: newDocument.custom_data,
           },
         },
-        refetchQueries: ["getESDocuments"],
+        refetchQueries: ["getESDocuments", "getParcelFiles", "getParcelFilesCount"],
         awaitRefetchQueries: true,
       }).then(() => {
         setFileData(null);
@@ -400,24 +414,36 @@ export default function DocumentDetails(props) {
             }}
           >
             <h4>Document Date</h4>
-            <KeyboardDatePicker
-              className={classes.maxWidth}
-              disableToolbar
-              variant="inline"
-              format="MM/DD/YYYY"
+            <TextField
+              autoOk
+              type="date"
+              //variant="outlined"
               margin="normal"
-              id="date-picker-inline"
-              value={newDocument?.dateTime ? new Date(newDocument.dateTime) : null}
-              onChange={(date) => {
-                setNewDocument({
-                  ...newDocument,
-                  dateTime: date ? String(date["_d"]) : "",
-                });
+              fullWidth
+              value={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
+              onChange={(event) => {
+                setNewDocument({ ...newDocument, dateTime: event ? String(event?.target?.value) : null })
               }}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
+
+              InputLabelProps={{
+                shrink: true,
+              }}
+              disableToolbar
+              KeyboardButtonProps={{ "aria-label": "change date" }}
+              format="MM/DD/YYYY"
+              PopoverProps={{ disablePortal: false }}
+              InputProps={{
+                endAdornment: (
+                  <IconButton onClick={(event) => setNewDocument({ ...newDocument, dateTime: null })}>
+                    <Clear style={{ height: 22, width: 22 }} />
+                  </IconButton>
+                ),
+                classes: {
+                  root: classes.dateRoot,
+                },
               }}
             />
+
           </ListItem>
 
           {/* TEMPORARY COMMENT OUT UNTIL FEATURE IS FIXED */}
@@ -441,7 +467,10 @@ export default function DocumentDetails(props) {
                   <h4>Party 2 Name</h4>
                   <ContactPaginatedDropdown nameAutValue={nameAutValueParty2} setNameAutValue={setNameAutValueParty2} />
                 </ListItem> */}
-          <ListItem
+
+          {/* Hiding Recording info */}
+
+          {/* <ListItem
             style={{
               flexDirection: "column",
               justifyContent: "start",
@@ -460,9 +489,65 @@ export default function DocumentDetails(props) {
                 });
               }}
             />
+          </ListItem> */}
+
+          <ListItem
+            style={{
+              flexDirection: "row",
+              justifyContent: "start",
+              alignItems: "start",
+            }}
+          >
+            <div style={{
+              marginRight: "15px",
+            }}>
+              <h4>Book</h4>
+              <TextField
+                className={classes.maxWidth}
+                multiline
+                value={newDocument?.book}
+                onChange={(e) => {
+                  setNewDocument({
+                    ...newDocument,
+                    book: e.target.value,
+                  });
+                }}
+              />
+            </div>
+
+            <div style={{
+              marginRight: "15px",
+            }}>
+              <h4>Page</h4>
+              <TextField
+                className={classes.maxWidth}
+                multiline
+                value={newDocument?.page}
+                onChange={(e) => {
+                  setNewDocument({
+                    ...newDocument,
+                    page: e.target.value,
+                  });
+                }}
+              />
+            </div>
+            <div>
+              <h4>Instrument #</h4>
+              <TextField
+                className={classes.maxWidth}
+                multiline
+                value={newDocument?.instrument}
+                onChange={(e) => {
+                  setNewDocument({
+                    ...newDocument,
+                    instrument: e.target.value,
+                  });
+                }}
+              />
+            </div>
           </ListItem>
 
-          {metaData.map((meta) => {
+          {metaData.map((meta, index) => {
             const value = newDocument.custom_data[meta.name];
             let isInView = false;
             if (stateApp.selectedView && stateApp.selectedView?.columns?.length > 0) {
@@ -505,8 +590,11 @@ export default function DocumentDetails(props) {
                       }}
                     >
                       <h4>{meta.label}</h4>
-                      <CustomFieldSelect
+                      <ReactSelectField
+                        isSingleSelect={true}
                         fullWidth
+                        showUnderline
+                        showChevron={true}
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}
                         column={meta}
@@ -531,8 +619,26 @@ export default function DocumentDetails(props) {
                       }}
                     >
                       <h4>{meta.label}</h4>
-                      <CustomFieldMultiSelect
+                      {/* <CustomFieldMultiSelect
                         fullWidth
+                        index={"documentTable"}
+                        dropdownOptions={meta.dropdownOptions}
+                        column={meta}
+                        value={value}
+                        onCustomKeyChange={(value) => {
+                          const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
+                          custom_data[meta.name] = value ? value : null; // empty string is falsey so null
+                          setNewDocument({
+                            ...newDocument,
+                            custom_data,
+                          });
+                        }}
+                      /> */}
+
+                      <ReactSelectField
+                        fullWidth
+                        showUnderline
+                        showChevron={true}
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}
                         column={meta}
@@ -748,68 +854,10 @@ export default function DocumentDetails(props) {
           </Button>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 
-const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
-  const classes = useStyles();
-  const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-  const [hasNextPage, setHasNextPage] = useState(true);
-  const [isNextPageLoading, setIsNextPageLoading] = useState(false);
-  const [nameAutInputValue, NameAutInputValue] = useState("");
-  const setNameAutInputValue = (newState) => {
-    setStateIfDeepEqual(NameAutInputValue, newState);
-  };
-
-  const [getPaginatedContacts, { data: allContacts, loading: contactsLoading, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-      nextFetchPolicy: "cache-first",
-    }
-  );
-
-  useEffect(() => {
-    if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
-      setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
-    }
-    setIsNextPageLoading(false);
-  }, [allContacts]);
-
-  useEffect(() => {
-    //will also run during initial mount
-    setIsNextPageLoading(true);
-    getPaginatedContacts({
-      variables: {
-        search: nameAutInputValue,
-      },
-    });
-  }, [nameAutInputValue]);
-
-  const loadNextPage = async (pageVariables) => {
-    setIsNextPageLoading(true);
-    fetchMorePaginatedContacts(pageVariables);
-    return null;
-  };
-
-  return (
-    <AutocompEntityNamesVirtualizeList
-      className={classes.maxWidth}
-      mongoEntitiesArray={mongoEntitiesArray}
-      setMongoEntitiesArray={setMongoEntitiesArray}
-      nameAutValue={nameAutValue}
-      setNameAutValue={setNameAutValue}
-      nameAutInputValue={nameAutInputValue}
-      setNameAutInputValue={setNameAutInputValue}
-      hasNextPage={hasNextPage}
-      isNextPageLoading={isNextPageLoading}
-      loadNextPage={loadNextPage}
-      addNew={true}
-    />
-  );
-};
 
 const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
   const useStyles = makeStyles({

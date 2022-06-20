@@ -115,7 +115,7 @@ export default function Portfolio({
           renderInput={(params) => (
             <TextField {...params} label="Date Range" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
           )}
-          defaultValue={isProperties ? CUSTOM_DATES.ALL_DATES : CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH}
+          defaultValue={CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH}
           disableListWrap
           id="custom-date-dropdown"
         />

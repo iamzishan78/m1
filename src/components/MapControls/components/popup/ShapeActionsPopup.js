@@ -659,7 +659,9 @@ const ShapeActionsPopup = (props) => {
         className={classes.parcelPopover}
       >
         <MenuItem disabled>Shape Layer Type</MenuItem>
-        <MenuItem onClick={(event) => setAgreementAnchorEl(event.currentTarget)}>Agreement</MenuItem>
+        <FeatureFlag feature={FEATURES.AGREEMENT_LAYER}>
+          <MenuItem onClick={(event) => setAgreementAnchorEl(event.currentTarget)}>Agreement</MenuItem>
+        </FeatureFlag>
         <MenuItem onClick={saveAndOpenParcelDetail}>Tract</MenuItem>
         <MenuItem onClick={() => saveAndOpenShapeDetail("unit")}>Unit Boundary</MenuItem>
       </Menu>
