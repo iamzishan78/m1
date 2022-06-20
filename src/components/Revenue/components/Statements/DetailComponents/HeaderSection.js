@@ -70,20 +70,18 @@ export default function HeaderFunction(props) {
 
   const { control, reset, watch } = useForm();
 
-  const watchCheckNumber = watch("checkNumber")
 
   useEffect(() => {
-    return history.listen(() => {
-
+    return () => {
+      const watchCheckNumber = watch("checkNumber")
       if (!watchCheckNumber || watchCheckNumber === '') {
         dispatch(showInfoMessage("Check Number is required"));
         history.goBack();
       }
-    });
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history, watchCheckNumber]);
-
-
+  }, [history]);
 
   useEffect(() => {
     if (check) {
