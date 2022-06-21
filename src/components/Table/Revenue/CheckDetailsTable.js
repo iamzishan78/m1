@@ -14,20 +14,19 @@ function CheckDetailsTable(props) {
 
     const formatHits = (hits) => {
         return hits.map((hit) => {
-            hit.number = hit.property.number;
-            hit.name = hit.property.name;
-            hit.state = hit.property.state;
-            hit.county = hit.property.county;
+            hit.number = hit?.property?.number;
+            hit.name = hit?.property?.name;
+            hit.state = hit.property?.state;
+            hit.county = hit.property?.county;
             return hit;
         });
     };
 
     useEffect(() => {
-        props.setInitialFilters([{ field: "check._id.keyword", value: checkId }])
         setTableMeta({
             addBtnText: "INPUT MODE",
             addWithInput: true,
-            // filters: [{ field: "check._id.keyword", value: checkId }],
+            filters: [{ field: "check._id.keyword", value: checkId }],
             TableHeader: copy(TableHeader),
             esIndex: "checkdetails_flat",
             startPaginationAt: 50,
