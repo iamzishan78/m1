@@ -40,6 +40,7 @@ import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEnti
 import AutoCompleteWithNewOption from "components/Shared/Forms/Fields/AutoCompleteWithNewOption";
 import { addTrailingZeros } from "components/Shared/functions";
 import { GET_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetAutoCompleteList";
+import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import AutoCompleteParcelOwners from "components/Shared/Forms/Fields/AutoCompleteParcelOwners";
 
 const useStyles = makeStyles((theme) => ({
@@ -98,6 +99,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 
   const [loading, setLoading] = useState(false);
   const [isTractOwner, setIsTractOwner] = useState(false);
+  const [isNewTract, setIsNewTract] = useState(true);
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [tractValue, setTractValue] = useState({ name: "", _id: null });
   const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
@@ -364,7 +366,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                 fontSize: "1.1rem",
               }}
             >
-              {props.seletedTract ? `Update ${props.shapeType} Tract` : `Add ${props.shapeType} Tract`}
+              {props.seletedTract ? `Update ${props.shapeType} Tract` : `Associate Tract to ${props.shapeType}`}
             </h4>
             <div style={{ float: "right" }}>
               {props.seletedTract && (
@@ -385,11 +387,49 @@ function AddAgreementOwnerAndTractDialog(props) {
           </Grid>
 
           <div>
+            <List>
+              <ListItem
+                style={{
+                  flexDirection: "column",
+                  justifyContent: "start",
+                  alignItems: "start",
+                }}
+              >
+                <ListItemText>
+                  <h4
+                    onClick={() => {
+                      setIsNewTract(true);
+                    }}
+                    className={isNewTract ? classes.selectedType : classes.unSelectedType}
+                  >
+                    New Tract
+                  </h4>
+                  <h4
+                    onClick={() => {
+                      setIsNewTract(false);
+                    }}
+                    className={!isNewTract ? classes.selectedType : classes.unSelectedType}
+                    style={{ marginLeft: "20px" }}
+                  >
+                    Existing Tract
+                  </h4>
+                </ListItemText>
+              </ListItem>
+            </List>
+          </div>
+
+          <div>
             <Box mt={2}>
-              <Typography>Search for existing tract to associate to agreement and populate ownership detail</Typography>
+              {isNewTract ?
+                <Typography>Add new tract to the map by entering a valid legal description</Typography> :
+                <Typography>Search for existing tract to associate to agreement and populate ownership detail</Typography>
+              }
+
             </Box>
             <TextField id="_id" name="_id" style={{ display: "none" }} inputRef={register()} />
+
             <TractForm
+              isNewTract={isNewTract}
               tract={tract}
               tractValue={tractValue}
               setSelectedShapeLayer={setSelectedShapeLayer}
@@ -446,18 +486,8 @@ function AddAgreementOwnerAndTractDialog(props) {
                 />
               </Grid>
             </Grid>
-            <Controller
-              as={TextField}
-              control={control}
-              variant="outlined"
-              margin="dense"
-              name="tract.sdGrossAcres"
-              label={"Gross. Acres"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue={tract?.sdGrossAcres || ""}
-            />
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.sdGrossAcres" label={"Gross. Acres"} InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.sdGrossAcres || ""} />
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.shapeArea" label={"Calc. Acres"} InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.shapeArea || ""} />
           </div>
           <div>
             <List>
