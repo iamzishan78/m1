@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { InputAdornment, TextField, IconButton, Tooltip } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
@@ -61,6 +62,7 @@ const LandSearch = () => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [search, setSearch] = useState("");
+  const { activeModule } = useSelector(({ common }) => common);
 
   useEffect(() => {
     return () =>{
@@ -93,7 +95,7 @@ const LandSearch = () => {
         className={classes.contactSearchField}
         margin="dense"
         variant="outlined"
-        placeholder="Search for agreement by name or attribute"
+        placeholder={`Search for ${activeModule?.title?.toLowerCase()} by name or attribute`}
         InputProps={{
           startAdornment: (
             <InputAdornment>
@@ -114,7 +116,6 @@ const LandSearch = () => {
                     setStateApp((stateApp) => ({
                       ...stateApp,
                       landSearchQuery: "",
-                      // isLandSearching: true,
                     }));
                   }}
                 >
