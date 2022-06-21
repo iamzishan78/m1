@@ -54,6 +54,7 @@ export const usetableStyles = makeStyles(() => ({
     },
   },
   container2: {
+    width: "100%",
     "& .MuiTableCell-paddingCheckbox": {
       position: (p) => p.isCheckboxSticky ? 'sticky !important' : '',
     },
