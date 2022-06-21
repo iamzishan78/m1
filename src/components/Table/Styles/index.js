@@ -58,6 +58,9 @@ export const usetableStyles = makeStyles(() => ({
     "& .MuiTableCell-paddingCheckbox": {
       position: (p) => p.isCheckboxSticky ? 'sticky !important' : '',
     },
+    "& .MuiTableHead-root": {
+      zIndex: 9999
+    }
   },
   multiSelectionTopBarButtons: {
     margin: "0px 5px",
