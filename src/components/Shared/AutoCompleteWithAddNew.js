@@ -69,7 +69,7 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant })
       }}
       onInputChange={onInputChange}
       filterOptions={(options, params) => {
-        let inputValue = JSON.parse(JSON.stringify(value));
+        let inputValue = value ? JSON.parse(JSON.stringify(value)) : '';
         // if (typeof inputValue.name === "string") {
         //   inputValue = inputValue.name;
         // }
