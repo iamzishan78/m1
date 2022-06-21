@@ -140,17 +140,17 @@ export default function AgreementSummary(props) {
               <TextField
                 id="outlined-multiline-static"
                 label="Description"
-                defaultValue={unitProperties.description}
-                value={unitProperties.description}
+                defaultValue={unitProperties.metaDescription}
+                value={unitProperties.metaDescription}
                 multiline
                 fullWidth
                 rows={17}
                 variant="outlined"
                 onChange={(e) => {
-                  setProperties({ ...unitProperties, description: e.target.value });
+                  setProperties({ ...unitProperties, metaDescription: e.target.value });
                 }}
                 onKeyDown={(e) => {
-                  if (e.keyCode === 13 && !e.shiftKey) props.updateProperties(e, "description", unitProperties.description);
+                  if (e.keyCode === 13 && !e.shiftKey) props.updateProperties(e, "metaDescription", unitProperties.metaDescription);
                 }}
                 onFocus={() => {
                   setTableDataState({ description: true });
