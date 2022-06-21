@@ -23,11 +23,10 @@ function CheckDetailsTable(props) {
     };
 
     useEffect(() => {
-        props.setInitialFilters([{ field: "check._id.keyword", value: checkId }])
         setTableMeta({
             addBtnText: "INPUT MODE",
             addWithInput: true,
-            // filters: [{ field: "check._id.keyword", value: checkId }],
+            filters: [{ field: "check._id.keyword", value: checkId }],
             TableHeader: copy(TableHeader),
             esIndex: "checkdetails_flat",
             startPaginationAt: 50,
