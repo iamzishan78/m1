@@ -16,7 +16,7 @@ import DeleteConfirmationDialogContent from "components/Shared/M1nTable/componen
 const genericDataActions = ["tags", "comments"];
 
 function RevenueStatementTable(props) {
-  const classes = usetableStyles();
+  const classes = usetableStyles({ isRevenueTable: true });
 
   const [potentialIssuesList, setPotentialIssuesList] = useState([]);
   const [pIssuesArr, setIssuesArr] = useState([]);
@@ -199,10 +199,10 @@ function RevenueStatementTable(props) {
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
             {`Do you want to delete the selected revenue statement${props.selectedRows &&
-                props.selectedRows.length > 1 &&
-                props.selectedRows.length > 1
-                ? "s"
-                : ""
+              props.selectedRows.length > 1 &&
+              props.selectedRows.length > 1
+              ? "s"
+              : ""
               }?`}
           </DeleteConfirmationDialogContent>
         )}
