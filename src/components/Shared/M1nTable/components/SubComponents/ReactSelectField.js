@@ -81,6 +81,11 @@ const ReactSelectField = ({
     value: "----",
   };
 
+  const { colors } = defaultTheme;
+
+  useEffect(() => {
+    onFilterChange("");
+  }, [dropdownOptions]);
 
   const Option = (props) => {
     const palleteId = props?.options.find(opt => opt.value === props.value)?.palleteId
@@ -208,18 +213,18 @@ const ReactSelectField = ({
     );
   };
 
-
-  const { colors } = defaultTheme;
-
-  useEffect(() => {
-    onFilterChange("");
-  }, [dropdownOptions]);
-
   const onFilterChange = (search) => {
     const options = JSON.parse(JSON.stringify(dropdownOptions.filter(op => op.value?.toLowerCase()?.includes(search.toLowerCase()))));
     options.unshift(defaultValue);
     options.push({ label: "edit", value: "editOption" });
     setOptions(options);
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Escape" && isOpen) {
+      e.stopPropagation();
+      setIsOpen(!isOpen)
+    }
   }
 
   const Menu = props => {
@@ -384,6 +389,7 @@ const ReactSelectField = ({
             hideSelectedOptions={false}
             isClearable={false}
             menuIsOpen
+            onKeyDown={handleKeyDown}
             onChange={(e) => onSelectChange(e)}
             options={options
               .filter((op) => typeof op.value === "string")
