@@ -30,7 +30,7 @@ const unitsColumnHeaders = [
       options: {
         sort: true,
         filter: true,
-        setCellProps: () => ({ style: { minWidth: "230px" } }),
+        setCellProps: () => ({ style: { minWidth: "250px" } }),
       },
       style: { minWidth: 185 }
     },
