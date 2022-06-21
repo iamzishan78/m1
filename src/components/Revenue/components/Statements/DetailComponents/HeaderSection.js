@@ -414,9 +414,9 @@ export default function HeaderFunction(props) {
                     fullWidth
                     variant="outlined"
                     value={props.value || ""}
-                    onChange={(value) => {
-                      props.onChange(value);
-                      handleUpdateCheck({ source: value });
+                    onChange={(e) => {
+                      props.onChange(e.target.value);
+                      handleUpdateCheck({ source: e.target.value });
                     }}
                   >
                     <MenuItem value={"Manual Entry"}>Manual Entry</MenuItem>
