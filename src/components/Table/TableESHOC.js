@@ -165,7 +165,7 @@ export const TableESHOC = (Component) => {
                         }
                         if (!isEmpty(view)) {
                             view = formattingGridView(JSON.parse(JSON.stringify(view)));
-                            columnsData = handleSelectedGridChange(TableHeader, view, columnsData);
+                            columnsData = handleSelectedGridChange(TableHeader(), view, columnsData);
                         }
                         columnsData = sortColumns(columnsData, view);
                         setColumnsData(columnsData)
