@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
 
 import TextField from '@material-ui/core/TextField';
@@ -12,8 +12,10 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
   const [search, setSearch] = useState(value);
   // const { filterKey, type } = column
   const [getFilters, { data: filtersData, loading }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: "no-cache" });
-  const getFiltersType = GET_ES_SIMPLE_FILTER?.definitions?.[0]?.name?.value
-  console.log(getFiltersType)
+
+  useEffect(() => {
+    setSearch(value)
+  }, [value]);
 
   useEffect(() => {
     getFiltersAction("")
@@ -24,6 +26,11 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
       const keys = Object.keys(filtersData)
       if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits) {
         let hits = filtersData[keys[0]].hits
+        if (label === 'State') {
+          hits = hits.map((hit) => ({ ...hit, key: states[hit.key] || hit.key }))
+        }
+        hits = hits.map((hit) => ({ ...hit, key: hit.key ? hit.key.toUpperCase() : hit.key }))
+
         if (label === 'Township')
           hits = hits.map((hit) => ({ ...hit, key: hit.key.split(" ")[0] }))
         if (label === 'Range')
@@ -111,3 +118,66 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
     />
   );
 })
+
+
+const states = {
+  "Alabama": "AL",
+  "Alaska": "AK",
+  "American Samoa": "AS",
+  "Arizona": "AZ",
+  "Arkansas": "AR",
+  "California": "CA",
+  "Colorado": "CO",
+  "Connecticut": "CT",
+  "Delaware": "DE",
+  "District of Columbia": "DC",
+  "Federated States Of Micronesia": "FM",
+  "Florida": "FL",
+  "Georgia": "GA",
+  "Guam": "GU",
+  "Hawaii": "HI",
+  "Idaho": "ID",
+  "Illinois": "IL",
+  "Indiana": "IN",
+  "Iowa": "IA",
+  "Kansas": "KS",
+  "Kentucky": "KY",
+  "Louisiana": "LA",
+  "Maine": "ME",
+  "Marshall Islands": "MH",
+  "Maryland": "MD",
+  "Massachusetts": "MA",
+  "Michigan": "MI",
+  "Minnesota": "MN",
+  "Mississippi": "MS",
+  "Missouri": "MO",
+  "Montana": "MT",
+  "Nebraska": "NE",
+  "Nevada": "NV",
+  "New Hampshire": "NH",
+  "New Jersey": "NJ",
+  "New Mexico": "NM",
+  "New York": "NY",
+  "North Carolina": "NC",
+  "North Dakota": "ND",
+  "Northern Mariana Islands": "MP",
+  "Ohio": "OH",
+  "Oklahoma": "OK",
+  "Oregon": "OR",
+  "Palau": "PW",
+  "Pennsylvania": "PA",
+  "Puerto Rico": "PR",
+  "Rhode Island": "RI",
+  "South Carolina": "SC",
+  "South Dakota": "SD",
+  "Tennessee": "TN",
+  "Texas": "TX",
+  "Utah": "UT",
+  "Vermont": "VT",
+  "Virgin Islands": "VI",
+  "Virginia": "VA",
+  "Washington": "WA",
+  "West Virginia": "WV",
+  "Wisconsin": "WI",
+  "Wyoming": "WY"
+}

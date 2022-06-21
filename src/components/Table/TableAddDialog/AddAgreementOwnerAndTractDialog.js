@@ -179,6 +179,8 @@ function AddAgreementOwnerAndTractDialog(props) {
       const originalProperties = getParcelOriginalProperties(selectedShapeLayer?.shapeJson?.properties);
       const sdGrossAcres = selectedShapeLayer?.shapeJson?.properties?.sdGrossAcres || "";
       const legalDescription = selectedShapeLayer?.shapeJson?.properties?.legalDescription || "";
+      const tractStatus = selectedShapeLayer?.shapeJson?.properties?.tractStatus || "";
+      const mapStatus = selectedShapeLayer?.shapeJson?.properties?.mapStatus || "";
       selectedShapeLayer.parcelId = selectedShapeLayer._id;
 
       setTractValue({ _id: selectedShapeLayer._id, name: selectedShapeLayer.name });
@@ -191,6 +193,8 @@ function AddAgreementOwnerAndTractDialog(props) {
           tractName: selectedShapeLayer.name,
           sdGrossAcres,
           legalDescription,
+          tractStatus,
+          mapStatus,
           ...originalProperties,
           qtrQtrSelection: selectedShapeLayer.qtrQtrSelection,
         },
@@ -488,6 +492,40 @@ function AddAgreementOwnerAndTractDialog(props) {
             </Grid>
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.sdGrossAcres" label={"Gross. Acres"} InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.sdGrossAcres || ""} />
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.shapeArea" label={"Calc. Acres"} InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.shapeArea || ""} />
+            <Controller
+              control={control}
+              name={`tract.tractStatus`}
+              defaultValue={tract?.tractStatus || ''}
+              render={(props) => (
+                <AutoCompleteTypeComponent
+                  value={props.value}
+                  meta={{
+                    path: 'shapeJson.properties.tractStatus'
+                  }}
+                  label="Tract Status"
+                  variant="outlined"
+                  onChange={(e, value) => { props.onChange(value.name) }}
+                  autoFocus={false}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name={`tract.mapStatus`}
+              defaultValue={tract?.mapStatus || ''}
+              render={(props) => (
+                <AutoCompleteTypeComponent
+                  value={props.value}
+                  meta={{
+                    path: 'shapeJson.properties.mapStatus'
+                  }}
+                  label="Map Status"
+                  variant="outlined"
+                  onChange={(e, value) => { props.onChange(value.name) }}
+                  autoFocus={false}
+                />
+              )}
+            />
           </div>
           <div>
             <List>
@@ -690,7 +728,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           </Grid>
 
           <Grid container direction="row" spacing={2}>
-            <Grid item xs={6}>
+            {/* <Grid item xs={6}>
               <Controller
                 control={control}
                 name={`tractStatus`}
@@ -708,8 +746,8 @@ function AddAgreementOwnerAndTractDialog(props) {
                   />
                 )}
               />
-            </Grid>
-            <Grid item xs={6}>
+            </Grid> */}
+            <Grid item xs={12}>
               <FormControl variant="outlined" fullWidth margin="dense" inputRef={register()} name="countAcres">
                 <InputLabel id="countAcres">Count Acres</InputLabel>
                 <Controller
@@ -749,7 +787,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                 handleSave();
               }}
               className={classes.footerButton}
-              disabled={!selectedShapeLayer?._id}
+            // disabled={!selectedShapeLayer?._id}
             >
               {loading ? <CircularProgress size={14} /> : "Save"}
             </Button>

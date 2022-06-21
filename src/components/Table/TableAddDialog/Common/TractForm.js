@@ -33,23 +33,6 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
         )}
       />
 
-      <Controller
-        control={control}
-        name={`${prefix}county`}
-        defaultValue={tract?.county || ''}
-        render={(props) => (
-          <AutoCompleteLandgrid
-            value={props.value}
-            filterKey='level2Name.keyword'
-            filters={[{ "field": "level2Type.keyword", "value": "County" }, { "field": "level1Name.keyword", "value": state }]}
-            label="County"
-            variant="outlined"
-            onChange={(value) => { props.onChange(value.key); setState(value.key) }}
-            autoFocus={false}
-          />
-        )}
-      />
-
       {/* <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}state`} label={"State"}
         InputLabelProps={{ shrink: true }} fullWidth defaultValue={tract?.state || ''} disabled />
 
@@ -68,7 +51,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
               filters={{ "field": "level3Type.keyword", "value": "Meridian" }}
               label="Meridian"
               variant="outlined"
-              onChange={(value) => { props.onChange(value.key); setState(value.key) }}
+              onChange={(value) => { props.onChange(value.key) }}
               autoFocus={false}
             />
           )}
@@ -85,7 +68,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
               filters={{ "field": "level5Type.keyword", "value": "TownshipRange" }}
               label="Township"
               variant="outlined"
-              onChange={(value) => { props.onChange(value.key); setState(value.key) }}
+              onChange={(value) => { props.onChange(value.key) }}
               autoFocus={false}
             />
           )}
@@ -102,7 +85,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
               filters={{ "field": "level5Type.keyword", "value": "TownshipRange" }}
               label="Range"
               variant="outlined"
-              onChange={(value) => { props.onChange(value.key); setState(value.key) }}
+              onChange={(value) => { props.onChange(value.key) }}
               autoFocus={false}
             />
           )}
@@ -119,7 +102,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
               filters={{ "field": "level6Type.keyword", "value": "Section" }}
               label="Section"
               variant="outlined"
-              onChange={(value) => { props.onChange(value.key); setState(value.key) }}
+              onChange={(value) => { props.onChange(value.key) }}
               autoFocus={false}
             />
           )}
@@ -150,7 +133,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
               filters={{ "field": "level3Type.keyword", "value": "Survey" }}
               label="Survey"
               variant="outlined"
-              onChange={(value) => { props.onChange(value.key); setState(value.key) }}
+              onChange={(value) => { props.onChange(value.key) }}
               autoFocus={false}
             />
           )}
@@ -164,10 +147,11 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             <AutoCompleteLandgrid
               value={props.value}
               filterKey='level2Name.keyword'
-              filters={{ "field": "level2Type.keyword", "value": "County" }}
+              filters={[{ "field": "level2Type.keyword", "value": "County" }, { "field": "level1Name.keyword", "value": state }]}
+
               label="County"
               variant="outlined"
-              onChange={(value) => { props.onChange(value.key); setState(value.key) }}
+              onChange={(value) => { props.onChange(value.key) }}
               autoFocus={false}
             />
           )}
@@ -184,7 +168,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
               filters={{ "field": "level4Type.keyword", "value": "Block" }}
               label="Block"
               variant="outlined"
-              onChange={(value) => { props.onChange(value.key); setState(value.key) }}
+              onChange={(value) => { props.onChange(value.key) }}
               autoFocus={false}
             />
           )}
@@ -201,7 +185,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
               filters={{ "field": "level5Type.keyword", "value": "Section" }}
               label="Section"
               variant="outlined"
-              onChange={(value) => { props.onChange(value.key); setState(value.key) }}
+              onChange={(value) => { props.onChange(value.key) }}
               autoFocus={false}
             />
           )}
@@ -218,7 +202,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
               filters={{ "field": "level6Type.keyword", "value": "Abstract" }}
               label="Abstract"
               variant="outlined"
-              onChange={(value) => { props.onChange(value.key); setState(value.key) }}
+              onChange={(value) => { props.onChange(value.key) }}
               autoFocus={false}
             />
           )}
