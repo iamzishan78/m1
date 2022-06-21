@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState, useRef } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
@@ -98,7 +98,7 @@ function AgreementsTable(props) {
       selectedGridView: GridViewModule || defaultView,
       customDataESKey: 'shapeJson.properties.custom_data',
       searchFields: ["*"],
-      TableHeader: copy(TableHeader),
+      TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
       startPaginationAt: 10,
       typeKeyword: { gridViewCategory: "Agreements", metaModule: "Agreement" },

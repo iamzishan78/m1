@@ -1,4 +1,5 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -8,6 +9,7 @@ import AgreementDetailCard from "./AgreementDetailCard";
 // contexts 
 import { AppContext } from "AppContext";
 import { ExpandableCardContext } from "components/ExpandableCard/ExpandableCardContext";
+import { setMapGridCardState } from "actions";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -28,6 +30,11 @@ export default function AgreementCard(props) {
   const [stateExpandableCard] = useContext(ExpandableCardContext);
 
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setMapGridCardState({ mapGridCardActivated: false }));
+  }, [dispatch]);
 
   return (
     <>
