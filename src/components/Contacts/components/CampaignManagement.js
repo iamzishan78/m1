@@ -2,10 +2,12 @@ import React, { useContext, useState } from "react";
 import { useSelector } from "react-redux";
 import CampaignsTable from "components/Table/Contact/CampaignsTable";
 import { makeStyles } from "@material-ui/core/styles";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 import { AppContext } from "AppContext";
 
 import CampaignAnalytics from "components/Contacts/components/CampaignAnalytics";
+import CustomDatesActivities from "components/Contacts/components/CampaignFilter";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,6 +48,7 @@ const CampaignManagement = () => {
     toDate: null,
     fromDate: null,
   });
+  // console.log('appliedFilters===>', appliedFilters);
 
   const getCustomAppliedFilters = () => {
     if (activeModule?.filterValue) {
@@ -63,18 +66,26 @@ const CampaignManagement = () => {
   };
 
   return (
-    <div className={classes.root}>
-      <CampaignAnalytics />
-      <CampaignsTable
-        esIndex={esIndex}
-        searchFields={searchFields}
-        filtersChange={filtersChange}
-        appliedFilters={appliedFilters}
-        filterToggle={filterToggle}
-        targetLabel="campaignManagement"
-        header="Campaigns"
-      />
-    </div>
+      <div className={classes.root}>
+        <CustomDatesActivities
+          setToDate={(value) => setAppliedFilters({...appliedFilters, toDate: value})}
+          setFromDate={(value) => setAppliedFilters({...appliedFilters, fromDate: value})}
+          esIndex={esIndex}
+          searchFields={searchFields}
+          tableFilters={tableFilters}
+          appliedFilters={appliedFilters}
+        />
+        <CampaignAnalytics />
+        <CampaignsTable
+          esIndex={esIndex}
+          searchFields={searchFields}
+          filtersChange={filtersChange}
+          appliedFilters={appliedFilters}
+          filterToggle={filterToggle}
+          targetLabel="campaignManagement"
+          header="Campaigns"
+        />
+      </div>
   );
 };
 
