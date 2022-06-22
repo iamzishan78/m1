@@ -309,6 +309,8 @@ export default function DetailComponents(props) {
         variables: {
           check: { _id: checksFlatData._id, ...data }
         },
+        refetchQueries: ["getCheck"],
+        awaitRefetchQueries: true
       });
     }
   }
@@ -435,6 +437,7 @@ export default function DetailComponents(props) {
                     targetSourceId={checkId}
                     setStateApp={setStateApp}
                     descriptionKey="description"
+                    isApproval={true}
                   />
                 </div>
               )}
