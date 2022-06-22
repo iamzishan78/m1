@@ -1466,7 +1466,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       }
 
       var bbox = [[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]];
-      let features = map.queryRenderedFeatures(bbox, { layers: [...defaultLayers] });
+      const mapLayers = map.getStyle().layers
+      const layersToQuery = defaultLayers.filter((layerId) => mapLayers.find((mLayer) => mLayer.id === layerId))
+      let features = map.queryRenderedFeatures(bbox, { layers: [...layersToQuery] });
       if (features?.length === 0)
         return ''
 
