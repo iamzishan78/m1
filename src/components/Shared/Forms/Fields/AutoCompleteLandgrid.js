@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
+import { US_STATES } from "utils/data";
 
 export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ onChange, filterKey, type, extendSearchQuery, esIndex = 'platformData:landgrid', filters, label, value, variant }) {
   const [open, setOpen] = useState(false);
@@ -27,9 +28,9 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
       if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits) {
         let hits = filtersData[keys[0]].hits
         if (label === 'State') {
-          hits = hits.map((hit) => ({ ...hit, key: states[hit.key] || hit.key }))
+          hits = hits.map((hit) => ({ ...hit, key: US_STATES[hit.key] || hit.key }))
         }
-        hits = hits.map((hit) => ({ ...hit, key: hit.key ? hit.key.toUpperCase() : hit.key }))
+        hits = hits.map((hit) => ({ ...hit, key: hit.key, label: hit.key.toUpperCase() }))
 
         if (label === 'Township')
           hits = hits.map((hit) => ({ ...hit, key: hit.key.split(" ")[0] }))
@@ -43,7 +44,8 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
 
   const handleChange = (search) => {
     setSearch(search);
-    getFiltersAction(search);
+    if (label !== 'State')
+      getFiltersAction(search);
   }
 
   const getFiltersAction = (search) => {
@@ -59,12 +61,12 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
         filterKey: typeof filterKey === 'string' ? filterKey : undefined,
         search: { query: "", fields: ["*"] },
         extendSearchQuery,
-        size: 50,
+        size: 70,
         filterAggs: {
           query: rawSearch,
           field: typeof filterKey === 'string' ? filterKey : undefined,
           fields: typeof filterKey !== 'string' ? filterKey : undefined,
-          size: 50
+          size: 70
         }
       },
     });
@@ -118,66 +120,3 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
     />
   );
 })
-
-
-const states = {
-  "Alabama": "AL",
-  "Alaska": "AK",
-  "American Samoa": "AS",
-  "Arizona": "AZ",
-  "Arkansas": "AR",
-  "California": "CA",
-  "Colorado": "CO",
-  "Connecticut": "CT",
-  "Delaware": "DE",
-  "District of Columbia": "DC",
-  "Federated States Of Micronesia": "FM",
-  "Florida": "FL",
-  "Georgia": "GA",
-  "Guam": "GU",
-  "Hawaii": "HI",
-  "Idaho": "ID",
-  "Illinois": "IL",
-  "Indiana": "IN",
-  "Iowa": "IA",
-  "Kansas": "KS",
-  "Kentucky": "KY",
-  "Louisiana": "LA",
-  "Maine": "ME",
-  "Marshall Islands": "MH",
-  "Maryland": "MD",
-  "Massachusetts": "MA",
-  "Michigan": "MI",
-  "Minnesota": "MN",
-  "Mississippi": "MS",
-  "Missouri": "MO",
-  "Montana": "MT",
-  "Nebraska": "NE",
-  "Nevada": "NV",
-  "New Hampshire": "NH",
-  "New Jersey": "NJ",
-  "New Mexico": "NM",
-  "New York": "NY",
-  "North Carolina": "NC",
-  "North Dakota": "ND",
-  "Northern Mariana Islands": "MP",
-  "Ohio": "OH",
-  "Oklahoma": "OK",
-  "Oregon": "OR",
-  "Palau": "PW",
-  "Pennsylvania": "PA",
-  "Puerto Rico": "PR",
-  "Rhode Island": "RI",
-  "South Carolina": "SC",
-  "South Dakota": "SD",
-  "Tennessee": "TN",
-  "Texas": "TX",
-  "Utah": "UT",
-  "Vermont": "VT",
-  "Virgin Islands": "VI",
-  "Virginia": "VA",
-  "Washington": "WA",
-  "West Virginia": "WV",
-  "Wisconsin": "WI",
-  "Wyoming": "WY"
-}

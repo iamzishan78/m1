@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import TextField from "@material-ui/core/TextField";
 import { Controller } from "react-hook-form";
-
+import { US_STATES_CODES } from "utils/data";
 import AutoCompleteShapeLayer from "components/Shared/Forms/Fields/AutoCompleteShapeLayer";
 import { AutoCompleteLandgrid } from "components/Shared/Forms/Fields/AutoCompleteLandgrid";
 
@@ -147,7 +147,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             <AutoCompleteLandgrid
               value={props.value}
               filterKey='level2Name.keyword'
-              filters={[{ "field": "level2Type.keyword", "value": "County" }, { "field": "level1Name.keyword", "value": state }]}
+              filters={[{ "field": "level2Type.keyword", "value": "County" }, { "field": "level1Name.keyword", "value": US_STATES_CODES[state] }]}
 
               label="County"
               variant="outlined"

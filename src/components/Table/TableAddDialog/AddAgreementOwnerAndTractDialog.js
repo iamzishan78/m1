@@ -39,9 +39,11 @@ import TractForm from "components/Table/TableAddDialog/Common/TractForm";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import AutoCompleteWithNewOption from "components/Shared/Forms/Fields/AutoCompleteWithNewOption";
 import { addTrailingZeros } from "components/Shared/functions";
+import { showErrorMessage } from "actions";
 import { GET_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetAutoCompleteList";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import AutoCompleteParcelOwners from "components/Shared/Forms/Fields/AutoCompleteParcelOwners";
+import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   dialogFooter: {
@@ -95,6 +97,7 @@ const qtrOptions = ["E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
 
 function AddAgreementOwnerAndTractDialog(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const { control, reset, register, getValues, watch, setValue } = useForm();
 
   const [loading, setLoading] = useState(false);
@@ -114,9 +117,13 @@ function AddAgreementOwnerAndTractDialog(props) {
   const parcelOwnersRadioBValue = watch("parcelOwnersRadioBValue", "true");
 
   const [addOwnerToAShape] = useMutation(ADD_OWNER_TOA_SHAPE, {
-    onCompleted: () => {
+    onCompleted: (data) => {
       setLoading(false);
-      handleClose();
+      if (data.addOwnerToAShape.success) {
+        handleClose();
+      } else {
+        dispatch(showErrorMessage(data.addOwnerToAShape.message));
+      }
     },
     refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
@@ -164,6 +171,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       else props.seletedOwner.parcelOwnersRadioBValue = "false";
 
       reset(props.seletedOwner);
+      setIsNewTract(false)
 
       // reset(pick(props.seletedOwner, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'sdGrossAcres', 'uAcres', 'legalDescription']))
     }
@@ -226,6 +234,9 @@ function AddAgreementOwnerAndTractDialog(props) {
       ownerToAdd.depthFrom = "All depths";
       ownerToAdd.depthTo = "All depths";
     }
+
+    if (isNewTract)
+      delete ownerToAdd.tract.tractId
 
     setLoading(true);
     if (props.seletedOwner) {
