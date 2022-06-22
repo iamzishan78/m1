@@ -45,7 +45,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
               e.stopPropagation();
               if (isSnapGrid)
                 history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
-                  { showAgreementBreadcrumb: true }
+                  { showAgreementBreadcrumb: false }
                 );
               else
                 history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
