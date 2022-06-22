@@ -130,6 +130,12 @@ const RevenuePropertiesHeadCells = [
     style: { minWidth: 120 },
   },
   {
+    name: "prospectID",
+    label: "Prospect ID",
+    esKey: "prospectID.keyword",
+    options: { sort: true, filter: true },
+  },
+  {
     name: "acquisitionID",
     label: "Acquisition ID",
     esKey: "acquisitionID.keyword",
