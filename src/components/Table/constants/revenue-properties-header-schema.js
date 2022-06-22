@@ -27,7 +27,9 @@ const RevenuePropertiesHeadCells = [
             style={styles}
           >
             {/* {splitNumber?.[0]} */}
-            {splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]}
+            {splitNumber?.[0]
+              ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
+              : tableMeta?.rowData[2]}
           </p>
         );
       },
@@ -46,10 +48,10 @@ const RevenuePropertiesHeadCells = [
     label: "Operator",
     esKey: "operator.name.keyword",
     options: {
-      sort: true, filter: true,
+      sort: true,
+      filter: true,
       setCellProps: () => ({ style: { minWidth: "225px" } }),
     },
-
   },
   {
     name: "state",
@@ -127,7 +129,12 @@ const RevenuePropertiesHeadCells = [
     },
     style: { minWidth: 120 },
   },
-
+  {
+    name: "acquisitionID",
+    label: "Acquisition ID",
+    esKey: "acquisitionID.keyword",
+    options: { sort: true, filter: true },
+  },
   {
     name: "lastChecked",
     label: "Last Check Date",

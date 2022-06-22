@@ -6,4 +6,10 @@ export const GET_PROPERTY = gql`
   }
 `;
 
+export const GET_ACQUISITION_AUTOCOMPLETE_LIST = gql`
+  query getAquisitionAutoCompleteList {
+    getAquisitionAutoCompleteList
+  }
+`;
+
 

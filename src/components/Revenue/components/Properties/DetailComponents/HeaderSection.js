@@ -12,10 +12,13 @@ import {
   Select,
   MenuItem,
   IconButton,
+  Typography,
 } from "@material-ui/core";
 import { Clear } from "@material-ui/icons";
+import { Autocomplete, createFilterOptions } from "@material-ui/lab";
+import loadashFilter from "lodash/filter";
 import { KeyboardDatePicker } from "@material-ui/pickers";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import StateField from "./State";
 import CountyField from "./County";
 import AssociatedWellsList from "components/Shared/Wells/AssociatedWells";
@@ -27,6 +30,7 @@ import { AppContext } from "AppContext";
 import { CONTACT_ENTITY } from "graphQL/useQueryContactEntity";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
+import { GET_ACQUISITION_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetProperty";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -131,6 +135,7 @@ export default function HeaderSection(props) {
   const [entityType, setEntityType] = useState("");
 
   const [getContactEntity, { data: contactEntityData }] = useLazyQuery(CONTACT_ENTITY);
+  const { data, loading, error} = useQuery(GET_ACQUISITION_AUTOCOMPLETE_LIST);
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
 
   useEffect(() => {
@@ -196,6 +201,8 @@ export default function HeaderSection(props) {
   const handleUpdate = debounce((key, value) => {
     updatePropertyData(key, value);
   }, 500);
+  
+  const getAcquisitionListOptions = () => data?.getAquisitionAutoCompleteList?.map(option => ({ name: option, value: option})) || [];
 
   return (
     <Grid container direction="row" justify="space-between" alignItems="center">
@@ -618,6 +625,105 @@ export default function HeaderSection(props) {
                       <MenuItem value="InPay">In Pay</MenuItem>
                       <MenuItem value="NotInPay">Not in Pay</MenuItem>
                     </Select>
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={5}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={3}>
+                <div className={classes.label}>Acquisition ID</div>
+              </Grid>
+              <Grid item xs={8}>
+                <Controller
+                  control={control}
+                  name="acquisitionID"
+                  render={(params) => (
+                    <Autocomplete
+                      className={classes.field}
+                      value={
+                        params.value
+                          ? { _id: params.value, name: params.value }
+                          : null
+                      }
+                      disableListWrap
+                      onBlur={() => {}}
+                      options={getAcquisitionListOptions()}
+                      getOptionLabel={(option) => {
+                        // Value selected with enter, right from the input
+                        console.log(option);
+                        if (typeof option === "string") {
+                          return option;
+                        }
+                        // Add "xxx" option created dynamically
+                        if (option.inputValue) {
+                          return option.name;
+                        }
+
+                        if (option?.name) return option.name;
+                        else return "";
+                      }}
+                      getOptionSelected={(option, value) => {
+                        return option?._id === value?._id;
+                      }}
+                      renderOption={(option) => {
+                        if (option._id === "newEntity")
+                          return (
+                            <Typography style={{ color: "midnightblue" }}>
+                              Add '{option.name}'
+                            </Typography>
+                          );
+
+                        return (
+                          <Grid container spacing={0}>
+                            <Grid container item xs={12} alignItems="center">
+                              <Grid item xs>
+                                <span style={{ fontWeight: 400 }}>
+                                  {option.name}
+                                </span>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        );
+                      }}
+                      filterOptions={(options, params) => {
+                        const inputValue = params.inputValue;
+                        const filtered = createFilterOptions()(options, {
+                          ...params,
+                          inputValue,
+                        });
+                        const isExist = loadashFilter(filtered, (filter) => {
+                          return filter._id === inputValue;
+                        });
+                        // Suggest the creation of a new value
+                        if (
+                          inputValue !== "" &&
+                          (!isExist || isExist.length === 0)
+                        ) {
+                          filtered.unshift({
+                            value: inputValue,
+                            name: inputValue,
+                          });
+                        }
+                        return filtered;
+                      }}
+                      onChange={(event, newValue) => {
+                        updatePropertyData("acquisitionID", newValue.value);
+                      }}
+                      renderInput={(props) => (
+                        <TextField
+                          variant={"outlined"}
+                          margin="dense"
+                          {...props}
+                          InputProps={{
+                            ...props.InputProps,
+                          }}
+                          fullWidth
+                          size="small"
+                        />
+                      )}
+                    />
                   )}
                 />
               </Grid>
