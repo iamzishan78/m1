@@ -193,7 +193,7 @@ const AssociatedWellsList = ({
     history.push(`/map/wells/${id.toUpperCase()}`, {
       showWellBreadcrumb: true,
       breadcrumbs: [
-        { title: "Division Orders", url: "/revenue/properties" },
+        { title: "Properties", url: "/revenue/properties" },
         { title: moduleName, url: `/revenue/property/details/${relatedObject}` },
       ],
     });
