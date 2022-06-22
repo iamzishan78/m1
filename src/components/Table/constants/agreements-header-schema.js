@@ -70,7 +70,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
           minWidth: "300px",
           whiteSpace: "nowrap",
           position: "sticky",
-          left: "227px",
+          left: "245px",
           background: "white",
           zIndex: 100
         }
@@ -79,7 +79,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
         style: {
           position: "sticky",
           minWidth: "150px",
-          left: "227px",
+          left: "245px",
           zIndex: 101
         }
       }),
