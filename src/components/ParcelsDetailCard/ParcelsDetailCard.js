@@ -413,7 +413,7 @@ export default function ParcelsDetailCard(props) {
   const RunsheetHeader = () => (
     <div className={classes.documentHeader}>
       <GavelIcon />
-      <span>LIMITED TITLE RUNSHEET</span>
+      <span>RUNSHEET INSTRUMENTS</span>
     </div>
   );
 
