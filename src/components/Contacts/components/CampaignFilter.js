@@ -301,7 +301,7 @@ const CampaignFilter = ({
         <TextField
           {...params}
           variant="outlined"
-          label="Campaign status"
+          label="Campaign Status"
           placeholder=""
           onChange={(e) => {
             setSearch(e.target.value);
