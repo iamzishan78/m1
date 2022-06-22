@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
-import { get } from "lodash";
+import { get, isEmpty } from "lodash";
 import { Grid, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Link from "@material-ui/core/Link";
@@ -121,7 +121,12 @@ const AssociatedWellsList = ({
   let history = useHistory();
   const classes = useStyles();
 
-  const moduleName = details?.name ?? "";
+  const moduleName = useMemo(() => {
+    if (!isEmpty(details)) {
+      return `${details.number}-${details.name}`;
+    }
+    return "";
+  }, [details]);
 
   // States
   const [search, setSearch] = useState("");
@@ -188,7 +193,7 @@ const AssociatedWellsList = ({
     history.push(`/map/wells/${id.toUpperCase()}`, {
       showWellBreadcrumb: true,
       breadcrumbs: [
-        { title: "Properties", url: "/revenue/properties" },
+        { title: "Division Orders", url: "/revenue/properties" },
         { title: moduleName, url: `/revenue/property/details/${relatedObject}` },
       ],
     });
