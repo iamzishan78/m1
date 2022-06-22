@@ -1218,10 +1218,12 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           findBoundsMap([selectedUserDefinedLayer], map);
           return {
             ...state,
+            expandedCard: true,
             selectedUserDefinedLayer: null,
             selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
           };
         });
+        drawBoundary(map, selectedUserDefinedLayer);
       } else if (feature.source === "interests_source" && !drawMode.includes("draw") && !drawMode.includes("drag")) {
         setStateApp((state) => {
           if (state.isDrawing) return state;
@@ -6133,15 +6135,15 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
     }
   }, [parcelBoundaryId]);
 
-  useEffect(() => {
-    if (map && stateApp.selectedParcel) {
-      setParcelBoundaryId(stateApp.selectedParcel.id);
-    } else if (map) {
-      if (map.getLayer("parcelBoundary")) map.removeLayer("parcelBoundary");
-      if (map.getSource("parcelBoundarySource")) map.removeSource("parcelBoundarySource");
-      setParcelBoundaryId(null);
-    }
-  }, [stateApp.selectedParcel]);
+  // useEffect(() => {
+  //   if (map && stateApp.selectedParcel) {
+  //     setParcelBoundaryId(stateApp.selectedParcel.id);
+  //   } else if (map) {
+  //     if (map.getLayer("parcelBoundary")) map.removeLayer("parcelBoundary");
+  //     if (map.getSource("parcelBoundarySource")) map.removeSource("parcelBoundarySource");
+  //     setParcelBoundaryId(null);
+  //   }
+  // }, [stateApp.selectedParcel]);
 
   useEffect(() => {
     if ((!stateApp.selectedUserDefinedLayer && !stateApp.selectedShape && !stateApp.selectedParcel) || stateApp.shapeEdit) {
