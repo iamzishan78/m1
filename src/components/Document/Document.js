@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import { isEmpty } from "lodash";
 
 import { AppContext } from "AppContext";
 import Drawer from "./components/Drawer";
@@ -28,6 +29,10 @@ const useStyles = makeStyles((theme) => ({
         },
       },
     },
+
+    '& .MuiDrawer-paperAnchorRight': {
+      overflow: "hidden",
+    }
   },
 }));
 
@@ -64,7 +69,7 @@ export default function DocumentComponent() {
       {stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0 ? (
         <DocViewer width="calc(100vw - 515px)" onCloseHandler={onCloseHandler} />
       ) : (
-        <DocViewer width="calc(100vw)" onCloseHandler={onCloseHandler} />
+        !isEmpty(stateApp.viewDoc) && <DocViewer width="calc(100vw)" onCloseHandler={onCloseHandler} />
       )}
     </div>
   );

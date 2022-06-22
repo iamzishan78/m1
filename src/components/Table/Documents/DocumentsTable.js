@@ -289,6 +289,7 @@ function DocumentsTable(props) {
       case "search":
       case "sort":
       case "filterChange":
+
         dispatch(
           updateUserGridViewSettingAction.STARTED({
             userGridViewSetting: {
