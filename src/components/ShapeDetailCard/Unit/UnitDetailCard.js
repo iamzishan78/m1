@@ -172,7 +172,7 @@ export default function UnitDetailCard(props) {
     return (
       <div className={classes.documentHeader}>
         <GavelIcon />
-        <span>LIMITED TITLE RUNSHEET</span>
+        <span>RUNSHEET INSTRUMENTS</span>
       </div>
     );
   };
