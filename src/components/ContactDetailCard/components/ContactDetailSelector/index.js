@@ -33,6 +33,10 @@ import AgreementsTable from "components/Table/Agreement/AgreementsTable";
 import TractsTable from "components/Table/Tract/TractsTable";
 import ContactDetailedInfo from "components/ContactDetailedInfo/ContactDetailedInfo";
 import ActivitiesTable from "components/Table/Activities/ActivitiesTable";
+import ContactWellInterestTable from "components/Table/Contact/ContactWellInterestTable";
+import ContactParcelInterestTable from "components/Table/Contact/ContactParcelInterestTable";
+import ContactTaxRollInterestTable from "components/Table/Contact/ContactTaxRollInterestTable";
+import UnitInterestsTable from "../../../Table/Unit/UnitInterestsTable";
 
 import SearchPanel from "components/MapGridCard/components/SearchPanel";
 import { platformDataInitialData, snapGridSideBarData } from "components/MapGridCard/components/data";
@@ -343,10 +347,6 @@ function MapGridCard(props) {
 
                 <Grid item md={10} style={{ padding: "0px 10px", maxHeight: "700px", overflow: "overlay" }}>
                   <div style={{ position: "relative" }} classes={classes.gridTables}>
-                    {/* <TabPanels
-                  value={searchTapValue.index}
-                  panels={getTaps.map((tab, index) => {
-                    return ( */}
                     <Fragment>
                       {searchTapValue.value === "contactInformation" && (
                         <ContactDetailedInfo user={stateApp.user} purchaseData={props.purchaseData} contactData={props.contactData} />
@@ -370,57 +370,42 @@ function MapGridCard(props) {
                         />
                       )}
                       {searchTapValue.value === "taxRollInterest" && (
-                        // <MapGridTaxOwnersTable
-                        //   dense
-                        //   parent="search"
-                        //   customOptions={options}
-                        //   targetLabel={searchTapValue.value}
-                        //   header={<SearchPanel {...commonProps} />}
-                        //   showTags
-                        //   showComments
-                        //   showTracks
-                        // />
-                        <p>helllo</p>
+                        <ContactTaxRollInterestTable
+                          parent="assocTaxRollInterests"
+                          header={"Tax Roll Interests"}
+                          targetLabel="well"
+                          contactId={props.contactData._id}
+                          showTracks
+                        />
                       )}
                       {searchTapValue.value === "wellInterest" && (
-                        // <MapGridOperatorTable
-                        //   dense
-                        //   parent="search"
-                        //   customOptions={options}
-                        //   targetLabel={searchTapValue.value}
-                        //   header={<SearchPanel {...commonProps} />}
-                        //   showTags
-                        //   showComments
-                        //   showTracks
-                        // />
-                        <p>helllo</p>
+                        <ContactWellInterestTable
+                          parent="assocTaxRollInterests"
+                          header={"Well Interests"}
+                          targetLabel="well"
+                          contactId={props.contactData._id}
+                          showTracks
+                        />
                       )}
                       {searchTapValue.value === "unitInterests" && (
-                        // <MapGridLayersTable
-                        //   dense
-                        //   parent="search"
-                        //   customOptions={options}
-                        //   targetLabel={"operator"}
-                        //   header={<SearchPanel {...commonProps} />}
-                        // />
-                        <p>helllo</p>
+                        <UnitInterestsTable
+                          parent="assocTaxRollInterests"
+                          header={"Unit Interests"}
+                          targetLabel="unit"
+                          esFilters={[{ field: "contact._id.keyword", value: props.contactData._id }]}
+                          esIndex="shapeowners_flat"
+                          setESFilters={() => { }}
+                          onTractCount={() => { }}
+                        />
                       )}
                       {searchTapValue.value === "parcelInterests" && (
-                        // <MapGridContactTable
-                        //   dense
-                        //   parent="search"
-                        //   customOptions={options}
-                        //   targetLabel={searchTapValue.value}
-                        //   header={
-                        //     <SearchPanel
-                        //       isShapeGridOnly={stateApp.gridPolygonString}
-                        //       handleChange={handleSearchPanelChange}
-                        //       value={searchTapValue}
-                        //       ativateSearchPanel={ativateSearchPanel}
-                        //     />
-                        //   }
-                        // />
-                        <p>helllo</p>
+                        <ContactParcelInterestTable
+                          parent="assocTaxRollInterests"
+                          header={"Parcel Interests"}
+                          targetLabel="parcel"
+                          contactId={props.contactData._id}
+                          showTracks
+                        />
                       )}
                       {searchTapValue.value === "deals" && (
                         // <MapGridUnitTable
@@ -445,9 +430,6 @@ function MapGridCard(props) {
                         <p>helllo</p>
                       )}
                     </Fragment>
-                    {/* )
-                  })}
-                /> */}
                   </div>
                 </Grid>
               </Grid>
