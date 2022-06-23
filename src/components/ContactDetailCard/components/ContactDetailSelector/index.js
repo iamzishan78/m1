@@ -365,6 +365,8 @@ function MapGridCard(props) {
                           filterToggle={() => { }}
                           targetLabel={"activitiesDashboard"}
                           header="Activities"
+                          addAble={{ type: "contactActivity" }}
+                          onAddActivity={props.onAddActivity}
                         />
                       )}
                       {searchTapValue.value === "taxRollInterest" && (

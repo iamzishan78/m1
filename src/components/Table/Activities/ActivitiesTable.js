@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import get from "lodash/get";
 // context
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
-import { Container, Dialog, IconButton } from "@material-ui/core";
+import { Container, Dialog, IconButton, ButtonGroup, Button } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import { useMutation, useApolloClient } from "@apollo/client";
@@ -201,9 +201,8 @@ function ActivitiesTable(props) {
             m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
-            {`Do you want to delete the selected interest${
-              props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
-            }?`}
+            {`Do you want to delete the selected interest${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+              }?`}
           </DeleteConfirmationDialogContent>
         )}
       </Dialog>
@@ -231,6 +230,21 @@ function ActivitiesTable(props) {
                   float: "left",
                 }}
               >
+                {
+                  props.addAble.type === 'contactActivity' && (
+                    <ButtonGroup variant="contained" style={{ height: "40px", margin: "4px" }} color="primary" aria-label="split button">
+                      <Button
+                        color="primary"
+                        size="small"
+                        aria-label="select merge strategy"
+                        aria-haspopup="menu"
+                        onClick={() => props.onAddActivity(true)}
+                      >
+                        + Add Activity
+                      </Button>
+                    </ButtonGroup>
+                  )
+                }
                 <IconButton onClick={onDownload}>
                   <CloudDownloadIcon />
                 </IconButton>
