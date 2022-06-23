@@ -38,6 +38,9 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   inputFieldDate: {
+    "&.MuiFormControl-marginDense": {
+      marginBottom: 8,
+    },
     "& .MuiOutlinedInput-input": {
       paddingLeft: "0px",
     },
@@ -92,13 +95,13 @@ export default function Portfolio({
     handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate);
   };
   return (
-    <Grid container direction="row" display="flex" alignItems="center" spacing={3}>
+    <>
       {label && (
         <Grid style={{ marginTop: "2px", padding: 0 }}>
           <label className={classes.label}>{label}</label>
         </Grid>
       )}
-      <Grid item xs={3} sm={3} md={3} lg={3} xl={3} style={{ marginTop: "2px" }}>
+      <Grid item xs md style={{ marginTop: "2px" }}>
         <Autocomplete
           size="small"
           onChange={(event, newValue) => {
@@ -120,7 +123,7 @@ export default function Portfolio({
           id="custom-date-dropdown"
         />
       </Grid>
-      <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+      <Grid item xs md>
         <TextField
           size="small"
           margin="dense"
@@ -152,7 +155,7 @@ export default function Portfolio({
       <Grid>
         <label>to</label>
       </Grid>
-      <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+      <Grid item xs md>
         <TextField
           size="small"
           margin="dense"
@@ -181,6 +184,6 @@ export default function Portfolio({
           }}
         />
       </Grid>
-    </Grid>
+    </>
   );
 }

@@ -28,11 +28,10 @@ const useStyles = makeStyles((theme) => ({
   viewSwitcher: {
     height: "40px",
     backgroundColor: "white",
-    maxWidth: 250,
   },
 
   formControl: {
-    minWidth: 250
+    width: '100%'
   }
 }));
 
@@ -118,58 +117,55 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
           container
           alignItems="center"
           // justifyContent="space-between"
+          spacing={2}
           style={{ padding: "0px 36px 0px 45px" }}
         >
-          <Grid item xs={12} md={8}>
-            <CustomDates
-              fromDate={fromDate}
-              setFromDate={setFromDate}
-              toDate={toDate}
-              setToDate={setToDate}
-              label="Last Check Date"
-              isProperties
-              lastCheckMinDate={lastCheckMinDate}
-              onChange={setSelectedFilter}
-            />
-          </Grid>
-          <Grid item xs={12} md={4}> 
-            <Grid container display="flex" alignItems="center" wrap="nowrap">
-              {extraFitlers.includes("status") && (
-                  <MuiThemeProvider>
-                    <FormControl
-                      variant="outlined"
-                      className={classes.formControl}
-                    >
-                      <InputLabel id="status-outlined-label">Status</InputLabel>
+          <CustomDates
+            fromDate={fromDate}
+            setFromDate={setFromDate}
+            toDate={toDate}
+            setToDate={setToDate}
+            label="Last Check Date"
+            isProperties
+            lastCheckMinDate={lastCheckMinDate}
+            onChange={setSelectedFilter}
+          />
+          <Grid item xs md>
+            {extraFitlers.includes("status") && (
+              <MuiThemeProvider>
+                <FormControl variant="outlined" className={classes.formControl}>
+                  <InputLabel id="status-outlined-label">Status</InputLabel>
 
-                      <Select
-                        fullWidth
-                        labelId="status-outlined-label"
-                        id="status-filter"
-                        value={status ? status : ""}
-                        className={classes.viewSwitcher}
-                        onChange={(e) => setStatus(e.target.value)}
-                      >
-                        <MenuItem value="ALL">All</MenuItem>
-                        <MenuItem value="InPay">In Pay</MenuItem>
-                        <MenuItem value="NotInPay">Not In Pay</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </MuiThemeProvider>
-              )}
-                {extraFitlers.includes("propertyGroup") && (
-                  <ReportGroupHeader
-                    type="Properties"
-                    esFilters={propertiesReportGroup || []}
-                    setESFilters={(value) => setPropertyFilter(value)}
-                    setFilterToggle={() => {}}
-                    isBackground={false}
-                    noUpdate={true}
+                  <Select
                     fullWidth
-                    isShrink
-                  />
-                )}
-            </Grid>
+                    labelId="status-outlined-label"
+                    id="status-filter"
+                    value={status ? status : ""}
+                    className={classes.viewSwitcher}
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
+                    <MenuItem value="ALL">All</MenuItem>
+                    <MenuItem value="InPay">In Pay</MenuItem>
+                    <MenuItem value="NotInPay">Not In Pay</MenuItem>
+                  </Select>
+                </FormControl>
+              </MuiThemeProvider>
+            )}
+          </Grid>
+          <Grid item xs maxWidth>
+            {extraFitlers.includes("propertyGroup") && (
+              <ReportGroupHeader
+                type="Properties"
+                esFilters={propertiesReportGroup || []}
+                setESFilters={(value) => setPropertyFilter(value)}
+                setFilterToggle={() => {}}
+                isBackground={false}
+                noUpdate={true}
+                strechedWidth
+                isShrink
+                noPadding
+              />
+            )}
           </Grid>
         </Grid>
       </div>
