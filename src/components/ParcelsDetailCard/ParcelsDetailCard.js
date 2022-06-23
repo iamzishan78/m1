@@ -413,7 +413,7 @@ export default function ParcelsDetailCard(props) {
   const RunsheetHeader = () => (
     <div className={classes.documentHeader}>
       <GavelIcon />
-      <span>LIMITED TITLE RUNSHEET</span>
+      <span>RUNSHEET INSTRUMENTS</span>
     </div>
   );
 
@@ -605,6 +605,8 @@ export default function ParcelsDetailCard(props) {
                 </div>,
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <SuggestedTaxOwnersTable
+                    jobType="PARCELINTERESTS"
+                    jobName="Converting potential owner to parcel owner"
                     customLayer={copy(parcelObj)}
                     parent="potentialOwnersPerParcel"
                     targetLabel="well"
@@ -639,7 +641,7 @@ export default function ParcelsDetailCard(props) {
                 customLayer={copy(parcelObj)}
                 relatedObjectType='Parcel'
                 parent="associatedDocumentsPerParcel"
-                targetLabel="parcelDocument"
+                targetLabel="documents"
                 header={<DocumentHeader />}
                 dense
               />

@@ -178,7 +178,11 @@ const AssociatedWellsList = ({ title }) => {
 
   // sending to wells page
   const goToWell = (well) => {
-    history.push(`/map/wells/${well?.id.toUpperCase()}`, { showWellBreadcrumb: true });
+    history.push(`/map/wells/${well?.id.toUpperCase()}`, {
+      showWellBreadcrumb: true, breadcrumbs: [
+        { title: "Documents", url: "/documents" },
+      ],
+    });
     setStateApp({ ...stateApp, DocumentDrawer: false, selectedDocument: {} });
   };
 

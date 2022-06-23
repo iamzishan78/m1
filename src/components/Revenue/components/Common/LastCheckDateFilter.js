@@ -41,8 +41,8 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
     const classes = useStyles();
 
     const [selectedFilter, setSelectedFilter] = useState('');
-    const [fromDate, setFromDate] = React.useState('');
-    const [toDate, setToDate] = React.useState(moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD'));
+    const [fromDate, setFromDate] = React.useState(null);
+    const [toDate, setToDate] = React.useState(null);
     const [lastCheckMinDate, setLastCheckMinDate] = useState('');
     const [status, setStatus] = useState('ALL');
     const [propertyFilter, setPropertyFilter] = useState([]);
@@ -55,12 +55,17 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
         fetchPolicy: "no-cache",
         onCompleted: (data) => {
             if (data?.getESMinValue) {
+                console.log(data?.getESMinValue);
                 setLastCheckMinDate(data?.getESMinValue);
-                setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
+                // setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
+                // setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
             }
         },
     });
-
+    useEffect(() => {
+        setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
+        setToDate(moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD'));
+    }, []);
     useEffect(() => {
         getESMinValue({
             variables: {

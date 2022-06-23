@@ -153,6 +153,7 @@ export default function Properties() {
           onPropertiesCount={onPropertiesCount}
           startPaginationAt={startPaginationAt}
           revenueSearchQuery={stateApp.revenueSearchQuery}
+          actionColumns={[" ", "Tags", "Comments", "Status"]}
         />
       </div>
     </>
