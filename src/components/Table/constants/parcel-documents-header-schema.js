@@ -68,7 +68,8 @@ const DocumentsHeadCells = [
     esKey: 'documentDate',
     options: {
       filter: true
-    }
+    },
+    custom: { isDate: true, key_as_string: true },
   },
   {
     name: "uploadedDate",
@@ -97,13 +98,39 @@ const DocumentsHeadCells = [
   //   label: "Party 2 Name",
   // },
   {
-    name: "recordingInfo",
-    label: "Recording Info",
-    esKey: 'recordingInfo.keyword',
+    name: "book",
+    esKey: "book.keyword",
+    label: "Book",
     options: {
-      filter: true
-    }
+      filter: true,
+    },
   },
+  {
+    name: "page",
+    esKey: "page.keyword",
+    label: "Page",
+    options: {
+      filter: true,
+    },
+  },
+  {
+    name: "instrument",
+    esKey: "instrument.keyword",
+    label: "Instrument #",
+    options: {
+      filter: true,
+    },
+  },
+
+  // hiding recording info
+  // {
+  //   name: "recordingInfo",
+  //   label: "Recording Info",
+  //   esKey: 'recordingInfo.keyword',
+  //   options: {
+  //     filter: true
+  //   }
+  // },
   {
     name: " ",
     label: " ",

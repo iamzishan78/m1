@@ -141,13 +141,11 @@ const useStyles = makeStyles({
   },
 });
 
-export default function DocumentDrawer() {
+export default function DocumentDrawer(props) {
   const classes = useStyles();
   const [activePanel, setPanel] = useState("Home");
   const [fileData, setFileData] = useState(null);
-  const [state, setState] = React.useState({
-    right: false,
-  });
+  // const [state, setState] = useState({right: false});
   const [anchorEl, setAnchorEl] = useState();
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
@@ -155,16 +153,20 @@ export default function DocumentDrawer() {
 
   // Fetching wells from descriptor
   useEffect(() => {
-    getWellsFromDocument({
-      variables: {
-        descriptorObject: stateApp.selectedDocument._id,
-      },
-    });
+    if (!props.isRelatedDocuments)
+      getWellsFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument._id,
+        },
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.selectedDocument._id]);
 
   const documentInitial = {
     documentName: "",
+    book: "",
+    page: "",
+    instrument: "",
     recordingInfo: "",
     dateTime: null,
     documentNumber: "",
@@ -254,7 +256,7 @@ export default function DocumentDrawer() {
         variables: { fileIds: ID },
       });
       if (stateApp.selectedDocument) {
-        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, recordingInfo, custom_data } =
+        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, book, page, instrument, recordingInfo, custom_data } =
           stateApp.selectedDocument;
         setNameAutValueParty1({
           name: partyName1?.entityDetail?.name,
@@ -266,6 +268,9 @@ export default function DocumentDrawer() {
         });
 
         setNewDocument({
+          book,
+          page,
+          instrument,
           recordingInfo,
           documentName,
           dateTime,
@@ -283,11 +288,8 @@ export default function DocumentDrawer() {
   }, [stateApp.selectedDocument]);
 
   const toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
-      return;
-    }
-
-    setState({ ...state, [anchor]: open });
+    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) { return; }
+    // setState({ ...state, [anchor]: open });
   };
 
   const handleMenuClick = (event) => {
@@ -366,8 +368,8 @@ export default function DocumentDrawer() {
           </div>
         </div>
         <div className={classes.contentRoot}>
-          <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} />
-          <div style={{ marginRight: "60px" }}>
+          {!props.isRelatedDocuments && <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} />}
+          <div style={{ marginRight: !props.isRelatedDocuments ? "60px" : "" }}>
             {activePanel === "Home" && (
               <DetailsPanel
                 newDocument={newDocument}
@@ -404,7 +406,7 @@ export default function DocumentDrawer() {
             onClose={handleDeleteCancel}
             deleteFunc={handleDeleteAccept}
             m1nSelectedRowsIds={[document._id]}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected documents?
           </DeleteConfirmationDialogContent>
@@ -420,3 +422,7 @@ export default function DocumentDrawer() {
     </div>
   );
 }
+
+Drawer.defaultProps = {
+  isRelatedDocuments: false,
+};

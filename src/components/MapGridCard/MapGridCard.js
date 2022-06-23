@@ -555,6 +555,7 @@ function MapGridCard(props) {
                           customOptions={options}
                           targetLabel={searchTapValue.value}
                           header={<SearchPanel {...commonProps} />}
+                          isSnapGrid
                         />
                       )}
                       {searchTapValue.value === "tract" && (

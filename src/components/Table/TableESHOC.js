@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useCallback, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import { Button, Tooltip, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -31,7 +31,7 @@ import moment from "moment";
 
 
 export const TableESHOC = (Component) => {
-    return function HOC(props) {
+    const hocWithDefaultProps = function HOC(props) {
         const dispatch = useDispatch();
         const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky })
 
@@ -143,8 +143,8 @@ export const TableESHOC = (Component) => {
                         const selectedData = JSON.parse(JSON.stringify(selectedGridView));
                         setStateApp((state) => ({ ...state, selectedView: selectedData }));
 
-                        let filterColumns = cols.filter((col) => !col._id && ![" ", "Tags", "Comments"].includes(col.label));
-                        let actionColumns = cols.filter((col) => [" ", "Tags", "Comments"].includes(col.label));
+                        let filterColumns = cols.filter((col) => !col._id && !props.actionColumns.includes(col.label));
+                        let actionColumns = cols.filter((col) => props.actionColumns.includes(col.label));
 
                         // Excluding actionColumns from veiw Columns 
                         actionColumns = actionColumns.map(aC => ({ ...aC, options: { ...aC.options, viewColumns: false } }))
@@ -165,7 +165,7 @@ export const TableESHOC = (Component) => {
                         }
                         if (!isEmpty(view)) {
                             view = formattingGridView(JSON.parse(JSON.stringify(view)));
-                            columnsData = handleSelectedGridChange(TableHeader, view, columnsData);
+                            columnsData = handleSelectedGridChange(TableHeader(), view, columnsData);
                         }
                         columnsData = sortColumns(columnsData, view);
                         setColumnsData(columnsData)
@@ -514,7 +514,7 @@ export const TableESHOC = (Component) => {
                 variables: {
                     index: tableMeta.esIndex,
                     search: {
-                        query: tableState.searchText,
+                        query: typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableState.searchText,
                         fields: tableMeta.searchFields,
                         advanceSearch: tableMeta.advanceSearch,
                     },
@@ -817,6 +817,10 @@ export const TableESHOC = (Component) => {
             </span>
         );
     };
+    hocWithDefaultProps.defaultProps = {
+        actionColumns: [" ", "Tags", "Comments"]
+    }
+    return hocWithDefaultProps
 };
 
 export default TableESHOC;

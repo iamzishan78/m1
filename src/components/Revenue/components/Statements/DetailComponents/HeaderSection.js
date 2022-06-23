@@ -17,6 +17,9 @@ import { Controller, useForm } from "react-hook-form";
 import { useMutation } from "@apollo/client";
 import { UPDATE_CHECK_DATA } from "graphQL/useMutationUpdateCheck";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router";
+import { showInfoMessage } from "actions";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -36,6 +39,8 @@ const useStyles = makeStyles(() => ({
   fieldsSection: {
     margin: "0px 0px",
     "& .MuiOutlinedInput-root": {
+      paddingTop: 0,
+      paddingBottom: 0,
       height: `46px !important`,
       borderRadius: "6px !important",
     },
@@ -60,8 +65,23 @@ export default function HeaderFunction(props) {
   // const [check, setCheck] = useState({});
   const { check, setCheck } = props
   const [updateCheck] = useMutation(UPDATE_CHECK_DATA);
+  const history = useHistory();
+  const dispatch = useDispatch();
 
-  const { control, reset } = useForm();
+  const { control, reset, watch } = useForm();
+
+
+  useEffect(() => {
+    return () => {
+      const watchCheckNumber = watch("checkNumber")
+      if (!watchCheckNumber || watchCheckNumber === '') {
+        dispatch(showInfoMessage("Check Number is required"));
+        history.goBack();
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history]);
 
   useEffect(() => {
     if (check) {
@@ -178,45 +198,45 @@ export default function HeaderFunction(props) {
                 name="checkDate"
                 defaultValue={moment(props?.value || "").format("MM/DD/YYYY")}
                 render={(props) => (
-                    <TextField
-                      type="date"
-                      variant="outlined"
-                      margin="normal"
-                      fullWidth
-                      value={moment(props?.value || "").format("yyyy-MM-DD")}
-                      onChange={(e) => {
-                        props.onChange(e.target.value);
-                      }}
-                      onBlur={(e) => {
-                        handleUpdateCheck({
-                          checkDate: moment(e.target.value).toISOString(),
-                        });
-                      }}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      disableToolbar
-                      KeyboardButtonProps={{ "aria-label": "change date" }}
-                      format="MM/DD/YYYY"
-                      PopoverProps={{ disablePortal: false }}
-                      InputProps={{
-                        endAdornment: (
-                          <IconButton
-                            onClick={(event) =>
-                              handleUpdateCheck({
-                                checkDate: null,
-                              })
-                            }
-                          >
-                            <Clear style={{ height: 22, width: 22 }} />
-                          </IconButton>
-                        ),
-                        classes: {
-                          root: classes.dateRoot,
-                        },
-                      }}
-                      />
-                  )}
+                  <TextField
+                    type="date"
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    value={moment(props?.value || "").format("yyyy-MM-DD")}
+                    onChange={(e) => {
+                      props.onChange(e.target.value);
+                    }}
+                    onBlur={(e) => {
+                      handleUpdateCheck({
+                        checkDate: moment(e.target.value).toISOString(),
+                      });
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    disableToolbar
+                    KeyboardButtonProps={{ "aria-label": "change date" }}
+                    format="MM/DD/YYYY"
+                    PopoverProps={{ disablePortal: false }}
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton
+                          onClick={(event) =>
+                            handleUpdateCheck({
+                              checkDate: null,
+                            })
+                          }
+                        >
+                          <Clear style={{ height: 22, width: 22 }} />
+                        </IconButton>
+                      ),
+                      classes: {
+                        root: classes.dateRoot,
+                      },
+                    }}
+                  />
+                )}
               />
             </Grid>
           </Grid>
@@ -394,9 +414,9 @@ export default function HeaderFunction(props) {
                     fullWidth
                     variant="outlined"
                     value={props.value || ""}
-                    onChange={(value) => {
-                      props.onChange(value);
-                      handleUpdateCheck({ source: value });
+                    onChange={(e) => {
+                      props.onChange(e.target.value);
+                      handleUpdateCheck({ source: e.target.value });
                     }}
                   >
                     <MenuItem value={"Manual Entry"}>Manual Entry</MenuItem>

@@ -127,6 +127,7 @@ import AddActivityDialog from "components/ContactDetailCard/components/AddActivi
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
 import { getIndexofColumn } from "utils/helper";
+import ReactSelectField from "./SubComponents/ReactSelectField";
 
 
 // suppress debug console logs
@@ -143,6 +144,7 @@ const useStyles = makeStyles((theme) => ({
       height: "50px",
       "& .MuiTableCell-paddingCheckbox": {
         zIndex: (props) => (typeof props.headerZIndex !== 'undefined' ? props.headerZIndex : 100),
+        paddingRight: (props) => props.dense ? '32px !important' : 'inherit',
       },
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
@@ -161,7 +163,7 @@ const useStyles = makeStyles((theme) => ({
       alignItems: "center !important",
     },
     "& .MuiButton-text": {
-      padding: "5px 12px",
+      // padding: "5px 12px",
     },
     "& .Mui-disabled": {
       backgroundColor: "transparent",
@@ -191,14 +193,17 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#D4E8F1",
       margin: "0 2px",
     },
+    "& .MuiTableHead-root:nth-child(1) .MuiButton-label": { minWidth: '103px' },
     "& .MuiTableHead-root": {
       "& th": {
         backgroundColor: "#F2F2F2",
         zIndex: "auto",
         padding: (props) => (props.dense ? "10px 10px 10px 0px" : null),
         "& button": {
+          minWidth: 'max-content',
           "& .MuiButton-label": {
             textAlign: "left",
+            display: 'block'
           },
         },
       },
@@ -1536,6 +1541,10 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           // for unit wells we need to use globalWell instead of wellId
+                          if(props.parent === "UnitsTable"){
+                            const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
+                            history.push(`/map/units/${row_line._id}`)
+                          }
                           if (props.targetLabel === "well") {
                             value.wellId = props.rows[tableMeta.rowIndex].globalWell;
                           }
@@ -2295,7 +2304,8 @@ function SubTable(props) {
               },
             };
             break;
-          case "status":
+
+          case "status" && props.parent !== "Documents":
             column.options = {
               ...column.options,
               customBodyRender: (value, tableMeta) => {
@@ -2318,7 +2328,13 @@ function SubTable(props) {
                     )}
                     {props.parent === "RevenuePropertiesTable" && (
                       <>
-                        {value?.toLowerCase() === 'approved' && (
+                        {value?.toLowerCase() === 'notinpay' && (
+                            'Not in Pay'
+                        )}
+                        {value?.toLowerCase() === 'inpay' && (
+                            'In Pay'
+                        )}
+                        {/* {value?.toLowerCase() === 'approved' && (
                           <div className="flex justifyCenter alignCenter success w-100">
                             <CheckCircle size={20} />
                           </div>
@@ -2327,7 +2343,7 @@ function SubTable(props) {
                           <div className={`flex justifyCenter alignCenter w-100 ${classes.customWarning}`}>
                             <WarningIcon size={20} />
                           </div>
-                        )}
+                        )} */}
                       </>
                     )}
                     {props.parent === "AgreementsTable" && (
@@ -2345,6 +2361,31 @@ function SubTable(props) {
               },
             };
             break;
+          case "approvalStatus":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value, tableMeta) => {
+                return (
+                  <>
+                    {props.parent === "RevenuePropertiesTable" && (
+                      <>
+                        {value?.toLowerCase() === 'approved' && (
+                          <div className="flex justifyCenter alignCenter success w-100">
+                            <CheckCircle size={20} />
+                          </div>
+                        )}
+                        {value?.toLowerCase() === 'unapproved' && (
+                          <div className={`flex justifyCenter alignCenter w-100 ${classes.customWarning}`}>
+                            <WarningIcon size={20} />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </>
+                );
+              },
+            };
+          break;
           case "tractName":
             column.options = {
               ...column.options,
@@ -2469,7 +2510,12 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-
+                  if(column.name === 'name' && props.parent === 'UnitsTable'){
+                    const row_line = Object.assign({},...tableMeta.rowData.map((item, index) => ({[props.columns[index]?.name]: item,})));
+                    return(
+                      <span style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }} onClick={() => history.push(`/map/units/${row_line._id}`)}>{row_line.name}</span>
+                    )
+                  }
                   if (column.isCustom && column.type === "dropdown") {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
@@ -2477,7 +2523,15 @@ function SubTable(props) {
                     }
                     return (
                       <div style={{ minWidth: "100px" }}>
-                        <CustomFieldSelectV2
+                        {/* <CustomFieldSelectV2
+                          dropdownOptions={column.dropdownOptions}
+                          index={tableMeta.rowIndex}
+                          column={column}
+                          value={value}
+                          onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)}
+                        /> */}
+                        <ReactSelectField
+                          isSingleSelect={true}
                           dropdownOptions={column.dropdownOptions}
                           index={tableMeta.rowIndex}
                           column={column}
@@ -2487,14 +2541,14 @@ function SubTable(props) {
                       </div>
                     );
                   }
-                  if (column.isCustom && column.type === "multiselect") {
+                  if (column.isCustom && (column.type === "multiselect" || column.type === 'dropsdown')) {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
                     }
                     return (
                       <div style={{ minWidth: "100px", maxWidth: "400px" }}>
-                        <CustomFieldMultiSelect
+                        <ReactSelectField
                           dropdownOptions={column.dropdownOptions}
                           index={tableMeta.rowIndex}
                           column={column}

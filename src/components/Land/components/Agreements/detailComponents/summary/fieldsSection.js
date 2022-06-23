@@ -20,6 +20,10 @@ import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubCom
 
 import { AppContext } from "AppContext";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { showInfoMessage } from "actions";
+import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
 
 export default function FieldsSection({ updateAgreement, control, agreementDetails }) {
   const classes = summaryStyles();
@@ -27,6 +31,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   const [fieldsList, setFieldsList] = useState([]);
   const [editIconState, setEditIconState] = useState({});
   const [agreementDetailCopied, setAgreementCopied] = useState();
+  const [bonusValue, setBonusValue] = useState('');
+  const history = useHistory();
+  const dispatch = useDispatch();
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
@@ -36,6 +43,12 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
       console.log("blur triggered");
     });
   }, []);
+
+  useEffect(() => {
+    console.log(agreementDetails)
+    if (agreementDetails?._id && !agreementDetails?.agreementNumber)
+      dispatch(showInfoMessage("Agreement Number is required"));
+  }, [agreementDetails?._id]);
 
   useEffect(() => {
     setAgreementCopied(agreementDetails);
@@ -49,6 +62,19 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
       },
     });
   }, []);
+
+  useEffect(() => {
+    return history.listen((location) => {
+      console.log(`You changed the page to: ${location.pathname}`);
+      if (!agreementDetails?.agreementNumber) {
+        setStateApp((state) => ({
+          ...state,
+          selectedShape: null,
+        }));
+        history.goBack();
+      }
+    });
+  }, [history, agreementDetails]);
 
   useEffect(() => {
     const customData = getCustomMetaFields(agreementDetails, metaDataRes);
@@ -96,7 +122,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
               }}
               style={{ display: "flex" }}
             >
-              <div className={classes.fieldLabel}>{field.label}</div>
+              <div className={classes.fieldLabel}>{field.key !== 'approvalStatus' && field.label}</div>
               {field.isCustom && editIconState[`${field.key}key`] && (
                 <Tooltip title={"Edit"} placement="top">
                   <CreateTwoToneIcon
@@ -119,9 +145,10 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     control={control}
                     name={field.key}
                     render={(params) => {
+                      
                       return (
                         <Fragment>
-                          {field.type === "text" && (
+                          {field.type === "text" && field.key === 'bounusPayment' && (
                             <TextField
                               {...params}
                               id={`field-${index}`}
@@ -132,11 +159,40 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               InputLabelProps={{
                                 shrink: true,
                               }}
+                              value={bonusValue ? bonusValue : params.value}
+                              InputProps={field.InputProps}
+                              onFocus={() => {
+                                setBonusValue(params.value.replace(/,/g, ''));
+                              }}
+                              onChange={(e) => {
+                                setBonusValue(e.target.value);
+                              }}
+                              onBlur={(event) => {
+                                const value = event.target.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                setBonusValue(value);
+                                offClickHandler(field.key, value);
+                              }}
+                              disabled={field.disabled}
+                            />
+                          )}
+                          {field.type === "text" && field.key !== 'bounusPayment' && (
+                            <TextField
+                              {...params}
+                              id={`field-${index}`}
+                              variant="outlined"
+                              margin="dense"
+                              type="text"
+                              fullWidth
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              InputProps={field.InputProps}
                               onBlur={(event) => offClickHandler(field.key, event.target.value)}
                             />
                           )}
                           {field.type === "dropdown" && (
-                            <CustomFieldSelect
+                            <ReactSelectField
+                              isSingleSelect={true}
                               fullWidth
                               variant="outlined"
                               index={`field-${index}`}
@@ -169,7 +225,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                             </Select>
                           )}
                           {field.type === "multiselect" && (
-                            <CustomFieldMultiSelect
+                            <ReactSelectField
                               id={`field-${index}`}
                               variant="outlined"
                               margin="dense"
@@ -220,7 +276,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     }}
                   />
                 )}
-                {field.type === "autocomplete" && (
+                {field.type === "autocomplete" && field.key !== 'approvalStatus' && (
                   <AutoCompleteTypeComponent
                     value={agreementDetails?.[field.key]}
                     shapeType="Agreement"

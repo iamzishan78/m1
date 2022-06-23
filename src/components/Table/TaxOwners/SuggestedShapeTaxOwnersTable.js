@@ -72,6 +72,8 @@ const AntSwitch = withStyles((theme) => ({
 function SuggestedShapeTaxOwnersTable(props) {
   const classes = usetableStyles();
 
+  const { jobType, jobName } = props;
+
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
 
@@ -524,6 +526,8 @@ function SuggestedShapeTaxOwnersTable(props) {
       />
       {showConvertDialog && (
         <MultipleOwnerToContactDrawerContainer
+          jobType={jobType} 
+          jobName={jobName}
           onClose={() => {
             setShowConvertDialog(false);
           }}

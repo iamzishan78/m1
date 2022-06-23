@@ -39,8 +39,14 @@ const AutoCompleteParcelOwners = ({ onChange, value, parcel, onBlur, ...other })
     }, [parcel])
 
     useEffect(() => {
-        if (elasticData && elasticData[Object.keys(elasticData)[0]])
-            setEsData(elasticData[Object.keys(elasticData)[0]])
+        if (elasticData && elasticData[Object.keys(elasticData)[0]]) {
+            const data = elasticData[Object.keys(elasticData)[0]]
+            setEsData(data)
+
+            if (other?.setTotalOwners)
+                other?.setTotalOwners(data.length)
+        }
+
 
     }, [elasticData])
 

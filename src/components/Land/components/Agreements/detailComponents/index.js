@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useContext } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { debounce, get, set } from "lodash";
+import _, { debounce, get, set } from "lodash";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import {
@@ -36,6 +36,7 @@ import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
 
 const useStyles = makeStyles((theme) => ({
   detailHeader: {
@@ -229,11 +230,13 @@ export default function DetailComponents(props) {
   const classes = useStyles({ ...props, metaCollapse, validationCollapse, flowlineCollapse });
   // queries
 
+
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
   const [getStandardProvisions, { data: standardProvisions }] = useLazyQuery(GET_STANDARD_PROVISIONS);
   const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
   const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
+  const [updateMetaData] = useMutation(UPSERT_USER_DESCRIPTOR);
 
   useEffect(() => {
     return () => {
@@ -342,6 +345,7 @@ export default function DetailComponents(props) {
     customLayer.shape = JSON.stringify(shape);
     customLayer.shapeJson = shape;
 
+    console.log("-*-* called updateCustomLayer *-*-*", customLayer);
     updateCustomLayer({
       variables: {
         customLayerId: activeAgreement._id,
@@ -396,12 +400,17 @@ export default function DetailComponents(props) {
     });
   }
 
+
   return (
-    <NavHeader title={`${agreementDetails?.agreementNumber} - ${agreementDetails?.agreementName}`}>
+    <NavHeader
+      title={`${agreementDetails?.agreementNumber} - ${agreementDetails?.agreementName}`}
+    >
       {/**
        * Detail title section
        */}
-      <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
+      <div
+        className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}
+      >
         <div className="flex column alignStart justifyStart w-100">
           <div className={classes.title}>
             <IconButton className={classes.icon}>
@@ -410,7 +419,11 @@ export default function DetailComponents(props) {
             <div className={classes.titleText}>
               {agreementDetails && (
                 <Typography
-                  style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "large",
+                    marginLeft: 8,
+                  }}
                 >{`${agreementDetails?.agreementNumber} - ${agreementDetails?.agreementName}`}</Typography>
               )}
               <div className={classes.tagsContainer}>
@@ -420,7 +433,13 @@ export default function DetailComponents(props) {
                   </Typography>
                 </div>
                 <div className={classes.tags}>
-                  <Tags width="100%" targetSourceId={agreementId} targetLabel="agreement" publicLeftBottom onlyTags />
+                  <Tags
+                    width="100%"
+                    targetSourceId={agreementId}
+                    targetLabel="agreement"
+                    publicLeftBottom
+                    onlyTags
+                  />
                 </div>
               </div>
             </div>
@@ -457,10 +476,19 @@ export default function DetailComponents(props) {
               <Button startIcon={<FlowIcon />} className={classes.flowlineButton} onClick={() => setFlowlineCollapse(!flowlineCollapse)}>
                 Flowline
               </Button> */}
-              <Button startIcon={<InfoOutlinedIcon />} className={classes.metaButton} onClick={() => setMetaCollapse(!metaCollapse)}>
+              <Button
+                startIcon={<InfoOutlinedIcon />}
+                className={classes.metaButton}
+                onClick={() => setMetaCollapse(!metaCollapse)}
+              >
                 Metadata
               </Button>
-              <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
+              <IconButton
+                size="small"
+                component="span"
+                className={classes.menuIcon}
+                onClick={handleMenuClick}
+              >
                 <MoreHorizIcon size="medium" />
               </IconButton>
             </div>
@@ -474,33 +502,84 @@ export default function DetailComponents(props) {
            * Detail tabs section
            */}
 
-          <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
-            <div id="parent-div" className={classes.tabsSectionDetails} onScroll={handleScroll}>
-              <div id="summary-div" className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null} style={{ backgroundColor: "#fff" }}>
+          <div
+            className={classes.tabsSection}
+            style={{ display: stateApp.viewDoc ? "none" : "" }}
+          >
+            <div
+              id="parent-div"
+              className={classes.tabsSectionDetails}
+              onScroll={handleScroll}
+            >
+              <div
+                id="summary-div"
+                className={classes.tabDetailSection}
+                ref={tab === 0 ? selectedTabRef : null}
+                style={{ backgroundColor: "#fff" }}
+              >
                 <Summary
                   agreementDetails={agreementDetails}
                   activeAgreement={activeAgreement}
-                  agreementProvisions={get(agreementProvisions, "getAgreementProvisions", [])}
-                  standardProvisions={get(standardProvisions, "getStandardProvisions", [])}
+                  agreementProvisions={get(
+                    agreementProvisions,
+                    "getAgreementProvisions",
+                    []
+                  )}
+                  standardProvisions={get(
+                    standardProvisions,
+                    "getStandardProvisions",
+                    []
+                  )}
                   updateAgreement={updateAgreement}
-                  shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails}
+                  shapeSummaryDetails={
+                    dataShapeSummaryDetails?.shapeSummaryDetails
+                  }
                 />
               </div>
-              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="related-parties-div" className={classes.tabDetailSection} ref={tab === 1 ? selectedTabRef : null}>
-                <RelatedParties agreementDetails={agreementDetails} agreementId={agreementId} />
+              <div
+                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
+              />
+              <div
+                id="related-parties-div"
+                className={classes.tabDetailSection}
+                ref={tab === 1 ? selectedTabRef : null}
+              >
+                <RelatedParties
+                  agreementDetails={agreementDetails}
+                  agreementId={agreementId}
+                />
               </div>
-              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="provisions-div" className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
+              <div
+                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
+              />
+              <div
+                id="provisions-div"
+                className={classes.tabDetailSection}
+                ref={tab === 2 ? selectedTabRef : null}
+              >
                 <Provisions
                   agreementDetails={agreementDetails}
                   agreementId={agreementId}
-                  agreementProvisions={get(agreementProvisions, "getAgreementProvisions", [])}
-                  standardProvisions={get(standardProvisions, "getStandardProvisions", [])}
+                  agreementProvisions={get(
+                    agreementProvisions,
+                    "getAgreementProvisions",
+                    []
+                  )}
+                  standardProvisions={get(
+                    standardProvisions,
+                    "getStandardProvisions",
+                    []
+                  )}
                 />
               </div>
-              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="legal-description-div" className={classes.tabDetailSection} ref={tab === 3 ? selectedTabRef : null}>
+              <div
+                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
+              />
+              <div
+                id="legal-description-div"
+                className={classes.tabDetailSection}
+                ref={tab === 3 ? selectedTabRef : null}
+              >
                 <LegalDescription
                   agreementDetails={agreementDetails}
                   uniObj={uniObj}
@@ -508,12 +587,29 @@ export default function DetailComponents(props) {
                   updateAgreement={updateAgreement}
                 />
               </div>
-              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="related-wells-div" className={classes.tabDetailSection} ref={tab === 4 ? selectedTabRef : null}>
-                <RelatedWells uniObj={uniObj} shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails} />
+              <div
+                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
+              />
+              <div
+                id="related-wells-div"
+                className={classes.tabDetailSection}
+                ref={tab === 4 ? selectedTabRef : null}
+              >
+                <RelatedWells
+                  uniObj={uniObj}
+                  shapeSummaryDetails={
+                    dataShapeSummaryDetails?.shapeSummaryDetails
+                  }
+                />
               </div>
-              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="related-docs-div" className={classes.tabDetailSection} ref={tab === 5 ? selectedTabRef : null}>
+              <div
+                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
+              />
+              <div
+                id="related-docs-div"
+                className={classes.tabDetailSection}
+                ref={tab === 5 ? selectedTabRef : null}
+              >
                 <Documents uniObj={uniObj} />
               </div>
             </div>
@@ -521,7 +617,10 @@ export default function DetailComponents(props) {
 
           {/*** Component for viewing selected pdf file*/}
           {stateApp.viewDoc && (
-            <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
+            <DocViewer
+              divCondition={true}
+              DocStyle={{ height: "calc(100vh - 280px)" }}
+            />
           )}
         </div>
 
@@ -539,7 +638,12 @@ export default function DetailComponents(props) {
               targetSourceId={agreementId}
               data={agreementDetails}
               targetLabel="Shape"
+              showDescription={false}
               descriptionKey="description"
+              ownerPlaceHolder='Assign Approver'
+              ownerTitle="Approver"
+              isApproval={true}
+              onUpdate={(data) => updateAgreement('approvalStatus', data.status)}
             />
           </div>
         )}
@@ -559,10 +663,12 @@ export default function DetailComponents(props) {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <MenuItem onClick={() => {
-          setOpenDialog(true);
-          setAnchorEl(null);
-        }}>
+        <MenuItem
+          onClick={() => {
+            setOpenDialog(true);
+            setAnchorEl(null);
+          }}
+        >
           <ListItemIcon>
             <DeleteIcon size="medium" />
           </ListItemIcon>
