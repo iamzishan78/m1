@@ -125,7 +125,8 @@ export default function QtrQtrSelectorNew({ layerData }) {
   useEffect(() => {
     if (layerData?.qtrQtrSelection) {
       setQtr(copy(layerData.qtrQtrSelection.selectedQtr))
-      setQtrQtr(copy(layerData.qtrQtrSelection.qtrQtr))
+      if (layerData.qtrQtrSelection.qtrQtr)
+        setQtrQtr(copy(layerData.qtrQtrSelection.qtrQtr))
     }
 
   }, [layerData?.qtrQtrSelection])
