@@ -230,7 +230,7 @@ export default function DetailComponents(props) {
   const classes = useStyles({ ...props, metaCollapse, validationCollapse, flowlineCollapse });
   // queries
 
-  
+
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
   const [getStandardProvisions, { data: standardProvisions }] = useLazyQuery(GET_STANDARD_PROVISIONS);
   const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
@@ -685,7 +685,7 @@ export default function DetailComponents(props) {
           onClose={() => setOpenDialog(false)}
           deleteFunc={handleDeleteAgreement}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={() => { }}
         >
           Are you sure you want to delete this agreement?
         </DeleteConfirmationDialogContent>

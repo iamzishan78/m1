@@ -165,7 +165,7 @@ export const TableESHOC = (Component) => {
                         }
                         if (!isEmpty(view)) {
                             view = formattingGridView(JSON.parse(JSON.stringify(view)));
-                            columnsData = handleSelectedGridChange(TableHeader, view, columnsData);
+                            columnsData = handleSelectedGridChange(TableHeader(), view, columnsData);
                         }
                         columnsData = sortColumns(columnsData, view);
                         setColumnsData(columnsData)
@@ -513,7 +513,7 @@ export const TableESHOC = (Component) => {
                 variables: {
                     index: tableMeta.esIndex,
                     search: {
-                        query: tableState.searchText,
+                        query: typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableState.searchText,
                         fields: tableMeta.searchFields
                     },
                     pagination: {

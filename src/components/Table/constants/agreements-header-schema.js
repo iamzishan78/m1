@@ -4,7 +4,7 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import MapFilledIcon from "components/Shared/svgIcons/MapFilled"
 import { history } from "store";
 
-const AgreementsHeadCells = [
+const AgreementsHeadCells = (isSnapGrid = false) => [
   {
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
@@ -34,18 +34,23 @@ const AgreementsHeadCells = [
       }),
       dbName: "shapeJson.properties.agreementNumber",
       stickyColumn: true,
-      sort: false,
+      sort: true,
       filter: true,
       viewColumns: false,
       display: true,
-      customRender: (value, tableMeta, updateValue) => {
+      customRender: (value, tableMeta) => {
         return (
           <p
             onClick={(e) => {
               e.stopPropagation();
-              history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
-                { showAgreementBreadcrumb: true }
-              );
+              if (isSnapGrid)
+                history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
+                  { showAgreementBreadcrumb: true }
+                );
+              else
+                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
+                  { showAgreementBreadcrumb: true }
+                );
             }}
             style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
           >
@@ -80,7 +85,7 @@ const AgreementsHeadCells = [
       }),
       dbName: "shapeJson.properties.agreementName",
       stickyColumn: true,
-      sort: false,
+      sort: true,
       filter: true,
       viewColumns: false,
       display: true,
@@ -263,6 +268,14 @@ const AgreementsHeadCells = [
       dbName: "shapeJson.properties.originalProperties.County",
       sort: true,
       filter: true,
+    },
+  },
+  {
+    name: "layer",
+    label: "Layer",
+    options: {
+      display: false,
+      viewColumns: false,
     },
   },
   {
