@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import TextField from "@material-ui/core/TextField";
 import { Controller } from "react-hook-form";
@@ -8,7 +8,12 @@ import { AutoCompleteLandgrid } from "components/Shared/Forms/Fields/AutoComplet
 
 
 function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, control, prefix = '' }) {
-  const [state, setState] = useState(tract?.state)
+  const [state, setState] = useState(tract.state)
+
+  useEffect(() => {
+    if (tract.state)
+      setState(tract.state)
+  }, [tract.state])
   return (
     <>
       {!isNewTract && <AutoCompleteShapeLayer value={tractValue} shapeType='parcel' setSelectedShapeLayer={setSelectedShapeLayer} />}

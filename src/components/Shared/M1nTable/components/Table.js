@@ -1541,7 +1541,7 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           // for unit wells we need to use globalWell instead of wellId
-                          if(props.parent === "UnitsTable"){
+                          if (props.parent === "UnitsTable") {
                             const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
                             history.push(`/map/units/${row_line._id}`)
                           }
@@ -2329,10 +2329,10 @@ function SubTable(props) {
                     {props.parent === "RevenuePropertiesTable" && (
                       <>
                         {value?.toLowerCase() === 'notinpay' && (
-                            'Not in Pay'
+                          'Not in Pay'
                         )}
                         {value?.toLowerCase() === 'inpay' && (
-                            'In Pay'
+                          'In Pay'
                         )}
                         {/* {value?.toLowerCase() === 'approved' && (
                           <div className="flex justifyCenter alignCenter success w-100">
@@ -2385,7 +2385,7 @@ function SubTable(props) {
                 );
               },
             };
-          break;
+            break;
           case "tractName":
             column.options = {
               ...column.options,
@@ -2510,9 +2510,9 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  if(column.name === 'name' && props.parent === 'UnitsTable'){
-                    const row_line = Object.assign({},...tableMeta.rowData.map((item, index) => ({[props.columns[index]?.name]: item,})));
-                    return(
+                  if (column.name === 'name' && props.parent === 'UnitsTable') {
+                    const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item, })));
+                    return (
                       <span style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }} onClick={() => history.push(`/map/units/${row_line._id}`)}>{row_line.name}</span>
                     )
                   }

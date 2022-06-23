@@ -153,6 +153,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         nri,
         depthFrom,
         depthTo,
+        company_net_acres,
         net_acres,
         nra,
         customLayer,
@@ -176,6 +177,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         operating_rights: operating_rights || null,
         nri: nri || null,
         net_acres: net_acres || null,
+        company_net_acres: company_net_acres || null,
         nra: nra || null,
         depthFrom: depthFrom || "",
         depthTo: depthTo || "",
@@ -283,6 +285,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       unknown_interest: null,
       record_title: null,
       operating_rights: null,
+      company_net_acres: null,
       nri: null,
       net_acres: null,
       depthFrom: "",
@@ -652,6 +655,23 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                         )}
                       </InputAdornment>
                     ),
+                  }}
+                  onWheel={(e) => e.target.blur()}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Company Net Acres</h3>
+                <TextField
+                  type="number"
+                  size="small"
+                  className={classes.maxWidth}
+                  value={newOwner.company_net_acres}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setNewOwner({
+                      ...newOwner,
+                      company_net_acres: value ? addTrailingZeros(e.target.value) : null,
+                    });
                   }}
                   onWheel={(e) => e.target.blur()}
                 />

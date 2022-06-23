@@ -304,6 +304,21 @@ function AddAgreementOwnerAndTractDialog(props) {
     return netAcres;
   };
 
+  const calculateRoyaltyNetAcres = () => {
+    const values = getValues()
+    if (!values.royalty_interest && !values.orri) return null;
+    let netAcres = calculateNetAcres(),
+      nra = netAcres * (parseFloat(values.royalty_interest || 0) + parseFloat(values.orri || 0)) * 8;
+    nra = addTrailingZeros(nra.toFixed(8));
+    return nra;
+  };
+
+  const checkIfNotEqual = (type, value) => {
+    const acres = type === 'net_acres' ? calculateNetAcres() : calculateRoyaltyNetAcres();
+    if (!value || !acres) return false;
+    return value && Number(value) !== Number(acres);
+  };
+
   useEffect(() => {
     if (nameAutValue?._id && nameAutValue?.name) {
       reset({ ...getValues(), ownerEntity: nameAutValue._id, ownerName: nameAutValue.name });
@@ -334,12 +349,6 @@ function AddAgreementOwnerAndTractDialog(props) {
     } else {
       setNameAutValue(null);
     }
-  };
-
-  const checkIfNotEqual = (value) => {
-    const acres = calculateNetAcres();
-    if (!value || !acres) return false;
-    return value && Number(value) !== Number(acres);
   };
 
   const handleChangeQtr = (value, index) => {
@@ -501,7 +510,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                 />
               </Grid>
             </Grid>
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.sdGrossAcres" label={"Gross. Acres"} InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.sdGrossAcres || ""} />
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.sdGrossAcres" label={"Gross. Acres"} InputLabelProps={{ shrink: true }} fullWidth disabled={!isNewTract} defaultValue={tract?.sdGrossAcres || ""} />
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.shapeArea" label={"Calc. Acres"} InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.shapeArea || ""} />
             <Controller
               control={control}
@@ -625,18 +634,26 @@ function AddAgreementOwnerAndTractDialog(props) {
           />
 
           <Controller
-            as={TextField}
             control={control}
-            variant="outlined"
-            margin="dense"
             name="royalty_interest"
-            inputRef={register()}
-            label={"Royalty Interest"}
-            InputLabelProps={{ shrink: true }}
-            type="number"
-            fullWidth
-            onWheel={(e) => e.target.blur()}
+            render={({ onChange, value }) => (
+              <TextField
+                variant="outlined"
+                InputLabelProps={{ shrink: true }}
+                margin="dense"
+                value={value}
+                type="number"
+                label={"Royalty Interest"}
+                fullWidth
+                onWheel={(e) => e.target.blur()}
+                onChange={(e) => {
+                  onChange(e.target.value);
+                  setValue("nra", calculateRoyaltyNetAcres());
+                }}
+              />
+            )}
           />
+
           <Controller
             as={TextField}
             control={control}
@@ -645,6 +662,20 @@ function AddAgreementOwnerAndTractDialog(props) {
             name="orri"
             inputRef={register()}
             label={"Overriding Royalty Interest (ORRI)"}
+            InputLabelProps={{ shrink: true }}
+            type="number"
+            fullWidth
+            onWheel={(e) => e.target.blur()}
+          />
+
+          <Controller
+            as={TextField}
+            control={control}
+            variant="outlined"
+            margin="dense"
+            name="working_interest"
+            inputRef={register()}
+            label={"Working Interest"}
             InputLabelProps={{ shrink: true }}
             type="number"
             fullWidth
@@ -662,7 +693,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                 value={value}
                 type="number"
                 label={"Net Acres"}
-                className={checkIfNotEqual(value) ? classes.netAcresOveridden : classes.netAcresNormal}
+                className={checkIfNotEqual('net_acres', value) ? classes.netAcresOveridden : classes.netAcresNormal}
                 fullWidth
                 onWheel={(e) => e.target.blur()}
                 onChange={(e) => {
@@ -671,14 +702,66 @@ function AddAgreementOwnerAndTractDialog(props) {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      {checkIfNotEqual(value) && (
+                      {checkIfNotEqual('net_acres', value) && (
                         <IconButton
                           aria-label="toggle royality-acres"
                           onClick={() => {
                             setValue("net_acres", calculateNetAcres());
                           }}
                         >
-                          {checkIfNotEqual(value)}
+                          {checkIfNotEqual('net_acres', value)}
+                          <AutorenewIcon />
+                        </IconButton>
+                      )}
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            )}
+          />
+
+          <Controller
+            as={TextField}
+            control={control}
+            variant="outlined"
+            margin="dense"
+            name="company_net_acres"
+            inputRef={register()}
+            label={"Company Net Acres"}
+            InputLabelProps={{ shrink: true }}
+            type="number"
+            fullWidth
+            onWheel={(e) => e.target.blur()}
+          />
+
+          <Controller
+            control={control}
+            name="nra"
+            render={({ onChange, value }) => (
+              <TextField
+                variant="outlined"
+                InputLabelProps={{ shrink: true }}
+                margin="dense"
+                value={value}
+                type="number"
+                label="Net Royalty Acres (NRA)"
+                className={checkIfNotEqual('nra', value) ? classes.netAcresOveridden : classes.netAcresNormal}
+                fullWidth
+                onWheel={(e) => e.target.blur()}
+                onChange={(e) => {
+                  onChange(e.target.value);
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      {checkIfNotEqual('nra', value) && (
+                        <IconButton
+                          aria-label="toggle royality-acres"
+                          onClick={() => {
+                            setValue("nra", calculateRoyaltyNetAcres());
+                          }}
+                        >
+                          {checkIfNotEqual('nra', value)}
                           <AutorenewIcon />
                         </IconButton>
                       )}
