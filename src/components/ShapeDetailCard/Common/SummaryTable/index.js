@@ -19,6 +19,8 @@ import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
 import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
+import NumberField from "components/Shared/components/Fields/NumberField";
+
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
@@ -262,6 +264,23 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                         InputProps={data.InputProps}
                       />
                     )}
+                    {
+                      (data.type === "number") && (
+                        <NumberField
+                          InputProps={{
+                            endAdornment: (
+                              <p className={classes.foodText}>
+                                <span>Return</span> to save
+                              </p>
+                            ),
+                          }}
+                          value={get(tableTempProperties, `agreementTerm`)}
+                          offClickHandler={(key, value) => {
+                            setTableTempProperties({ ...tableTempProperties, ['agreementTerm']: value || '' });
+                            updateProperties(null, 'agreementTerm', value);
+                          }} />
+                      )
+                    }
                     {data.type === "date" && (
                       <KeyboardDatePicker
                         autoFocus

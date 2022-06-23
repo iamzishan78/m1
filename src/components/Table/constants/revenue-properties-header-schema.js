@@ -149,6 +149,38 @@ const RevenuePropertiesHeadCells = [
   },
 
   {
+    name: "internalID",
+    label: "Internal ID #",
+    esKey: "lastCheck.internalID",
+    options: {
+      customHeadLabelRender: () => (
+        <>
+          <div style={{ minWidth: 100 }}>Internal ID #</div>
+        </>
+      ),
+      sort: true,
+      filter: true,
+    },
+    style: { minWidth: 100 },
+  },
+
+  {
+    name: "internalCompany",
+    label: "Internal Company",
+    esKey: "lastCheck.internalCompany",
+    options: {
+      customHeadLabelRender: () => (
+        <>
+          <div style={{ minWidth: 120 }}>Internal Company</div>
+        </>
+      ),
+      sort: true,
+      filter: true,
+    },
+    style: { minWidth: 120 },
+  },
+
+  {
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",

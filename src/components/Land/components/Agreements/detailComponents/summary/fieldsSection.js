@@ -191,6 +191,16 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               disabled={field.disabled}
                             />
                           )}
+                          {field.type === "number" && (
+                            <NumberField
+                              index={index}
+                              field={field}
+                              offClickHandler={(key, value) => {
+                                offClickHandler(key, value);
+                              }}
+                              {...params}
+                            />
+                          )}
                           {field.type === "dropdown" && (
                             <ReactSelectField
                               isSingleSelect={true}
