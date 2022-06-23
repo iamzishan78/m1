@@ -11,8 +11,9 @@ import ActivitiesTable from "components/Table/Activities/ActivitiesTable";
 import ContactWellInterestTable from "components/Table/Contact/ContactWellInterestTable";
 import ContactParcelInterestTable from "components/Table/Contact/ContactParcelInterestTable";
 import ContactTaxRollInterestTable from "components/Table/Contact/ContactTaxRollInterestTable";
-import UnitInterestsTable from "../../../Table/Unit/UnitInterestsTable";
+import UnitInterestsTable from "components/Table/Unit/UnitInterestsTable";
 import ContactDealsProvider from "components/DealsDetailCard/ContactDealsProvider";
+import ContactDocumentsProvider from "components/ViewDocuments/ContactDocumentsProvider";
 
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
 import { contactDetailInitialData } from "./data";
@@ -271,16 +272,7 @@ function MapGridCard(props) {
                         <ContactDealsProvider />
                       )}
                       {searchTapValue.value === "documents" && (
-                        // <AgreementsTable
-                        //   isCheckboxSticky={true}
-                        //   dense
-                        //   esIndex={"shapes_flat"}
-                        //   parent="AgreementsTable"
-                        //   customOptions={options}
-                        //   targetLabel={searchTapValue.value}
-                        //   header={<SearchPanel {...commonProps} />}
-                        // />
-                        <p>helllo</p>
+                        <ContactDocumentsProvider />
                       )}
                     </Fragment>
                   </div>
