@@ -145,20 +145,20 @@ export const contactManagementRoutes = {
   CAMPAIGNS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Campaigns",
-    link: "/contacts/campaignManagement",
+    link: "/contacts/campaign",
     component: "CampaignManagement",
     value: 'Contacts',
     search: true,
     isDefault: true
   },
-  CAMPAIGN_DETAIL: {
-    featureFlag: "CONTACTSUBMENU",
-    title: "Campaigns",
-    link: "/contacts/campaignManagement/:id",
-    component: "CampaignDetail",
-    search: true,
-    isExcluded: true,
-  },
+  // CAMPAIGN_DETAIL: {
+  //   featureFlag: "CONTACTSUBMENU",
+  //   title: "Campaigns",
+  //   link: "/contacts/campaignManagement/:id",
+  //   component: "CampaignDetail",
+  //   search: true,
+  //   isExcluded: true,
+  // },
 };
 
 export const contactsAnalyticsCards = [

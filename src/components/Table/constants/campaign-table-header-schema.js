@@ -30,7 +30,7 @@ const CampaignsHeadCells = [
               
               history.push(
                 {
-                  pathname: `/contacts/campaignManagement/:id`,
+                  pathname: `/contacts/campaign/details/${tableMeta.rowData[0]}`,
                   state: { campaignName: value }
                 }
               );
@@ -47,7 +47,7 @@ const CampaignsHeadCells = [
   },
   {
     name: "type",
-    label: "Campaign Type",
+    label: "Campaign Status",
     esKey: "type.keyword",
     options: {
       display: true,
@@ -57,7 +57,7 @@ const CampaignsHeadCells = [
   },
   {
     name: "entityType",
-    label: "Entity Type",
+    label: "Units",
     esKey: "type.keyword",
     options: {
       display: true,
@@ -67,7 +67,7 @@ const CampaignsHeadCells = [
   },
   {
     name: "currentEntities",
-    label: "# Current Entities",
+    label: "Total NRA",
     esKey: "type.keyword",
     options: {
       display: true,
@@ -77,7 +77,7 @@ const CampaignsHeadCells = [
   },
   {
     name: "type",
-    label: "# Sent",
+    label: "Created Date",
     esKey: "type.keyword",
     options: {
       display: true,
@@ -87,7 +87,7 @@ const CampaignsHeadCells = [
   },
   {
     name: "status",
-    label: "Campaign Status",
+    label: "SuperVisor",
     esKey: "type.keyword",
     options: {
       display: true,
@@ -96,6 +96,16 @@ const CampaignsHeadCells = [
       customRender: (value, tableMeta) => {
         return <CampaignStatus status={value} />;
       },
+    },
+  },
+  {
+    name: "type",
+    label: "Tags",
+    esKey: "type.keyword",
+    options: {
+      display: true,
+      sort: true,
+      filter: true,
     },
   },
 ];
