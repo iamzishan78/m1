@@ -9,9 +9,7 @@ import { CONTACTDEALS } from "graphQL/useQueryContactDeals";
 import { CONTACT } from "graphQL/useQueryContact";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    marginTop: "65px",
-  },
+  root: {},
 }));
 
 export default function ContactDocumentsCard(props) {
@@ -24,7 +22,7 @@ export default function ContactDocumentsCard(props) {
   const [activeDeals, setActiveDeals] = useState([]);
   const [contactData, setContactData] = useState(null);
 
-  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 2];
+  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
   const [getContactDeals, { data: deals, loading }] = useLazyQuery(CONTACTDEALS, { fetchPolicy: "cache-and-network" });
@@ -87,7 +85,7 @@ export default function ContactDocumentsCard(props) {
       <div
         style={{
           backgroundColor: "#F2F2F2",
-          minHeight: "7px",
+          minHeight: "4px",
           display: "flex",
           position: "relative",
           alignItems: "center",

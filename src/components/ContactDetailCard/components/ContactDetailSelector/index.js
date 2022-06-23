@@ -1,49 +1,20 @@
-import React, { Fragment, useState, useContext, useMemo } from "react";
+import React, { Fragment, useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "AppContext";
 import Card from "@material-ui/core/Card";
-import CloseIcon from "@material-ui/icons/Close";
-import IconButton from "@material-ui/core/IconButton";
-import InboxIcon from "@material-ui/icons/Inbox";
-import DraftsIcon from "@material-ui/icons/Drafts";
-import M1nTable from "components/Shared/M1nTable/M1nTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import Button from "@material-ui/core/Button";
 import { setMapGridCardState } from "actions";
 import OwnersSummaryCard from "components/OwnersSummaryCard/OwnersSummaryCard";
-import TabPanels, { TabPanel } from "components/Shared/TabPanels";
-
-import ContactsHeadCells from "components/Shared/constants/contacts-header-schema.js";
-import wellsColumnHeaders from "components/Shared/constants/well-interests-header-grid-schema.js";
-import {
-  leasesColumnHeaders,
-  locationsColumnHeaders,
-  operatorsColumnHeaders,
-  ownersColumnHeaders,
-} from "components/MapGridCard/MapGridCardHeaders";
-import DockMenu from "components/MapGridCard//DockMenu";
-import ShapeGridWellsTable from "components/Table/Wells/ShapeGridWellsTable";
-import ShapeGridTaxOwnersTable from "components/Table/TaxOwners/ShapeGridTaxOwnersTable";
-import MapGridWellsTable from "components/Table/Wells/MapGridWellsTable";
-import MapGridTaxOwnersTable from "components/Table/TaxOwners/MapGridTaxOwnersTable";
-import MapGridOperatorTable from "components/Table/Operator/MapGridOperatorTable";
-import MapGridContactTable from "components/Table/Contact/MapGridContactTable";
-import MapGridUnitTable from "components/Table/Unit/MapGridUnitTable";
-import AgreementsTable from "components/Table/Agreement/AgreementsTable";
-import TractsTable from "components/Table/Tract/TractsTable";
+import { TabPanel } from "components/Shared/TabPanels";
 import ContactDetailedInfo from "components/ContactDetailedInfo/ContactDetailedInfo";
 import ActivitiesTable from "components/Table/Activities/ActivitiesTable";
 import ContactWellInterestTable from "components/Table/Contact/ContactWellInterestTable";
 import ContactParcelInterestTable from "components/Table/Contact/ContactParcelInterestTable";
 import ContactTaxRollInterestTable from "components/Table/Contact/ContactTaxRollInterestTable";
 import UnitInterestsTable from "../../../Table/Unit/UnitInterestsTable";
+import ContactDealsProvider from "components/DealsDetailCard/ContactDealsProvider";
 
-import SearchPanel from "components/MapGridCard/components/SearchPanel";
-import { platformDataInitialData, snapGridSideBarData } from "components/MapGridCard/components/data";
-import MapGridLayersTable from "components/Table/Layer/MapGridLayersTable";
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
-import { FEATURES } from "components/Shared/FeatureFlag/common";
-import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { contactDetailInitialData } from "./data";
 
 const useStyles = makeStyles((theme) => {
@@ -162,39 +133,12 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const TabLabels = ({ labels, value, setValue }) => {
-  const classes = useStyles();
-
-  return (
-    <>
-      {labels &&
-        labels.length &&
-        labels.map((label, i) => (
-          <Button
-            key={i}
-            size="small"
-            variant="contained"
-            className={value === i ? classes.tapsLabelsButtonsSelected : classes.tapsLabelsButtons}
-            onClick={() => {
-              setValue(i);
-            }}
-          >
-            {label}
-          </Button>
-        ))}
-    </>
-  );
-};
-
 function MapGridCard(props) {
   // contexts
   const [stateApp] = useContext(AppContext);
 
   // function state
-  const [searchTapValue, SearchTapValue] = useState(contactDetailInitialData[5]);
-  const [viewportTapValue, ViewportTapValue] = useState(0);
-  const [dockMenu, SetDockMenu] = useState("bottom");
-  const [trackedTapValue, TrackedTapValue] = useState(0);
+  const [searchTapValue, SearchTapValue] = useState(contactDetailInitialData[0]);
 
   // selectorsW
   const { mapGridCardActivated, mapGridCardActiveTap, selectedOwner } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
@@ -202,16 +146,6 @@ function MapGridCard(props) {
   const userGridViewFilters = useSelector(({ session }) => session.userGridViewSettings?.filters);
 
   const dispatch = useDispatch();
-
-  // React.useEffect(() => {
-  //   console.log(dcreenSizes);
-  // }, [dcreenSizes]);
-
-  const setSelectedDockMenu = (state) => {
-    if (dockMenu !== state) {
-      SetDockMenu(state);
-    }
-  };
 
   const setSearchTapValue = (state) => {
     if (searchTapValue !== state) {
@@ -221,7 +155,6 @@ function MapGridCard(props) {
 
   // styles
   const classes = useStyles({
-    dockMenu,
     mapLayersPanelExtended,
     mapGridCardActivated,
     mapGridCardActiveTap,
@@ -230,85 +163,12 @@ function MapGridCard(props) {
     // screenSizes
   });
 
-  const handleMainTapChange = (event, newValue) => {
-    dispatch(
-      setMapGridCardState({
-        mapGridCardActiveTap: newValue,
-        selectedOwner: null,
-        selectedOwnerWellIntsSummary: null,
-      })
-    );
-  };
-
   const handleSearchPanelChange = (value) => {
     setSearchTapValue(value);
     if (searchTapValue.index !== value.index) {
       dispatch(setMapGridCardState({ searchResultData: [], searchloading: true }));
     }
   };
-
-  const ativateSearchPanel = () => {
-    if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
-    if (mapGridCardActivated === "min") {
-      dispatch(setMapGridCardState({ mapGridCardActivated: true }));
-    }
-  };
-
-  const options = {
-    toolbarActionMarginRight: "105px !important",
-    customToolbar: () => {
-      const dynamicLeftPos = mapGridCardActiveTap !== 2 ? 236 : 122;
-      return (
-        <div style={{ display: "flex", float: "left", position: "relative", left: `${dynamicLeftPos}px`, marginRight: "15px" }}>
-          <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
-
-          <IconButton
-            className="cancelDraggableEffect"
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatch(
-                setMapGridCardState({
-                  mapGridCardActivated: false,
-                  selectedOwner: null,
-                  selectedOwnerWellIntsSummary: null,
-                })
-              );
-            }}
-          >
-            <CloseIcon color="secondary" />
-          </IconButton>
-        </div>
-      );
-    },
-  };
-
-  const commonProps = {
-    isShapeGridOnly: stateApp.gridPolygonString,
-    isLayerOnly: stateApp.selectedLayer,
-    handleChange: handleSearchPanelChange,
-    value: searchTapValue,
-    ativateSearchPanel: ativateSearchPanel,
-  };
-
-  // black
-  // darken
-  const blackOut = () => (
-    <div
-      style={{
-        position: "fixed",
-        top: "0",
-        left: "0",
-        width: "100vw",
-        height: "100vh",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        // zIndex: "1299",
-        zIndex: "1199",
-      }}
-      onClick={() => {
-        dispatch(setMapGridCardState({ mapGridCardActivated: true }));
-      }}
-    />
-  );
 
   return (
     <div className={classes.card}>
@@ -408,14 +268,7 @@ function MapGridCard(props) {
                         />
                       )}
                       {searchTapValue.value === "deals" && (
-                        // <MapGridUnitTable
-                        //   dense
-                        //   parent="search"
-                        //   customOptions={options}
-                        //   targetLabel={searchTapValue.value}
-                        //   header={<SearchPanel {...commonProps} />}
-                        // />
-                        <p>helllo</p>
+                        <ContactDealsProvider />
                       )}
                       {searchTapValue.value === "documents" && (
                         // <AgreementsTable
