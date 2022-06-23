@@ -150,9 +150,9 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
                         className={classes.viewSwitcher}
                         onChange={(e) => setStatus(e.target.value)}
                       >
-                        <MenuItem value="ALL">ALL</MenuItem>
-                        <MenuItem value="Approved">Approved</MenuItem>
-                        <MenuItem value="Unapproved">Unapproved</MenuItem>
+                        <MenuItem value="ALL">All</MenuItem>
+                        <MenuItem value="InPay">In Pay</MenuItem>
+                        <MenuItem value="NotInPay">Not In Pay</MenuItem>
                       </Select>
                     </FormControl>
                   </MuiThemeProvider>
