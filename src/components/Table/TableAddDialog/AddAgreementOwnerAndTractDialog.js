@@ -102,11 +102,8 @@ function AddAgreementOwnerAndTractDialog(props) {
 
   const [loading, setLoading] = useState(false);
   const [isTractOwner, setIsTractOwner] = useState(false);
-<<<<<<< HEAD
   const [isNewTract, setIsNewTract] = useState(true);
-=======
   const [totalOwners, setTotalOwners] = useState(0);
->>>>>>> 78e2194f01bcfcde09895ed7a6f125c2891da08e
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [tractValue, setTractValue] = useState({ name: "", _id: null });
   const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
