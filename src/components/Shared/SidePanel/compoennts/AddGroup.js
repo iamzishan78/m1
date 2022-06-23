@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
             color: '#fff',
             backgroundColor: '#1c2233',
             marginTop: '110px',
-            left: '18% !important',
+            // left: '10% !important',
         },
         "& .MuiTabs-indicator": {
             height: '4px',
