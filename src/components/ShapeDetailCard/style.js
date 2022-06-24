@@ -297,6 +297,12 @@ export const summaryTableStyles = makeStyles((theme) => ({
     background: "#FFF",
     border: "0px",
   },
+  nraHighLight: {
+    fontWeight: "900",
+    fontSize: "13px",
+    lineHeight: "18px",
+    color: "#FF0000",
+  },
   cell1: {
     border: "0px",
     fontFamily: "Poppins",
@@ -324,6 +330,19 @@ export const summaryTableStyles = makeStyles((theme) => ({
   select: {
     "& .MuiOutlinedInput-root": {
       height: "38px",
+    },
+  },
+  positionRenewIcon: {
+    position: "absolute",
+    right: '17%',
+    bottom: '0px',
+    top: '0px'
+  },
+  baseValueChanged: {
+    width: "100%",
+    "& .MuiInputBase-input": {
+      color: "red",
+      fontWeight: "bold",
     },
   },
   foodText: {
