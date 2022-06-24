@@ -20,6 +20,8 @@ import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubCom
 
 import { AppContext } from "AppContext";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+import NumberField from "../../../../../Shared/components/Fields/NumberField";
+
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { showInfoMessage } from "actions";
