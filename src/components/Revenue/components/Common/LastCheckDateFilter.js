@@ -125,7 +125,7 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
             setFromDate={setFromDate}
             toDate={toDate}
             setToDate={setToDate}
-            label="Last Check"
+            //label="Last Check"
             isProperties
             lastCheckMinDate={lastCheckMinDate}
             onChange={setSelectedFilter}

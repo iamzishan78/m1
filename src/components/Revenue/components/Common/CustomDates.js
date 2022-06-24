@@ -116,7 +116,7 @@ export default function Portfolio({
             else return true;
           })}
           renderInput={(params) => (
-            <TextField {...params} label="Date Range" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
+            <TextField {...params} label="Check Date Range" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
           )}
           defaultValue={CUSTOM_DATES.THIS_YEAR_TO_DATE}
           disableListWrap
