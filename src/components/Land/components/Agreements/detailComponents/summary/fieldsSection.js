@@ -142,7 +142,11 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
             </Grid>
             <Grid item xs={8}>
               <Fragment key={index}>
-                {(field.type === "text" || field.type === "dropdown" || field.type === "multiselect" || field.type === "select") && (
+                {(field.type === "text"   ||
+                  field.type === "number" || 
+                  field.type === "dropdown" || 
+                  field.type === "multiselect" || 
+                  field.type === "select") && (
                   <Controller
                     control={control}
                     name={field.key}

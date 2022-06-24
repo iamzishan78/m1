@@ -145,6 +145,14 @@ export default function AgreementDetailCard(props) {
       }
     }
 
+    // if (field ==='agreementTerm' || field ==='effectiveDate') {
+    //   if (field ==='agreementTerm') {
+    //     shape.properties.expirationDate = moment(shape.properties.effectiveDate, 'YYYY-MM-DD').add(parseInt(value), 'months').format('YYYY-MM-DD');
+    //   } else {
+    //     shape.properties.expirationDate = moment(value, 'YYYY-MM-DD').add(parseInt(shape.properties.agreementTerm), 'months').format('YYYY-MM-DD');
+    //   }
+    // }
+
 
     shape.properties.shapeLabel = shapeLabel;
     shape.name = shapeLabel;
