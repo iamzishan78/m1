@@ -1,6 +1,5 @@
 import React, { useEffect, useContext } from "react";
 import { Container } from "@material-ui/core";
-import { TablePagination } from 'mui-datatables'
 import { useSelector } from "react-redux";
 
 // context
@@ -114,6 +113,8 @@ function MapGridLayersTable(props) {
     searchInput
   ]);
 
+  console.log(stateApp.selectedLayer, stateApp.selectedDataset)
+
   return (
     <Container
       maxWidth={false}
@@ -140,8 +141,8 @@ function MapGridLayersTable(props) {
         parent={props.parent}
         setColumnsBase={[]}
       />
-      {stateApp.selectedLayer?.fileName &&
-        <div style={{ position: 'absolute', fontWeight: 'bold', fontSize: '16px', bottom: '0px', right: '410px', padding: '13px 54px 16px 19px', borderBottom: '1px solid rgba(224, 224, 224, 1)', backgroundColor: '#F2F2F2' }}>{stateApp.selectedLayer?.fileName}</div>
+      {stateApp.selectedDataset?.fileName &&
+        <div style={{ position: 'absolute', fontWeight: 'bold', fontSize: '16px', bottom: '0px', right: '410px', padding: '13px 54px 16px 19px', borderBottom: '1px solid rgba(224, 224, 224, 1)', backgroundColor: '#F2F2F2' }}>{stateApp.selectedDataset?.fileName}</div>
       }
     </Container>
   );

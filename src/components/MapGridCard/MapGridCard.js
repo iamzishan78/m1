@@ -247,9 +247,15 @@ function MapGridCard(props) {
 
   const dispatch = useDispatch();
 
-  // React.useEffect(() => {
-  //   console.log(dcreenSizes);
-  // }, [dcreenSizes]);
+
+
+  React.useEffect(() => {
+    if (!stateApp.layerGridCard) {
+      SearchTapValue(platformDataInitialData[0])
+    } else {
+      SearchTapValue(platformDataInitialData[3])
+    }
+  }, [stateApp.layerGridCard]);
 
   const setSelectedDockMenu = (state) => {
     if (dockMenu !== state) {
@@ -447,7 +453,7 @@ function MapGridCard(props) {
                           key={row.name}
                           button
                           selected={row.name === stateApp.selectedLayer.name}
-                          onClick={() => setStateApp((state) => ({ ...state, selectedLayer: row }))}
+                          onClick={() => setStateApp((state) => ({ ...state, selectedLayer: { ...row } }))}
                         >
                           <ListItemIcon>
                             <Icon />

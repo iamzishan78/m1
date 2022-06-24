@@ -20,6 +20,7 @@ import { setMapGridCardState, toggleMapGridCardAtived } from "actions";
 import { snapGridSideBarData } from "components/MapGridCard/components/data";
 import { GET_DATASETS } from "graphQL/useQueryDataset";
 import { USER_MAP_SETTINGS_QUERY } from "graphQL/useQueryUserMapSettings";
+import { scrollbarStyle } from "styles/common";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -28,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'auto',
     height: '274px',
     paddingTop: '10px',
+    ...scrollbarStyle,
 
     "& .item": {
       "&:hover": {
@@ -124,12 +126,14 @@ function Datasets({ layerMap, headerButton }) {
   const getBorderColor = useCallback((name) => (stateApp?.selectedDataset?.sourceName === name ? '#05aff0' : '#263451'), [stateApp.selectedDataset])
 
   const onItemClick = (dataset) => {
+    dispatch(setMapGridCardState({ mapGridCardActivated: false }));
     if (dataset.sourceName === 'M1 Platform' && stateApp?.selectedDataset?.sourceName !== dataset.sourceName) {
-      dispatch(toggleMapGridCardAtived());
+      setStateApp((state) => ({ ...state, layerGridCard: false }));
+      dispatch(setMapGridCardState({ mapGridCardActivated: true }));
     } else {
       setStateApp((state) => ({
         ...state,
-        selectedLayer: dataset.categories[0],
+        selectedLayer: { ...dataset.categories[0] },
         layerGridCard: true,
       }));
       dispatch(setMapGridCardState({ mapGridCardActivated: true }));

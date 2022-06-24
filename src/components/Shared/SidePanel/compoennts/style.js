@@ -6,6 +6,7 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItem from "@material-ui/core/ListItem";
 import Select from "@material-ui/core/Select";
 import { createMuiTheme } from "@material-ui/core/styles";
+import { scrollbarStyle } from "styles/common";
 
 export const theme = createMuiTheme({
   overrides: {
@@ -111,15 +112,15 @@ export const useStyles = makeStyles((theme) => ({
     color: "#FFFFFF",
     height: '1.3rem',
     width: '1.3rem',
-    
+
     position: 'absolute',
-    left:'57px',
-    top:'1px',
+    left: '57px',
+    top: '1px',
     zIndex: '1',
     textAlign: 'center',
-     "& span" : {
-       padding: '0px'
-     }
+    "& span": {
+      padding: '0px'
+    }
   },
 
   heatmapList: {
@@ -129,16 +130,7 @@ export const useStyles = makeStyles((theme) => ({
     height: "calc(100vh - 50px - 122px)",
     maxHeight: "calc(100vh - 40px - 64px)",
     backgroundColor: "#0e111a",
-    "&::-webkit-scrollbar": {
-      width: "0.75em",
-    },
-    "&::-webkit-scrollbar-track": {
-      "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#506187",
-      borderRadius: 5,
-    },
+    ...scrollbarStyle
   },
   nested: {
     paddingLeft: theme.spacing(6),
@@ -185,9 +177,7 @@ export const useStyles = makeStyles((theme) => ({
     maxheight: "calc(100vh - 172px)",
     paddingTop: 10,
     paddingBottom: 10,
-    "&::-webkit-scrollbar": { width: "0.75em" },
-    "&::-webkit-scrollbar-track": { "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)" },
-    "&::-webkit-scrollbar-thumb": { backgroundColor: "#506187", borderRadius: 5 },
+    ...scrollbarStyle
   },
   toolbarActions: {
     display: "flex",
@@ -256,9 +246,9 @@ export const useStyles = makeStyles((theme) => ({
     position: 'relative',
     zIndex: '1',
     textAlign: 'center',
-     "& span" : {
-       padding: '0px'
-     }
+    "& span": {
+      padding: '0px'
+    }
   },
 }));
 
