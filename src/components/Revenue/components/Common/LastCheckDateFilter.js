@@ -63,7 +63,7 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
     });
     useEffect(() => {
         setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
-        setToDate(moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD'));
+        setToDate(moment().subtract(0, 'months').endOf('month').format('yyyy-MM-DD'));
     }, []);
     useEffect(() => {
         getESMinValue({
@@ -125,7 +125,7 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
             setFromDate={setFromDate}
             toDate={toDate}
             setToDate={setToDate}
-            label="Last Check Date"
+            //label="Last Check"
             isProperties
             lastCheckMinDate={lastCheckMinDate}
             onChange={setSelectedFilter}
