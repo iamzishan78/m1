@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState, useRef } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
@@ -40,16 +40,13 @@ function AgreementsTable(props) {
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState(defaultView);
-  const [gridViews, setGridViews] = useState(null);
-
-  const selectedFilters = useRef([]);
   const [stateApp] = useContext(AppContext);
 
   // queries
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
   const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
 
-  const classes = usetableStyles();
+  const classes = usetableStyles({ isFullHeight: true });
 
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
@@ -101,10 +98,10 @@ function AgreementsTable(props) {
       selectedGridView: GridViewModule || defaultView,
       customDataESKey: 'shapeJson.properties.custom_data',
       searchFields: ["*"],
-      TableHeader: copy(TableHeader),
+      TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
       startPaginationAt: 10,
-      gridView: { category: "Agreement" },
+      typeKeyword: { gridViewCategory: "Agreements", metaModule: "Agreement" },
       filters: [
         {
           field: "shapeJson.properties.type.keyword",
@@ -118,6 +115,8 @@ function AgreementsTable(props) {
         value: stateApp?.currentFeature?.geometry
       },
       formatHits,
+
+      modifySelectedGridView: modifySelectedGridView
     });
     // eslint-disable-next-line
   }, [searchInput, props.landSearchQuery, props.filterToggle]);
@@ -165,15 +164,12 @@ function AgreementsTable(props) {
   };
 
   const handleDefaultView = (view, user) => {
-    if (view.name === "My Agreements") {
-      view.filters[0].value = user._id;
-    }
-    if (view.name === "Recently Modified" || view.name === "Recently Added") {
-      view.filters[0].type = "range";
-      view.filters[0].value.range[view.filters[0].field].gte = moment().subtract(30, "days").toISOString();
-      view.filters[0].value.range[view.filters[0].field].lte = moment().toISOString();
-    }
     return view;
+  };
+
+  const modifySelectedGridView = (selectedGridView) => {
+    if (selectedGridView?.name === 'My Agreements' && selectedGridView?.filters?.length)
+      selectedGridView.filters[0].value = stateApp.user._id;
   };
 
 

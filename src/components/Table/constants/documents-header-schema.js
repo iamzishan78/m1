@@ -77,7 +77,31 @@ const DocumentsHeadCells = [
       viewColumns: false,
     },
   },
-
+  {
+    name: "book",
+    esKey: "book.keyword",
+    label: "Book",
+    options: {
+      filter: true,
+    },
+  },
+  {
+    name: "page",
+    esKey: "page.keyword",
+    label: "Page",
+    options: {
+      filter: true,
+    },
+  },
+  {
+    name: "instrument",
+    esKey: "instrument.keyword",
+    label: "Instrument #",
+    options: {
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "175px" } }),
+    },
+  },
   // TEMPORARY COMMENT OUT UNTIL FEATURE IS FIXED
   // {
   //   name: "partyName1",
@@ -88,14 +112,17 @@ const DocumentsHeadCells = [
   //   label: "Party 2 Name",
   // },
 
-  {
-    name: "recordingInfo",
-    esKey: "recordingInfo.keyword",
-    label: "Recording Info",
-    options: {
-      filter: true,
-    },
-  },
+  // hiding recordingInfo
+  // {
+  //   name: "recordingInfo",
+  //   esKey: "recordingInfo.keyword",
+  //   label: "Recording Info",
+  //   options: {
+  //     display: false,
+  //     filter: false,
+
+  //   },
+  // },
   {
     name: " ",
     label: " ",

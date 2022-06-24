@@ -1,10 +1,11 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-export const usetableStyles = makeStyles((theme) => ({
+export const usetableStyles = makeStyles(() => ({
   container: {
     padding: "0 !important",
-    "& .MuiTableCell-paddingCheckbox": {
-      position: (p) => p.isCheckboxSticky ? 'sticky !important' : '',
+
+    "& .MuiTableHead-root": {
+      zIndex: (p) => p.isRevenueTable ? 995 : 0,
     },
     "& div": {
       "&>.MuiPaper-root": {
@@ -25,7 +26,7 @@ export const usetableStyles = makeStyles((theme) => ({
           },
           "@media (max-height:1200px)": {
             maxHeight: "58vh",
-            minHeight: "58vh",
+            minHeight: (p) => p.isFullHeight ? '75vh' : '58vh',
           },
           "@media (max-height:1100px)": {
             maxHeight: "51vh",
@@ -54,6 +55,13 @@ export const usetableStyles = makeStyles((theme) => ({
         },
       },
     },
+  },
+  container2: {
+    width: "100%",
+    "& .MuiTableCell-paddingCheckbox": {
+      position: (p) => p.isCheckboxSticky ? 'sticky !important' : '',
+    },
+
   },
   multiSelectionTopBarButtons: {
     margin: "0px 5px",

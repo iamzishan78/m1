@@ -195,6 +195,7 @@ export const TableHOC = (Component) => {
         }
 
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
+
             let pageESVariables = {
                 variables: {
                     esIndex: tableState.esIndex,
@@ -252,11 +253,13 @@ export const TableHOC = (Component) => {
                 },
             };
             tableState.filterList.forEach((val, index) => {
-                if (val.length > 0) {
-                    if (columns[index]?.custom?.isDate) {
-                        const filterData = stateApp.filtersData[columns[index]?.name];
-                        const data = filterData.find(f => f.key === val[0])
-                        pageESVariables.variables.filters.push({ field: columns[index]?.esKey, value: data.key_as_string });
+                if (val.length > 0 && columns[index]) {
+                    if (columns[index].custom?.isDate) {
+                        const filterData = stateApp.filtersData[columns[index].name];
+                        if (filterData) {
+                            const data = filterData.find(f => f.key === val[0] || f.key_as_string === val[0])
+                            pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
+                        }
                     } else if (columns[index]?.custom?.filterOptions?.length > 0) {
                         pageESVariables.variables.customFilters.push({ field: columns[index]?.esKey, value: val[0] })
                     } else if (columns[index]?.custom?.formatedFilterOptions?.length > 0) {
@@ -283,6 +286,7 @@ export const TableHOC = (Component) => {
             //         pageESVariables.variables.filters.push(filter)
             //     })
             // }
+
             return {
                 pageESVariables,
                 genericESAction: () => {

@@ -71,8 +71,7 @@ function MapGridUnitTable(props) {
 
   useEffect(() => {
     setTableMeta({
-      addableName: "Unit",
-      extendSearchQuery: searchInput,
+      extendSearchQuery: searchInput || stateApp.landSearchQuery,
       searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
@@ -92,7 +91,7 @@ function MapGridUnitTable(props) {
       formatHits,
     });
     // eslint-disable-next-line
-  }, [searchInput]);
+  }, [searchInput, stateApp.landSearchQuery]);
 
   useEffect(() => {
     if (owners?.getShapeOwnerDataById && get(status, "getESFilterList.hits", [])) {

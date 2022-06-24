@@ -18,6 +18,7 @@ import vf_number from "components/Shared/valueformatters/vf_number";
 import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
 import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
+import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
@@ -211,7 +212,8 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                   <>
                     {(data.type === "select" || data.type === "dropdown") && (
                       <FormControl fullWidth margin="dense">
-                        <CustomFieldSelect
+                        <ReactSelectField
+                          isSingleSelect={true}
                           fullWidth
                           index={`field${index}`}
                           dropdownOptions={data.options}
@@ -227,7 +229,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                     )}
                     {(data.type === "multiselect") && (
                       <FormControl fullWidth margin="dense">
-                        <CustomFieldMultiSelect
+                        <ReactSelectField
                           fullWidth
                           index={`field${index}`}
                           dropdownOptions={data.options}

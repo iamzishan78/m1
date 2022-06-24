@@ -11,7 +11,7 @@ import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 import { isEmpty } from "lodash-es";
 import { formattingGridView, sortColumns } from "utils/helper";
 import { handleSelectedGridChange } from "../Table/helpers";
-import { setStateIfDeepEqual } from "components/Shared/functions";
+import { setStateIfDeepEqual, copy } from "components/Shared/functions";
 
 
 export const GridViewHOC = (Component, category = "") => {
@@ -24,7 +24,7 @@ export const GridViewHOC = (Component, category = "") => {
             type: "Default",
         };
 
-        const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
+        const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader())));
         const [selectedGridView, setSelectedGridView] = useState(defaultView);
         const [gridViews, setGridViews] = useState(null);
         const [metaDatas, setMetaDatas] = useState(null);
@@ -87,18 +87,19 @@ export const GridViewHOC = (Component, category = "") => {
                         selectedView: selectedData,
                     };
                 });
+                const tableHeader = copy(TableHeader())
 
                 let filterColumns = props.columns.filter((col) => !metaDatas.find((meta) => meta.name === col.name));
 
                 let columnsData = JSON.parse(JSON.stringify([...filterColumns, ...metaDatas]));
                 for (let i = 0; i < metaDatas.length; i++) {
-                    TableHeader.push(metaDatas[i]);
+                    tableHeader.push(metaDatas[i]);
                 }
 
                 let view = JSON.parse(JSON.stringify(selectedData));
                 if (!isEmpty(view)) {
                     view = formattingGridView(JSON.parse(JSON.stringify(view)));
-                    columnsData = handleSelectedGridChange(TableHeader, view, columnsData);
+                    columnsData = handleSelectedGridChange(tableHeader, view, columnsData);
                 }
 
                 columnsData = sortColumns(columnsData, view);

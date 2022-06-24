@@ -4,7 +4,7 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import MapFilledIcon from "components/Shared/svgIcons/MapFilled"
 import { history } from "store";
 
-const AgreementsHeadCells = [
+const AgreementsHeadCells = (isSnapGrid = false) => [
   {
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
@@ -34,18 +34,23 @@ const AgreementsHeadCells = [
       }),
       dbName: "shapeJson.properties.agreementNumber",
       stickyColumn: true,
-      sort: false,
+      sort: true,
       filter: true,
       viewColumns: false,
       display: true,
-      customRender: (value, tableMeta, updateValue) => {
+      customRender: (value, tableMeta) => {
         return (
           <p
             onClick={(e) => {
               e.stopPropagation();
-              history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
-                { showAgreementBreadcrumb: true }
-              );
+              if (isSnapGrid)
+                history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
+                  { showAgreementBreadcrumb: false }
+                );
+              else
+                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
+                  { showAgreementBreadcrumb: true }
+                );
             }}
             style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
           >
@@ -65,7 +70,7 @@ const AgreementsHeadCells = [
           minWidth: "300px",
           whiteSpace: "nowrap",
           position: "sticky",
-          left: "227px",
+          left: isSnapGrid ? "227px" : "245px",
           background: "white",
           zIndex: 100
         }
@@ -74,13 +79,13 @@ const AgreementsHeadCells = [
         style: {
           position: "sticky",
           minWidth: "150px",
-          left: "227px",
+          left: isSnapGrid ? "227px" : "245px",
           zIndex: 101
         }
       }),
       dbName: "shapeJson.properties.agreementName",
       stickyColumn: true,
-      sort: false,
+      sort: true,
       filter: true,
       viewColumns: false,
       display: true,
@@ -266,6 +271,14 @@ const AgreementsHeadCells = [
     },
   },
   {
+    name: "layer",
+    label: "Layer",
+    options: {
+      display: false,
+      viewColumns: false,
+    },
+  },
+  {
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
@@ -299,7 +312,7 @@ const AgreementsHeadCells = [
           <IconButton
             size="medium"
             color="primary"
-            style={{ backgroundColor: "#efefef" }}
+            style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
             onClick={(e) => {
               history.push(
                 `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
