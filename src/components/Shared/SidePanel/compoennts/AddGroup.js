@@ -80,7 +80,7 @@ export default function AddGroup({ userId, above }) {
     return (
         <div>
             <IconButton aria-controls="group-button" aria-haspopup="true" onClick={handleClick} >
-                <FolderIcon fontSize="large" style={{ color: '#fff', marginRight: '10px' }} />
+                <FolderIcon style={{ color: '#fff', marginRight: '10px' }} />
             </IconButton>
             <Menu
                 id="group-button"

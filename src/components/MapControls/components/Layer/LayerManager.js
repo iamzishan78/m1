@@ -79,12 +79,14 @@ function LayerManager(props) {
   //   setLayerHandler(layerName, selectCategory)
   // }, [layerName, selectCategory])
 
+  const datasets = useMemo(() => {
+    const datasets = stateApp.datasets?.filter((dataset) => dataset.name !== 'M1 Platform')
+    return datasets || [];
+  }, [stateApp.datasets])
+
   const layerCategories = useMemo(() => {
-
     const dataset = stateApp.datasets.find((dataset) => dataset.name === source)
-
     return dataset?.categories || []
-
   }, [source])
 
   return (
@@ -109,7 +111,7 @@ function LayerManager(props) {
                   Select Source
                 </InputLabel>
                 <Select onChange={(evt) => setSource(evt.target.value)}>
-                  {stateApp.datasets.map((dataset) => <MenuItem value={dataset.name}>{dataset.name}</MenuItem>)}
+                  {datasets.map((dataset) => <MenuItem value={dataset.name}>{dataset.name}</MenuItem>)}
                 </Select>
               </FormControl>
             </Grid>

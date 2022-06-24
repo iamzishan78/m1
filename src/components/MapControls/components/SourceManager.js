@@ -161,10 +161,10 @@ export default function SourceManager(props) {
   const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, { refetchQueries: ["getUserMapSettings"], awaitRefetchQueries: true });
 
   useEffect(() => {
-    if (stateApp.layers) {
+    if (!deepEqual(currentLayers, stateApp.layers)) {
       setCurrentLayers(stateApp.layers);
     }
-  }, [stateApp.layers]);
+  }, [currentLayers, stateApp.layers]);
 
   const handleClose = () => {
     setStateMapControls((stateMapControls) => ({
@@ -205,6 +205,39 @@ export default function SourceManager(props) {
 
     setCurrentLayers(update(currentLayers, updatefn));
   };
+
+  const handleDatasetChange = (dataset, value) => {
+    const updatefn = {};
+    const layersSettingsToUpdate = [];
+    currentLayers.forEach((clayer, layerIndex) => {
+      if (clayer.file === dataset.file) {
+        updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
+        layersSettingsToUpdate.push({
+          _id: clayer._id,
+          layerSettings: { ...clayer.layerSettings, showable: value }
+        });
+      }
+    });
+    updateUserMapSettings({
+      variables: {
+        settings: {
+          user: stateApp.user.mongoId,
+          type: 'DatasetVisibility',
+          settings: { [dataset._id]: value },
+        },
+      },
+    });
+    if (layersSettingsToUpdate.length > 0)
+      updateManyUserLayerSettings({
+        variables: {
+          manySettings: layersSettingsToUpdate,
+        },
+      });
+
+    const newLayers = update(currentLayers, updatefn)
+    setCurrentLayers(newLayers);
+    setTimeout(() => { setStateApp({ ...stateApp, layers: newLayers }); }, 0)
+  }
 
   const changeLayerName = (layer, name) => {
     const updatefn = {};
@@ -400,18 +433,6 @@ export default function SourceManager(props) {
         fileUploadedContent: fileContent,
         fileUploadedOriginalContent: originalData,
       });
-  }
-
-  const handleDatasetChange = (dataset, value) => {
-    updateUserMapSettings({
-      variables: {
-        settings: {
-          user: stateApp.user.mongoId,
-          type: 'DatasetVisibility',
-          settings: { [dataset._id]: value },
-        },
-      },
-    });
   }
 
   const checkIfDeleteAllow = (layer) => {
