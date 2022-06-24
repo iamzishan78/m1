@@ -105,13 +105,14 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     { title: "Campaign Name", value: "campaignName" },
     { title: "Contact Owner", value: "contactOwner" },
     { title: "Entity Type", value: "ownerType" },
-    { title: "Stage", value: "status" },
-    { title: "Status", value: "contactStatus" },
     { title: "Industry Type", value: "industryType" },
     { title: "Lead Source", value: "leadSource" },
+    { title: "Stage", value: "status" },
+    { title: "Status", value: "contactStatus" },
+    { title: "Tags", value: "contactStatus" },
     { title: "Territory", value: "territory" },
     { title: "Time Zone", value: "timeZone" },
-    { title: "Tags", value: "contactStatus" },
+
   ];
 
   useEffect(() => {
@@ -281,7 +282,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       case "Territory":
         return (
           <TextField
-            placeholder={"Type something..."}
+            placeholder={"Enter a value"}
             value={fieldKey}
             onChange={({ target }) => {
               setFieldKey(target.value)
