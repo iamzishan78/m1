@@ -130,6 +130,21 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
             lastCheckMinDate={lastCheckMinDate}
             onChange={setSelectedFilter}
           />
+          <Grid item xs maxWidth>
+            {extraFitlers.includes("propertyGroup") && (
+              <ReportGroupHeader
+                type="Properties"
+                esFilters={propertiesReportGroup || []}
+                setESFilters={(value) => setPropertyFilter(value)}
+                setFilterToggle={() => {}}
+                isBackground={false}
+                noUpdate={true}
+                strechedWidth
+                isShrink
+                noPadding
+              />
+            )}
+          </Grid>
           <Grid item xs md>
             {extraFitlers.includes("status") && (
               <MuiThemeProvider>
@@ -152,21 +167,7 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
               </MuiThemeProvider>
             )}
           </Grid>
-          <Grid item xs maxWidth>
-            {extraFitlers.includes("propertyGroup") && (
-              <ReportGroupHeader
-                type="Properties"
-                esFilters={propertiesReportGroup || []}
-                setESFilters={(value) => setPropertyFilter(value)}
-                setFilterToggle={() => {}}
-                isBackground={false}
-                noUpdate={true}
-                strechedWidth
-                isShrink
-                noPadding
-              />
-            )}
-          </Grid>
+
         </Grid>
       </div>
     );
