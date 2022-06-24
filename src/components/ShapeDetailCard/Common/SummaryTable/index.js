@@ -76,11 +76,6 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
             aria-label="toggle royality-acres"
             onMouseDown={e => e.preventDefault()}
             onMouseUp={(e) => onKeyDown(e, data, 'calculation')}
-          // onClick={(e) => {
-          //   console.log("clicked gooool")
-          //   e.stopPropagation();
-          //   onKeyDown(e, data, 'calculation');
-          // }}
           >
             <AutorenewIcon style={{ color: "red" }} />
           </IconButton>
@@ -92,7 +87,6 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
 }
 
 export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [] }) {
-
   const classes = summaryTableStyles();
   const dispatch = useDispatch();
   const [tableDataState, setTableDataState] = useState({});
@@ -115,7 +109,6 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
     setFilteredTableData(filteredKeys);
     setTableTempProperties({ ...tableTempProperties });
     setTableDataState({});
-
   }, [properties, metaData]);
 
   useEffect(() => {

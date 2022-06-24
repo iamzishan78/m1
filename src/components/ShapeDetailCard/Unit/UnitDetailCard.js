@@ -61,9 +61,7 @@ export default function UnitDetailCard(props) {
     }
   }, [props.id]);
 
-
   useEffect(() => {
-
     if (dataCustomLayer && dataCustomLayer.customLayer) {
       let shape = JSON.parse(dataCustomLayer.customLayer.shape);
       if (dataCustomLayer.customLayer.shapeJson) shape = copy(dataCustomLayer.customLayer.shapeJson);
