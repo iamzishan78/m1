@@ -8,20 +8,8 @@ export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
 
     if (agreementDetails?.custom_data) {
         agreementDetails.custom_data_arr?.forEach(data => {
-            // if(data.key in agreementDetails?.custom_data){
             customData.push({ ...data, title: data.key, label: data.key, key: data.key, value: data.value });
-            // } else {
-            //     customData.push({ ...data, title: data.key, label: data.key, key: data.key, value: data.value });
-            // }
         });
-        // Object.keys(agreementDetails?.custom_data).forEach((key) => {
-        //     if (agreementDetails?.custom_data_arr) {
-        //         const meta = agreementDetails.custom_data_arr.find((m) => m.key === key);
-        //         if (meta) {
-        //             customData.push({ ...meta, title: meta.key, label: meta.key, key: meta.key, value: meta.value });
-        //         }
-        //     }
-        // });
     }
 
     //? Meta data which is attached to this agreement
