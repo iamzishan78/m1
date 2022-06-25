@@ -461,7 +461,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           {data.type === "currency" && (vf_currency(data.value) || vf_currency(properties[data.key]) || "-")}
                           {data.type === "comma-number" && (vf_number(data.value) || vf_number(properties[data.key]) || "-")}
                           {data.type === 'calculation' && (<>
-                            <Typography className={isNraMatched() ? '' : classes.nraHighLight}>
+                            <Typography className={isNraMatched() ? classes.nraText : classes.nraHighLight}>
                               {properties?.netRoyalityAcres?.unitNra}
                             </Typography>
 

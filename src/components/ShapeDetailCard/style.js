@@ -299,9 +299,12 @@ export const summaryTableStyles = makeStyles((theme) => ({
   },
   nraHighLight: {
     fontWeight: "900",
-    fontSize: "13px",
+    fontSize: "14px",
     lineHeight: "18px",
-    color: "#FF0000",
+    color: "dodgerblue",
+  },
+  nraText: {
+    fontSize: "14px",
   },
   cell1: {
     border: "0px",
@@ -341,8 +344,9 @@ export const summaryTableStyles = makeStyles((theme) => ({
   baseValueChanged: {
     width: "100%",
     "& .MuiInputBase-input": {
-      color: "red",
+      color: "dodgerblue",
       fontWeight: "bold",
+      fontSize: '14px'
     },
   },
   foodText: {
