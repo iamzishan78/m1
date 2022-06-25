@@ -308,6 +308,7 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
                         onKeyDown={onKeyDown}
                         onBlur={onBlur}
                         type="key"
+                        setTableDataState={setTableDataState}
                       />
                     ) : (
                       <div style={{ minWidth: "30px", cursor: "pointer" }}>

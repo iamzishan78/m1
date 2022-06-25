@@ -45,7 +45,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
               e.stopPropagation();
               if (isSnapGrid)
                 history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
-                  { showAgreementBreadcrumb: true }
+                  { showAgreementBreadcrumb: false }
                 );
               else
                 history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
@@ -70,7 +70,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
           minWidth: "300px",
           whiteSpace: "nowrap",
           position: "sticky",
-          left: "227px",
+          left: isSnapGrid ? "227px" : "245px",
           background: "white",
           zIndex: 100
         }
@@ -79,7 +79,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
         style: {
           position: "sticky",
           minWidth: "150px",
-          left: "227px",
+          left: isSnapGrid ? "227px" : "245px",
           zIndex: 101
         }
       }),

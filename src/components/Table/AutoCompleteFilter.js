@@ -44,6 +44,13 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
                     setStateApp((state, props) => {
                         return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
                     });
+                }else if (custom?.isDateTime) {
+                    filtersData[keys[0]].hits = filtersData[keys[0]]?.hits.filter((hit) => hit.key)
+                    const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key: moment(new Date(hit.key)).format("MM/DD/YYYY HH:mm:ss.SSS"), key_as_string: hit.key_as_string || hit.key }))
+                    setOptions(hits)
+                    setStateApp((state, props) => {
+                        return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
+                    });
                 } else if (custom?.formatedFilterOptions) {
                     const hits = filtersData[keys[0]].hits
                     for (let i = 0; i < custom.formatedFilterOptions.length; i++) {
