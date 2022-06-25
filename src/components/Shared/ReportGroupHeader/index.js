@@ -11,8 +11,8 @@ import ButtonDropDown from "components/Shared/M1nTable/components/ButtonGroup";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 const useStyles = makeStyles((theme) => ({
-  actionBar: ({ isBackground }) => ({
-    padding: "10px 40px",
+  actionBar: ({ isBackground, noPadding }) => ({
+    padding: noPadding ? 0 :"10px 40px",
     display: "flex",
     alignItems: "center",
     backgroundColor: isBackground ? "#f7f7f7" : "transparent",
@@ -49,8 +49,10 @@ export default function ReportGroupHeader({
   fullWidth = false,
   isShrink = false,
   noUpdate,
+  noPadding = false,
+  strechedWidth = false
 }) {
-  const classes = useStyles({ isBackground, isShrink });
+  const classes = useStyles({ isBackground, isShrink, noPadding });
   const [stateApp] = useContext(AppContext);
 
   const [getGridViews, { data: gridViews }] = useLazyQuery(GET_GRID_VIEWS);
@@ -76,7 +78,9 @@ export default function ReportGroupHeader({
     (updatedConfig) => {
       const actionType = config.type || updatedConfig.type;
       if (["update", "delete"].includes(actionType)) {
-        const gridViewId = gridViews?.getGridViews?.gridViews.find((view) => view.name === reportingGroup)._id;
+        const gridViewId = gridViews?.getGridViews?.gridViews.find(
+          (view) => view.name === reportingGroup
+        )._id;
         const name = config.name || updatedConfig.name;
         const isDeleted = actionType === "update" ? false : true;
         updateGridView({
@@ -142,18 +146,42 @@ export default function ReportGroupHeader({
       {
         isShow: true,
         text: "Save as New Report Group",
-        action: () => setConfig({ show: true, type: "new", name: reportingGroup + " - Copy" }),
+        action: () =>
+          setConfig({
+            show: true,
+            type: "new",
+            name: reportingGroup + " - Copy",
+          }),
       },
-      { isShow: true, text: "Edit Report Group Name", action: () => setConfig({ show: true, type: "update", name: reportingGroup }) },
-      { isShow: true, text: "Delete Report Group", action: () => setDeleteDialogOpen(true) },
+      {
+        isShow: true,
+        text: "Edit Report Group Name",
+        action: () =>
+          setConfig({ show: true, type: "update", name: reportingGroup }),
+      },
+      {
+        isShow: true,
+        text: "Delete Report Group",
+        action: () => setDeleteDialogOpen(true),
+      },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reportingGroup, handleAddUpdateDelete]);
 
   return (
     <>
-      <Grid container direction="row" display="flex" justify="space-between" className={classes.actionBar}>
-        <Grid item xs={fullWidth ? 7 : 3} md={fullWidth ? 7 : 3}>
+      <Grid
+        container
+        direction="row"
+        display="flex"
+        justify="space-between"
+        className={classes.actionBar}
+      >
+        <Grid
+          item
+          xs={strechedWidth ? true : fullWidth ? 7 : 3}
+          md={strechedWidth ? true : fullWidth ? 7 : 3}
+        >
           {config.show ? (
             <TextField
               fullWidth={true}
@@ -180,8 +208,14 @@ export default function ReportGroupHeader({
               onBlur={() => setConfig({ show: false })}
             />
           ) : (
-            <FormControl variant="outlined" fullWidth className={classes.formControl}>
-              <InputLabel id="select-outlined-label">Reporting Groups</InputLabel>
+            <FormControl
+              variant="outlined"
+              fullWidth
+              className={classes.formControl}
+            >
+              <InputLabel id="select-outlined-label">
+                Reporting Groups
+              </InputLabel>
               <Select
                 labelId="select-outlined-label"
                 id="select-outlined"
@@ -191,7 +225,9 @@ export default function ReportGroupHeader({
                 className={classes.viewSwitcher}
                 onChange={(e) => {
                   setReportingGroup(e.target.value);
-                  const gridView = gridViews?.getGridViews?.gridViews.find((view) => view.name === e.target.value);
+                  const gridView = gridViews?.getGridViews?.gridViews.find(
+                    (view) => view.name === e.target.value
+                  );
                   if (gridView) {
                     setESFilters(gridView.filters);
                     setFilterToggle((value) => !value);
@@ -213,18 +249,34 @@ export default function ReportGroupHeader({
 
         {esFilters.length > 0 && !noUpdate && (
           <Grid item xs={5} md={5}>
-            <Grid container display="flex" justify="flex-end" direction="row" spacing={2}>
+            <Grid
+              container
+              display="flex"
+              justify="flex-end"
+              direction="row"
+              spacing={2}
+            >
               <Grid item>
                 {reportingGroup === All_TYPE ? (
                   <Button
                     variant="contained"
                     color="secondary"
-                    onClick={() => setConfig({ show: true, type: "new", name: reportingGroup + " - Copy" })}
+                    onClick={() =>
+                      setConfig({
+                        show: true,
+                        type: "new",
+                        name: reportingGroup + " - Copy",
+                      })
+                    }
                   >
                     Save as New Group
                   </Button>
                 ) : (
-                  <ButtonDropDown variant="contained" color="secondary" options={ButtonActions} />
+                  <ButtonDropDown
+                    variant="contained"
+                    color="secondary"
+                    options={ButtonActions}
+                  />
                 )}
               </Grid>
             </Grid>
@@ -243,9 +295,11 @@ export default function ReportGroupHeader({
           <DeleteConfirmationDialogContent
             header={`Delete Report Group`}
             onClose={setDeleteDialogOpen}
-            deleteFunc={() => handleAddUpdateDelete({ type: "delete", name: reportingGroup })}
+            deleteFunc={() =>
+              handleAddUpdateDelete({ type: "delete", name: reportingGroup })
+            }
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
+            setM1nSelectedRowsIndexes={() => {}}
           >
             Do you want to delete this report group?
           </DeleteConfirmationDialogContent>
