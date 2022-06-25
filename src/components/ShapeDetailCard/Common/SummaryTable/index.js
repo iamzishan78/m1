@@ -19,6 +19,8 @@ import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
 import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
+import NumberField from "components/Shared/components/Fields/NumberField";
+
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
