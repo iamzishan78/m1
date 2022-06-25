@@ -264,7 +264,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                         InputProps={data.InputProps}
                       />
                     )}
-                    {
+                    {/* {
                       (data.type === "number") && (
                         <NumberField
                           InputProps={{
@@ -280,7 +280,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             updateProperties(null, 'agreementTerm', value);
                           }} />
                       )
-                    }
+                    } */}
                     {data.type === "date" && (
                       <KeyboardDatePicker
                         autoFocus
