@@ -77,7 +77,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
             onMouseDown={e => e.preventDefault()}
             onMouseUp={(e) => onKeyDown(e, data, 'calculation')}
           >
-            <AutorenewIcon style={{ color: "red" }} />
+            <AutorenewIcon style={{ color: "dodgerblue" }} />
           </IconButton>
         )
       }
@@ -180,9 +180,8 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
           dispatch(showErrorMessage("Key with this name already exists"));
           return;
         }
-        updateCustomProperties(type, get(tableTempProperties, `${data.key}key`), data.key);
+        updateCustomProperties(type, get(tableTempProperties, `${data.key}key`), data.key, data.id);
       }
-      updateCustomProperties(type, get(tableTempProperties, `${data.key}key`), data.key, data.id);
     }
   };
 
