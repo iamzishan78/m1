@@ -386,7 +386,7 @@ export default function CommentComponent(props) {
                             <span className={classes.bold}>
                               {eachComment.user.name}
                             </span>
-                            <ReactTimeAgo
+                            {/* <ReactTimeAgo
                               className={classes.commentTime}
                               date={
                                 new Date(
@@ -396,11 +396,11 @@ export default function CommentComponent(props) {
                                     day: "2-digit",
                                     hour: "2-digit",
                                     minute: "2-digit",
-                                  }).format(eachComment.ts)
+                                  }).format(eachComment.ts ?? "")
                                 )
                               }
                               locale="en-US"
-                            />
+                            /> */}
                             {eachComment.isEdited && (
                               <span className={classes.commentTime}>
                                 (Edited)
