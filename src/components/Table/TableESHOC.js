@@ -357,7 +357,10 @@ export const TableESHOC = (Component) => {
                         if (column.custom?.isDate && columns?.length) {
                             if (value !== "")
                                 value = moment(new Date(value)).format("MM/DD/YYYY")
-
+                        }
+                        if (column.custom?.isDateTime && columns?.length) {
+                            if (value !== "")
+                                value = moment(new Date(value)).format("MM/DD/YYYY HH:mm:ss.SSS")
                         }
                         filterList = [value];
                     }
@@ -539,7 +542,7 @@ export const TableESHOC = (Component) => {
             };
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0 && columns[index]) {
-                    if (columns[index].custom?.isDate) {
+                    if (columns[index].custom?.isDate || columns[index].custom?.isDateTime) {
                         const filterData = stateApp.filtersData[columns[index].name];
                         if (filterData) {
                             const data = filterData.find(f => f.key === val[0] || f.key_as_string === val[0])

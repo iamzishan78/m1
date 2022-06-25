@@ -212,6 +212,11 @@ const PrivateRoute = ({ component, ...options }) => {
   );
 };
 
+const localClient = new ApolloClient({
+  uri: "http://localhost:7071/api/m1graph",
+  cache: new InMemoryCache(),
+});
+
 function App() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [apolloClient, setApolloClient] = useState(null);
@@ -320,7 +325,7 @@ function App() {
 
         />
         {apolloClient ? (
-          <ApolloProvider client={apolloClient}>
+          <ApolloProvider client={localClient}>
             <FeatureFlag feature={FEATURES.USERSNAP} >
               <UsersnapProvider />
             </FeatureFlag>

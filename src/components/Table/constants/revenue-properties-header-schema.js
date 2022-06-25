@@ -130,7 +130,7 @@ const RevenuePropertiesHeadCells = [
 
   {
     name: "lastChecked",
-    label: "Last Check Date",
+    label: "Last Check",
     esKey: "lastCheck.checkDate",
     options: {
       customHeadLabelRender: () => (

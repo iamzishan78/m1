@@ -21,7 +21,6 @@ function RevenuePropertiesTable(props) {
   const dispatch = useDispatch();
   const [refetchData, setRefetchData] = useState(false)
 
-
   const esFilters = props.esFilters ? props.esFilters : []
 
   const formatHits = (hits) => {
@@ -52,6 +51,10 @@ function RevenuePropertiesTable(props) {
       formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field]
       fixedFilters.push(formatedFilter[0])
     }
+
+    // fixedFilters[1].type = "value";
+    // fixedFilters[1].value = "";
+
     props.setInitialFilters(formatedFilter)
     props.setTableMeta({
       extendSearchQuery: props.revenueSearchQuery,
