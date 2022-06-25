@@ -396,7 +396,7 @@ export default function CommentComponent(props) {
                                     day: "2-digit",
                                     hour: "2-digit",
                                     minute: "2-digit",
-                                  }).format(eachComment.ts ?? "")
+                                  }).format(eachComment.ts)
                                 )
                               }
                               locale="en-US"
