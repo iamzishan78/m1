@@ -121,7 +121,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
           dispatch(showErrorMessage("Please provide key value first"));
           return;
         } else {
-          updateCustomProperties(type, get(tableTempProperties, `${data.key}`), data.key);
+          updateCustomProperties(type, get(tableTempProperties, `${data.key}`), data.key, data.id);
         }
       } else updateProperties(e, data.key, get(tableTempProperties, `${data.key}`), data.isCustom);
     } else {

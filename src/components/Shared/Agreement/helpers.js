@@ -6,11 +6,9 @@ export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
     const attachedMetaData = [];
     const nonAttachedMetaData = [];
 
-    if (agreementDetails?.custom_data) {
-        agreementDetails.custom_data_arr?.forEach(data => {
-            customData.push({ ...data, title: data.key, label: data.key, key: data.key, value: data.value });
-        });
-    }
+    agreementDetails.custom_data_arr?.forEach(data => {
+        customData.push({ ...data, title: data.key, label: data.key, key: data.key, value: data.value });
+    });
 
     //? Meta data which is attached to this agreement
     metaData.forEach(md => {
