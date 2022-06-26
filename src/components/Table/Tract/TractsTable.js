@@ -43,7 +43,7 @@ function TractsTable(props) {
       // addableName: "Unit",
       extendSearchQuery: props.landSearchQuery || searchInput || '',
       searchFields: ["*"],
-      TableHeader: copy(TableHeader),
+      TableHeader: copy(TableHeader(props.isSnapGrid)),
       esIndex: "shapes_flat",
       startPaginationAt: 10,
       filters: [
