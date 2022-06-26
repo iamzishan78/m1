@@ -227,9 +227,8 @@ export default function DetailInfo(props) {
     return (
       <FormGroup style={{ display: "block" }}>
         <FormControlLabel
-          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""} ${
-            !showEmpty ? classes.switchTextDeselected : ""
-          }`}
+          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""} ${!showEmpty ? classes.switchTextDeselected : ""
+            }`}
           control={
             <React.Fragment>
               <AntSwitch
@@ -450,7 +449,6 @@ export default function DetailInfo(props) {
                           entity={props.contactData.entity}
                           content={row.data}
                           linkType={row.linkType}
-                          disabled
                           isPurchased
                         />
                       </Grid>
@@ -477,7 +475,6 @@ export default function DetailInfo(props) {
                             entity={props.contactData.entity}
                             content={row.data}
                             linkType={row.linkType}
-                            disabled
                             isPurchased
                           />
                         </Grid>
