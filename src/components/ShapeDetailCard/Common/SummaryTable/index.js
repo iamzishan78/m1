@@ -23,6 +23,8 @@ import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponen
 import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
 import { copy } from "components/Shared/functions";
+import NumberField from "components/Shared/components/Fields/NumberField";
+
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
