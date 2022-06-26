@@ -20,7 +20,7 @@ const interestTypeOptions = ["Royalty Interest", "Overriding Royalty", "Working 
 
 const statusOptions = ["Active", "Inactive"];
 
-const costFreeOptions = ["Yes", "No"];
+const costFreeOptions = ["No", "Yes - All Products", "Yes - Gas", "Yes - Oil"];
 
 const useStyles = makeStyles((theme) => ({
   sideModal: {
