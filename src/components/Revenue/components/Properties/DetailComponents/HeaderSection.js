@@ -714,8 +714,8 @@ export default function HeaderSection(props) {
                         updatePropertyData("status", e.target.value);
                       }}
                     >
-                      <MenuItem value="In Pay">In Pay</MenuItem>
-                      <MenuItem value="Not in Pay">Not in Pay</MenuItem>
+                      <MenuItem value="InPay">In Pay</MenuItem>
+                      <MenuItem value="NotInPay">Not in Pay</MenuItem>
                     </Select>
                   )}
                 />

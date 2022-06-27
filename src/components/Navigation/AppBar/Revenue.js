@@ -63,7 +63,7 @@ export default function RevenueAppBar(props) {
             variables: {
               property: {
                 source: "Manual Entry",
-                status: "Not in Pay",
+                status: "NotInPay",
               },
             },
           });
