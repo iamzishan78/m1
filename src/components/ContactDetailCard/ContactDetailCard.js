@@ -30,6 +30,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
+import AddDealDialog from "components/Transact/components/DealDialog/AddDealDialog";
 import ParcelsCard from "./components/ParcelsCard";
 import ShapeOwnershipCard from "./components/ShapeOwnershipCard";
 import LeadStage from "../Shared/LeadStage";
@@ -1051,6 +1052,20 @@ export default function ContactDetailCard(props) {
           <RightDialog open={true} handleClickDialogClose={() => setActivityDialog(false)} width="700px">
             <AddActivityDialog onClose={() => setActivityDialog(false)} id={props.id} contactData={contactData} />
           </RightDialog>
+        )}
+        {stateApp.dealDialog && (
+          <AddDealDialog
+            open={stateApp.dealDialog ? true : false}
+            width="450px"
+            onClose={() =>
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                dealDialog: false,
+                activeDeal: { cardId: null, laneId: null },
+              }))
+            }
+            contactId={contactData?._id}
+          />
         )}
       </div>
     </div>

@@ -2892,21 +2892,6 @@ function M1nTable(props) {
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
-      {props.parent && props.parent === "Deals" && stateApp.dealDialog && (
-        <AddDealDialog
-          open={stateApp.dealDialog ? true : false}
-          width="450px"
-          onClose={() =>
-            setStateApp((stateApp) => ({
-              ...stateApp,
-              dealDialog: false,
-              activeDeal: { cardId: null, laneId: null },
-            }))
-          }
-          contactId={props.contact?._id}
-        />
-      )}
-
       {props.parent && props.parent === "assocTaxRollInterests" && (
         <AddWellInterestDialog
           open={stateApp.wellInterestDialog ? true : false}
