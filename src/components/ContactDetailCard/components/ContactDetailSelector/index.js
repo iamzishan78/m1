@@ -1,6 +1,8 @@
-import React, { Fragment, useState, useContext } from "react";
+import React, { Fragment, useState, useContext, useEffect } from "react";
+import { get } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "AppContext";
+import { useLazyQuery } from "@apollo/client";
 import Card from "@material-ui/core/Card";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { setMapGridCardState } from "actions";
@@ -17,6 +19,8 @@ import ContactDocumentsProvider from "components/ViewDocuments/ContactDocumentsP
 
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
 import { contactDetailInitialData } from "./data";
+
+import { CONTACT_SUMMARY } from "graphQL/useQueryContactSummary";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -138,6 +142,8 @@ function MapGridCard(props) {
   // contexts
   const [stateApp] = useContext(AppContext);
 
+  const [getContactSummary, { data: contactSummaryData }] = useLazyQuery(CONTACT_SUMMARY);
+
   // function state
   const [searchTapValue, SearchTapValue] = useState(contactDetailInitialData[0]);
 
@@ -147,6 +153,15 @@ function MapGridCard(props) {
   const userGridViewFilters = useSelector(({ session }) => session.userGridViewSettings?.filters);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (props.contactData._id)
+      getContactSummary({
+        variables: {
+          contactId: props.contactData._id
+        }
+      })
+  }, [getContactSummary, props.contactData]);
 
   const setSearchTapValue = (state) => {
     if (searchTapValue !== state) {
@@ -199,7 +214,7 @@ function MapGridCard(props) {
                           <ListItemIcon style={{ minWidth: "40px" }}>
                             <Icon />
                           </ListItemIcon>
-                          <ListItemText primary={row.label} />
+                          <ListItemText primary={`${row.label} (${get(contactSummaryData, `contactSummary.${row.value}`, 0)})`} />
                         </ListItem>
                       );
                     })}
@@ -230,7 +245,7 @@ function MapGridCard(props) {
                           onAddActivity={props.onAddActivity}
                         />
                       )}
-                      {searchTapValue.value === "taxRollInterest" && (
+                      {searchTapValue.value === "taxRollInterests" && (
                         <ContactTaxRollInterestTable
                           parent="assocTaxRollInterests"
                           header={"Tax Roll Interests"}
@@ -239,7 +254,7 @@ function MapGridCard(props) {
                           showTracks
                         />
                       )}
-                      {searchTapValue.value === "wellInterest" && (
+                      {searchTapValue.value === "wellInterests" && (
                         <ContactWellInterestTable
                           parent="assocTaxRollInterests"
                           header={"Well Interests"}
