@@ -373,7 +373,6 @@ function TractInterestsTable(props) {
       default:
     }
   };
-
   return (
     <div className={classes.tractInterestTable}>
       <Container
