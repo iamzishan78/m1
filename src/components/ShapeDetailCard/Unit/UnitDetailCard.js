@@ -123,7 +123,7 @@ export default function UnitDetailCard(props) {
     });
   };
 
-  const updateCustomProperties = (type, value, id) => {
+  const updateCustomProperties = (type, value, key, id) => {
     const shape = uniObj.shape;
     const customRow = properties.custom_data_arr.find((p) => p.id === id);
     if (type === "key") {
@@ -172,7 +172,7 @@ export default function UnitDetailCard(props) {
     return (
       <div className={classes.documentHeader}>
         <GavelIcon />
-        <span>LIMITED TITLE RUNSHEET</span>
+        <span>RUNSHEET INSTRUMENTS</span>
       </div>
     );
   };

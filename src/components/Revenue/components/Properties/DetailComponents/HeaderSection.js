@@ -29,6 +29,8 @@ import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
 // import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
+import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -384,7 +386,62 @@ export default function HeaderSection(props) {
               </Grid>
             </Grid>
           </Grid>
-
+          <Grid item xs={5}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={3}>
+                <div className={classes.label}>Internal ID #</div>
+              </Grid>
+              <Grid item xs={8}>
+                <Controller
+                  control={control}
+                  name="internalID"
+                  render={(params) => (
+                    <TextField
+                      {...params}
+                      className={classes.textField}
+                      variant="outlined"
+                      margin="dense"
+                      placeholder=""
+                      fullWidth
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                      }}
+                      onBlur={(e) => handleUpdate("internalID", e.target.value)}
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={7}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={2}>
+                <div className={classes.label}>Internal Company</div>
+              </Grid>
+              <Grid item xs={9}>
+                <Controller
+                  control={control}
+                  name="internalCompany"
+                  render={(params) => {
+                    return (
+                      <AutoCompleteTypeComponent
+                        {...params}
+                        shapeType={"Unit"}
+                        typeKey={"internalCompany"}
+                        variant="outlined"
+                        onChange={(e, value) => {
+                          params.onChange(value?.name || "");
+                        }}
+                        onBlur={(e) => {
+                          handleUpdate("internalCompany", e.target.value || '');
+                        }}
+                      />
+                    );
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>

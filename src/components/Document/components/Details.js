@@ -6,8 +6,6 @@ import ListItem from "@material-ui/core/ListItem";
 import { AppContext } from "AppContext";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
-import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
-import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 import { IconButton, TextField, withStyles } from "@material-ui/core";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
@@ -17,12 +15,9 @@ import Tooltip from "@material-ui/core/Tooltip";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import DeleteIcon from "@material-ui/icons/Delete";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
-import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 import { useLazyQuery } from "@apollo/client";
-import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
-import { setStateIfDeepEqual } from "components/Shared/functions";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 
 // functions

@@ -191,7 +191,7 @@ const unitsColumnHeaders = [
       },
       custom: {
         key_as_string: true,
-        isDate: true,
+        isDateTime: true,
       },
     },
     {

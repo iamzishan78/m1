@@ -82,8 +82,8 @@ export default function Properties() {
   const [propertiesCount, setPropertiesCount] = useState(0);
   const [esFilters, ESFilters] = useState([]);
 
-  const setESFilters = (newState) => {
-    setStateIfDeepEqual(ESFilters, newState);
+  const setESFilters = (newFilter) => {
+    setStateIfDeepEqual(ESFilters, newFilter);
   };
 
   const onPropertiesCount = (count) => {
@@ -105,11 +105,11 @@ export default function Properties() {
       points: 0,
     },
     {
-      heading: "Active",
+      heading: "In Pay",
       points: 0,
     },
     {
-      heading: "Inactive",
+      heading: "Not In Pay",
       points: 0,
     },
     {
@@ -121,7 +121,14 @@ export default function Properties() {
 
   return (
     <>
-      <LastCheckDateFilter field={"lastCheck.checkDate"} esIndex={esIndex} setESFilters={setESFilters} setFilterToggle={setFilterToggle} filterToggle={filterToggle} />
+      <LastCheckDateFilter
+        field={"lastCheck.checkDate"}
+        esIndex={esIndex}
+        setESFilters={setESFilters}
+        setFilterToggle={setFilterToggle}
+        filterToggle={filterToggle}
+        extraFitlers={["status", "propertyGroup"]}
+      />
 
       <AnalyticsCards
         parent={"Properties"}

@@ -130,7 +130,7 @@ const RevenuePropertiesHeadCells = [
 
   {
     name: "lastChecked",
-    label: "Last Check Date",
+    label: "Last Check",
     esKey: "lastCheck.checkDate",
     options: {
       customHeadLabelRender: () => (
@@ -146,6 +146,38 @@ const RevenuePropertiesHeadCells = [
       key_as_string: true,
       isDate: true,
     },
+  },
+
+  {
+    name: "internalID",
+    label: "Internal ID #",
+    esKey: "lastCheck.internalID",
+    options: {
+      customHeadLabelRender: () => (
+        <>
+          <div style={{ minWidth: 100 }}>Internal ID #</div>
+        </>
+      ),
+      sort: true,
+      filter: true,
+    },
+    style: { minWidth: 100 },
+  },
+
+  {
+    name: "internalCompany",
+    label: "Internal Company",
+    esKey: "lastCheck.internalCompany",
+    options: {
+      customHeadLabelRender: () => (
+        <>
+          <div style={{ minWidth: 120 }}>Internal Company</div>
+        </>
+      ),
+      sort: true,
+      filter: true,
+    },
+    style: { minWidth: 120 },
   },
 
   {
