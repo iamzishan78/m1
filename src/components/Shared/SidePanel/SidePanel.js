@@ -87,6 +87,7 @@ export default function SidePanel() {
   const openManager = (type) => {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
+      manageTransferData: false,
       [`${type === 'manageLayer' ? 'manageLayer' : 'manageSource'}`]: true,
       [`${type === 'manageLayer' ? 'manageSource' : 'manageLayer'}`]: null,
       selectedLayer: null,

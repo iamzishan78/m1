@@ -8,6 +8,7 @@ import SourceManager from "components/MapControls/components/SourceManager";
 import LayerStyling from "components/MapControls/components/Layer/LayerStyling";
 import LayerManager from "components/MapControls/components/Layer/LayerManager";
 import { AppContext } from "AppContext";
+import TransferDataManager from "components/MapControls/components/TransferDataManager";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -36,6 +37,7 @@ const Secondarypanel = () => {
     <div className={classes.root}>
       {stateMapControls.manageLayer && <LayerManager />}
       {stateMapControls.manageSource && <SourceManager />}
+      {stateMapControls.manageTransferData && <TransferDataManager />}
       {stateMapControls.addLayer && <AddALayer />}
       {stateMapControls.selectedLayer && <LayerStyling layer={stateApp.selectedLayer} fileName={stateApp.selectedLayer.fileName} />}
     </div>
