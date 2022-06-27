@@ -58,12 +58,9 @@ export const ColorPickerStyledBox = withStyles((theme) => ({
 
 export const useStyles = makeStyles((theme) => ({
     gridOnIcon: {
-        color: "#d3d3d3",
-        backgroundColor: "#1c2233",
+        color: "#7f7f80",
         borderRadius: "0px",
-        marginLeft: "5px",
         "&:hover ": {
-            backgroundColor: "#626687",
             borderRadius: "0px",
         },
     }

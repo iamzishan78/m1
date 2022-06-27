@@ -82,8 +82,8 @@ function LayerStyling(props) {
     <ClickAwayListener onClickAway={handleApplyChanges}>
       <div style={{ width: '100%' }}>
         <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "15px" }}>
-          <Grid item>
-            <Typography variant="h5">{layer.layerName === "Parcels" ? "Tracts" : layer.layerName}</Typography>
+          <Grid item md={11}>
+            <Typography variant="h5" noWrap>{layer.layerName === "Parcels" ? "Tracts" : layer.layerName}</Typography>
           </Grid>
           <Grid item>
             <IconButton size="small" onClick={handleApplyChanges}>
@@ -119,7 +119,7 @@ function LayerStyling(props) {
                       handleClose()
                       dispatch(setMapGridCardState({ mapGridCardActivated: true }));
                     }}>
-                      <GridOnIcon />
+                      <GridOnIcon fontSize="large" />
                     </IconButton>
                   </Tooltip>
                 </Grid>
