@@ -74,7 +74,7 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
   const classes = useStyles();
   const history = useHistory();
 
-  const [partyTypes, setPartyTypes] = useState(["Attorney", "Broker", "Lessor Contact", "Surface Landowner"]);
+  const [partyTypes, setPartyTypes] = useState(["Attorney", "Broker", "Lessor Contact", "Spouse", "Surface Landowner"]);
   const [openCommentsDialog, setCommentsDialog] = useState(false);
   const [, setAnchorEl] = useState();
   const [hoverParty, setHoverParty] = useState(-1);

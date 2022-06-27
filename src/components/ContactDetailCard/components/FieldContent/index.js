@@ -314,13 +314,13 @@ export default function FieldContent({
                   id={"fieldContentInput" + fieldName}
                   key={"fieldContentInput" + fieldName}
                   options={timeZoneOptions}
-                  getOptionLabel={(option) => option.title || editContent[fieldName]}
+                  getOptionLabel={(option) => option || editContent[fieldName]}
                   style={{ width: 300 }}
                   onChange={(e, data) => {
                     e.persist();
                     setEditContent((editContent) => ({
                       ...editContent,
-                      [fieldName]: data?.title || ""
+                      [fieldName]: data || ""
                     }));
                   }}
                   value={

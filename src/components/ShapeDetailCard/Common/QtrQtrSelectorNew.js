@@ -125,7 +125,8 @@ export default function QtrQtrSelectorNew({ layerData }) {
   useEffect(() => {
     if (layerData?.qtrQtrSelection) {
       setQtr(copy(layerData.qtrQtrSelection.selectedQtr))
-      setQtrQtr(copy(layerData.qtrQtrSelection.qtrQtr))
+      if (layerData.qtrQtrSelection.qtrQtr)
+        setQtrQtr(copy(layerData.qtrQtrSelection.qtrQtr))
     }
 
   }, [layerData?.qtrQtrSelection])
@@ -231,16 +232,16 @@ export default function QtrQtrSelectorNew({ layerData }) {
   const checkForDisabled = () => {
     let isDisabled = true
 
-    if (!layerData?.qtrQtrSelection?.qtrQtr && !Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
+    if (qtrQtr && !layerData?.qtrQtrSelection?.qtrQtr && !Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
       setDisableUpdate(true)
       return
     }
 
-    if (!layerData?.qtrQtrSelection?.qtrQtr && Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
+    if (qtrQtr && !layerData?.qtrQtrSelection?.qtrQtr && Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
       setDisableUpdate(false)
       return
     }
-    Object.keys(qtrQtr).forEach((key) => {
+    qtrQtr && Object.keys(qtrQtr).forEach((key) => {
       if (layerData?.qtrQtrSelection?.qtrQtr[key] !== qtrQtr[key]) {
         isDisabled = false
       }
