@@ -16,7 +16,7 @@ export const contactDetailInitialData = [
   { index: 5, value: "parcelInterests", Icon: LeaseIcon, label: "Tract Interests" },
   { index: 2, value: "taxRollInterests", Icon: OperatorIcon, label: "Tax Roll Interests" },
   { index: 1, value: "activities", Icon: TaxOwnerIcon, label: "Activities" },
-  { index: 0, value: "contactInformation", Icon: WellIcon, label: "Contact Information" },
+  { index: 0, value: "contactInformation", Icon: WellIcon, label: "Contact Info" },
   { index: 7, value: "documents", Icon: ContactIcon, label: "Documents" },
   { index: 6, value: "deals", Icon: ContactIcon, label: "Deals" },
 ];
