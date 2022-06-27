@@ -325,7 +325,7 @@ function App() {
 
         />
         {apolloClient ? (
-          <ApolloProvider client={localClient}>
+          <ApolloProvider client={apolloClient}>
             <FeatureFlag feature={FEATURES.USERSNAP} >
               <UsersnapProvider />
             </FeatureFlag>
