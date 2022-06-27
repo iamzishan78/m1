@@ -30,11 +30,20 @@ const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur
   }, []);
 
   useEffect(() => {
-    if (dataTypes && dataTypes[Object.keys(dataTypes)[0]]) setTypes(dataTypes[Object.keys(dataTypes)[0]]);
+    if (dataTypes && dataTypes[Object.keys(dataTypes)[0]]) {
+      setTypes(types => {
+        let options = dataTypes[Object.keys(dataTypes)[0]]
+        if (other?.manualOptions) {
+          options = options.concat(other?.manualOptions)
+          options = Array.from(new Set(options));
+        }
+
+        return options
+      })
+    }
   }, [dataTypes]);
 
   const classes = useStyles();
-
   return (
     <Autocomplete
       defaultValue={{ _id: value, name: value }}
@@ -108,7 +117,7 @@ const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur
         />
       )}
       id={other.id}
-      //   {...other}
+    //   {...other}
     />
   );
 };

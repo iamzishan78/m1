@@ -109,6 +109,14 @@ const TractsHeadCells = (isSnapGrid = false) => [
     }
   },
   {
+    name: "department", label: "Department", esKey: 'shapeJson.properties.department.keyword',
+    options: {
+      dbName: "shapeJson.properties.department",
+      sort: true,
+      filter: true
+    }
+  },
+  {
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
