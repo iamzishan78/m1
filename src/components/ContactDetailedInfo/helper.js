@@ -608,7 +608,7 @@ export const SUMMARY_FIELDS = (contactData) => [
     key: "contactInterests.nraSum",
     type: "text",
     position: "right",
-    disabled: true,
+    disabled: false,
   },
   {
     label: "First Name",
@@ -617,11 +617,11 @@ export const SUMMARY_FIELDS = (contactData) => [
     position: "left",
   },
   {
-    label: "Total Price",
+    label: "Total Offer Price",
     key: "contactInterests.offerPriceSum",
     type: "text",
     position: "right",
-    disabled: true,
+    disabled: false,
   },
   {
     label: "Middle Name",
