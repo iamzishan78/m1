@@ -2,10 +2,10 @@ import LeaseIcon from "components/Shared/svgIcons/lease";
 import WellIcon from "components/Shared/svgIcons/well";
 import UnitIcon from "components/Shared/svgIcons/unit";
 import TaxOwnerIcon from "@material-ui/icons/AccountBalance";
-import ContactInformationIcon from '@material-ui/icons/ContactPhone';
 import DocumentsIcon from "@material-ui/icons/DescriptionOutlined";
 import DealsIcon from "@material-ui/icons/MonetizationOn";
 import ActivitiesIcon from '@material-ui/icons/Event';
+import ContactInformationIcon from "components/Shared/svgIcons/ContactPhone";
 
 export const contactDetailInitialData = [
   { index: 4, value: "unitInterests", Icon: UnitIcon, label: "Unit Interests" },
