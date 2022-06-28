@@ -82,7 +82,7 @@ const styles = () => ({
     },
   },
 });
-  
+
 const useStyles = makeStyles(styles);
 
 export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes, showSuccessMessage, getContactCampaignAction, campaignList }) {
@@ -130,7 +130,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       });
     // eslint-disable-next-line
   }, [fieldKey]);
-  
+
 
 
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT);
@@ -174,7 +174,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
         err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) }
       );
     }
-    else if(field === "Tags"){
+    else if (field === "Tags") {
       let contactIds = rows.map((row) => row._id);
 
       updateBulkTags({
@@ -188,7 +188,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       }).then(
         (res) => {
           if (res.data && res.data.bulkUpsertTagOnContacts) {
-            const {success, message} = res.data.bulkUpsertTagOnContacts;
+            const { success, message } = res.data.bulkUpsertTagOnContacts;
 
             if (success) {
               Loader.successToast("contact-creation", message);
@@ -262,7 +262,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             onSearch={(value) => {
               setFieldKey(value);
             }}
-            setValue={(value) => {}}
+            setValue={(value) => { }}
             options={campaignList.map((campaign) => ({
               _id: campaign,
               name: campaign,
@@ -298,21 +298,20 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           <Autocomplete
             id="combo-box-demo"
             options={timeZoneOptions}
-            getOptionLabel={(option) => option.title}
-            setValue={(value) => {}}
-            onChange={(e, fieldKey) => {
-              setFieldKey(fieldKey.title);
+            onChange={(e, newValue) => {
+              setFieldKey(newValue);
             }}
+            value={fieldKey}
             renderInput={(params) => (
               <TextField
+                {...params}
                 size="small"
                 placeholder={"Select Timezone"}
-                {...params}
               />
             )}
           />
         );
-      case "Tags": 
+      case "Tags":
         return (
           <Autocomplete
             multiple

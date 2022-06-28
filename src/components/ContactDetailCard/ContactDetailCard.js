@@ -794,7 +794,14 @@ export default function ContactDetailCard(props) {
       <div className={classes.mainGridContainer}>
         <Grid container className={classes.leftColumn} onScroll={handleScroll} id="parent-div">
           {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
-            <DocViewer DocStyle={{ backgroundColor: "white !important", width: "71vw" }} divCondition={true}></DocViewer>
+            <DocViewer
+              divCondition={true}
+              DocStyle={{
+                position: "relative",
+                height: "calc(100% - 5px)",
+                width: "100vw"
+              }}
+            />
           ) : (
             <>
               <div id="summary-div" className={classes.summarySection} ref={tab === 0 ? selectedTabRef : null}>
