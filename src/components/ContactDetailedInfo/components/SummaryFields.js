@@ -1,6 +1,5 @@
 import React, { useEffect, useState, Fragment } from "react";
-import { isEmpty } from "lodash";
-import { get } from 'lodash';
+import { get, set, isEmpty } from 'lodash';
 import { useMutation } from "@apollo/client";
 import { Controller, useForm } from "react-hook-form";
 import { useSelector } from 'react-redux';
@@ -9,6 +8,7 @@ import { Grid, TextField, InputAdornment, CircularProgress } from "@material-ui/
 import EmailOutlinedIcon from "@material-ui/icons/EmailOutlined";
 import { makeStyles } from "@material-ui/core/styles";
 
+import vf_number from "components/Shared/valueformatters/vf_number";
 import ContactStatus from 'components/ContactDetailCard/components/ContactStatus'
 import { SUMMARY_FIELDS } from "components/ContactDetailedInfo/helper";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
@@ -62,7 +62,12 @@ export default function SummaryFields({ contactData }) {
 
   useEffect(() => {
     if (!isEmpty(contactData) && !isFormSet) {
-      reset(contactData);
+      let _contact = { ...contactData };
+      if (get(_contact, 'contactInterests.offerPriceSum')) {
+        const totalSum = vf_number(_contact.contactInterests.offerPriceSum);
+        _contact = { ..._contact, contactInterests: { ..._contact.contactInterests, offerPriceSum: totalSum } };
+      }
+      reset(_contact);
       setFormState(true);
     }
   }, [contactData, reset, isFormSet]);
@@ -141,6 +146,9 @@ export default function SummaryFields({ contactData }) {
                           // If field info is updating, show loading as adornment
                           // else show nothing
                           InputProps={{
+                            startAdornment: field.type === "number" && (
+                              <InputAdornment position="start"> $</InputAdornment>
+                            ),
                             endAdornment:
                               field.type === "email" && contactData[field.key] ? (
                                 <a href={"mailto:" + contactData.primaryEmail} className={classes.emailAdornment}>
