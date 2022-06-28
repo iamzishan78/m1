@@ -243,6 +243,8 @@ const Notifications = () => {
         return;
     }
   };
+
+  console.log(notifications)
   return (
     <Fragment>
       <CardHeader
@@ -381,19 +383,9 @@ const Notifications = () => {
                           <div>
                             <span className={classes.bold}>{user?.name}</span>
                             {
-                              dateIsValid(Date.parse(source.ts)) && <ReactTimeAgo
+                              <ReactTimeAgo
                                 className={classes.commentTime}
-                                date={
-                                  new Date(
-                                    new Intl.DateTimeFormat("en-US", {
-                                      year: "numeric",
-                                      month: "long",
-                                      day: "2-digit",
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    }).format(Date.parse(source.ts))
-                                  )
-                                }
+                                date={new Date(!isNaN(Number(source.ts)) ? Number(source.ts) : source.ts)}
                                 locale="en-US"
                               />
                             }

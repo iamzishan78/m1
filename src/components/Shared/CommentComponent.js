@@ -390,9 +390,7 @@ export default function CommentComponent(props) {
                             {
                               <ReactTimeAgo
                                 className={classes.commentTime}
-                                date={
-                                  new Date(Number(eachComment.ts))
-                                }
+                                date={new Date(Number(eachComment.ts))}
                                 locale="en-US"
                               />
                             }
