@@ -64,8 +64,13 @@ export default function SummaryFields({ contactData }) {
     if (!isEmpty(contactData) && !isFormSet) {
       let _contact = { ...contactData };
       if (get(_contact, 'contactInterests.offerPriceSum')) {
-        const totalSum = vf_number(_contact.contactInterests.offerPriceSum);
-        _contact = { ..._contact, contactInterests: { ..._contact.contactInterests, offerPriceSum: totalSum } };
+        _contact = {
+          ..._contact,
+          contactInterests: {
+            nraSum: vf_number(_contact.contactInterests.nraSum),
+            offerPriceSum: vf_number(_contact.contactInterests.offerPriceSum)
+          }
+        };
       }
       reset(_contact);
       setFormState(true);
