@@ -338,7 +338,7 @@ const Notifications = () => {
                         <Grid item xs={11} className={classes.paddingLeft10}>
                           <div>
                             {
-                              dateIsValid(dateTimeAdded) && <ReactTimeAgo
+                              dateIsValid(Date.parse(dateTimeAdded)) && <ReactTimeAgo
                                 className={[classes.commentTime, classes.sysNotification]}
                                 date={
                                   new Date(
@@ -381,7 +381,7 @@ const Notifications = () => {
                           <div>
                             <span className={classes.bold}>{user?.name}</span>
                             {
-                              dateIsValid(source?.ts) && <ReactTimeAgo
+                              dateIsValid(Date.parse(source.ts)) && <ReactTimeAgo
                                 className={classes.commentTime}
                                 date={
                                   new Date(

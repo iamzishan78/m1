@@ -367,18 +367,10 @@ export default function DealComment(props) {
                           <span className={classes.bold}>{eachComment.user?.name}</span>
                           {eachComment.isPinned && <span> created this task.</span>}
                           {
-                            dateIsValid(eachComment?.ts) && <ReactTimeAgo
+                            <ReactTimeAgo
                               className={classes.commentTime}
                               date={
-                                new Date(
-                                  new Intl.DateTimeFormat("en-US", {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "2-digit",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  }).format(eachComment.ts)
-                                )
+                                new Date(Number(eachComment.ts))
                               }
                               locale="en-US"
                             />

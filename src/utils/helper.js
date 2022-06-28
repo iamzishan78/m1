@@ -12,7 +12,22 @@ export const copy = (data) => {
 };
 
 export const dateIsValid = (date) => {
-  return date instanceof Date && !isNaN(date);
+  try {
+    debugger
+    date = new Date(
+      new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(date)
+    )
+    return date instanceof Date && !isNaN(date);
+  } catch (e) {
+    debugger
+    return false
+  }
 }
 
 export const getURL = () => {
