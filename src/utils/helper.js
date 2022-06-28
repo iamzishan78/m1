@@ -11,6 +11,10 @@ export const copy = (data) => {
   return data ? JSON.parse(JSON.stringify(data)) : null;
 };
 
+export const dateIsValid = (date) => {
+  return date instanceof Date && !isNaN(date);
+}
+
 export const getURL = () => {
   let tenantName = window.sessionStorage.getItem("tenantName");
   if (tenantName) {
