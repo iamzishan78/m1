@@ -15,6 +15,7 @@ import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 
 const useStyles = makeStyles(() => ({
   container: {
+    height: "100%",
     padding: "10px 30px 15px 5px",
   },
   gridStyle: {
@@ -118,9 +119,9 @@ export default function SummaryFields({ contactData }) {
   };
 
   return (
-    <Grid container alignItems="center" justify="space-between" display="flex" direction="row" className={classes.container}>
+    <Grid container alignItems="center" justify="space-between" display="flex" direction="column" className={classes.container}>
       {SUMMARY_FIELDS(contactData).map((field, key) => (
-        <Grid item xs={5} key={key} style={{ width: "100%", marginRight: "30px" }}>
+        <Grid item key={key} style={{ position: "relative", width: "100%", marginRight: "30px", maxWidth: "44%", flexBasis: "11%" }}>
           <Grid container className={classes.gridStyle}>
             <Grid item style={{ display: "flex" }}>
               <div className={classes.fieldLabel}>{featureFlagChanges(field)}</div>

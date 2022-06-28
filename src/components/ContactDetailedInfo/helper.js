@@ -604,17 +604,59 @@ export const SUMMARY_FIELDS = (contactData) => [
     position: "left",
   },
   {
+    label: "First Name",
+    key: "firstName",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Middle Name",
+    key: "middleName",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Last Name",
+    key: "lastName",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Primary Address 1",
+    key: "address1",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Primary Address 2",
+    key: "address2",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "City",
+    key: "city",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "State",
+    key: "state",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Zip Code",
+    key: "zip",
+    type: "text",
+    position: "left",
+  },
+  {
     label: "Total NRA",
     key: "contactInterests.nraSum",
     type: "text",
     position: "right",
     disabled: true,
-  },
-  {
-    label: "First Name",
-    key: "firstName",
-    type: "text",
-    position: "left",
   },
   {
     label: "Total Offer Price",
@@ -624,22 +666,10 @@ export const SUMMARY_FIELDS = (contactData) => [
     disabled: true,
   },
   {
-    label: "Middle Name",
-    key: "middleName",
-    type: "text",
-    position: "left",
-  },
-  {
     label: "Home Phone",
     key: "homePhone",
     type: "text",
     position: "right",
-  },
-  {
-    label: "Last Name",
-    key: "lastName",
-    type: "text",
-    position: "left",
   },
   {
     label: "Mobile Phone 1",
@@ -648,22 +678,10 @@ export const SUMMARY_FIELDS = (contactData) => [
     position: "right",
   },
   {
-    label: "Primary Address 1",
-    key: "address1",
-    type: "text",
-    position: "left",
-  },
-  {
     label: "Mobile Phone 2",
     key: "mobilephone2",
     type: "text",
     position: "right",
-  },
-  {
-    label: "Primary Address 2",
-    key: "address2",
-    type: "text",
-    position: "left",
   },
   {
     label: "Work Phone",
@@ -672,22 +690,10 @@ export const SUMMARY_FIELDS = (contactData) => [
     position: "right",
   },
   {
-    label: "City",
-    key: "city",
-    type: "text",
-    position: "left",
-  },
-  {
     label: "Email",
     key: "primaryEmail",
     type: "email",
     position: "right",
-  },
-  {
-    label: "State",
-    key: "state",
-    type: "text",
-    position: "left",
   },
   {
     label: "Status",
@@ -695,12 +701,6 @@ export const SUMMARY_FIELDS = (contactData) => [
     type: "autocomplete",
     position: "right",
     value: { contactStatus: contactData?.contactStatus },
-  },
-  {
-    label: "Zip Code",
-    key: "zip",
-    type: "text",
-    position: "left",
   },
   {
     label: "Last Updated",
