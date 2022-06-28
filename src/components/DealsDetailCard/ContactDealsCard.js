@@ -9,7 +9,16 @@ import { CONTACTDEALS } from "graphQL/useQueryContactDeals";
 import { CONTACT } from "graphQL/useQueryContact";
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
+  root: {
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": {
+          minHeight: "calc(48.85vh - 240px)",
+          maxHeight: "calc(41vh)",
+        },
+      },
+    },
+  },
 }));
 
 export default function ContactDocumentsCard(props) {
