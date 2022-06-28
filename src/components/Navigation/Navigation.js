@@ -23,7 +23,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { contactManagementRoutes } from "utils/data";
+import { analyticsManagementRoutes, contactManagementRoutes } from "utils/data";
 import SupportCenterModal from "./components/SupportCenter";
 import { useStyles } from "./Common";
 
@@ -115,6 +115,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/track") {
       setStateNav((state) => ({
@@ -131,6 +132,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname.startsWith("/flow")) {
       setStateNav((state) => ({
@@ -147,6 +149,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/title") {
       setStateNav((state) => ({
@@ -164,6 +167,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/contacts") {
       setStateGrid((state) => ({
@@ -184,6 +188,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/alerts") {
       setStateNav((state) => ({
@@ -200,6 +205,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/dashboard") {
       setStateNav((state) => ({
@@ -216,6 +222,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/studio") {
       setStateNav((state) => ({
@@ -232,6 +239,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/calendar/activities") {
       setStateNav((state) => ({
@@ -248,6 +256,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/documents") {
       setStateNav((state) => ({
@@ -264,6 +273,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 1,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname.startsWith("/revenue")) {
       setStateNav((state) => ({
@@ -280,6 +290,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 1,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname.startsWith("/land")) {
       setStateNav((state) => ({
@@ -296,6 +307,24 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 1,
+        selectedMenuIndexAnalytics:0,
+      }));
+    } else if (location.pathname === "/analytics") {
+      setStateNav((state) => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 0,
+        selectedMenuIndexCalendar: 0,
+        selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics: 1,
       }));
     }
   }, [location, setStateNav]);
@@ -438,7 +467,13 @@ export default function Navigation(props) {
                 )) && <ContactSearch />}
               {location.pathname.includes("/contact/details") && (
                 <ContactBreadcrumbs />
-              )}
+              )}    
+          
+              {(location.pathname === "/analytics" || location.pathname === "/analytics/land" ||
+                Object.values(analyticsManagementRoutes).find(
+                  (item) => item.link === location.pathname && item.search
+                )) && <ContactSearch />}
+
               {location.pathname.startsWith("/flow") && <DealSearch />}
               {location.pathname === "/dashboard" && (
                 <Typography

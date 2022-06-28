@@ -16,6 +16,7 @@ const initialValue = {
   selectedMenuIndexAlerts: 0,
   selectedMenuIndexDashboard: 0,
   selectedMenuIndexContacts: 0,
+  selectedMenuIndexAnalytics: 0,
   selectedMenuIndexStudio: 0,
   totalFilterCount: 0,
   filterTVD: null,

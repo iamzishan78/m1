@@ -33,6 +33,7 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import WorkspaceEditModal from "components/Navigation/components/WorkSpaceEditModal";
+import Analytics from "components/Shared/svgIcons/analytics";
 
 const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   width: 260px;
@@ -392,6 +393,39 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               </ListItemSecondaryAction>
             </div>
           </ListItem> */}
+
+          <ListItem
+            classes={{
+              root: classes.menuListItem,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexAnalytics === 1}
+            onClick={(event) => {
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                selectedContact: null,
+                contactSearchQuery: null,
+              }));
+              setStateNav((stateApp) => ({
+                ...stateApp,
+                contactFromMap: false,
+              }));
+              handleListItemClick("/analytics");
+            }}
+            key="analytics"
+          >
+            <div className={classes.tabContent}>
+              <Tooltip title="Analytics" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <ListItemIcon className={classes.sideNavIcon}>
+                <Analytics />
+                </ListItemIcon>
+              </Tooltip>
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Analytics" />
+            </div>
+          </ListItem>
+
+
         </List>
       </Drawer>
       {showWorkspaceModal && (
