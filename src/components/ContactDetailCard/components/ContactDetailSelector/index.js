@@ -278,7 +278,7 @@ function MapGridCard(props) {
                       {searchTapValue.value === "parcelInterests" && (
                         <ContactParcelInterestTable
                           parent="assocTaxRollInterests"
-                          header={"Parcel Interests"}
+                          header={"Tract Interests"}
                           targetLabel="parcel"
                           contactId={props.contactData._id}
                           showTracks
