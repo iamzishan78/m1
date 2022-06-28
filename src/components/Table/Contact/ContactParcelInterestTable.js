@@ -49,7 +49,7 @@ function ContactParcelInterestTable(props) {
   const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: ["getContactWells", "getContactParcelInterests"], awaitRefetchQueries: true });
   const tableData = dataContactParcels?.contactParcelInterest
 
-  const addAble = { type: "parcelInterest" }
+  const addAble = {}
   const total = false
   const orderByTracks = false
 
@@ -86,8 +86,8 @@ function ContactParcelInterestTable(props) {
         const parcel = JSON.parse(well.parcel.shape).properties
         const original_properties = getParcelOriginalProperties(parcel);
         well.parcelName = well.parcel.name
-        well.cost_bearing_high_value = well?.cost_bearing_high_value ? vf_currency(well.cost_bearing_high_value): undefined
-        well.cost_free_high_value = well?.cost_free_high_value ? vf_currency(well.cost_free_high_value): undefined
+        well.cost_bearing_high_value = well?.cost_bearing_high_value ? vf_currency(well.cost_bearing_high_value) : undefined
+        well.cost_free_high_value = well?.cost_free_high_value ? vf_currency(well.cost_free_high_value) : undefined
         well.state = original_properties.state
         well.county = original_properties.county
         well.survey = original_properties.state === 'TX' ? original_properties.survey : original_properties.meridian
@@ -135,7 +135,7 @@ function ContactParcelInterestTable(props) {
       const cleanAvailableTags = []; // get from backend
       const columns = handleTagColumn(TableHeader, cleanAvailableTags);
       let tenantName = window.sessionStorage.getItem("tenantName");
-      if(tenantName !== 'Providence' && columns.length > 0){
+      if (tenantName !== 'Providence' && columns.length > 0) {
         let index = columns.findIndex(col => col.name === 'cost_bearing')
         set(columns, `[${index}].options.display`, false)
         set(columns, `[${index}].options.filter`, false)
