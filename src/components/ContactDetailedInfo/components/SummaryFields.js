@@ -1,5 +1,6 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { isEmpty } from "lodash";
+import { get } from 'lodash';
 import { useMutation } from "@apollo/client";
 import { Controller, useForm } from "react-hook-form";
 import { useSelector } from 'react-redux';
@@ -160,7 +161,7 @@ export default function SummaryFields({ contactData }) {
                           setValue={(value) => {
                             updateFieldData(field.key, value.name)
                           }}
-                          value={contactData[field.key]}
+                          value={contactData[field.key] ?? ""}
                           variant="outlined"
                         />
                       )}

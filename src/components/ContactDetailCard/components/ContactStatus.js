@@ -118,7 +118,7 @@ const ContactStatus = ({ setValue, value, ...other }) => {
       onInputChange={onInputChange}
       filterOptions={(options, params) => {
         let inputValue = JSON.parse(JSON.stringify(search));
-        if (inputValue.name) {
+        if (inputValue?.name) {
           inputValue = inputValue.name;
         }
         const filtered = filter(options, { ...params, inputValue });
