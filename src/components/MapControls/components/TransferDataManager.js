@@ -1,11 +1,9 @@
-import React, { useContext, useState, useEffect, Fragment } from "react";
-import update from "immutability-helper";
+import React, { useState, useContext, useEffect, Fragment } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
 import { Grid, Typography, Divider } from "@material-ui/core";
 import { Close as CloseButton } from "@material-ui/icons";
-import Dialog from "@material-ui/core/Dialog";
 import Checkbox from "@material-ui/core/Checkbox";
 import { Collapse } from "@material-ui/core";
 import List from "@material-ui/core/List";
@@ -13,98 +11,25 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import { deepEqual, deepEqualObjects } from "../../Shared/functions";
-import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyLayerSettings";
-import { useMutation } from "@apollo/client";
-import { DropzoneAreaBase } from "material-ui-dropzone";
-import shp from "shpjs";
-import geojsonMerge from "@mapbox/geojson-merge";
+import { deepEqual } from "../../Shared/functions";
 import { IconButton } from "@material-ui/core";
-import Tooltip from "@material-ui/core/Tooltip";
-import DeleteIcon from "@material-ui/icons/Delete";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
-import Box from "@material-ui/core/Box";
-import Accordion from "@material-ui/core/Accordion";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import UploadIcon from "components/Shared/svgIcons/uploadIcon";
-import EditableTextField from "components/Shared/components/Fields/EditableTextField";
 import { truncate } from "components/Shared/functions";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 
-import proj4 from "proj4";
-// cra webpack hack to call this a png to get included in bundle
-import conus from "../../Shared/constants/nadgrids/conus.png";
-import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
-import { useHistory } from "react-router-dom";
-import { FEATURES } from "components/Shared/FeatureFlag/common";
-import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
-import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
-
-const GCS_North_American_1927 =
-  'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
-proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@conus,null +no_defs");
-proj4.defs(GCS_North_American_1927, proj4.defs("EPSG:4267"));
-
-const GCS_North_American_1927_ALT1 =
-  'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]]';
-proj4.defs(GCS_North_American_1927_ALT1, proj4.defs("EPSG:4267"));
+import { snapGridSideBarData } from "components/MapGridCard/components/data";
 
 const useStyles = makeStyles((theme) => ({
-  subHeaderItem: {
-    backgroundColor: "#011133 !important",
-    minWidth: "350px",
-  },
   list: {
     border: "2px solid #A9A9A9",
     padding: "0px",
     margin: "8px 0px",
     borderRadius: "8px",
   },
-  nested: {
-    paddingLeft: theme.spacing(6),
-    paddingRight: theme.spacing(6),
-  },
-  disabledLayerTitle: {
-    "& span": { color: "rgb(127, 149, 199) !important" },
-  },
-  dropzoneClass: {
-    "& .MuiDropzoneArea-text": {
-      marginTop: 0,
-    },
-    "& .MuiDropzoneArea-icon": {
-      display: "none",
-    },
-    minHeight: "0",
-    marginBottom: "0px",
-    border: "none",
-  },
-  url: {
-    textDecoration: "underline",
-    "&:hover": {
-      color: "darkblue",
-    },
-  },
-  uploaderText: {
-    color: "#828282",
-    fontSize: "1rem",
-    backgroundColor: "#e8edefe8",
-    border: "2px dashed #999",
-    padding: "10px",
-    borderRadius: "5px",
-  },
   contentRoot: {
     padding: "15px",
     height: "calc(100% - 65px)",
     position: "absolute",
     overflow: "overlay",
-  },
-  footer: {
-    position: "absolute",
-    right: "0px",
-    bottom: "0px",
-    padding: "15px",
-  },
+  }
 }));
 
 const StyledListItem2 = withStyles((theme) => ({
@@ -145,20 +70,15 @@ const StyledListItem = withStyles((theme) => ({
 
 export default function TransferDataManager(props) {
   const classes = useStyles();
-  let history = useHistory();
 
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [openM1, setOpenM1] = React.useState(true);
-  const [openDataSets, setOpenDataSets] = React.useState({});
-  const [openUD, setOpenUD] = React.useState(true);
+  const [, setStateMapControls] = useContext(MapControlsContext);
+  const [stateApp] = useContext(AppContext);
+  const [openSourcePanel, setOpenSourcePanel] = useState(true);
+  const [openPlatformPanel, setOpenPlatformPanel] = useState(true);
+
+  const [selectedSourceCategory, setSelectedSourceCategory] = useState(null);
+  const [selectedPlatformCategory, setSelectedPlatformCategory] = useState(null);
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [openUDLayers, setUDLayersStates] = useState([]);
-
-  const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
-  const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
-  const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, { refetchQueries: ["getUserMapSettings"], awaitRefetchQueries: true });
 
   useEffect(() => {
     if (!deepEqual(currentLayers, stateApp.layers)) {
@@ -176,149 +96,7 @@ export default function TransferDataManager(props) {
     }));
   };
 
-  const windowClose = () => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      addLayer: false,
-    }));
-  };
-
-  const handleClickM1List = () => {
-    setOpenM1(!openM1);
-  };
-
-  const handleClickUDList = () => {
-    setOpenUD(!openUD);
-  };
-
-  const changeShowAble = (layer) => {
-    const updatefn = {};
-    if (layer.type === "group") {
-      const value = !!layer.layers.find((l) => l.layerSettings.showable);
-      layer.layers.forEach((l) => {
-        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
-        updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } };
-      });
-    } else {
-      const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
-      updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings.showable } } };
-    }
-
-    setCurrentLayers(update(currentLayers, updatefn));
-  };
-
-  const handleDatasetChange = (dataset, value) => {
-    const updatefn = {};
-    const layersSettingsToUpdate = [];
-    currentLayers.forEach((clayer, layerIndex) => {
-      if (clayer.file === dataset.file) {
-        updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
-        layersSettingsToUpdate.push({
-          _id: clayer._id,
-          layerSettings: { ...clayer.layerSettings, showable: value }
-        });
-      }
-    });
-    updateUserMapSettings({
-      variables: {
-        settings: {
-          user: stateApp.user.mongoId,
-          type: 'DatasetVisibility',
-          settings: { [dataset._id]: value },
-        },
-      },
-    });
-    if (layersSettingsToUpdate.length > 0)
-      updateManyUserLayerSettings({
-        variables: {
-          manySettings: layersSettingsToUpdate,
-        },
-      });
-
-    const newLayers = update(currentLayers, updatefn)
-    setCurrentLayers(newLayers);
-    setTimeout(() => { setStateApp({ ...stateApp, layers: newLayers }); }, 0)
-  }
-
-  const changeLayerName = (layer, name) => {
-    const updatefn = {};
-    if (layer.type === "group") {
-      layer.layers.forEach((l) => {
-        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
-        updatefn[layerIndex] = { groupName: { $set: name } };
-      });
-    } else {
-      const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
-      updatefn[layerIndex] = { layerName: { $set: name } };
-    }
-
-    setCurrentLayers(update(currentLayers, updatefn));
-  };
-
-  const handleApplyChange = () => {
-    if (!deepEqual(currentLayers, stateApp.layers)) {
-      const layersToUpdate = [];
-      const layersSettingsToUpdate = [];
-      for (let i = 0; i < currentLayers.length; i++) {
-        if (!deepEqualObjects(currentLayers[i], stateApp.layers[i])) {
-          layersSettingsToUpdate.push({
-            _id: currentLayers[i]._id,
-            layerSettings: currentLayers[i].layerSettings,
-          });
-          layersToUpdate.push({
-            _id: currentLayers[i].layerId,
-            layerName: currentLayers[i].layerName,
-            groupName: currentLayers[i].groupName,
-          });
-        }
-      }
-
-      //// saving to stateApp
-      setStateApp({
-        ...stateApp,
-        layers: [...currentLayers],
-      });
-
-      //// saving to mongo
-      if (layersToUpdate.length > 0) {
-        updateManyLayer({
-          variables: {
-            layers: layersToUpdate,
-          },
-        });
-
-        updateManyUserLayerSettings({
-          variables: {
-            manySettings: layersSettingsToUpdate,
-          },
-        });
-      }
-    }
-
-    handleClose();
-  };
-
-  const checkIfDeleteAllow = (layer) => {
-    if (layer.name === 'Agreements' || layer.groupName === 'Agreements')
-      return false;
-    return true
-  }
-
-  const M1Layers = React.useMemo(() => {
-    const layers = currentLayers.filter((layer) => layer.layerCategory === "M1 Layer" || ['Parcels', 'Agreements', 'Units', 'Area of Interest'].includes(layer.groupName || layer.layerName));
-    const groupHandled = [];
-    for (let index = 0; index < layers.length; index++) {
-      const UdLayer = layers[index];
-      if (UdLayer.groupId && !groupHandled.includes(UdLayer.groupId)) {
-        groupHandled.push(UdLayer.groupId);
-        const groupLayers = layers.filter((ul) => ul.groupId === UdLayer.groupId);
-        layers.splice(index, 0, { type: "group", collapsed: true, name: UdLayer.groupName, id: UdLayer.groupId, layers: groupLayers });
-        index = 0;
-      }
-    }
-    return layers.filter((UdLayer) => !((UdLayer.layerCategory === "M1 Layer" || UdLayer.groupName === "Agreements") && UdLayer.groupId));
-  }, [currentLayers]);
-
+  const dataset = stateApp?.selectedDataset
   return (
     <div style={{ width: '100%' }}>
       <Grid
@@ -351,167 +129,74 @@ export default function TransferDataManager(props) {
           Transfer source category from:
         </Typography>
         <Typography varient="h6" style={{ textAlign: "start", marginBottom: "10px" }} onClick={(e) => e.stopPropagation()}>
-          Please select 1 category. Category type needs to align to create a match (ex. Polygon to polygon)
+          <span style={{ textDecoration: "underline" }}>Please select 1 category.</span> Category type needs to align to create a match (ex. Polygon to polygon)
         </Typography>
         <div onClick={(e) => e.stopPropagation()}>
-          <StyledListItem2 button onClick={handleClickM1List}>
-            <ListItemText primary="M1neral Platform Sources" />
-            {openM1 ? <ExpandLess /> : <ExpandMore />}
-          </StyledListItem2>
-          <Collapse in={openM1} timeout="auto" unmountOnExit>
-            <List className={classes.list}>
-              {M1Layers.map((layer, index) => {
-                const labelId = `m1layer-list-label-${index}`;
 
-                if (layer.type === "group") {
-                  return (
-                    <Accordion>
-                      <AccordionSummary
-                        // expandIcon={<ExpandMoreIcon />}
-                        aria-controls="panel1a-content"
-                        id="panel1a-header"
-                        style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
-                        onClick={() => {
-                          const _index = openUDLayers.findIndex(l => l === index);
-                          if (_index === -1) setUDLayersStates([...openUDLayers, index]);
-                          else setUDLayersStates(openUDLayers.filter(l => l !== index));
-                        }}
-                      >
-                        <Checkbox
-                          checked={!!layer.layers.find((l) => l.layerSettings?.showable)}
-                          color="dark gray"
-                          onClick={(event) => event.stopPropagation()}
-                          onChange={(e) => changeShowAble(layer)}
-                          inputProps={{ "aria-label": "primary checkbox" }}
-                        />
-                        <EditableTextField
-                          onChange={changeLayerName}
-                          item={layer}
-                          name={layer.name}
-                          isEditable={checkIfDeleteAllow(layer)}
-                          showExpandIcon
-                          openUd={openUDLayers.includes(index)}
-                        />
-                        {checkIfDeleteAllow(layer) && (
-                          <ListItemSecondaryAction onClick={(e) => e.stopPropagation()}>
-                            <Tooltip title="Delete" placement="top">
-                              <IconButton
-                                edge="end"
-                                size="small"
-                                onClick={() => {
-                                  setOpenDeleteDialog(layer);
-                                }}
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </ListItemSecondaryAction>
-                        )}
-                      </AccordionSummary>
-                      <Box paddingLeft={2} paddingRight={2}>
-                        <List className={classes.list}>
-                          {layer.layers.map((groupLayer, index) => (
-                            <StyledListItem key={index} ContainerComponent="li">
-                              <Checkbox
-                                checked={groupLayer?.layerSettings?.showable}
-                                color="dark gray"
-                                onChange={() => changeShowAble(groupLayer)}
-                                inputProps={{ "aria-label": "primary checkbox" }}
-                              />
-                              <EditableTextField onChange={changeLayerName} item={groupLayer} name={groupLayer.layerName} isEditable={checkIfDeleteAllow(layer)} />
-                              <ListItemSecondaryAction>
-                                {
-                                  checkIfDeleteAllow(layer) && <Tooltip title="Delete" placement="top">
-                                    <IconButton
-                                      edge="end"
-                                      size="small"
-                                      onClick={() => {
-                                        setOpenDeleteDialog(groupLayer);
-                                      }}
-                                    >
-                                      <DeleteIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                }
-                              </ListItemSecondaryAction>
-                            </StyledListItem>
-                          ))}
-                        </List>
-                      </Box>
-                    </Accordion>
-                  );
-                }
+          <Fragment key={dataset.sourceName}>
+            {
+              dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 button onClick={() => setOpenSourcePanel(!openSourcePanel)}>
+                <ListItemText primary={dataset.sourceName} />
+                {openSourcePanel ? <ExpandLess /> : <ExpandMore />}
+              </StyledListItem2>
+                <Collapse in={openSourcePanel} timeout="auto" unmountOnExit>
+                  <List className={classes.list}>
+                    {dataset.categories.map((layer, index) => {
+                      const labelId = `m1layer-list-label-${index}`;
+                      return (
+                        <StyledListItem key={index} ContainerComponent="li">
+                          <Checkbox
+                            checked={selectedSourceCategory?._id === layer._id}
+                            color="dark gray"
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={() => { setSelectedSourceCategory(selectedSourceCategory?._id !== layer._id ? layer : null) }}
+                            inputProps={{ "aria-label": "primary checkbox" }}
+                          />
+                          <ListItemText style={{ padding: '5px 0px 5px 0px' }} id={labelId} primary={truncate(layer.layerName || layer.name, 30)} />
+                        </StyledListItem>
+                      );
+                    })}
+                  </List>
+                </Collapse></> : <></>
+            }
+          </Fragment>
 
-                return (
-                  <StyledListItem key={index} ContainerComponent="li">
-                    <Checkbox
-                      checked={layer.layerSettings.showable}
-                      color="dark gray"
-                      onChange={() => changeShowAble(layer)}
-                      inputProps={{ "aria-label": "primary checkbox" }}
-                    />
+          <Divider style={{ height: '2px', marginTop: "15px" }} />
+          <Typography varient="h5" style={{ textAlign: "start", marginTop: "5px", fontWeight: "bolder", fontFamily: 'sans-serif' }} onClick={(e) => e.stopPropagation()}>
+            To the Following Platform Source Category:
+          </Typography>
+          <Typography varient="h6" style={{ textAlign: "start", marginBottom: "10px" }} onClick={(e) => e.stopPropagation()}>
+            <span style={{ textDecoration: "underline" }}>Please select 1 category.</span> Category type needs to align to create a match (ex. Polygon to polygon)
+          </Typography>
 
-                    <ListItemText id={labelId} primary={layer.layerName === "Parcels" ? "Tracts" : truncate(layer.layerName, 30)} />
-
-                    {
-                      (layer.layerName === 'Units') &&
-                      <FeatureFlag feature={FEATURES.UNITIMPORT} >
-                        <ListItemSecondaryAction>
-                          <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/units`); }}>
-                            <UploadIcon opacity="1.0" small />
-                          </IconButton>
-                        </ListItemSecondaryAction>
-                      </FeatureFlag>
-                    }
-
-                    {
-                      (layer.layerName === 'Parcels') &&
-                      <FeatureFlag feature={FEATURES.TRACTIMPORT} >
-                        <ListItemSecondaryAction>
-                          <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/tracts`); }}>
-                            <UploadIcon opacity="1.0" small />
-                          </IconButton>
-                        </ListItemSecondaryAction>
-                      </FeatureFlag>
-                    }
-                  </StyledListItem>
-                );
-              })}
-            </List>
-          </Collapse>
-
-          {
-            stateApp.datasets.map((dataset) => (
-              <Fragment key={dataset.sourceName}>
-                {
-                  dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 style={{ paddingLeft: '0px' }} button onClick={() => setOpenDataSets({ ...openDataSets, [dataset.sourceName]: !openDataSets[dataset.sourceName] })}>
-                    <Checkbox
-                      checked={dataset.visibility}
-                      color="dark gray"
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={() => { handleDatasetChange(dataset, !dataset.visibility); }}
-                      inputProps={{ "aria-label": "primary checkbox" }}
-                    />
-                    <ListItemText primary={dataset.sourceName} />
-                    {openDataSets[dataset.sourceName] ? <ExpandLess /> : <ExpandMore />}
-                  </StyledListItem2>
-                    <Collapse in={openDataSets[dataset.sourceName]} timeout="auto" unmountOnExit>
-                      <List className={classes.list}>
-                        {dataset.categories.map((layer, index) => {
-                          const labelId = `m1layer-list-label-${index}`;
-                          return (
-                            <StyledListItem key={index} ContainerComponent="li">
-
-                              <ListItemText style={{ padding: '5px 0px 5px 40px' }} id={labelId} primary={truncate(layer.layerName || layer.name, 30)} />
-                            </StyledListItem>
-                          );
-                        })}
-                      </List>
-                    </Collapse></> : <></>
-                }
-
-              </Fragment>))
-          }
+          <Fragment key={dataset.sourceName}>
+            {
+              <>
+                <StyledListItem2 button onClick={() => setOpenPlatformPanel(!openPlatformPanel)}>
+                  <ListItemText primary={'M1 Platform'} />
+                  {openPlatformPanel ? <ExpandLess /> : <ExpandMore />}
+                </StyledListItem2>
+                <Collapse in={openPlatformPanel} timeout="auto" unmountOnExit>
+                  <List className={classes.list}>
+                    {snapGridSideBarData.map((row, index) => {
+                      const labelId = `m1layer-list-label-${index}`;
+                      return (
+                        <StyledListItem key={index} ContainerComponent="li">
+                          <Checkbox
+                            checked={selectedPlatformCategory?.label === row.label}
+                            color="dark gray"
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={() => { setSelectedPlatformCategory(selectedPlatformCategory?.label !== row.label ? row : null) }}
+                            inputProps={{ "aria-label": "primary checkbox" }}
+                          />
+                          <ListItemText style={{ padding: '5px 0px 5px 0px' }} id={labelId} primary={row.label} />
+                        </StyledListItem>
+                      );
+                    })}
+                  </List>
+                </Collapse></>
+            }
+          </Fragment>
         </div>
       </div>
     </div>

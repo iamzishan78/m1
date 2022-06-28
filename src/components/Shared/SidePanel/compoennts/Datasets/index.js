@@ -184,7 +184,9 @@ function Datasets({ layerMap, headerButton }) {
         setTimeout(() => { setStateApp({ ...stateApp, layers: newLayers }); }, 0)
     }
 
-    const handleTransfer = () => {
+    const handleTransfer = (dataset) => {
+        setStateApp((state) => ({ ...state, selectedDataset: dataset }))
+
         setStateMapControls((stateMapControls) => ({
             ...stateMapControls,
             manageSource: false,
