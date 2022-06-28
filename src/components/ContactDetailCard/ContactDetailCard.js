@@ -51,6 +51,7 @@ import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer"
 import AddActivityDialog from "../ContactDetailCard/components/AddActivityDialog";
 import SummaryFields from "../ContactDetailedInfo/components/SummaryFields";
 import ContactDetailedSelector from "./components/ContactDetailSelector";
+import PipelinesFetchHoc from "components/Transact/components/Common/PipelinesFetchHoc";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Link from "@material-ui/core/Link";
@@ -441,7 +442,7 @@ const StyledTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-export default function ContactDetailCard(props) {
+function ContactDetailCard(props) {
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -1090,3 +1091,5 @@ export default function ContactDetailCard(props) {
     </div>
   );
 }
+
+export default PipelinesFetchHoc(ContactDetailCard)
