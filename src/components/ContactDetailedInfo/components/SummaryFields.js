@@ -49,6 +49,7 @@ export default function SummaryFields({ contactData }) {
   const classes = useStyles();
   const { control, reset } = useForm();
   const [activeLoadingField, setLoading] = useState();
+  const [isFormSet, setFormState] = useState(false);
 
   const { user } = useSelector(state => state.app);
 
@@ -59,10 +60,11 @@ export default function SummaryFields({ contactData }) {
   }, [user]);
 
   useEffect(() => {
-    if (!isEmpty(contactData)) {
+    if (!isEmpty(contactData) && !isFormSet) {
       reset(contactData);
+      setFormState(true);
     }
-  }, [contactData, reset]);
+  }, [contactData, reset, isFormSet]);
 
   const featureFlagChanges = (field) => {
     if (showGenericPhones) {
@@ -82,6 +84,8 @@ export default function SummaryFields({ contactData }) {
   }
 
   const updateFieldData = (key, value) => {
+    if (contactData[key] === value) return;
+
     setLoading(key);
     updateContact({
       variables: {
