@@ -21,6 +21,7 @@ const DocumentsHeadCells = [
     label: "File Name",
     options: {
       filter: true,
+      sortThirdClickReset: true,
     },
   },
   // {
@@ -37,6 +38,7 @@ const DocumentsHeadCells = [
     label: "Document Number",
     options: {
       filter: true,
+      sortThirdClickReset: true,
     },
   },
   {
@@ -45,6 +47,7 @@ const DocumentsHeadCells = [
     label: "Document Name",
     options: {
       filter: true,
+      sortThirdClickReset: true,
     },
   },
   {
@@ -53,6 +56,7 @@ const DocumentsHeadCells = [
     label: "Document Type",
     options: {
       filter: true,
+      sortThirdClickReset: true,
     },
   },
   {
@@ -61,6 +65,7 @@ const DocumentsHeadCells = [
     label: "Document Date",
     options: {
       filter: false,
+      sortThirdClickReset: true,
     },
     custom: { isDate: true, key_as_string: true },
   },
@@ -83,6 +88,7 @@ const DocumentsHeadCells = [
     label: "Book",
     options: {
       filter: true,
+      sortThirdClickReset: true,
     },
   },
   {
@@ -91,6 +97,7 @@ const DocumentsHeadCells = [
     label: "Page",
     options: {
       filter: true,
+      sortThirdClickReset: true,
     },
   },
   {
@@ -99,6 +106,7 @@ const DocumentsHeadCells = [
     label: "Instrument #",
     options: {
       filter: true,
+      sortThirdClickReset: true,
       setCellProps: () => ({ style: { minWidth: "175px" } }),
     },
   },

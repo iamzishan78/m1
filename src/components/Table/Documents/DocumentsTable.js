@@ -104,7 +104,8 @@ function DocumentsTable(props) {
     let sort
     if (selectedSorts.current) {
       const field = Object.keys(selectedSorts.current)[0]
-      sort = { field, ...selectedSorts.current[field] }
+      if (selectedSorts.current[field]?.order !== 'none')
+        sort = { field, ...selectedSorts.current[field] }
     }
     return sort
   }
