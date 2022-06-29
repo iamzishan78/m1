@@ -215,7 +215,10 @@ function MapGridCard(props) {
                           <ListItemIcon style={{ minWidth: "40px" }}>
                             <Icon />
                           </ListItemIcon>
-                          <ListItemText primary={`${row.label} (${get(contactSummaryData, `contactSummary.${row.value}`, 0)})`} />
+                          <ListItemText
+                            primary={`${row.label} ${row.label !== "Contact Info" ? `(${get(contactSummaryData, `contactSummary.${row.value}`, 0)})` : ""
+                              }`}
+                          />
                         </ListItem>
                       );
                     })}
@@ -285,12 +288,8 @@ function MapGridCard(props) {
                           showTracks
                         />
                       )}
-                      {searchTapValue.value === "deals" && (
-                        <ContactDealsProvider />
-                      )}
-                      {searchTapValue.value === "documents" && (
-                        <ContactDocumentsProvider />
-                      )}
+                      {searchTapValue.value === "deals" && <ContactDealsProvider />}
+                      {searchTapValue.value === "documents" && <ContactDocumentsProvider />}
                     </Fragment>
                   </div>
                 </Grid>
