@@ -10,7 +10,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import vf_number from "components/Shared/valueformatters/vf_number";
 import ContactStatus from 'components/ContactDetailCard/components/ContactStatus'
-import { SUMMARY_FIELDS } from "components/ContactDetailedInfo/helper";
+import { SUMMARY_FIELDS, featureFlagChanges } from "components/ContactDetailedInfo/helper";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 
 const useStyles = makeStyles(() => ({
@@ -78,23 +78,6 @@ export default function SummaryFields({ contactData }) {
     }
   }, [contactData, reset, isFormSet]);
 
-  const featureFlagChanges = (field) => {
-    if (showGenericPhones) {
-      switch (field.key) {
-        case "homePhone":
-          return "Phone 1"
-        case "mobilePhone":
-          return "Phone 2"
-        case "mobilephone2":
-          return "Phone 3"
-        case "AltPhone":
-          return "Phone 4"
-        default:
-      }
-    }
-    return field.label;
-  }
-
   const updateFieldData = (key, value) => {
     if (contactData[key] === value) return;
 
@@ -124,7 +107,7 @@ export default function SummaryFields({ contactData }) {
         <Grid item key={key} style={{ position: "relative", width: "100%", marginRight: "30px", maxWidth: "44%", flexBasis: "11%" }}>
           <Grid container className={classes.gridStyle}>
             <Grid item style={{ display: "flex" }}>
-              <div className={classes.fieldLabel}>{featureFlagChanges(field)}</div>
+              <div className={classes.fieldLabel}>{featureFlagChanges(showGenericPhones, field.label)}</div>
             </Grid>
             <Grid item xs={8}>
               <Controller

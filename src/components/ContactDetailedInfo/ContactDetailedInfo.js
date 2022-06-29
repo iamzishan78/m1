@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from 'react-redux';
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import FieldContent from "../ContactDetailCard/components/FieldContent";
-import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import { useHistory } from "react-router-dom";
@@ -17,6 +15,7 @@ import {
   getBasicInfoExpContent,
   getBasicPurchaseInfoContent,
   getBasicPurchaseInfoExpContent,
+  featureFlagChanges
 } from "components/ContactDetailedInfo/helper";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
@@ -205,6 +204,12 @@ export default function DetailInfo(props) {
   let history = useHistory();
   const [loading, setLoading] = useState(false);
 
+  const { user } = useSelector(state => state.app);
+
+  const showGenericPhones = React.useMemo(() => {
+    return user.features?.find(f => f.name === "showGenericPhones")
+  }, [user]);
+
   useEffect(() => {
     if (props.purchaseData.length > 0) {
       setSelectedPurchaseData(props.purchaseData[0]._id);
@@ -305,7 +310,7 @@ export default function DetailInfo(props) {
                   return (
                     <React.Fragment>
                       <Grid item xs={3} className="fieldName">
-                        <p className="dataLabels">{key}</p>
+                        <p className="dataLabels">{featureFlagChanges(showGenericPhones, key)}</p>
                       </Grid>
                       <Grid item xs={9}>
                         <FieldContent
@@ -332,7 +337,7 @@ export default function DetailInfo(props) {
                     return (
                       <React.Fragment>
                         <Grid item xs={3} className="fieldName">
-                          <p className="dataLabels">{key}</p>
+                          <p className="dataLabels">{featureFlagChanges(showGenericPhones, key)}</p>
                         </Grid>
                         <Grid item xs={9}>
                           <FieldContent
@@ -356,7 +361,7 @@ export default function DetailInfo(props) {
                     return (
                       <React.Fragment key={key}>
                         <Grid item xs={3} className="fieldName">
-                          <p className="dataLabels">{key}</p>
+                          <p className="dataLabels">{featureFlagChanges(showGenericPhones, key)}</p>
                         </Grid>
                         <Grid item xs={9}>
                           <FieldContent
@@ -389,7 +394,7 @@ export default function DetailInfo(props) {
                       return (
                         <React.Fragment key={key}>
                           <Grid item xs={3} className="fieldName">
-                            <p className="dataLabels">{key}</p>
+                            <p className="dataLabels">{featureFlagChanges(showGenericPhones, key)}</p>
                           </Grid>
                           <Grid item xs={9}>
                             <FieldContent
