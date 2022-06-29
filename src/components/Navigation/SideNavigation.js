@@ -241,11 +241,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                 </ListItemIcon>
               </Tooltip>
               <ListItemText className={`${classes.sideNavText} uppercase`} primary="Flow" />
-              <ListItemSecondaryAction className={classes.sideNavAction}>
+              {/* <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
                   beta
                 </Button>
-              </ListItemSecondaryAction>
+              </ListItemSecondaryAction> */}
             </div>
           </ListItem>
 
@@ -354,11 +354,6 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                 </ListItemIcon>
               </Tooltip>
               <ListItemText className={`${classes.sideNavText} uppercase`} primary="Calendar" />
-              <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
-                  beta
-                </Button>
-              </ListItemSecondaryAction>
             </div>
           </ListItem>
 
@@ -422,6 +417,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                 </ListItemIcon>
               </Tooltip>
               <ListItemText className={`${classes.sideNavText} uppercase`} primary="Analytics" />
+              <ListItemSecondaryAction className={classes.sideNavAction}>
+                <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
+                  beta
+                </Button>
+              </ListItemSecondaryAction>
             </div>
           </ListItem>
 
