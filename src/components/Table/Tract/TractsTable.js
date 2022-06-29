@@ -13,6 +13,7 @@ const genericDataActions = ['tags', 'comments', 'tracks']
 function TractsTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
+  const { esFilters } = props
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
   );
@@ -46,12 +47,13 @@ function TractsTable(props) {
       TableHeader: copy(TableHeader(props.isSnapGrid)),
       esIndex: "shapes_flat",
       startPaginationAt: 10,
-      filters: [
-        {
-          field: "layer.keyword",
-          value: "parcel",
-        },
-      ],
+      // filters: [
+      //   {
+      //     field: "layer.keyword",
+      //     value: "parcel",
+      //   },
+      // ],
+      filters: esFilters,
       defaultSort: { field: '_ts', order: 'desc' },
       polygon: stateApp?.currentFeature?.geometry && {
         type: "geo_intersects",

@@ -7,12 +7,18 @@ import TractInterestsTable from "../../../Table/Tract/TractInterestsTable";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 import TabPanels from "components/Shared/TabPanels";
 import TabButtons from "components/Shared/TabPanels/TabButtons";
+import TractsGreyFilter from "./TractGreyFilter";
 
 function Tracts(props) {
   const [stateApp] = useContext(AppContext);
   // const history = useHistory();
 
-  const [esFilters, ESFilters] = useState([]);
+  const [esFilters, ESFilters] = useState([
+    { field: "shapeJson.properties.department.keyword", value: "Land" },
+    {
+      field: "layer.keyword",
+      value: "parcel",
+    }]);
   const setESFilters = (newState) => {
     setStateIfDeepEqual(ESFilters, newState);
   };
@@ -23,7 +29,6 @@ function Tracts(props) {
   // const [netAcresSum, setNetAcresSum] = useState(0);
   // const [netRoyaltyAcresSum, setNetRoyaltyAcresSum] = useState(0);
   // const [openDrawer, setOpenDrawer] = useState(false);
-
   const onTractCount = (count) => {
     setTractCount(count);
   }
@@ -100,8 +105,11 @@ function Tracts(props) {
     />
   );
 
-  return (
-    <div style={{ marginTop: 62, padding: "75px 56px" }}>
+  console.log("esFIlters : ", esFilters)
+  return (<>
+
+    <div style={{ marginTop: "28px", padding: "75px 56px" }}>
+      <TractsGreyFilter setESFilters={setESFilters} />
       <AnalyticsCards
         parent={"Tracts"}
         esIndex={esIndex[selectedTractTab]}
@@ -143,6 +151,7 @@ function Tracts(props) {
         />
       </div>
     </div>
+  </>
   )
 }
 
