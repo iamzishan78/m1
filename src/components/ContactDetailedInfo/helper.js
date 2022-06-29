@@ -100,6 +100,83 @@ const getLastUpdateByRow = (contactData) => {
   );
 };
 
+export const getBasicInfoContent = (contactData) => {
+  let ownerType = null;
+  if (contactData?.ownerType) {
+    const data = entityTypeOptions.find((ownerType) => ownerType.value === contactData.ownerType);
+    if (data) {
+      ownerType = data.label;
+    } else {
+      ownerType = contactData.ownerType;
+    }
+  }
+
+  return {
+    "Full Name": {
+      data: { name: contactData?.name },
+      linkType: LinkTypes.None,
+    },
+    "First Name": {
+      data: { firstName: contactData?.firstName },
+      linkType: LinkTypes.None,
+    },
+    "Middle Name": {
+      data: { middleName: contactData?.middleName },
+      linkType: LinkTypes.None,
+    },
+    "Last Name": {
+      data: { lastName: contactData?.lastName },
+      linkType: LinkTypes.None,
+    },
+    "Entity Type": {
+      data: { ownerType: ownerType },
+      linkType: LinkTypes.None,
+    },
+    "Primary Email": {
+      data: { primaryEmail: contactData?.primaryEmail },
+      linkType: LinkTypes.Mail,
+    },
+    "Primary Home Phone": { // 1
+      data: { homePhone: contactData?.homePhone },
+      linkType: LinkTypes.None,
+    },
+    "Primary Mobile Phone": { // 2
+      data: { mobilePhone: contactData?.mobilePhone },
+      linkType: LinkTypes.None,
+    },
+    "Mobile Phone 2": {  // 3
+      data: { mobilephone2: contactData?.mobilephone2 },
+      linkType: LinkTypes.None,
+    },
+    "Primary Work Phone": { // 4
+      data: { AltPhone: contactData?.AltPhone },
+      linkType: LinkTypes.None,
+    },
+    "Primary Address": {
+      data: {
+        address1: contactData?.address1,
+        address2: contactData?.address2,
+        city: contactData?.city,
+        state: contactData?.state,
+        zip: contactData?.zip,
+        country: contactData?.country,
+      },
+      linkType: LinkTypes.None,
+    },
+    "Secondary Address": {
+      data: {
+        address1Alt: contactData?.address1Alt,
+        address2Alt: contactData?.address2Alt,
+        cityAlt: contactData?.cityAlt,
+        stateAlt: contactData?.stateAlt,
+        zipAlt: contactData?.zipAlt,
+        countryAlt: contactData?.countryAlt,
+      },
+      linkType: LinkTypes.None,
+    },
+  };
+};
+
 export const getBasicInfoExpContent = (contactData) => {
   let stage = null;
   if (contactData?.status) {
@@ -230,83 +307,6 @@ export const getBasicInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
       inner: getLastUpdateByRow(contactData),
       hideFromPurchase: true,
-    },
-  };
-};
-
-export const getBasicInfoContent = (contactData) => {
-  let ownerType = null;
-  if (contactData?.ownerType) {
-    const data = entityTypeOptions.find((ownerType) => ownerType.value === contactData.ownerType);
-    if (data) {
-      ownerType = data.label;
-    } else {
-      ownerType = contactData.ownerType;
-    }
-  }
-
-  return {
-    "Full Name": {
-      data: { name: contactData?.name },
-      linkType: LinkTypes.None,
-    },
-    "First Name": {
-      data: { firstName: contactData?.firstName },
-      linkType: LinkTypes.None,
-    },
-    "Middle Name": {
-      data: { middleName: contactData?.middleName },
-      linkType: LinkTypes.None,
-    },
-    "Last Name": {
-      data: { lastName: contactData?.lastName },
-      linkType: LinkTypes.None,
-    },
-    "Entity Type": {
-      data: { ownerType: ownerType },
-      linkType: LinkTypes.None,
-    },
-    "Primary Email": {
-      data: { primaryEmail: contactData?.primaryEmail },
-      linkType: LinkTypes.Mail,
-    },
-    "Primary Home Phone": {
-      data: { homePhone: contactData?.homePhone },
-      linkType: LinkTypes.None,
-    },
-    "Primary Mobile Phone": {
-      data: { mobilePhone: contactData?.mobilePhone },
-      linkType: LinkTypes.None,
-    },
-    "Mobile Phone 2": {
-      data: { mobilephone2: contactData?.mobilephone2 },
-      linkType: LinkTypes.None,
-    },
-    "Primary Work Phone": {
-      data: { AltPhone: contactData?.AltPhone },
-      linkType: LinkTypes.None,
-    },
-    "Primary Address": {
-      data: {
-        address1: contactData?.address1,
-        address2: contactData?.address2,
-        city: contactData?.city,
-        state: contactData?.state,
-        zip: contactData?.zip,
-        country: contactData?.country,
-      },
-      linkType: LinkTypes.None,
-    },
-    "Secondary Address": {
-      data: {
-        address1Alt: contactData?.address1Alt,
-        address2Alt: contactData?.address2Alt,
-        cityAlt: contactData?.cityAlt,
-        stateAlt: contactData?.stateAlt,
-        zipAlt: contactData?.zipAlt,
-        countryAlt: contactData?.countryAlt,
-      },
-      linkType: LinkTypes.None,
     },
   };
 };
@@ -765,6 +765,14 @@ export const featureFlagChanges = (showGenericPhones, key) => {
         return "Phone 4";
       case "Mobile Phone 3":
         return "Phone 5";
+      case "Home Phone 2":
+        return "Phone 6";
+      case "Home Phone 3":
+        return "Phone 7";
+      case "Work Phone 2":
+        return "Phone 8";
+      case "Work Phone 3":
+        return "Phone 9";
       default:
     }
   }
