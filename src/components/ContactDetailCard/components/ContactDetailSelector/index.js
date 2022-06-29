@@ -244,6 +244,7 @@ function MapGridCard(props) {
                           header="Activities"
                           addAble={{ type: "contactActivity" }}
                           onAddActivity={props.onAddActivity}
+                          dialogType="activitySideDialog"
                         />
                       )}
                       {searchTapValue.value === "taxRollInterests" && (

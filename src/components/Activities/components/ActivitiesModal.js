@@ -194,7 +194,7 @@ const initialErrors = {
 
 const localizer = momentLocalizer(moment);
 
-export default function ActivitiesModal({ selectedActivity, events, setSelectedActivityId }) {
+export default function ActivitiesModal({ events, setSelectedActivityId }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const history = useHistory();
@@ -212,6 +212,7 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
   const [dealId, setDealId] = useState(null);
   const [errors, setErrors] = useState({ ...initialErrors });
   const [users, setUsers] = useState([]);
+  const { selectedActivity } = stateApp;
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "cache-and-network",
@@ -514,20 +515,20 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
       open={!!stateApp.activityDialog}
       onClose={
         addLoading && updateLoading
-          ? () => {}
+          ? () => { }
           : () => {
-              onModalClose();
-            }
+            onModalClose();
+          }
       }
     >
       <ExpandableCardProvider
         expanded={true}
         handleCloseExpandableCard={
           addLoading && updateLoading
-            ? () => {}
+            ? () => { }
             : () => {
-                onModalClose();
-              }
+              onModalClose();
+            }
         }
         title={addNew ? "Add Activity" : "Activity Details"}
         subTitle={""}

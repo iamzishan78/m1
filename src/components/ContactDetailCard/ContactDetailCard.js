@@ -512,6 +512,16 @@ function ContactDetailCard(props) {
   };
 
   useEffect(() => {
+    setActivityDialog(!!stateApp.activitySideDialog);
+  }, [stateApp.activitySideDialog]);
+
+  useEffect(() => {
+    if (!showActivityDialog) {
+      setStateApp(() => ({ ...stateApp, selectedActivity: null, activitySideDialog: false }));
+    }
+  }, [showActivityDialog]);
+
+  useEffect(() => {
     setTimeout(() => {
       setShowShrinkColumnContent(shrinkRightColumn);
     }, 300);
@@ -1058,7 +1068,12 @@ function ContactDetailCard(props) {
         )}
         {showActivityDialog && (
           <RightDialog open={true} handleClickDialogClose={() => setActivityDialog(false)} width="700px">
-            <AddActivityDialog onClose={() => setActivityDialog(false)} id={props.id} contactData={contactData} />
+            <AddActivityDialog
+              onClose={() => setActivityDialog(false)}
+              id={props.id}
+              contactData={contactData}
+              selectedActivity={stateApp.selectedActivity}
+            />
           </RightDialog>
         )}
         {stateApp.dealDialog && (

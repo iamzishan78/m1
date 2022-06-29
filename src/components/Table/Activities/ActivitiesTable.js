@@ -71,7 +71,6 @@ function ActivitiesTable(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const { appliedFilters, esIndex, searchFields, clickedRow } = props;
 
-  const [selectedActivity, setSelectedActivity] = useState(null);
   const [events, setEvents] = useState([]);
 
   const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
@@ -126,15 +125,17 @@ function ActivitiesTable(props) {
 
   useEffect(() => {
     if (clickedRow) {
-      setSelectedActivity({
+      const activity = {
         ...clickedRow,
         type: get(
           activityTypes.find((type) => type.label === clickedRow.type),
           "value",
           ""
         ),
-      });
-      onModalOpen();
+      };
+
+      setStateApp(() => ({ ...stateApp, selectedActivity: activity }));
+      onModalOpen(props.dialogType);
     }
   }, [clickedRow]);
 
@@ -176,10 +177,10 @@ function ActivitiesTable(props) {
     );
   };
 
-  const onModalOpen = () => {
+  const onModalOpen = (type = "activityDialog") => {
     setStateApp((stateApp) => ({
       ...stateApp,
-      activityDialog: true,
+      [type]: true,
     }));
   };
 
@@ -256,7 +257,7 @@ function ActivitiesTable(props) {
         parent={props.parent}
         setColumnsBase={[]}
       />
-      <ActivitiesModal selectedActivity={selectedActivity} setSelectedActivityId={setSelectedActivityId} events={events} />
+      <ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} />
     </Container>
   );
 }
