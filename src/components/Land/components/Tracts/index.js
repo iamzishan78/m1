@@ -14,7 +14,6 @@ function Tracts(props) {
   // const history = useHistory();
 
   const [esFilters, ESFilters] = useState([
-    { field: "shapeJson.properties.department.keyword", value: "Land" },
     {
       field: "layer.keyword",
       value: "parcel",
@@ -105,7 +104,7 @@ function Tracts(props) {
     />
   );
 
-  console.log("esFIlters : ", esFilters)
+  console.log("selectedTractTab : ", selectedTractTab)
   return (<>
 
     <div style={{ marginTop: "28px", padding: "75px 56px" }}>

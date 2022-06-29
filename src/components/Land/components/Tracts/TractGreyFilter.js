@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
+import { useDispatch } from "react-redux";
 import { Grid, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
-import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
-import { useLazyQuery } from "@apollo/client";
-import moment from "moment";
 import { useSelector } from "react-redux";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
-import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
+import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
+import { AppContext } from "AppContext";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -41,53 +40,89 @@ const useStyles = makeStyles((theme) => ({
 const TractsGreyFilter = ({ setESFilters }) => {
     const classes = useStyles();
 
-    const [filters, setFilters] = useState([]);
+    const [stateApp] = useContext(AppContext);
+    const dispatch = useDispatch();
+    const [, setFilters] = useState([]);
+    const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
+    const TractGridViewModule = userGridViewSettings[`Tracts`]
 
-    const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
-        fetchPolicy: "no-cache", onCompleted: () => {
 
-        }
-    });
 
-    const column = {
+    const filterColumns = [{
         label: "Department",
         filterKey: "shapeJson.properties.department.keyword",
         type: undefined,
         name: "department"
+    },
+    {
+        label: "State",
+        filterKey: ["shapeJson.properties.originalProperties.State.keyword",
+            "shapeJson.properties.originalProperties.StateAbbreviation.keyword"],
+        type: undefined,
+        name: "state"
+    },
+    {
+        label: "Count",
+        filterKey: "shapeJson.properties.originalProperties.County.keyword",
+        type: undefined,
+        name: "count"
+    },
+    {
+        label: "Owners",
+        filterKey: "shapeJson.properties.department.keyword",
+        type: undefined,
+        name: "department"
     }
+    ]
 
     const appliedFilters = [{
         field: "layer.keyword",
         value: "parcel"
     }]
 
-    const propertiesReportGroup = useSelector(
-        ({ Revenue }) => Revenue.propertiesReportGroup
-    );
+    const handleMultiFieldFilter = (esFilter) => {
+        const filters = []
+        const filterHistory = {}
+
+        if (esFilter) {
+            esFilter.forEach((filter) => {
+                if (typeof filter?.field === 'string') {
+                    if (!filterHistory[filter.field])
+                        filters.push(filter)
+                    filterHistory[filter.field] = true
+                } else {
+                    filter?.field?.forEach((_, index) => {
+                        if (!filterHistory[filter.field])
+                            filters.push({ field: filter.field[index], value: filter.value[index] })
+                        filterHistory[filter.field] = true
+                    })
+                }
+            })
+        }
+        return filters
+    }
+
     const onChange = (filter, index, column) => {
-        debugger
-        const pageEsVariable = {
-            esIndex: "shapes_flat",
-            index: "shapes_flat",
-            filters: [{ field: "shapeJson.properties.department.keyword", value: "Land" }, { field: "layer.keyword", value: "parcel" }],
-            filterKey: "name.keyword",
-            search: {
-                query: "",
-                fields: ["*"]
-            },
-            extendSearchQuery: "",
-            size: 50,
-            filterAggs: {
-                query: "",
-                field: "name.keyword", size: 50
-            }
+
+        if (TractGridViewModule) {
+            let { filters } = TractGridViewModule
+            filters.push({ field: filterColumns[index].filterKey, value: filter[0] })
+            debugger
+            filters = handleMultiFieldFilter(filters)
+
+            dispatch(updateUserGridViewSettingAction.STARTED({
+                userGridViewSetting: {
+                    module: TractGridViewModule?.module,
+                    gridView: TractGridViewModule._id,
+                    gridViewPatch: {
+                        filters: filters,
+                        columns: TractGridViewModule?.columns,
+                    },
+                    user: stateApp.user?.mongoId,
+                }
+            }));
         }
 
-        getESSimpleSearch({
-            variables: { ...pageEsVariable }
-        });
-
-        console.log("column : ", column)
     }
 
     return (
@@ -95,65 +130,31 @@ const TractsGreyFilter = ({ setESFilters }) => {
             <Grid
                 container
                 alignItems="center"
-                style={{ padding: "5px 36px 0px 45px", maxWidth: "1350px" }}
+                style={{ padding: "5px 36px 5px 45px", maxWidth: "1350px" }}
                 // justifyContent="space-between"
                 spacing={2}
             >
-                <Grid item xs md style={{ minWidth: "205px", maxWidth: "305px" }}>
-                    <AutoCompleteFilter
-                        esIndex={"shapes_flat"}
-                        setFilters={setFilters}
-                        filterList={[[''], [''], [''], ['']]}
-                        column={column}
-                        index={1}
-                        onChange={onChange}
-                        query={GET_ES_SIMPLE_FILTER}
-                        searchFields={["*"]}
-                        filters={appliedFilters}
-                        extendSearchQuery={""}
-                        custom={undefined}
-                    />
-                </Grid>
+                {
+                    filterColumns.map((filterColumn, index) => (
+                        <Grid item xs md style={{ minWidth: "205px", maxWidth: "305px" }}>
+                            <AutoCompleteFilter
+                                esIndex={"shapes_flat"}
+                                variant="outlined"
+                                setFilters={setFilters}
+                                filterList={[[''], [''], [''], ['']]}
+                                column={filterColumn}
+                                index={index}
+                                onChange={onChange}
+                                query={GET_ES_SIMPLE_FILTER}
+                                searchFields={["*"]}
+                                filters={appliedFilters}
+                                extendSearchQuery={""}
+                                custom={undefined}
+                            />
+                        </Grid>
+                    ))
+                }
 
-                <Grid item xs md style={{ minWidth: "205px", maxWidth: "305px" }}>
-                    <Autocomplete
-                        size="small"
-                        onChange={(event, newValue) => { }}
-
-                        renderInput={(params) => (
-                            <TextField {...params} label="Check Date Range" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
-                        )}
-                        // defaultValue={CUSTOM_DATES.THIS_YEAR_TO_DATE}
-                        disableListWrap
-                        id="custom-date-dropdown"
-                    />
-                </Grid>
-                <Grid item xs md style={{ minWidth: "205px", maxWidth: "305px" }}>
-                    <Autocomplete
-                        size="small"
-                        onChange={(event, newValue) => { }}
-
-                        renderInput={(params) => (
-                            <TextField {...params} label="Check Date Range" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
-                        )}
-                        // defaultValue={CUSTOM_DATES.THIS_YEAR_TO_DATE}
-                        disableListWrap
-                        id="custom-date-dropdown"
-                    />
-                </Grid>
-                <Grid item xs md style={{ minWidth: "205px", maxWidth: "305px" }}>
-                    <Autocomplete
-                        size="small"
-                        onChange={(event, newValue) => { }}
-
-                        renderInput={(params) => (
-                            <TextField {...params} label="Check Date Range" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
-                        )}
-                        // defaultValue={CUSTOM_DATES.THIS_YEAR_TO_DATE}
-                        disableListWrap
-                        id="custom-date-dropdown"
-                    />
-                </Grid>
             </Grid>
         </div >
     );

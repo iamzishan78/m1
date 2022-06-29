@@ -493,6 +493,7 @@ export const TableESHOC = (Component) => {
         const handleMultiFieldFilter = (esFilter) => {
             const filters = []
             const filterHistory = {}
+
             if (esFilter) {
                 esFilter.forEach((filter) => {
                     if (typeof filter?.field === 'string') {
@@ -613,6 +614,7 @@ export const TableESHOC = (Component) => {
         }
 
         const updateGridViewRedux = (tableState) => {
+
             setTableMeta((tableMeta) => {
                 if (tableMeta?.selectedGridView)
                     dispatch(updateUserGridViewSettingAction.STARTED({
