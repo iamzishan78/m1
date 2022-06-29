@@ -96,7 +96,7 @@ function RevenueStatementTable(props) {
       filters: fixedFilters,
       extendSearchQuery: revenueSearchQuery,
       searchFields: ["checkNumber", "_all"],
-      startPaginationAt: 24,
+      startPaginationAt: 25,
       defaultSort: { field: "checkDate", order: "desc" },
       formatHits,
       initializeGenericData: { key: "_id", actions: genericDataActions },
