@@ -200,6 +200,8 @@ export default function DocumentDetails(props) {
     setOpenDeleteConfirmDialog,
     setFileIdToDelete,
     handleClose,
+    setReplaceFile,
+    replaceFile,
     viewFiles,
     viewFileSResult,
   } = props;
@@ -324,6 +326,7 @@ export default function DocumentDetails(props) {
   };
 
   const onFileUpload = (file) => {
+    setReplaceFile(false)
     setStateApp((stateApp) => ({
       ...stateApp,
       selectedDocument: { _id: file.id, ...file },
@@ -656,7 +659,7 @@ export default function DocumentDetails(props) {
         </List>
       </div>
       <div style={{ flexShrink: 0 }}>
-        {stateApp.selectedDocument?.fileId || fileData ? (
+        {(stateApp.selectedDocument?.fileId || fileData) && !replaceFile ? (
           <ListItem>
             <div style={{ display: "flex", justifyContent: "start" }}>
               {viewFileSResult?.viewFiles?.map((value, key) => {
@@ -670,8 +673,11 @@ export default function DocumentDetails(props) {
                             <IconButton
                               size="small"
                               onClick={() => {
+                                setReplaceFile(true)
                                 setOpenDeleteConfirmDialog(true);
                                 setFileIdToDelete(stateApp.selectedDocument.fileId);
+                                // setStateApp((state) => ({ ...state, selectedDocument: { ...state.selectedDocument, fileId: null } }))
+                                // setFileData(null)
                               }}
                             >
                               <DeleteIcon />
@@ -743,8 +749,12 @@ export default function DocumentDetails(props) {
                             <IconButton
                               size="small"
                               onClick={() => {
+                                debugger
+                                setReplaceFile(true)
                                 setOpenDeleteConfirmDialog(true);
                                 setFileIdToDelete(value.id);
+                                // setStateApp((state) => ({ ...state, selectedDocument: { ...state.selectedDocument, fileId: null } }))
+                                // setFileData(null)
                               }}
                             >
                               <DeleteIcon />
@@ -801,7 +811,7 @@ export default function DocumentDetails(props) {
           </ListItem>
         )}
 
-        {!stateApp.selectedDocument?.fileId && !fileData ? (
+        {(!stateApp.selectedDocument?.fileId && !fileData) || replaceFile ? (
           <div className={classes.Uploadcomp}>
             <UploadZone
               style={{
@@ -809,7 +819,7 @@ export default function DocumentDetails(props) {
               }}
               userId={stateApp.user.mongoId}
               setFileData={setFileData}
-              fileId={stateApp.selectedDocument?._id}
+              fileId={replaceFile ? null : stateApp.selectedDocument?._id}
               onFileUpload={onFileUpload}
             />
           </div>

@@ -21,6 +21,11 @@ import AssociatedWells from "./AssociatedWells";
 import { DocumentContext } from "../DocumentContext";
 
 const useStyles = makeStyles({
+  drawer: {
+    '& .MuiDrawer-paper': {
+      overflowY: 'inherit'
+    }
+  },
   list: {
     width: 250,
   },
@@ -191,6 +196,7 @@ export default function DocumentDrawer(props) {
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
+  const [replaceFile, setReplaceFile] = useState(false);
 
   let [loader, setLoader] = useState(false);
 
@@ -220,23 +226,23 @@ export default function DocumentDrawer(props) {
       setLoader(true);
       updateDocument({
         variables: {
-          document: {
-            fileId: fileIdToDelete,
-            isDeleted: true,
-          },
+          document: { fileId: fileIdToDelete, isDeleted: true }
         },
-        refetchQueries: ["getESDocuments"],
+        refetchQueries: replaceFile ? [] : ["getESDocuments"],
         awaitRefetchQueries: true,
       }).then(() => {
-        setStateApp({
-          ...stateApp,
-          DocumentDrawer: false,
-          selectedDocument: {},
-        });
+        debugger
+        if (!replaceFile) {
+          setStateApp({
+            ...stateApp,
+            DocumentDrawer: false,
+            selectedDocument: {},
+          });
+          setNewDocument(documentInitial);
+          setNameAutValueParty1({ name: "", _id: null });
+          setNameAutValueParty2({ name: "", _id: null });
+        }
         setFileIdToDelete(null);
-        setNewDocument(documentInitial);
-        setNameAutValueParty1({ name: "", _id: null });
-        setNameAutValueParty2({ name: "", _id: null });
         setOpenDeleteConfirmDialog(false);
         setLoader(false);
       });
@@ -386,6 +392,8 @@ export default function DocumentDrawer(props) {
                 setFileIdToDelete={setFileIdToDelete}
                 handleClose={handleClose}
                 viewFiles={viewFiles}
+                replaceFile={replaceFile}
+                setReplaceFile={setReplaceFile}
                 viewFileSResult={viewFileSResult}
               />
             )}
@@ -399,7 +407,7 @@ export default function DocumentDrawer(props) {
 
   return (
     <div>
-      <Drawer anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>
+      <Drawer className={classes.drawer} anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>
         <Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
           <DeleteConfirmationDialogContent
             header="Delete Document"
