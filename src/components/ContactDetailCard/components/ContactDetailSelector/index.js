@@ -82,19 +82,7 @@ const useStyles = makeStyles((theme) => {
       "& div": {
         "&>.MuiPaper-root": {
           "&>:nth-child(3)": {
-            minHeight: "calc(58.80vh - 240px)",
-            maxHeight: "calc(41vh)",
-            "@media (max-height:930px)": {
-              maxHeight: "calc(50vh - 620px)",
-            },
-            "@media (max-height:1600px)": {
-              maxHeight: ({ dockMenu, userGridViewFilters }) => {
-                if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 640px)";
-                else if (dockMenu === "left" || dockMenu === "right")
-                  return userGridViewFilters?.length > 0 ? "calc(100vh - 235px)" : "calc(100vh - 200px)";
-                else if (dockMenu === "full") return userGridViewFilters?.length ? "calc(100vh - 275px)" : "calc(100vh - 183px)";
-              },
-            },
+            height: "calc(50vh - 128px) !important"
           },
         },
       },

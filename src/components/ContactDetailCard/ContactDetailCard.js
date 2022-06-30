@@ -816,7 +816,7 @@ function ContactDetailCard(props) {
           ) : (
             <>
               <div id="summary-div" className={classes.summarySection} ref={tab === 0 ? selectedTabRef : null}>
-                <Grid item xs={12} container spacing={0} style={{ padding: "23px 28px", height: "650px", textAlign: "center" }}>
+                <Grid item xs={12} container spacing={0} style={{ padding: "5px 20px", height: "550px", textAlign: "center" }}>
                   <SummaryFields contactData={contactData} />
                 </Grid>
               </div>
