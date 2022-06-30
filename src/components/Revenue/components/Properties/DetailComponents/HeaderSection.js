@@ -429,7 +429,7 @@ export default function HeaderSection(props) {
                           params.onChange(value?.name || "");
                         }}
                         onBlur={(e) => {
-                          handleUpdate("internalCompany", e.target.value || '');
+                          handleUpdate("internalCompany", e.target.value || "");
                         }}
                       />
                     );
@@ -701,7 +701,7 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Prospect ID</div>
+                <div className={classes.label}>Prospect</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
@@ -716,7 +716,9 @@ export default function HeaderSection(props) {
                           : null
                       }
                       disableListWrap
-                      onBlur={(e) => updatePropertyData("prospectID", e.target.value)}
+                      onBlur={(e) =>
+                        updatePropertyData("prospectID", e.target.value)
+                      }
                       options={getMappedOptions(
                         prospectOptions?.getAutoCompletePropertyList
                       )}
@@ -737,7 +739,7 @@ export default function HeaderSection(props) {
                         return option?._id === value?._id;
                       }}
                       renderOption={(option) => {
-                        if (option._id === "newEntity")
+                        if (option.isNew)
                           return (
                             <Typography style={{ color: "midnightblue" }}>
                               Add '{option.name}'
@@ -773,6 +775,7 @@ export default function HeaderSection(props) {
                           filtered.unshift({
                             value: inputValue,
                             name: inputValue,
+                            isNew: true,
                           });
                         }
                         return filtered;
@@ -816,8 +819,12 @@ export default function HeaderSection(props) {
                           : null
                       }
                       disableListWrap
-                      onBlur={(e) => updatePropertyData("acquisitionID", e.target.value)}
-                      options={getMappedOptions(acquisitionOptions?.getAutoCompletePropertyList)}
+                      onBlur={(e) =>
+                        updatePropertyData("acquisitionID", e.target.value)
+                      }
+                      options={getMappedOptions(
+                        acquisitionOptions?.getAutoCompletePropertyList
+                      )}
                       getOptionLabel={(option) => {
                         // Value selected with enter, right from the input
                         if (typeof option === "string") {
@@ -835,7 +842,7 @@ export default function HeaderSection(props) {
                         return option?._id === value?._id;
                       }}
                       renderOption={(option) => {
-                        if (option._id === "newEntity")
+                        if (option.isNew)
                           return (
                             <Typography style={{ color: "midnightblue" }}>
                               Add '{option.name}'
@@ -871,6 +878,7 @@ export default function HeaderSection(props) {
                           filtered.unshift({
                             value: inputValue,
                             name: inputValue,
+                            isNew: true,
                           });
                         }
                         return filtered;

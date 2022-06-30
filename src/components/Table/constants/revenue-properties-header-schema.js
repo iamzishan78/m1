@@ -131,7 +131,7 @@ const RevenuePropertiesHeadCells = [
   },
   {
     name: "prospectID",
-    label: "Prospect ID",
+    label: "Prospect",
     esKey: "prospectID.keyword",
     options: { sort: true, filter: true },
   },
