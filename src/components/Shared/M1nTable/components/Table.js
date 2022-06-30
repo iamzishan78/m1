@@ -400,13 +400,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "-20px",
     position: "relative",
     justifyContent: "flex-end",
-    // minWidth: "100px",
-    // borderRadius: "7px",
-    // color: "#17aadd",
-    // "&:hover": {
-    //   textDecoration: "underline",
-    // },
-    // fontWeight: "bold",
   },
   tooltip: {
     position: "absolute",
@@ -416,20 +409,6 @@ const useStyles = makeStyles((theme) => ({
     width: 200,
     left: -150,
   },
-  // filenamediv: {
-  //   cursor: "pointer",
-  //   padding: "10px 30px 10px 10px",
-  //   position: "relative",
-  //   minWidth: "100px",
-  //   borderRadius: "7px",
-  //   color: "#17aadd",
-  //   "&:hover": {
-  //     // color: "#18aadd",
-  //     textDecoration: 'underline'
-  //   },
-  //   fontWeight: "bold",
-
-  // }
   activeBadge: {
     background: "#17c10d",
     height: 12,
@@ -490,8 +469,16 @@ const useStyles = makeStyles((theme) => ({
     "&  .MuiSvgIcon-root": {
       fill: "#5a5a5a"
     }
+  },
+  gridElementStyling: {
+    width: '250px',
+    padding: '0px 25px 0px 0px'
+  },
+  gridElementEmptyStyling: {
+    color: "#959595"
   }
 }));
+
 
 function SubTable(props) {
   const classes = useStyles({
@@ -615,6 +602,9 @@ function SubTable(props) {
     setStateIfDeepEqual(Rows, newState);
   };
   const [searchedRows, setSearchedRows] = useState([]);
+
+  const [gridColWidth, setGridColWidth] = useState('250px');
+
 
   // queries
   const [getWell] = useLazyQuery(WELLQUERY, {
@@ -764,28 +754,6 @@ function SubTable(props) {
     setHandleSearch(() => handleSearch);
   };
 
-  // const registerSearchCloseHandler = (handleSearchClose) => {
-  //   setHandleSearchClose(() => handleSearchClose);
-  // };
-
-  // useEffect(() => {
-  //   if (props.header === "Contacts") {
-  //     handleSearch(stateApp.contactSearchQuery);
-  //   }
-  // }, [stateApp.contactSearchQuery]);
-
-  // useEffect(() => {
-  //   if (props.parent === "search") {
-  //     handleSearchClose(stateApp.contactSearchQuery);
-  //   }
-  // }, [searchloading])
-
-  // not a good workaround - need to use the table actions callback
-  // useEffect(() => {
-  //   // reset selected rows
-  //   setM1nSelectedRowsIndexes([]);
-  //   setM1nSelectedRowsIds([]);
-  // }, [rows])
 
   //// save contact data chosen by action menu
   useEffect(() => {
@@ -1240,11 +1208,31 @@ function SubTable(props) {
                         if (props.onInfiniteScroll) props.onInfiniteScroll()
                       }}
                     />
-                    <p style={{ padding: "0px 5px", color: value ? 'inherit' : "#959595" }}>{value || "N/A"}</p>
+
+                    <Typography 
+                            noWrap 
+                            variant='body2'
+                            className={classes.gridElementStyling}
+                          >
+                            {value ? (value) : (<span className={classes.gridElementEmptyStyling}>--</span>)}
+                          </Typography>
+
+
+                    {/* <p style={{ padding: "0px 5px", color: value ? 'inherit' : "#959595" }}>{value || "N/A"}</p> */}
                   </Fragment>
                 );
               } else {
-                return <p style={{ padding: "0px 5px", color: value ? 'inherit' : "#959595" }}>{value || "N/A"}</p>;
+                return (
+                  <>
+                        <Typography 
+                              noWrap 
+                              variant='body2'
+                              className={classes.gridElementStyling}
+                            >
+                              {value ? (value) : (<span className={classes.gridElementEmptyStyling}>--</span>)}
+                        </Typography>
+                  </>
+                      )
               }
             },
           };
@@ -1354,9 +1342,16 @@ function SubTable(props) {
                     dateTime = row_line.dateTime;
                   }
                   return (
-                    <span style={{ padding: 10 }}>
-                      {dateTime ? <span>{moment(dateTime).format("MM/DD/YYYY")}</span> : <span style={{ color: "#959595" }}>N/A</span>}
-                    </span>
+                  <Typography 
+                    noWrap 
+                    variant='body2'
+                    className={classes.gridElementStyling}
+                  >
+                    {
+                    dateTime ? <span>{moment(dateTime).format("MM/DD/YYYY")}</span> : 
+                    <span className={classes.gridElementEmptyStyling}>--</span>
+                    }
+                  </Typography>
                   );
                 },
               };
@@ -1832,28 +1827,7 @@ function SubTable(props) {
                             routeChange(`/contact/details/${value}`);
                             setTitle("Contact Details");
                             setSubTitle(" ");
-
-                            // handleOpenExpandableCard();
-
-                            // setTargetLabelToExpand("contact");
-                            // setStateApp((stateApp) => ({
-                            //   ...stateApp,
-                            //   selectedContact: value,
-                            // }));
-                            // setSelectedRow({ _id: value });
-
-                            // setSubComponent(
-                            //   <ContactDetailCard
-                            //     selectRowOpenContact={selectRowOpenContact}
-                            //     handleCloseExpandableCard={
-                            //       handleCloseExpandableCard
-                            //     }
-                            //   />
-                            // );
-                            // setTitle("Contact Details");
-                            // setMultipleExpandableCard(true);
-                            // setSubTitle(" ");
-                            // handleOpenExpandableCard();
+                            
                           } else {
                             // Code is not used as we are opening different model from above
                             if (props.targetLabel === "owner") {
@@ -2684,11 +2658,12 @@ function SubTable(props) {
                       )}
                       {props.targetLabel === "documents" && (
                         <>
-                          <Typography noWrap variant='body2'
-                            style={{ width: "250px",
-                            padding: "0px 25px 0px 0px"}}
+                          <Typography 
+                            noWrap 
+                            variant='body2'
+                            className={classes.gridElementStyling}
                           >
-                            {value ? ( value ) : ( "--" )}
+                            {value ? (value) : (<span className={classes.gridElementEmptyStyling}>--</span>)}
                           </Typography>
                         </>
                       )}
