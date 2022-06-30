@@ -2520,14 +2520,13 @@ function SubTable(props) {
                       <span style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }} onClick={() => history.push(`/map/units/${row_line._id}`)}>{row_line.name}</span>
                     )
                   }
-                  if (column.isCustom && column.type === "dropdown") {
+                  if (column.isCustom && (column.type === "multiselect" || column.type === "dropdown")) {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
                     }
                     return (
                       <div className={classes.gridElementStyling}>
-
                         <ReactSelectField
                           isSingleSelect={true}
                           dropdownOptions={column.dropdownOptions}
@@ -2539,23 +2538,7 @@ function SubTable(props) {
                       </div>
                     );
                   }
-                  if (column.isCustom && (column.type === "multiselect" || column.type === 'dropsdown')) {
-                    let value = null;
-                    if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
-                      value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
-                    }
-                    return (
-                      <div style={{ minWidth: "100px", maxWidth: "400px" }}>
-                        <ReactSelectField
-                          dropdownOptions={column.dropdownOptions}
-                          index={tableMeta.rowIndex}
-                          column={column}
-                          value={value}
-                          onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)}
-                        />
-                      </div>
-                    );
-                  }
+
                   if (column.isCustom && column.type === "text") {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
