@@ -15,7 +15,7 @@ function TractsTable(props) {
   const [stateApp] = useContext(AppContext);
 
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
-  const GridViewModule = userGridViewSettings[`Tracts`]
+  const GridViewModule = userGridViewSettings?.Tracts
   const defaultView = {
     name: `All Tracts`,
     type: "Default",

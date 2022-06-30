@@ -45,7 +45,7 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
     const dispatch = useDispatch();
     const [, setFilters] = useState([]);
     const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
-    const TractGridViewModule = userGridViewSettings[`Tracts`]
+    const TractGridViewModule = userGridViewSettings?.Tracts
 
     const appliedFilters = [{
         field: "layer.keyword",
