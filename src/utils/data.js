@@ -253,7 +253,6 @@ export const tractInterestFilterColumnsHeader = [
   {
     label: "Department",
     filterKey: "shape.shapeJson.properties.department.keyword",
-    type: undefined,
     name: "department",
 
   },
@@ -261,19 +260,16 @@ export const tractInterestFilterColumnsHeader = [
     label: "State",
     filterKey: ["shape.shapeJson.properties.originalProperties.State.keyword",
       "shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword"],
-    type: undefined,
     name: "State"
   },
   {
     label: "Count",
     filterKey: "shape.shapeJson.properties.originalProperties.County.keyword",
-    type: undefined,
     name: "County"
   },
   {
     label: "Owners",
     filterKey: "contact.entityDetail.name.keyword",
-    type: undefined,
     name: "name"
   }
 ]
