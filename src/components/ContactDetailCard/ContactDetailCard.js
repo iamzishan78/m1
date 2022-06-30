@@ -104,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
   },
   pDealCard: {
     fontWeight: "bold !important",
-    marginTop: "7 !important",
+    marginTop: "8 !important",
     marginBottom: "7!important",
   },
   divDealCard: {
@@ -164,8 +164,8 @@ const useStyles = makeStyles((theme) => ({
   },
   mainGridContainer: {
     display: "flex",
-    marginTop: "20px",
-    height: "calc(100vh - 222px)",
+    marginTop: "8px",
+    height: "calc(100vh - 210px)",
     "& a": { color: "#757575" },
     "& .MuiPopover-paper": {
       zIndex: "1700",
@@ -370,7 +370,7 @@ const useStyles = makeStyles((theme) => ({
     "& fieldset": {
       border: "none",
     },
-    width: "calc(100vw - 775px)",
+    width: "calc(100vw - 785px)",
   },
   actionsContainer: {
     display: "flex",
@@ -395,7 +395,7 @@ const useStyles = makeStyles((theme) => ({
   },
   detailCardSection: {
     backgroundColor: "#fff",
-    marginTop: "20px",
+    marginTop: "8px",
     width: "100%",
   },
 }));
@@ -852,7 +852,7 @@ function ContactDetailCard(props) {
             <div
               style={{
                 margin: "0px 15px",
-                height: "calc(100vh - 222px)",
+                height: "calc(100vh - 210px)",
               }}
             >
               <MetadataDrawer
