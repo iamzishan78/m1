@@ -75,6 +75,7 @@ import ContactWellHeadCells from "../constants/contactperwell-header-schema.js";
 import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
 import { addTrailingZeros } from "components/Shared/functions";
 import Loader from "components/Loaders";
+import { getContactsAddress, getAddressUrl } from "utils/helper";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -2889,47 +2890,8 @@ function M1nTable(props) {
     setSelectedYear(selectedYear);
   };
 
-  const getContactsAddress = (contacts) => {
-    const addressedContacts = contacts.map((contact) => {
-      let address = "https://www.google.com/maps/search/";
-      if (contact.address1) address = `${address}${contact.address1.replace(/ /g, "+")}`;
-      if (contact.city) address = `${address},+${contact.city.replace(/ /g, "+")}`;
-      if (contact.state) address = `${address},+${contact.state}`;
-      if (contact.zip) address = `${address}+${contact.zip}`;
-      return {
-        ...contact,
-        fullContactAddress: address,
-      };
-    });
-    return addressedContacts;
-  };
-
-  const getAddressUrl = (owner) => {
-    let address = "https://www.google.com/maps/search/";
-    if (owner.StreetAddress) address = `${address}${owner.StreetAddress.replace(/ /g, "+")}`;
-    if (owner.City) address = `${address},+${owner.City.replace(/ /g, "+")}`;
-    if (owner.State) address = `${address},+${owner.State}`;
-    if (owner.Zip) address = `${address}+${owner.Zip}`;
-    return address;
-  };
-
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
-      {props.parent && props.parent === "Deals" && stateApp.dealDialog && (
-        <AddDealDialog
-          open={stateApp.dealDialog ? true : false}
-          width="450px"
-          onClose={() =>
-            setStateApp((stateApp) => ({
-              ...stateApp,
-              dealDialog: false,
-              activeDeal: { cardId: null, laneId: null },
-            }))
-          }
-          contactId={props.contact?._id}
-        />
-      )}
-
       {props.parent && props.parent === "assocTaxRollInterests" && (
         <AddWellInterestDialog
           open={stateApp.wellInterestDialog ? true : false}

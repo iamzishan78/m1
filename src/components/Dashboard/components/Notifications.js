@@ -33,6 +33,7 @@ import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { AppContext } from "AppContext";
 
 import ReactTimeAgo from "react-time-ago";
+import { dateIsValid } from "utils/helper";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -242,6 +243,8 @@ const Notifications = () => {
         return;
     }
   };
+
+  console.log(notifications)
   return (
     <Fragment>
       <CardHeader
@@ -336,21 +339,23 @@ const Notifications = () => {
                         </Grid>
                         <Grid item xs={11} className={classes.paddingLeft10}>
                           <div>
-                            <ReactTimeAgo
-                              className={[classes.commentTime, classes.sysNotification]}
-                              date={
-                                new Date(
-                                  new Intl.DateTimeFormat("en-US", {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "2-digit",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  }).format(Date.parse(dateTimeAdded))
-                                )
-                              }
-                              locale="en-US"
-                            />
+                            {
+                              dateIsValid(Date.parse(dateTimeAdded)) && <ReactTimeAgo
+                                className={[classes.commentTime, classes.sysNotification]}
+                                date={
+                                  new Date(
+                                    new Intl.DateTimeFormat("en-US", {
+                                      year: "numeric",
+                                      month: "long",
+                                      day: "2-digit",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    }).format(Date.parse(dateTimeAdded))
+                                  )
+                                }
+                                locale="en-US"
+                              />
+                            }
                             <br />
                             <span>{message}</span>
                           </div>
@@ -377,21 +382,13 @@ const Notifications = () => {
                         <Grid item xs={11} className={classes.paddingLeft10}>
                           <div>
                             <span className={classes.bold}>{user?.name}</span>
-                            <ReactTimeAgo
-                              className={classes.commentTime}
-                              date={
-                                new Date(
-                                  new Intl.DateTimeFormat("en-US", {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "2-digit",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  }).format(Date.parse(source.ts))
-                                )
-                              }
-                              locale="en-US"
-                            />
+                            {
+                              <ReactTimeAgo
+                                className={classes.commentTime}
+                                date={new Date(!isNaN(Number(source.ts)) ? Number(source.ts) : source.ts)}
+                                locale="en-US"
+                              />
+                            }
                           </div>
                           <CommentText users={users} eachComment={source} />
                         </Grid>

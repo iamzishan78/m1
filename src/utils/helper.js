@@ -11,6 +11,25 @@ export const copy = (data) => {
   return data ? JSON.parse(JSON.stringify(data)) : null;
 };
 
+export const dateIsValid = (date) => {
+  try {
+    debugger
+    date = new Date(
+      new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(date)
+    )
+    return date instanceof Date && !isNaN(date);
+  } catch (e) {
+    debugger
+    return false
+  }
+}
+
 export const getURL = () => {
   let tenantName = window.sessionStorage.getItem("tenantName");
   if (tenantName) {
@@ -182,6 +201,19 @@ export const getContactsAddress = (contact) => {
     ...contact,
     fullContactAddress: address,
   };
+};
+
+export const getAddressUrl = (owner) => {
+  let address = "https://www.google.com/maps/search/";
+  if (owner.StreetAddress) address = `${address}${owner.StreetAddress.replace(/ /g, "+")}`;
+  if (owner.address1) address = `${address}${owner.address1.replace(/ /g, "+")}`;
+  if (owner.City) address = `${address},+${owner.City.replace(/ /g, "+")}`;
+  if (owner.city) address = `${address},+${owner.city.replace(/ /g, "+")}`;
+  if (owner.State) address = `${address},+${owner.State}`;
+  if (owner.state) address = `${address},+${owner.state}`;
+  if (owner.Zip) address = `${address}+${owner.Zip}`;
+  if (owner.zip) address = `${address},+${owner.zip}`;
+  return address;
 };
 
 export const getMapFilters = (stateNav, searchInput, gridPolygonString, format) => {
