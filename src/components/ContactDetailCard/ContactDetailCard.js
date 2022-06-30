@@ -165,7 +165,7 @@ const useStyles = makeStyles((theme) => ({
   mainGridContainer: {
     display: "flex",
     marginTop: "20px",
-    height: "calc(100vh - 274px)",
+    height: "calc(100vh - 222px)",
     "& a": { color: "#757575" },
     "& .MuiPopover-paper": {
       zIndex: "1700",
@@ -370,7 +370,7 @@ const useStyles = makeStyles((theme) => ({
     "& fieldset": {
       border: "none",
     },
-    width: "100%",
+    width: "calc(100vw - 775px)",
   },
   actionsContainer: {
     display: "flex",
@@ -380,6 +380,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   metaActions: {
+    float: "right",
     "& button": {
       margin: "0px 5px",
       color: "grey",
@@ -464,9 +465,6 @@ function ContactDetailCard(props) {
   const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
   const [showActivityDialog, setActivityDialog] = useState(null);
   const [purchaseData, setPurchaseData] = useState([]);
-  const [tab, setTab] = useState(0);
-  const [isButtonScroll, setButtonScroll] = useState(false);
-  const selectedTabRef = React.useRef(null);
 
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
 
@@ -526,16 +524,6 @@ function ContactDetailCard(props) {
       setShowShrinkColumnContent(shrinkRightColumn);
     }, 300);
   }, [shrinkRightColumn]);
-
-  useEffect(() => {
-    if (selectedTabRef?.current && isButtonScroll) {
-      selectedTabRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-        inline: "start",
-      });
-    }
-  }, [tab, isButtonScroll]);
 
   useEffect(() => {
     if (stateApp.selectedContact && stateApp.selectedContact === contactId) {
@@ -632,31 +620,6 @@ function ContactDetailCard(props) {
   };
   const togglePullout = () => dispatch(toggleRightColumn());
 
-  const getRelativePosition = (childDivId) => {
-    const parentPos = document.getElementById("parent-div").getBoundingClientRect();
-    const childPos = document.getElementById(childDivId)?.getBoundingClientRect();
-    const relativePos = {};
-
-    if (childPos) {
-      relativePos.top = childPos.top - parentPos.top;
-      relativePos.right = childPos.right - parentPos.right;
-      relativePos.bottom = childPos.bottom - parentPos.bottom;
-      relativePos.left = childPos.left - parentPos.left;
-    }
-    return relativePos.top;
-  };
-
-  const handleEndScroll = React.useCallback(() => setButtonScroll(false), []);
-  const handleScroll = debounce(() => {
-    if (!isButtonScroll) {
-      let activeTab = 0;
-      if (getRelativePosition("summary-div") < 5) activeTab = 0;
-      if (getRelativePosition("detail-div") < 50) activeTab = 1;
-      if (tab !== activeTab) setTab(activeTab);
-    }
-    handleEndScroll();
-  }, 500);
-
   return contactData ? (
     <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)", width: "100%", backgroundColor: "#F2F2F2" }}>
       {/**
@@ -751,61 +714,45 @@ function ContactDetailCard(props) {
                 <div className={classes.tags}>
                   <Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" publicLeftBottom onlyTags />
                 </div>
+                <div className={classes.metaActions}>
+                  <Button
+                    className={classes.contactDataButton}
+                    startIcon={<RequestPageIcon color="grey" />}
+                    onClick={() => {
+                      handleExpandClick("buyContactsInfo");
+                    }}
+                  >
+                    Contact Data
+                  </Button>
+                  <Button
+                    className={classes.contactDataButton}
+                    startIcon={<MonetizationOnIcon color="grey" />}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setStateApp((stateApp) => ({
+                        ...stateApp,
+                        dealDialog: true,
+                      }));
+                    }}
+                  >
+                    Add Deal
+                  </Button>
+                  <Button
+                    className={classes.contactDataButton}
+                    startIcon={<AddIcCallIcon color="grey" />}
+                    onClick={() => setActivityDialog(true)}
+                  >
+                    Add Activity
+                  </Button>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <div className={classes.actionsContainer}>
-            <div className={classes.tabsHeader}>
-              <StyledTabs
-                value={tab}
-                onChange={(event, tab) => {
-                  setButtonScroll(true);
-                  setTab(tab);
-                }}
-                aria-label="ant example"
-              >
-                <StyledTab label="Summary" />
-                <StyledTab label="Details" />
-              </StyledTabs>
-            </div>
-            <div className={classes.metaActions}>
-              <Button
-                className={classes.contactDataButton}
-                startIcon={<RequestPageIcon color="grey" />}
-                onClick={() => {
-                  handleExpandClick("buyContactsInfo");
-                }}
-              >
-                Contact Data
-              </Button>
-              <Button
-                className={classes.contactDataButton}
-                startIcon={<MonetizationOnIcon color="grey" />}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setStateApp((stateApp) => ({
-                    ...stateApp,
-                    dealDialog: true,
-                  }));
-                }}
-              >
-                Add Deal
-              </Button>
-              <Button
-                className={classes.contactDataButton}
-                startIcon={<AddIcCallIcon color="grey" />}
-                onClick={() => setActivityDialog(true)}
-              >
-                Add Activity
-              </Button>
             </div>
           </div>
         </div>
       </div>
 
       <div className={classes.mainGridContainer}>
-        <Grid container className={classes.leftColumn} onScroll={handleScroll} id="parent-div">
+        <Grid container className={classes.leftColumn}>
           {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
             <DocViewer
               divCondition={true}
@@ -817,13 +764,13 @@ function ContactDetailCard(props) {
             />
           ) : (
             <>
-              <div id="summary-div" className={classes.summarySection} ref={tab === 0 ? selectedTabRef : null}>
+              <div className={classes.summarySection}>
                 <Grid item xs={12} container spacing={0} style={{ padding: "5px 20px", height: "550px", textAlign: "center" }}>
                   <SummaryFields contactData={contactData} />
                 </Grid>
               </div>
               {/*/////////// section 3 //////////// */}
-              <div id="detail-div" className={classes.detailCardSection} ref={tab === 1 ? selectedTabRef : null}>
+              <div className={classes.detailCardSection}>
                 <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px" }}>
                   <ContactDetailedSelector
                     purchaseData={purchaseData}
@@ -905,7 +852,7 @@ function ContactDetailCard(props) {
             <div
               style={{
                 margin: "0px 15px",
-                height: "calc(100vh - 274px)",
+                height: "calc(100vh - 222px)",
               }}
             >
               <MetadataDrawer
