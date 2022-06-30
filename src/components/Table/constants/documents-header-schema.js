@@ -36,7 +36,7 @@ const DocumentsHeadCells = [
     name: "documentNumber",
     infiniteScroll: true,
     esKey: "documentNumber.keyword",
-    label: "Document Number",
+    label: "File Number",
     options: {
       filter: true,
       sortThirdClickReset: true,
@@ -45,7 +45,7 @@ const DocumentsHeadCells = [
   {
     name: "documentName",
     esKey: "documentName.keyword",
-    label: "Document Name",
+    label: "File Description",
     options: {
       filter: true,
       sortThirdClickReset: true,
@@ -54,7 +54,7 @@ const DocumentsHeadCells = [
   {
     name: "documentType",
     esKey: "documentType.keyword",
-    label: "Document Type",
+    label: "File Type",
     options: {
       filter: true,
       sortThirdClickReset: true,
@@ -63,7 +63,7 @@ const DocumentsHeadCells = [
   {
     name: "dateTime",
     esKey: "documentDate",
-    label: "Document Date",
+    label: "File Date",
     options: {
       filter: false,
       sortThirdClickReset: true,
@@ -72,7 +72,7 @@ const DocumentsHeadCells = [
   },
   {
     name: "uploadedDate",
-    label: "Document Date",
+    label: "File Date",
     options: {
       display: false,
       filter: false,

@@ -574,7 +574,7 @@ export default function DocumentDrawer(props) {
             alignItems: "start",
           }}
         >
-          <h4>Document Number</h4>
+          <h4>File Number</h4>
           <TextField
             className={classes.maxWidth}
             multiline
