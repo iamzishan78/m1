@@ -637,10 +637,12 @@ function ContactDetailCard(props) {
     const childPos = document.getElementById(childDivId).getBoundingClientRect();
     const relativePos = {};
 
-    relativePos.top = childPos.top - parentPos.top;
-    relativePos.right = childPos.right - parentPos.right;
-    relativePos.bottom = childPos.bottom - parentPos.bottom;
-    relativePos.left = childPos.left - parentPos.left;
+    if (childPos) {
+      relativePos.top = childPos.top - parentPos.top;
+      relativePos.right = childPos.right - parentPos.right;
+      relativePos.bottom = childPos.bottom - parentPos.bottom;
+      relativePos.left = childPos.left - parentPos.left;
+    }
     return relativePos.top;
   };
 
