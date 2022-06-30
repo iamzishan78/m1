@@ -595,7 +595,7 @@ export default function DocumentDrawer(props) {
             alignItems: "start",
           }}
         >
-          <h4>Document Name</h4>
+          <h4>File Name</h4>
           <TextField
             className={classes.maxWidth}
             multiline
@@ -616,7 +616,7 @@ export default function DocumentDrawer(props) {
             alignItems: "start",
           }}
         >
-          <h4>Document Type</h4>
+          <h4>File Type</h4>
           <DocumentType
             disabled={selectedType === "existing"}
             className={classes.maxWidth}
@@ -637,7 +637,7 @@ export default function DocumentDrawer(props) {
             alignItems: "start",
           }}
         >
-          <h4>Document Date</h4>
+          <h4>File Date</h4>
           <KeyboardDatePicker
             className={classes.maxWidth}
             disableToolbar
