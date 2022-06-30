@@ -196,7 +196,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function DetailInfo(props) {
-  const [basicInfExp, setBasicInfExp] = useState(false);
+  const [basicInfExp, setBasicInfExp] = useState(true);
   const [showEmpty, setShowEmpty] = useState(true);
   const [selectedTab, setSelectedTab] = useState("Basic Info");
   const [selectedPurchaseData, setSelectedPurchaseData] = useState("");
@@ -279,7 +279,7 @@ export default function DetailInfo(props) {
               {props.purchaseData.map((purchaseData) => {
                 return (
                   <MenuItem value={purchaseData._id}>
-                    IDI Data - {moment(purchaseData.sysDateTime).format("MM/DD/YYYY hh:mm:ss a")}
+                    M1 Data - {moment(purchaseData.sysDateTime).format("MM/DD/YYYY hh:mm:ss a")}
                   </MenuItem>
                 );
               })}
