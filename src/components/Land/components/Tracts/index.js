@@ -101,55 +101,54 @@ function Tracts(props) {
     />
   );
 
-  console.log("selectedTractTab : ", selectedTractTab)
-  return (<>
-
-    <div style={{ marginTop: "28px", padding: "75px 56px" }}>
-      <TractsFilters setGreyBarFilters={setGreyBarFilters} selectedTractTab={selectedTractTab} />
-      <AnalyticsCards
-        parent={"Tracts"}
-        esIndex={esIndex[selectedTractTab]}
-        esFilters={esFilters}
-        totalCount={tractCount}
-        setESFilters={setESFilters}
-        cardsDefault={cardsDefault}
-        landSearchQuery={stateApp.landSearchQuery}
-      />
-      <div style={{ marginTop: "40px" }}>
-        <TabPanels
-          value={selectedTractTab}
-          panels={[
-            <div>
-              <TractsTable
-                esIndex={esIndex[selectedTractTab]}
-                header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                esFilters={esFilters}
-                parent="TractTable"
-                targetLabel="parcel"
-                setESFilters={setESFilters}
-                onTractCount={onTractCount}
-                landSearchQuery={stateApp.landSearchQuery}
-              />
-            </div>,
-            <div>
-              <TractInterestsTable
-                esIndex={esIndex[selectedTractTab]}
-                header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                esFilters={esFilters}
-                setGreyBarFilters={setGreyBarFilters}
-                greyBarFilters={greyBarFilters}
-                parent="TractInterestsTable"
-                targetLabel="parcel"
-                setESFilters={setESFilters}
-                onTractCount={onTractCount}
-                landSearchQuery={stateApp.landSearchQuery}
-              />
-            </div>
-          ]}
+  return (
+    <>
+      <div style={{ marginTop: "28px", padding: "75px 56px" }}>
+        <TractsFilters setGreyBarFilters={setGreyBarFilters} selectedTractTab={selectedTractTab} />
+        <AnalyticsCards
+          parent={"Tracts"}
+          esIndex={esIndex[selectedTractTab]}
+          esFilters={esFilters}
+          totalCount={tractCount}
+          setESFilters={setESFilters}
+          cardsDefault={cardsDefault}
+          landSearchQuery={stateApp.landSearchQuery}
         />
+        <div style={{ marginTop: "40px" }}>
+          <TabPanels
+            value={selectedTractTab}
+            panels={[
+              <div>
+                <TractsTable
+                  esIndex={esIndex[selectedTractTab]}
+                  header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                  esFilters={esFilters}
+                  parent="TractTable"
+                  targetLabel="parcel"
+                  setESFilters={setESFilters}
+                  onTractCount={onTractCount}
+                  landSearchQuery={stateApp.landSearchQuery}
+                />
+              </div>,
+              <div>
+                <TractInterestsTable
+                  esIndex={esIndex[selectedTractTab]}
+                  header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                  esFilters={esFilters}
+                  setGreyBarFilters={setGreyBarFilters}
+                  greyBarFilters={greyBarFilters}
+                  parent="TractInterestsTable"
+                  targetLabel="parcel"
+                  setESFilters={setESFilters}
+                  onTractCount={onTractCount}
+                  landSearchQuery={stateApp.landSearchQuery}
+                />
+              </div>
+            ]}
+          />
+        </div>
       </div>
-    </div>
-  </>
+    </>
   )
 }
 

@@ -357,8 +357,15 @@ function TractInterestsTable(props) {
           tableState.filterList[listIndex] = [greyBarFilters.value]
         }
         else {
-          tableState.columns[listIndex].filterList = []
-          tableState.filterList[listIndex] = []
+          if (greyBarFilters?.value) {
+            //remove filter if user clicked on cross
+            tableState.columns[listIndex].filterList = greyBarFilters.value
+            tableState.filterList[listIndex] = [greyBarFilters.value]
+          }
+          else {
+            tableState.columns[listIndex].filterList = []
+            tableState.filterList[listIndex] = []
+          }
         }
       }
 

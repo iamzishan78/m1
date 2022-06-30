@@ -83,11 +83,14 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
 
     const onChange = (filter, index, column) => {
         if (selectedTractTab === 0) {
-
-            if (TractGridViewModule && filter.length) {
+            if (TractGridViewModule) {
                 let { filters } = TractGridViewModule
-                filters.push({ field: tractFilterColumnsHeader[index].filterKey, value: filter[0] })
-                filters = handleMultiFieldFilter(filters)
+                if (filter.length) {
+                    filters.push({ field: tractFilterColumnsHeader[index].filterKey, value: filter[0] })
+                    filters = handleMultiFieldFilter(filters)
+                }
+                else
+                    filters = filters.filter(filter => filter.field !== column.filterKey)
 
                 dispatch(updateUserGridViewSettingAction.STARTED({
                     userGridViewSetting: {
@@ -139,29 +142,7 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
                     ))
 
                 ) : (
-                    // const getFilterColumns = () => {
 
-                    //     let filterColumns = []
-                    //     const gridViewFilters = TractGridViewModule.filters
-                    //     const tableColumns = TableHeader(false)
-                    //     console.log(TableHeader)
-                    //     tableColumns.forEach((filterColumn, index) => {
-                    //         let gridViewFilter
-                    //         if (filterColumn?.esKey) {
-                    //             if (typeof filterColumn?.esKey === 'string')
-                    //                 gridViewFilter = gridViewFilters.find(filter => filter.field === filterColumn?.esKey)
-                    //             else
-                    //                 gridViewFilter = gridViewFilters.find(filter => filter.field === filterColumn?.esKey[0])
-                    //         }
-
-                    //         if (gridViewFilter)
-                    //             filterColumns.push([gridViewFilter.value])
-                    //         else filterColumns.push([''])
-                    //     });
-
-                    //     debugger
-                    //     return filterColumns
-                    // }
                     tractFilterColumnsHeader.map((filterColumn, index) => {
                         let filterList = [[''], [''], [''], ['']]
                         const gridViewFilters = TractGridViewModule.filters
