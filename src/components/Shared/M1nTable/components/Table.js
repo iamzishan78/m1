@@ -2625,7 +2625,13 @@ function SubTable(props) {
                           round
                         />
                       )}
+
+
+                      {/* // standard document grid elements */}
                       {props.targetLabel === "documents" && (gridElement(value))}
+
+
+
                       {props.targetLabel !== "contact" && props.targetLabel !== "documents" && (
                         <CellContentEdition
                           id={tableMeta.rowData[0]}
