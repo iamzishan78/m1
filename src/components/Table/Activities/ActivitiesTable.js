@@ -69,7 +69,7 @@ function ActivitiesTable(props) {
   const dispatch = useDispatch();
   const client = useApolloClient();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const { appliedFilters, esIndex, searchFields, clickedRow } = props;
+  const { appliedFilters, esIndex, searchFields, clickedRow, applyCustomClasses } = props;
 
   const [events, setEvents] = useState([]);
 
@@ -192,7 +192,11 @@ function ActivitiesTable(props) {
   };
 
   return (
-    <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
+    <Container
+      maxWidth={false}
+      className={`${classes.container} ${!applyCustomClasses && classes.subComponentsClasses}`}
+      id={props.id ? props.id : props.parent}
+    >
       <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
         {props.openDialog === "delete" && (
           <DeleteConfirmationDialogContent
@@ -231,21 +235,19 @@ function ActivitiesTable(props) {
                   float: "left",
                 }}
               >
-                {
-                  props.addAble.type === 'contactActivity' && (
-                    <ButtonGroup variant="contained" style={{ height: "40px", margin: "4px" }} color="primary" aria-label="split button">
-                      <Button
-                        color="primary"
-                        size="small"
-                        aria-label="select merge strategy"
-                        aria-haspopup="menu"
-                        onClick={() => props.onAddActivity(true)}
-                      >
-                        + Add Activity
-                      </Button>
-                    </ButtonGroup>
-                  )
-                }
+                {props.addAble.type === "contactActivity" && (
+                  <ButtonGroup variant="contained" style={{ height: "40px", margin: "4px" }} color="primary" aria-label="split button">
+                    <Button
+                      color="primary"
+                      size="small"
+                      aria-label="select merge strategy"
+                      aria-haspopup="menu"
+                      onClick={() => props.onAddActivity(true)}
+                    >
+                      + Add Activity
+                    </Button>
+                  </ButtonGroup>
+                )}
                 <IconButton onClick={onDownload}>
                   <CloudDownloadIcon />
                 </IconButton>
