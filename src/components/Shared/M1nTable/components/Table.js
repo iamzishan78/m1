@@ -497,7 +497,6 @@ function SubTable(props) {
 
   // function state
   const [trueTargetLabel, TrueTargetLabel] = useState(null);
-  // const [contactDataMissing, setContactDataMissing] = useState([]);
   const [rowsPerPage, RowsPerPage] = useState(props.startPaginationAt);
   const [firstMount, FirstMount] = useState(true);
   const [title, Title] = useState("");
@@ -753,6 +752,27 @@ function SubTable(props) {
   const registerSearchHandler = (handleSearch) => {
     setHandleSearch(() => handleSearch);
   };
+
+
+  // functions 
+  const gridElement = value => {
+    // wraps standard grid elements w/ consistent styling
+
+    return (
+    <>
+      <Typography 
+        noWrap 
+        variant='body2'
+        className={classes.gridElementStyling}
+      >
+        {value ? (value) : (<span className={classes.gridElementEmptyStyling}>--</span>)}
+      </Typography>
+    </>
+    )
+
+  }
+
+
 
 
   //// save contact data chosen by action menu
@@ -1209,30 +1229,12 @@ function SubTable(props) {
                       }}
                     />
 
-                    <Typography 
-                            noWrap 
-                            variant='body2'
-                            className={classes.gridElementStyling}
-                          >
-                            {value ? (value) : (<span className={classes.gridElementEmptyStyling}>--</span>)}
-                          </Typography>
 
-
-                    {/* <p style={{ padding: "0px 5px", color: value ? 'inherit' : "#959595" }}>{value || "N/A"}</p> */}
-                  </Fragment>
+                        {gridElement(value)}
+                    </Fragment>
                 );
               } else {
-                return (
-                  <>
-                        <Typography 
-                              noWrap 
-                              variant='body2'
-                              className={classes.gridElementStyling}
-                            >
-                              {value ? (value) : (<span className={classes.gridElementEmptyStyling}>--</span>)}
-                        </Typography>
-                  </>
-                      )
+                return (gridElement(value))
               }
             },
           };
@@ -1341,17 +1343,7 @@ function SubTable(props) {
                   if (row_line && row_line.dateTime) {
                     dateTime = row_line.dateTime;
                   }
-                  return (
-                  <Typography 
-                    noWrap 
-                    variant='body2'
-                    className={classes.gridElementStyling}
-                  >
-                    {
-                    dateTime ? <span>{moment(dateTime).format("MM/DD/YYYY")}</span> : 
-                    <span className={classes.gridElementEmptyStyling}>--</span>
-                    }
-                  </Typography>
+                  return (gridElement(convert_date(dateTime))
                   );
                 },
               };
@@ -2633,17 +2625,7 @@ function SubTable(props) {
                           round
                         />
                       )}
-                      {props.targetLabel === "documents" && (
-                        <>
-                          <Typography 
-                            noWrap 
-                            variant='body2'
-                            className={classes.gridElementStyling}
-                          >
-                            {value ? (value) : (<span className={classes.gridElementEmptyStyling}>--</span>)}
-                          </Typography>
-                        </>
-                      )}
+                      {props.targetLabel === "documents" && (gridElement(value))}
                       {props.targetLabel !== "contact" && props.targetLabel !== "documents" && (
                         <CellContentEdition
                           id={tableMeta.rowData[0]}
