@@ -6,11 +6,12 @@ import DocumentsIcon from "@material-ui/icons/DescriptionOutlined";
 import DealsIcon from "@material-ui/icons/MonetizationOn";
 import ActivitiesIcon from '@material-ui/icons/Event';
 import ContactInformationIcon from "components/Shared/svgIcons/ContactPhone";
+import ParcelIcon from "components/Shared/svgIcons/tract";
 
 export const contactDetailInitialData = [
   { index: 4, value: "unitInterests", Icon: UnitIcon, label: "Unit Interests" },
   { index: 3, value: "wellInterests", Icon: WellIcon, label: "Well Interests" },
-  { index: 5, value: "parcelInterests", Icon: LeaseIcon, label: "Tract Interests" },
+  { index: 5, value: "parcelInterests", Icon: ParcelIcon, label: "Tract Interests" },
   { index: 2, value: "taxRollInterests", Icon: TaxOwnerIcon, label: "Tax Roll Interests" },
   { index: 1, value: "activities", Icon: ActivitiesIcon, label: "Activities" },
   { index: 0, value: "contactInformation", Icon: ContactInformationIcon, label: "Contact Info" },
