@@ -634,7 +634,7 @@ function ContactDetailCard(props) {
 
   const getRelativePosition = (childDivId) => {
     const parentPos = document.getElementById("parent-div").getBoundingClientRect();
-    const childPos = document.getElementById(childDivId).getBoundingClientRect();
+    const childPos = document.getElementById(childDivId)?.getBoundingClientRect();
     const relativePos = {};
 
     if (childPos) {
