@@ -652,7 +652,7 @@ export const SUMMARY_FIELDS = (contactData) => [
     position: "left",
   },
   {
-    label: "Total NRA",
+    label: "Total Unit NRA",
     key: "contactInterests.nraSum",
     type: "text",
     position: "right",
