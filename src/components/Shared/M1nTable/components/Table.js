@@ -2114,24 +2114,16 @@ function SubTable(props) {
 
                   return (
                     <div style={{ minWidth: 400 }}>
-                      <Grid container spacing={2} direction="row">
+                      <Grid container spacing={0} direction="row">
                         <Grid
                           item
-                          xs={2}
+                          xs={1}
                           style={{
                             display: "flex",
-                            justifyContent: "center",
+                            justifyContent: "flex-start",
                             alignItems: "center",
                           }}
                         >
-                          {/* {new RegExp(
-                          ["jpg", "jpeg", "png", "bmp"].join("|")
-                        ).test(fileExtension) ? (
-                          <img
-                            src={uri}
-                            alt={file}
-                          ></img>
-                        ) : ( */}
                           <div
                             onClick={() => {
                               if (file.state !== "active") return;
@@ -2151,7 +2143,8 @@ function SubTable(props) {
                           {/* </div> */}
                         </Grid>
 
-                        <Grid xs={10} item>
+                      <Grid xs={11} item
+                        >
                           {/**
                            * This is the document title showing in each row
                            */}
@@ -2159,7 +2152,7 @@ function SubTable(props) {
                             style={{
                               display: "flex",
                               // alignItems: "center",
-                              justifyContent: "flex-end",
+                              justifyContent: "flex-start",
                             }}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -2182,8 +2175,18 @@ function SubTable(props) {
                               }
                             }}
                           >
-                            <Grid container direction="column" alignItems="flex-start">
-                              <Grid item>
+
+
+                            <Grid container spacing={0} direction="row"
+                            
+                            // direction="column" alignItems="flex-start"
+                            >
+                              <Grid item                           
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-start",
+                                alignItems: "center",
+                          }}>
                                 <p
                                   style={{
                                     display: "flex",
@@ -2191,6 +2194,7 @@ function SubTable(props) {
                                     // padding: "10px 10px 10px 10px",
                                     // position: "relative",
                                     minWidth: "120px",
+                                    // marginLeft: "-10px",
                                     borderRadius: "7px",
                                     color: "#17aadd",
                                     wordBreak: "break-word",
