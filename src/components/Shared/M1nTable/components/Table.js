@@ -2158,8 +2158,8 @@ function SubTable(props) {
                           <div
                             style={{
                               display: "flex",
-                              alignItems: "center",
-                              justifyContent: "left",
+                              // alignItems: "center",
+                              justifyContent: "flex-end",
                             }}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -2186,9 +2186,10 @@ function SubTable(props) {
                               <Grid item>
                                 <p
                                   style={{
+                                    display: "flex",
                                     cursor: "pointer",
-                                    padding: "10px 10px 10px 10px",
-                                    position: "relative",
+                                    // padding: "10px 10px 10px 10px",
+                                    // position: "relative",
                                     minWidth: "120px",
                                     borderRadius: "7px",
                                     color: "#17aadd",
@@ -2197,19 +2198,19 @@ function SubTable(props) {
                                       textDecoration: "underline",
                                     },
                                     fontWeight: "bold",
+                                    justifyContent: "flex-start",
                                   }}>{value}</p>
                               </Grid>
-                              <Grid item>
-                                {/* <p className={classes.docDateText}>{dateTime = moment.utc(row_line.dateTime).format("MM/DD/YYYY")}</p> */}
-                                {/* <p className={classes.docDateText}>{convert_date(dateTime)}</p> */}
-                                {/* <p className={classes.docDateText}>{dateTime.substring(0,8)}}</p> */}
-                                <p style={{
+                              {/* <Grid item>
+                                 <p style={{
                                   padding: "0px 30px 10px 10px",
                                   marginTop: "-20px",
                                   position: "relative",
                                   justifyContent: "flex-end",
-                                }}>{convert_date(dateTime)}</p>
-                              </Grid>
+                                }}>
+                                  {convert_date(dateTime)}
+                                  </p>
+                              </Grid> */}
                             </Grid>
                           </div>
                         </Grid>
