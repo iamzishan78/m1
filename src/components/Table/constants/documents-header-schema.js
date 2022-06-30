@@ -34,6 +34,7 @@ const DocumentsHeadCells = [
   // },
   {
     name: "documentNumber",
+    infiniteScroll: true,
     esKey: "documentNumber.keyword",
     label: "Document Number",
     options: {

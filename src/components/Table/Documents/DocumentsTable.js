@@ -39,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
     "& ::-webkit-scrollbar": {
       height: "0.7em !important",
     },
+    '& .MuiTablePagination-root': {
+      visibility: 'hidden'
+    }
   },
 }));
 
@@ -58,6 +61,7 @@ function DocumentsTable(props) {
 
   // function states
   const [filters, setFilters] = useState([]);
+  const [changePage, isPageChanged] = useState(false);
   const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
@@ -186,7 +190,13 @@ function DocumentsTable(props) {
 
   useEffect(() => {
     if (tableData?.hits) {
-      props.setRows(tableData?.hits);
+      if (changePage) {
+        props.setRows(props.rows.concat(tableData?.hits));
+        isPageChanged(false)
+      }
+      else
+        props.setRows(tableData?.hits);
+
       let updatedColumns = columns;
       if (!isEmpty(selectedGridView)) {
         const view = formattingGridView(JSON.parse(JSON.stringify(selectedGridView)));
@@ -324,6 +334,7 @@ function DocumentsTable(props) {
         tableActions.genericESAction();
         break;
       case "changePage":
+        isPageChanged(true)
         tableActions.changeESPage();
         break;
       case "viewColumnsChange":
@@ -427,6 +438,10 @@ function DocumentsTable(props) {
     });
   };
 
+  const onInfiniteScroll = () => {
+    document.getElementById('pagination-next').click()
+  }
+
   return (
     <div className={classes.documentTable}>
       <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
@@ -466,6 +481,7 @@ function DocumentsTable(props) {
           options={options}
           parent={props.parent}
           setColumnsBase={[]}
+          onInfiniteScroll={onInfiniteScroll}
           deleteFunc={deleteFunc}
           onTableChange={onTableChange}
           onCustomKeyChange={onCustomKeyChange}
