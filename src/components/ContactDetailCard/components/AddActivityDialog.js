@@ -468,14 +468,14 @@ function AddActivityDialog(props) {
         {!addNew &&
           <IconButton
             size="small"
-            style={{ float: "right", top: "-5px", right: "37px" }}
+            style={{ float: "right", right: "50px" }}
             disabled={addLoading || updateLoading}
             onClick={openConfirmationDialog}
           >
             {isDeleting ? <CircularProgress size={20} color="secondary" /> :
               <DeleteIcon
                 className={classes.closeIcon}
-                fontSize="small"
+                fontSize="medium"
               />
             }
           </IconButton>

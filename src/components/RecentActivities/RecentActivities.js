@@ -6,7 +6,6 @@ import ActivitiesList from "./components/ActivitiesList";
 import ActivitySummary from "./components/ActivitySummary";
 import RightDialog from "../ContactDetailCard/components/RightDialog";
 import AddActivityDialog from "../ContactDetailCard/components/AddActivityDialog";
-import { grey } from "@material-ui/core/colors";
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -203,6 +203,19 @@ export const getContactsAddress = (contact) => {
   };
 };
 
+export const getAddressUrl = (owner) => {
+  let address = "https://www.google.com/maps/search/";
+  if (owner.StreetAddress) address = `${address}${owner.StreetAddress.replace(/ /g, "+")}`;
+  if (owner.address1) address = `${address}${owner.address1.replace(/ /g, "+")}`;
+  if (owner.City) address = `${address},+${owner.City.replace(/ /g, "+")}`;
+  if (owner.city) address = `${address},+${owner.city.replace(/ /g, "+")}`;
+  if (owner.State) address = `${address},+${owner.State}`;
+  if (owner.state) address = `${address},+${owner.state}`;
+  if (owner.Zip) address = `${address}+${owner.Zip}`;
+  if (owner.zip) address = `${address},+${owner.zip}`;
+  return address;
+};
+
 export const getMapFilters = (stateNav, searchInput, gridPolygonString, format) => {
   const extendSearchQuery = searchInput
 
