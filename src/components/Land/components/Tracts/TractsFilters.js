@@ -104,6 +104,20 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
                     }
                 }));
             }
+            else {
+                let filters = [{ field: tractFilterColumnsHeader[index].filterKey, value: filter[0] }]
+                dispatch(updateUserGridViewSettingAction.STARTED({
+                    userGridViewSetting: {
+                        module: "Tracts",
+                        gridView: undefined,
+                        gridViewPatch: {
+                            filters: filters,
+                            columns: [],
+                        },
+                        user: stateApp.user?.mongoId,
+                    }
+                }));
+            }
         }
 
         else {
@@ -145,12 +159,13 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
 
                     tractFilterColumnsHeader.map((filterColumn, index) => {
                         let filterList = [[''], [''], [''], ['']]
-                        const gridViewFilters = TractGridViewModule.filters
-                        if (typeof filterColumn?.filterKey === 'string') {
-                            const filterValue = gridViewFilters.find(filter => filter.field === filterColumn?.filterKey)?.value
-                            if (filterValue)
-                                filterList[index] = [filterValue]
-                        }
+                        const gridViewFilters = TractGridViewModule?.filters
+                        if (gridViewFilters)
+                            if (gridViewFilters && typeof filterColumn?.filterKey === 'string') {
+                                const filterValue = gridViewFilters.find(filter => filter.field === filterColumn?.filterKey)?.value
+                                if (filterValue)
+                                    filterList[index] = [filterValue]
+                            }
 
                         return (
                             <Grid item xs md style={{ minWidth: "205px", maxWidth: "305px" }}>
