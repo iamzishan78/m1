@@ -132,26 +132,6 @@ export const getBasicInfoContent = (contactData) => {
       data: { ownerType: ownerType },
       linkType: LinkTypes.None,
     },
-    "Primary Email": {
-      data: { primaryEmail: contactData?.primaryEmail },
-      linkType: LinkTypes.Mail,
-    },
-    "Primary Home Phone": { // 1
-      data: { homePhone: contactData?.homePhone },
-      linkType: LinkTypes.None,
-    },
-    "Primary Mobile Phone": { // 2
-      data: { mobilePhone: contactData?.mobilePhone },
-      linkType: LinkTypes.None,
-    },
-    "Mobile Phone 2": {  // 3
-      data: { mobilephone2: contactData?.mobilephone2 },
-      linkType: LinkTypes.None,
-    },
-    "Primary Work Phone": { // 4
-      data: { AltPhone: contactData?.AltPhone },
-      linkType: LinkTypes.None,
-    },
     "Primary Address": {
       data: {
         address1: contactData?.address1,
@@ -174,6 +154,25 @@ export const getBasicInfoContent = (contactData) => {
       },
       linkType: LinkTypes.None,
     },
+
+    "Primary Home Phone": { // 1
+      data: { homePhone: contactData?.homePhone },
+      linkType: LinkTypes.None,
+    },
+    "Primary Mobile Phone": { // 2
+      data: { mobilePhone: contactData?.mobilePhone },
+      linkType: LinkTypes.None,
+    },
+    "Mobile Phone 2": {  // 3
+      data: { mobilephone2: contactData?.mobilephone2 },
+      linkType: LinkTypes.None,
+    },
+    "Primary Work Phone": { // 4
+      data: { AltPhone: contactData?.AltPhone },
+      linkType: LinkTypes.None,
+    },
+
+
   };
 };
 
@@ -206,24 +205,8 @@ export const getBasicInfoExpContent = (contactData) => {
   }
 
   return {
-    "Email 2": {
-      data: { secondaryEmail: contactData?.secondaryEmail },
-      linkType: LinkTypes.Mail,
-    },
-    "Email 3": {
-      data: { email3: contactData?.email3 },
-      linkType: LinkTypes.None,
-    },
     "Mobile Phone 3": {
       data: { mobilephone3: contactData?.mobilephone3 },
-      linkType: LinkTypes.None,
-    },
-    Age: {
-      data: { age: contactData?.age },
-      linkType: LinkTypes.None,
-    },
-    "Relative Names": {
-      data: { relatives: contactData?.relatives },
       linkType: LinkTypes.None,
     },
     "Home Phone 2": {
@@ -242,6 +225,28 @@ export const getBasicInfoExpContent = (contactData) => {
       data: { AltPhone3: contactData?.AltPhone3 },
       linkType: LinkTypes.None,
     },
+    "Primary Email": {
+      data: { primaryEmail: contactData?.primaryEmail },
+      linkType: LinkTypes.Mail,
+    },
+    "Email 2": {
+      data: { secondaryEmail: contactData?.secondaryEmail },
+      linkType: LinkTypes.Mail,
+    },
+    "Email 3": {
+      data: { email3: contactData?.email3 },
+      linkType: LinkTypes.None,
+    },
+
+    Age: {
+      data: { age: contactData?.age },
+      linkType: LinkTypes.None,
+    },
+    "Relative Names": {
+      data: { relatives: contactData?.relatives },
+      linkType: LinkTypes.None,
+    },
+
     "LinkedIn Profile": {
       data: { linkedIn: contactData?.linkedIn },
       linkType: LinkTypes.Simple,
