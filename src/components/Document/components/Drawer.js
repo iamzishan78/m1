@@ -196,7 +196,7 @@ export default function DocumentDrawer(props) {
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
-  const [replaceFile, setReplaceFile] = useState(false);
+  const [replaceFile, setReplaceFile] = useState(null);
 
   let [loader, setLoader] = useState(false);
 
@@ -205,7 +205,7 @@ export default function DocumentDrawer(props) {
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
     setOpenDeleteConfirmDialog(false);
-    setNewDocument(documentInitial);
+    setReplaceFile('CANCEL')
   };
   const handleClose = () => {
     setStateApp({
@@ -228,11 +228,15 @@ export default function DocumentDrawer(props) {
         variables: {
           document: { fileId: fileIdToDelete, isDeleted: true }
         },
-        refetchQueries: replaceFile ? [] : ["getESDocuments"],
+        refetchQueries: replaceFile === 'INITIATE' ? [] : ["getESDocuments"],
         awaitRefetchQueries: true,
       }).then(() => {
-        debugger
-        if (!replaceFile) {
+
+        if (replaceFile === 'INITIATE') {
+          setReplaceFile('IN_PROGRESS')
+        }
+
+        if (replaceFile !== 'INITIATE') {
           setStateApp({
             ...stateApp,
             DocumentDrawer: false,

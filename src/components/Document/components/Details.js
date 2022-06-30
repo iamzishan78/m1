@@ -107,6 +107,9 @@ const useStyles = makeStyles({
     color: "red",
   },
   Uploadcomp: {
+    "& .MuiDropzoneArea-root": {
+      minHeight: '90px'
+    }
     // width: "200px !important",
     // height: "200px !important",
   },
@@ -326,11 +329,15 @@ export default function DocumentDetails(props) {
   };
 
   const onFileUpload = (file) => {
-    setReplaceFile(false)
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      selectedDocument: { _id: file.id, ...file },
-    }));
+    if (replaceFile === 'IN_PROGRESS') {
+      setReplaceFile('DONE')
+    }
+    else {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        selectedDocument: { _id: file.id, ...file },
+      }));
+    }
   };
 
   return (
@@ -659,7 +666,7 @@ export default function DocumentDetails(props) {
         </List>
       </div>
       <div style={{ flexShrink: 0 }}>
-        {(stateApp.selectedDocument?.fileId || fileData) && !replaceFile ? (
+        {(stateApp.selectedDocument?.fileId || fileData) && replaceFile !== 'IN_PROGRESS' ? (
           <ListItem>
             <div style={{ display: "flex", justifyContent: "start" }}>
               {viewFileSResult?.viewFiles?.map((value, key) => {
@@ -673,7 +680,7 @@ export default function DocumentDetails(props) {
                             <IconButton
                               size="small"
                               onClick={() => {
-                                setReplaceFile(true)
+                                setReplaceFile('INITIATE')
                                 setOpenDeleteConfirmDialog(true);
                                 setFileIdToDelete(stateApp.selectedDocument.fileId);
                                 // setStateApp((state) => ({ ...state, selectedDocument: { ...state.selectedDocument, fileId: null } }))
@@ -749,8 +756,7 @@ export default function DocumentDetails(props) {
                             <IconButton
                               size="small"
                               onClick={() => {
-                                debugger
-                                setReplaceFile(true)
+                                setReplaceFile('INITIATE')
                                 setOpenDeleteConfirmDialog(true);
                                 setFileIdToDelete(value.id);
                                 // setStateApp((state) => ({ ...state, selectedDocument: { ...state.selectedDocument, fileId: null } }))
@@ -811,11 +817,12 @@ export default function DocumentDetails(props) {
           </ListItem>
         )}
 
-        {(!stateApp.selectedDocument?.fileId && !fileData) || replaceFile ? (
+        {(!stateApp.selectedDocument?.fileId && !fileData) || replaceFile === 'IN_PROGRESS' ? (
           <div className={classes.Uploadcomp}>
             <UploadZone
               style={{
                 paddingLeft: "50px",
+                height: '90px'
               }}
               userId={stateApp.user.mongoId}
               setFileData={setFileData}
