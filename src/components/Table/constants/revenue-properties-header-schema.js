@@ -151,7 +151,7 @@ const RevenuePropertiesHeadCells = [
   {
     name: "internalID",
     label: "Internal ID #",
-    esKey: "lastCheck.internalID",
+    esKey: "internalID.keyword",
     options: {
       customHeadLabelRender: () => (
         <>
@@ -167,7 +167,7 @@ const RevenuePropertiesHeadCells = [
   {
     name: "internalCompany",
     label: "Internal Company",
-    esKey: "lastCheck.internalCompany",
+    esKey: "internalCompany.keyword",
     options: {
       customHeadLabelRender: () => (
         <>

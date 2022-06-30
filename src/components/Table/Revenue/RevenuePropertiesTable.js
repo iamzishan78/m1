@@ -14,6 +14,11 @@ import TableESHOC from "../TableESHOC";
 
 const genericDataActions = ["tags", "comments"];
 
+const statusData = [
+  { label:'Not in Pay', value: 'NotInPay' },
+  { label:'In Pay', value: 'InPay' },
+]
+
 function RevenuePropertiesTable(props) {
   const classes = usetableStyles();
   const { esIndex, setESFilters } = props;
@@ -25,6 +30,9 @@ function RevenuePropertiesTable(props) {
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
+      if(statusData.find(st => st.value === hit.status)){
+        hit.status = statusData.find(st => st.value === hit.status).label
+      }
       hit = props.setGenricData(
         hit,
         hit._id,
@@ -37,7 +45,7 @@ function RevenuePropertiesTable(props) {
       hit.checkNumber = hit?.lastCheck?.checkNumber;
       hit.amount = hit?.lastCheck?.netOwnerValue;
       hit.type = hit?.lastCheck?.interestType[0];
-      hit.lastChecked = new Date(hit?.lastCheck?.checkDate).toLocaleDateString();
+      hit.lastChecked = hit?.lastCheck?.checkDate ? new Date(hit?.lastCheck?.checkDate).toLocaleDateString() : ''
       return hit;
     });
     return hits
