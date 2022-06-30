@@ -2684,11 +2684,12 @@ function SubTable(props) {
                       )}
                       {props.targetLabel === "documents" && (
                         <>
-                          {value ? (
-                            <p style={{ padding: "0px 5px", wordBreak: "break-word" }}>{value}</p>
-                          ) : (
-                            <p style={{ padding: "0px 5px", color: "#959595" }}>{value ? value : "N/A"}</p>
-                          )}
+                          <Typography noWrap variant='body2'
+                            style={{ width: "250px",
+                            padding: "0px 25px 0px 0px"}}
+                          >
+                            {value ? ( value ) : ( "--" )}
+                          </Typography>
                         </>
                       )}
                       {props.targetLabel !== "contact" && props.targetLabel !== "documents" && (
