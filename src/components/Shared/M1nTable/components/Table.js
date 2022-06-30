@@ -2526,14 +2526,8 @@ function SubTable(props) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
                     }
                     return (
-                      <div style={{ minWidth: "100px" }}>
-                        {/* <CustomFieldSelectV2
-                          dropdownOptions={column.dropdownOptions}
-                          index={tableMeta.rowIndex}
-                          column={column}
-                          value={value}
-                          onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)}
-                        /> */}
+                      <div className={classes.gridElementStyling}>
+
                         <ReactSelectField
                           isSingleSelect={true}
                           dropdownOptions={column.dropdownOptions}
