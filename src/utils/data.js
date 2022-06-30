@@ -225,3 +225,55 @@ export const CUSTOM_DATES = {
   LAST_YEAR: "Last Year",
   CUSTOM: "Custom",
 };
+
+export const tractFilterColumnsHeader = [
+  {
+    label: "Department",
+    filterKey: "shapeJson.properties.department.keyword",
+    name: "department"
+  },
+  {
+    label: "State",
+    filterKey: "shapeJson.properties.originalProperties.State.keyword",
+    name: "state"
+  },
+  {
+    label: "Count",
+    filterKey: "shapeJson.properties.originalProperties.County.keyword",
+    name: "County"
+  },
+  {
+    label: "Owners",
+    filterKey: "shapeJson.properties.department.keyword",
+    name: "department",
+    disabled: true
+  }]
+
+export const tractInterestFilterColumnsHeader = [
+  {
+    label: "Department",
+    filterKey: "shape.shapeJson.properties.department.keyword",
+    type: undefined,
+    name: "department",
+
+  },
+  {
+    label: "State",
+    filterKey: ["shape.shapeJson.properties.originalProperties.State.keyword",
+      "shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword"],
+    type: undefined,
+    name: "State"
+  },
+  {
+    label: "Count",
+    filterKey: "shape.shapeJson.properties.originalProperties.County.keyword",
+    type: undefined,
+    name: "County"
+  },
+  {
+    label: "Owners",
+    filterKey: "contact.entityDetail.name.keyword",
+    type: undefined,
+    name: "name"
+  }
+]

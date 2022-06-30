@@ -195,7 +195,6 @@ export const TableHOC = (Component) => {
         }
 
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
-
             let pageESVariables = {
                 variables: {
                     esIndex: tableState.esIndex,

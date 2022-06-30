@@ -111,6 +111,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
                 setOpen(false);
             }}
 
+            disabled={others.disabled || false}
             value={value}
             inputValue={search?.toString()}
             getOptionSelected={(option, value) => option.key === value.key}

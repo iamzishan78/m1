@@ -30,10 +30,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
     }
   },
   {
-    name: "State", label: "State", esKey: [
-      'shapeJson.properties.originalProperties.State.keyword',
-      'shapeJson.properties.originalProperties.StateAbbreviation.keyword'
-    ],
+    name: "State", label: "State", esKey: 'shapeJson.properties.originalProperties.State.keyword',
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.State?.StateAbbreviation?",
       sort: true,

@@ -7,17 +7,14 @@ import TractInterestsTable from "../../../Table/Tract/TractInterestsTable";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 import TabPanels from "components/Shared/TabPanels";
 import TabButtons from "components/Shared/TabPanels/TabButtons";
-import TractsGreyFilter from "./TractGreyFilter";
+import TractsFilters from "components/Land/components/Tracts/TractsFilters";
 
 function Tracts(props) {
   const [stateApp] = useContext(AppContext);
   // const history = useHistory();
 
-  const [esFilters, ESFilters] = useState([
-    {
-      field: "layer.keyword",
-      value: "parcel",
-    }]);
+  const [esFilters, ESFilters] = useState([]);
+  const [greyBarFilters, setGreyBarFilters] = useState({});
   const setESFilters = (newState) => {
     setStateIfDeepEqual(ESFilters, newState);
   };
@@ -108,7 +105,7 @@ function Tracts(props) {
   return (<>
 
     <div style={{ marginTop: "28px", padding: "75px 56px" }}>
-      <TractsGreyFilter setESFilters={setESFilters} />
+      <TractsFilters setGreyBarFilters={setGreyBarFilters} selectedTractTab={selectedTractTab} />
       <AnalyticsCards
         parent={"Tracts"}
         esIndex={esIndex[selectedTractTab]}
@@ -139,6 +136,8 @@ function Tracts(props) {
                 esIndex={esIndex[selectedTractTab]}
                 header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
                 esFilters={esFilters}
+                setGreyBarFilters={setGreyBarFilters}
+                greyBarFilters={greyBarFilters}
                 parent="TractInterestsTable"
                 targetLabel="parcel"
                 setESFilters={setESFilters}

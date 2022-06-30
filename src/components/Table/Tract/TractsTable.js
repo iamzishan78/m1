@@ -13,7 +13,7 @@ const genericDataActions = ['tags', 'comments', 'tracks']
 function TractsTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
-  const { esFilters } = props
+
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
   const GridViewModule = userGridViewSettings[`Tracts`]
   const defaultView = {
@@ -56,13 +56,13 @@ function TractsTable(props) {
       selectedGridView: GridViewModule || defaultView,
       typeKeyword: { gridViewCategory: "Tracts" },
       startPaginationAt: 10,
-      // filters: [
-      //   {
-      //     field: "layer.keyword",
-      //     value: "parcel",
-      //   },
-      // ],
-      filters: esFilters,
+      filters: [
+        {
+          field: "layer.keyword",
+          value: "parcel",
+        },
+      ],
+
       defaultSort: { field: '_ts', order: 'desc' },
       polygon: stateApp?.currentFeature?.geometry && {
         type: "geo_intersects",

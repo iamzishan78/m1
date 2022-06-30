@@ -3,6 +3,7 @@ import { Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
+import isEmpty from "lodash/isEmpty";
 
 // QUERIES
 import { useLazyQuery } from "@apollo/client";
@@ -51,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function TractInterestsTable(props) {
-  const { esIndex, setESFilters } = props;
+  const { esIndex, setESFilters, greyBarFilters, setGreyBarFilters } = props;
   const classes = useStyles();
   const [filters, setFilters] = useState([]);
 
@@ -115,6 +116,8 @@ function TractInterestsTable(props) {
       field: "shape.layer",
       value: "parcel",
     },
+
+
   ];
 
   const count = tableData?.total || 0;
@@ -344,6 +347,23 @@ function TractInterestsTable(props) {
   // }, [pIssuesArr]);
 
   const onTableChange = (action, tableState, rows, meta) => {
+    if (tableState.columns.length && greyBarFilters && !isEmpty(greyBarFilters)) {
+      action = "filterChange"
+      const listIndex = TableHeader.findIndex(header => header.name === greyBarFilters.name);
+
+      if (listIndex >= 0) {
+        if (typeof greyBarFilters?.value === 'string') {
+          tableState.columns[listIndex].filterList = [greyBarFilters.value]
+          tableState.filterList[listIndex] = [greyBarFilters.value]
+        }
+        else {
+          tableState.columns[listIndex].filterList = []
+          tableState.filterList[listIndex] = []
+        }
+      }
+
+      setGreyBarFilters({})
+    }
 
     tableState.esIndex = esIndex;
     tableState.esFilters = esStaticFilters;
@@ -355,6 +375,7 @@ function TractInterestsTable(props) {
       columns,
       getESPaginatedList
     );
+
     setESFilters(tableActions.pageESVariables.variables.filters);
     switch (action) {
       case "search":
