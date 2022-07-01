@@ -288,7 +288,7 @@ function ContactWellInterestTable(props) {
       {props.parent && props.parent === "assocTaxRollInterests" && (
         <AddWellInterestDialog
           open={stateApp.wellInterestDialog ? true : false}
-          width="450px"
+          width="700px !important"
           onClose={() =>
             setStateApp((stateApp) => ({
               ...stateApp,

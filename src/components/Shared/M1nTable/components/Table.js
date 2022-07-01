@@ -104,7 +104,6 @@ import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubCom
 import { OWNERSLATSLONS } from "graphQL/useQueryOwnerLatsLonsArray";
 import { OPERATORSLATSLONS } from "graphQL/useQueryOperatorLatsLonsArray";
 import { LEASELATSLONS } from "graphQL/useQueryLeaseLatsLonsArray";
-import { CONTACTWELLS } from "graphQL/useQueryContactWells";
 import { Typography } from "@material-ui/core";
 import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 
@@ -616,10 +615,9 @@ function SubTable(props) {
   const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS);
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
-  const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getContact, { data: contactData }] = useLazyQuery(CONTACT);
 
-  const [viewFile, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILEQUERY, {
+  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
   const handleViewFile = async (id) => {

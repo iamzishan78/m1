@@ -248,18 +248,6 @@ const DealDialogHeader = ({
         )}
       </Grid>
       <Grid item container xs={12} style={{ padding: "0px 0px 0px 10px" }} alignItems="center">
-        {/* {!((Object.keys(contact).length === 0 && contact.constructor === Object) || contact === null) && !isTransactPage && (
-          <TextField
-            variant="outlined"
-            margin="dense"
-            value={<Typography noWrap> {contact?.name} </Typography>}
-            label="Contact Name"
-            fullWidth
-            disabled
-            className={classes.inputField}
-          />
-        )} */}
-
         <FormControl variant="outlined" className={classes.inputFieldDealName} style={{ marginLeft: "-15px" }} fullWidth size="small">
           <TextField
             margin="dense"
