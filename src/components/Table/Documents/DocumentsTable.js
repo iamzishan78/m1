@@ -39,8 +39,9 @@ const useStyles = makeStyles((theme) => ({
     "& ::-webkit-scrollbar": {
       height: "0.7em !important",
     },
-    '& .MuiTablePagination-root': {
-      visibility: 'hidden'
+    '& .MuiTableRow-footer': {
+      visibility: 'hidden',
+      display: 'none'
     }
   },
 }));
