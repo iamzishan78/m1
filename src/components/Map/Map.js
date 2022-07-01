@@ -134,7 +134,7 @@ const random_hex_color_code = () => {
 };
 let hoveredAbstractId = null;
 
-function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial = true, width }) {
+function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial = true, width, hideShape = false }) {
   // context states
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -6216,7 +6216,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           />
         </div>
       )}
-      {stateApp.selectedShape?.shapeLabel && stateApp.expandedCard && (
+      {stateApp.selectedShape?.shapeLabel && stateApp.expandedCard && !hideShape && (
         <div className={classes.draggable}>
           <ExpandableCardProvider
             expanded={true}
