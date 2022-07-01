@@ -757,15 +757,15 @@ function SubTable(props) {
     // wraps standard grid elements w/ consistent styling
 
     return (
-    <>
-      <Typography 
-        noWrap 
-        variant='body2'
-        className={classes.gridElementStyling}
-      >
-        {value ? (value) : (<span className={classes.gridElementEmptyStyling}>--</span>)}
-      </Typography>
-    </>
+      <>
+        <Typography
+          noWrap
+          variant='body2'
+          className={classes.gridElementStyling}
+        >
+          {value ? (value) : (<span className={classes.gridElementEmptyStyling}>--</span>)}
+        </Typography>
+      </>
     )
 
   }
@@ -1228,8 +1228,8 @@ function SubTable(props) {
                     />
 
 
-                        {gridElement(value)}
-                    </Fragment>
+                    {gridElement(value)}
+                  </Fragment>
                 );
               } else {
                 return (gridElement(value))
@@ -1817,7 +1817,7 @@ function SubTable(props) {
                             routeChange(`/contact/details/${value}`);
                             setTitle("Contact Details");
                             setSubTitle(" ");
-                            
+
                           } else {
                             // Code is not used as we are opening different model from above
                             if (props.targetLabel === "owner") {
@@ -2107,7 +2107,7 @@ function SubTable(props) {
                           {/* </div> */}
                         </Grid>
 
-                      <Grid xs={11} item
+                        <Grid xs={11} item
                         >
                           {/**
                            * This is the document title showing in each row
@@ -2142,15 +2142,15 @@ function SubTable(props) {
 
 
                             <Grid container spacing={0} direction="row"
-                            
+
                             // direction="column" alignItems="flex-start"
                             >
-                              <Grid item                           
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-start",
-                                alignItems: "center",
-                          }}>
+                              <Grid item
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "flex-start",
+                                  alignItems: "center",
+                                }}>
                                 <p
                                   style={{
                                     display: "flex",
