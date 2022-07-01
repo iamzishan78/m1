@@ -36,6 +36,13 @@ const useStyles = makeStyles((theme) => ({
     padding: "0 !important",
   },
   documentTable: {
+    "& .MuiTableRow-hover": {
+      "&:hover": {
+        "& .MuiTableCell-root": {
+          backgroundColor: "#dfdfdf"
+        }
+      }
+    },
     "& ::-webkit-scrollbar": {
       height: "0.7em !important",
     },
