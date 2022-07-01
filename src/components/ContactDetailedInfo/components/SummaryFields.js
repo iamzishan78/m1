@@ -177,6 +177,7 @@ export default function SummaryFields({ contactData }) {
                                 <>
                                   {isValueOveridden && (
                                     <AutorenewIcon
+                                    htmlColor="#757575"
                                       onClick={() => {
                                         const key = `evaluatedContactInterests.${field.key.split(".")[1]}`;
                                         updateFieldData(field.key, get(contactData, key));
