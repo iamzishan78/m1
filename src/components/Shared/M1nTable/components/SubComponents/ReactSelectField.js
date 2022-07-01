@@ -77,8 +77,8 @@ const ReactSelectField = ({
   const [, setStateApp] = useContext(AppContext);
 
   const defaultValue = {
-    label: "----",
-    value: "----",
+    label: "--",
+    value: "--",
   };
 
   const { colors } = defaultTheme;
@@ -480,7 +480,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
 
 
             </span>
-          ) : (<span class="colorText">----</span>)}
+          ) : (<span class="colorText">--</span>)}
         </>
       )}
     </span>

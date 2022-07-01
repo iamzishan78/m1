@@ -11,7 +11,7 @@ export const entityTypeOptions = [
   { label: "NON PROFIT", value: "NON PROFIT" },
   { label: "RELIGIOUS INSTITUTION", value: "RELIGIOUS INSTITUTION" },
   { label: "TRUST", value: "TRUST" },
-  { label: "UNKNOWN", value: "UNKNOWN" }  
+  { label: "UNKNOWN", value: "UNKNOWN" },
 ];
 
 export const contactStatusOptions = [
@@ -42,11 +42,11 @@ export const contactStatusOptions = [
 export const contactNewStatusOptions = [
   {
     label: "Good Call",
-    value: "Good Call"
+    value: "Good Call",
   },
   {
     label: "Negative",
-    value: "Negative"
+    value: "Negative",
   },
   {
     label: "No Attempt",
@@ -71,100 +71,142 @@ export const contactNewStatusOptions = [
 ];
 
 const getCreateByRow = (contactData) => {
-    return contactData?.createBy && contactData?.createBy.name === null ? (
-        <span>
-          <CircularProgress size={22} color="secondary" />
-        </span>
-      ) : (contactData?.createBy && contactData?.createBy.name) ||
-        contactData?.createAt ? (
-        `${
-          contactData?.createBy && contactData?.createBy.name
-            ? contactData?.createBy.name
-            : ""
-        }
-      ${
-        contactData?.createAt
-          ? " - " + anyToDate(contactData?.createAt).toLocaleString()
-          : ""
-      }`
-      ) : (
-        <p>Not Available</p>
-      );      
-}
+  return contactData?.createBy && contactData?.createBy.name === null ? (
+    <span>
+      <CircularProgress size={22} color="secondary" />
+    </span>
+  ) : (contactData?.createBy && contactData?.createBy.name) || contactData?.createAt ? (
+    `${contactData?.createBy && contactData?.createBy.name ? contactData?.createBy.name : ""}
+      ${contactData?.createAt ? " - " + anyToDate(contactData?.createAt).toLocaleString() : ""}`
+  ) : (
+    <p>Not Available</p>
+  );
+};
+
+const getLastUpdatedByValue = (contactData) => {
+  return (contactData?.lastUpdateBy && contactData?.lastUpdateBy.name) || contactData?.lastUpdateAt
+    ? `${contactData?.lastUpdateBy && contactData?.lastUpdateBy.name ? contactData?.lastUpdateBy.name : ""}
+    ${contactData?.lastUpdateAt ? " - " + anyToDate(contactData?.lastUpdateAt).toLocaleString() : ""}`
+    : null;
+};
 
 const getLastUpdateByRow = (contactData) => {
-    return contactData?.lastUpdateBy && contactData?.lastUpdateBy.name === null ? (
-        <span>
-          <CircularProgress size={22} color="secondary" />
-        </span>
-      ) : (contactData?.lastUpdateBy && contactData?.lastUpdateBy.name) ||
-        contactData?.lastUpdateAt ? (
-        `${
-          contactData?.lastUpdateBy && contactData?.lastUpdateBy.name
-            ? contactData?.lastUpdateBy.name
-            : ""
-        }
-      ${
-        contactData?.lastUpdateAt
-          ? " - " + anyToDate(contactData?.lastUpdateAt).toLocaleString()
-          : ""
-      }`
-      ) : (
-        <p>Not Available</p>
-      );
-} 
+  return contactData?.lastUpdateBy && contactData?.lastUpdateBy.name === null ? (
+    <span>
+      <CircularProgress size={22} color="secondary" />
+    </span>
+  ) : (
+    getLastUpdatedByValue(contactData) ?? <p>Not Available</p>
+  );
+};
 
-export const getBasicInfoExpContent = (contactData) => {
-  let stage = null
-  if(contactData?.status){
-    const data = contactStatusOptions.find(status => status.value === contactData.status)
-    if(data){
-      stage = data.label
-    }else{
-      stage = contactData.status
+export const getBasicInfoContent = (contactData) => {
+  let ownerType = null;
+  if (contactData?.ownerType) {
+    const data = entityTypeOptions.find((ownerType) => ownerType.value === contactData.ownerType);
+    if (data) {
+      ownerType = data.label;
+    } else {
+      ownerType = contactData.ownerType;
     }
   }
 
-  let contactStatus = null
-  if(contactData?.contactStatus){
-    const data = contactNewStatusOptions.find(status => status.value === contactData.contactStatus)
-    if(data){
-      contactStatus = data.label
-    }else{
-      contactStatus = contactData.contactStatus
-    }
-  }
-
-  let campaignName = []
-  if(typeof contactData?.campaignName === 'string'){
-    campaignName = [contactData?.campaignName]
-  }else if(Array.isArray(contactData?.campaignName)){
-    campaignName = contactData.campaignName
-  }
-  
   return {
-    "Email 2": {
-      data: { secondaryEmail: contactData?.secondaryEmail },
-      linkType: LinkTypes.Mail,
-    },
-    "Email 3": {
-      data: { email3: contactData?.email3 },
+    "Full Name": {
+      data: { name: contactData?.name },
       linkType: LinkTypes.None,
     },
-    "Mobile Phone 2": {
+    "First Name": {
+      data: { firstName: contactData?.firstName },
+      linkType: LinkTypes.None,
+    },
+    "Middle Name": {
+      data: { middleName: contactData?.middleName },
+      linkType: LinkTypes.None,
+    },
+    "Last Name": {
+      data: { lastName: contactData?.lastName },
+      linkType: LinkTypes.None,
+    },
+    "Entity Type": {
+      data: { ownerType: ownerType },
+      linkType: LinkTypes.None,
+    },
+    "Primary Address": {
+      data: {
+        address1: contactData?.address1,
+        address2: contactData?.address2,
+        city: contactData?.city,
+        state: contactData?.state,
+        zip: contactData?.zip,
+        country: contactData?.country,
+      },
+      linkType: LinkTypes.None,
+    },
+    "Secondary Address": {
+      data: {
+        address1Alt: contactData?.address1Alt,
+        address2Alt: contactData?.address2Alt,
+        cityAlt: contactData?.cityAlt,
+        stateAlt: contactData?.stateAlt,
+        zipAlt: contactData?.zipAlt,
+        countryAlt: contactData?.countryAlt,
+      },
+      linkType: LinkTypes.None,
+    },
+
+    "Primary Home Phone": { // 1
+      data: { homePhone: contactData?.homePhone },
+      linkType: LinkTypes.None,
+    },
+    "Primary Mobile Phone": { // 2
+      data: { mobilePhone: contactData?.mobilePhone },
+      linkType: LinkTypes.None,
+    },
+    "Mobile Phone 2": {  // 3
       data: { mobilephone2: contactData?.mobilephone2 },
       linkType: LinkTypes.None,
     },
+    "Primary Work Phone": { // 4
+      data: { AltPhone: contactData?.AltPhone },
+      linkType: LinkTypes.None,
+    },
+
+
+  };
+};
+
+export const getBasicInfoExpContent = (contactData) => {
+  let stage = null;
+  if (contactData?.status) {
+    const data = contactStatusOptions.find((status) => status.value === contactData.status);
+    if (data) {
+      stage = data.label;
+    } else {
+      stage = contactData.status;
+    }
+  }
+
+  let contactStatus = null;
+  if (contactData?.contactStatus) {
+    const data = contactNewStatusOptions.find((status) => status.value === contactData.contactStatus);
+    if (data) {
+      contactStatus = data.label;
+    } else {
+      contactStatus = contactData.contactStatus;
+    }
+  }
+
+  let campaignName = [];
+  if (typeof contactData?.campaignName === "string") {
+    campaignName = [contactData?.campaignName];
+  } else if (Array.isArray(contactData?.campaignName)) {
+    campaignName = contactData.campaignName;
+  }
+
+  return {
     "Mobile Phone 3": {
       data: { mobilephone3: contactData?.mobilephone3 },
-      linkType: LinkTypes.None,
-    },
-    Age: {
-      data: { age: contactData?.age },
-      linkType: LinkTypes.None,
-    },
-    "Relative Names": {
-      data: { relatives: contactData?.relatives },
       linkType: LinkTypes.None,
     },
     "Home Phone 2": {
@@ -183,6 +225,28 @@ export const getBasicInfoExpContent = (contactData) => {
       data: { AltPhone3: contactData?.AltPhone3 },
       linkType: LinkTypes.None,
     },
+    "Primary Email": {
+      data: { primaryEmail: contactData?.primaryEmail },
+      linkType: LinkTypes.Mail,
+    },
+    "Email 2": {
+      data: { secondaryEmail: contactData?.secondaryEmail },
+      linkType: LinkTypes.Mail,
+    },
+    "Email 3": {
+      data: { email3: contactData?.email3 },
+      linkType: LinkTypes.None,
+    },
+
+    Age: {
+      data: { age: contactData?.age },
+      linkType: LinkTypes.None,
+    },
+    "Relative Names": {
+      data: { relatives: contactData?.relatives },
+      linkType: LinkTypes.None,
+    },
+
     "LinkedIn Profile": {
       data: { linkedIn: contactData?.linkedIn },
       linkType: LinkTypes.Simple,
@@ -235,92 +299,19 @@ export const getBasicInfoExpContent = (contactData) => {
         contactOwnerId: contactData?.contactOwnerId,
       },
       linkType: LinkTypes.None,
-      hideFromPurchase: true
+      hideFromPurchase: true,
     },
     "Created By": {
       data: { createByRow: getCreateByRow(contactData) },
       linkType: LinkTypes.None,
       inner: getCreateByRow(contactData),
-      hideFromPurchase: true
+      hideFromPurchase: true,
     },
     "Last Updated By": {
       data: { lastUpdateByRow: getLastUpdateByRow(contactData) },
       linkType: LinkTypes.None,
       inner: getLastUpdateByRow(contactData),
-      hideFromPurchase: true
-    },
-  };
-};
-
-export const getBasicInfoContent = (contactData) => {
-  let ownerType = null
-  if(contactData?.ownerType){
-    const data = entityTypeOptions.find(ownerType => ownerType.value === contactData.ownerType)
-    if(data){
-      ownerType = data.label
-    }else{
-      ownerType = contactData.ownerType
-    }
-  }
-
-  return {
-    "Full Name": {
-      data: { name: contactData?.name },
-      linkType: LinkTypes.None,
-    },
-    "First Name": {
-      data: { firstName: contactData?.firstName },
-      linkType: LinkTypes.None,
-    },
-    "Middle Name": {
-      data: { middleName: contactData?.middleName },
-      linkType: LinkTypes.None,
-    },
-    "Last Name": {
-      data: { lastName: contactData?.lastName },
-      linkType: LinkTypes.None,
-    },
-    "Entity Type": {
-      data: { ownerType: ownerType },
-      linkType: LinkTypes.None,
-    },
-    "Primary Email": {
-      data: { primaryEmail: contactData?.primaryEmail },
-      linkType: LinkTypes.Mail,
-    },
-    "Primary Mobile Phone": {
-      data: { mobilePhone: contactData?.mobilePhone },
-      linkType: LinkTypes.None,
-    },
-    "Primary Home Phone": {
-      data: { homePhone: contactData?.homePhone },
-      linkType: LinkTypes.None,
-    },
-    "Primary Work Phone": {
-      data: { AltPhone: contactData?.AltPhone },
-      linkType: LinkTypes.None,
-    },
-    "Primary Address": {
-      data: {
-        address1: contactData?.address1,
-        address2: contactData?.address2,
-        city: contactData?.city,
-        state: contactData?.state,
-        zip: contactData?.zip,
-        country: contactData?.country,
-      },
-      linkType: LinkTypes.None,
-    },
-    "Secondary Address": {
-      data: {
-        address1Alt: contactData?.address1Alt,
-        address2Alt: contactData?.address2Alt,
-        cityAlt: contactData?.cityAlt,
-        stateAlt: contactData?.stateAlt,
-        zipAlt: contactData?.zipAlt,
-        countryAlt: contactData?.countryAlt,
-      },
-      linkType: LinkTypes.None,
+      hideFromPurchase: true,
     },
   };
 };
@@ -339,19 +330,19 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       data: { lastName: contactData?.lastName },
       linkType: LinkTypes.None,
     },
-    "Age": {
+    Age: {
       data: { age: contactData?.age },
       linkType: LinkTypes.None,
     },
-    "Deceased": {
+    Deceased: {
       data: { age: contactData?.deceased },
       linkType: LinkTypes.None,
     },
-    "Bankruptcy": {
+    Bankruptcy: {
       data: { age: contactData?.bankruptcy },
       linkType: LinkTypes.None,
     },
-    "Lien": {
+    Lien: {
       data: { age: contactData?.lien },
       linkType: LinkTypes.None,
     },
@@ -396,7 +387,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Phone 1 Last Seen": {
-      data: { phone1LastSeen: contactData?.phone1LastSeen ? moment(contactData.phone1LastSeen).format('MM/DD/YYYY'): null },
+      data: { phone1LastSeen: contactData?.phone1LastSeen ? moment(contactData.phone1LastSeen).format("MM/DD/YYYY") : null },
       linkType: LinkTypes.None,
     },
     "Phone 2": {
@@ -408,7 +399,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Phone 2 Last Seen": {
-      data: { phone2LastSeen: contactData?.phone2LastSeen ? moment(contactData.phone2LastSeen).format('MM/DD/YYYY'): null },
+      data: { phone2LastSeen: contactData?.phone2LastSeen ? moment(contactData.phone2LastSeen).format("MM/DD/YYYY") : null },
       linkType: LinkTypes.None,
     },
     "Phone 3": {
@@ -420,7 +411,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Phone 3 Last Seen": {
-      data: { phone3LastSeen: contactData?.phone3LastSeen ? moment(contactData.phone3LastSeen).format('MM/DD/YYYY'): null },
+      data: { phone3LastSeen: contactData?.phone3LastSeen ? moment(contactData.phone3LastSeen).format("MM/DD/YYYY") : null },
       linkType: LinkTypes.None,
     },
     "Phone 4": {
@@ -432,7 +423,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Phone 4 Last Seen": {
-      data: { phone4LastSeen: contactData?.phone4LastSeen ? moment(contactData.phone4LastSeen).format('MM/DD/YYYY'): null },
+      data: { phone4LastSeen: contactData?.phone4LastSeen ? moment(contactData.phone4LastSeen).format("MM/DD/YYYY") : null },
       linkType: LinkTypes.None,
     },
     "Phone 5": {
@@ -444,7 +435,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Phone 5 Last Seen": {
-      data: { phone5LastSeen: contactData?.phone5LastSeen ? moment(contactData.phone5LastSeen).format('MM/DD/YYYY'): null },
+      data: { phone5LastSeen: contactData?.phone5LastSeen ? moment(contactData.phone5LastSeen).format("MM/DD/YYYY") : null },
       linkType: LinkTypes.None,
     },
     "Email 1": {
@@ -452,7 +443,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Email 1 Last Seen": {
-      data: { email1LastSeen: contactData?.email1LastSeen ? moment(contactData.email1LastSeen).format('MM/DD/YYYY'): null },
+      data: { email1LastSeen: contactData?.email1LastSeen ? moment(contactData.email1LastSeen).format("MM/DD/YYYY") : null },
       linkType: LinkTypes.None,
     },
     "Email 2": {
@@ -460,7 +451,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Email 2 Last Seen": {
-      data: { email2LastSeen: contactData?.email2LastSeen ? moment(contactData.email2LastSeen).format('MM/DD/YYYY'): null },
+      data: { email2LastSeen: contactData?.email2LastSeen ? moment(contactData.email2LastSeen).format("MM/DD/YYYY") : null },
       linkType: LinkTypes.None,
     },
     "Email 3": {
@@ -468,7 +459,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Email 3 Last Seen": {
-      data: { email3LastSeen: contactData?.email3LastSeen ? moment(contactData.email3LastSeen).format('MM/DD/YYYY'): null },
+      data: { email3LastSeen: contactData?.email3LastSeen ? moment(contactData.email3LastSeen).format("MM/DD/YYYY") : null },
       linkType: LinkTypes.None,
     },
     "Email 4": {
@@ -476,7 +467,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Email 4 Last Seen": {
-      data: { email4LastSeen: contactData?.email4LastSeen ? moment(contactData.email4LastSeen).format('MM/DD/YYYY'): null },
+      data: { email4LastSeen: contactData?.email4LastSeen ? moment(contactData.email4LastSeen).format("MM/DD/YYYY") : null },
       linkType: LinkTypes.None,
     },
     "Email 5": {
@@ -484,7 +475,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Email 5 Last Seen": {
-      data: { email5LastSeen: contactData?.email5LastSeen ? moment(contactData.email5LastSeen).format('MM/DD/YYYY'): null },
+      data: { email5LastSeen: contactData?.email5LastSeen ? moment(contactData.email5LastSeen).format("MM/DD/YYYY") : null },
       linkType: LinkTypes.None,
     },
     "Relative 1 First Name": {
@@ -610,25 +601,141 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
   };
 };
 
+export const SUMMARY_FIELDS = (contactData) => [
+  {
+    label: "Full Name",
+    key: "name",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "First Name",
+    key: "firstName",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Middle Name",
+    key: "middleName",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Last Name",
+    key: "lastName",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Primary Address 1",
+    key: "address1",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Primary Address 2",
+    key: "address2",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "City",
+    key: "city",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "State",
+    key: "state",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Zip Code",
+    key: "zip",
+    type: "text",
+    position: "left",
+  },
+  {
+    label: "Total Unit NRA",
+    key: "contactInterests.nraSum",
+    type: "text",
+    position: "right",
+    disabled: true,
+  },
+  {
+    label: "Total Offer Price",
+    key: "contactInterests.offerPriceSum",
+    type: "number",
+    position: "right",
+    disabled: true,
+  },
+  {
+    label: "Home Phone",
+    key: "homePhone",
+    type: "text",
+    position: "right",
+  },
+  {
+    label: "Mobile Phone 1",
+    key: "mobilePhone",
+    type: "text",
+    position: "right",
+  },
+  {
+    label: "Mobile Phone 2",
+    key: "mobilephone2",
+    type: "text",
+    position: "right",
+  },
+  {
+    label: "Work Phone",
+    key: "AltPhone",
+    type: "text",
+    position: "right",
+  },
+  {
+    label: "Email",
+    key: "primaryEmail",
+    type: "email",
+    position: "right",
+  },
+  {
+    label: "Status",
+    key: "contactStatus",
+    type: "autocomplete",
+    position: "right",
+    value: { contactStatus: contactData?.contactStatus },
+  },
+  {
+    label: "Last Updated",
+    key: "",
+    type: "text",
+    position: "right",
+    value: getLastUpdatedByValue(contactData),
+    disabled: true,
+  },
+];
+
 export const getBasicPurchaseInfoContent = (contactData) => {
   return {
     "Full Name": {
       data: { fullName: contactData?.fullName },
       linkType: LinkTypes.None,
     },
-    "Age": {
+    Age: {
       data: { age: contactData?.age },
       linkType: LinkTypes.None,
     },
-    "Deceased": {
+    Deceased: {
       data: { age: contactData?.deceased },
       linkType: LinkTypes.None,
     },
-    "Bankruptcy": {
+    Bankruptcy: {
       data: { age: contactData?.bankruptcy },
       linkType: LinkTypes.None,
     },
-    "Lien": {
+    Lien: {
       data: { age: contactData?.lien },
       linkType: LinkTypes.None,
     },
@@ -643,6 +750,36 @@ export const getBasicPurchaseInfoContent = (contactData) => {
     "Email 1": {
       data: { email1: contactData?.email1 },
       linkType: LinkTypes.None,
-    }
+    },
   };
 };
+
+export const featureFlagChanges = (showGenericPhones, key) => {
+  if (showGenericPhones) {
+    switch (key) {
+      case "Home Phone":
+      case "Primary Home Phone":
+        return "Phone 1";
+      case "Mobile Phone 1":
+      case "Primary Mobile Phone":
+        return "Phone 2";
+      case "Mobile Phone 2":
+        return "Phone 3";
+      case "Work Phone":
+      case "Primary Work Phone":
+        return "Phone 4";
+      case "Mobile Phone 3":
+        return "Phone 5";
+      case "Home Phone 2":
+        return "Phone 6";
+      case "Home Phone 3":
+        return "Phone 7";
+      case "Work Phone 2":
+        return "Phone 8";
+      case "Work Phone 3":
+        return "Phone 9";
+      default:
+    }
+  }
+  return key;
+}

@@ -18,33 +18,25 @@ const DocumentsHeadCells = [
     name: "fileName",
     label: "File Name",
   },
-  // {
-  //   name: "fileState",
-  //   label: "FILE STATE",
-  // },
-  // {
-  //   name: "dateTime",
-  //   label: "DATE & TIME",
-  // },
   {
     name: "documentNumber",
-    label: "Document Number",
+    label: "File Number",
   },
   {
     name: "documentName",
-    label: "Document Name",
+    label: "File Name",
   },
   {
     name: "documentType",
-    label: "Document Type",
+    label: "File Type",
   },
   {
     name: "dateTime",
-    label: "Document Date",
+    label: "File Date",
   },
   {
     name: "uploadedDate",
-    label: "Document Date",
+    label: "File Date",
     options: {
       display: false,
       filter: false,
@@ -55,21 +47,6 @@ const DocumentsHeadCells = [
       viewColumns: false,
     },
   },
-
-  // TEMPORARY COMMENT OUT UNTIL FEATURE IS FIXED
-  // {
-  //   name: "partyName1",
-  //   label: "Party 1 Name",
-  // },
-  // {
-  //   name: "partyName2",
-  //   label: "Party 2 Name",
-  // },
-
-  // {
-  //   name: "recordingInfo",
-  //   label: "Recording Info",
-  // },
   {
     name: " ",
     label: " ",
@@ -92,10 +69,6 @@ const DocumentsHeadCells = [
       viewColumns: false,
     }
   },
-
-
-
-
 ];
 
 

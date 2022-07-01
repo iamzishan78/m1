@@ -105,11 +105,11 @@ export default function Properties() {
       points: 0,
     },
     {
-      heading: "Active",
+      heading: "In Pay",
       points: 0,
     },
     {
-      heading: "Inactive",
+      heading: "Not In Pay",
       points: 0,
     },
     {

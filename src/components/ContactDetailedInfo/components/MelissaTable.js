@@ -203,7 +203,7 @@ const MelissaTable = ({ ...props }) => {
                     {props.options?.map(option => {
                       return (
                         <MenuItem value={option._id}>
-                          IDI Data -{" "}
+                          M1 Data -{" "}
                           {moment(option.date).format(
                             "MM/DD/YYYY hh:mm:ss a"
                           )}
