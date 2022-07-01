@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "0 !important",
   },
   documentTable: {
+    "& .MuiTableCell-paddingCheckbox": { position: 'sticky' },
     "& .MuiTableRow-hover": {
       "&:hover": {
         "& .MuiTableCell-root": {
