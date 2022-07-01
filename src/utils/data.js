@@ -238,12 +238,12 @@ export const tractFilterColumnsHeader = [
     name: "state"
   },
   {
-    label: "Count",
+    label: "County",
     filterKey: "shapeJson.properties.originalProperties.County.keyword",
     name: "County"
   },
   {
-    label: "Owners",
+    label: "Owner Name",
     filterKey: "shapeJson.properties.department.keyword",
     name: "department",
     disabled: true
@@ -263,12 +263,12 @@ export const tractInterestFilterColumnsHeader = [
     name: "State"
   },
   {
-    label: "Count",
+    label: "County",
     filterKey: "shape.shapeJson.properties.originalProperties.County.keyword",
     name: "County"
   },
   {
-    label: "Owners",
+    label: "Owner Name",
     filterKey: "contact.entityDetail.name.keyword",
     name: "name"
   }

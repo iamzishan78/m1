@@ -173,7 +173,6 @@ function TractInterestsTable(props) {
   //         setPotentialIssuesList([]);
   //     }
   // }, [issues]);
-
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
       const objectsIdsArray = tableData?.hits?.map((hit) => hit.contact?._id);
@@ -347,6 +346,8 @@ function TractInterestsTable(props) {
   // }, [pIssuesArr]);
 
   const onTableChange = (action, tableState, rows, meta) => {
+    if (action === "filterChange" && !tableState.filterList.some(filter => filter.length) && isEmpty(greyBarFilters)) setFilters([]);
+
     if (tableState.columns.length && greyBarFilters && !isEmpty(greyBarFilters)) {
       action = "filterChange"
       const listIndex = TableHeader.findIndex(header => header.name === greyBarFilters.name);

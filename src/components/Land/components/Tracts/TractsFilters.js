@@ -47,10 +47,6 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
     const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
     const TractGridViewModule = userGridViewSettings?.Tracts
 
-    const appliedFilters = [{
-        field: "layer.keyword",
-        value: "parcel"
-    }]
 
     const handleMultiFieldFilter = (esFilter) => {
         const filters = []
@@ -158,13 +154,24 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
                 ) : (
 
                     tractFilterColumnsHeader.map((filterColumn, index) => {
+                        const appliedFilters = [{
+                            field: "layer.keyword",
+                            value: "parcel"
+                        }]
                         let filterList = [[''], [''], [''], ['']]
                         const gridViewFilters = TractGridViewModule?.filters
                         if (gridViewFilters)
                             if (gridViewFilters && typeof filterColumn?.filterKey === 'string') {
-                                const filterValue = gridViewFilters.find(filter => filter.field === filterColumn?.filterKey)?.value
-                                if (filterValue)
-                                    filterList[index] = [filterValue]
+                                const gridViewFilter = gridViewFilters.find(filter => filter.field === filterColumn?.filterKey)
+                                if (gridViewFilter)
+                                    filterList[index] = [gridViewFilter?.value]
+
+                                if (filterColumn.name === 'County') {
+                                    const stateFilter = gridViewFilters.find(filter => filter.field === 'shapeJson.properties.originalProperties.State.keyword')
+
+                                    if (stateFilter)
+                                        appliedFilters.push(stateFilter)
+                                }
                             }
 
                         return (
