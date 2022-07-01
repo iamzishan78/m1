@@ -13,7 +13,6 @@ export const copy = (data) => {
 
 export const dateIsValid = (date) => {
   try {
-    debugger
     date = new Date(
       new Intl.DateTimeFormat("en-US", {
         year: "numeric",
@@ -25,7 +24,6 @@ export const dateIsValid = (date) => {
     )
     return date instanceof Date && !isNaN(date);
   } catch (e) {
-    debugger
     return false
   }
 }
