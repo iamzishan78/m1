@@ -6,18 +6,17 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import PersonIcon from "@material-ui/icons/Person";
 import WellIcon from "components/Shared/svgIcons/well";
-import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox';
+import IndeterminateCheckBoxIcon from "@material-ui/icons/IndeterminateCheckBox";
 import Checkbox from "@material-ui/core/Checkbox";
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import parse from "autosuggest-highlight/parse";
 import { deepEqualObjects } from "components/Shared/functions";
 import useStyles from "../style";
 
-
-// import value formatters 
+// import value formatters
 import joinAddress from "components/Shared/valueformatters/join-address.js";
 import { callOwnerSearch, callWellSearch } from "./searchApi";
 
@@ -64,7 +63,7 @@ function Search({ fetchSelectedWells }) {
       }
       return undefined;
     }
-    setSelectedIds([])
+    setSelectedIds([]);
     setSearchLoading(true);
     (async () => {
       let newOptions = [];
@@ -85,7 +84,7 @@ function Search({ fetchSelectedWells }) {
                   Source: indexSource,
                   Primary: result.WellName,
                   Secondary: result.ApiNumber,
-                  selected: false
+                  selected: false,
                 };
               }),
               ...newOptions,
@@ -95,7 +94,7 @@ function Search({ fetchSelectedWells }) {
           }
           setSearchResultData([...newOptions]);
           setSearchLoading(false);
-        })
+        });
       if (searchOption === "owners")
         callOwnerSearch({ input: inputValue, top: searchTop }, (results) => {
           if (results) {
@@ -112,7 +111,7 @@ function Search({ fetchSelectedWells }) {
                   Source: indexSource,
                   Primary: result.OwnerName,
                   Secondary: joinAddress(result),
-                  selected: false
+                  selected: false,
                 };
               }),
             ];
@@ -121,47 +120,44 @@ function Search({ fetchSelectedWells }) {
           }
           setSearchResultData([...newOptions]);
           setSearchLoading(false);
-        })
+        });
     })();
   }, [inputValue, searchTop, callWellSearch, callOwnerSearch, searchOption]);
 
   const selectWellId = (id, selection, all = false) => {
     const _searchResultData = searchResultData.map((data) => {
       if (data.Id === id || all) {
-        data.selected = selection
+        data.selected = selection;
       }
-      return data
-    })
-    setSearchResultData(_searchResultData)
+      return data;
+    });
+    setSearchResultData(_searchResultData);
     if (selection) {
-      if (all)
-        setSelectedIds(searchResultData.map(s => s.Id))
+      if (all) setSelectedIds(searchResultData.map((s) => s.Id));
       else {
         selectedIds.push(id);
-        setSelectedIds(selectedIds)
+        setSelectedIds(selectedIds);
       }
     } else {
-      if (all)
-        setSelectedIds([])
-      else
-        setSelectedIds([...selectedIds.filter(e => e !== id || all)])
+      if (all) setSelectedIds([]);
+      else setSelectedIds([...selectedIds.filter((e) => e !== id || all)]);
     }
-  }
+  };
 
   const handleSearchOption = (value) => {
     if (value !== searchOption) {
-      setSearchResultData([])
+      setSearchResultData([]);
       setSearchTop(defaultSize);
-      setSearchOption(value)
+      setSearchOption(value);
     }
-  }
+  };
 
   return (
-    <Grid className={classes.grid} container direction="column" spacing={1} >
-      <Grid item >
+    <Grid className={classes.grid} container direction="column" spacing={1}>
+      <Grid item>
         <Typography className={classes.heading}>1. Search by interest owner or well name to associate interests to contacts</Typography>
       </Grid>
-      <Grid item >
+      <Grid item>
         <TextField
           variant="outlined"
           fullWidth
@@ -179,7 +175,7 @@ function Search({ fetchSelectedWells }) {
           }}
         />
       </Grid>
-      <Grid container item spacing={0} >
+      <Grid container item spacing={0}>
         <Grid item xs={12} style={{ margin: "0 4px" }}>
           <Button
             className={classes.headerButtons}
@@ -214,119 +210,124 @@ function Search({ fetchSelectedWells }) {
       </Grid>
 
       <Grid container item>
-        {
-          searchLoading ? <CircularProgress key="loader" style={{ margin: "10px 0 0 48%" }} size={28} color="secondary" />
-            :
-            <>
-              {
-                searchResultData.length > 0 && <Grid container item xs={12} className={classes.groupsHeaders}>
-                  <Grid item item xs={1}>
+        {searchLoading ? (
+          <CircularProgress key="loader" style={{ margin: "10px 0 0 48%" }} size={28} color="secondary" />
+        ) : (
+          <>
+            {searchResultData.length > 0 && (
+              <Grid container item xs={12} className={classes.groupsHeaders}>
+                <Grid item xs={1}>
+                  <Checkbox
+                    icon={selectedIds.length > 0 && selectedIds.length < searchResultData.length ? intermediateCheckedIcon : icon}
+                    checkedIcon={checkedIcon}
+                    style={{ marginRight: 8 }}
+                    color="primary"
+                    onChange={(e) => {
+                      selectWellId(null, e.target.checked, true);
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={5}>
+                  <h3 className={classes.groupsHeadersText}>
+                    {searchOption === "wells" ? "Well Interests " : searchOption === "owners" ? "Tax Owners " : searchOption}
+                    {selectedIds.length > 0 && `(${selectedIds.length} Selected)`}
+                  </h3>
+                </Grid>
+                <Grid item xs={6} style={{ textAlign: "right" }}>
+                  {searchTop === defaultSize ? (
+                    <Button
+                      size="small"
+                      className={classes.groupsButton}
+                      onClick={() => {
+                        setSearchLoading(true);
+                        setSearchTop(200);
+                      }}
+                    >
+                      See All Results
+                    </Button>
+                  ) : (
+                    <Button
+                      size="small"
+                      className={classes.groupsButton}
+                      onClick={() => {
+                        setSearchLoading(true);
+                        setSearchTop(defaultSize);
+                      }}
+                    >
+                      See Less
+                    </Button>
+                  )}
+                </Grid>
+              </Grid>
+            )}
+          </>
+        )}
+
+        <Grid item xs={12} style={{ maxHeight: "550px", overflowX: "hidden", overflowY: "visible" }}>
+          {searchResultData.map((option) => {
+            return (
+              <Grid container spacing={0} key={option.Id}>
+                <Grid container item xs={11} alignItems="center">
+                  <Grid item>
                     <Checkbox
-                      icon={selectedIds.length > 0 && selectedIds.length < searchResultData.length ? intermediateCheckedIcon : icon}
+                      icon={icon}
                       checkedIcon={checkedIcon}
                       style={{ marginRight: 8 }}
+                      checked={option.selected}
                       color="primary"
                       onChange={(e) => {
-                        selectWellId(null, e.target.checked, true);
+                        selectWellId(option.Id, e.target.checked);
                       }}
                     />
                   </Grid>
-                  <Grid item item xs={5}>
-                    <h3 className={classes.groupsHeadersText}>
-                      {searchOption === "wells" ? "Well Interests " : searchOption === "owners" ? "Tax Owners " : searchOption}
-                      {selectedIds.length > 0 && `(${selectedIds.length} Selected)`}
-                    </h3>
+                  <Grid item>
+                    {option.Source === "globalowner-index" && <PersonIcon className={classes.icon} />}
+                    {option.Source === "wellheader-index" && <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />}
                   </Grid>
-                  <Grid item xs={6} style={{ textAlign: "right" }}>
-                    {searchTop === defaultSize ? (
-                      <Button size="small" className={classes.groupsButton}
-                        onClick={() => {
-                          setSearchLoading(true);
-                          setSearchTop(200);
-                        }}
-                      >
-                        See All Results
-                      </Button>
-                    ) : (
-                      <Button
-                        size="small"
-                        className={classes.groupsButton}
-                        onClick={() => {
-                          setSearchLoading(true);
-                          setSearchTop(defaultSize);
-                        }}
-                      >
-                        See Less
-                      </Button>
+                  <Grid item xs>
+                    {parse(option.Primary, Array()).map((part, index) => (
+                      <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                        {" "}
+                        {part.text}{" "}
+                      </span>
+                    ))}
+
+                    {option && option.Secondary && (
+                      <Typography variant="body2" color="textSecondary">
+                        {" "}
+                        {option.Secondary}{" "}
+                      </Typography>
                     )}
                   </Grid>
                 </Grid>
-              }
-            </>
-        }
-
-        <Grid item xs={12} style={{ maxHeight: "550px", overflowX: "hidden", overflowY: "visible" }}>
-          {
-            searchResultData.map((option) => {
-              return (
-                <Grid container spacing={0} key={option.Id}>
-                  <Grid container item xs={11} alignItems="center">
-                    <Grid item>
-                      <Checkbox
-                        icon={icon}
-                        checkedIcon={checkedIcon}
-                        style={{ marginRight: 8 }}
-                        checked={option.selected}
-                        color="primary"
-                        onChange={(e) => {
-                          selectWellId(option.Id, e.target.checked);
-                        }}
-                      />
-                    </Grid>
-                    <Grid item>
-                      {option.Source === "globalowner-index" && (
-                        <PersonIcon className={classes.icon} />
-                      )}
-                      {option.Source === "wellheader-index" && (
-                        <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
-                      )}
-                    </Grid>
-                    <Grid item xs>
-                      {parse(option.Primary, Array()).map((part, index) => (
-                        <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }} > {part.text} </span>
-                      ))}
-
-                      {option && option.Secondary && (
-                        <Typography variant="body2" color="textSecondary"> {option.Secondary} </Typography>
-                      )}
-                    </Grid>
-                  </Grid>
-                  <Grid container item xs={1} alignItems="center">
-                    <Grid item style={{ position: "relative" }}>
-                      <div
-                        className={classes.score}
-                        style={{
-                          zIndex: "1300",
-                          backgroundColor: "#12ABE0",
-                        }}
-                      />
-                      <div
-                        className={classes.score}
-                        style={{
-                          zIndex: "1301",
-                          backgroundImage: "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
-                          opacity: calcScoreOpacity(option.Source === ownerCogIndexName ? maxMinOwnersScore : maxMinWellsScore, option.Score).toString(),
-                        }}
-                      />
-                    </Grid>
+                <Grid container item xs={1} alignItems="center">
+                  <Grid item style={{ position: "relative" }}>
+                    <div
+                      className={classes.score}
+                      style={{
+                        zIndex: "1300",
+                        backgroundColor: "#12ABE0",
+                      }}
+                    />
+                    <div
+                      className={classes.score}
+                      style={{
+                        zIndex: "1301",
+                        backgroundImage: "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
+                        opacity: calcScoreOpacity(
+                          option.Source === ownerCogIndexName ? maxMinOwnersScore : maxMinWellsScore,
+                          option.Score
+                        ).toString(),
+                      }}
+                    />
                   </Grid>
                 </Grid>
-              );
-            })
-          }
+              </Grid>
+            );
+          })}
         </Grid>
       </Grid>
-    </Grid >
+    </Grid>
   );
 }
 

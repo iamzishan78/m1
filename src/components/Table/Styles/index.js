@@ -3,7 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 export const usetableStyles = makeStyles(() => ({
   container: {
     padding: "0 !important",
-
+  },
+  subComponentsClasses: {
     "& .MuiTableHead-root": {
       zIndex: (p) => p.isRevenueTable ? 995 : 0,
     },

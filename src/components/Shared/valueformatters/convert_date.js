@@ -6,7 +6,7 @@ export default function convert_date(value) {
 
     const convertDate = unixStamp => {
 
-        const date = moment.utc(unixStamp).format("MM/DD/YYYY");
+        const date = moment.utc(new Date(unixStamp)).format("MM/DD/YYYY");
       
         if (unixStamp === 'null') {return '--'}
         else if(unixStamp === null) {return '--'}

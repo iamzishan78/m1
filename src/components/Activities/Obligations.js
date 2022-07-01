@@ -128,7 +128,6 @@ const Activities = () => {
   const [activityFilterByOwner, setActivityFilterByOwner] = useState("all");
   const [activityFilterByTime, setActivityFilterByTime] = useState("all");
   const [view, setView] = React.useState(Views.MONTH);
-  const [selectedActivity, setSelectedActivity] = useState(null);
 
   useEffect(() => {
     getAllActivities({
@@ -198,9 +197,9 @@ const Activities = () => {
 
   useEffect(() => {
     if (stateApp.selectedActivityId) {
-      setSelectedActivity(events.find((act) => act._id === stateApp.selectedActivityId));
+      setStateApp(() => ({ ...stateApp, selectedActivity: events.find((act) => act._id === stateApp.selectedActivityId) }));
     } else {
-      setSelectedActivity(null);
+      setStateApp(() => ({ ...stateApp, selectedActivity: null }))
     }
   }, [stateApp.selectedActivityId]);
 
@@ -263,7 +262,7 @@ const Activities = () => {
               </div>
             </div>
           )}
-          <ActivitiesModal selectedActivity={selectedActivity} setSelectedActivityId={setSelectedActivityId} events={events} />
+          <ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} />
         </>
       )}
     </div>
