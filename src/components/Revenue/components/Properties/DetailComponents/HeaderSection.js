@@ -77,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
   },
   associatedWell: {
     border: "2px solid #d5d5d5",
-    height: "475px",
+    height: "525px",
     borderRadius: "15px",
     maxWidth: "30%",
     width: "30%",
