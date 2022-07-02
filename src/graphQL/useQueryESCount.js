@@ -11,3 +11,13 @@ export const GET_ES_COUNT = gql`
     )
   }
 `;
+
+export const GET_ES_SIMPLE_COUNT = gql`
+  query getESSimpleCount($index: String, $search: esSearchInput, $filters: [esFilterInput], ) {
+    getESSimpleCount(
+      index: $index,
+      search: $search,
+      filters: $filters,
+    )
+  }
+`;

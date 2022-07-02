@@ -22,6 +22,7 @@ import ReactTimeAgo from "react-time-ago";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
+import { dateIsValid } from "utils/helper";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -386,21 +387,13 @@ export default function CommentComponent(props) {
                             <span className={classes.bold}>
                               {eachComment.user.name}
                             </span>
-                            <ReactTimeAgo
-                              className={classes.commentTime}
-                              date={
-                                new Date(
-                                  new Intl.DateTimeFormat("en-US", {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "2-digit",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  }).format(eachComment.ts)
-                                )
-                              }
-                              locale="en-US"
-                            />
+                            {
+                              <ReactTimeAgo
+                                className={classes.commentTime}
+                                date={new Date(Number(eachComment.ts))}
+                                locale="en-US"
+                              />
+                            }
                             {eachComment.isEdited && (
                               <span className={classes.commentTime}>
                                 (Edited)
