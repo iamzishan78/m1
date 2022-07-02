@@ -74,8 +74,13 @@ export default function HeaderFunction(props) {
   useEffect(() => {
     return () => {
       const watchCheckNumber = watch("checkNumber")
+      const watchCheckDate = watch("checkDate")
       if (!watchCheckNumber || watchCheckNumber === '') {
         dispatch(showInfoMessage("Check Number is required"));
+        history.goBack();
+      }
+      if (!watchCheckDate || watchCheckDate === '') {
+        dispatch(showInfoMessage("Check Date is required"));
         history.goBack();
       }
     }
