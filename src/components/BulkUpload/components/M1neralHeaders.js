@@ -156,7 +156,6 @@ export default function M1neralHeaders(props) {
   const changeDataToSendState = async () => {
     let headers = stateApp.mappedHeadersFromCSV;
     let arr_data = stateApp.csvContactsList;
-
     // let filtered_data_to_send = arr_data.map((obj) => {
     let filtered_data_to_send = [];
     for await (const obj of arr_data) {
@@ -170,7 +169,16 @@ export default function M1neralHeaders(props) {
           return_obj[header.actual_key] = obj.data[header.mapped_key];
         }
       }
-
+      if(['PROPERTIES'].includes(stateApp.jobType)) {
+        Object.keys(return_obj).forEach(key => {
+          if(return_obj[key] instanceof Date ){
+            return_obj[key] = return_obj[key].toISOString()
+          }
+          if(key === 'wellsApiNumbers' && typeof return_obj[key] === 'number' ){
+            return_obj[key] = return_obj[key].toString()
+          }
+        })
+      }
       if (['PARCELINTERESTS'].includes(stateApp.jobType)) {
         if (!return_obj["parcel._id"] ||
           !return_obj["parcel.name"]) {

@@ -29,6 +29,9 @@ import { AppContext } from "AppContext";
 
 import { CONTACT_ENTITY } from "graphQL/useQueryContactEntity";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
+// import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { GET_AUTOCOMPLETE_PROPERTY_LIST } from "graphQL/useQueryGetProperty";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
@@ -74,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
   },
   associatedWell: {
     border: "2px solid #d5d5d5",
-    height: "382px",
+    height: "525px",
     borderRadius: "15px",
     maxWidth: "30%",
     width: "30%",
@@ -134,7 +137,9 @@ export default function HeaderSection(props) {
   const { control, setValue, watch, register, reset } = useForm();
   const { propertyDetails, propertyOwnerContact, setEntityToConvert } = props;
   const [entityType, setEntityType] = useState("");
+  const [searchOperator, setSearchOperator] = useState("");
 
+  const [getOperatorList, { data: operatorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
   const [getContactEntity, { data: contactEntityData }] = useLazyQuery(CONTACT_ENTITY);
   const {
     data: acquisitionOptions,
@@ -150,6 +155,22 @@ export default function HeaderSection(props) {
   });
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
 
+  // console.log('operatorList', operatorList, get(operatorList,'getESFilterList.hits',[])?.map((campaign) => ({
+  //   _id: campaign.key,
+  //   name: campaign.key,
+  // })))
+
+  useEffect(() => {
+    getOperatorList({
+      variables: {
+        search: searchOperator ? `${searchOperator}*` : "*",
+        filterKey: "operator.name.keyword",
+        esIndex: "properties_flat",
+        size: 50,
+      }
+    })
+  },[getOperatorList, searchOperator])
+
   useEffect(() => {
     register("state");
     register("county");
@@ -161,12 +182,13 @@ export default function HeaderSection(props) {
       delete data.owner;
       delete data.operator;
       let owner = {};
-      let operator = {};
+      // let operator = {};
       if (propertyOwnerContact) {
         owner = propertyOwnerContact?.find((owner) => owner.entityId === propertyDetails?.owner?._id);
-        operator = propertyOwnerContact?.find((owner) => owner.entityId === propertyDetails?.operator?._id);
+        // operator = propertyOwnerContact?.find((owner) => owner.entityId === propertyDetails?.operator?._id);
       }
-      reset({ ...data, owner: { ...owner, number: data.ownerNumber }, operator });
+      setSearchOperator(propertyDetails?.operator?.name)
+      reset({ ...data, owner: { ...owner, number: data.ownerNumber }, operator: propertyDetails?.operator?.name });
     }
   }, [propertyDetails, propertyOwnerContact]);
 
@@ -259,7 +281,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Property</div>
+                <div className={classes.label}>Property Name</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
@@ -317,7 +339,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Owner</div>
+                <div className={classes.label}>Owner Name</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
@@ -501,6 +523,27 @@ export default function HeaderSection(props) {
                 <Controller
                   control={control}
                   name="operator"
+                  render={(props) => (
+                    <AutoCompleteWithAddNew
+                      value={searchOperator}
+                      variant="outlined"
+                      onSearch={(value) => {
+                        setSearchOperator(value);
+                      }}
+                      setValue={(value) => {
+                        handleUpdate("operator", {name: value?.name});
+                        props.onChange(value);
+                      }}
+                      options={get(operatorList,'getESFilterList.hits',[])?.map((campaign) => ({
+                        _id: campaign.key,
+                        name: campaign.key,
+                      }))}
+                    />
+                  )}
+                />
+                {/* <Controller
+                  control={control}
+                  name="operator"
                   render={(params) => (
                     <ContactPaginatedAutocomplete
                       className={classes.field}
@@ -557,7 +600,7 @@ export default function HeaderSection(props) {
                       )}
                     />
                   )}
-                />
+                /> */}
               </Grid>
             </Grid>
           </Grid>
@@ -661,8 +704,8 @@ export default function HeaderSection(props) {
                         updatePropertyData("status", e.target.value);
                       }}
                     >
-                      <MenuItem value="Approved">Approved</MenuItem>
-                      <MenuItem value="Unapproved">Unapproved</MenuItem>
+                      <MenuItem value="In Pay">In Pay</MenuItem>
+                      <MenuItem value="Not in Pay">Not in Pay</MenuItem>
                     </Select>
                   )}
                 />

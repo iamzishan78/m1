@@ -15,6 +15,7 @@ import { Menu, MenuItem } from "@material-ui/core";
 import M1neral_headers from "./jobHeaders";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
+import isEmpty from 'lodash/isEmpty'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,7 +40,8 @@ export const rawJobs = [
   { name: 'Shape Owner Upload', type: 'SHAPEOWNER' },
   { name: 'Import Tracts', type: 'TRACTS', featureFlag: "TRACTIMPORT" },
   { name: 'Import Units', type: 'UNITS', featureFlag: "UNITIMPORT" },
-  { name: 'Check Detail Upload', type: 'CHECKDETAILS' }
+  { name: 'Check Detail Upload', type: 'CHECKDETAILS' },
+  { name: 'Property Upload', type: 'PROPERTIES' }
 ]
 
 export default function BulkUpload(props) {
@@ -47,7 +49,12 @@ export default function BulkUpload(props) {
   const [, setStateApp] = React.useContext(AppContext);
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
   const history = useHistory();
-  const previousRoute = matchRoutes(props.routes, typeof history.pathHistory[1] === "string" ? history.pathHistory[1] : history?.pathHistory[1]?.pathname ?? "");
+  let previousRoute = matchRoutes(props.routes, typeof history.pathHistory[1] === "string" ? history.pathHistory[1] : history?.pathHistory[1]?.pathname ?? "");
+
+  if(!isEmpty(history.location.state)){
+    previousRoute[0].match = { url: history.location.state.previousRoute }
+    previousRoute[0].route = { title: history.location.state.title }
+  }
 
   const jobs = rawJobs.filter((job) => {
     let filter = true;
