@@ -82,7 +82,7 @@ export default function UnitDetailCard(props) {
         const customLayer = updatedUnit.updateCustomLayer.customLayer;
         const feature = JSON.parse(customLayer.shape);
 
-        if (!feature?.properties?.netRoyalityAcres?.unitNra)
+        if (feature?.properties?.netRoyalityAcres && !feature?.properties?.netRoyalityAcres?.unitNra)
           feature.properties.netRoyalityAcres.unitNra = feature.properties?.netRoyalityAcres?.calculatedNra
         setProperties({ ...feature.properties });
 

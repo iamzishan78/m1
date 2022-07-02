@@ -19,10 +19,11 @@ import CampaignNameField from "components/ContactDetailCard/components/FieldCont
 import vf_currency from "components/Shared/valueformatters/vf_currency";
 import vf_number from "components/Shared/valueformatters/vf_number";
 import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
+import { copy } from "components/Shared/functions";
+import { getRoundedNra } from "utils/helper";
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
 import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
-import { copy } from "components/Shared/functions";
 import NumberField from "components/Shared/components/Fields/NumberField";
 
 
@@ -41,7 +42,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
       <TextField
         size="small"
         type={data.type === "calculation" ? 'number' : data.type}
-        value={data.type === "calculation" ? value.unitNra : value}
+        value={data.type === "calculation" ? getRoundedNra(value.unitNra) : value}
         variant="outlined"
 
         autoFocus
@@ -474,7 +475,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           {data.type === "comma-number" && (vf_number(data.value) || vf_number(properties[data.key]) || "-")}
                           {data.type === 'calculation' && (<>
                             <Typography className={isNraMatched() ? classes.nraText : classes.nraHighLight}>
-                              {properties?.netRoyalityAcres?.unitNra}
+                              {getRoundedNra(properties?.netRoyalityAcres?.unitNra)}
                             </Typography>
 
                           </> || 0)}
