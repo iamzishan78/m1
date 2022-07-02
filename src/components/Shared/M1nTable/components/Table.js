@@ -2525,7 +2525,7 @@ function SubTable(props) {
                     return (
                       <div className={classes.gridElementStyling}>
                         <ReactSelectField
-                          isSingleSelect={true}
+                          isSingleSelect={column.type !== "multiselect"}
                           dropdownOptions={column.dropdownOptions}
                           index={tableMeta.rowIndex}
                           column={column}
