@@ -20,24 +20,12 @@ export default function RevenueStatements() {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  const [statements, setStatements] = useState([]);
+  const [statementCount, setStatementCount] = useState(0);
   const [approvedCount, setApprovedCount] = useState(0);
   const [unapprovedCount, setUnapprovedCount] = useState(0);
   const [potentialIssuesList, setPotentialIssuesList] = useState([]);
   const [esFilters, ESFilters] = useState([]);
   const [filterToggle, setFilterToggle] = React.useState(false);
-
-  useEffect(() => {
-    if (statements.length > 0) {
-      const checks = statements?.length;
-      const approved = statements?.filter((statement) => statement.status === "APPROVED" && statement)?.length;
-      setApprovedCount(approved);
-      setUnapprovedCount(Number(checks) - Number(approved));
-    } else {
-      setApprovedCount(0);
-      setUnapprovedCount(0);
-    }
-  }, [statements]);
 
   useEffect(() => {
     return () => {
@@ -52,7 +40,17 @@ export default function RevenueStatements() {
    };
 
   const onGettingStatements = useCallback((statementsList) => {
-    setStatements(statementsList);
+    if (statementsList.statementCount) {
+      const checks = statementsList.statementCount;
+      const approved = statementsList?.approvedCount
+      setApprovedCount(approved);
+      setStatementCount(checks)
+      setUnapprovedCount(Number(checks) - Number(approved));
+    } else {
+      setStatementCount(0)
+      setApprovedCount(0);
+      setUnapprovedCount(0);
+    }
   }, []);
 
   const onGettingPotentialIssues = useCallback((issues) => {
@@ -71,7 +69,7 @@ export default function RevenueStatements() {
 
       <div style={{ padding: 40 }}>
         <AnalyticsCards
-          checks={statements?.length || 0}
+          checks={statementCount}
           approvedCount={approvedCount}
           unapprovedCount={unapprovedCount}
           potentialIssues={potentialIssuesList}

@@ -27,7 +27,9 @@ const RevenuePropertiesHeadCells = [
             style={styles}
           >
             {/* {splitNumber?.[0]} */}
-            {splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]}
+            {splitNumber?.[0]
+              ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
+              : tableMeta?.rowData[2]}
           </p>
         );
       },
@@ -46,10 +48,10 @@ const RevenuePropertiesHeadCells = [
     label: "Operator",
     esKey: "operator.name.keyword",
     options: {
-      sort: true, filter: true,
+      sort: true,
+      filter: true,
       setCellProps: () => ({ style: { minWidth: "225px" } }),
     },
-
   },
   {
     name: "state",
@@ -127,7 +129,18 @@ const RevenuePropertiesHeadCells = [
     },
     style: { minWidth: 120 },
   },
-
+  {
+    name: "prospectID",
+    label: "Prospect",
+    esKey: "prospectID.keyword",
+    options: { sort: true, filter: true },
+  },
+  {
+    name: "acquisitionID",
+    label: "Acquisition ID",
+    esKey: "acquisitionID.keyword",
+    options: { sort: true, filter: true },
+  },
   {
     name: "lastChecked",
     label: "Last Check",
@@ -151,7 +164,7 @@ const RevenuePropertiesHeadCells = [
   {
     name: "internalID",
     label: "Internal ID #",
-    esKey: "lastCheck.internalID",
+    esKey: "internalID.keyword",
     options: {
       customHeadLabelRender: () => (
         <>
@@ -167,7 +180,7 @@ const RevenuePropertiesHeadCells = [
   {
     name: "internalCompany",
     label: "Internal Company",
-    esKey: "lastCheck.internalCompany",
+    esKey: "internalCompany.keyword",
     options: {
       customHeadLabelRender: () => (
         <>
