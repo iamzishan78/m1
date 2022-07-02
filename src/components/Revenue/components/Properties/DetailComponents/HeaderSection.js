@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
   },
   associatedWell: {
     border: "2px solid #d5d5d5",
-    height: "382px",
+    height: "475px",
     borderRadius: "15px",
     maxWidth: "30%",
     width: "30%",
@@ -263,7 +263,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Property</div>
+                <div className={classes.label}>Property Name</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
@@ -321,7 +321,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Owner</div>
+                <div className={classes.label}>Owner Name</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
