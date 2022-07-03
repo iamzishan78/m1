@@ -13,8 +13,9 @@ const useStyles = makeStyles((theme) => ({
   propertyTableContainer: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
-    paddingLeft: "38px",
-    paddingRight: "38px",
+    // paddingLeft: "38px",
+    // paddingRight: "38px",
+    marginLeft: '-10px',
     marginTop: theme.spacing(2),
   },
 }));
