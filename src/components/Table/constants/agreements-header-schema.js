@@ -10,8 +10,8 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-    name: "agreementNumber",
-    label: "Agreement #",
+    name: "agreementControl",
+    label: "Agreement",
     esKey: "shapeJson.properties.agreementNumber.keyword",
     options: {
       setCellProps: () => ({
@@ -32,12 +32,45 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
           zIndex: 201
         }
       }),
+    },
+    dbName: "shapeJson.properties.agreementNumber",
+    stickyColumn: true,    
+    sort: true,
+    filter: true,
+    viewColumns: false,
+    display: true,
+    // sortThirdClickReset: true,
+  },
+  {
+    name: "agreementNumber",
+    label: "Agreement #",
+    esKey: "shapeJson.properties.agreementNumber.keyword",
+    options: {
+      setCellProps: () => ({
+        style: {
+          minWidth: "150px",
+          whiteSpace: "nowrap",
+          // position: "sticky",
+          // left: "77px",
+          background: "white",
+          zIndex: 200
+        }
+      }),
+      // setCellHeaderProps: () => ({
+      //   style: {
+      //     // position: "sticky",
+      //     minWidth: "150px",
+      //     // left: "77px",
+      //     zIndex: 201
+      //   }
+      // }),
       dbName: "shapeJson.properties.agreementNumber",
-      stickyColumn: true,
+      // stickyColumn: true,
       sort: true,
       filter: true,
       viewColumns: false,
-      display: true,
+      // display: true,
+      // sortThirdClickReset: true,
       customRender: (value, tableMeta) => {
         return (
           <p
@@ -65,26 +98,26 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Agreement Name",
     esKey: "shapeJson.properties.agreementName.keyword",
     options: {
-      setCellProps: () => ({
-        style: {
-          minWidth: "300px",
-          whiteSpace: "nowrap",
-          position: "sticky",
-          left: isSnapGrid ? "227px" : "245px",
-          background: "white",
-          zIndex: 100
-        }
-      }),
-      setCellHeaderProps: () => ({
-        style: {
-          position: "sticky",
-          minWidth: "150px",
-          left: isSnapGrid ? "227px" : "245px",
-          zIndex: 101
-        }
-      }),
+      // setCellProps: () => ({
+      //   style: {
+      //     minWidth: "300px",
+      //     whiteSpace: "nowrap",
+      //     position: "sticky",
+      //     left: isSnapGrid ? "227px" : "245px",
+      //     background: "white",
+      //     zIndex: 100
+      //   }
+      // }),
+      // setCellHeaderProps: () => ({
+      //   style: {
+      //     position: "sticky",
+      //     minWidth: "150px",
+      //     left: isSnapGrid ? "227px" : "245px",
+      //     zIndex: 101
+      //   }
+      // }),
       dbName: "shapeJson.properties.agreementName",
-      stickyColumn: true,
+      // stickyColumn: true,
       sort: true,
       filter: true,
       viewColumns: false,
