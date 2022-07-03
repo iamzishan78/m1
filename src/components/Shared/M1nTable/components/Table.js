@@ -186,9 +186,9 @@ const useStyles = makeStyles((theme) => ({
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
       backgroundColor: "#fff",
     },
-    "& .MuiTableCell-paddingCheckbox": {
-      position: "relative",
-    },
+    // "& .MuiTableCell-paddingCheckbox": {
+    //   position: "relative",
+    // },
     "& .MuiToolbar-regular > div:nth-child(2) .MuiIconButton-root": {
       backgroundColor: "#D4E8F1",
       margin: "0 2px",

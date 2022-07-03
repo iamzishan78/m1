@@ -6,7 +6,6 @@ const RevenuePropertiesHeadCells = [
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
-
   {
     name: "number",
     label: "Property",
@@ -19,7 +18,8 @@ const RevenuePropertiesHeadCells = [
           position: "sticky",
           left: "77px",
           background: "white",
-          zIndex: 200
+          zIndex: 200,
+          boxShadow: 'inset -2px 0px 0px 0px #929292',
         }
       }),
       setCellHeaderProps: () => ({
@@ -27,7 +27,8 @@ const RevenuePropertiesHeadCells = [
           position: "sticky",
           minWidth: "150px",
           left: "77px",
-          zIndex: 201
+          zIndex: 201,
+          boxShadow: 'inset -2px 0px 0px 0px #929292',
         }
       }),
       customRender: (value, tableMeta) => {
@@ -39,7 +40,9 @@ const RevenuePropertiesHeadCells = [
           cursor: "pointer",
         };
         return (
-          <div>
+          <div
+            // style={{borderRight: 'solid red'}}
+          >
           <p
             onClick={(e) => {
               e.stopPropagation();

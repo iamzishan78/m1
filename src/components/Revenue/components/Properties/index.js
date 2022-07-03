@@ -151,6 +151,7 @@ export default function Properties() {
           loading={false}
           filterToggle={filterToggle}
           setESFilters={setESFilters}
+          isCheckboxSticky={true}
           onPropertiesCount={onPropertiesCount}
           startPaginationAt={startPaginationAt}
           revenueSearchQuery={stateApp.revenueSearchQuery}
