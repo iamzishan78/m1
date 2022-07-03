@@ -2077,7 +2077,9 @@ function SubTable(props) {
                   const uri = row_line?.fileUrl;
 
                   return (
-                    <div style={{ minWidth: 400 }}>
+                    <div style={{ minWidth: 400,
+                      boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                    }}>
                       <Grid container spacing={0} direction="row" >
                         {
                           props.parent === 'Documents' && <div style={{ position: 'relative', zIndex: 100 }}>
