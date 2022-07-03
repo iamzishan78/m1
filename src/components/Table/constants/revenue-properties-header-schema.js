@@ -77,16 +77,7 @@ const RevenuePropertiesHeadCells = [
     esKey: "name.keyword",
     options: { sort: true, filter: true, display: false },
   },
-  {
-    name: "payorName",
-    label: "Operator",
-    esKey: "operator.name.keyword",
-    options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "225px" } }),
-    },
-  },
+
   {
     name: "state",
     label: "State",
@@ -99,16 +90,7 @@ const RevenuePropertiesHeadCells = [
     esKey: "county.keyword",
     options: { sort: true, filter: true },
   },
-  {
-    name: "source",
-    label: "Source",
-    esKey: "source.keyword",
-    options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
-    },
-  },
+
 
   {
     name: "wellApiNumber",
@@ -128,6 +110,16 @@ const RevenuePropertiesHeadCells = [
       sort: true,
       filter: true,
       setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }),
+    },
+  },
+  {
+    name: "payorName",
+    label: "Operator",
+    esKey: "operator.name.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "225px" } }),
     },
   },
   {
@@ -164,18 +156,6 @@ const RevenuePropertiesHeadCells = [
     style: { minWidth: 120 },
   },
   {
-    name: "prospectID",
-    label: "Prospect",
-    esKey: "prospectID.keyword",
-    options: { sort: true, filter: true },
-  },
-  {
-    name: "acquisitionID",
-    label: "Acquisition ID",
-    esKey: "acquisitionID.keyword",
-    options: { sort: true, filter: true },
-  },
-  {
     name: "lastChecked",
     label: "Last Check",
     esKey: "lastCheck.checkDate",
@@ -194,6 +174,19 @@ const RevenuePropertiesHeadCells = [
       isDate: true,
     },
   },
+  {
+    name: "prospectID",
+    label: "Prospect",
+    esKey: "prospectID.keyword",
+    options: { sort: true, filter: true },
+  },
+  {
+    name: "acquisitionID",
+    label: "Acquisition ID",
+    esKey: "acquisitionID.keyword",
+    options: { sort: true, filter: true },
+  },
+
 
   {
     name: "internalID",
@@ -225,6 +218,17 @@ const RevenuePropertiesHeadCells = [
       filter: true,
     },
     style: { minWidth: 120 },
+  },
+
+  {
+    name: "source",
+    label: "Source",
+    esKey: "source.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
+    },
   },
 
   {
