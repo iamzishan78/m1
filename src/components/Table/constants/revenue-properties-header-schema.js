@@ -27,7 +27,9 @@ const RevenuePropertiesHeadCells = [
             style={styles}
           >
             {/* {splitNumber?.[0]} */}
-            {splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]}
+            {splitNumber?.[0]
+              ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
+              : tableMeta?.rowData[2]}
           </p>
         );
       },
@@ -41,16 +43,7 @@ const RevenuePropertiesHeadCells = [
     esKey: "name.keyword",
     options: { sort: true, filter: true, display: false },
   },
-  {
-    name: "payorName",
-    label: "Operator",
-    esKey: "operator.name.keyword",
-    options: {
-      sort: true, filter: true,
-      setCellProps: () => ({ style: { minWidth: "225px" } }),
-    },
 
-  },
   {
     name: "state",
     label: "State",
@@ -63,16 +56,7 @@ const RevenuePropertiesHeadCells = [
     esKey: "county.keyword",
     options: { sort: true, filter: true },
   },
-  {
-    name: "source",
-    label: "Source",
-    esKey: "source.keyword",
-    options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
-    },
-  },
+
 
   {
     name: "wellApiNumber",
@@ -92,6 +76,16 @@ const RevenuePropertiesHeadCells = [
       sort: true,
       filter: true,
       setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }),
+    },
+  },
+  {
+    name: "payorName",
+    label: "Operator",
+    esKey: "operator.name.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "225px" } }),
     },
   },
   {
@@ -127,10 +121,9 @@ const RevenuePropertiesHeadCells = [
     },
     style: { minWidth: 120 },
   },
-
   {
     name: "lastChecked",
-    label: "Last Check Date",
+    label: "Last Check",
     esKey: "lastCheck.checkDate",
     options: {
       customHeadLabelRender: () => (
@@ -145,6 +138,62 @@ const RevenuePropertiesHeadCells = [
     custom: {
       key_as_string: true,
       isDate: true,
+    },
+  },
+  {
+    name: "prospectID",
+    label: "Prospect",
+    esKey: "prospectID.keyword",
+    options: { sort: true, filter: true },
+  },
+  {
+    name: "acquisitionID",
+    label: "Acquisition ID",
+    esKey: "acquisitionID.keyword",
+    options: { sort: true, filter: true },
+  },
+
+
+  {
+    name: "internalID",
+    label: "Internal ID #",
+    esKey: "internalID.keyword",
+    options: {
+      customHeadLabelRender: () => (
+        <>
+          <div style={{ minWidth: 100 }}>Internal ID #</div>
+        </>
+      ),
+      sort: true,
+      filter: true,
+    },
+    style: { minWidth: 100 },
+  },
+
+  {
+    name: "internalCompany",
+    label: "Internal Company",
+    esKey: "internalCompany.keyword",
+    options: {
+      customHeadLabelRender: () => (
+        <>
+          <div style={{ minWidth: 120 }}>Internal Company</div>
+        </>
+      ),
+      sort: true,
+      filter: true,
+    },
+    style: { minWidth: 120 },
+  },
+
+  {
+    name: "source",
+    label: "Source",
+    esKey: "source.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
     },
   },
 

@@ -21,6 +21,11 @@ import AssociatedWells from "./AssociatedWells";
 import { DocumentContext } from "../DocumentContext";
 
 const useStyles = makeStyles({
+  drawer: {
+    '& .MuiDrawer-paper': {
+      overflowY: 'inherit'
+    }
+  },
   list: {
     width: 250,
   },
@@ -145,9 +150,7 @@ export default function DocumentDrawer(props) {
   const classes = useStyles();
   const [activePanel, setPanel] = useState("Home");
   const [fileData, setFileData] = useState(null);
-  const [state, setState] = React.useState({
-    right: false,
-  });
+  // const [state, setState] = useState({right: false});
   const [anchorEl, setAnchorEl] = useState();
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
@@ -166,6 +169,9 @@ export default function DocumentDrawer(props) {
 
   const documentInitial = {
     documentName: "",
+    book: "",
+    page: "",
+    instrument: "",
     recordingInfo: "",
     dateTime: null,
     documentNumber: "",
@@ -190,6 +196,7 @@ export default function DocumentDrawer(props) {
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
+  const [replaceFile, setReplaceFile] = useState(null);
 
   let [loader, setLoader] = useState(false);
 
@@ -198,7 +205,7 @@ export default function DocumentDrawer(props) {
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
     setOpenDeleteConfirmDialog(false);
-    setNewDocument(documentInitial);
+    setReplaceFile('CANCEL')
   };
   const handleClose = () => {
     setStateApp({
@@ -219,23 +226,27 @@ export default function DocumentDrawer(props) {
       setLoader(true);
       updateDocument({
         variables: {
-          document: {
-            fileId: fileIdToDelete,
-            isDeleted: true,
-          },
+          document: { fileId: fileIdToDelete, isDeleted: true }
         },
-        refetchQueries: ["getESDocuments"],
+        refetchQueries: replaceFile === 'INITIATE' ? [] : ["getESDocuments"],
         awaitRefetchQueries: true,
       }).then(() => {
-        setStateApp({
-          ...stateApp,
-          DocumentDrawer: false,
-          selectedDocument: {},
-        });
+
+        if (replaceFile === 'INITIATE') {
+          setReplaceFile('IN_PROGRESS')
+        }
+
+        if (replaceFile !== 'INITIATE') {
+          setStateApp({
+            ...stateApp,
+            DocumentDrawer: false,
+            selectedDocument: {},
+          });
+          setNewDocument(documentInitial);
+          setNameAutValueParty1({ name: "", _id: null });
+          setNameAutValueParty2({ name: "", _id: null });
+        }
         setFileIdToDelete(null);
-        setNewDocument(documentInitial);
-        setNameAutValueParty1({ name: "", _id: null });
-        setNameAutValueParty2({ name: "", _id: null });
         setOpenDeleteConfirmDialog(false);
         setLoader(false);
       });
@@ -255,7 +266,7 @@ export default function DocumentDrawer(props) {
         variables: { fileIds: ID },
       });
       if (stateApp.selectedDocument) {
-        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, recordingInfo, custom_data } =
+        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, book, page, instrument, recordingInfo, custom_data } =
           stateApp.selectedDocument;
         setNameAutValueParty1({
           name: partyName1?.entityDetail?.name,
@@ -267,6 +278,9 @@ export default function DocumentDrawer(props) {
         });
 
         setNewDocument({
+          book,
+          page,
+          instrument,
           recordingInfo,
           documentName,
           dateTime,
@@ -284,11 +298,8 @@ export default function DocumentDrawer(props) {
   }, [stateApp.selectedDocument]);
 
   const toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
-      return;
-    }
-
-    setState({ ...state, [anchor]: open });
+    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) { return; }
+    // setState({ ...state, [anchor]: open });
   };
 
   const handleMenuClick = (event) => {
@@ -320,7 +331,7 @@ export default function DocumentDrawer(props) {
       >
         <div style={{ flexShrink: 0 }}>
           <div className={classes.titleSection}>
-            <div>{stateApp.selectedDocument?.fileId ? <h2>Document Detail</h2> : <h2>Add New Document</h2>}</div>
+            <div>{stateApp.selectedDocument?.fileId ? <h2>File Detail</h2> : <h2>Add New Document</h2>}</div>
             <div style={{ cursor: "pointer" }}>
               {stateApp.selectedDocument?.fileId && (
                 <IconButton
@@ -385,6 +396,8 @@ export default function DocumentDrawer(props) {
                 setFileIdToDelete={setFileIdToDelete}
                 handleClose={handleClose}
                 viewFiles={viewFiles}
+                replaceFile={replaceFile}
+                setReplaceFile={setReplaceFile}
                 viewFileSResult={viewFileSResult}
               />
             )}
@@ -398,7 +411,7 @@ export default function DocumentDrawer(props) {
 
   return (
     <div>
-      <Drawer anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>
+      <Drawer className={classes.drawer} anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>
         <Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
           <DeleteConfirmationDialogContent
             header="Delete Document"

@@ -59,8 +59,8 @@ const CustomFieldMultiSelect = ({
   const [search, setSearch] = useState("");
   const [, setStateApp] = useContext(AppContext);
   const defaultValue = {
-    label: "----",
-    value: "----",
+    label: "--",
+    value: "--",
   };
   const [showOptions, setShowOptions] = useState(false);
   const [showIcon, setShowIcon] = useState(false);
@@ -82,7 +82,7 @@ const CustomFieldMultiSelect = ({
     if (reason === "clear") {
       e.stopPropagation();
     }
-    if (act?.value !== "editOption") {
+    if (act?.value !== "editOption" && act?.value !== "search") {
       let newValue = value ? copy(value) : [];
       const selectedValue =
         act?.value !== defaultValue.value ? act?.value : null;
@@ -415,7 +415,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange }) => {
           );
         })
       ) : (
-        <span class="colorText">----</span>
+        <span class="colorText">--</span>
       )}
     </span>
   );

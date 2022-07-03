@@ -27,6 +27,7 @@ import { copy } from "components/Shared/functions";
 import { detailCardStyles } from "../style";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
+import moment from "moment";
 
 export default function AgreementDetailCard(props) {
   const dispatch = useDispatch();
@@ -50,8 +51,7 @@ export default function AgreementDetailCard(props) {
   useEffect(() => {
     return history.listen((location) => {
       console.log(`You changed the page to: ${location.pathname}`);
-      if (!properties?.agreementNumber && !location
-        .includes(uniObj._id)) {
+      if (!properties?.agreementNumber && !location.includes(uniObj._id)) {
         setStateApp((state) => ({
           ...state,
           selectedShape: null,
@@ -135,6 +135,24 @@ export default function AgreementDetailCard(props) {
       history.location.pathname !== newPath && history.replace(newPath);
     }
 
+    
+    if (field ==='agreementTerm' || field ==='effectiveDate') {
+      if (field ==='agreementTerm') {
+        shape.properties.expirationDate = moment(shape.properties.effectiveDate).add(parseInt(value), 'months').toDate();
+      } else {
+        shape.properties.expirationDate = moment(value).add(parseInt(shape.properties.agreementTerm), 'months').toDate();
+      }
+    }
+
+    // if (field ==='agreementTerm' || field ==='effectiveDate') {
+    //   if (field ==='agreementTerm') {
+    //     shape.properties.expirationDate = moment(shape.properties.effectiveDate, 'YYYY-MM-DD').add(parseInt(value), 'months').format('YYYY-MM-DD');
+    //   } else {
+    //     shape.properties.expirationDate = moment(value, 'YYYY-MM-DD').add(parseInt(shape.properties.agreementTerm), 'months').format('YYYY-MM-DD');
+    //   }
+    // }
+
+
     shape.properties.shapeLabel = shapeLabel;
     shape.name = shapeLabel;
     shape.properties.name = shapeLabel;
@@ -151,7 +169,7 @@ export default function AgreementDetailCard(props) {
         customLayer,
       },
       refetchQueries: ["getMetaData"],
-      awaitRefetchQueries: true
+      awaitRefetchQueries: true,
     });
   };
 

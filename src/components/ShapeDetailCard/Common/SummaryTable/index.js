@@ -18,6 +18,9 @@ import vf_number from "components/Shared/valueformatters/vf_number";
 import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
 import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
+import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
+import NumberField from "components/Shared/components/Fields/NumberField";
+
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
@@ -96,17 +99,21 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
     }
   }, [search]);
 
-  const getKey = (data, type) => {
+  const getKey = (data, type, e) => {
     const appendValue = type === "key" ? type : "";
-    if (appendValue)
-      return `${data.key}.${appendValue}`;
+    if (appendValue) {
+      data.key = e.target.value;
+      return `${data.key}${appendValue}`;
+    }
     return `${data.key}`;
   }
 
   const onChange = (e, data, type) => {
     const obj = { ...tableTempProperties };
-    set(obj, getKey(data, type), e.target.value);
+    const key = getKey(data, type, e);
+    set(obj, key, e.target.value);
     setTableTempProperties(obj);
+    if (type === "key") setTableDataState({ [key]: true });
   };
 
   const onKeyDown = (e, data, type) => {
@@ -116,7 +123,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
           dispatch(showErrorMessage("Please provide key value first"));
           return;
         } else {
-          updateCustomProperties(type, get(tableTempProperties, `${data.key}`), data.key);
+          updateCustomProperties(type, get(tableTempProperties, `${data.key}`), data.key, data.id);
         }
       } else updateProperties(e, data.key, get(tableTempProperties, `${data.key}`), data.isCustom);
     } else {
@@ -125,7 +132,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
         dispatch(showErrorMessage("Key with this name already exists"));
         return;
       }
-      updateCustomProperties(type, get(tableTempProperties, `${data.key}key`), data.key);
+      updateCustomProperties(type, get(tableTempProperties, `${data.key}key`), data.key, data.id);
     }
   };
 
@@ -165,9 +172,15 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                         data={data}
                         value={tableTempProperties[`${data.key}key`]}
                         showMessage={tableDataState[`${data.key}key`] === true}
-                        onChange={onChange}
-                        onKeyDown={onKeyDown}
-                        onBlur={onBlur}
+                        onChange={(e, data, type) => {
+                          checkFieldChange(e, data, type, onChange);
+                        }}
+                        onKeyDown={(e, data, type) => {
+                          checkFieldChange(e, data, type, onKeyDown);
+                        }}
+                        onBlur={(e, data, type) => {
+                          checkFieldChange(e, data, type, onBlur);
+                        }}
                         type="key"
                       />
                     ) : (
@@ -211,7 +224,8 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                   <>
                     {(data.type === "select" || data.type === "dropdown") && (
                       <FormControl fullWidth margin="dense">
-                        <CustomFieldSelect
+                        <ReactSelectField
+                          isSingleSelect={true}
                           fullWidth
                           index={`field${index}`}
                           dropdownOptions={data.options}
@@ -227,7 +241,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                     )}
                     {(data.type === "multiselect") && (
                       <FormControl fullWidth margin="dense">
-                        <CustomFieldMultiSelect
+                        <ReactSelectField
                           fullWidth
                           index={`field${index}`}
                           dropdownOptions={data.options}

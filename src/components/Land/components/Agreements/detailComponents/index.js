@@ -36,6 +36,7 @@ import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import moment from "moment";
 import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
 
 const useStyles = makeStyles((theme) => ({
@@ -230,7 +231,7 @@ export default function DetailComponents(props) {
   const classes = useStyles({ ...props, metaCollapse, validationCollapse, flowlineCollapse });
   // queries
 
-  
+
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
   const [getStandardProvisions, { data: standardProvisions }] = useLazyQuery(GET_STANDARD_PROVISIONS);
   const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
@@ -328,6 +329,13 @@ export default function DetailComponents(props) {
   const updateAgreement = (field, value, isCustom) => {
     if (agreementDetails[field] === value) return;
     const shape = activeAgreement.shape;
+    if (field ==='agreementTerm' || field ==='effectiveDate') {
+      if (field ==='agreementTerm') {
+        shape.properties.expirationDate = moment(shape.properties.effectiveDate, 'YYYY-MM-DD').add(parseInt(value), 'months').format('YYYY-MM-DD');
+      } else {
+        shape.properties.expirationDate = moment(value, 'YYYY-MM-DD').add(parseInt(shape.properties.agreementTerm), 'months').format('YYYY-MM-DD');
+      }
+    }
     set(shape, `properties.${field}`, value);
     const customLayer = {};
     let shapeLabel = shape.properties.shapeLabel;
@@ -684,7 +692,7 @@ export default function DetailComponents(props) {
           onClose={() => setOpenDialog(false)}
           deleteFunc={handleDeleteAgreement}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={() => { }}
         >
           Are you sure you want to delete this agreement?
         </DeleteConfirmationDialogContent>

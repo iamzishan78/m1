@@ -1,37 +1,34 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import uuid from "uuid";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AutorenewIcon from '@material-ui/icons/Autorenew';
-import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { CircularProgress, Dialog, OutlinedInput, InputAdornment, Typography } from "@material-ui/core";
+import { CircularProgress, Dialog, OutlinedInput, InputAdornment, Typography, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import RightDialog from "../../RightDialog";
-import { useDispatch, useSelector } from "react-redux";
-import { showErrorMessage, showSuccessMessage } from "../../../../../actions";
 import debounce from "lodash/debounce";
 import parse from "autosuggest-highlight/parse";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
-import { INTERESTOWNERTYPESQUERY } from "../../../../../graphQL/useQueryInterestOwnerTypes";
-import { INTERESTTYPESQUERY } from "../../../../../graphQL/useQueryInterestTypes";
-import { TENANTWELL } from "../../../../../graphQL/useQueryTenantWell";
-import { ADDWELLINTEREST } from "../../../../../graphQL/useMutationAddWellInterest";
-import { UPDATEWELLINTEREST } from "../../../../../graphQL/useMutationUpdateWellInterest";
-import { REMOVEWELLINTEREST } from "../../../../../graphQL/useMutationRemoveWellInterest";
-import DeleteConfirmationDialogContent from "../../../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { INTERESTOWNERTYPESQUERY } from "graphQL/useQueryInterestOwnerTypes";
+import { INTERESTTYPESQUERY } from "graphQL/useQueryInterestTypes";
+import { TENANTWELL } from "graphQL/useQueryTenantWell";
+import { ADDWELLINTEREST } from "graphQL/useMutationAddWellInterest";
+import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
+import { REMOVEWELLINTEREST } from "graphQL/useMutationRemoveWellInterest";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 // contexts 
-import { WellCardContext } from "../../../../WellCard/WellCardContext";
-import { AppContext } from "../../../../../AppContext";
+import { WellCardContext } from "components/WellCard/WellCardContext";
+import { AppContext } from "AppContext";
 
 
 function NumberFormatCustom(props) {
@@ -108,16 +105,23 @@ const useStyles = makeStyles((theme) => ({
     '& .MuiInputBase-input': {
       color: 'red'
     }
-  }
+  },
+  menu: {
+    "& .MuiListItem-root": {
+      "& .MuiListItemIcon-root": {
+        minWidth: "30px",
+        "& .MuiSvgIcon-root": {
+          fill: "red !important",
+        },
+      },
+    },
+  },
 }));
 
 function AddWellInterestDialog(props) {
-  const dispatch = useDispatch();
   const classes = useStyles();
 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
-
 
   const [initializing, setInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -134,6 +138,7 @@ function AddWellInterestDialog(props) {
   const [interestOwnerTypes, setInterestOwnerTypes] = useState([]);
   const [interestTypes, setInterestTypes] = useState([]);
   const [valid, setValid] = useState({});
+  const [anchorEl, setAnchorEl] = useState();
 
   const [getInterestOwnerTypes, { data: dataInterestOwnerTypes }] = useLazyQuery(INTERESTOWNERTYPESQUERY, {
     fetchPolicy: "cache-and-network",
@@ -371,6 +376,7 @@ function AddWellInterestDialog(props) {
 
   const openConfirmationDialog = () => {
     setDeleteDialogOpen(true);
+    handleMenuClose();
   };
   const handleCloseDialog = () => {
     setDeleteDialogOpen(false);
@@ -397,6 +403,10 @@ function AddWellInterestDialog(props) {
       setLoading(false);
     }
   };
+
+  const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
+
+  const handleMenuClose = () => setAnchorEl(null);
 
   return (
     <>
@@ -428,7 +438,7 @@ function AddWellInterestDialog(props) {
           <Grid item xs={12} style={{ minHeight: "35px" }}>
             <h4
               style={{
-                margin: "0 0 15px 0",
+                margin: 0,
                 "float": "left",
                 fontSize: "1.1rem",
               }}
@@ -440,33 +450,45 @@ function AddWellInterestDialog(props) {
                 <>
                   <IconButton
                     disabled={loading}
-                    onClick={openConfirmationDialog}
                     size="small"
                     style={{ margin: "0 8px" }}
                   >
                     {loading ? (
                       <CircularProgress size={20} color="secondary" />
                     ) : (
-                      <DeleteIcon
-                        className={classes.closeIcon}
-                        fontSize="small"
-                      />
+                      <MoreHorizIcon size="medium" onClick={handleMenuClick} />
                     )}
                   </IconButton>
+                  <Menu
+                    id="dealMenu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                    className={classes.menu}
+                    getContentAnchorEl={null}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                    transformOrigin={{ vertical: "top", horizontal: "center" }}
+                  >
+                    <MenuItem onClick={openConfirmationDialog}>
+                      <ListItemIcon>
+                        <DeleteIcon size="medium" />
+                      </ListItemIcon>
+                      <ListItemText>Delete</ListItemText>
+                    </MenuItem>
+                  </Menu>
                 </>
               ))}
               <IconButton
                 onClick={handleClose}
                 size="small"
               >
-                <CloseIcon fontSize="small" />
+                <KeyboardTabIcon fontSize="large" />
               </IconButton>
             </div>
           </Grid>
 
-          <div>
-
-
+          <div style={{ marginTop: "15px" }}>
             <FormControl
               variant="outlined"
               fullWidth

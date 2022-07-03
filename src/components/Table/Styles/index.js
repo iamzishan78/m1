@@ -3,7 +3,11 @@ import { makeStyles } from "@material-ui/core/styles";
 export const usetableStyles = makeStyles(() => ({
   container: {
     padding: "0 !important",
-
+  },
+  subComponentsClasses: {
+    "& .MuiTableHead-root": {
+      zIndex: (p) => p.isRevenueTable ? 995 : 0,
+    },
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
@@ -58,6 +62,7 @@ export const usetableStyles = makeStyles(() => ({
     "& .MuiTableCell-paddingCheckbox": {
       position: (p) => p.isCheckboxSticky ? 'sticky !important' : '',
     },
+
   },
   multiSelectionTopBarButtons: {
     margin: "0px 5px",

@@ -124,6 +124,7 @@ export default function LagalDescription({ uniObj }) {
                   dense
                   isPdfViewer={false}
                   targetLabel={"documents"}
+                  documentSearchQuery={`shape:${uniObj?._id}`}
                 />
               </Grid>
             )}

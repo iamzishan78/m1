@@ -349,10 +349,10 @@ export default function MetadataDrawer(props) {
                             <>
                               <InputAdornment position="start">
                                 <Avatar
-                                 style={{
-                                  backgroundColor:users.find((user) => user?.value === ownerId)?getRandomColor(users.find((user) => user?.value === ownerId).text.toString()):""
-                                }}
-                                className={classes.dealOwnerAvatar}>
+                                  style={{
+                                    backgroundColor: users.find((user) => user?.value === ownerId) ? getRandomColor(users.find((user) => user?.value === ownerId).text.toString()) : ""
+                                  }}
+                                  className={classes.dealOwnerAvatar}>
                                   {users.find(
                                     (user) => user?.value === ownerId
                                   ) ? (
@@ -394,31 +394,31 @@ export default function MetadataDrawer(props) {
                   />
                 </Grid>
               </Grid>
-              { isApproval &&
+              {isApproval &&
                 <Grid container className={classes.gridStyle}>
                   <Grid item xs={3}>
                     <div>Approval Status</div>
                   </Grid>
                   <Grid item xs={9}>
-                  <Controller
-                    control={control}
-                    name="status"
-                    render={(params) => (
-                      <Select
-                        {...params}
-                        id="status-simple-select-outlined-label"
-                        variant="outlined"
-                        value={data.approvalStatus ? data.approvalStatus : data.status ? data.status : ""}
-                        fullWidth
-                        onChange={(e) => {
-                          props.onUpdate({ 'approvalStatus': e.target.value });
-                        }}
-                      >
-                        <MenuItem value="Approved">Approved</MenuItem>
-                        <MenuItem value="Unapproved">Unapproved</MenuItem>
-                      </Select>
-                    )}
-                  />
+                    <Controller
+                      control={control}
+                      name="status"
+                      render={(params) => (
+                        <Select
+                          {...params}
+                          id="status-simple-select-outlined-label"
+                          variant="outlined"
+                          value={data.approvalStatus ? data.approvalStatus : data.status ? data.status : ""}
+                          fullWidth
+                          onChange={(e) => {
+                            props.onUpdate({ 'approvalStatus': e.target.value });
+                          }}
+                        >
+                          <MenuItem value="Approved">Approved</MenuItem>
+                          <MenuItem value="Unapproved">Unapproved</MenuItem>
+                        </Select>
+                      )}
+                    />
                   </Grid>
                 </Grid>
               }
@@ -437,22 +437,13 @@ export default function MetadataDrawer(props) {
                 onChange={(e) => {
                   setDescription(e.target.value);
                 }}
-                onKeyPress={(event) => {
-                  if (event.key === "Enter") {
-                    document.activeElement.blur();
-                    if (props.onUpdate)
-                      props.onUpdate({ [props.descriptionKey]: event.target.value });
-                  }
-                }}
                 onFocus={() => setFocusSate(true)}
-                onBlur={() => setFocusSate(false)}
-                InputProps={{
-                  endAdornment: onFocusDescription === true && (
-                    <p className={classes.foodText}>
-                      <span>Return</span> to save
-                    </p>
-                  ),
-                }}
+                onBlur={({target}) => { 
+                  setFocusSate(false); 
+                  if (props.onUpdate)
+                  props.onUpdate({
+                    [props.descriptionKey]: event.target.value,
+                  });}}
               />
             </Grid>
           )}

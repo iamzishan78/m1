@@ -39,6 +39,10 @@ const useStyles = makeStyles((theme) => ({
     "& ::-webkit-scrollbar": {
       height: "0.7em !important",
     },
+    '& .MuiTableRow-footer': {
+      visibility: 'hidden',
+      display: 'none'
+    }
   },
 }));
 
@@ -58,6 +62,7 @@ function DocumentsTable(props) {
 
   // function states
   const [filters, setFilters] = useState([]);
+  const [changePage, isPageChanged] = useState(false);
   const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
@@ -104,7 +109,8 @@ function DocumentsTable(props) {
     let sort
     if (selectedSorts.current) {
       const field = Object.keys(selectedSorts.current)[0]
-      sort = { field, ...selectedSorts.current[field] }
+      if (selectedSorts.current[field]?.order !== 'none')
+        sort = { field, ...selectedSorts.current[field] }
     }
     return sort
   }
@@ -185,7 +191,13 @@ function DocumentsTable(props) {
 
   useEffect(() => {
     if (tableData?.hits) {
-      props.setRows(tableData?.hits);
+      if (changePage) {
+        props.setRows(props.rows.concat(tableData?.hits));
+        isPageChanged(false)
+      }
+      else
+        props.setRows(tableData?.hits);
+
       let updatedColumns = columns;
       if (!isEmpty(selectedGridView)) {
         const view = formattingGridView(JSON.parse(JSON.stringify(selectedGridView)));
@@ -216,7 +228,7 @@ function DocumentsTable(props) {
               first: startPaginationAt,
               keep_alive: "1micros",
             },
-            search: props.documentSearchQuery ? props.documentSearchQuery : "",
+            search: props.documentSearchQuery ? props.documentSearchQuery + "*" : "*",
             filters: selectedGridView?.filters ? selectedGridView?.filters : [],
             sort: getSort()
           },
@@ -289,6 +301,7 @@ function DocumentsTable(props) {
       case "search":
       case "sort":
       case "filterChange":
+
         dispatch(
           updateUserGridViewSettingAction.STARTED({
             userGridViewSetting: {
@@ -322,6 +335,7 @@ function DocumentsTable(props) {
         tableActions.genericESAction();
         break;
       case "changePage":
+        isPageChanged(true)
         tableActions.changeESPage();
         break;
       case "viewColumnsChange":
@@ -425,6 +439,10 @@ function DocumentsTable(props) {
     });
   };
 
+  const onInfiniteScroll = () => {
+    document.getElementById('pagination-next').click()
+  }
+
   return (
     <div className={classes.documentTable}>
       <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
@@ -464,6 +482,7 @@ function DocumentsTable(props) {
           options={options}
           parent={props.parent}
           setColumnsBase={[]}
+          onInfiniteScroll={onInfiniteScroll}
           deleteFunc={deleteFunc}
           onTableChange={onTableChange}
           onCustomKeyChange={onCustomKeyChange}

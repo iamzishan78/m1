@@ -1,21 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from 'react-redux';
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import FieldContent from "../ContactDetailCard/components/FieldContent";
-import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import { useHistory } from "react-router-dom";
-import {
-  Grid,
-  Box,
-  FormControlLabel,
-  FormGroup,
-  Switch,
-} from "@material-ui/core";
+import { Grid, Box, FormControlLabel, FormGroup, Switch } from "@material-ui/core";
 import moment from "moment";
 
 import {
@@ -23,6 +15,7 @@ import {
   getBasicInfoExpContent,
   getBasicPurchaseInfoContent,
   getBasicPurchaseInfoExpContent,
+  featureFlagChanges
 } from "components/ContactDetailedInfo/helper";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
@@ -194,10 +187,16 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "14px",
     marginLeft: "10px",
   },
+  headerActions: {
+    minHeight: "28px",
+    display: "flex",
+    justifyContent: "space-between",
+    padding: "20px 2px 4px 2px",
+  },
 }));
 
 export default function DetailInfo(props) {
-  const [basicInfExp, setBasicInfExp] = useState(false);
+  const [basicInfExp, setBasicInfExp] = useState(true);
   const [showEmpty, setShowEmpty] = useState(true);
   const [selectedTab, setSelectedTab] = useState("Basic Info");
   const [selectedPurchaseData, setSelectedPurchaseData] = useState("");
@@ -205,12 +204,17 @@ export default function DetailInfo(props) {
   let history = useHistory();
   const [loading, setLoading] = useState(false);
 
+  const { user } = useSelector(state => state.app);
+
+  const showGenericPhones = React.useMemo(() => {
+    return user.features?.find(f => f.name === "showGenericPhones")
+  }, [user]);
+
   useEffect(() => {
     if (props.purchaseData.length > 0) {
-      setSelectedPurchaseData(props.purchaseData[0]._id)
+      setSelectedPurchaseData(props.purchaseData[0]._id);
     }
-
-  }, [props.purchaseData])
+  }, [props.purchaseData]);
 
   useEffect(() => {
     setLoading(true);
@@ -228,8 +232,8 @@ export default function DetailInfo(props) {
     return (
       <FormGroup style={{ display: "block" }}>
         <FormControlLabel
-          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""
-            } ${!showEmpty ? classes.switchTextDeselected : ""}`}
+          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""} ${!showEmpty ? classes.switchTextDeselected : ""
+            }`}
           control={
             <React.Fragment>
               <AntSwitch
@@ -249,53 +253,46 @@ export default function DetailInfo(props) {
   };
 
   const tabs =
-    props.purchaseData.length > 0 && props?.user?.features?.find(f => f.name === FEATURES.IDICORE)
+    props.purchaseData.length > 0 && props?.user?.features?.find((f) => f.name === FEATURES.IDICORE)
       ? ["Basic Info", "Purchased Info"]
       : ["Basic Info"];
 
   return (
     <div className={classes.root}>
-      <Grid item xs={12} style={{ minHeight: "28px" }}>
-        {tabs.map((tab) => {
-          return (
-            <span
-              className={`${classes.tab} ${selectedTab === tab ? classes.selectedTab : ""
-                }`}
-              onClick={() => setSelectedTab(tab)}
+      <Grid item xs={12} className={classes.headerActions}>
+        <div>
+          {tabs.map((tab) => {
+            return (
+              <span className={`${classes.tab} ${selectedTab === tab ? classes.selectedTab : ""}`} onClick={() => setSelectedTab(tab)}>
+                {tab}
+              </span>
+            );
+          })}
+          {selectedTab === "Purchased Info" && (
+            <Select
+              className={classes.viewSwitcher}
+              value={selectedPurchaseData}
+              onChange={(e) => {
+                setSelectedPurchaseData(e.target.value);
+              }}
             >
-              {tab}
-            </span>
-          );
-        })}
-        {selectedTab === "Purchased Info" && (
-          <Select
-            className={classes.viewSwitcher}
-            value={selectedPurchaseData}
-            onChange={(e) => {
-              setSelectedPurchaseData(e.target.value);
-            }}
-          >
-            {props.purchaseData.map((purchaseData) => {
-              return (
-                <MenuItem value={purchaseData._id}>
-                  IDI Data -{" "}
-                  {moment(purchaseData.sysDateTime).format(
-                    "MM/DD/YYYY hh:mm:ss a"
-                  )}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        )}
+              {props.purchaseData.map((purchaseData) => {
+                return (
+                  <MenuItem value={purchaseData._id}>
+                    M1 Data - {moment(purchaseData.sysDateTime).format("MM/DD/YYYY hh:mm:ss a")}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          )}
+        </div>
 
         <Box display="flex" justifyContent="flex-end">
           <ToggleEmptyFieldButton />
           <h4
             className={classes.viewAll}
             onClick={() => {
-              history.push(
-                `/contact/details/${props.contactData._id}/detailedInformation`
-              );
+              history.push(`/contact/details/${props.contactData._id}/detailedInformation`);
             }}
           >
             View All
@@ -308,13 +305,40 @@ export default function DetailInfo(props) {
           <Grid item xs={12} container className={classes.dataSect} spacing={0}>
             {!loading &&
               getBasicInfoContent(props.contactData) &&
-              Object.entries(getBasicInfoContent(props.contactData)).map(
-                ([key, row]) => {
-                  if (showEmpty) {
+              Object.entries(getBasicInfoContent(props.contactData)).map(([key, row]) => {
+                if (showEmpty) {
+                  return (
+                    <React.Fragment>
+                      <Grid item xs={3} className="fieldName">
+                        <p className="dataLabels">{featureFlagChanges(showGenericPhones, key)}</p>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <FieldContent
+                          id={props.contactData._id}
+                          entity={props.contactData.entity}
+                          isMerged={!!props.contactData.mergedContacts}
+                          content={row.data}
+                          linkType={row.linkType}
+                          isPurchased={selectedTab === "Purchased Info"}
+                        />
+                      </Grid>
+                    </React.Fragment>
+                  );
+                } else {
+                  let objName = Object.keys(row.data)[0];
+                  if (
+                    row.data[objName] !== undefined &&
+                    row.data[objName] !== null &&
+                    row.data[objName] !== `""` &&
+                    row.data[objName] !== "" &&
+                    row.data[objName] !== "" &&
+                    row.data[objName].length !== 0 &&
+                    row.data[objName] != null
+                  ) {
                     return (
                       <React.Fragment>
                         <Grid item xs={3} className="fieldName">
-                          <p className="dataLabels">{key}</p>
+                          <p className="dataLabels">{featureFlagChanges(showGenericPhones, key)}</p>
                         </Grid>
                         <Grid item xs={9}>
                           <FieldContent
@@ -323,51 +347,55 @@ export default function DetailInfo(props) {
                             isMerged={!!props.contactData.mergedContacts}
                             content={row.data}
                             linkType={row.linkType}
-                            isPurchased={selectedTab === "Purchased Info"}
                           />
+                        </Grid>
+                      </React.Fragment>
+                    );
+                  }
+                }
+              })}
+
+            {basicInfExp && (
+              <>
+                {Object.entries(getBasicInfoExpContent(props.contactData)).map(([key, row]) => {
+                  if (showEmpty) {
+                    return (
+                      <React.Fragment key={key}>
+                        <Grid item xs={3} className="fieldName">
+                          <p className="dataLabels">{featureFlagChanges(showGenericPhones, key)}</p>
+                        </Grid>
+                        <Grid item xs={9}>
+                          <FieldContent
+                            onlyChildren={row.inner ? true : false}
+                            id={props.contactData._id}
+                            entity={props.contactData.entity}
+                            isMerged={!!props.contactData.mergedContacts}
+                            content={row.data}
+                            linkType={row.linkType}
+                            noMargin={key === "Campaign Name"}
+                          >
+                            {row.inner}
+                          </FieldContent>
                         </Grid>
                       </React.Fragment>
                     );
                   } else {
                     let objName = Object.keys(row.data)[0];
-                    if (
-                      row.data[objName] != undefined &&
-                      row.data[objName] != `""` &&
-                      row.data[objName] != "" &&
-                      row.data[objName] != "" &&
-                      row.data[objName].length != 0 &&
-                      row.data[objName] != null
-                    ) {
-                      return (
-                        <React.Fragment>
-                          <Grid item xs={3} className="fieldName">
-                            <p className="dataLabels">{key}</p>
-                          </Grid>
-                          <Grid item xs={9}>
-                            <FieldContent
-                              id={props.contactData._id}
-                              entity={props.contactData.entity}
-                              isMerged={!!props.contactData.mergedContacts}
-                              content={row.data}
-                              linkType={row.linkType}
-                            />
-                          </Grid>
-                        </React.Fragment>
-                      );
-                    }
-                  }
-                }
-              )}
 
-            {basicInfExp && (
-              <>
-                {Object.entries(getBasicInfoExpContent(props.contactData)).map(
-                  ([key, row]) => {
-                    if (showEmpty) {
+                    if (
+                      row.data[objName] &&
+                      row.data[objName] !== undefined &&
+                      row.data[objName] !== `""` &&
+                      row.data[objName] !== "" &&
+                      row.data[objName] !== "" &&
+                      row.data[objName].length &&
+                      row.data[objName].length !== 0 &&
+                      row.data[objName] !== null
+                    ) {
                       return (
                         <React.Fragment key={key}>
                           <Grid item xs={3} className="fieldName">
-                            <p className="dataLabels">{key}</p>
+                            <p className="dataLabels">{featureFlagChanges(showGenericPhones, key)}</p>
                           </Grid>
                           <Grid item xs={9}>
                             <FieldContent
@@ -377,49 +405,15 @@ export default function DetailInfo(props) {
                               isMerged={!!props.contactData.mergedContacts}
                               content={row.data}
                               linkType={row.linkType}
-                              noMargin={key === 'Campaign Name'}
                             >
                               {row.inner}
                             </FieldContent>
                           </Grid>
                         </React.Fragment>
                       );
-                    } else {
-                      let objName = Object.keys(row.data)[0];
-
-                      if (
-                        row.data[objName] &&
-                        row.data[objName] !== undefined &&
-                        row.data[objName] !== `""` &&
-                        row.data[objName] !== "" &&
-                        row.data[objName] !== "" &&
-                        row.data[objName].length &&
-                        row.data[objName].length !== 0 &&
-                        row.data[objName] !== null
-                      ) {
-                        return (
-                          <React.Fragment key={key}>
-                            <Grid item xs={3} className="fieldName">
-                              <p className="dataLabels">{key}</p>
-                            </Grid>
-                            <Grid item xs={9}>
-                              <FieldContent
-                                onlyChildren={row.inner ? true : false}
-                                id={props.contactData._id}
-                                entity={props.contactData.entity}
-                                isMerged={!!props.contactData.mergedContacts}
-                                content={row.data}
-                                linkType={row.linkType}
-                              >
-                                {row.inner}
-                              </FieldContent>
-                            </Grid>
-                          </React.Fragment>
-                        );
-                      }
                     }
                   }
-                )}
+                })}
               </>
             )}
           </Grid>
@@ -444,17 +438,10 @@ export default function DetailInfo(props) {
       {selectedTab === "Purchased Info" && (
         <>
           <Grid item xs={12} container className={classes.dataSect} spacing={0}>
-            {!basicInfExp && getBasicPurchaseInfoContent(
-              props.purchaseData.find(
-                (purchaseData) => purchaseData._id === selectedPurchaseData
-              )
-            ) &&
+            {!basicInfExp &&
+              getBasicPurchaseInfoContent(props.purchaseData.find((purchaseData) => purchaseData._id === selectedPurchaseData)) &&
               Object.entries(
-                getBasicPurchaseInfoContent(
-                  props.purchaseData.find(
-                    (purchaseData) => purchaseData._id === selectedPurchaseData
-                  )
-                )
+                getBasicPurchaseInfoContent(props.purchaseData.find((purchaseData) => purchaseData._id === selectedPurchaseData))
               ).map(([key, row]) => {
                 if (showEmpty) {
                   return (
@@ -468,7 +455,6 @@ export default function DetailInfo(props) {
                           entity={props.contactData.entity}
                           content={row.data}
                           linkType={row.linkType}
-                          disabled
                           isPurchased
                         />
                       </Grid>
@@ -495,7 +481,6 @@ export default function DetailInfo(props) {
                             entity={props.contactData.entity}
                             content={row.data}
                             linkType={row.linkType}
-                            disabled
                             isPurchased
                           />
                         </Grid>
@@ -508,9 +493,7 @@ export default function DetailInfo(props) {
             {basicInfExp && (
               <>
                 {Object.entries(
-                  getBasicPurchaseInfoExpContent(props.purchaseData.find(
-                    (purchaseData) => purchaseData._id === selectedPurchaseData
-                  ))
+                  getBasicPurchaseInfoExpContent(props.purchaseData.find((purchaseData) => purchaseData._id === selectedPurchaseData))
                 ).map(([key, row]) => {
                   if (showEmpty) {
                     return (
@@ -526,7 +509,6 @@ export default function DetailInfo(props) {
                             isMerged={!!props.contactData.mergedContacts}
                             content={row.data}
                             linkType={row.linkType}
-                            disabled
                             isPurchased
                           >
                             {row.inner}
@@ -558,7 +540,6 @@ export default function DetailInfo(props) {
                               isMerged={!!props.contactData.mergedContacts}
                               content={row.data}
                               linkType={row.linkType}
-                              disabled
                               isPurchased
                             >
                               {row.inner}

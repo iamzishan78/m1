@@ -181,9 +181,9 @@ export default function UploadZone(props) {
             // ]}
             maxFileSize={104857600}
             dropzoneClass={classes.dropzoneClassCRM}
-            // getFileAddedMessage={(value) => {
-            // 	alert("File is been added", value);
-            // }}
+          // getFileAddedMessage={(value) => {
+          // 	alert("File is been added", value);
+          // }}
           ></DropzoneAreaBase>
         </Container>
       </div>

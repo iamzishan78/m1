@@ -10,9 +10,16 @@ import { CONTACT } from "graphQL/useQueryContact";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    marginTop: "65px",
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": {
+          maxHeight: "calc(50vh - 266px) !important"
+        },
+      },
+    },
   },
 }));
+
 
 export default function ContactDocumentsCard(props) {
   let history = useHistory();
@@ -24,7 +31,7 @@ export default function ContactDocumentsCard(props) {
   const [activeDeals, setActiveDeals] = useState([]);
   const [contactData, setContactData] = useState(null);
 
-  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 2];
+  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
   const [getContactDeals, { data: deals, loading }] = useLazyQuery(CONTACTDEALS, { fetchPolicy: "cache-and-network" });
@@ -87,7 +94,7 @@ export default function ContactDocumentsCard(props) {
       <div
         style={{
           backgroundColor: "#F2F2F2",
-          minHeight: "7px",
+          minHeight: "4px",
           display: "flex",
           position: "relative",
           alignItems: "center",
