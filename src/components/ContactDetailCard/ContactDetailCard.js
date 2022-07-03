@@ -10,6 +10,8 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import AddIcCallIcon from "@material-ui/icons/AddIcCall";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import { useHistory } from "react-router-dom";
+import Divider from '@material-ui/core/Divider';
+
 
 // internal components
 import Comments from "../Shared/Comments";
@@ -395,7 +397,7 @@ const useStyles = makeStyles((theme) => ({
   },
   detailCardSection: {
     backgroundColor: "#fff",
-    marginTop: "8px",
+    marginTop: "3px",
     width: "100%",
   },
 }));
@@ -773,9 +775,14 @@ function ContactDetailCard(props) {
               
               {/*/////////// section 3 //////////// */}
               {/* this is the descriptor grid on the contact detail */}
-
               <div className={classes.detailCardSection}>
-                <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "0px 0px" }}>
+
+              {/* <Divider sx={{backgroundColor: '#F2F2F2', borderBottomWidth: 5}}/> */}
+
+                <Grid item xs={12} container className={classes.border} spacing={0} 
+                    style={{ padding: "0px 0px",
+                            //  height: '100vh'
+                    }}>
                   <ContactDetailedSelector
                     purchaseData={purchaseData}
                     contactData={contactData}
