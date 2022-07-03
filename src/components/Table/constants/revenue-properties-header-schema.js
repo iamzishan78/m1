@@ -1,4 +1,6 @@
 import { history } from "store";
+import Button from "@material-ui/core/Button";
+
 const RevenuePropertiesHeadCells = [
   {
     name: "_id",
@@ -10,6 +12,24 @@ const RevenuePropertiesHeadCells = [
     label: "Property",
     esKey: "number.keyword",
     options: {
+      setCellProps: () => ({
+        style: {
+          minWidth: "150px",
+          whiteSpace: "nowrap",
+          position: "sticky",
+          left: "77px",
+          background: "white",
+          zIndex: 200
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          position: "sticky",
+          minWidth: "150px",
+          left: "77px",
+          zIndex: 201
+        }
+      }),
       customRender: (value, tableMeta) => {
         const splitNumber = value?.split("_");
         const styles = {
@@ -19,6 +39,7 @@ const RevenuePropertiesHeadCells = [
           cursor: "pointer",
         };
         return (
+          <div>
           <p
             onClick={(e) => {
               e.stopPropagation();
@@ -30,11 +51,21 @@ const RevenuePropertiesHeadCells = [
             {splitNumber?.[0]
               ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
               : tableMeta?.rowData[2]}
-          </p>
+
+            </p>
+            {/* <Button/> */}
+            </div>
+            
+
+
         );
       },
+
       sort: true,
       filter: true,
+      stickyColumn: true,
+      viewColumns: false,
+      display: true,
     },
   },
   {
