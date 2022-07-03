@@ -9,7 +9,7 @@ import { setMapGridCardState } from "actions";
 
 
 const useStyles = makeStyles((theme) => ({
-  root: { paddingTop: '100px' },
+  root: { paddingTop: '65px' },
   propertyTableContainer: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
