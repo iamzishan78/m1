@@ -769,9 +769,13 @@ function ContactDetailCard(props) {
                   <SummaryFields contactData={contactData} />
                 </Grid>
               </div>
+
+              
               {/*/////////// section 3 //////////// */}
+              {/* this is the descriptor grid on the contact detail */}
+
               <div className={classes.detailCardSection}>
-                <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px" }}>
+                <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "0px 0px" }}>
                   <ContactDetailedSelector
                     purchaseData={purchaseData}
                     contactData={contactData}
@@ -779,6 +783,8 @@ function ContactDetailCard(props) {
                   />
                 </Grid>
               </div>
+
+
               {/*/////////// new section - lead stage //////////// */}
               {/* <Grid item xs={12} className={`${classes.border}`}>
                 <div className={classes.SectMargin}>
