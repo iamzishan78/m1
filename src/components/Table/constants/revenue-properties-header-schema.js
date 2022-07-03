@@ -19,7 +19,7 @@ const RevenuePropertiesHeadCells = [
           left: "77px",
           background: "white",
           zIndex: 200,
-          boxShadow: 'inset -2px 0px 0px 0px #929292',
+          boxShadow: 'inset -1px 0px 0px 0px lightgrey',
         }
       }),
       setCellHeaderProps: () => ({
@@ -28,7 +28,7 @@ const RevenuePropertiesHeadCells = [
           minWidth: "150px",
           left: "77px",
           zIndex: 201,
-          boxShadow: 'inset -2px 0px 0px 0px #929292',
+          // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
         }
       }),
       customRender: (value, tableMeta) => {
