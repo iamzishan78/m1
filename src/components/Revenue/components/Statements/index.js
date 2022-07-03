@@ -67,7 +67,14 @@ export default function RevenueStatements() {
         filterToggle={filterToggle}
       />
 
-      <div style={{ padding: 40 }}>
+      <div 
+      // style={{ padding: 40 }}
+      >
+
+      <div 
+      style={{ padding: 40 }}
+      >
+
         <AnalyticsCards
           checks={statementCount}
           approvedCount={approvedCount}
@@ -76,7 +83,14 @@ export default function RevenueStatements() {
           revenueSearchQuery={stateApp.revenueSearchQuery}
         />
 
-        <div classes={classes.revenueContainer} style={{ marginTop: 40 }}>
+        </div>
+
+        <div 
+        classes={classes.revenueContainer} 
+        style={{ 
+          marginLeft: "-10px" 
+        }}
+        >
           <RevenueStatementTable
             header="Revenue Statements"
             targetLabel="check"

@@ -36,6 +36,14 @@ const useStyles = makeStyles((theme) => ({
     padding: "0 !important",
   },
   documentTable: {
+    "& .MuiTableCell-paddingCheckbox": { position: 'sticky' },
+    "& .MuiTableRow-hover": {
+      "&:hover": {
+        "& .MuiTableCell-root": {
+          backgroundColor: "#dfdfdf"
+        }
+      }
+    },
     "& ::-webkit-scrollbar": {
       height: "0.7em !important",
     },
