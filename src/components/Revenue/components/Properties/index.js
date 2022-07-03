@@ -10,8 +10,9 @@ import LastCheckDateFilter from "../Common/LastCheckDateFilter";
 const useStyles = makeStyles((theme) => ({
   propertyTableContainer: {
     paddingTop: theme.spacing(1),
-    paddingLeft: "38px",
-    paddingRight: "38px",
+    // paddingLeft: "38px",
+    // paddingRight: "38px",
+    marginLeft: '-8px',
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
