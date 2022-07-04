@@ -338,7 +338,7 @@ export default function DetailComponents(props) {
     document.addEventListener('keyup', escapeFunc);
     return () => {
       setStateApp({ ...stateApp, viewDoc: null })
-      document.removeEventListener(escapeFunc);
+      document.removeEventListener('keyup', escapeFunc);
     }
   }, []);
 
