@@ -220,9 +220,18 @@ const UnitInterestsHeadCells = [
     //     }
     // },
     {
-        name: "nra", label: "Net Royalty Acres", esKey: 'nra', 
+        name: "nra", label: "NRA", esKey: 'nra', 
         options: { 
             dbName: "nra",
+            sort: true, 
+            filter: true 
+        }
+    },
+
+    {
+        name: "offer_price", label: "Offer Price", esKey: 'offer_price', 
+        options: { 
+            dbName: "offer_price",
             sort: true, 
             filter: true 
         }
