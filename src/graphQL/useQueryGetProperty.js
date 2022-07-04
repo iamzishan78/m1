@@ -6,4 +6,10 @@ export const GET_PROPERTY = gql`
   }
 `;
 
+export const GET_AUTOCOMPLETE_PROPERTY_LIST = gql`
+  query getAutoCompletePropertyList($key: String) {
+    getAutoCompletePropertyList(key: $key)
+  }
+`;
+
 

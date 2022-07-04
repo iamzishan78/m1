@@ -24,7 +24,7 @@ export default function ContactDocumentsCard(props) {
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
 
-  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 2];
+  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
@@ -66,16 +66,7 @@ export default function ContactDocumentsCard(props) {
   };
 
   return contactData ? (
-    <div variant="outlined" style={{ marginTop: "65px" }}>
-      <div
-        style={{
-          backgroundColor: "#F2F2F2",
-          minHeight: "7px",
-          display: "flex",
-          position: "relative",
-          alignItems: "center",
-        }}
-      />
+    <div variant="outlined">
       <ViewDocuments
         contactId={contactId}
         user_id={stateApp.user.email}

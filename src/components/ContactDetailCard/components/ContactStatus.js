@@ -49,7 +49,7 @@ const ContactStatus = ({ setValue, value, ...other }) => {
 
   useEffect(() => {
     setSearch(value);
-  },[value])
+  }, [value])
 
   useEffect(() => {
     if (contactStatusFiltersData?.getESFilterList?.hits) {
@@ -118,7 +118,7 @@ const ContactStatus = ({ setValue, value, ...other }) => {
       onInputChange={onInputChange}
       filterOptions={(options, params) => {
         let inputValue = JSON.parse(JSON.stringify(search));
-        if (inputValue.name) {
+        if (inputValue?.name) {
           inputValue = inputValue.name;
         }
         const filtered = filter(options, { ...params, inputValue });
@@ -138,10 +138,14 @@ const ContactStatus = ({ setValue, value, ...other }) => {
         if (newValue && newValue._id) {
           if (newValue._id !== "newEntity") setValue(newValue);
           else setValue({ _id: "newEntity", name: newValue.name });
-        } else setSearch("");
+        } else {
+          setSearch("");
+          setValue({ _id: "", name: "" });
+        }
       }}
       renderInput={(params) => (
         <TextField
+          variant={other.variant}
           margin="dense"
           {...params}
           InputProps={{

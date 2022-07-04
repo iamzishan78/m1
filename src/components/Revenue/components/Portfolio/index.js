@@ -96,20 +96,35 @@ export default function Portfolio() {
   return (
     <>
       <div className={classes.actionBar}>
-        <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 36px" }}>
+        <Grid
+          container
+          direction="row"
+          display="flex"
+          justify="space-between"
+          style={{ padding: "0px 36px" }}
+        >
           <Grid item xs={8} md={8} style={{ marginTop: "4px" }}>
-            <CustomDates
-              onChangeDates={onChangeDates}
-              fromDate={fromDate}
-              setFromDate={setFromDate}
-              toDate={toDate}
-              setToDate={setToDate}
-              isProperties={true}
-              lastCheckMinDate={lastCheckMinDate}
-            />
+            <Grid container display="flex" alignItems="center" spacing={3}>
+              <CustomDates
+                onChangeDates={onChangeDates}
+                fromDate={fromDate}
+                setFromDate={setFromDate}
+                toDate={toDate}
+                setToDate={setToDate}
+                isProperties={true}
+                lastCheckMinDate={lastCheckMinDate}
+              />
+            </Grid>
           </Grid>
           <Grid item xs={4} md={4}>
-            <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
+            <Grid
+              container
+              display="flex"
+              justify="flex-end"
+              direction="row"
+              spacing={2}
+              className={classes.actionsGrid}
+            >
               {/* <Grid item>
                 <Button variant="contained" color="secondary">
                   Save View
@@ -124,7 +139,10 @@ export default function Portfolio() {
       </div>
       {/* <AnalyticsCards cards={cards} /> */}
       <Divider className={classes.divider} />
-      <DetailTabsSection monthsInterval={monthsInterval} portfolioSummary={portfolioSummary?.getPortfolioSummary || {}} />
+      <DetailTabsSection
+        monthsInterval={monthsInterval}
+        portfolioSummary={portfolioSummary?.getPortfolioSummary || {}}
+      />
     </>
   );
 }

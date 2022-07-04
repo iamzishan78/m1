@@ -1,15 +1,36 @@
 import { history } from "store";
+import Button from "@material-ui/core/Button";
+
 const RevenuePropertiesHeadCells = [
   {
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
-
   {
     name: "number",
     label: "Property",
     esKey: "number.keyword",
     options: {
+      setCellProps: () => ({
+        style: {
+          minWidth: "150px",
+          whiteSpace: "nowrap",
+          position: "sticky",
+          left: "77px",
+          background: "white",
+          zIndex: 200,
+          boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          position: "sticky",
+          minWidth: "150px",
+          left: "77px",
+          zIndex: 201,
+          // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+        }
+      }),
       customRender: (value, tableMeta) => {
         const splitNumber = value?.split("_");
         const styles = {
@@ -19,6 +40,9 @@ const RevenuePropertiesHeadCells = [
           cursor: "pointer",
         };
         return (
+          <div
+            // style={{borderRight: 'solid red'}}
+          >
           <p
             onClick={(e) => {
               e.stopPropagation();
@@ -27,12 +51,24 @@ const RevenuePropertiesHeadCells = [
             style={styles}
           >
             {/* {splitNumber?.[0]} */}
-            {splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]}
-          </p>
+            {splitNumber?.[0]
+              ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
+              : tableMeta?.rowData[2]}
+
+            </p>
+            {/* <Button/> */}
+            </div>
+            
+
+
         );
       },
+
       sort: true,
       filter: true,
+      stickyColumn: true,
+      viewColumns: false,
+      display: true,
     },
   },
   {
@@ -41,16 +77,7 @@ const RevenuePropertiesHeadCells = [
     esKey: "name.keyword",
     options: { sort: true, filter: true, display: false },
   },
-  {
-    name: "payorName",
-    label: "Operator",
-    esKey: "operator.name.keyword",
-    options: {
-      sort: true, filter: true,
-      setCellProps: () => ({ style: { minWidth: "225px" } }),
-    },
 
-  },
   {
     name: "state",
     label: "State",
@@ -63,16 +90,7 @@ const RevenuePropertiesHeadCells = [
     esKey: "county.keyword",
     options: { sort: true, filter: true },
   },
-  {
-    name: "source",
-    label: "Source",
-    esKey: "source.keyword",
-    options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
-    },
-  },
+
 
   {
     name: "wellApiNumber",
@@ -92,6 +110,16 @@ const RevenuePropertiesHeadCells = [
       sort: true,
       filter: true,
       setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }),
+    },
+  },
+  {
+    name: "payorName",
+    label: "Operator",
+    esKey: "operator.name.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "225px" } }),
     },
   },
   {
@@ -127,10 +155,9 @@ const RevenuePropertiesHeadCells = [
     },
     style: { minWidth: 120 },
   },
-
   {
     name: "lastChecked",
-    label: "Last Check Date",
+    label: "Last Check",
     esKey: "lastCheck.checkDate",
     options: {
       customHeadLabelRender: () => (
@@ -145,6 +172,62 @@ const RevenuePropertiesHeadCells = [
     custom: {
       key_as_string: true,
       isDate: true,
+    },
+  },
+  {
+    name: "prospectID",
+    label: "Prospect",
+    esKey: "prospectID.keyword",
+    options: { sort: true, filter: true },
+  },
+  {
+    name: "acquisitionID",
+    label: "Acquisition ID",
+    esKey: "acquisitionID.keyword",
+    options: { sort: true, filter: true },
+  },
+
+
+  {
+    name: "internalID",
+    label: "Internal ID #",
+    esKey: "internalID.keyword",
+    options: {
+      customHeadLabelRender: () => (
+        <>
+          <div style={{ minWidth: 100 }}>Internal ID #</div>
+        </>
+      ),
+      sort: true,
+      filter: true,
+    },
+    style: { minWidth: 100 },
+  },
+
+  {
+    name: "internalCompany",
+    label: "Internal Company",
+    esKey: "internalCompany.keyword",
+    options: {
+      customHeadLabelRender: () => (
+        <>
+          <div style={{ minWidth: 120 }}>Internal Company</div>
+        </>
+      ),
+      sort: true,
+      filter: true,
+    },
+    style: { minWidth: 120 },
+  },
+
+  {
+    name: "source",
+    label: "Source",
+    esKey: "source.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
     },
   },
 

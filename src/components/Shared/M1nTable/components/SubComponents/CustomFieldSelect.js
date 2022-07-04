@@ -54,8 +54,8 @@ const CustomFieldSelect = ({
   const [search, setSearch] = useState("");
   const [, setStateApp] = useContext(AppContext);
   const defaultValue = {
-    label: "----",
-    value: "----",
+    label: "--",
+    value: "--",
   };
   const [showOptions, setShowOptions] = useState(false);
   const [showIcon, setShowIcon] = useState(false);
@@ -111,12 +111,12 @@ const CustomFieldSelect = ({
       } else {
         document.getElementById(
           `colorText_${index}_${column.name}`
-        ).innerHTML = `<span class='colorText'>----</span>`;
+        ).innerHTML = `<span class='colorText'>--</span>`;
       }
     } else {
       document.getElementById(
         `colorText_${index}_${column.name}`
-      ).innerHTML = `<span class='colorText'>----</span>`;
+      ).innerHTML = `<span class='colorText'>--</span>`;
     }
   }, [index, value, dropdownOptions]);
 

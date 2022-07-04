@@ -25,7 +25,7 @@ const useStyles = makeStyles({
   },
 });
 
-const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options }) => {
+const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant }) => {
   const classes = useStyles();
 
   const onInputChange = (event, value) => {
@@ -69,7 +69,7 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options }) => {
       }}
       onInputChange={onInputChange}
       filterOptions={(options, params) => {
-        let inputValue = JSON.parse(JSON.stringify(value));
+        let inputValue = value ? JSON.parse(JSON.stringify(value)) : '';
         // if (typeof inputValue.name === "string") {
         //   inputValue = inputValue.name;
         // }
@@ -95,6 +95,7 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options }) => {
       renderInput={(params) => (
         <TextField
           margin="dense"
+          variant={variant? variant :'standard'}
           {...params}
           InputProps={{
             ...params.InputProps,
