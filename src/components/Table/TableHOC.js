@@ -20,6 +20,7 @@ export const TableHOC = (Component) => {
 
         const [loading, Loading] = useState(true);
         const setLoading = (newState) => { setStateIfDeepEqual(Loading, newState) };
+        const [page, setPage] = useState(0)
 
         const [dataTracksIds, DataTracksIds] = useState(null);
         const setDataTracksIds = (newState) => { setStateIfDeepEqual(DataTracksIds, newState) };
@@ -238,6 +239,7 @@ export const TableHOC = (Component) => {
                                 ]
                             } else {
                                 return {
+
                                     [field]: {
                                         order: tableState.sortOrder?.direction,
                                         // unmapped_type: "null",
@@ -291,6 +293,7 @@ export const TableHOC = (Component) => {
                 pageESVariables,
                 genericESAction: () => {
                     setLoading(true);
+                    setPage(0)
                     tableState.page = 0;
                     meta.setPageInd(tableState.page);
                     meta.setRowsPerPage(tableState.rowsPerPage);
@@ -298,6 +301,19 @@ export const TableHOC = (Component) => {
                 },
                 changeESPage: () => {
                     setLoading(true);
+
+                    let afterSort = rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null
+                    // if (rows && tableState.page > meta.pageInd)
+                    //     for (let i = rows.length - 1; i >= 0; i--) {
+                    //         afterSort = rows[i]?.sort
+                    //         if (((new Date(afterSort[0])).getTime() > 0)) {
+                    //             afterSort = rows[i]?.sort
+                    //             if (i !== rows.length - 1) afterSort[0] += 1
+                    //             break;
+                    //         }
+                    //     }
+                    setPage(tableState.page)
+
                     gqlQuery({
                         ...pageESVariables,
                         variables: {
@@ -306,7 +322,7 @@ export const TableHOC = (Component) => {
                                 pit: tableData.pit,
                                 ...pageESVariables.variables.pagination,
                                 before: tableState.page === 0 ? null : rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
-                                after: tableState.page === 0 ? null : rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
+                                after: afterSort,
                             },
                         },
                     });
@@ -353,6 +369,8 @@ export const TableHOC = (Component) => {
                 setGenricData={setGenricData}
                 dependencyUpdate={dependencyUpdate}
                 initializeTableActions={initializeTableActions}
+                page={page}
+                setPage={setPage}
             />
         );
     };

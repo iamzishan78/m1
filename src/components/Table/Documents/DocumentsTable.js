@@ -101,6 +101,7 @@ function DocumentsTable(props) {
   const startPaginationAt = 25;
 
   useEffect(() => {
+    props.setPage(0)
     return () => {
       setStateApp((stateApp) => ({
         ...stateApp,
@@ -123,6 +124,12 @@ function DocumentsTable(props) {
     return sort
   }
   useEffect(() => {
+    const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]")
+    if (tableClass.length > 0) {
+      tableClass[0].scrollTop = 0;
+    }
+
+    props.setPage(0)
     getESDocuments({
       variables: {
         pagination: {
@@ -264,6 +271,7 @@ function DocumentsTable(props) {
 
   const count = tableData?.total || 0;
   const options = {
+    page: props.page,
     rowsPerPageOptions: [10, 25, 50, 100],
     count: count,
     serverSide: true,
@@ -272,6 +280,8 @@ function DocumentsTable(props) {
     searchText: props.documentSearchQuery,
     customSearchRender: () => null,
   };
+
+  console.log("options.page", options.page)
 
   const viewColumnsChange = (tableColumns) => {
     for (let i = 0; i < tableColumns.length; i++) {

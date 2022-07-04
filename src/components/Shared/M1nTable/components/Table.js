@@ -1218,7 +1218,7 @@ function SubTable(props) {
             ...column.options,
             customBodyRender: (value, tableMeta) => {
               const rowIndex = tableMeta.rowIndex;
-              if (rowIndex === props.rows.length - 5) {
+              if (rowIndex === props.rows.length - 2) {
                 return (
                   <Fragment>
                     <Waypoint
@@ -4162,6 +4162,7 @@ function SubTable(props) {
           }`}
       >
         <MUIDataTable
+          id={props.parent}
           innerRef={props.tableRef}
           className={tableStyle}
           title={getHeaders()}
