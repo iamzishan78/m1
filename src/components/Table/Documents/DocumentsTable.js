@@ -207,7 +207,9 @@ function DocumentsTable(props) {
   useEffect(() => {
     if (tableData?.hits) {
       if (changePage) {
+        const rowIndex = props.rows.length - 2
         props.setRows(props.rows.concat(tableData?.hits));
+        document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
         isPageChanged(false)
       }
       else
