@@ -186,9 +186,9 @@ const useStyles = makeStyles((theme) => ({
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
       backgroundColor: "#fff",
     },
-    "& .MuiTableCell-paddingCheckbox": {
-      position: "relative",
-    },
+    // "& .MuiTableCell-paddingCheckbox": {
+    //   position: "relative",
+    // },
     "& .MuiToolbar-regular > div:nth-child(2) .MuiIconButton-root": {
       backgroundColor: "#D4E8F1",
       margin: "0 2px",
@@ -2077,7 +2077,9 @@ function SubTable(props) {
                   const uri = row_line?.fileUrl;
 
                   return (
-                    <div style={{ minWidth: 400 }}>
+                    <div style={{ minWidth: 400,
+                      boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                    }}>
                       <Grid container spacing={0} direction="row" >
                         {
                           props.parent === 'Documents' && <div style={{ position: 'relative', zIndex: 100 }}>

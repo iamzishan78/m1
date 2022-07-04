@@ -101,7 +101,15 @@ function Tracts(props) {
   );
 
   return (
-    <div style={{ marginTop: 62, padding: "75px 56px" }}>
+    <div>
+
+    
+    <div 
+      style={{ 
+        marginTop: '65px', 
+        padding: "20px 75px 0px 75px" 
+        }}
+      >
       <AnalyticsCards
         parent={"Tracts"}
         esIndex={esIndex[selectedTractTab]}
@@ -111,7 +119,13 @@ function Tracts(props) {
         cardsDefault={cardsDefault}
         landSearchQuery={stateApp.landSearchQuery}
       />
-      <div style={{ marginTop: "40px" }}>
+      </div>
+
+      <div 
+        style={{ 
+          marginTop: "40px",
+          marginLeft: "-10px", 
+          }}>
         <TabPanels
           value={selectedTractTab}
           panels={[
