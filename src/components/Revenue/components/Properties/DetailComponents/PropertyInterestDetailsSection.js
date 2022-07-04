@@ -33,7 +33,7 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
       labels={[
         "Interest Details",
         "Revenue Details",
-        "Well Production"
+        // "Well Production"
       ]}
       value={selectedTab}
       setValue={(n) => {
@@ -67,7 +67,7 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
           propertyId={propertyId}
         />
       )}
-      {selectedTab === 2 && (
+      {/* {selectedTab === 2 && (
         <PropertyWellProductionTable
           onClickAdd={onClickAdd}
           setSelectedInterest={setSelectedInterest}
@@ -77,7 +77,7 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
           header={<Header />}
           propertyId={propertyId}
         />
-      )}
+      )} */}
     </div>
   );
 };
