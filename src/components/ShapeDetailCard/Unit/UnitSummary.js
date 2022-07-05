@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from "react";
-import { v4 as uuid } from "uuid";
 import { useSelector } from "react-redux";
 import { copy } from "utils/helper";
 import Grid from "@material-ui/core/Grid";

@@ -144,8 +144,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
   };
 
   const checkFieldChange = (e, data, type, func) => {
-    if (data.isCustomData) func(e, data, type);
-    else func(e, data, type);
+    func(e, data, type);
   }
 
   return (
@@ -187,7 +186,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                       <div style={{ minWidth: "30px", cursor: "pointer" }}>
                         <Grid container direction="row" justifyContent="space-between" alignItems="center">
                           <Grid item md={10}>
-                            {data.key || "-"}
+                            {data.label || "-"}
                           </Grid>
                           <Grid item md={2}>
                             {editIconState[`${data.key}key`] && (
