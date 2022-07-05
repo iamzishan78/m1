@@ -21,7 +21,8 @@ const tableData = [
     label: "Agreement Type",
     type: "select",
     options: agreementTypes,
-    formatValue: (value) => agreementTypes.find((at) => at.value === value)?.label || "",
+    formatValue: (value) =>
+      agreementTypes.find((at) => at.value === value)?.label || "",
     key: "agreementType",
   },
   {
@@ -87,6 +88,11 @@ const tableData = [
     label: "Approval Status",
     type: "autocomplete",
     key: "approvalStatus",
+  },
+  {
+    label: "Aqusition ID",
+    type: "autocomplete",
+    key: "acquisitionID",
   },
   {
     label: "Internal Company",

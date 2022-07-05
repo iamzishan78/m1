@@ -17,15 +17,16 @@ const fieldsList = (activeUser) => {
       label: "Agreement Name",
       type: "text",
       key: "agreementName",
-      disabled: activeUser.rolePrivileges === "READ_ONLY"
+      disabled: activeUser.rolePrivileges === "READ_ONLY",
     },
     {
       label: "Agreement Type",
       type: "select",
       options: agreementTypes,
-      formatValue: (value) => agreementTypes.find((at) => at.value === value)?.label || "",
+      formatValue: (value) =>
+        agreementTypes.find((at) => at.value === value)?.label || "",
       key: "agreementType",
-      disabled: activeUser.rolePrivileges === "READ_ONLY"
+      disabled: activeUser.rolePrivileges === "READ_ONLY",
     },
     {
       label: "Agreement Subtype",
@@ -90,6 +91,11 @@ const fieldsList = (activeUser) => {
       label: "Approval Status",
       type: "autocomplete",
       key: "approvalStatus",
+    },
+    {
+      label: "Aqusition ID",
+      type: "autocomplete",
+      key: "acquisitionID",
     },
     {
       label: "Internal Company",
