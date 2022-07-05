@@ -2079,108 +2079,122 @@ function SubTable(props) {
 
                   return (
                     <div style={{
-                      minWidth: 400,
-                      boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                      // paddingRight: '200px'
                     }}>
-                      <Grid container spacing={0} direction="row" >
-                        {
-                          props.parent === 'Documents' && <div style={{ position: 'relative', zIndex: 100 }}>
-                            <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
-                              {tableMeta.rowIndex + 1}
+
+                      <div style={{
+                        minWidth: 400,
+                        boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                        // paddingRight: '200px'
+                      }}>
+                        <Grid container spacing={0} direction="row" >
+                          {
+                            props.parent === 'Documents' && <div style={{ position: 'relative', zIndex: 100 }}>
+                              <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
+                                {tableMeta.rowIndex + 1}
+                              </div>
                             </div>
-                          </div>
-                        }
-                        <Grid
-                          item
-                          xs={1}
-                          style={{
-                            display: "flex",
-                            justifyContent: "flex-start",
-                            alignItems: "center",
-                          }}
-                        >
-                          <div
-                            onClick={() => {
-                              if (file.state !== "active") return;
-
-                              if (fileExtension === "pdf") {
-                                setStateApp({
-                                  ...stateApp,
-                                  viewDoc: { uri: uri, name: file },
-                                });
-                              }
-                            }}
-                          >
-                            {get_file_icon(fileExtension)}
-                          </div>
-                          {/* )
-                        } */}
-                          {/* </div> */}
-                        </Grid>
-
-                        <Grid xs={11} item
-                        >
-                          {/**
-                           * This is the document title showing in each row
-                           */}
-                          <div
+                          }
+                          <Grid
+                            item
+                            xs={1}
                             style={{
                               display: "flex",
-                              // alignItems: "center",
                               justifyContent: "flex-start",
-                            }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
-                              if (type === "pdf") {
-                                if (props.addAble.type === "document") {
-                                  window.history.pushState("", "", `/documents/${row_line._id}/view`);
-                                }
-                                // const selectedRow = rows.find((row) => row._id === row_line._id);
-                                setStateApp((state) => ({
-                                  ...state,
-                                  pdfView: row_line,
-                                  viewDoc: {
-                                    uri: row_line.viewToken,
-                                    name: row_line.fileName,
-                                  },
-                                }));
-                              } else {
-                                handleViewFile(row_line._id);
-                              }
+                              alignItems: "center",
                             }}
                           >
+                            <div
+                              style={{
+                                // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                              }}
 
+                              onClick={() => {
+                                if (file.state !== "active") return;
 
-                            <Grid container spacing={0} direction="row"
-
-                            // direction="column" alignItems="flex-start"
+                                if (fileExtension === "pdf") {
+                                  setStateApp({
+                                    ...stateApp,
+                                    viewDoc: { uri: uri, name: file },
+                                  });
+                                }
+                              }}
                             >
-                              <Grid item
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-start",
-                                  alignItems: "center",
-                                }}>
-                                <p
+                              {get_file_icon(fileExtension)}
+                            </div>
+                            {/* )
+                        } */}
+                            {/* </div> */}
+                          </Grid>
+
+                          <Grid xs={11} item
+                          >
+                            {/**
+                           * This is the document title showing in each row
+                           */}
+                            <div
+                              style={{
+                                display: "flex",
+                                // alignItems: "center",
+                                justifyContent: "flex-start",
+
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
+                                if (type === "pdf") {
+                                  if (props.addAble.type === "document") {
+                                    window.history.pushState("", "", `/documents/${row_line._id}/view`);
+                                  }
+                                  // const selectedRow = rows.find((row) => row._id === row_line._id);
+                                  setStateApp((state) => ({
+                                    ...state,
+                                    pdfView: row_line,
+                                    viewDoc: {
+                                      uri: row_line.viewToken,
+                                      name: row_line.fileName,
+                                    },
+                                  }));
+                                } else {
+                                  handleViewFile(row_line._id);
+                                }
+                              }}
+                            >
+
+
+                              <Grid container spacing={0} direction="row"
+
+                              // direction="column" alignItems="flex-start"
+                              >
+                                <Grid item
                                   style={{
                                     display: "flex",
-                                    cursor: "pointer",
-                                    // padding: "10px 10px 10px 10px",
-                                    // position: "relative",
-                                    minWidth: "120px",
-                                    // marginLeft: "-10px",
-                                    borderRadius: "7px",
-                                    color: "#17aadd",
-                                    wordBreak: "break-word",
-                                    "&:hover": {
-                                      textDecoration: "underline",
-                                    },
-                                    fontWeight: "bold",
                                     justifyContent: "flex-start",
-                                  }}>{value}</p>
-                              </Grid>
-                              {/* <Grid item>
+                                    alignItems: "center",
+                                  }}>
+                                  <p
+                                    style={{
+                                      display: "flex",
+                                      cursor: "pointer",
+                                      // padding: "10px 10px 10px 10px",
+                                      // position: "relative",
+                                      minWidth: "120px",
+                                      // marginLeft: "-10px",
+                                      borderRadius: "7px",
+                                      color: "#17aadd",
+                                      wordBreak: "break-word",
+                                      "&:hover": {
+                                        textDecoration: "underline",
+                                      },
+                                      fontWeight: "bold",
+                                      justifyContent: "flex-start",
+                                    }}>{value}</p>
+                                </Grid>
+                                {/* <Grid item>
                                  <p style={{
                                   padding: "0px 30px 10px 10px",
                                   marginTop: "-20px",
@@ -2190,10 +2204,16 @@ function SubTable(props) {
                                   {convert_date(dateTime)}
                                   </p>
                               </Grid> */}
-                            </Grid>
-                          </div>
+                              </Grid>
+                            </div>
+                          </Grid>
                         </Grid>
-                      </Grid>
+                      </div>
+                      <div
+                        style={{
+                          paddingRight: '40px'
+                        }}
+                      ></div>
                     </div>
                   );
                 },
