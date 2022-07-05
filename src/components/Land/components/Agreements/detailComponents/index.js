@@ -42,6 +42,11 @@ import MapImgViewIcon from "components/Shared/svgIcons/MapImgViewIcon";
 import MapProvider from "components/Map/MapProvider";
 
 const useStyles = makeStyles((theme) => ({
+  mapProvider: {
+    position: "relative",
+    zIndex: "9999",
+    height: "calc(100vw - 63vw)",
+  },
   detailHeader: {
     backgroundColor: "#fff",
     padding: "20px 27px 0px 45px",
@@ -572,11 +577,7 @@ export default function DetailComponents(props) {
                   : <div
                     id="summary-div"
                     ref={tab === 0 ? selectedTabRef : null}
-                    style={{
-                      position: "relative",
-                      "z-index": "9999",
-                      height: "calc(100vw - 47vw)"
-                    }}
+                    className={`${classes.mapProvider}  summary-div-small-map`}
                   >
                     <MapProvider
                       match={{
@@ -585,6 +586,7 @@ export default function DetailComponents(props) {
                           openSpeedDial: false,
                           hideShape: true,
                           paramId: agreementId,
+                          layerPadding: { padding: { top: 50, bottom: 50, left: !metaCollapse ? 300 : 700, right: 20 } }
                         },
                       }}
                     ></MapProvider>
