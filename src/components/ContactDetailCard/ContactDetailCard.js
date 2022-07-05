@@ -899,6 +899,7 @@ function ContactDetailCard(props) {
                     awaitRefetchQueries: false,
                   });
                 }}
+                activityLog={contactData.activityLog}
               />
             </div>
           )}
