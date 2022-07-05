@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
       "&>.MuiPaper-root": {
         display: "flex",
         "flex-direction": "column",
-        height: "calc(100vh - 90px)",
+        height: "calc(100vh - 65px)",
         position: "relative",
         "align-items": "stretch",
         "&>.MuiPaper-root": {

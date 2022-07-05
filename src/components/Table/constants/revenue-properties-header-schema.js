@@ -1,15 +1,45 @@
 import { history } from "store";
+import GlobalSettings from "..//..//..//GlobalSettings.js";
+
 const RevenuePropertiesHeadCells = [
   {
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
-
   {
+
+    /// this is the control column for properties 
+
     name: "number",
     label: "Property",
     esKey: "number.keyword",
     options: {
+
+      ...GlobalSettings.muiGridControlOptions,
+
+
+      // setCellProps: () => ({
+      //   style: {
+      //     minWidth: "150px",
+      //     whiteSpace: "nowrap",
+      //     position: "sticky",
+      //     left: "77px",
+      //     background: "white",
+      //     zIndex: 200,
+      //     boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+      //   }
+      // }),
+      // setCellHeaderProps: () => ({
+      //   style: {
+      //     position: "sticky",
+      //     minWidth: "150px",
+      //     left: "77px",
+      //     zIndex: 201,
+      //     // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+      //   }
+      // }),
+
+      
       customRender: (value, tableMeta) => {
         const splitNumber = value?.split("_");
         const styles = {
@@ -19,6 +49,9 @@ const RevenuePropertiesHeadCells = [
           cursor: "pointer",
         };
         return (
+          <div
+            // style={{borderRight: 'solid red'}}
+          >
           <p
             onClick={(e) => {
               e.stopPropagation();
@@ -30,34 +63,45 @@ const RevenuePropertiesHeadCells = [
             {splitNumber?.[0]
               ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
               : tableMeta?.rowData[2]}
-          </p>
+
+            </p>
+            {/* <Button/> */}
+            </div>
+            
+
+
         );
       },
-      sort: true,
-      filter: true,
+
+      // sort: true,
+      // filter: true,
+      // stickyColumn: true,
+      // viewColumns: false,
+      // display: true,
+
     },
   },
   {
     name: "name",
     label: "Property Name",
     esKey: "name.keyword",
-    options: { sort: true, filter: true, display: false },
+    options: { sort: true, filter: true, 
+      display: false },
+    // options: {
+    //   ...GlobalSettings.muiGridStandardOptions,
+    //   display: false,
+    // }
   },
-  {
-    name: "payorName",
-    label: "Operator",
-    esKey: "operator.name.keyword",
-    options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "225px" } }),
-    },
-  },
+
   {
     name: "state",
     label: "State",
     esKey: "state.keyword",
-    options: { sort: true, filter: true },
+    options: { sort: true, 
+      filter: true },
+    // options: {
+    //   ...GlobalSettings.muiGridStandardOptions,
+    // }
   },
   {
     name: "county",
@@ -65,16 +109,7 @@ const RevenuePropertiesHeadCells = [
     esKey: "county.keyword",
     options: { sort: true, filter: true },
   },
-  {
-    name: "source",
-    label: "Source",
-    esKey: "source.keyword",
-    options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
-    },
-  },
+
 
   {
     name: "wellApiNumber",
@@ -94,6 +129,16 @@ const RevenuePropertiesHeadCells = [
       sort: true,
       filter: true,
       setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }),
+    },
+  },
+  {
+    name: "payorName",
+    label: "Operator",
+    esKey: "operator.name.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "225px" } }),
     },
   },
   {
@@ -130,18 +175,6 @@ const RevenuePropertiesHeadCells = [
     style: { minWidth: 120 },
   },
   {
-    name: "prospectID",
-    label: "Prospect",
-    esKey: "prospectID.keyword",
-    options: { sort: true, filter: true },
-  },
-  {
-    name: "acquisitionID",
-    label: "Acquisition ID",
-    esKey: "acquisitionID.keyword",
-    options: { sort: true, filter: true },
-  },
-  {
     name: "lastChecked",
     label: "Last Check",
     esKey: "lastCheck.checkDate",
@@ -160,6 +193,19 @@ const RevenuePropertiesHeadCells = [
       isDate: true,
     },
   },
+  {
+    name: "prospectID",
+    label: "Prospect",
+    esKey: "prospectID.keyword",
+    options: { sort: true, filter: true },
+  },
+  {
+    name: "acquisitionID",
+    label: "Acquisition ID",
+    esKey: "acquisitionID.keyword",
+    options: { sort: true, filter: true },
+  },
+
 
   {
     name: "internalID",
@@ -191,6 +237,17 @@ const RevenuePropertiesHeadCells = [
       filter: true,
     },
     style: { minWidth: 120 },
+  },
+
+  {
+    name: "source",
+    label: "Source",
+    esKey: "source.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
+    },
   },
 
   {
