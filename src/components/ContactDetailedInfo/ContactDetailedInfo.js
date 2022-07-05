@@ -330,6 +330,7 @@ export default function DetailInfo(props) {
                   let objName = Object.keys(row.data)[0];
                   if (
                     row.data[objName] !== undefined &&
+                    row.data[objName] !== null &&
                     row.data[objName] !== `""` &&
                     row.data[objName] !== "" &&
                     row.data[objName] !== "" &&
