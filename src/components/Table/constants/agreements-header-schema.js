@@ -98,41 +98,48 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     name: "agreementName",
     label: "Agreement Name",
     esKey: "shapeJson.properties.agreementName.keyword",
+    // options: {
+    //   // setCellProps: () => ({
+    //   //   style: {
+    //   //     minWidth: "300px",
+    //   //     whiteSpace: "nowrap",
+    //   //     position: "sticky",
+    //   //     left: isSnapGrid ? "227px" : "245px",
+    //   //     background: "white",
+    //   //     zIndex: 100
+    //   //   }
+    //   // }),
+    //   // setCellHeaderProps: () => ({
+    //   //   style: {
+    //   //     position: "sticky",
+    //   //     minWidth: "150px",
+    //   //     left: isSnapGrid ? "227px" : "245px",
+    //   //     zIndex: 101
+    //   //   }
+    //   // }),
+    //   dbName: "shapeJson.properties.agreementName",
+    //   // stickyColumn: true,
+    //   sort: true,
+    //   filter: true,
+    //   viewColumns: false,
+    //   display: true,
+    // },
+
     options: {
-      // setCellProps: () => ({
-      //   style: {
-      //     minWidth: "300px",
-      //     whiteSpace: "nowrap",
-      //     position: "sticky",
-      //     left: isSnapGrid ? "227px" : "245px",
-      //     background: "white",
-      //     zIndex: 100
-      //   }
-      // }),
-      // setCellHeaderProps: () => ({
-      //   style: {
-      //     position: "sticky",
-      //     minWidth: "150px",
-      //     left: isSnapGrid ? "227px" : "245px",
-      //     zIndex: 101
-      //   }
-      // }),
+      ...GlobalSettings.muiGridStandardOptions,
       dbName: "shapeJson.properties.agreementName",
-      // stickyColumn: true,
-      sort: true,
-      filter: true,
-      viewColumns: false,
-      display: true,
-    },
+    }
+
   },
   {
     name: "agreementType",
     label: "Type",
     esKey: "shapeJson.properties.agreementType.keyword",
     options: {
+      ...GlobalSettings.muiGridStandardOptions,
       dbName: "shapeJson.properties.agreementSubtype",
-      sort: true,
-      filter: true,
+      // sort: true,
+      // filter: true,
     },
   },
   {
@@ -140,10 +147,11 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Subtype",
     esKey: "shapeJson.properties.agreementSubtype.keyword",
     options: {
-      setCellProps: () => ({ style: { minWidth: "170px" } }),
+      // setCellProps: () => ({ style: { minWidth: "170px" } }),
+      ...GlobalSettings.muiGridStandardOptions,
       dbName: "shapeJson.properties.agreementSubtype",
-      sort: true,
-      filter: true,
+      // sort: true,
+      // filter: true,
     },
   },
   {

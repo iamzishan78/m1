@@ -94,29 +94,32 @@ const RevenuePropertiesHeadCells = [
     name: "name",
     label: "Property Name",
     esKey: "name.keyword",
-    options: { sort: true, filter: true, 
-      display: false },
-    // options: {
-    //   ...GlobalSettings.muiGridStandardOptions,
-    //   display: false,
-    // }
+    // options: { sort: true, filter: true, 
+    //   display: false },
+    options: {
+      ...GlobalSettings.muiGridStandardOptions,
+      display: false,
+    }
   },
 
   {
     name: "state",
     label: "State",
     esKey: "state.keyword",
-    options: { sort: true, 
-      filter: true },
-    // options: {
-    //   ...GlobalSettings.muiGridStandardOptions,
-    // }
+    // options: { sort: true, 
+    //   filter: true },
+    options: {
+      ...GlobalSettings.muiGridStandardOptions,
+    }
   },
   {
     name: "county",
     label: "County",
     esKey: "county.keyword",
-    options: { sort: true, filter: true },
+    // options: { sort: true, filter: true },
+    options: {
+      ...GlobalSettings.muiGridStandardOptions,
+    }
   },
 
 
@@ -127,6 +130,7 @@ const RevenuePropertiesHeadCells = [
     options: {
       sort: true,
       filter: true,
+      // ...GlobalSettings.muiGridStandardOptions,
       setCellProps: () => ({ style: { minWidth: "110px", maxWidth: "110px" } }),
     },
   },
@@ -144,17 +148,23 @@ const RevenuePropertiesHeadCells = [
     name: "payorName",
     label: "Operator",
     esKey: "operator.name.keyword",
+    // options: {
+    //   sort: true,
+    //   filter: true,
+    //   setCellProps: () => ({ style: { minWidth: "225px" } }),
+    // },
     options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "225px" } }),
-    },
+      ...GlobalSettings.muiGridStandardOptions,
+    }
   },
   {
     name: "status",
     label: "Pay Status",
     esKey: "status.keyword",
-    options: { sort: true, filter: true },
+    // options: { sort: true, filter: true },
+    options: {
+      ...GlobalSettings.muiGridStandardOptions,
+    }
   },
   // {
   //   name: "type",
@@ -182,21 +192,27 @@ const RevenuePropertiesHeadCells = [
       filter: true,
     },
     style: { minWidth: 120 },
+    options: {
+      ...GlobalSettings.muiGridStandardOptions,
+    }
   },
   {
     name: "lastChecked",
     label: "Last Check",
     esKey: "lastCheck.checkDate",
+    // options: {
+    //   customHeadLabelRender: () => (
+    //     <>
+    //       <div style={{ width: 120 }}>Last Check</div>
+    //     </>
+    //   ),
+    //   sort: true,
+    //   filter: true,
+    // },
+    // style: { minWidth: 120 },
     options: {
-      customHeadLabelRender: () => (
-        <>
-          <div style={{ width: 120 }}>Last Check</div>
-        </>
-      ),
-      sort: true,
-      filter: true,
+      ...GlobalSettings.muiGridStandardOptions,
     },
-    style: { minWidth: 120 },
     custom: {
       key_as_string: true,
       isDate: true,
@@ -206,13 +222,19 @@ const RevenuePropertiesHeadCells = [
     name: "prospectID",
     label: "Prospect",
     esKey: "prospectID.keyword",
-    options: { sort: true, filter: true },
+    // options: { sort: true, filter: true },
+    options: {
+      ...GlobalSettings.muiGridStandardOptions,
+    }
   },
   {
     name: "acquisitionID",
     label: "Acquisition ID",
     esKey: "acquisitionID.keyword",
-    options: { sort: true, filter: true },
+    // options: { sort: true, filter: true },
+    options: {
+      ...GlobalSettings.muiGridStandardOptions,
+    }
   },
 
 
@@ -220,43 +242,52 @@ const RevenuePropertiesHeadCells = [
     name: "internalID",
     label: "Internal ID #",
     esKey: "internalID.keyword",
+    // options: {
+    //   customHeadLabelRender: () => (
+    //     <>
+    //       <div style={{ minWidth: 100 }}>Internal ID #</div>
+    //     </>
+    //   ),
+    //   sort: true,
+    //   filter: true,
+    // },
     options: {
-      customHeadLabelRender: () => (
-        <>
-          <div style={{ minWidth: 100 }}>Internal ID #</div>
-        </>
-      ),
-      sort: true,
-      filter: true,
-    },
-    style: { minWidth: 100 },
+      ...GlobalSettings.muiGridStandardOptions,
+    }
+    // style: { minWidth: 100 },
   },
 
   {
     name: "internalCompany",
     label: "Internal Company",
     esKey: "internalCompany.keyword",
+    // options: {
+    //   customHeadLabelRender: () => (
+    //     <>
+    //       <div style={{ minWidth: 120 }}>Internal Company</div>
+    //     </>
+    //   ),
+    //   sort: true,
+    //   filter: true,
+    // },
+    // style: { minWidth: 120 },
     options: {
-      customHeadLabelRender: () => (
-        <>
-          <div style={{ minWidth: 120 }}>Internal Company</div>
-        </>
-      ),
-      sort: true,
-      filter: true,
-    },
-    style: { minWidth: 120 },
+      ...GlobalSettings.muiGridStandardOptions,
+    }
   },
 
   {
     name: "source",
     label: "Source",
     esKey: "source.keyword",
+    // options: {
+    //   sort: true,
+    //   filter: true,
+    //   setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
+    // },
     options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
-    },
+      ...GlobalSettings.muiGridStandardOptions,
+    }
   },
 
   {
@@ -264,6 +295,7 @@ const RevenuePropertiesHeadCells = [
     label: "Tags",
     esKey: "tags.tag.keyword",
     options: { sort: true, filter: true },
+    
   },
   {
     name: "commentsCounter",
