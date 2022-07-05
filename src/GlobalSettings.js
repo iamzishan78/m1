@@ -6,6 +6,27 @@ import Typography from "@material-ui/core/Typography";
 
 const GlobalSettings = {
 
+    muiGridControlCodeInjection: {
+        numerals:{
+                            //  {             // props.parent === 'Documents' && 
+                            //   <div style={{ position: 'relative', zIndex: 100 }}>
+                            //     <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
+                            //       {tableMeta.rowIndex + 1}
+                            //     </div>
+                            //   </div>
+                            // }
+                            numerals: () => (
+                              <div style={{ position: 'relative', zIndex: 100 }}>
+                                <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
+                                  {tableMeta.rowIndex + 1}
+                                </div>
+                              </div>
+                              ),
+
+        }
+    },
+
+
     // this is custom options settings for control grid elements (frist column w/ row level indicators and controls)
     muiGridControlOptions: {
 
@@ -42,6 +63,34 @@ const GlobalSettings = {
 
         // display indicates if the default is set to show the column in the grid 
         display: true,
+
+        // customRender: (value, tableMeta) => {
+        //     // const splitNumber = value?.split("_");
+        //     // const styles = {
+        //     //   minWidth: 225,
+        //     //   fontWeight: 600,
+        //     //   color: "#17aadd",
+        //     //   cursor: "pointer",
+        //     // };
+        //     return (
+        //       <div
+        //         // style={{borderRight: 'solid red'}}
+        //       >
+        //                     {
+        //                       // props.parent === 'Documents' && 
+        //                       <div style={{ position: 'relative', zIndex: 100 }}>
+        //                         <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
+        //                           {tableMeta.rowIndex + 1}
+        //                         </div>
+        //                       </div>
+        //                     }
+            
+        //         </div>
+                
+    
+    
+        //     );
+        //   },
 
     },
 

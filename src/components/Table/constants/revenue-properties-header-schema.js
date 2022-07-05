@@ -52,6 +52,15 @@ const RevenuePropertiesHeadCells = [
           <div
             // style={{borderRight: 'solid red'}}
           >
+          {/* {GlobalSettings.muiGridControlCodeInjection.numerals} */}
+          {/* //               {
+          //                 // props.parent === 'Documents' && 
+          //                 <div style={{ position: 'relative', zIndex: 100 }}>
+          //                   <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
+          //                     {tableMeta.rowIndex + 1}
+          //                   </div>
+          //                 </div>
+          //               } */}
           <p
             onClick={(e) => {
               e.stopPropagation();
