@@ -1218,7 +1218,7 @@ function SubTable(props) {
             ...column.options,
             customBodyRender: (value, tableMeta) => {
               const rowIndex = tableMeta.rowIndex;
-              if (rowIndex === props.rows.length - 2) {
+              if (rowIndex === props.rows.length - 5) {
                 return (
                   <Fragment>
                     <Waypoint
@@ -1247,7 +1247,6 @@ function SubTable(props) {
               ...column.options,
               customBodyRender: (value, tableMeta, updateValue) => {
                 let id = props.targetLabel + tableMeta.columnIndex;
-                console.log('table detail card', props.parent, props.targetLabel)
                 if (props.parent !== "search" && props.targetLabel !== "well") {
                   return (
                     <Tooltip title={"Detail Card"} placement="top">
@@ -3307,7 +3306,6 @@ function SubTable(props) {
               const selectedRows = [];
               for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
                 rows[m1nSelectedRowsIndexes[i]]._id = rows[m1nSelectedRowsIndexes[i]].isContact;
-                console.log("rows m1Selected", rows[m1nSelectedRowsIndexes[i]]);
                 selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
               }
               return selectedRows;

@@ -302,17 +302,7 @@ export const TableHOC = (Component) => {
                 changeESPage: () => {
                     setLoading(true);
 
-                    let afterSort = rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null
-                    // if (rows && tableState.page > meta.pageInd)
-                    //     for (let i = rows.length - 1; i >= 0; i--) {
-                    //         afterSort = rows[i]?.sort
-                    //         if (((new Date(afterSort[0])).getTime() > 0)) {
-                    //             afterSort = rows[i]?.sort
-                    //             if (i !== rows.length - 1) afterSort[0] += 1
-                    //             break;
-                    //         }
-                    //     }
-                    setPage(tableState.page)
+                    let afterSort = rows && tableState.page > page ? rows[rows.length - 1]?.sort : null
 
                     gqlQuery({
                         ...pageESVariables,
@@ -321,11 +311,12 @@ export const TableHOC = (Component) => {
                             pagination: {
                                 pit: tableData.pit,
                                 ...pageESVariables.variables.pagination,
-                                before: tableState.page === 0 ? null : rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
+                                before: tableState.page === 0 ? null : rows && tableState.page < page ? rows[0]?.sort : null,
                                 after: afterSort,
                             },
                         },
                     });
+                    setPage(tableState.page)
                 },
                 searchClientSide: () => {
                     let searchRows = []
