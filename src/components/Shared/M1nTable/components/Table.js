@@ -2077,8 +2077,17 @@ function SubTable(props) {
                   const uri = row_line?.fileUrl;
 
                   return (
+                    <div style={{ 
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                      // paddingRight: '200px'
+                    }}>
+
                     <div style={{ minWidth: 400,
                       boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                      // paddingRight: '200px'
                     }}>
                       <Grid container spacing={0} direction="row" >
                         {
@@ -2098,6 +2107,10 @@ function SubTable(props) {
                           }}
                         >
                           <div
+                            style={{ 
+                              // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                            }}
+
                             onClick={() => {
                               if (file.state !== "active") return;
 
@@ -2126,6 +2139,7 @@ function SubTable(props) {
                               display: "flex",
                               // alignItems: "center",
                               justifyContent: "flex-start",
+
                             }}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -2192,6 +2206,12 @@ function SubTable(props) {
                           </div>
                         </Grid>
                       </Grid>
+                    </div>
+                    <div
+                    style={{
+                      paddingRight: '40px'
+                    }}
+                    ></div>
                     </div>
                   );
                 },
