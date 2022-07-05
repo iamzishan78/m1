@@ -1,8 +1,11 @@
 import { IconButton } from "@material-ui/core";
 import WarningIcon from "@material-ui/icons/Warning";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import MapFilledIcon from "components/Shared/svgIcons/MapFilled"
+import MapFilledIcon from "components/Shared/svgIcons/MapFilled";
 import { history } from "store";
+import GlobalSettings from "..//..//..//GlobalSettings.js";
+
+
 
 const AgreementsHeadCells = (isSnapGrid = false) => [
   {
@@ -42,36 +45,32 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
   //   // sortThirdClickReset: true,
   // },
   {
+
+    // this column is considered the grid "control"
+
     name: "agreementNumber",
     label: "Agreement #",
     esKey: "shapeJson.properties.agreementNumber.keyword",
     options: {
-      setCellProps: () => ({
-        style: {
-          minWidth: "150px",
-          whiteSpace: "nowrap",
-          position: "sticky",
-          left: "77px",
-          background: "white",
-          zIndex: 200,
-          boxShadow: 'inset -1px 0px 0px 0px lightgrey',
-        }
-      }),
-      setCellHeaderProps: () => ({
-        style: {
-          position: "sticky",
-          minWidth: "150px",
-          left: "77px",
-          zIndex: 201
-        }
-      }),
+      ...GlobalSettings.muiGridControlOptions,
       dbName: "shapeJson.properties.agreementNumber",
-      // stickyColumn: true,
-      sort: true,
-      filter: true,
-      viewColumns: false,
-      // display: true,
-      // sortThirdClickReset: true,
+
+      // setCellProps: () => ({
+      //   style: {
+      //     ...GlobalSettings.muiGridControlCell,
+      //   }
+      // }),
+      // setCellHeaderProps: () => ({
+      //   style: {
+      //     ...GlobalSettings.muiGridControlHeader,
+      //   }
+      // }),
+      // sort: true,
+      // filter: true,
+      // viewColumns: false,
+      // // display: true,
+      // // sortThirdClickReset: true,
+
       customRender: (value, tableMeta) => {
         return (
           <p
@@ -92,6 +91,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
           </p>
         );
       },
+
     },
   },
   {
