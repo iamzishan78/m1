@@ -87,7 +87,7 @@ export default function SummaryFields({ contactData }) {
   }, [contactData, reset, isFormSet]);
 
   const getCommaValue = (value) => {
-    if (!value.includes(".")) {
+    if (value && !value.includes(".")) {
       return vf_number(Number(value.replace(/,/g, "")));
     } else return value;
   }
