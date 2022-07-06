@@ -11,3 +11,9 @@ export const UNLINK_GLOBAL_OWNER = gql`
     unlinkGlobalOwners(contactId: $contactId, globalOwner: $globalOwner)
   }
 `
+
+export const LINK_GLOBAL_OWNER = gql`
+  mutation linkGlobalOwners($contactId: ID, $globalOwnerId: ID) {
+    linkGlobalOwners(contactId: $contactId, globalOwnerId: $globalOwnerId)
+  }
+`;

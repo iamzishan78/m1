@@ -6,14 +6,20 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import debounce from "lodash/debounce";
 import Tooltip from "@material-ui/core/Tooltip";
 import LinkIcon from "@material-ui/icons/Link";
-import { Grid, Container, Box, Typography, Badge, TextField, InputAdornment } from "@material-ui/core";
+import { Grid, Container, Box, Typography, Badge, TextField, InputAdornment, Button } from "@material-ui/core";
 import RightDialog from "../ContactDetailCard/components/RightDialog";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
-import SearchIcon from '@material-ui/icons/Search';
+import SearchIcon from '@material-ui/icons/Search'; 
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
-import { LINKED_GLOBAL_OWNERS, UNLINK_GLOBAL_OWNER } from "../../graphQL/useQueryLinkedGlobalOwners";
+import {
+  LINKED_GLOBAL_OWNERS,
+  UNLINK_GLOBAL_OWNER,
+  LINK_GLOBAL_OWNER,
+} from "../../graphQL/useQueryLinkedGlobalOwners";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
+import PersonIcon from "@material-ui/icons/Person";
+import ControlPointIcon from "@material-ui/icons/ControlPoint";
 
 export default function LinkWithIcon(props) {
   const [openDialog, setOpenDialog] = useState(false);
@@ -24,6 +30,7 @@ export default function LinkWithIcon(props) {
     fetchPolicy: "cache-and-network",
   });
   const [unlinkGlobalOwners] = useMutation(UNLINK_GLOBAL_OWNER);
+  const [linkGlobalOwners] = useMutation(LINK_GLOBAL_OWNER);
   const [getESSimpleSearch, { data: esSearchData }] = useLazyQuery(
     GET_ES_SIMPLE_SEARCH,
     { fetchPolicy: "no-cache" }
@@ -41,7 +48,7 @@ export default function LinkWithIcon(props) {
   }, [props.objectId]);
 
   useEffect(() => {
-    debouncedSeearch();
+    debouncedSearch();
   }, [inputSearchValue]);
 
 
@@ -94,7 +101,7 @@ export default function LinkWithIcon(props) {
       variables: {
         index: "platformData:globalowner",
         pagination: {
-          first: 5,
+          first: 25,
           keep_alive: "1micros",
         },
         search: {
@@ -104,7 +111,7 @@ export default function LinkWithIcon(props) {
       },
     });
   }
-  const debouncedSeearch = debounce(searchTaxOwners, 500)
+  const debouncedSearch = debounce(searchTaxOwners, 1000)
 
   const handleRemoveGlobalOwner = () => {
     unlinkGlobalOwners({
@@ -117,7 +124,18 @@ export default function LinkWithIcon(props) {
     });
   };
 
-  console.log("-*-*-*esSearchData-*-*-*-", esSearchData);
+  const handleAddGlobalOwner = (globalOwnerId) => {
+    linkGlobalOwners({
+      variables: {
+        contactId: props.objectId,
+        globalOwnerId,
+      },
+      refetchQueries: ["getLinkedGlobalOwners"],
+      awaitRefetchQueries: true,
+    });
+  }
+  
+  console.log("-*-*-*esSearchData-*-*-*-", {esSearchData, data});
   return (
     <React.Fragment>
       <Tooltip title={"Linked Global Owner"} placement="top">
@@ -194,6 +212,46 @@ export default function LinkWithIcon(props) {
                     }}
                   />
                 </Grid>
+
+                {inputSearchValue && (
+                  <Grid container style={{ maxHeight: 300, overflowY: "auto" }}>
+                    <Grid
+                      container
+                      item
+                      xs={12}
+                      className={classes.groupsHeaders}
+                    >
+                      <Grid item xs={6}>
+                        <h3 className={classes.groupsHeadersText}>
+                          PLATFORM OWNERS
+                        </h3>
+                      </Grid>
+                      <Grid
+                        item
+                        xs={6}
+                        style={{
+                          textAlign: "right",
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Button
+                          size="small"
+                          className={classes.groupsButton}
+                          onClick={() => {
+                            // setSearchTop(200);
+                          }}
+                        >
+                          See All Results
+                        </Button>
+                      </Grid>
+                    </Grid>
+                    {esSearchData.getESSimpleSearch.hits.map((globalOwner) => (
+                        <ListGlobalOwners globalOwner={globalOwner} onClick={() => handleAddGlobalOwner()} key={"search_tax_owners" + globalOwner._id} />
+                    ))}
+                  </Grid>
+                )}
                 {getGlobalOwners().length > 0 ? (
                   <>
                     <Box mt={2}>
@@ -308,4 +366,51 @@ export default function LinkWithIcon(props) {
       </Dialog>
     </React.Fragment>
   );
+}
+
+
+const ListGlobalOwners = ({globalOwner, onClick}) => {
+  return (
+    <Grid container spacing={0}>
+      <Grid
+        container
+        item
+        xs={10}
+        spacing={2}
+        alignItems="center"
+        style={{marginBottom: 5}}
+      >
+        <Grid item>
+          <PersonIcon
+            color={"#757575"}
+          />
+        </Grid>
+        <Grid item xs>
+          <span>{globalOwner.ownerName}</span>
+          <Typography variant="body2" color="textSecondary">
+            {globalOwner.streetAddress}, {globalOwner.city},{" "}
+            {globalOwner.state}, {globalOwner.zip}
+          </Typography>
+        </Grid>
+      </Grid>
+      <Grid item>
+        {true ? (
+          <Button
+            onClick={() => onClick(globalOwner._id)}
+          >
+            <ControlPointIcon
+              className={classes.icon}
+              color={"#757575"}
+              onCL
+            />
+          </Button>
+        ) : (
+          <LinkIcon
+            className={classes.icon}
+            color={"#757575"}
+          />
+        )}
+      </Grid>
+    </Grid>
+  )
 }
