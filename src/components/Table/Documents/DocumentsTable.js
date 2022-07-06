@@ -99,7 +99,7 @@ function DocumentsTable(props) {
   const dense = true;
   const total = false;
   const orderByTracks = false;
-  const startPaginationAt = 25;
+  const startPaginationAt = 50;
 
   useEffect(() => {
     if (props.refetch === false) return
