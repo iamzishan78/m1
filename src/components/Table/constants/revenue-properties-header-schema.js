@@ -14,32 +14,7 @@ const RevenuePropertiesHeadCells = [
     label: "Property",
     esKey: "number.keyword",
     options: {
-
       ...GlobalSettings.muiGridControlOptions,
-
-
-      // setCellProps: () => ({
-      //   style: {
-      //     minWidth: "150px",
-      //     whiteSpace: "nowrap",
-      //     position: "sticky",
-      //     left: "77px",
-      //     background: "white",
-      //     zIndex: 200,
-      //     boxShadow: 'inset -1px 0px 0px 0px lightgrey',
-      //   }
-      // }),
-      // setCellHeaderProps: () => ({
-      //   style: {
-      //     position: "sticky",
-      //     minWidth: "150px",
-      //     left: "77px",
-      //     zIndex: 201,
-      //     // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
-      //   }
-      // }),
-
-      
       customRender: (value, tableMeta) => {
         const splitNumber = value?.split("_");
         const styles = {
@@ -50,17 +25,19 @@ const RevenuePropertiesHeadCells = [
         };
         return (
           <div
-            // style={{borderRight: 'solid red'}}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start'
+            }}
           >
-          {/* {GlobalSettings.muiGridControlCodeInjection.numerals} */}
-          {/* //               {
-          //                 // props.parent === 'Documents' && 
-          //                 <div style={{ position: 'relative', zIndex: 100 }}>
-          //                   <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
-          //                     {tableMeta.rowIndex + 1}
-          //                   </div>
-          //                 </div>
-          //               } */}
+          <div
+            style={{
+              paddingRight: '70px',
+            }}
+          >
+          {tableMeta.rowIndex + 1}
+          </div>
           <p
             onClick={(e) => {
               e.stopPropagation();
@@ -68,151 +45,63 @@ const RevenuePropertiesHeadCells = [
             }}
             style={styles}
           >
-            {/* {splitNumber?.[0]} */}
             {splitNumber?.[0]
               ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
               : tableMeta?.rowData[2]}
 
             </p>
-            {/* <Button/> */}
             </div>
-            
-
-
         );
       },
-
-      // sort: true,
-      // filter: true,
-      // stickyColumn: true,
-      // viewColumns: false,
-      // display: true,
-
     },
   },
   {
     name: "name",
     label: "Property Name",
     esKey: "name.keyword",
-    // options: { sort: true, filter: true, 
-    //   display: false },
     options: {
-      ...GlobalSettings.muiGridStandardOptions,
       display: false,
     }
   },
-
   {
     name: "state",
     label: "State",
     esKey: "state.keyword",
-    // options: { sort: true, 
-    //   filter: true },
-    options: {
-      ...GlobalSettings.muiGridStandardOptions,
-    }
   },
   {
     name: "county",
     label: "County",
     esKey: "county.keyword",
-    // options: { sort: true, filter: true },
-    options: {
-      ...GlobalSettings.muiGridStandardOptions,
-    }
   },
-
-
   {
     name: "wellApiNumber",
     label: "Well API",
     esKey: "wells.apiNumber.keyword",
-    options: {
-      sort: true,
-      filter: true,
-      // ...GlobalSettings.muiGridStandardOptions,
-      setCellProps: () => ({ style: { minWidth: "110px", maxWidth: "110px" } }),
-    },
   },
   {
     name: "wellName",
     label: "Well Name",
     esKey: "wells.wellName.keyword",
-    options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }),
-    },
   },
   {
     name: "payorName",
     label: "Operator",
     esKey: "operator.name.keyword",
-    // options: {
-    //   sort: true,
-    //   filter: true,
-    //   setCellProps: () => ({ style: { minWidth: "225px" } }),
-    // },
-    options: {
-      ...GlobalSettings.muiGridStandardOptions,
-    }
   },
   {
     name: "status",
     label: "Pay Status",
     esKey: "status.keyword",
-    // options: { sort: true, filter: true },
-    options: {
-      ...GlobalSettings.muiGridStandardOptions,
-    }
   },
-  // {
-  //   name: "type",
-  //   label: "Type",
-  //   esKey: "type.keyword",
-  //   options: { sort: true, filter: true },
-  // },
-  // {
-  //   name: "amount",
-  //   label: "Decimal",
-  //   esKey: "amount",
-  //   options: { sort: true, filter: true },
-  // },
   {
     name: "checkNumber",
     label: "Last Check #",
     esKey: "lastCheck.checkNumber.keyword",
-    options: {
-      customHeadLabelRender: () => (
-        <>
-          <div style={{ width: 120 }}>Last Check #</div>
-        </>
-      ),
-      sort: true,
-      filter: true,
-    },
-    style: { minWidth: 120 },
-    options: {
-      ...GlobalSettings.muiGridStandardOptions,
-    }
   },
   {
     name: "lastChecked",
     label: "Last Check",
     esKey: "lastCheck.checkDate",
-    // options: {
-    //   customHeadLabelRender: () => (
-    //     <>
-    //       <div style={{ width: 120 }}>Last Check</div>
-    //     </>
-    //   ),
-    //   sort: true,
-    //   filter: true,
-    // },
-    // style: { minWidth: 120 },
-    options: {
-      ...GlobalSettings.muiGridStandardOptions,
-    },
     custom: {
       key_as_string: true,
       isDate: true,
@@ -222,80 +111,31 @@ const RevenuePropertiesHeadCells = [
     name: "prospectID",
     label: "Prospect",
     esKey: "prospectID.keyword",
-    // options: { sort: true, filter: true },
-    options: {
-      ...GlobalSettings.muiGridStandardOptions,
-    }
   },
   {
     name: "acquisitionID",
     label: "Acquisition ID",
     esKey: "acquisitionID.keyword",
-    // options: { sort: true, filter: true },
-    options: {
-      ...GlobalSettings.muiGridStandardOptions,
-    }
   },
-
-
   {
     name: "internalID",
     label: "Internal ID #",
     esKey: "internalID.keyword",
-    // options: {
-    //   customHeadLabelRender: () => (
-    //     <>
-    //       <div style={{ minWidth: 100 }}>Internal ID #</div>
-    //     </>
-    //   ),
-    //   sort: true,
-    //   filter: true,
-    // },
-    options: {
-      ...GlobalSettings.muiGridStandardOptions,
-    }
-    // style: { minWidth: 100 },
   },
-
   {
     name: "internalCompany",
     label: "Internal Company",
     esKey: "internalCompany.keyword",
-    // options: {
-    //   customHeadLabelRender: () => (
-    //     <>
-    //       <div style={{ minWidth: 120 }}>Internal Company</div>
-    //     </>
-    //   ),
-    //   sort: true,
-    //   filter: true,
-    // },
-    // style: { minWidth: 120 },
-    options: {
-      ...GlobalSettings.muiGridStandardOptions,
-    }
   },
-
   {
     name: "source",
     label: "Source",
     esKey: "source.keyword",
-    // options: {
-    //   sort: true,
-    //   filter: true,
-    //   setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
-    // },
-    options: {
-      ...GlobalSettings.muiGridStandardOptions,
-    }
   },
-
   {
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
-    options: { sort: true, filter: true },
-    
   },
   {
     name: "commentsCounter",

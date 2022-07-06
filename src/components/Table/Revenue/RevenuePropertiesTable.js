@@ -104,6 +104,8 @@ function RevenuePropertiesTable(props) {
   delete props.options.onRowClick;
   props.options.search = props.searchBar
 
+  // console.log('PROPS BRO', props)
+
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       <Table

@@ -159,10 +159,11 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Rights",
     esKey: "shapeJson.properties.rightsType.keyword",
     options: {
-      setCellProps: () => ({ style: { minWidth: "170px" } }),
+      // setCellProps: () => ({ style: { minWidth: "170px" } }),
+      ...GlobalSettings.muiGridStandardOptions,
       dbName: "shapeJson.properties.rightsType",
-      sort: true,
-      filter: true,
+      // sort: true,
+      // filter: true,
     },
   },
   {
@@ -170,10 +171,11 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Grantor (Party 1)",
     esKey: "shapeJson.properties.grantor.keyword",
     options: {
-      setCellProps: () => ({ style: { minWidth: "225px" } }),
+      // setCellProps: () => ({ style: { minWidth: "225px" } }),
+      ...GlobalSettings.muiGridStandardOptions,
       dbName: "shapeJson.properties.grantor",
-      sort: true,
-      filter: true,
+      // sort: true,
+      // filter: true,
     },
   },
   {
@@ -181,16 +183,17 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Grantee (Party 2)",
     esKey: "shapeJson.properties.grantee.keyword",
     options: {
-      setCellProps: () => ({ style: { minWidth: "225px" } }),
+      // setCellProps: () => ({ style: { minWidth: "225px" } }),
       // customHeadLabelRender: () => (
       //   <>
       //     <div>Grantee</div>
       //     <div>(Party 2)</div>
       //   </>
       // ),
+      ...GlobalSettings.muiGridStandardOptions,
       dbName: "shapeJson.properties.grantee",
-      sort: true,
-      filter: true,
+      // sort: true,
+      // filter: true,
     },
   },
   {

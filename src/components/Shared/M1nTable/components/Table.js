@@ -145,6 +145,8 @@ const useStyles = makeStyles((theme) => ({
       "& .MuiTableCell-paddingCheckbox": {
         zIndex: (props) => (typeof props.headerZIndex !== 'undefined' ? props.headerZIndex : 100),
         paddingRight: (props) => props.dense ? '32px !important' : 'inherit',
+        // paddingRight: (props) => props.dense ? '0px !important' : '0px !important',
+
       },
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
@@ -183,7 +185,7 @@ const useStyles = makeStyles((theme) => ({
     //   left: props.header !== "Tax Roll Ownership" ? "100px !important" : "0px !important",
     // }),
     "& .MuiTableCell-body": {
-      padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
+      padding: (props) => (props.dense ? "0 !important" : "0px 0px 0px 16px"),
       backgroundColor: "#fff",
     },
     // "& .MuiTableCell-paddingCheckbox": {
@@ -1379,31 +1381,31 @@ function SubTable(props) {
             }
             break;
           }
-          case "property": {
-            {
-              column.options = {
-                ...column.options,
-                customBodyRender: (value, tableMeta, updateValue) => {
-                  const {
-                    columnData: { label },
-                    rowData,
-                  } = tableMeta;
-                  return (
-                    <>
-                      {label === "property #" && <span style={{ padding: 10 }}>{rowData[1]}</span>}
+          // case "property": {
+          //   {
+          //     column.options = {
+          //       ...column.options,
+          //       customBodyRender: (value, tableMeta, updateValue) => {
+          //         const {
+          //           columnData: { label },
+          //           rowData,
+          //         } = tableMeta;
+          //         return (
+          //           <>
+          //             {label === "property #" && <span style={{ padding: 10 }}>{rowData[1]}</span>}
 
-                      {label === "Property Name" && <span style={{ padding: 10 }}>{rowData[1].name}</span>}
+          //             {label === "Property Name" && <span style={{ padding: 10 }}>{rowData[1].name}</span>}
 
-                      {label === "State" && <span style={{ padding: 10 }}>{rowData[1].state}</span>}
+          //             {label === "State" && <span style={{ padding: 10 }}>{rowData[1].state}</span>}
 
-                      {(label === "Country" || label === "County") && <span style={{ padding: 10 }}>{rowData[1].county}</span>}
-                    </>
-                  );
-                },
-              };
-            }
-            break;
-          }
+          //             {(label === "Country" || label === "County") && <span style={{ padding: 10 }}>{rowData[1].county}</span>}
+          //           </>
+          //         );
+          //       },
+          //     };
+          //   }
+          //   break;
+          // }
           case "date": {
             {
               column.options = {

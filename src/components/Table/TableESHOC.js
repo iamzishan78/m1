@@ -29,6 +29,9 @@ import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 import { formattingGridView, sortColumns } from "utils/helper";
 import moment from "moment";
 
+import GlobalSettings from "..//..//GlobalSettings.js";
+
+
 
 export const TableESHOC = (Component, shouldGridViewSort = true) => {
     const hocWithDefaultProps = function HOC(props) {
@@ -311,6 +314,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 if (column?.options?.filter) {
                     const custom = column.custom;
                     column.options = {
+                        ...GlobalSettings.muiGridStandardOptions,
                         ...column.options,
                         sortThirdClickReset: column.options.sort === false ? false : true,
                         filter: true,

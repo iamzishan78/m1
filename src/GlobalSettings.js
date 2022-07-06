@@ -40,6 +40,8 @@ const GlobalSettings = {
                 background: "white",
                 zIndex: 200,
                 boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                padding: '0px 25px 0px 0px'
+
             }
           }),
 
@@ -86,9 +88,6 @@ const GlobalSettings = {
         //                     }
             
         //         </div>
-                
-    
-    
         //     );
         //   },
 
@@ -168,7 +167,9 @@ const GlobalSettings = {
             noWrap
             variant='body2'
             // className={classes.gridElementStyling}
-          >
+            // style={{width: '250px',
+            //         padding: '0px 25px 0px 0px'}}
+            >
             {value ? (value) : (<span 
             style={{color: "#959595"}}
             >--</span>)}
