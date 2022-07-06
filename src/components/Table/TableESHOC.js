@@ -283,7 +283,12 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 let hits = tableData?.hits
                 if (formatHits)
                     hits = formatHits(hits)
-                setRows(hits);
+                if (tableMeta.isInfiniteScroll) {
+                    setRows(rows.concat(tableData?.hits));
+                    //  document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();   } 
+                }
+                else
+                    setRows(hits);
 
                 if (formatColumns)
                     TableHeader = formatColumns(TableHeader, hits)
@@ -770,6 +775,9 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 setClickedRow({ ...rows[dataIndex] })
             }
         }
+        const onInfiniteScroll = () => {
+            document.getElementById('pagination-next').click()
+        }
 
         return (
             <span className={classes.container2}>
@@ -781,6 +789,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     total={tableData?.total}
                     loading={loading}
                     dataTracks={dataTracksIds}
+                    onInfiniteScroll={onInfiniteScroll}
                     setRows={setRows}
                     setLoading={setLoading}
                     initializeGenericData={initializeGenericData}

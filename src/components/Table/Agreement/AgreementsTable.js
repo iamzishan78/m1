@@ -34,8 +34,6 @@ import GridView from "components/Shared/GridView";
 // value formatters 
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 
-
-
 const genericDataActions = ['tags', 'comments', 'tracks']
 function AgreementsTable(props) {
   const defaultView = {
@@ -106,6 +104,7 @@ function AgreementsTable(props) {
       searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
+      isInfiniteScroll: true,
       startPaginationAt: 25,
       typeKeyword: { gridViewCategory: "Agreements", metaModule: "Agreement" },
       filters: [
@@ -177,11 +176,6 @@ function AgreementsTable(props) {
     if (selectedGridView?.name === 'My Agreements' && selectedGridView?.filters?.length)
       selectedGridView.filters[0].value = stateApp.user._id;
   };
-
-  const onInfiniteScroll = () => {
-    document.getElementById('pagination-next').click()
-  }
-
   const headerProps = {
     columns: props.columns,
     showViewModal,
@@ -235,7 +229,7 @@ function AgreementsTable(props) {
         startPaginationAt={null}
         onTableChange={props.onTableChange}
         onCustomKeyChange={onCustomKeyChange}
-        onInfiniteScroll={onInfiniteScroll}
+        onInfiniteScroll={props.onInfiniteScroll}
         options={{
           ...props.options,
           ...props.customOptions,

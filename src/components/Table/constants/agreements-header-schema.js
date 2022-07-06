@@ -96,7 +96,6 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
   },
   {
     name: "agreementName",
-    infiniteScroll: true,
     label: "Agreement Name",
     esKey: "shapeJson.properties.agreementName.keyword",
     options: {
@@ -287,7 +286,6 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
 
   {
     name: "State",
-    infiniteScroll: true,
     label: "State",
     esKey: "shapeJson.properties.originalProperties.State.keyword",
     options: {
