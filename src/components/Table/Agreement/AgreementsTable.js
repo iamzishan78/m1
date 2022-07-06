@@ -52,7 +52,7 @@ function AgreementsTable(props) {
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
   const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
 
-  const classes = usetableStyles({ isFullHeight: true });
+  const classes = usetableStyles({ isFullHeight: true, isHideFooter: true });
 
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
@@ -106,7 +106,7 @@ function AgreementsTable(props) {
       searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
-      startPaginationAt: 10,
+      startPaginationAt: 25,
       typeKeyword: { gridViewCategory: "Agreements", metaModule: "Agreement" },
       filters: [
         {
@@ -178,6 +178,9 @@ function AgreementsTable(props) {
       selectedGridView.filters[0].value = stateApp.user._id;
   };
 
+  const onInfiniteScroll = () => {
+    document.getElementById('pagination-next').click()
+  }
 
   const headerProps = {
     columns: props.columns,
@@ -232,6 +235,7 @@ function AgreementsTable(props) {
         startPaginationAt={null}
         onTableChange={props.onTableChange}
         onCustomKeyChange={onCustomKeyChange}
+        onInfiniteScroll={onInfiniteScroll}
         options={{
           ...props.options,
           ...props.customOptions,
