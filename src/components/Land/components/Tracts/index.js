@@ -103,8 +103,9 @@ function Tracts(props) {
 
   return (
     <>
-      <div style={{ marginTop: "28px", padding: "75px 56px" }}>
+      <div style={{ marginTop: "28px", padding: "20px 75px 0px 75px" }}>
         <TractsFilters setGreyBarFilters={setGreyBarFilters} selectedTractTab={selectedTractTab} />
+
         <AnalyticsCards
           parent={"Tracts"}
           esIndex={esIndex[selectedTractTab]}
@@ -113,6 +114,42 @@ function Tracts(props) {
           setESFilters={setESFilters}
           cardsDefault={cardsDefault}
           landSearchQuery={stateApp.landSearchQuery}
+        />
+      </div>
+
+      <div
+        style={{
+          marginTop: "40px",
+          marginLeft: "-10px",
+        }}>
+        <TabPanels
+          value={selectedTractTab}
+          panels={[
+            <div>
+              <TractsTable
+                esIndex={esIndex[selectedTractTab]}
+                header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                esFilters={esFilters}
+                parent="TractTable"
+                targetLabel="parcel"
+                setESFilters={setESFilters}
+                onTractCount={onTractCount}
+                landSearchQuery={stateApp.landSearchQuery}
+              />
+            </div>,
+            <div>
+              <TractInterestsTable
+                esIndex={esIndex[selectedTractTab]}
+                header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                esFilters={esFilters}
+                parent="TractInterestsTable"
+                targetLabel="parcel"
+                setESFilters={setESFilters}
+                onTractCount={onTractCount}
+                landSearchQuery={stateApp.landSearchQuery}
+              />
+            </div>
+          ]}
         />
         <div style={{ marginTop: "40px" }}>
           <TabPanels

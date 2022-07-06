@@ -20,6 +20,24 @@ const DocumentsHeadCells = [
     dbName: "name",
     label: "File Name",
     options: {
+      setCellProps: () => ({
+        style: {
+          minWidth: "150px",
+          whiteSpace: "nowrap",
+          position: "sticky",
+          left: "77px",
+          zIndex: 200
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          position: "sticky",
+          minWidth: "150px",
+          left: "77px",
+          zIndex: 201
+        }
+      }),
+      stickyColumn: true,
       filter: true,
       sortThirdClickReset: true,
     },
