@@ -12,38 +12,6 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
-  // {
-  //   name: "agreementControl",
-  //   label: "Agreement",
-  //   esKey: "shapeJson.properties.agreementNumber.keyword",
-  //   options: {
-  //     setCellProps: () => ({
-  //       style: {
-  //         minWidth: "150px",
-  //         whiteSpace: "nowrap",
-  //         position: "sticky",
-  //         left: "77px",
-  //         background: "white",
-  //         zIndex: 200
-  //       }
-  //     }),
-  //     setCellHeaderProps: () => ({
-  //       style: {
-  //         position: "sticky",
-  //         minWidth: "150px",
-  //         left: "77px",
-  //         zIndex: 201
-  //       }
-  //     }),
-  //   },
-  //   dbName: "shapeJson.properties.agreementNumber",
-  //   stickyColumn: true,    
-  //   sort: true,
-  //   filter: true,
-  //   viewColumns: false,
-  //   display: true,
-  //   // sortThirdClickReset: true,
-  // },
   {
 
     // this column is considered the grid "control"

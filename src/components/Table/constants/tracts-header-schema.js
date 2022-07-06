@@ -1,6 +1,9 @@
 import WarningIcon from "@material-ui/icons/Warning";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { history } from "store";
+import GlobalSettings from "..//..//..//GlobalSettings.js";
+
+
 
 const TractsHeadCells = (isSnapGrid = false) => [
   {
@@ -8,41 +11,85 @@ const TractsHeadCells = (isSnapGrid = false) => [
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-    name: "name", label: "Tract Name", esKey: 'name.keyword',
+
+    /// this is the control column for tracts 
+    name: "name", 
+    label: "Tract Name", 
+    esKey: 'name.keyword',
+
     options: {
+      ...GlobalSettings.muiGridControlOptions,
       dbName: "name",
-      sort: true,
-      filter: true,
-      setCellProps: () => ({
-        style: {
-          minWidth: "250px",
-          whiteSpace: "nowrap",
-          position: "sticky",
-          left: "77px",
-          background: "white",
-          zIndex: 200,
-          boxShadow: 'inset -1px 0px 0px 0px lightgrey',
-        }
-      }),
-      setCellHeaderProps: () => ({
-        style: {
-          position: "sticky",
-          minWidth: "250px",
-          left: "77px",
-          zIndex: 201
-        }
-      }),
-      customRender: (value, tableMeta, updateValue) => {
+      // sort: true,
+      // filter: true,
+      // setCellProps: () => ({
+      //   style: {
+      //     minWidth: "250px",
+      //     whiteSpace: "nowrap",
+      //     position: "sticky",
+      //     left: "77px",
+      //     background: "white",
+      //     zIndex: 200,
+      //     boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+      //   }
+      // }),
+      // setCellHeaderProps: () => ({
+      //   style: {
+      //     position: "sticky",
+      //     minWidth: "250px",
+      //     left: "77px",
+      //     zIndex: 201
+      //   }
+      // }),
+      // customRender: (value, tableMeta, updateValue) => {
+      //   return (
+      //     <p
+      //       onClick={(e) => {
+      //         e.stopPropagation();
+      //         history.push(`/map/parcels/${tableMeta.rowData[0]}`, { showTractsBreadcrumb: !isSnapGrid });
+      //       }}
+      //       style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+      //     >
+      //       {value}
+      //     </p>
+      //   );
+      // },
+      customRender: (value, tableMeta) => {
+        const splitNumber = value?.split("_");
+        const styles = {
+          minWidth: 225,
+          fontWeight: 600,
+          color: "#17aadd",
+          cursor: "pointer",
+        };
         return (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start'
+            }}
+          >
+          <div
+            style={{
+              paddingRight: '70px',
+            }}
+          >
+          {tableMeta.rowIndex + 1}
+          </div>
           <p
             onClick={(e) => {
               e.stopPropagation();
-              history.push(`/map/parcels/${tableMeta.rowData[0]}`, { showTractsBreadcrumb: !isSnapGrid });
+              history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
             }}
-            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+            style={styles}
           >
-            {value}
-          </p>
+            {splitNumber?.[0]
+              ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
+              : tableMeta?.rowData[2]}
+
+            </p>
+            </div>
         );
       },
     }
@@ -52,18 +99,18 @@ const TractsHeadCells = (isSnapGrid = false) => [
       'shapeJson.properties.originalProperties.State.keyword',
       'shapeJson.properties.originalProperties.StateAbbreviation.keyword'
     ],
-    options: {
-      dbName: "shapeJson.properties.originalProperties.0?.State?.StateAbbreviation?",
-      sort: true,
-      filter: true
-    }
+    // options: {
+    //   dbName: "shapeJson.properties.originalProperties.0?.State?.StateAbbreviation?",
+    //   // sort: true,
+    //   // filter: true
+    // }
   },
   {
     name: "County", label: "County", esKey: 'shapeJson.properties.originalProperties.County.keyword',
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.County",
-      sort: true,
-      filter: true
+      // sort: true,
+      // filter: true
     }
   },
   {
@@ -73,8 +120,8 @@ const TractsHeadCells = (isSnapGrid = false) => [
     ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
-      sort: true,
-      filter: true
+      // sort: true,
+      // filter: true
     }
   },
   {
@@ -84,8 +131,8 @@ const TractsHeadCells = (isSnapGrid = false) => [
     ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Block?.Township?",
-      sort: true,
-      filter: true
+      // sort: true,
+      // filter: true
     }
   },
   {
@@ -95,8 +142,8 @@ const TractsHeadCells = (isSnapGrid = false) => [
     ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
-      sort: true,
-      filter: true
+      // sort: true,
+      // filter: true
     }
   },
   {
@@ -106,24 +153,24 @@ const TractsHeadCells = (isSnapGrid = false) => [
     ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
-      sort: true,
-      filter: true
+      // sort: true,
+      // filter: true
     }
   },
   {
     name: "GrossAcres", label: "Gross Acres", esKey: 'shapeJson.properties.sdGrossAcres.keyword',
     options: {
       dbName: "shapeJson.properties.sdGrossAcres",
-      sort: true,
-      filter: true
+      // sort: true,
+      // filter: true
     }
   },
   {
     name: "CalcAcres", label: "Calc Acres", esKey: 'shapeJson.properties.shapeArea.keyword',
     options: {
       dbName: "shapeJson.properties.shapeArea",
-      sort: true,
-      filter: true
+      // sort: true,
+      // filter: true
     }
   },
   {

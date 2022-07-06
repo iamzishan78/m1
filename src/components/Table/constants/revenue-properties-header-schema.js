@@ -1,5 +1,7 @@
 import { history } from "store";
 import GlobalSettings from "..//..//..//GlobalSettings.js";
+import GlobalStyles from "..//..//..//GlobalStyles.js";
+import Typography from "@material-ui/core/Typography";
 
 const RevenuePropertiesHeadCells = [
   {
@@ -9,20 +11,21 @@ const RevenuePropertiesHeadCells = [
   {
 
     /// this is the control column for properties 
-
     name: "number",
     label: "Property",
     esKey: "number.keyword",
     options: {
       ...GlobalSettings.muiGridControlOptions,
+
       customRender: (value, tableMeta) => {
         const splitNumber = value?.split("_");
+
         const styles = {
-          minWidth: 225,
-          fontWeight: 600,
-          color: "#17aadd",
-          cursor: "pointer",
+          // fontWeight: GlobalStyles.font.boldFontWeight,
+          // color: GlobalStyles.colors.lightBlue,
+          // cursor: GlobalStyles.hyperlink.cursor,
         };
+
         return (
           <div
             style={{
@@ -34,10 +37,22 @@ const RevenuePropertiesHeadCells = [
           <div
             style={{
               paddingRight: '70px',
+              // color: GlobalStyles.mutedGrey,
             }}
           >
           {tableMeta.rowIndex + 1}
           </div>
+
+
+          {/* <Typography 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
+                      }}
+                      noWrap
+                      variant='body2'
+                      style={styles}
+          > */}
           <p
             onClick={(e) => {
               e.stopPropagation();
@@ -50,6 +65,8 @@ const RevenuePropertiesHeadCells = [
               : tableMeta?.rowData[2]}
 
             </p>
+            {/* </Typography> */}
+
             </div>
         );
       },

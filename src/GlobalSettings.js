@@ -2,6 +2,7 @@
 // initally being used for commonalities on grids 
 
 import Typography from "@material-ui/core/Typography";
+import GlobalStyles from "GlobalStyles.js";
 
 
 const GlobalSettings = {
@@ -34,10 +35,9 @@ const GlobalSettings = {
         setCellProps: () => ({
             style: {
                 minWidth: "450px",
+                maxWidth: "450px",
                 whiteSpace: "nowrap",
                 position: "sticky",
-                left: "77px",
-                background: "white",
                 zIndex: 200,
                 boxShadow: 'inset -1px 0px 0px 0px lightgrey',
                 padding: '0px 25px 0px 0px'
@@ -49,7 +49,7 @@ const GlobalSettings = {
         setCellHeaderProps: () => ({
         style: {
             position: "sticky",
-            left: "77px",
+            paddingLeft: '70px',
             zIndex: 201
         }
         }),
@@ -102,13 +102,8 @@ const GlobalSettings = {
             style: {
                 minWidth: "250px",
                 maxWidth: "250px",
-                padding: '0px 25px 0px 0px'
-                // width: "1000px"
-                // whiteSpace: "nowrap",
-                // position: "sticky",
-                // left: "77px",
+                padding: '0px 25px 0px 25px',
                 // background: "white",
-                // zIndex: 200,
                 // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
             }
           }),
@@ -116,12 +111,7 @@ const GlobalSettings = {
         // styling props applied to the column header cell
         setCellHeaderProps: () => ({
         style: {
-            // position: "sticky",
-            // left: "77px",
-            // zIndex: 201
-            // minWidth: "100px",
-            // maxWidth: "100px",
-            // width: "100px"
+            padding: '0px 25px 0px 25px',
         }
         }),
 
@@ -171,7 +161,7 @@ const GlobalSettings = {
             //         padding: '0px 25px 0px 0px'}}
             >
             {value ? (value) : (<span 
-            style={{color: "#959595"}}
+            style={{color: GlobalStyles.colors.mutedGrey}}
             >--</span>)}
 
           </Typography>
