@@ -42,6 +42,12 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/land/units",
     component: "Units",
   },
+  WELLS: {
+    featureFlag: "LANDMODULE",
+    title: "Wells",
+    link: "/land/wells",
+    component: "Wells",
+  },
   REPORTING_GROUPS: {
     featureFlag: "LANDREPORTINGGROUPS",
     title: "Reporting Groups",
