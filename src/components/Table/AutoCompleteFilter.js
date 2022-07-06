@@ -90,6 +90,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
                 extendSearchQuery,
                 size: 50,
                 key_as_string: custom?.key_as_string,
+                multi_filter_keys: custom?.multi_filter_keys,
                 filterAggs: {
                     query: rawSearch,
                     field: typeof filterKey === 'string' ? filterKey : undefined,
@@ -125,9 +126,11 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
                     filterList[index][0] = typeof value2.key === 'string' ? value2.key.replace(/^\,|\,$/gm, "") : value2.key
                     setSearch(value2.key)
                     setValue(value2)
+                    if (value2?.esKey) column.activeFilterKey = value2?.esKey
+
                 }
                 if (setFilters) setFilters(filterList)
-                onChange(filterList[index], index, column);
+                onChange(filterList[index], index, column, value2?.esKey || '');
             }}
             options={options}
             loading={loading}

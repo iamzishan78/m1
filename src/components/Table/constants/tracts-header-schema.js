@@ -30,12 +30,18 @@ const TractsHeadCells = (isSnapGrid = false) => [
     }
   },
   {
-    name: "State", label: "State", esKey: 'shapeJson.properties.originalProperties.State.keyword',
+    name: "State", label: "State", esKey: [
+      'shapeJson.properties.originalProperties.State.keyword',
+      'shapeJson.properties.originalProperties.StateAbbreviation.keyword'
+    ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.State?.StateAbbreviation?",
       sort: true,
       filter: true
-    }
+    },
+    custom: {
+      multi_filter_keys: true,
+    },
   },
   {
     name: "County", label: "County", esKey: 'shapeJson.properties.originalProperties.County.keyword',
@@ -54,7 +60,10 @@ const TractsHeadCells = (isSnapGrid = false) => [
       dbName: "shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
       sort: true,
       filter: true
-    }
+    },
+    custom: {
+      multi_filter_keys: true,
+    },
   },
   {
     name: "BlockTownship", label: "Block/ Township", esKey: [
@@ -65,7 +74,10 @@ const TractsHeadCells = (isSnapGrid = false) => [
       dbName: "shapeJson.properties.originalProperties.0?.Block?.Township?",
       sort: true,
       filter: true
-    }
+    },
+    custom: {
+      multi_filter_keys: true,
+    },
   },
   {
     name: "SectionRange", label: "Section/ Range", esKey: [
@@ -76,7 +88,10 @@ const TractsHeadCells = (isSnapGrid = false) => [
       dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
       sort: true,
       filter: true
-    }
+    },
+    custom: {
+      multi_filter_keys: true,
+    },
   },
   {
     name: "AbstractSection", label: "Abstract/ Section", esKey: [
@@ -87,7 +102,10 @@ const TractsHeadCells = (isSnapGrid = false) => [
       dbName: "shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
       sort: true,
       filter: true
-    }
+    },
+    custom: {
+      multi_filter_keys: true,
+    },
   },
   {
     name: "GrossAcres", label: "Gross Acres", esKey: 'shapeJson.properties.sdGrossAcres.keyword',

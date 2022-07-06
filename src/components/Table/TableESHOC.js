@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback, useRef } from "react";
+import React, { useContext, useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import { Button, Tooltip, IconButton } from "@material-ui/core";
@@ -278,6 +278,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
         useEffect(() => {
             if (tableData?.hits?.length > 0) {
+
                 let { TableHeader, formatColumns, formatHits } = tableMeta
                 TableHeader = columns.length > 0 ? columns : TableHeader;
                 let hits = tableData?.hits
@@ -350,12 +351,16 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     }
                 }
             });
+
             const allFilters = (tableMeta.selectedGridView?.filters || []).concat(initialFilters)
             if (allFilters) {
                 tableCols.forEach((column, index) => {
                     setColumnDisplayAndFilter(TableHeader, tableMeta.selectedGridView, column);
-                    let value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
-                    let filterList = Array.isArray(column.esKey) ? undefined : [];
+                    let value
+                    if (Array.isArray(column.esKey)) value = get(allFilters.find((filter) => { return column.esKey.includes(filter.field) }), "value", "");
+                    else value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
+
+                    let filterList = Array.isArray(column.esKey) ? [] : [];
                     if (value && typeof value !== "object") {
                         if (column.custom?.isDate && columns?.length) {
                             if (value !== "")
@@ -496,7 +501,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const handleMultiFieldFilter = (esFilter) => {
             const filters = []
             const filterHistory = {}
-
             if (esFilter) {
                 esFilter.forEach((filter) => {
                     if (typeof filter?.field === 'string') {
@@ -506,7 +510,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     } else {
                         filter?.field?.forEach((_, index) => {
                             if (!filterHistory[filter.field])
-                                filters.push({ field: filter.field[index], value: filter.value[index] })
+                                filters.push({ field: filter.field[index], value: filter.value })
                             filterHistory[filter.field] = true
                         })
                     }
@@ -544,6 +548,21 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     customFilters: []
                 },
             };
+
+            const manageAppliedFilter = (value, index) => {
+                const gridViewfilters = selectedGridView.filters
+                const gridViewEsKey = gridViewfilters.find(filter => filter.value === value)?.field
+
+                const columnEsKey = columns[index].esKey
+
+                let field
+                if (tableState.columns[index]?.activeFilterKey) field = tableState.columns[index]?.activeFilterKey
+                else if (Array.isArray(columnEsKey) && gridViewEsKey) field = gridViewEsKey
+                else field = columnEsKey
+
+                return { field: field, value: value }
+            }
+
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0 && columns[index]) {
                     if (columns[index].custom?.isDate || columns[index].custom?.isDateTime) {
@@ -568,17 +587,17 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                         const data = filterData.find(f => f.label === value)
                         pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string })
                     } else {
-                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
+                        pageESVariables.variables.filters.push(manageAppliedFilter(val[0], index))
                     }
 
                 }
             })
-            if (selectedGridView?.filters && selectedGridView.type === 'Default') {
+            // if (selectedGridView?.filters && selectedGridView.type === 'Default') {
 
-                selectedGridView.filters.forEach(filter => {
-                    pageESVariables.variables.filters.push(filter)
-                })
-            }
+            //     selectedGridView.filters.forEach(filter => {
+            //         pageESVariables.variables.filters.push(filter)
+            //     })
+            // }
             if (tableState.polygon) {
                 pageESVariables.variables.filters.push(tableState.polygon)
             }
@@ -617,7 +636,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         }
 
         const updateGridViewRedux = (tableState) => {
-
             setTableMeta((tableMeta) => {
                 if (tableMeta?.selectedGridView)
                     dispatch(updateUserGridViewSettingAction.STARTED({
@@ -651,8 +669,8 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             tableState.esIndex = tableMeta.esIndex;
             // tableState.filters = tableMeta.filters ? tableMeta.filters : [];
             tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
-
-            const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch)
+            const selectedGridView = tableMeta.selectedGridView
+            const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch, selectedGridView)
             activeSearchRef.current = tableActions.pageESVariables.variables.search;
             activeFiltersRef.current = handleMultiFieldFilter(tableActions.pageESVariables.variables.filters.concat(tableMeta.filters));
             selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;

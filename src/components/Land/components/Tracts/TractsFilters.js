@@ -77,17 +77,20 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
         return filters
     }
 
-    const onChange = (filter, index, column) => {
+    const onChange = (filter, index, column, esKey) => {
         if (selectedTractTab === 0) {
             if (TractGridViewModule) {
                 let { filters } = TractGridViewModule
                 if (filter.length) {
-                    filters.push({ field: tractFilterColumnsHeader[index].filterKey, value: filter[0] })
+                    filters.push({ field: esKey || tractFilterColumnsHeader[index].filterKey, value: filter[0] })
                     filters = handleMultiFieldFilter(filters)
                 }
-                else
-                    filters = filters.filter(filter => filter.field !== column.filterKey)
-
+                else {
+                    const { filterKey } = column
+                    if (Array.isArray(filterKey))
+                        filters = filters.filter(filter => !filterKey.includes(filter.field))
+                    else filters = filters.filter(filter => filter.field !== filterKey)
+                }
                 dispatch(updateUserGridViewSettingAction.STARTED({
                     userGridViewSetting: {
                         module: TractGridViewModule?.module,
@@ -154,6 +157,9 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
                 ) : (
 
                     tractFilterColumnsHeader.map((filterColumn, index) => {
+                        const custom = {
+                            multi_filter_keys: true,
+                        }
                         const appliedFilters = [{
                             field: "layer.keyword",
                             value: "parcel"
@@ -184,12 +190,12 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
                                     column={filterColumn}
                                     disabled={filterColumn?.disabled}
                                     index={index}
+                                    custom={Array.isArray(filterColumn.filterKey) ? custom : undefined}
                                     onChange={onChange}
                                     query={GET_ES_SIMPLE_FILTER}
                                     searchFields={["*"]}
                                     filters={appliedFilters}
                                     extendSearchQuery={""}
-                                    custom={undefined}
                                 />
                             </Grid>
                         )

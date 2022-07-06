@@ -234,7 +234,11 @@ export const tractFilterColumnsHeader = [
   },
   {
     label: "State",
-    filterKey: "shapeJson.properties.originalProperties.State.keyword",
+    filterKey: [
+      'shapeJson.properties.originalProperties.State.keyword',
+      'shapeJson.properties.originalProperties.StateAbbreviation.keyword'
+    ],
+
     name: "state"
   },
   {
