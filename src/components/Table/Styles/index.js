@@ -3,7 +3,22 @@ import { makeStyles } from "@material-ui/core/styles";
 export const usetableStyles = makeStyles(() => ({
   container: {
     padding: "0 !important",
+    "& .MuiTableRow-hover": {
+      "&:hover": {
+        "& .MuiTableCell-root": {
+          backgroundColor: "#dfdfdf"
+        }
+      }
+    },
+    // "& ::-webkit-scrollbar": {
+    //   height: "0.7em !important",
+    // },
+    // '& .MuiTableRow-footer': {
+    //   visibility: 'hidden',
+    //   display: 'none'
+    // }
   },
+
   subComponentsClasses: {
     "& .MuiTableHead-root": {
       zIndex: (p) => p.isRevenueTable ? 995 : 0,

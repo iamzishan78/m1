@@ -56,6 +56,8 @@ const AntSwitch = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
+    paddingRight: "20px",
+    paddingLeft: "15px"
   },
   avatar: {
     marginRight: "20px",
@@ -328,6 +330,7 @@ export default function DetailInfo(props) {
                   let objName = Object.keys(row.data)[0];
                   if (
                     row.data[objName] !== undefined &&
+                    row.data[objName] !== null &&
                     row.data[objName] !== `""` &&
                     row.data[objName] !== "" &&
                     row.data[objName] !== "" &&
