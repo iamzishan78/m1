@@ -2081,13 +2081,14 @@ function SubTable(props) {
                     <div style={{
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
+                      justifyContent: "flex-start",
                       // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
                       // paddingRight: '200px'
                     }}>
 
                       <div style={{
                         minWidth: 400,
+                        maxWidth: 400,
                         boxShadow: 'inset -1px 0px 0px 0px lightgrey',
                         // paddingRight: '200px'
                       }}>
@@ -2192,7 +2193,14 @@ function SubTable(props) {
                                       },
                                       fontWeight: "bold",
                                       justifyContent: "flex-start",
-                                    }}>{value}</p>
+                                    }}>
+                                                  <Typography
+              nowrap
+              color="inherit"
+            >
+                                      {value}
+                                      </Typography>
+                                      </p>
                                 </Grid>
                                 {/* <Grid item>
                                  <p style={{
