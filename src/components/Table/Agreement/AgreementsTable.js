@@ -188,7 +188,6 @@ function AgreementsTable(props) {
     selectedFilters: props.selectedFilters.current,
   };
 
-
   return (
     <Container
       maxWidth={false}
@@ -255,13 +254,13 @@ function AgreementsTable(props) {
         startPaginationAt={null}
         onTableChange={props.onTableChange}
         onCustomKeyChange={onCustomKeyChange}
-        onInfiniteScroll={props.onInfiniteScroll}
         options={{
           ...props.options,
           ...props.customOptions,
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

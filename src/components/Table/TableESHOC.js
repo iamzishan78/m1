@@ -807,6 +807,10 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             document.getElementById('pagination-next').click()
         }
 
+        const esHocProps = React.useMemo(() => {
+            return { onInfiniteScroll: onInfiniteScroll }
+        }, []);
+
         return (
             <span className={classes.container2}>
                 <Component
@@ -854,6 +858,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
                     initialFilters={initialFilters}
                     setInitialFilters={setInitialFilters}
+                    esHocProps={esHocProps}
                 />
             </span>
         );
