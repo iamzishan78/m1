@@ -9,7 +9,6 @@ const RevenuePropertiesHeadCells = [
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-
     /// this is the control column for properties 
     name: "number",
     label: "Property",
@@ -24,6 +23,8 @@ const RevenuePropertiesHeadCells = [
           fontWeight: GlobalStyles.font.boldFontWeight,
           color: GlobalStyles.colors.lightBlue,
           cursor: GlobalStyles.hyperlink.cursor,
+          position: 'absolute',
+          left: '70px',
         };
 
         return (
@@ -31,12 +32,11 @@ const RevenuePropertiesHeadCells = [
             style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'flex-start'
+              justifyContent: 'start'
             }}
           >
           <div
             style={{
-              paddingRight: '70px',
             }}
           >
           {<span 
@@ -46,26 +46,17 @@ const RevenuePropertiesHeadCells = [
 
 
           <Typography 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
-                      }}
-                      noWrap
-                      variant='body2'
-                      style={styles}
-          >
-          {/* <p
             onClick={(e) => {
               e.stopPropagation();
               history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
             }}
+            noWrap
+            variant='body2'
             style={styles}
-          > */}
+          >
             {splitNumber?.[0]
               ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
               : tableMeta?.rowData[2]}
-
-            {/* </p> */}
             </Typography>
 
             </div>

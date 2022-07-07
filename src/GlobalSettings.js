@@ -138,36 +138,14 @@ const GlobalSettings = {
 
         customRender: (value, tableMeta) => {
             return (
-            //   <p
-            //     onClick={(e) => {
-            //       e.stopPropagation();
-            //       if (isSnapGrid)
-            //         history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
-            //           { showAgreementBreadcrumb: false }
-            //         );
-            //       else
-            //         history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
-            //           { showAgreementBreadcrumb: true }
-            //         );
-            //     }}
-            //     style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-            //   >
-            
-
             <Typography
             noWrap
             variant='body2'
-            // className={classes.gridElementStyling}
-            // style={{width: '250px',
-            //         padding: '0px 25px 0px 0px'}}
             >
             {value ? (value) : (<span 
             style={{color: GlobalStyles.colors.mutedGrey}}
             >--</span>)}
-
           </Typography>
-
-            //   </p>
             );
           },
 

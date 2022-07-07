@@ -2,6 +2,8 @@ import WarningIcon from "@material-ui/icons/Warning";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { history } from "store";
 import GlobalSettings from "..//..//..//GlobalSettings.js";
+import GlobalStyles from "..//..//..//GlobalStyles.js";
+import Typography from "@material-ui/core/Typography";
 
 
 
@@ -56,39 +58,49 @@ const TractsHeadCells = (isSnapGrid = false) => [
       // },
       customRender: (value, tableMeta) => {
         const splitNumber = value?.split("_");
+
         const styles = {
-          minWidth: 225,
-          fontWeight: 600,
-          color: "#17aadd",
-          cursor: "pointer",
+          fontWeight: GlobalStyles.font.boldFontWeight,
+          color: GlobalStyles.colors.lightBlue,
+          cursor: GlobalStyles.hyperlink.cursor,
+          position: 'absolute',
+          left: '70px',
         };
+
         return (
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'flex-start'
             }}
           >
           <div
-            style={{
-              paddingRight: '70px',
-            }}
+            style={{}}
           >
-          {tableMeta.rowIndex + 1}
+          {<span 
+            style={{color: GlobalStyles.colors.mutedGrey}}
+            >{tableMeta.rowIndex + 1}</span>}
           </div>
-          <p
+
+
+          <Typography 
             onClick={(e) => {
               e.stopPropagation();
               history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
             }}
+            noWrap
+            variant='body2'
             style={styles}
           >
+
             {splitNumber?.[0]
               ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
               : tableMeta?.rowData[2]}
 
-            </p>
+            </Typography>
+
+
+
             </div>
         );
       },

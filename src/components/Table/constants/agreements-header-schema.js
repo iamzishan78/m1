@@ -4,6 +4,9 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import MapFilledIcon from "components/Shared/svgIcons/MapFilled";
 import { history } from "store";
 import GlobalSettings from "..//..//..//GlobalSettings.js";
+import GlobalStyles from "..//..//..//GlobalStyles.js";
+import Typography from "@material-ui/core/Typography";
+
 
 
 
@@ -23,25 +26,35 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       ...GlobalSettings.muiGridControlOptions,
       dbName: "shapeJson.properties.agreementNumber",
 
-      // setCellProps: () => ({
-      //   style: {
-      //     ...GlobalSettings.muiGridControlCell,
-      //   }
-      // }),
-      // setCellHeaderProps: () => ({
-      //   style: {
-      //     ...GlobalSettings.muiGridControlHeader,
-      //   }
-      // }),
-      // sort: true,
-      // filter: true,
-      // viewColumns: false,
-      // // display: true,
-      // // sortThirdClickReset: true,
-
       customRender: (value, tableMeta) => {
+        const splitNumber = value?.split("_");
+
+        const styles = {
+          fontWeight: GlobalStyles.font.boldFontWeight,
+          color: GlobalStyles.colors.lightBlue,
+          cursor: GlobalStyles.hyperlink.cursor,
+          position: 'absolute',
+          left: '70px',
+        };
+
         return (
-          <p
+
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+          <div
+            style={{}}
+          >
+          {<span 
+            style={{color: GlobalStyles.colors.mutedGrey}}
+            >{tableMeta.rowIndex + 1}</span>}
+          </div>
+
+
+          <Typography 
             onClick={(e) => {
               e.stopPropagation();
               if (isSnapGrid)
@@ -53,10 +66,17 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
                   { showAgreementBreadcrumb: true }
                 );
             }}
-            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+            noWrap
+            variant='body2'
+            style={styles}
           >
-            {value}
-          </p>
+            {splitNumber?.[0]
+              ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
+              : tableMeta?.rowData[2]}
+            </Typography>
+
+          </div>
+
         );
       },
 
