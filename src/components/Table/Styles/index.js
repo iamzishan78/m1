@@ -78,6 +78,11 @@ export const usetableStyles = makeStyles(() => ({
       position: (p) => p.isCheckboxSticky ? 'sticky !important' : '',
     },
 
+    '& .MuiTableRow-footer': {
+      visibility: (p) => p.isHideFooter ? 'hidden' : '',
+      display: (p) => p.isHideFooter ? 'none' : '',
+    }
+
   },
   multiSelectionTopBarButtons: {
     margin: "0px 5px",

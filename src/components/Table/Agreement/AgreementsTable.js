@@ -51,7 +51,7 @@ function AgreementsTable(props) {
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
   const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
 
-  const classes = usetableStyles({ isFullHeight: true, isHideFooter: false });
+  const classes = usetableStyles({ isFullHeight: true });
 
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 

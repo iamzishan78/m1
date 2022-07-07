@@ -82,7 +82,6 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
 
             <div style={{
               minWidth: 400,
-
               // paddingRight: '200px'
             }}>
               <Grid container spacing={0} direction="row" >
@@ -158,6 +157,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       display: true,
     },
   },
+  // infiniteScroll key should be added in a which do not have customRender in schema file as it will be override in table.js
   {
     name: "agreementType",
     infiniteScroll: true,

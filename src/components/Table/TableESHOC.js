@@ -33,9 +33,10 @@ import moment from "moment";
 export const TableESHOC = (Component, shouldGridViewSort = true) => {
     const hocWithDefaultProps = function HOC(props) {
         const dispatch = useDispatch();
-        const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky })
-
         const [tableMeta, setTableMeta] = useState([]);
+        const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, isHideFooter: tableMeta?.isInfiniteScroll })
+
+
         const [columns, Columns] = useState([]);
         const [filters, setFilters] = useState([]);
         const [changePage, isPageChanged] = useState(false);
@@ -285,7 +286,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 if (formatHits)
                     hits = formatHits(hits)
 
-                if (changePage) {
+                if (tableMeta?.isInfiniteScroll && changePage) {
                     const rowIndex = rows.length - 5
                     setRows(rows.concat(tableData?.hits));
                     document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
