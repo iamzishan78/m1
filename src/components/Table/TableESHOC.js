@@ -35,7 +35,8 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const dispatch = useDispatch();
         const { loadMore } = props
         const [tableMeta, setTableMeta] = useState([]);
-        const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, isHideFooter: props?.loadMore?.type === "infiniteScroll" && true })
+        const isFiniteScroll = props?.loadMore?.type === "infiniteScroll"
+        const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, isHideFooter: isFiniteScroll && true })
 
 
         const [columns, Columns] = useState([]);
@@ -53,9 +54,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const [stateApp, setStateApp] = useContext(AppContext);
 
         const selectedFilters = useRef([]);
-
-
-
 
         const [rows, setRows] = useState([]);
         // const [rows, Rows] = useState([]);
@@ -288,7 +286,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 if (formatHits)
                     hits = formatHits(hits)
 
-                if (props?.loadMore?.type === "infiniteScroll" && changePage) {
+                if (isFiniteScroll && changePage) {
                     const rowIndex = rows.length - 5
                     setRows(rows.concat(tableData?.hits));
                     document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
@@ -630,8 +628,8 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                             pagination: {
                                 pit: tableData?.pit,
                                 ...pageESVariables.variables.pagination,
-                                before: props?.loadMore?.type === "infiniteScroll" ? beforeSort : rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
-                                after: props?.loadMore?.type === "infiniteScroll" ? afterSort : rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
+                                before: isFiniteScroll ? beforeSort : rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
+                                after: isFiniteScroll ? afterSort : rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
                             },
                             filters: handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters))
                         },
@@ -700,7 +698,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 case "resetFilters":
                 case "changeRowsPerPage":
                     // updateGridViewRedux(tableState)
-                    if (props?.loadMore?.type === "infiniteScroll") {
+                    if (isFiniteScroll) {
                         const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]")
                         if (tableClass.length > 0) tableClass[0].scrollTop = 0;
                     }
@@ -808,7 +806,9 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         }
 
         const esHocProps = React.useMemo(() => {
-            return { onInfiniteScroll: onInfiniteScroll }
+            const esPropObj = {}
+            esPropObj.onInfiniteScroll = isFiniteScroll ? onInfiniteScroll : null
+            return esPropObj
         }, []);
 
         return (
