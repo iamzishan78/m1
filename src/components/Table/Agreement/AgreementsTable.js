@@ -36,6 +36,7 @@ import convert_date from "components/Shared/valueformatters/convert_date.js";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 const genericDataActions = ['tags', 'comments', 'tracks']
+
 function AgreementsTable(props) {
   const defaultView = {
     name: `All Agreements`,
@@ -104,9 +105,7 @@ function AgreementsTable(props) {
       customDataESKey: 'shapeJson.properties.custom_data',
       searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
-      esIndex: "shapes_flat",
-      isInfiniteScroll: true,
-      startPaginationAt: 25,
+      esIndex: "shapes_flat", startPaginationAt: 25,
       typeKeyword: { gridViewCategory: "Agreements", metaModule: "Agreement" },
       filters: [
         {
@@ -188,6 +187,7 @@ function AgreementsTable(props) {
     label: "Agreements",
     selectedFilters: props.selectedFilters.current,
   };
+
 
   return (
     <Container

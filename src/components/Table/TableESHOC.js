@@ -33,8 +33,9 @@ import moment from "moment";
 export const TableESHOC = (Component, shouldGridViewSort = true) => {
     const hocWithDefaultProps = function HOC(props) {
         const dispatch = useDispatch();
+        const { loadMore } = props
         const [tableMeta, setTableMeta] = useState([]);
-        const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, isHideFooter: tableMeta?.isInfiniteScroll })
+        const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, isHideFooter: props?.loadMore?.type === "infiniteScroll" && true })
 
 
         const [columns, Columns] = useState([]);
@@ -281,12 +282,13 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         useEffect(() => {
             if (tableData?.hits?.length > 0) {
                 let { TableHeader, formatColumns, formatHits } = tableMeta
+
                 TableHeader = columns.length > 0 ? columns : TableHeader;
                 let hits = tableData?.hits
                 if (formatHits)
                     hits = formatHits(hits)
 
-                if (tableMeta?.isInfiniteScroll && changePage) {
+                if (props?.loadMore?.type === "infiniteScroll" && changePage) {
                     const rowIndex = rows.length - 5
                     setRows(rows.concat(tableData?.hits));
                     document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
@@ -318,6 +320,14 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 appliedFilters = [...initialFilters, ...filters]
             }
             tableCols.forEach((column, index) => {
+                const waypointKey = props?.loadMore?.waypointKey
+                if (waypointKey && column.name === waypointKey) {
+                    column.options = {
+                        ...column.options,
+                        infiniteScroll: true
+                    };
+                }
+
                 if (column?.options?.filter) {
                     const custom = column.custom;
                     column.options = {
@@ -620,8 +630,8 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                             pagination: {
                                 pit: tableData?.pit,
                                 ...pageESVariables.variables.pagination,
-                                before: tableMeta.isInfiniteScroll ? beforeSort : rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
-                                after: tableMeta.isInfiniteScroll ? afterSort : rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
+                                before: props?.loadMore?.type === "infiniteScroll" ? beforeSort : rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
+                                after: props?.loadMore?.type === "infiniteScroll" ? afterSort : rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
                             },
                             filters: handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters))
                         },
@@ -690,7 +700,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 case "resetFilters":
                 case "changeRowsPerPage":
                     // updateGridViewRedux(tableState)
-                    if (tableMeta.isInfiniteScroll) {
+                    if (props?.loadMore?.type === "infiniteScroll") {
                         const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]")
                         if (tableClass.length > 0) tableClass[0].scrollTop = 0;
                     }

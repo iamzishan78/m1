@@ -7,6 +7,9 @@ import { setStateIfDeepEqual } from "components/Shared/functions";
 import { setMapGridCardState } from "actions";
 import { useDispatch } from "react-redux";
 
+// waypointKey should any key of tableHader which do not have customRender in schema file
+const loadMore = { type: 'infiniteScroll', waypointKey: 'agreementType' }
+
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: "65px",
@@ -95,6 +98,7 @@ function Agreements(props) {
         setESFilters={setESFilters}
         onAgreementCount={onAgreementCount}
         landSearchQuery={stateApp.landSearchQuery}
+        loadMore={loadMore}
       />
     </div>
   );

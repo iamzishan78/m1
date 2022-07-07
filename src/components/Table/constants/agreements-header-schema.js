@@ -157,10 +157,8 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       display: true,
     },
   },
-  // infiniteScroll key should be added in a which do not have customRender in schema file as it will be override in table.js
   {
     name: "agreementType",
-    infiniteScroll: true,
     label: "Type",
     esKey: "shapeJson.properties.agreementType.keyword",
     options: {
