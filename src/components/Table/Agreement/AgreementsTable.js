@@ -105,7 +105,8 @@ function AgreementsTable(props) {
       customDataESKey: 'shapeJson.properties.custom_data',
       searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
-      esIndex: "shapes_flat", startPaginationAt: 25,
+      esIndex: "shapes_flat",
+      startPaginationAt: 25,
       typeKeyword: { gridViewCategory: "Agreements", metaModule: "Agreement" },
       filters: [
         {

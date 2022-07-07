@@ -235,7 +235,7 @@ function ActivitiesTable(props) {
                   float: "left",
                 }}
               >
-                {props.addAble.type === "contactActivity" && (
+                {props.addable && props.addAble.type === "contactActivity" && (
                   <ButtonGroup variant="contained" style={{ height: "40px", margin: "4px" }} color="primary" aria-label="split button">
                     <Button
                       color="primary"
