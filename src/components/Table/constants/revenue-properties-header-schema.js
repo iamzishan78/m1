@@ -37,14 +37,15 @@ const RevenuePropertiesHeadCells = [
           <div
             style={{
               paddingRight: '70px',
-              color: GlobalStyles.mutedGrey,
             }}
           >
-          {tableMeta.rowIndex + 1}
+          {<span 
+            style={{color: GlobalStyles.colors.mutedGrey}}
+            >{tableMeta.rowIndex + 1}</span>}
           </div>
 
 
-          {/* <Typography 
+          <Typography 
                       onClick={(e) => {
                         e.stopPropagation();
                         history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
@@ -52,20 +53,20 @@ const RevenuePropertiesHeadCells = [
                       noWrap
                       variant='body2'
                       style={styles}
-          > */}
-          <p
+          >
+          {/* <p
             onClick={(e) => {
               e.stopPropagation();
               history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
             }}
             style={styles}
-          >
+          > */}
             {splitNumber?.[0]
               ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
               : tableMeta?.rowData[2]}
 
-            </p>
-            {/* </Typography> */}
+            {/* </p> */}
+            </Typography>
 
             </div>
         );

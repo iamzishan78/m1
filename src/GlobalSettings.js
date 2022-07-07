@@ -38,10 +38,10 @@ const GlobalSettings = {
                 maxWidth: "450px",
                 whiteSpace: "nowrap",
                 position: "sticky",
+                left: "77px",
                 zIndex: 200,
                 boxShadow: 'inset -1px 0px 0px 0px lightgrey',
-                padding: '0px 25px 0px 0px'
-
+                padding: '0px 25px 0px 0px',
             }
           }),
 
@@ -50,7 +50,8 @@ const GlobalSettings = {
         style: {
             position: "sticky",
             paddingLeft: '70px',
-            zIndex: 201
+            zIndex: 201,
+            left: "77px",
         }
         }),
 
