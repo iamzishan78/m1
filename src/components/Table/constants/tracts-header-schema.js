@@ -22,40 +22,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
     options: {
       ...GlobalSettings.muiGridControlOptions,
       dbName: "name",
-      // sort: true,
-      // filter: true,
-      // setCellProps: () => ({
-      //   style: {
-      //     minWidth: "250px",
-      //     whiteSpace: "nowrap",
-      //     position: "sticky",
-      //     left: "77px",
-      //     background: "white",
-      //     zIndex: 200,
-      //     boxShadow: 'inset -1px 0px 0px 0px lightgrey',
-      //   }
-      // }),
-      // setCellHeaderProps: () => ({
-      //   style: {
-      //     position: "sticky",
-      //     minWidth: "250px",
-      //     left: "77px",
-      //     zIndex: 201
-      //   }
-      // }),
-      // customRender: (value, tableMeta, updateValue) => {
-      //   return (
-      //     <p
-      //       onClick={(e) => {
-      //         e.stopPropagation();
-      //         history.push(`/map/parcels/${tableMeta.rowData[0]}`, { showTractsBreadcrumb: !isSnapGrid });
-      //       }}
-      //       style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-      //     >
-      //       {value}
-      //     </p>
-      //   );
-      // },
+
       customRender: (value, tableMeta) => {
         const splitNumber = value?.split("_");
 
@@ -86,7 +53,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
           <Typography 
             onClick={(e) => {
               e.stopPropagation();
-              history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
+              history.push(`/map/parcels/${tableMeta.rowData[0]}`, { showTractsBreadcrumb: !isSnapGrid });
             }}
             noWrap
             variant='body2'

@@ -45,7 +45,7 @@ function TractsTable(props) {
       searchFields: ["*"],
       TableHeader: copy(TableHeader(props.isSnapGrid)),
       esIndex: "shapes_flat",
-      startPaginationAt: 10,
+      startPaginationAt: 50,
       filters: [
         {
           field: "layer.keyword",
