@@ -38,6 +38,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const [tableMeta, setTableMeta] = useState([]);
         const [columns, Columns] = useState([]);
         const [filters, setFilters] = useState([]);
+        const [changePage, isPageChanged] = useState(false);
         const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
         const [addToTable, setAddToTable] = useState('')
@@ -283,9 +284,12 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 let hits = tableData?.hits
                 if (formatHits)
                     hits = formatHits(hits)
-                if (tableMeta.isInfiniteScroll) {
+
+                if (changePage) {
+                    const rowIndex = rows.length - 5
                     setRows(rows.concat(tableData?.hits));
-                    //  document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();   } 
+                    document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
+                    isPageChanged(false)
                 }
                 else
                     setRows(hits);
@@ -685,6 +689,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     setSelectedRows(tableState.selectedRows.data)
                     break;
                 case "changePage":
+                    isPageChanged(true)
                     tableActions.changeESPage();
                     break;
                 case "viewColumnsChange":

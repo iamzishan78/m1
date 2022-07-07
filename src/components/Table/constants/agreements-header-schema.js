@@ -1,4 +1,4 @@
-import { IconButton } from "@material-ui/core";
+import { Grid, IconButton } from "@material-ui/core";
 import WarningIcon from "@material-ui/icons/Warning";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import MapFilledIcon from "components/Shared/svgIcons/MapFilled";
@@ -54,7 +54,6 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     options: {
       ...GlobalSettings.muiGridControlOptions,
       dbName: "shapeJson.properties.agreementNumber",
-
       // setCellProps: () => ({
       //   style: {
       //     ...GlobalSettings.muiGridControlCell,
@@ -73,22 +72,56 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
 
       customRender: (value, tableMeta) => {
         return (
-          <p
-            onClick={(e) => {
-              e.stopPropagation();
-              if (isSnapGrid)
-                history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
-                  { showAgreementBreadcrumb: false }
-                );
-              else
-                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
-                  { showAgreementBreadcrumb: true }
-                );
-            }}
-            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-          >
-            {value}
-          </p>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            //boxShadow: 'inset 1px 1px 1px 1px lightgrey',
+            // paddingRight: '200px'
+          }}>
+
+            <div style={{
+              minWidth: 400,
+
+              // paddingRight: '200px'
+            }}>
+              <Grid container spacing={0} direction="row" >
+                <div style={{ position: 'relative', zIndex: 100 }}>
+                  <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
+                    {tableMeta.rowIndex + 1}
+                  </div>
+                </div>
+
+                <div>
+                  <p
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (isSnapGrid)
+                        history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
+                          { showAgreementBreadcrumb: false }
+                        );
+                      else
+                        history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
+                          { showAgreementBreadcrumb: true }
+                        );
+                    }}
+                    style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+                  >
+
+                    {value}
+                  </p>
+                </div>
+
+
+              </Grid>
+            </div>
+            {/* <div
+              style={{
+                paddingRight: '40px'
+              }}
+            ></div> */}
+          </div>
+
         );
       },
 
