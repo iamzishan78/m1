@@ -685,6 +685,10 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 // tableMeta.setAppliedFilters(activeFiltersRef.current);
             }
             if (['filterChange', 'resetFilters'].includes(action)) {
+                if (isFiniteScroll) {
+                    tableStateRef.current.sortOrder = {}
+                    tableState.sortOrder = {}
+                }
                 updateGridViewRedux(tableState)
             }
             if (action === 'filterChange') {
