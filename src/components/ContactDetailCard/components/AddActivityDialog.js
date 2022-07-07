@@ -296,7 +296,7 @@ function AddActivityDialog(props) {
       setClosed(false);
       setNotes("");
       setOwner({
-        name: stateApp.user.fullname || stateApp.user.email,
+        name: stateApp.user.fullname || stateApp.user.displayName,
         id: stateApp.user.mongoId,
       });
       setDealId(null);
