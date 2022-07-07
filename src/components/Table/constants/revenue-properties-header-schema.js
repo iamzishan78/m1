@@ -21,9 +21,9 @@ const RevenuePropertiesHeadCells = [
         const splitNumber = value?.split("_");
 
         const styles = {
-          // fontWeight: GlobalStyles.font.boldFontWeight,
-          // color: GlobalStyles.colors.lightBlue,
-          // cursor: GlobalStyles.hyperlink.cursor,
+          fontWeight: GlobalStyles.font.boldFontWeight,
+          color: GlobalStyles.colors.lightBlue,
+          cursor: GlobalStyles.hyperlink.cursor,
         };
 
         return (
@@ -37,7 +37,7 @@ const RevenuePropertiesHeadCells = [
           <div
             style={{
               paddingRight: '70px',
-              // color: GlobalStyles.mutedGrey,
+              color: GlobalStyles.mutedGrey,
             }}
           >
           {tableMeta.rowIndex + 1}
