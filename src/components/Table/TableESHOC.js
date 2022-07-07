@@ -39,6 +39,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const [columns, Columns] = useState([]);
         const [filters, setFilters] = useState([]);
         const [changePage, isPageChanged] = useState(false);
+        const [page, setPage] = useState(0)
         const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
         const [addToTable, setAddToTable] = useState('')
@@ -199,7 +200,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         };
 
         ////////Grid View Code ended
-
         useEffect(() => {
             if (constDataTracks?.tracksByObjectType) {
                 const tracksIdArray = constDataTracks.tracksByObjectType.map((track) => track.trackOn);
@@ -242,7 +242,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 if (tableMeta.modifySelectedGridView) {
                     tableMeta.modifySelectedGridView(tableMeta.selectedGridView)
                 }
-
+                setPage(0)
                 getESSimpleSearch({
                     variables: {
                         index: tableMeta.esIndex,
@@ -594,6 +594,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 pageESVariables,
                 genericESAction: () => {
                     setLoading(true);
+                    setPage(0)
                     tableState.page = 0;
                     meta.setPageInd(tableState.page);
                     meta.setRowsPerPage(tableState.rowsPerPage);
@@ -607,6 +608,10 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 },
                 changeESPage: () => {
                     setLoading(true);
+
+                    let afterSort = rows && tableState.page > page ? rows[rows.length - 1]?.sort : null
+                    let beforeSort = tableState.page === 0 ? null : rows && tableState.page < page ? rows[0]?.sort : null
+
                     gqlQuery({
                         ...pageESVariables,
                         variables: {
@@ -614,12 +619,13 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                             pagination: {
                                 pit: tableData?.pit,
                                 ...pageESVariables.variables.pagination,
-                                before: rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
-                                after: rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
+                                before: tableMeta.isInfiniteScroll ? beforeSort : rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
+                                after: tableMeta.isInfiniteScroll ? afterSort : rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
                             },
                             filters: handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters))
                         },
                     });
+                    setPage(tableState.page)
                 }
             }
         }
@@ -683,6 +689,10 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 case "resetFilters":
                 case "changeRowsPerPage":
                     // updateGridViewRedux(tableState)
+                    if (tableMeta.isInfiniteScroll) {
+                        const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]")
+                        if (tableClass.length > 0) tableClass[0].scrollTop = 0;
+                    }
                     tableActions.genericESAction();
                     break;
                 case "rowSelectionChange":
@@ -780,6 +790,8 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 setClickedRow({ ...rows[dataIndex] })
             }
         }
+        options.page = page
+
         const onInfiniteScroll = () => {
             document.getElementById('pagination-next').click()
         }
