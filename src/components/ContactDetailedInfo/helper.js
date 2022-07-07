@@ -41,8 +41,12 @@ export const contactStatusOptions = [
 
 export const contactNewStatusOptions = [
   {
-    label: "Good Call",
-    value: "Good Call",
+    label: "Circle Back",
+    value: "Circle Back",
+  },
+  {
+    label: "Good Phone#",
+    value: "Good Phone#",
   },
   {
     label: "Negative",
@@ -64,10 +68,7 @@ export const contactNewStatusOptions = [
     label: "Unsure",
     value: "Unsure",
   },
-  {
-    label: "Circle Back",
-    value: "Circle Back",
-  },
+
 ];
 
 const getCreateByRow = (contactData) => {
