@@ -2194,12 +2194,14 @@ function SubTable(props) {
                                       fontWeight: "bold",
                                       justifyContent: "flex-start",
                                     }}>
-                                                  <Typography
-              nowrap
-              color="inherit"
-            >
+
+                                      <Typography
+                                        nowrap={true}
+                                        color="inherit"
+                                        >
                                       {value}
                                       </Typography>
+
                                       </p>
                                 </Grid>
                                 {/* <Grid item>
