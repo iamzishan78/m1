@@ -13,7 +13,25 @@ const TractsHeadCells = (isSnapGrid = false) => [
       dbName: "name",
       sort: true,
       filter: true,
-      setCellProps: () => ({ style: { minWidth: "250px" } }),
+      setCellProps: () => ({
+        style: {
+          minWidth: "250px",
+          whiteSpace: "nowrap",
+          position: "sticky",
+          left: "77px",
+          background: "white",
+          zIndex: 200,
+          boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          position: "sticky",
+          minWidth: "250px",
+          left: "77px",
+          zIndex: 201
+        }
+      }),
       customRender: (value, tableMeta, updateValue) => {
         return (
           <p

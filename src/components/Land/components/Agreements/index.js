@@ -45,8 +45,9 @@ function Agreements(props) {
 
   return (
     <div style={{
-      padding: "0px 30px 30px",
-      marginTop: "90px",
+      // padding: "0px 30px 30px",
+      marginTop: "65px",
+      marginLeft: "-10px",
       height: "calc(100vh - 90px)"
     }}>
       {/* <AnalyticsCards

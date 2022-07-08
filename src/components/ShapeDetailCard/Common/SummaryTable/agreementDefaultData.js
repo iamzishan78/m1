@@ -60,6 +60,11 @@ const tableData = [
     key: "effectiveDate",
   },
   {
+    label: "Term (months)",
+    type: "number",
+    key: "agreementTerm",
+  },
+  {
     label: "Expiration Date",
     type: "date",
     key: "expirationDate",

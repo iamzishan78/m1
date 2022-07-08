@@ -30,6 +30,12 @@ import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import GridView from "components/Shared/GridView";
 
+
+// value formatters 
+import convert_date from "components/Shared/valueformatters/convert_date.js";
+
+
+
 const genericDataActions = ['tags', 'comments', 'tracks']
 function AgreementsTable(props) {
   const defaultView = {
@@ -70,10 +76,10 @@ function AgreementsTable(props) {
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
       hit.agreementType = agreementTypes.find((type) => type.value === hit.agreementType || type.label === hit.agreementType)?.label;
-      hit.agreementDate = hit.agreementDate ? moment(new Date(hit.agreementDate)).format("MM/DD/YYYY") : null;
-      hit.effectiveDate = hit.effectiveDate ? moment(new Date(hit.effectiveDate)).format("MM/DD/YYYY") : null;
-      hit.expirationDate = hit.expirationDate ? moment(new Date(hit.expirationDate)).format("MM/DD/YYYY") : null;
-      hit.extensionDate = hit.extensionDate ? moment(new Date(hit.extensionDate)).format("MM/DD/YYYY") : null;
+      hit.agreementDate = hit.agreementDate ? convert_date(hit.agreementDate) : null;
+      hit.effectiveDate = hit.effectiveDate ? convert_date(hit.effectiveDate) : null;
+      hit.expirationDate = hit.expirationDate ? convert_date(hit.expirationDate) : null;
+      hit.extensionDate = hit.extensionDate ? convert_date(hit.extensionDate) : null;
       hit.State = hit?.originalProperties?.State;
       hit.County = hit?.originalProperties?.County;
       hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
@@ -100,7 +106,7 @@ function AgreementsTable(props) {
       searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
-      startPaginationAt: 10,
+      startPaginationAt: 25,
       typeKeyword: { gridViewCategory: "Agreements", metaModule: "Agreement" },
       filters: [
         {

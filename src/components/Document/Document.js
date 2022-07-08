@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { isEmpty } from "lodash";
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
       "&>.MuiPaper-root": {
         display: "flex",
         "flex-direction": "column",
-        height: "calc(100vh - 90px)",
+        height: "calc(100vh - 65px)",
         position: "relative",
         "align-items": "stretch",
         "&>.MuiPaper-root": {
@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
 export default function DocumentComponent() {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [refetch, refetchData] = useState(false);
   let history = useHistory();
 
   useEffect(() => {
@@ -64,8 +65,8 @@ export default function DocumentComponent() {
 
   return (
     <div className={classes.root}>
-      <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} />
-      <Drawer />
+      <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} refetch={refetch} refetchData={refetchData} />
+      <Drawer refetchData={refetchData} />
       {stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0 ? (
         <DocViewer width="calc(100vw - 515px)" onCloseHandler={onCloseHandler} />
       ) : (
