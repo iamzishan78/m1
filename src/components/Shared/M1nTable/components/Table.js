@@ -2167,16 +2167,16 @@ function SubTable(props) {
                             >
 
 
-                              <Grid container spacing={0} direction="row"
+                              {/* <Grid container spacing={0} direction="row" */}
 
-                              // direction="column" alignItems="flex-start"
-                              >
-                                <Grid item
+                              {/* // direction="column" alignItems="flex-start"
+                              > */}
+                                {/* <Grid item
                                   style={{
                                     display: "flex",
                                     justifyContent: "flex-start",
                                     alignItems: "center",
-                                  }}>
+                                  }}> */}
                                   <p
                                     style={{
                                       display: "flex",
@@ -2193,17 +2193,18 @@ function SubTable(props) {
                                       },
                                       fontWeight: "bold",
                                       justifyContent: "flex-start",
+                                      paddingRight: '40px',
                                     }}>
 
                                       <Typography
-                                        nowrap={true}
+                                        noWrap
                                         color="inherit"
                                         >
                                       {value}
                                       </Typography>
 
                                       </p>
-                                </Grid>
+                                {/* </Grid> */}
                                 {/* <Grid item>
                                  <p style={{
                                   padding: "0px 30px 10px 10px",
@@ -2214,7 +2215,7 @@ function SubTable(props) {
                                   {convert_date(dateTime)}
                                   </p>
                               </Grid> */}
-                              </Grid>
+                              {/* </Grid> */}
                             </div>
                           </Grid>
                         </Grid>
