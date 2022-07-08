@@ -162,7 +162,7 @@ export default function CommentComponent(props) {
 
   useEffect(() => {
     if (dataComments && dataComments.commentsByObjectId) {
-      if(props.activityLog && props.activityLog.length > 0) {
+      if (props.activityLog && props.activityLog.length > 0) {
         let activittyData = [];
         console.log(props.activityLog);
         props.activityLog.forEach(element => {
@@ -183,13 +183,13 @@ export default function CommentComponent(props) {
           sortArrayBasedOnTs([...tempArray])
         );
       } else {
-      setCommentsArray(
-        sortArrayBasedOnTs([...dataComments.commentsByObjectId])
-      );
-    }
+        setCommentsArray(
+          sortArrayBasedOnTs([...dataComments.commentsByObjectId])
+        );
+      }
     }
     setLoadingComments(false);
-  }, [dataComments]);
+  }, [dataComments, props.activityLog]);
 
   useEffect(() => {
     setLoadingComments(false);
@@ -437,13 +437,13 @@ export default function CommentComponent(props) {
                                 </div>
                               )}
                           </div>
-                          { eachComment.isActivity === true &&
+                          {eachComment.isActivity === true &&
                             <>
                               <div className={`${classes.whiteSpace}`}>
-                                  {eachComment.activityData.type.replace(/_/g, ' ').toUpperCase()} - {eachComment.activityData.name}
+                                {eachComment.activityData.type.replace(/_/g, ' ').toUpperCase()} - {eachComment.activityData.name}
                               </div>
                               <div className={`${classes.whiteSpace}`}>
-                                  START DATE: {moment(eachComment.activityData.dateTime).format('MM/DD/YYYY hh:mm A')}
+                                START DATE: {moment(eachComment.activityData.dateTime).format('MM/DD/YYYY hh:mm A')}
                               </div>
                               <div className={`${classes.whiteSpace}`}>
                                 END DATE: {moment(eachComment.activityData.endDateTime).format('MM/DD/YYYY hh:mm A')}
