@@ -5,7 +5,6 @@ import TableESHOC from "components/Table/TableESHOC";
 import moment from "moment";
 import Agreements from "components/Shared/svgIcons/agreements";
 
-
 import { deepEqualObjects, copy } from "components/Shared/functions";
 import { HeaderComponent } from "components/Table/helpers";
 
@@ -19,7 +18,6 @@ import { useSelector } from "react-redux";
 
 import { useMutation } from "@apollo/client";
 
-
 import debounce from "lodash/debounce";
 import { AppContext } from "AppContext";
 
@@ -30,11 +28,8 @@ import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import GridView from "components/Shared/GridView";
 
-
 // value formatters 
 import convert_date from "components/Shared/valueformatters/convert_date.js";
-
-
 
 const genericDataActions = ['tags', 'comments', 'tracks']
 function AgreementsTable(props) {
@@ -85,7 +80,7 @@ function AgreementsTable(props) {
       hit.County = hit?.originalProperties?.County;
       hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
-      hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
+      // hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
       return hit;
     });
     return hits
@@ -107,7 +102,7 @@ function AgreementsTable(props) {
       searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
-      startPaginationAt: 10,
+      startPaginationAt: 25,
       typeKeyword: { gridViewCategory: "Agreements", metaModule: "Agreement" },
       filters: [
         {

@@ -120,6 +120,8 @@ const ContactBulkProgress = () => {
         const type = dataJobs.getJobsStatus.jobs[i].type;
         if (type === 'contacts') {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Contacts creation completed" : "Contacts creation failed";
+        } else if (type === 'PROPERTIES') {
+          message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Import successfully completed" : "Import Failed";
         } else {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Export successfully completed" : "Export Failed";
         }
