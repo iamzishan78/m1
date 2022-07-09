@@ -8,7 +8,7 @@ import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 // QUERIES
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useApolloClient, useLazyQuery, useMutation } from "@apollo/client";
 import isEmpty from "lodash/isEmpty";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
@@ -30,6 +30,7 @@ import { AppContext } from "AppContext";
 import { sortColumns, formattingGridView, getAppliedFilters, getFilterList } from "utils/helper";
 
 import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
+import { groupBy } from "lodash";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -67,6 +68,7 @@ function DocumentsTable(props) {
   const selectedFilters = useRef([]);
   const selectedSorts = useRef([]);
   const [stateApp, setStateApp] = useContext(AppContext);
+  const client = useApolloClient();
 
   // function states
   const [filters, setFilters] = useState([]);
@@ -78,7 +80,6 @@ function DocumentsTable(props) {
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState(defaultView);
-  const [refetchList, setRefetchList] = useState(false);
   const [gridViews, setGridViews] = useState(null);
   const [metaDatas, setMetaDatas] = useState(null);
 
@@ -98,9 +99,35 @@ function DocumentsTable(props) {
   const dense = true;
   const total = false;
   const orderByTracks = false;
-  const startPaginationAt = 25;
+  const startPaginationAt = 50;
 
   useEffect(() => {
+    if (props.refetch === false) return
+
+    let queryFilters = selectedGridView?.filters ? selectedGridView?.filters : []
+    queryFilters = queryFilters.length > 0 ? queryFilters : getAppliedFilters(filters, columns, stateApp.filtersData)
+    props.setPage(0);
+    (async () => {
+      const { data } = await client.query({
+        query: GET_ES_DOCUMENTS,
+        variables: {
+          pagination: {
+            first: props.rows.length > 0 ? props.rows.length + 1 : startPaginationAt,
+            keep_alive: "1micros",
+          },
+          search: props.documentSearchQuery ? `${props.documentSearchQuery}*` : "*",
+          filters: queryFilters,
+          sort: getSort()
+        },
+      });
+
+      const documents = data?.getESFiles;
+      props.setRows(documents?.hits)
+    })()
+  }, [props.refetch])
+
+  useEffect(() => {
+    props.setPage(0)
     return () => {
       setStateApp((stateApp) => ({
         ...stateApp,
@@ -123,6 +150,13 @@ function DocumentsTable(props) {
     return sort
   }
   useEffect(() => {
+    const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]")
+    if (tableClass.length > 0) tableClass[0].scrollTop = 0;
+
+    let queryFilters = selectedGridView?.filters ? selectedGridView?.filters : []
+    queryFilters = queryFilters.length > 0 ? queryFilters : getAppliedFilters(filters, columns, stateApp.filtersData)
+
+    props.setPage(0)
     getESDocuments({
       variables: {
         pagination: {
@@ -130,11 +164,11 @@ function DocumentsTable(props) {
           keep_alive: "1micros",
         },
         search: props.documentSearchQuery ? `${props.documentSearchQuery}*` : "*",
-        filters: getAppliedFilters(filters, columns, stateApp.filtersData),
+        filters: queryFilters,
         sort: getSort()
       },
     });
-  }, [getESDocuments, props.parent, props.documentSearchQuery, Documents]);
+  }, [getESDocuments, props.parent, props.documentSearchQuery, selectedGridView]);
 
   useEffect(() => {
     getMetaData({
@@ -160,7 +194,6 @@ function DocumentsTable(props) {
   useEffect(() => {
     if (selectedGridView && metaDatas) {
       const selectedData = JSON.parse(JSON.stringify(selectedGridView));
-      setRefetchList(false);
       setStateApp((state, props) => {
         return {
           ...state,
@@ -200,7 +233,9 @@ function DocumentsTable(props) {
   useEffect(() => {
     if (tableData?.hits) {
       if (changePage) {
+        const rowIndex = props.rows.length - 5
         props.setRows(props.rows.concat(tableData?.hits));
+        document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
         isPageChanged(false)
       }
       else
@@ -229,21 +264,6 @@ function DocumentsTable(props) {
 
   useEffect(() => {
     if (!isEmpty(selectedGridView)) {
-      if (refetchList) {
-        getESDocuments({
-          variables: {
-            pagination: {
-              first: startPaginationAt,
-              keep_alive: "1micros",
-            },
-            search: props.documentSearchQuery ? props.documentSearchQuery + "*" : "*",
-            filters: selectedGridView?.filters ? selectedGridView?.filters : [],
-            sort: getSort()
-          },
-        });
-      } else {
-        setRefetchList(true);
-      }
       const view = formattingGridView(JSON.parse(JSON.stringify(selectedGridView)));
       let updatedColumns = handleSelectedGridChange(TableHeader, view, columns, true);
       updatedColumns = sortColumns(updatedColumns, view);
@@ -264,6 +284,7 @@ function DocumentsTable(props) {
 
   const count = tableData?.total || 0;
   const options = {
+    page: props.page,
     rowsPerPageOptions: [10, 25, 50, 100],
     count: count,
     serverSide: true,
@@ -306,8 +327,6 @@ function DocumentsTable(props) {
       setFilters(tableState.filterList);
     }
     switch (action) {
-      case "search":
-      case "sort":
       case "filterChange":
 
         dispatch(
@@ -339,7 +358,11 @@ function DocumentsTable(props) {
           })
         );
         break;
+      case "search":
+      case "sort":
       case "changeRowsPerPage":
+        const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]")
+        if (tableClass.length > 0) tableClass[0].scrollTop = 0;
         tableActions.genericESAction();
         break;
       case "changePage":

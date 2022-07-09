@@ -228,12 +228,14 @@ export default function DocumentDrawer(props) {
         variables: {
           document: { fileId: fileIdToDelete, isDeleted: true }
         },
-        refetchQueries: replaceFile === 'INITIATE' ? [] : ["getESDocuments"],
+        // refetchQueries: replaceFile === 'INITIATE' ? [] : ["getESDocuments"],
         awaitRefetchQueries: true,
       }).then(() => {
 
         if (replaceFile === 'INITIATE') {
           setReplaceFile('IN_PROGRESS')
+        } else {
+          props.refetchData(fileIdToDelete)
         }
 
         if (replaceFile !== 'INITIATE') {
@@ -384,6 +386,7 @@ export default function DocumentDrawer(props) {
               <DetailsPanel
                 newDocument={newDocument}
                 setNewDocument={setNewDocument}
+                refetchData={props.refetchData}
                 fileData={fileData}
                 setFileData={setFileData}
                 setLoader={setLoader}
