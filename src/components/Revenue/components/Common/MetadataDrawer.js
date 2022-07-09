@@ -438,12 +438,13 @@ export default function MetadataDrawer(props) {
                   setDescription(e.target.value);
                 }}
                 onFocus={() => setFocusSate(true)}
-                onBlur={({target}) => { 
-                  setFocusSate(false); 
+                onBlur={({ target }) => {
+                  setFocusSate(false);
                   if (props.onUpdate)
-                  props.onUpdate({
-                    [props.descriptionKey]: event.target.value,
-                  });}}
+                    props.onUpdate({
+                      [props.descriptionKey]: target.value,
+                    });
+                }}
               />
             </Grid>
           )}
