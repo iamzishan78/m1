@@ -130,6 +130,10 @@ import ReactSelectField from "./SubComponents/ReactSelectField";
 import { Waypoint } from "react-waypoint";
 
 
+import Radio from '@material-ui/core/Radio';
+import Checkbox from '@material-ui/core/Checkbox';
+
+
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
 
@@ -4176,6 +4180,20 @@ function SubTable(props) {
     return dataSet;
   };
 
+
+
+  const CustomCheckbox = (props) => {
+    let newProps = Object.assign({}, props);
+    newProps.color = props['data-description'] === 'row-select' ? 'secondary' : 'primary';
+  
+    if (props['data-description'] === 'row-select') {
+      return (<Checkbox {...newProps} />);
+    } else {
+      return (<Checkbox {...newProps} />);
+    }
+  };
+
+
   const CustomTableViewCol = (columnsProps) => {
     if (props.viewColumn) {
       const ViewColumn = props.viewColumn;
@@ -4201,6 +4219,7 @@ function SubTable(props) {
           innerRef={props.tableRef}
           className={tableStyle}
           title={getHeaders()}
+          
           data={
             props.parent === "ownersPerParcel" || props.parent === 'boundary_grid_owners'
               ? searchedRows
@@ -4216,6 +4235,7 @@ function SubTable(props) {
 
           columns={columns ? columns : []}
           components={{
+            Checkbox: CustomCheckbox,
             TableViewCol: CustomTableViewCol,
             TableFilterList: (props.header === "Tax Roll Ownership" || props.parent === "potentialOwnersPerUnit") && !isSearchOpen ? TableFilterList : null,
             icons: {
@@ -4228,6 +4248,9 @@ function SubTable(props) {
             onSearchOpen: () => openSearch(true),
             onSearchClose: () => openSearch(false),
 
+            // selectableRows: "multiple",
+          // selectableRowsHideCheckboxes: true,
+          // selectableRowsOnClick: true,
             // resizableColumns: true,
 
             filter:
