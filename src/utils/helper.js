@@ -3,6 +3,7 @@ import moment from "moment";
 import { getSession } from "utils/user";
 import { wellsKeys } from "utils/data";
 import { tenantsCredentials } from "components/Login/AADAuthConfig";
+import { addTrailingZeros } from "components/Shared/functions";
 
 const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
 const isDev = process.env.REACT_APP_NODE_ENV === "development";
@@ -174,6 +175,11 @@ export const getRangeFilters = (filters, format) => {
   });
   return customFilters;
 };
+
+export const getRoundedNra = (unitNra) => {
+  let nra = parseFloat(unitNra || 0);
+  return addTrailingZeros(nra.toFixed(8));
+}
 
 export const getShapeFilter = (polygon) => {
   const coordinates = [];
