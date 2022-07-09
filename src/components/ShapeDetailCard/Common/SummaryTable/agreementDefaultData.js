@@ -90,7 +90,7 @@ const tableData = [
     key: "approvalStatus",
   },
   {
-    label: "Aqusition ID",
+    label: "Acquisition ID",
     type: "autocomplete",
     key: "acquisitionID",
   },

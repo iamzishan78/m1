@@ -94,7 +94,7 @@ const fieldsList = (activeUser) => {
       key: "approvalStatus",
     },
     {
-      label: "Aqusition ID",
+      label: "Acquisition ID",
       type: "autocomplete",
       key: "acquisitionID",
     },
