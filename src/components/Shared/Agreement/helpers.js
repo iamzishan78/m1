@@ -6,12 +6,12 @@ export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
     const attachedMetaData = [];
     const nonAttachedMetaData = [];
 
-    agreementDetails.custom_data_arr?.forEach(data => {
-        customData.push({ ...data, title: data.key, label: data.key, key: data.key, value: data.value });
+    agreementDetails.custom_data_arr?.forEach((data, index) => {
+        customData.push({ ...data, title: data.key, label: data.key, key: `custom_data_arr[${index}].value`, value: data.value });
     });
 
     //? Meta data which is attached to this agreement
-    metaData.forEach(md => {
+    metaData.forEach((md) => {
         const { isCustom, ...meta } = md;
         // Checking if meta data key exists in agreement detail
         // then it should be ignored from meta data
@@ -24,7 +24,7 @@ export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
         }
     });
 
-    attachedMetaData.forEach(meta => {
+    attachedMetaData.forEach((meta) => {
         customData.push({
             ...meta,
             title: meta.label,
@@ -33,11 +33,11 @@ export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
                 ...op,
                 label: op.value,
             })),
-            isCustomData: true
+            isCustomData: true,
         });
     });
 
-    nonAttachedMetaData.forEach(meta => {
+    nonAttachedMetaData.forEach((meta) => {
         customData.push({
             ...meta,
             title: meta.label,
@@ -46,8 +46,8 @@ export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
                 ...op,
                 label: op.value,
             })),
-            isCustomData: true
+            isCustomData: true,
         });
     });
     return customData;
-}
+};
