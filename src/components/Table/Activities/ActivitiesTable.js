@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import get from "lodash/get";
 // context
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
-import { Container, Dialog, IconButton } from "@material-ui/core";
+import { Container, Dialog, IconButton, ButtonGroup, Button } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import { useMutation, useApolloClient } from "@apollo/client";
@@ -30,12 +30,8 @@ export const getFilters = (appliedFilters) => {
     range = getRangeFilters(
       {
         dateTime: {
-          from: appliedFilters.fromDate
-            ? new Date(appliedFilters.fromDate).toISOString()
-            : null,
-          to: appliedFilters.toDate
-            ? new Date(appliedFilters.toDate).toISOString()
-            : null,
+          from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+          to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
         },
       },
       "simple"
@@ -44,12 +40,8 @@ export const getFilters = (appliedFilters) => {
     range = getRangeFilters(
       {
         endDateTime: {
-          from: appliedFilters.fromDate
-            ? new Date(appliedFilters.fromDate).toISOString()
-            : null,
-          to: appliedFilters.toDate
-            ? new Date(appliedFilters.toDate).toISOString()
-            : null,
+          from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+          to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
         },
       },
       "simple"
@@ -67,6 +59,7 @@ export const getFilters = (appliedFilters) => {
         value: appliedFilters.qualifier,
       });
     }
+    if (!filters.length && appliedFilters.length) filters = appliedFilters;
   }
   return filters;
 };
@@ -76,9 +69,8 @@ function ActivitiesTable(props) {
   const dispatch = useDispatch();
   const client = useApolloClient();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const { appliedFilters, esIndex, searchFields, clickedRow } = props
+  const { appliedFilters, esIndex, searchFields, clickedRow, applyCustomClasses } = props;
 
-  const [selectedActivity, setSelectedActivity] = useState(null);
   const [events, setEvents] = useState([]);
 
   const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
@@ -87,7 +79,9 @@ function ActivitiesTable(props) {
   });
 
   const formatHits = (hits) => {
-    setEvents(hits.map(hit => ({ ...hit, start: new Date(hit.dateTime), end: new Date(hit.endDateTime ? hit.endDateTime : hit.dateTime) })));
+    setEvents(
+      hits.map((hit) => ({ ...hit, start: new Date(hit.dateTime), end: new Date(hit.endDateTime ? hit.endDateTime : hit.dateTime) }))
+    );
     return hits.map((hit) => {
       hit.type = get(
         activityTypes.find((type) => type.value === hit.type),
@@ -102,9 +96,7 @@ function ActivitiesTable(props) {
         minute: "2-digit",
         hour: "2-digit",
       });
-      hit.end = anyToDate(
-        hit.endDateTime ? new Date(hit.endDateTime) : hit.start
-      ).toLocaleString("en-US", {
+      hit.end = anyToDate(hit.endDateTime ? new Date(hit.endDateTime) : hit.start).toLocaleString("en-US", {
         year: "numeric",
         day: "numeric",
         month: "numeric",
@@ -125,7 +117,7 @@ function ActivitiesTable(props) {
       esIndex,
       startPaginationAt: 25,
       formatHits,
-      defaultSort: { field: 'lastUpdateAt', order: 'desc' },
+      defaultSort: { field: "lastUpdateAt", order: "desc" },
       setAppliedFilters: props.filtersChange,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -133,8 +125,17 @@ function ActivitiesTable(props) {
 
   useEffect(() => {
     if (clickedRow) {
-      setSelectedActivity({ ...clickedRow, type: get(activityTypes.find((type) => type.label === clickedRow.type), "value", "") });
-      onModalOpen()
+      const activity = {
+        ...clickedRow,
+        type: get(
+          activityTypes.find((type) => type.label === clickedRow.type),
+          "value",
+          ""
+        ),
+      };
+
+      setStateApp(() => ({ ...stateApp, selectedActivity: activity }));
+      onModalOpen(props.dialogType);
     }
   }, [clickedRow]);
 
@@ -155,32 +156,33 @@ function ActivitiesTable(props) {
   };
 
   const onDownload = (e) => {
-    dispatch(execCommonAsyncExportJobAction.STARTED({
-      jobType: 'EXPORTCSV',
-      client,
-      setStateApp,
-      userId: stateApp.user.mongoId,
-      requestPayload: {
-        esIndex,
-        filters: getFilters(appliedFilters),
-        search: { query: stateApp.activitySearchQuery, fields: searchFields },
-        datasets: {
-          exportActivities: true
+    dispatch(
+      execCommonAsyncExportJobAction.STARTED({
+        jobType: "EXPORTCSV",
+        client,
+        setStateApp,
+        userId: stateApp.user.mongoId,
+        requestPayload: {
+          esIndex,
+          filters: getFilters(appliedFilters),
+          search: { query: stateApp.activitySearchQuery, fields: searchFields },
+          datasets: {
+            exportActivities: true,
+          },
+          counts: {
+            exportActivities: props.total,
+          },
         },
-        counts: {
-          exportActivities: props.total,
-        },
-      }
-    }));
+      })
+    );
   };
 
-  const onModalOpen = () => {
+  const onModalOpen = (type = "activityDialog") => {
     setStateApp((stateApp) => ({
       ...stateApp,
-      activityDialog: true,
+      [type]: true,
     }));
   };
-
 
   const setSelectedActivityId = (id) => {
     setStateApp((stateApp) => ({
@@ -192,30 +194,19 @@ function ActivitiesTable(props) {
   return (
     <Container
       maxWidth={false}
-      className={classes.container}
+      className={`${classes.container} ${!applyCustomClasses && classes.subComponentsClasses}`}
       id={props.id ? props.id : props.parent}
     >
-      <Dialog
-        open={props.openDialog ? true : false}
-        onClose={() => props.setOpenDialog(null)}
-        fullWidth={true}
-        maxWidth={"sm"}
-      >
+      <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
         {props.openDialog === "delete" && (
           <DeleteConfirmationDialogContent
             header={`Delete Interest(s)`}
             onClose={() => props.setOpenDialog(null)}
             deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={props.selectedRows.map(
-              (sR) => props.rows[sR.dataIndex]._id
-            )}
+            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
-            {`Do you want to delete the selected interest${props.selectedRows &&
-                props.selectedRows.length > 1 &&
-                props.selectedRows.length > 1
-                ? "s"
-                : ""
+            {`Do you want to delete the selected interest${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
               }?`}
           </DeleteConfirmationDialogContent>
         )}
@@ -244,18 +235,31 @@ function ActivitiesTable(props) {
                   float: "left",
                 }}
               >
+                {props.addable && props.addAble.type === "contactActivity" && (
+                  <ButtonGroup variant="contained" style={{ height: "40px", margin: "4px" }} color="primary" aria-label="split button">
+                    <Button
+                      color="primary"
+                      size="small"
+                      aria-label="select merge strategy"
+                      aria-haspopup="menu"
+                      onClick={() => props.onAddActivity(true)}
+                    >
+                      + Add Activity
+                    </Button>
+                  </ButtonGroup>
+                )}
                 <IconButton onClick={onDownload}>
                   <CloudDownloadIcon />
                 </IconButton>
               </div>
             );
           },
-          customToolbarSelect: () => <div></div>
+          customToolbarSelect: () => <div></div>,
         }}
         parent={props.parent}
         setColumnsBase={[]}
       />
-      <ActivitiesModal selectedActivity={selectedActivity} setSelectedActivityId={setSelectedActivityId} events={events} />
+      <ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} />
     </Container>
   );
 }

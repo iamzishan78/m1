@@ -30,7 +30,7 @@ import { formattingGridView, sortColumns } from "utils/helper";
 import moment from "moment";
 
 
-export const TableESHOC = (Component) => {
+export const TableESHOC = (Component, shouldGridViewSort = true) => {
     const hocWithDefaultProps = function HOC(props) {
         const dispatch = useDispatch();
         const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky })
@@ -167,7 +167,9 @@ export const TableESHOC = (Component) => {
                             view = formattingGridView(JSON.parse(JSON.stringify(view)));
                             columnsData = handleSelectedGridChange(TableHeader(), view, columnsData);
                         }
-                        columnsData = sortColumns(columnsData, view);
+                        if (shouldGridViewSort) {
+                            columnsData = sortColumns(columnsData, view);
+                        }
                         setColumnsData(columnsData)
                         // clearInterval(interval);
 
@@ -310,6 +312,7 @@ export const TableESHOC = (Component) => {
                     const custom = column.custom;
                     column.options = {
                         ...column.options,
+                        sortThirdClickReset: column.options.sort === false ? false : true,
                         filter: true,
                         filterType: "custom",
                         filterList: undefined,
@@ -357,7 +360,10 @@ export const TableESHOC = (Component) => {
                         if (column.custom?.isDate && columns?.length) {
                             if (value !== "")
                                 value = moment(new Date(value)).format("MM/DD/YYYY")
-
+                        }
+                        if (column.custom?.isDateTime && columns?.length) {
+                            if (value !== "")
+                                value = moment(new Date(value)).format("MM/DD/YYYY HH:mm:ss.SSS")
                         }
                         filterList = [value];
                     }
@@ -521,7 +527,7 @@ export const TableESHOC = (Component) => {
                         first: tableState.rowsPerPage,
                         after: null,
                     },
-                    ...(!isEmpty(tableState.sortOrder)) ? {
+                    ...(!isEmpty(tableState.sortOrder) && tableState.sortOrder.direction !== 'none') ? {
                         sort: (() => {
                             let field = columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
                                 columns.find(el => el.name === tableState.sortOrder?.name)?.name;
@@ -539,7 +545,7 @@ export const TableESHOC = (Component) => {
             };
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0 && columns[index]) {
-                    if (columns[index].custom?.isDate) {
+                    if (columns[index].custom?.isDate || columns[index].custom?.isDateTime) {
                         const filterData = stateApp.filtersData[columns[index].name];
                         if (filterData) {
                             const data = filterData.find(f => f.key === val[0] || f.key_as_string === val[0])

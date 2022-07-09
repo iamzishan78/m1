@@ -17,15 +17,16 @@ const fieldsList = (activeUser) => {
       label: "Agreement Name",
       type: "text",
       key: "agreementName",
-      disabled: activeUser.rolePrivileges === "READ_ONLY"
+      disabled: activeUser.rolePrivileges === "READ_ONLY",
     },
     {
       label: "Agreement Type",
       type: "select",
       options: agreementTypes,
-      formatValue: (value) => agreementTypes.find((at) => at.value === value)?.label || "",
+      formatValue: (value) =>
+        agreementTypes.find((at) => at.value === value)?.label || "",
       key: "agreementType",
-      disabled: activeUser.rolePrivileges === "READ_ONLY"
+      disabled: activeUser.rolePrivileges === "READ_ONLY",
     },
     {
       label: "Agreement Subtype",
@@ -63,6 +64,11 @@ const fieldsList = (activeUser) => {
       key: "effectiveDate",
     },
     {
+      label: "Term (months)",
+      type: "number",
+      key: "agreementTerm",
+    },
+    {
       label: "Expiration Date",
       type: "date",
       key: "expirationDate",
@@ -72,6 +78,7 @@ const fieldsList = (activeUser) => {
       type: "date",
       key: "extensionDate",
     },
+
     {
       label: "Bonus Payment",
       type: "text",
@@ -87,9 +94,19 @@ const fieldsList = (activeUser) => {
       key: "approvalStatus",
     },
     {
+      label: "Acquisition ID",
+      type: "autocomplete",
+      key: "acquisitionID",
+    },
+    {
       label: "Internal Company",
       type: "autocomplete",
       key: "internalCompany",
+    },
+    {
+      label: "Prospect ID",
+      type: "autocomplete",
+      key: "prospectID",
     },
   ];
 }

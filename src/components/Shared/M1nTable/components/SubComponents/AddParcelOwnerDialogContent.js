@@ -362,7 +362,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const calculateNetAcres = (interest) => {
     if (!interest) return null;
     const netAcres = addTrailingZeros(
-      stateApp.selectedParcel.sdGrossAcres ? (stateApp.selectedParcel.sdGrossAcres * interest).toFixed(8) : null
+      !!get(stateApp, 'selectedParcel.sdGrossAcres') ? (stateApp.selectedParcel.sdGrossAcres * interest).toFixed(8) : null
     );
     return netAcres;
   };

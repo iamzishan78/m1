@@ -400,7 +400,6 @@ export default function MetadataDrawer(props) {
                     <div>Approval Status</div>
                   </Grid>
                   <Grid item xs={9}>
-                    {console.log("data : ", data)}
                     <Controller
                       control={control}
                       name="status"
@@ -438,21 +437,13 @@ export default function MetadataDrawer(props) {
                 onChange={(e) => {
                   setDescription(e.target.value);
                 }}
-                onKeyPress={(event) => {
-                  if (event.key === "Enter") {
-                    document.activeElement.blur();
-                    if (props.onUpdate)
-                      props.onUpdate({ [props.descriptionKey]: event.target.value });
-                  }
-                }}
                 onFocus={() => setFocusSate(true)}
-                onBlur={() => setFocusSate(false)}
-                InputProps={{
-                  endAdornment: onFocusDescription === true && (
-                    <p className={classes.foodText}>
-                      <span>Return</span> to save
-                    </p>
-                  ),
+                onBlur={({ target }) => {
+                  setFocusSate(false);
+                  if (props.onUpdate)
+                    props.onUpdate({
+                      [props.descriptionKey]: target.value,
+                    });
                 }}
               />
             </Grid>
@@ -514,6 +505,7 @@ export default function MetadataDrawer(props) {
             targetLabel={targetLabel}
             targetSourceId={targetSourceId}
             commentsHeight={targetLabel === "Contact" ? "580px" : null}
+            activityLog={props.activityLog}
           />
         </div>
       </div>

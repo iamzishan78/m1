@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { v4 as uuid } from "uuid";
+import React, { useEffect, useState, useContext } from "react";
+import { useSelector } from "react-redux";
+import { copy } from "utils/helper";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -10,17 +11,21 @@ import GavelIcon from '@material-ui/icons/Gavel';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import CommentComponent from "components/Shared/CommentComponent";
 import ParcelTableInfo from './ParcelTableInfo'
+import SummaryTable from "components/ShapeDetailCard/Common/SummaryTable";
 import InputBase from '@material-ui/core/InputBase';
 import AddIcon from '@material-ui/icons/Add';
 import SearchIcon from '@material-ui/icons/Search';
 import { Button } from "@material-ui/core";
 import { useLazyQuery } from "@apollo/client";
+import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
 import { getPolygonString } from "../../Shared/functions";
 import { getParcelOriginalProperties } from '../utils/GetParcelOriginalProps'
 import QtrQtrSelectorNew from "../../ShapeDetailCard/Common/QtrQtrSelectorNew";
-
+import MetaField from "components/Table/helpers/MetaField";
+import { AppContext } from "AppContext";
+import parcelDefaultData from "./parcelDefaultData";
 
 const useStyles = makeStyles((theme) => ({
     summaryCard: {
@@ -244,15 +249,28 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ParcelSummary(props) {
+    const user = useSelector(({ app }) => app.user);
+
     const [search, setSearch] = useState('');
     const [parcelProperties, setProperties] = useState(props.properties);
     const [tableDataState, setTableDataState] = useState({});
+    const [stateApp, setStateApp] = useContext(AppContext);
 
     const classes = useStyles({ search });
 
     // get shape wells
     const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", skip: true });
     const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
+    const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
+
+    useEffect(() => {
+        getMetaData({
+            variables: {
+                user: user?.mongoId,
+                category: "Parcel",
+            },
+        });
+    }, [getMetaData, user]);
 
     useEffect(() => {
         getShapeSummaryDetails({ variables: { shapeId: props.id, shapeType: 'Parcel' } });
@@ -271,115 +289,153 @@ export default function ParcelSummary(props) {
 
     }, [props.customLayer]);
 
-    const addCustomData = () => {
-        if (!props.properties.custom_data_arr) {
-            props.properties.custom_data_arr = []
-        }
-        props.properties.custom_data_arr.push({
-            id: uuid(),
-            label: '',
-            type: 'text',
-            key: '',
-            value: '',
-            isCustom: true
-        });
-        props.setProperties({ ...props.properties, custom_data_arr: [...props.properties.custom_data_arr] })
-    }
+    const tableData = React.useMemo(() => {
+        return (props.properties?.state === "TX" || props.properties?.originalProperties?.State === "TX") ?
+            parcelDefaultData.filter((data) => data.showStateTX !== false) :
+            parcelDefaultData.filter((data) => data.showStateTX !== true)
+    }, [props.properties]);
 
-    const setQtrQtr = (qtrQtr) => {
-        // setParcelObj({ ...parcelObj, qtrQtr });
+    // const addCustomData = () => {
+    //     if (!props.properties.custom_data_arr) {
+    //         props.properties.custom_data_arr = []
+    //     }
+    //     props.properties.custom_data_arr.push({
+    //         id: uuid(),
+    //         label: '',
+    //         type: 'text',
+    //         key: '',
+    //         value: '',
+    //         isCustom: true
+    //     });
+    //     props.setProperties({ ...props.properties, custom_data_arr: [...props.properties.custom_data_arr] })
+    // }
+
+    const addCustomData = () => {
+        setStateApp((stateApp) => ({
+            ...stateApp,
+            showFieldModal: true,
+        }));
     };
 
-    return <Grid container direction="row" className={classes.summaryCard}>
-        <Grid item md={7} sm={12} className={classes.paddingLeft}>
-            <Grid container spacing={1} direction="column" >
-                <Grid item>
-                    <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: "space-between" }}>
+    const addAgreementCustomData = (data) => {
+        const customData = copy(props.properties.custom_data) ?? {};
+        data.forEach((d) => {
+            if (!customData[d.name]) customData[d.name] = null;
+        });
+        props.updateProperties(null, "custom_data", customData);
+    };
+
+    return (
+        <>
+            <Grid container direction="row" className={classes.summaryCard}>
+                <Grid item md={7} sm={12} className={classes.paddingLeft}>
+                    <Grid container spacing={1} direction="column" >
                         <Grid item>
-                            <Grid container spacing={2} className={classes.summaryDetailCard}>
+                            <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: "space-between" }}>
                                 <Grid item>
-                                    <div className={classes.summaryValue}> {dataShapeWellsCount?.shapeWellsCount || 0} </div>
-                                    <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
+                                    <Grid container spacing={2} className={classes.summaryDetailCard}>
+                                        <Grid item>
+                                            <div className={classes.summaryValue}> {dataShapeWellsCount?.shapeWellsCount || 0} </div>
+                                            <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
+                                        </Grid>
+                                        <Grid item>
+                                            <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeOwners || 0} </div>
+                                            <PersonIcon className={classes.icon} opacity="1.0" small />
+                                        </Grid>
+                                        <Grid item>
+                                            <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.documents || 0} </div>
+                                            <InsertDriveFileOutlinedIcon className={classes.icon} opacity="1.0" small />
+                                        </Grid>
+                                        <Grid item>
+                                            <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.runsheets || 0} </div>
+                                            <GavelIcon className={classes.icon} opacity="1.0" small />
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
                                 <Grid item>
-                                    <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeOwners || 0} </div>
-                                    <PersonIcon className={classes.icon} opacity="1.0" small />
-                                </Grid>
-                                <Grid item>
-                                    <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.documents || 0} </div>
-                                    <InsertDriveFileOutlinedIcon className={classes.icon} opacity="1.0" small />
-                                </Grid>
-                                <Grid item>
-                                    <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.runsheets || 0} </div>
-                                    <GavelIcon className={classes.icon} opacity="1.0" small />
+                                    <div className={classes.search}>
+                                        <div className={classes.searchIcon}>
+                                            <SearchIcon />
+                                        </div>
+                                        <InputBase
+                                            placeholder="Search…"
+                                            value={search}
+                                            onChange={(e) => setSearch(e.target.value)}
+                                            classes={{
+                                                root: classes.inputRoot,
+                                                input: classes.inputInput,
+                                            }}
+                                            inputProps={{ 'aria-label': 'search' }}
+                                        />
+                                    </div>
                                 </Grid>
                             </Grid>
                         </Grid>
                         <Grid item>
-                            <div className={classes.search}>
-                                <div className={classes.searchIcon}>
-                                    <SearchIcon />
-                                </div>
-                                <InputBase
-                                    placeholder="Search…"
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    classes={{
-                                        root: classes.inputRoot,
-                                        input: classes.inputInput,
-                                    }}
-                                    inputProps={{ 'aria-label': 'search' }}
-                                />
-                            </div>
+                            {/* <ParcelTableInfo properties={parcelProperties} updateProperties={props.updateProperties}
+                        updateCustomProperties={props.updateCustomProperties} search={search} /> */}
+                            <SummaryTable
+                                tableData={tableData}
+                                properties={props.properties}
+                                updateProperties={props.updateProperties}
+                                updateCustomProperties={props.updateCustomProperties}
+                                search={search}
+                                metaData={metaDataRes}
+                            />
+                        </Grid>
+                        <Grid item>
+                            <Button variant="contained" onClick={addCustomData} color="primary" component="span" className={classes.addDataButton} startIcon={<AddIcon />}>
+                                Add Data
+                            </Button>
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item>
-                    <ParcelTableInfo properties={parcelProperties} updateProperties={props.updateProperties}
-                        updateCustomProperties={props.updateCustomProperties} search={search} />
-                </Grid>
-                <Grid item>
-                    <Button variant="contained" onClick={addCustomData} color="primary" component="span" className={classes.addDataButton} startIcon={<AddIcon />}>
-                        Add Data
-                    </Button>
-                </Grid>
-            </Grid>
-        </Grid>
-        <Grid item md={5} sm={12}>
-            <Grid container spacing={2} direction="row">
-                <Grid item >
-                    <QtrQtrSelectorNew layerData={props.customLayer} />
-                </Grid>
-                <Grid item className={classes.descriptionInput}>
-                    <TextField
-                        id="outlined-multiline-static"
-                        placeholder="Description"
-                        defaultValue={parcelProperties.legalDescription}
-                        value={parcelProperties.legalDescription}
-                        multiline
-                        fullWidth
-                        rows={6}
-                        variant="outlined"
-                        onChange={(e) => {
-                            setProperties({ ...parcelProperties, legalDescription: e.target.value });
-                        }}
-                        onKeyDown={(e) => {
-                            if (e.keyCode === 13 && !e.shiftKey)
-                                props.updateProperties(e, 'legalDescription', parcelProperties.legalDescription);
-                        }}
-                        onFocus={() => { setTableDataState({ legalDescription: true }) }}
-                        InputProps={{
-                            endAdornment: (tableDataState.legalDescription === true &&
-                                <p className={classes.foodText}>
-                                    <span>Return</span> to save
-                                </p>)
-                        }}
-                    />
-                </Grid>
-                <Grid item md={12}>
-                    <CommentComponent targetLabel={'parcel'} targetSourceId={props.id} />
+                <Grid item md={5} sm={12}>
+                    <Grid container spacing={2} direction="row">
+                        <Grid item >
+                            <QtrQtrSelectorNew layerData={props.customLayer} />
+                        </Grid>
+                        <Grid item className={classes.descriptionInput}>
+                            <TextField
+                                id="outlined-multiline-static"
+                                placeholder="Description"
+                                defaultValue={parcelProperties.legalDescription}
+                                value={parcelProperties.legalDescription}
+                                multiline
+                                fullWidth
+                                rows={6}
+                                variant="outlined"
+                                onChange={(e) => {
+                                    setProperties({ ...parcelProperties, legalDescription: e.target.value });
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.keyCode === 13 && !e.shiftKey)
+                                        props.updateProperties(e, 'legalDescription', parcelProperties.legalDescription);
+                                }}
+                                onFocus={() => { setTableDataState({ legalDescription: true }) }}
+                                InputProps={{
+                                    endAdornment: (tableDataState.legalDescription === true &&
+                                        <p className={classes.foodText}>
+                                            <span>Return</span> to save
+                                        </p>)
+                                }}
+                            />
+                        </Grid>
+                        <Grid item md={12}>
+                            <CommentComponent targetLabel={'parcel'} targetSourceId={props.id} />
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Grid>
-        </Grid>
-    </Grid>
+            {stateApp.showFieldModal && (
+                <MetaField
+                    customDataPrefix="shapeJson.properties.custom_data"
+                    customDataPostfix=".keyword"
+                    columns={[]}
+                    category="Parcel"
+                    updateColumnSorting={addAgreementCustomData}
+                />
+            )}
+        </>
+    )
 }

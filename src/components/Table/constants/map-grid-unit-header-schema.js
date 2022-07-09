@@ -31,6 +31,25 @@ const unitsColumnHeaders = [
         sort: true,
         filter: true,
         setCellProps: () => ({ style: { minWidth: "250px" } }),
+        // setCellProps: () => ({
+        //   style: {
+        //     minWidth: "150px",
+        //     whiteSpace: "nowrap",
+        //     position: "sticky",
+        //     left: "77px",
+        //     background: "white",
+        //     zIndex: 200,
+        //     boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+        //   }
+        // }),
+        // setCellHeaderProps: () => ({
+        //   style: {
+        //     position: "sticky",
+        //     minWidth: "150px",
+        //     left: "77px",
+        //     zIndex: 201
+        //   }
+        // }),
       },
       style: { minWidth: 185 }
     },
@@ -191,7 +210,7 @@ const unitsColumnHeaders = [
       },
       custom: {
         key_as_string: true,
-        isDate: true,
+        isDateTime: true,
       },
     },
     {
