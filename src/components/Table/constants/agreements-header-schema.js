@@ -6,6 +6,7 @@ import { history } from "store";
 import GlobalSettings from "..//..//..//GlobalSettings.js";
 import GlobalStyles from "..//..//..//GlobalStyles.js";
 import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
 
 
 
@@ -30,11 +31,12 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
         const splitNumber = value?.split("_");
 
         const styles = {
-          fontWeight: GlobalStyles.font.boldFontWeight,
-          color: GlobalStyles.colors.lightBlue,
+          // fontWeight: GlobalStyles.font.boldFontWeight,
+          // color: GlobalStyles.colors.lightBlue,
+          // color: 'lightblue',
           cursor: GlobalStyles.hyperlink.cursor,
           position: 'absolute',
-          left: '70px',
+          left: '55px',
         };
 
         return (
@@ -69,11 +71,20 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
             noWrap
             variant='body2'
             style={styles}
+            color="inherit"
           >
+            <Box sx={{color: GlobalStyles.colors.lightBlue, 
+                          p: 2,                                     
+                                      "&:hover": {
+                                        textDecoration: "underline",
+                                        fontWeight: GlobalStyles.font.boldFontWeight,
+                                      }, }}>
             {splitNumber?.[0]
               ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
               : tableMeta?.rowData[2]}
+              </Box>
             </Typography>
+
 
           </div>
 
