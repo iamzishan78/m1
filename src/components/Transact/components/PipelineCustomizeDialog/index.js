@@ -505,7 +505,7 @@ const PipelineCustomDialog = (props) => {
                         setDialogWidth(DIALOG_WIDTHS.LANES);
                       }}
                     >
-                      Lanes
+                      Lane
                     </Link>
                     <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{selectedStageForDetail.name}</Typography>
                   </Breadcrumbs>
