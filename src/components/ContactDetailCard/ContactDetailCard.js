@@ -374,15 +374,9 @@ const useStyles = makeStyles((theme) => ({
     },
     width: "calc(100vw - 785px)",
   },
-  actionsContainer: {
-    display: "flex",
-    direction: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-  },
   metaActions: {
-    float: "right",
+    position: "absolute",
+    right: "15px",
     "& button": {
       margin: "0px 5px",
       color: "grey",
@@ -772,17 +766,18 @@ function ContactDetailCard(props) {
                 </Grid>
               </div>
 
-              
+
               {/*/////////// section 3 //////////// */}
               {/* this is the descriptor grid on the contact detail */}
               <div className={classes.detailCardSection}>
 
-              {/* <Divider sx={{backgroundColor: '#F2F2F2', borderBottomWidth: 5}}/> */}
+                {/* <Divider sx={{backgroundColor: '#F2F2F2', borderBottomWidth: 5}}/> */}
 
-                <Grid item xs={12} container className={classes.border} spacing={0} 
-                    style={{ padding: "0px 0px",
-                            //  height: '100vh'
-                    }}>
+                <Grid item xs={12} container className={classes.border} spacing={0}
+                  style={{
+                    padding: "0px 0px",
+                    //  height: '100vh'
+                  }}>
                   <ContactDetailedSelector
                     purchaseData={purchaseData}
                     contactData={contactData}
@@ -899,6 +894,7 @@ function ContactDetailCard(props) {
                     awaitRefetchQueries: false,
                   });
                 }}
+                activityLog={contactData.activityLog}
               />
             </div>
           )}

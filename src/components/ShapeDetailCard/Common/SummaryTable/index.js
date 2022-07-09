@@ -144,8 +144,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
   };
 
   const checkFieldChange = (e, data, type, func) => {
-    if (data.isCustomData) func(e, data, type);
-    else func(e, data, type);
+    func(e, data, type);
   }
 
   return (
@@ -187,7 +186,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                       <div style={{ minWidth: "30px", cursor: "pointer" }}>
                         <Grid container direction="row" justifyContent="space-between" alignItems="center">
                           <Grid item md={10}>
-                            {data.key || "-"}
+                            {data.label || "-"}
                           </Grid>
                           <Grid item md={2}>
                             {editIconState[`${data.key}key`] && (
@@ -390,7 +389,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             data.type !== "comma-number" &&
                             data.type !== "multiselect" &&
                             (data.value || get(properties, `${data.key}`, "-"))}
-                          {data.type === "multiselect" && get(properties, `${data.key}`, []).join(", ")}
+                          {data.type === "multiselect" && (get(properties, `${data.key}`) ?? []).join(", ")}
                           {data.type === "currency" && (vf_currency(data.value) || vf_currency(properties[data.key]) || "-")}
                           {data.type === "comma-number" && (vf_number(data.value) || vf_number(properties[data.key]) || "-")}
                         </Grid>
