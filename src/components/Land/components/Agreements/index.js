@@ -45,7 +45,7 @@ function Agreements(props) {
   const [esFilters, ESFilters] = useState([]);
 
   // waypointKey should any key of tableHader which do not have customRender in schema file
-  const loadMore = { type: 'infiniteScroll', waypointKey: 'agreementType' }
+  const loadMore = { type: 'infiniteScroll', waypointKey: '_id' }
 
   const setESFilters = (newState) => {
     setStateIfDeepEqual(ESFilters, newState);

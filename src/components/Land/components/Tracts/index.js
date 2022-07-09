@@ -12,6 +12,12 @@ function Tracts(props) {
   const [stateApp] = useContext(AppContext);
   // const history = useHistory();
 
+  // waypointKey should any key of tableHader which do not have customRender in schema file
+  const loadMore = { type: 'infiniteScroll', waypointKey: 'State' }
+
+
+
+
   const [esFilters, ESFilters] = useState([]);
   const setESFilters = (newState) => {
     setStateIfDeepEqual(ESFilters, newState);
@@ -139,6 +145,7 @@ function Tracts(props) {
                 setESFilters={setESFilters}
                 onTractCount={onTractCount}
                 landSearchQuery={stateApp.landSearchQuery}
+                loadMore={loadMore}
               />
             </div>,
             <div>
@@ -151,6 +158,7 @@ function Tracts(props) {
                 setESFilters={setESFilters}
                 onTractCount={onTractCount}
                 landSearchQuery={stateApp.landSearchQuery}
+                loadMore={loadMore}
               />
             </div>
           ]}
