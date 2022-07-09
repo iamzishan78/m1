@@ -208,7 +208,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             },
           ],
         },
-        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
+        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
         awaitRefetchQueries: true,
       });
     } else {
@@ -223,7 +223,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             lastUpdateBy: stateApp.user.mongoId,
           },
         },
-        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
+        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
         awaitRefetchQueries: true,
       });
     }

@@ -71,6 +71,7 @@ export default function UnitDetailCard(props) {
       });
       setProperties(shape.properties);
     }
+
   }, [dataCustomLayer]);
 
   useEffect(() => {
@@ -80,6 +81,9 @@ export default function UnitDetailCard(props) {
         // Updating stateapp parcel object
         const customLayer = updatedUnit.updateCustomLayer.customLayer;
         const feature = JSON.parse(customLayer.shape);
+
+        if (feature?.properties?.netRoyalityAcres && !feature?.properties?.netRoyalityAcres?.unitNra)
+          feature.properties.netRoyalityAcres.unitNra = feature.properties?.netRoyalityAcres?.calculatedNra
         setProperties({ ...feature.properties });
 
         feature.id = customLayer._id;
