@@ -374,7 +374,6 @@ export default function DetailComponents(props) {
     customLayer.shape = JSON.stringify(shape);
     customLayer.shapeJson = shape;
 
-    console.log("-*-* called updateCustomLayer *-*-*", customLayer);
     updateCustomLayer({
       variables: {
         customLayerId: activeAgreement._id,
