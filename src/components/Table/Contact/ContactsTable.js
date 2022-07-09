@@ -23,6 +23,7 @@ import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 import { getContactsAddress, copy } from "utils/helper";
 
 import { deepEqualObjects } from "components/Shared/functions";
+import { featureFlagChanges } from "components/ContactDetailedInfo/helper";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -106,6 +107,7 @@ function ContactsTable(props) {
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState(Contacts || defaultView);
   const { activeModule } = useSelector(({ common }) => common);
+  const { user } = useSelector(state => state.app);
 
   // queries
   const [getCheckPurchaseData, { data: ContactPurchaseData }] = useLazyQuery(GET_CHECK_PURCHASE_DATA);
@@ -123,17 +125,16 @@ function ContactsTable(props) {
   const esIndex = 'contacts_flat'
   const genericDataActions = ['tracks']
 
-  // const getFilters = () => {
-  //   let newFilters = []
-  //   if (selectedGridView?.filters) {
-  //     newFilters = selectedGridView.filters
-  //   }
-  //   if (props.customAppliedFilters) {
-  //     newFilters = [...newFilters, ...props.customAppliedFilters]
-  //   }
+  const showGenericPhones = React.useMemo(() => {
+    return user.features?.find(f => f.name === "showGenericPhones")
+  }, [user]);
 
-  //   return uniqBy(newFilters, "field");
-  // }
+  const tableheader = React.useMemo(() => {
+    return TableHeader.map(header => ({
+      ...header,
+      label: featureFlagChanges(showGenericPhones, header.label)
+    }))
+  }, [showGenericPhones]);
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
@@ -152,9 +153,10 @@ function ContactsTable(props) {
       addableName: "Contact",
       extendSearchQuery: props.contactSearchQuery ? props.contactSearchQuery : null,
       searchFields: ["name^4", "_all"],
-      TableHeader: copy(TableHeader),
+      TableHeader: copy(tableheader),
       esIndex,
       // filters: Contacts?.filters ? getFilters() : [],
+      typeKeyword: { gridViewCategory: "Contacts" },
       selectedGridView: Contacts || defaultView,
       startPaginationAt: 25,
       defaultSort: { field: "lastUpdateAt", order: "desc", unmapped_type: 'date' },
@@ -347,4 +349,4 @@ function ContactsTable(props) {
   );
 }
 
-export default React.memo(TableESHOC(ContactsTable), deepEqualObjects);
+export default React.memo(TableESHOC(ContactsTable, false), deepEqualObjects);

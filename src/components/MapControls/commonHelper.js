@@ -85,7 +85,7 @@ export const drawShapeLayerToggle = (stateApp, value) => {
     stateApp.map.setLayoutProperty('gl-draw-polygon-and-line-vertex-stroke-inactive.hot', "visibility", value);
 }
 
-export const findBoundsMap = (shapes, map) => {
+export const findBoundsMap = (shapes, map, padding) => {
     let bound = null;
     if (shapes && shapes.length > 0) {
         shapes.forEach((shape) => {
@@ -109,7 +109,8 @@ export const findBoundsMap = (shapes, map) => {
         });
     }
     map?.fitBounds([[bound.minLong, bound.minLat], [bound.maxLong, bound.maxLat],],
-        { padding: { top: 200, bottom: 200, left: 1200, right: 0 } });
+        padding || { padding: { top: 200, bottom: 200, left: 1200, right: 0 } }
+    );
     return { ...bound };
 };
 

@@ -134,7 +134,7 @@ const random_hex_color_code = () => {
 };
 let hoveredAbstractId = null;
 
-function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial = true, width }) {
+function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial = true, width, hideShape = false, layerPadding = null }) {
   // context states
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -463,7 +463,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       jsonLayer.id = layer.customLayer._id;
 
       if (!loading) {
-        findBoundsMap([jsonLayer], map);
+        findBoundsMap([jsonLayer], map, layerPadding);
 
         drawBoundary(map, jsonLayer);
       }
@@ -1218,10 +1218,12 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           findBoundsMap([selectedUserDefinedLayer], map);
           return {
             ...state,
+            expandedCard: true,
             selectedUserDefinedLayer: null,
             selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
           };
         });
+        drawBoundary(map, selectedUserDefinedLayer);
       } else if (feature.source === "interests_source" && !drawMode.includes("draw") && !drawMode.includes("drag")) {
         setStateApp((state) => {
           if (state.isDrawing) return state;
@@ -1466,7 +1468,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       }
 
       var bbox = [[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]];
-      let features = map.queryRenderedFeatures(bbox, { layers: [...defaultLayers] });
+      const mapLayers = map.getStyle().layers
+      const layersToQuery = defaultLayers.filter((layerId) => mapLayers.find((mLayer) => mLayer.id === layerId))
+      let features = map.queryRenderedFeatures(bbox, { layers: [...layersToQuery] });
       if (features?.length === 0)
         return ''
 
@@ -1582,7 +1586,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
               }
             }
           }
-        } else if (layer.layerType == "file layer") {
+        } else if (layer.layerType === "file layer") {
           let layerData = layersData.find((l) => l.file === layer.file);
           if (layerData.fileUrl) {
             if (layerData.layerPaintProps[0].sourceProps) {
@@ -6131,15 +6135,15 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
     }
   }, [parcelBoundaryId]);
 
-  useEffect(() => {
-    if (map && stateApp.selectedParcel) {
-      setParcelBoundaryId(stateApp.selectedParcel.id);
-    } else if (map) {
-      if (map.getLayer("parcelBoundary")) map.removeLayer("parcelBoundary");
-      if (map.getSource("parcelBoundarySource")) map.removeSource("parcelBoundarySource");
-      setParcelBoundaryId(null);
-    }
-  }, [stateApp.selectedParcel]);
+  // useEffect(() => {
+  //   if (map && stateApp.selectedParcel) {
+  //     setParcelBoundaryId(stateApp.selectedParcel.id);
+  //   } else if (map) {
+  //     if (map.getLayer("parcelBoundary")) map.removeLayer("parcelBoundary");
+  //     if (map.getSource("parcelBoundarySource")) map.removeSource("parcelBoundarySource");
+  //     setParcelBoundaryId(null);
+  //   }
+  // }, [stateApp.selectedParcel]);
 
   useEffect(() => {
     if ((!stateApp.selectedUserDefinedLayer && !stateApp.selectedShape && !stateApp.selectedParcel) || stateApp.shapeEdit) {
@@ -6212,7 +6216,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           />
         </div>
       )}
-      {stateApp.selectedShape?.shapeLabel && stateApp.expandedCard && (
+      {stateApp.selectedShape?.shapeLabel && stateApp.expandedCard && !hideShape && (
         <div className={classes.draggable}>
           <ExpandableCardProvider
             expanded={true}

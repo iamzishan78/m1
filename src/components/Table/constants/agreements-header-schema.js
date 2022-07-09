@@ -1,51 +1,89 @@
 import { IconButton } from "@material-ui/core";
 import WarningIcon from "@material-ui/icons/Warning";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import MapFilledIcon from "components/Shared/svgIcons/MapFilled"
+import MapFilledIcon from "components/Shared/svgIcons/MapFilled";
 import { history } from "store";
+import GlobalSettings from "..//..//..//GlobalSettings.js";
 
-const AgreementsHeadCells = [
+
+
+const AgreementsHeadCells = (isSnapGrid = false) => [
   {
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
+  // {
+  //   name: "agreementControl",
+  //   label: "Agreement",
+  //   esKey: "shapeJson.properties.agreementNumber.keyword",
+  //   options: {
+  //     setCellProps: () => ({
+  //       style: {
+  //         minWidth: "150px",
+  //         whiteSpace: "nowrap",
+  //         position: "sticky",
+  //         left: "77px",
+  //         background: "white",
+  //         zIndex: 200
+  //       }
+  //     }),
+  //     setCellHeaderProps: () => ({
+  //       style: {
+  //         position: "sticky",
+  //         minWidth: "150px",
+  //         left: "77px",
+  //         zIndex: 201
+  //       }
+  //     }),
+  //   },
+  //   dbName: "shapeJson.properties.agreementNumber",
+  //   stickyColumn: true,    
+  //   sort: true,
+  //   filter: true,
+  //   viewColumns: false,
+  //   display: true,
+  //   // sortThirdClickReset: true,
+  // },
   {
+
+    // this column is considered the grid "control"
+
     name: "agreementNumber",
     label: "Agreement #",
     esKey: "shapeJson.properties.agreementNumber.keyword",
     options: {
-      setCellProps: () => ({
-        style: {
-          minWidth: "150px",
-          whiteSpace: "nowrap",
-          position: "sticky",
-          left: "77px",
-          background: "white",
-          zIndex: 200
-        }
-      }),
-      setCellHeaderProps: () => ({
-        style: {
-          position: "sticky",
-          minWidth: "150px",
-          left: "77px",
-          zIndex: 201
-        }
-      }),
+      ...GlobalSettings.muiGridControlOptions,
       dbName: "shapeJson.properties.agreementNumber",
-      stickyColumn: true,
-      sort: false,
-      filter: true,
-      viewColumns: false,
-      display: true,
-      customRender: (value, tableMeta, updateValue) => {
+
+      // setCellProps: () => ({
+      //   style: {
+      //     ...GlobalSettings.muiGridControlCell,
+      //   }
+      // }),
+      // setCellHeaderProps: () => ({
+      //   style: {
+      //     ...GlobalSettings.muiGridControlHeader,
+      //   }
+      // }),
+      // sort: true,
+      // filter: true,
+      // viewColumns: false,
+      // // display: true,
+      // // sortThirdClickReset: true,
+
+      customRender: (value, tableMeta) => {
         return (
           <p
             onClick={(e) => {
               e.stopPropagation();
-              history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
-                { showAgreementBreadcrumb: true }
-              );
+              if (isSnapGrid)
+                history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
+                  { showAgreementBreadcrumb: false }
+                );
+              else
+                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
+                  { showAgreementBreadcrumb: true }
+                );
             }}
             style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
           >
@@ -53,6 +91,7 @@ const AgreementsHeadCells = [
           </p>
         );
       },
+
     },
   },
   {
@@ -60,27 +99,27 @@ const AgreementsHeadCells = [
     label: "Agreement Name",
     esKey: "shapeJson.properties.agreementName.keyword",
     options: {
-      setCellProps: () => ({
-        style: {
-          minWidth: "300px",
-          whiteSpace: "nowrap",
-          position: "sticky",
-          left: "227px",
-          background: "white",
-          zIndex: 100
-        }
-      }),
-      setCellHeaderProps: () => ({
-        style: {
-          position: "sticky",
-          minWidth: "150px",
-          left: "227px",
-          zIndex: 101
-        }
-      }),
+      // setCellProps: () => ({
+      //   style: {
+      //     minWidth: "300px",
+      //     whiteSpace: "nowrap",
+      //     position: "sticky",
+      //     left: isSnapGrid ? "227px" : "245px",
+      //     background: "white",
+      //     zIndex: 100
+      //   }
+      // }),
+      // setCellHeaderProps: () => ({
+      //   style: {
+      //     position: "sticky",
+      //     minWidth: "150px",
+      //     left: isSnapGrid ? "227px" : "245px",
+      //     zIndex: 101
+      //   }
+      // }),
       dbName: "shapeJson.properties.agreementName",
-      stickyColumn: true,
-      sort: false,
+      // stickyColumn: true,
+      sort: true,
       filter: true,
       viewColumns: false,
       display: true,
@@ -263,6 +302,14 @@ const AgreementsHeadCells = [
       dbName: "shapeJson.properties.originalProperties.County",
       sort: true,
       filter: true,
+    },
+  },
+  {
+    name: "layer",
+    label: "Layer",
+    options: {
+      display: false,
+      viewColumns: false,
     },
   },
   {

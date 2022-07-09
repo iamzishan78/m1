@@ -34,13 +34,9 @@ const DocumentsHeadCells = [
       viewColumns: false,
     },
   },
-  // {
-  //   name: "dateTime",
-  //   label: "DATE & TIME",
-  // },
   {
     name: "documentNumber",
-    label: "Document Number",
+    label: "File Number",
     esKey: "documentNumber.keyword",
     options: {
       filter: true
@@ -48,7 +44,7 @@ const DocumentsHeadCells = [
   },
   {
     name: "documentName",
-    label: "Document Name",
+    label: "File Name",
     esKey: 'documentName.keyword',
     options: {
       filter: true
@@ -56,7 +52,7 @@ const DocumentsHeadCells = [
   },
   {
     name: "documentType",
-    label: "Document Type",
+    label: "File Type",
     esKey: 'documentType.keyword',
     options: {
       filter: true
@@ -64,15 +60,16 @@ const DocumentsHeadCells = [
   },
   {
     name: "documentDate",
-    label: "Document Date",
+    label: "File Date",
     esKey: 'documentDate',
     options: {
       filter: true
-    }
+    },
+    custom: { isDate: true, key_as_string: true },
   },
   {
     name: "uploadedDate",
-    label: "Document Date",
+    label: "File Date",
     options: {
       display: false,
       filter: false,
@@ -83,26 +80,29 @@ const DocumentsHeadCells = [
       viewColumns: false,
     },
   },
-  // {
-  //   name: "RELATED PARTY NAME",
-  //   label: "RELATED PARTY NAME",
-  // },
-
-  // {
-  //   name: "partyName1",
-  //   label: "Party 1 Name",
-  // },
-  // {
-  //   name: "partyName2",
-  //   label: "Party 2 Name",
-  // },
   {
-    name: "recordingInfo",
-    label: "Recording Info",
-    esKey: 'recordingInfo.keyword',
+    name: "book",
+    esKey: "book.keyword",
+    label: "Book",
     options: {
-      filter: true
-    }
+      filter: true,
+    },
+  },
+  {
+    name: "page",
+    esKey: "page.keyword",
+    label: "Page",
+    options: {
+      filter: true,
+    },
+  },
+  {
+    name: "instrument",
+    esKey: "instrument.keyword",
+    label: "Instrument #",
+    options: {
+      filter: true,
+    },
   },
   {
     name: " ",

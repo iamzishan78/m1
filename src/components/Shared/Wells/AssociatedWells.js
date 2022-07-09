@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
-import { get } from "lodash";
+import { get, isEmpty } from "lodash";
 import { Grid, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Link from "@material-ui/core/Link";
@@ -111,10 +111,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descriptorObject, relatedObjectType }) => {
+const AssociatedWellsList = ({
+  title,
+  relatedObject,
+  relatedObjectType,
+  details
+}) => {
   // Initials
   let history = useHistory();
   const classes = useStyles();
+
+  const moduleName = useMemo(() => {
+    if (!isEmpty(details)) {
+      return `${details.number}-${details.name}`;
+    }
+    return "";
+  }, [details]);
 
   // States
   const [search, setSearch] = useState("");
@@ -177,7 +189,14 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
 
   // sending to wells page
   const goToWell = (well) => {
-    history.push(`/map/wells/${well?.id.toUpperCase()}`, { showWellBreadcrumb: true });
+    const id = well?.id ?? well.globalWell;
+    history.push(`/map/wells/${id.toUpperCase()}`, {
+      showWellBreadcrumb: true,
+      breadcrumbs: [
+        { title: "Properties", url: "/revenue/properties" },
+        { title: moduleName, url: `/revenue/property/details/${relatedObject}` },
+      ],
+    });
     setStateApp({ ...stateApp, DocumentDrawer: false, selectedDocument: {} });
   };
 
@@ -193,6 +212,7 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
       setWells(wells);
     }
   };
+
   return (
     <>
       <Grid container direction="row" justify="space-between" alignItems="center" className={classes.rootPadding}>
@@ -324,6 +344,7 @@ export default function AssociatedWellsProvider(props) {
   );
 }
 
-AssociatedWellsProvider.defaultProps = {
+AssociatedWellsList.defaultProps = {
   title: "Wells",
+  details: {}
 };

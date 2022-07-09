@@ -71,6 +71,7 @@ export default function UnitDetailCard(props) {
       });
       setProperties(shape.properties);
     }
+
   }, [dataCustomLayer]);
 
   useEffect(() => {
@@ -80,6 +81,9 @@ export default function UnitDetailCard(props) {
         // Updating stateapp parcel object
         const customLayer = updatedUnit.updateCustomLayer.customLayer;
         const feature = JSON.parse(customLayer.shape);
+
+        if (feature?.properties?.netRoyalityAcres && !feature?.properties?.netRoyalityAcres?.unitNra)
+          feature.properties.netRoyalityAcres.unitNra = feature.properties?.netRoyalityAcres?.calculatedNra
         setProperties({ ...feature.properties });
 
         feature.id = customLayer._id;
@@ -123,16 +127,10 @@ export default function UnitDetailCard(props) {
     });
   };
 
-  const updateCustomProperties = (type, value, id) => {
+  const updateCustomProperties = (type, value, key, id) => {
     const shape = uniObj.shape;
-    const customRow = properties.custom_data_arr.find((p) => p.id === id);
-    if (type === "key") {
-      customRow.key = value;
-    } else {
-      customRow.value = value;
-    }
-    properties.custom_data = {};
-    properties.custom_data_arr.forEach((data) => {
+    set(properties, `${key}`, value);
+    properties.custom_data_arr?.forEach((data) => {
       properties.custom_data[data.key] = data.value;
     });
     const customLayer = {};
@@ -172,7 +170,7 @@ export default function UnitDetailCard(props) {
     return (
       <div className={classes.documentHeader}>
         <GavelIcon />
-        <span>LIMITED TITLE RUNSHEET</span>
+        <span>RUNSHEET INSTRUMENTS</span>
       </div>
     );
   };
@@ -330,6 +328,7 @@ export default function UnitDetailCard(props) {
                 header={<DocumentHeader />}
                 addAble={{ type: "UnitDocument" }}
                 dense
+                targetLabel="documents"
               />
             </div>,
           ]}

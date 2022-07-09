@@ -20,6 +20,7 @@ export const TableHOC = (Component) => {
 
         const [loading, Loading] = useState(true);
         const setLoading = (newState) => { setStateIfDeepEqual(Loading, newState) };
+        const [page, setPage] = useState(0)
 
         const [dataTracksIds, DataTracksIds] = useState(null);
         const setDataTracksIds = (newState) => { setStateIfDeepEqual(DataTracksIds, newState) };
@@ -238,6 +239,7 @@ export const TableHOC = (Component) => {
                                 ]
                             } else {
                                 return {
+
                                     [field]: {
                                         order: tableState.sortOrder?.direction,
                                         // unmapped_type: "null",
@@ -253,11 +255,13 @@ export const TableHOC = (Component) => {
                 },
             };
             tableState.filterList.forEach((val, index) => {
-                if (val.length > 0) {
-                    if (columns[index]?.custom?.isDate) {
-                        const filterData = stateApp.filtersData[columns[index]?.name];
-                        const data = filterData.find(f => f.key === val[0])
-                        pageESVariables.variables.filters.push({ field: columns[index]?.esKey, value: data.key_as_string });
+                if (val.length > 0 && columns[index]) {
+                    if (columns[index].custom?.isDate) {
+                        const filterData = stateApp.filtersData[columns[index].name];
+                        if (filterData) {
+                            const data = filterData.find(f => f.key === val[0] || f.key_as_string === val[0])
+                            pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
+                        }
                     } else if (columns[index]?.custom?.filterOptions?.length > 0) {
                         pageESVariables.variables.customFilters.push({ field: columns[index]?.esKey, value: val[0] })
                     } else if (columns[index]?.custom?.formatedFilterOptions?.length > 0) {
@@ -289,6 +293,7 @@ export const TableHOC = (Component) => {
                 pageESVariables,
                 genericESAction: () => {
                     setLoading(true);
+                    setPage(0)
                     tableState.page = 0;
                     meta.setPageInd(tableState.page);
                     meta.setRowsPerPage(tableState.rowsPerPage);
@@ -296,6 +301,9 @@ export const TableHOC = (Component) => {
                 },
                 changeESPage: () => {
                     setLoading(true);
+
+                    let afterSort = rows && tableState.page > page ? rows[rows.length - 1]?.sort : null
+
                     gqlQuery({
                         ...pageESVariables,
                         variables: {
@@ -303,11 +311,12 @@ export const TableHOC = (Component) => {
                             pagination: {
                                 pit: tableData.pit,
                                 ...pageESVariables.variables.pagination,
-                                before: tableState.page === 0 ? null : rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
-                                after: tableState.page === 0 ? null : rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
+                                before: tableState.page === 0 ? null : rows && tableState.page < page ? rows[0]?.sort : null,
+                                after: afterSort,
                             },
                         },
                     });
+                    setPage(tableState.page)
                 },
                 searchClientSide: () => {
                     let searchRows = []
@@ -351,6 +360,8 @@ export const TableHOC = (Component) => {
                 setGenricData={setGenricData}
                 dependencyUpdate={dependencyUpdate}
                 initializeTableActions={initializeTableActions}
+                page={page}
+                setPage={setPage}
             />
         );
     };

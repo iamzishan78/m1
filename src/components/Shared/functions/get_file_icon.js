@@ -25,126 +25,126 @@ export default function get_file_icon(value) {
                     return (
                     <FontAwesomeIcon
                         icon={faFilePdf}
-                        style={{ fontSize: "2rem", color: "#F15642" }}
+                        style={{ fontSize: "1.4rem", color: "#F15642" }}
                     />
                     );
                 case "csv":
                     return (
                     <FontAwesomeIcon
                         icon={faFileExcel}
-                        style={{ fontSize: "2rem", color: "#207244" }}
+                        style={{ fontSize: "1.4rem", color: "#207244" }}
                     />
                     );
                 case "xlsx":
                     return (
                     <FontAwesomeIcon
                         icon={faFileExcel}
-                        style={{ fontSize: "2rem", color: "#207244" }}
+                        style={{ fontSize: "1.4rem", color: "#207244" }}
                     />
                     );
                 case "xlsb":
                     return (
                     <FontAwesomeIcon
                         icon={faFileExcel}
-                        style={{ fontSize: "2rem", color: "#207244" }}
+                        style={{ fontSize: "1.4rem", color: "#207244" }}
                     />
                     );
                 case "xlsm":
                     return (
                     <FontAwesomeIcon
                         icon={faFileExcel}
-                        style={{ fontSize: "2rem", color: "#207244" }}
+                        style={{ fontSize: "1.4rem", color: "#207244" }}
                     />
                     );
                 case "xltx":
                     return (
                     <FontAwesomeIcon
                         icon={faFileExcel}
-                        style={{ fontSize: "2rem", color: "#207244" }}
+                        style={{ fontSize: "1.4rem", color: "#207244" }}
                     />
                     );
                 case "doc":
                     return (
                     <FontAwesomeIcon
                         icon={faFileWord}
-                        style={{ fontSize: "2rem", color: "#2A5599" }}
+                        style={{ fontSize: "1.4rem", color: "#2A5599" }}
                     />
                     )
                 case "docx":
                     return (
                     <FontAwesomeIcon
                         icon={faFileWord}
-                        style={{ fontSize: "2rem", color: "#2A5599" }}
+                        style={{ fontSize: "1.4rem", color: "#2A5599" }}
                     />
                     );
                 case "ppt":
                     return (
                     <FontAwesomeIcon
                         icon={faFilePowerpoint}
-                        style={{ fontSize: "2rem", color: "#D04424" }}
+                        style={{ fontSize: "1.4rem", color: "#D04424" }}
                     />
                     );
                 case "pptx":
                     return (
                     <FontAwesomeIcon
                         icon={faFilePowerpoint}
-                        style={{ fontSize: "2rem", color: "#D04424" }}
+                        style={{ fontSize: "1.4rem", color: "#D04424" }}
                     />
                     );
                 case "bmp":
                     return (
                         <FontAwesomeIcon
                         icon={faFileImage}
-                        style={{ fontSize: "2rem", color: "#4c6ef5" }}
+                        style={{ fontSize: "1.4rem", color: "#4c6ef5" }}
                         />
                     );
                 case "png":
                     return (
                         <FontAwesomeIcon
                         icon={faFileImage}
-                        style={{ fontSize: "2rem", color: "#4c6ef5" }}
+                        style={{ fontSize: "1.4rem", color: "#4c6ef5" }}
                         />
                     );                  
                 case "jpeg":
                     return (
                         <FontAwesomeIcon
                         icon={faFileImage}
-                        style={{ fontSize: "2rem", color: "#4c6ef5" }}
+                        style={{ fontSize: "1.4rem", color: "#4c6ef5" }}
                         />
                     );              
                 case "jpg":
                     return (
                         <FontAwesomeIcon
                         icon={faFileImage}
-                        style={{ fontSize: "2rem", color: "#4c6ef5" }}
+                        style={{ fontSize: "1.4rem", color: "#4c6ef5" }}
                         />
                     );
                 case "zip":
                     return (
                         <FontAwesomeIcon
                         icon={faFileArchive}
-                        style={{ fontSize: "2rem", color: "#15aabf" }}
+                        style={{ fontSize: "1.4rem", color: "#15aabf" }}
                         />
                     );
                 case "shp":
                     return (
                         <FontAwesomeIcon
                         icon={faFileCode}
-                        style={{ fontSize: "2rem", color: "#82c91e" }}
+                        style={{ fontSize: "1.4rem", color: "#82c91e" }}
                         />
                     );
                 case "geojson":
                     return (
                         <FontAwesomeIcon
                         icon={faFileCode}
-                        style={{ fontSize: "2rem", color: "#82c91e" }}
+                        style={{ fontSize: "1.4rem", color: "#82c91e" }}
                         />
                     );
                 default:
                     return (
                     <FontAwesomeIcon
                         icon={faFile}
-                        style={{ fontSize: "2rem", color: "grey" }}
+                        style={{ fontSize: "1.4rem", color: "grey" }}
                     />
                     );
             }
