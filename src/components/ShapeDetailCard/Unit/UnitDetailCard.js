@@ -129,14 +129,8 @@ export default function UnitDetailCard(props) {
 
   const updateCustomProperties = (type, value, key, id) => {
     const shape = uniObj.shape;
-    const customRow = properties.custom_data_arr.find((p) => p.id === id);
-    if (type === "key") {
-      customRow.key = value;
-    } else {
-      customRow.value = value;
-    }
-    properties.custom_data = {};
-    properties.custom_data_arr.forEach((data) => {
+    set(properties, `${key}`, value);
+    properties.custom_data_arr?.forEach((data) => {
       properties.custom_data[data.key] = data.value;
     });
     const customLayer = {};

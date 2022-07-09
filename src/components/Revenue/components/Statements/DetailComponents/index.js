@@ -43,12 +43,13 @@ const useStyles = makeStyles((theme) => ({
   },
   titleText: {
     marginLeft: 16,
+    width: "calc(65vw - 10px)",
   },
   highlighter: {
     background: "#263451",
     padding: "5px 16px",
     borderRadius: 16,
-    width: "max-content",
+    width: "160px",
     transform: "translateX(5px) translateY(11px)",
     height: "32px",
   },
@@ -93,6 +94,7 @@ const useStyles = makeStyles((theme) => ({
     "& fieldset": {
       border: "none",
     },
+    width: "100%",
   },
   tabsSectionDetails: {
     maxHeight: "calc(100vh - 280px)",

@@ -160,6 +160,14 @@ const categoryOptions = [
     value: "Agreement",
   },
   {
+    label: "Unit",
+    value: "Unit"
+  },
+  {
+    label: "Tract",
+    value: "parcel"
+  },
+  {
     label: "All (contacts, docs, flow, agreement, etc.)",
     value: "All",
   },

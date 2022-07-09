@@ -171,7 +171,7 @@ export default function LanesInfoPanel({
         setStageIndex(null);
       }
     }
-  }, [openPipeDialog, selectedPipe, setStages]);
+  }, [openPipeDialog, selectedPipe, setStages, stageToSetIndex]);
 
   const removeStage = (stage, index) => {
     if (stages.length === 1) dispatch(showWarningMessage("The stage can't be deleted, the pipeline needs at least one stage."));
@@ -394,9 +394,9 @@ export default function LanesInfoPanel({
           <DeleteConfirmationDialogContent
             header={deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`}
             onClose={handleCloseDeleteDialog}
-            deleteFunc={deleteFunc ? deleteFunc : () => {}}
+            deleteFunc={deleteFunc ? deleteFunc : () => { }}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the Flowline?" : "Are you sure you want to delete the stage?"}
           </DeleteConfirmationDialogContent>

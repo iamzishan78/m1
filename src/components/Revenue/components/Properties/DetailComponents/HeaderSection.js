@@ -145,7 +145,7 @@ export default function HeaderSection(props) {
     data: acquisitionOptions,
     loading,
     error,
-  } = useQuery(GET_AUTOCOMPLETE_PROPERTY_LIST, { variables: { key: "acquisitionID"}});
+  } = useQuery(GET_AUTOCOMPLETE_PROPERTY_LIST, { variables: { key: "acquisitionID" } });
   const {
     data: prospectOptions,
     loading: prospectOptionsLoading,
@@ -169,7 +169,7 @@ export default function HeaderSection(props) {
         size: 50,
       }
     })
-  },[getOperatorList, searchOperator])
+  }, [getOperatorList, searchOperator])
 
   useEffect(() => {
     register("state");
@@ -235,8 +235,8 @@ export default function HeaderSection(props) {
   const handleUpdate = debounce((key, value) => {
     updatePropertyData(key, value);
   }, 500);
-  
-  const getMappedOptions = (strArray) => strArray?.map(option => ({ name: option, value: option})) || [];
+
+  const getMappedOptions = (strArray) => strArray?.map(option => ({ name: option, value: option })) || [];
 
   return (
     <Grid container direction="row" justify="space-between" alignItems="center">
@@ -444,6 +444,7 @@ export default function HeaderSection(props) {
                     return (
                       <AutoCompleteTypeComponent
                         {...params}
+                        autoFocus={false}
                         shapeType={"Unit"}
                         typeKey={"internalCompany"}
                         variant="outlined"
@@ -531,10 +532,10 @@ export default function HeaderSection(props) {
                         setSearchOperator(value);
                       }}
                       setValue={(value) => {
-                        handleUpdate("operator", {name: value?.name});
+                        handleUpdate("operator", { name: value?.name });
                         props.onChange(value);
                       }}
-                      options={get(operatorList,'getESFilterList.hits',[])?.map((campaign) => ({
+                      options={get(operatorList, 'getESFilterList.hits', [])?.map((campaign) => ({
                         _id: campaign.key,
                         name: campaign.key,
                       }))}
