@@ -76,8 +76,8 @@ export default function SummaryFields({ contactData }) {
         _contact = {
           ..._contact,
           contactInterests: {
-            nraSum: vf_number(_contact.contactInterests.nraSum),
-            offerPriceSum: vf_number(_contact.contactInterests.offerPriceSum)
+            nraSum: getCommaValue(_contact.contactInterests.nraSum),
+            offerPriceSum: getCommaValue(_contact.contactInterests.offerPriceSum)
           }
         };
       }
@@ -85,6 +85,12 @@ export default function SummaryFields({ contactData }) {
       setFormState(true);
     }
   }, [contactData, reset, isFormSet]);
+
+  const getCommaValue = (value) => {
+    if (value && !value.includes(".")) {
+      return vf_number(Number(value.replace(/,/g, "")));
+    } else return value;
+  }
 
   const updateFieldData = (key, value) => {
     if (contactData[key] === value) return;
@@ -156,6 +162,11 @@ export default function SummaryFields({ contactData }) {
                             shrink: true,
                           }}
                           onBlur={(event) => updateFieldData(field.key, event.target.value)}
+                          onChange={({ target }) => {
+                            if (field.key.includes('nraSum') || field.key.includes('offerPriceSum')) {
+                              params.onChange(getCommaValue(target.value));
+                            }
+                          }}
                           disabled={field.disabled}
                           className={`${classes.field} ${isValueOveridden ? classes.baseValueChanged : null}`}
                           value={field.value ?? params.value}
@@ -177,7 +188,7 @@ export default function SummaryFields({ contactData }) {
                                 <>
                                   {isValueOveridden && (
                                     <AutorenewIcon
-                                    htmlColor="#757575"
+                                      htmlColor="#757575"
                                       onClick={() => {
                                         const key = `evaluatedContactInterests.${field.key.split(".")[1]}`;
                                         updateFieldData(field.key, get(contactData, key));

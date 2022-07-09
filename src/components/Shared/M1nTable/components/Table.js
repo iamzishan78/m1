@@ -2081,13 +2081,14 @@ function SubTable(props) {
                     <div style={{
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
+                      justifyContent: "flex-start",
                       // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
                       // paddingRight: '200px'
                     }}>
 
                       <div style={{
                         minWidth: 400,
+                        maxWidth: 400,
                         boxShadow: 'inset -1px 0px 0px 0px lightgrey',
                         // paddingRight: '200px'
                       }}>
@@ -2166,24 +2167,12 @@ function SubTable(props) {
                             >
 
 
-                              <Grid container spacing={0} direction="row"
 
-                              // direction="column" alignItems="flex-start"
-                              >
-                                <Grid item
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "flex-start",
-                                    alignItems: "center",
-                                  }}>
                                   <p
                                     style={{
                                       display: "flex",
                                       cursor: "pointer",
-                                      // padding: "10px 10px 10px 10px",
-                                      // position: "relative",
                                       minWidth: "120px",
-                                      // marginLeft: "-10px",
                                       borderRadius: "7px",
                                       color: "#17aadd",
                                       wordBreak: "break-word",
@@ -2192,19 +2181,18 @@ function SubTable(props) {
                                       },
                                       fontWeight: "bold",
                                       justifyContent: "flex-start",
-                                    }}>{value}</p>
-                                </Grid>
-                                {/* <Grid item>
-                                 <p style={{
-                                  padding: "0px 30px 10px 10px",
-                                  marginTop: "-20px",
-                                  position: "relative",
-                                  justifyContent: "flex-end",
-                                }}>
-                                  {convert_date(dateTime)}
-                                  </p>
-                              </Grid> */}
-                              </Grid>
+                                      paddingRight: '40px',
+                                    }}>
+
+                                      <Typography
+                                        noWrap
+                                        color="inherit"
+                                        >
+                                      {value}
+                                      </Typography>
+
+                                      </p>
+
                             </div>
                           </Grid>
                         </Grid>
