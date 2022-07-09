@@ -126,6 +126,7 @@ function AgreementOwnersTractsTable(props) {
         options={props.options}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

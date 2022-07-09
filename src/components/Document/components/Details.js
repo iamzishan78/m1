@@ -289,26 +289,28 @@ export default function DocumentDetails(props) {
     const fileId = fileData?.addFileDescriptor?.file?.id;
     if (stateApp.selectedDocument.fileId || fileId) {
       setLoader(true);
+      const document = {
+        book: newDocument.book,
+        page: newDocument.page,
+        instrument: newDocument.instrument,
+        recordingInfo: newDocument.recordingInfo,
+        documentName: newDocument.documentName,
+        dateTime: newDocument.dateTime,
+        documentNumber: newDocument.documentNumber,
+        documentType: documentType,
+        partyName1: nameAutValueParty1._id,
+        partyName2: nameAutValueParty2._id,
+        fileId: fileId || newDocument.fileId,
+        custom_data: newDocument.custom_data,
+      }
       updateDocument({
         variables: {
-          document: {
-            book: newDocument.book,
-            page: newDocument.page,
-            instrument: newDocument.instrument,
-            recordingInfo: newDocument.recordingInfo,
-            documentName: newDocument.documentName,
-            dateTime: newDocument.dateTime,
-            documentNumber: newDocument.documentNumber,
-            documentType: documentType,
-            partyName1: nameAutValueParty1._id,
-            partyName2: nameAutValueParty2._id,
-            fileId: fileId || newDocument.fileId,
-            custom_data: newDocument.custom_data,
-          },
+          document,
         },
-        refetchQueries: ["getESDocuments", "getParcelFiles", "getParcelFilesCount"],
+        refetchQueries: ["getParcelFiles", "getParcelFilesCount"],
         awaitRefetchQueries: true,
       }).then(() => {
+        props.refetchData({ ...document })
         setFileData(null);
         setStateApp({
           ...stateApp,

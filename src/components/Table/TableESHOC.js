@@ -36,11 +36,16 @@ import GlobalSettings from "..//..//GlobalSettings.js";
 export const TableESHOC = (Component, shouldGridViewSort = true) => {
     const hocWithDefaultProps = function HOC(props) {
         const dispatch = useDispatch();
-        const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky })
-
+        const { loadMore } = props
         const [tableMeta, setTableMeta] = useState([]);
+        const isFiniteScroll = props?.loadMore?.type === "infiniteScroll"
+        const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, isHideFooter: isFiniteScroll && true })
+
+
         const [columns, Columns] = useState([]);
         const [filters, setFilters] = useState([]);
+        const [changePage, isPageChanged] = useState(false);
+        const [page, setPage] = useState(0)
         const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
         const [addToTable, setAddToTable] = useState('')
@@ -52,9 +57,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const [stateApp, setStateApp] = useContext(AppContext);
 
         const selectedFilters = useRef([]);
-
-
-
 
         const [rows, setRows] = useState([]);
         // const [rows, Rows] = useState([]);
@@ -201,7 +203,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         };
 
         ////////Grid View Code ended
-
         useEffect(() => {
             if (constDataTracks?.tracksByObjectType) {
                 const tracksIdArray = constDataTracks.tracksByObjectType.map((track) => track.trackOn);
@@ -244,7 +245,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 if (tableMeta.modifySelectedGridView) {
                     tableMeta.modifySelectedGridView(tableMeta.selectedGridView)
                 }
-
+                setPage(0)
                 getESSimpleSearch({
                     variables: {
                         index: tableMeta.esIndex,
@@ -282,11 +283,20 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         useEffect(() => {
             if (tableData?.hits?.length > 0) {
                 let { TableHeader, formatColumns, formatHits } = tableMeta
+
                 TableHeader = columns.length > 0 ? columns : TableHeader;
                 let hits = tableData?.hits
                 if (formatHits)
                     hits = formatHits(hits)
-                setRows(hits);
+
+                if (isFiniteScroll && changePage) {
+                    const rowIndex = rows.length - 5
+                    setRows(rows.concat(tableData?.hits));
+                    document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
+                    isPageChanged(false)
+                }
+                else
+                    setRows(hits);
 
                 if (formatColumns)
                     TableHeader = formatColumns(TableHeader, hits)
@@ -311,6 +321,14 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 appliedFilters = [...initialFilters, ...filters]
             }
             tableCols.forEach((column, index) => {
+                const waypointKey = props?.loadMore?.waypointKey
+                if (waypointKey && column.name === waypointKey) {
+                    column.options = {
+                        ...column.options,
+                        infiniteScroll: true
+                    };
+                }
+
                 if (column?.options?.filter) {
                     const custom = column.custom;
                     column.options = {
@@ -589,6 +607,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 pageESVariables,
                 genericESAction: () => {
                     setLoading(true);
+                    setPage(0)
                     tableState.page = 0;
                     meta.setPageInd(tableState.page);
                     meta.setRowsPerPage(tableState.rowsPerPage);
@@ -602,6 +621,10 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 },
                 changeESPage: () => {
                     setLoading(true);
+
+                    let afterSort = rows && tableState.page > page ? rows[rows.length - 1]?.sort : null
+                    let beforeSort = tableState.page === 0 ? null : rows && tableState.page < page ? rows[0]?.sort : null
+
                     gqlQuery({
                         ...pageESVariables,
                         variables: {
@@ -609,12 +632,13 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                             pagination: {
                                 pit: tableData?.pit,
                                 ...pageESVariables.variables.pagination,
-                                before: rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
-                                after: rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
+                                before: isFiniteScroll ? beforeSort : rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
+                                after: isFiniteScroll ? afterSort : rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
                             },
                             filters: handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters))
                         },
                     });
+                    setPage(tableState.page)
                 }
             }
         }
@@ -665,6 +689,10 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 // tableMeta.setAppliedFilters(activeFiltersRef.current);
             }
             if (['filterChange', 'resetFilters'].includes(action)) {
+                if (isFiniteScroll) {
+                    tableStateRef.current.sortOrder = {}
+                    tableState.sortOrder = {}
+                }
                 updateGridViewRedux(tableState)
             }
             if (action === 'filterChange') {
@@ -678,12 +706,17 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 case "resetFilters":
                 case "changeRowsPerPage":
                     // updateGridViewRedux(tableState)
+                    if (isFiniteScroll) {
+                        const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]")
+                        if (tableClass.length > 0) tableClass[0].scrollTop = 0;
+                    }
                     tableActions.genericESAction();
                     break;
                 case "rowSelectionChange":
                     setSelectedRows(tableState.selectedRows.data)
                     break;
                 case "changePage":
+                    isPageChanged(true)
                     tableActions.changeESPage();
                     break;
                 case "viewColumnsChange":
@@ -774,6 +807,17 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 setClickedRow({ ...rows[dataIndex] })
             }
         }
+        options.page = page
+
+        const onInfiniteScroll = () => {
+            document.getElementById('pagination-next').click()
+        }
+
+        const esHocProps = React.useMemo(() => {
+            const esPropObj = {}
+            esPropObj.onInfiniteScroll = isFiniteScroll ? onInfiniteScroll : null
+            return esPropObj
+        }, []);
 
         return (
             <span className={classes.container2}>
@@ -785,6 +829,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     total={tableData?.total}
                     loading={loading}
                     dataTracks={dataTracksIds}
+                    onInfiniteScroll={onInfiniteScroll}
                     setRows={setRows}
                     setLoading={setLoading}
                     initializeGenericData={initializeGenericData}
@@ -821,6 +866,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
                     initialFilters={initialFilters}
                     setInitialFilters={setInitialFilters}
+                    esHocProps={esHocProps}
                 />
             </span>
         );

@@ -13,10 +13,10 @@ export const usetableStyles = makeStyles(() => ({
     // "& ::-webkit-scrollbar": {
     //   height: "0.7em !important",
     // },
-    // '& .MuiTableRow-footer': {
-    //   visibility: 'hidden',
-    //   display: 'none'
-    // }
+    '& .MuiTableRow-footer': {
+      visibility: (p) => p.isHideFooter ? 'hidden' : '',
+      display: (p) => p.isHideFooter ? 'none' : '',
+    }
   },
 
   subComponentsClasses: {
@@ -77,6 +77,11 @@ export const usetableStyles = makeStyles(() => ({
     "& .MuiTableCell-paddingCheckbox": {
       position: (p) => p.isCheckboxSticky ? 'sticky !important' : '',
     },
+
+    '& .MuiTableRow-footer': {
+      visibility: (p) => p.isHideFooter ? 'hidden' : '',
+      display: (p) => p.isHideFooter ? 'none' : '',
+    }
 
   },
   multiSelectionTopBarButtons: {

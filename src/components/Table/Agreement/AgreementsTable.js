@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
-import { Container } from "@material-ui/core";
+import { Container, Dialog } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import moment from "moment";
@@ -33,10 +33,10 @@ import GridView from "components/Shared/GridView";
 
 // value formatters 
 import convert_date from "components/Shared/valueformatters/convert_date.js";
-
-
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 const genericDataActions = ['tags', 'comments', 'tracks']
+
 function AgreementsTable(props) {
   const defaultView = {
     name: `All Agreements`,
@@ -177,8 +177,6 @@ function AgreementsTable(props) {
     if (selectedGridView?.name === 'My Agreements' && selectedGridView?.filters?.length)
       selectedGridView.filters[0].value = stateApp.user._id;
   };
-
-
   const headerProps = {
     columns: props.columns,
     showViewModal,
@@ -197,6 +195,31 @@ function AgreementsTable(props) {
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
+      {/* <Dialog
+        open={props.openDialog ? true : false}
+        onClose={() => props.setOpenDialog(null)}
+        fullWidth={true}
+        maxWidth={"sm"}
+      >
+        {props.openDialog === "delete" && (
+          <DeleteConfirmationDialogContent
+            header={`Delete Revenue Statement(s)`}
+            onClose={() => props.setOpenDialog(null)}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={props.selectedRows.map(
+              (sR) => props.rows[sR.dataIndex]._id
+            )}
+            setM1nSelectedRowsIndexes={props.setSelectedRows}
+          >
+            {`Do you want to delete the selected revenue statement${props.selectedRows &&
+              props.selectedRows.length > 1 &&
+              props.selectedRows.length > 1
+              ? "s"
+              : ""
+              }?`}
+          </DeleteConfirmationDialogContent>
+        )}
+      </Dialog> */}
       {showViewModal && (
         <GridView
           columns={props.columns}
@@ -238,6 +261,7 @@ function AgreementsTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

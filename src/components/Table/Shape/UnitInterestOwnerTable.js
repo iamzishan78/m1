@@ -356,6 +356,7 @@ function UnitInterestOwnerTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

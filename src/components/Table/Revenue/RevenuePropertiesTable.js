@@ -15,8 +15,8 @@ import TableESHOC from "../TableESHOC";
 const genericDataActions = ["tags", "comments"];
 
 const statusData = [
-  { label:'Not in Pay', value: 'NotInPay' },
-  { label:'In Pay', value: 'InPay' },
+  { label: 'Not in Pay', value: 'NotInPay' },
+  { label: 'In Pay', value: 'InPay' },
 ]
 
 function RevenuePropertiesTable(props) {
@@ -30,7 +30,7 @@ function RevenuePropertiesTable(props) {
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
-      if(statusData.find(st => st.value === hit.status)){
+      if (statusData.find(st => st.value === hit.status)) {
         hit.status = statusData.find(st => st.value === hit.status).label
       }
       hit = props.setGenricData(
@@ -128,6 +128,7 @@ function RevenuePropertiesTable(props) {
         setColumnsBase={[]}
         setRefetchData={setRefetchData}
         refetchData={refetchData}
+        {...props.esHocProps}
       />
     </Container>
   );
