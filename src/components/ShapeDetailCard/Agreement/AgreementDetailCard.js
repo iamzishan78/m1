@@ -135,9 +135,9 @@ export default function AgreementDetailCard(props) {
       history.location.pathname !== newPath && history.replace(newPath);
     }
 
-    
-    if (field ==='agreementTerm' || field ==='effectiveDate') {
-      if (field ==='agreementTerm') {
+
+    if (field === 'agreementTerm' || field === 'effectiveDate') {
+      if (field === 'agreementTerm') {
         shape.properties.expirationDate = moment(shape.properties.effectiveDate).add(parseInt(value), 'months').toDate();
       } else {
         shape.properties.expirationDate = moment(value).add(parseInt(shape.properties.agreementTerm), 'months').toDate();
@@ -175,12 +175,6 @@ export default function AgreementDetailCard(props) {
 
   const updateCustomProperties = (type, value, key) => {
     const shape = uniObj.shape;
-    // const customRow = properties.custom_data_arr.find((p) => p.id === id);
-    // if (type === "key") {
-    //   customRow.key = value;
-    // } else {
-    //   customRow.value = value;
-    // }
     set(properties, `${key}`, value);
     properties.custom_data_arr?.forEach((data) => {
       properties.custom_data[data.key] = data.value;

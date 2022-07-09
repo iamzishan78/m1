@@ -78,6 +78,7 @@ const fieldsList = (activeUser) => {
       type: "date",
       key: "extensionDate",
     },
+
     {
       label: "Bonus Payment",
       type: "text",
@@ -101,6 +102,11 @@ const fieldsList = (activeUser) => {
       label: "Internal Company",
       type: "autocomplete",
       key: "internalCompany",
+    },
+    {
+      label: "Prospect ID",
+      type: "autocomplete",
+      key: "prospectID",
     },
   ];
 }

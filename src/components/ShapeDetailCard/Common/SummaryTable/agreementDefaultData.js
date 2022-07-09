@@ -99,5 +99,10 @@ const tableData = [
     type: "autocomplete",
     key: "internalCompany",
   },
+  {
+    label: "Prospect ID",
+    type: "autocomplete",
+    key: "prospectID",
+  },
 ];
 export default tableData;
