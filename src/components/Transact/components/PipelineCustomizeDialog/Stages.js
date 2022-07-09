@@ -236,7 +236,6 @@ export default function LanesInfoPanel({
 
   const handleCloseDeleteDialog = () => setDeleteDialogOpen(false);
   const handleStagesSave = (stageIndex) => {
-    // console.log('DOG BRAIN', stageIndex)
     handleSaveOrUpdate();
     setStageIndex(stageIndex);
   };
@@ -339,7 +338,6 @@ export default function LanesInfoPanel({
                                     />
                                   </TableCell>
 
-                                  {/* {console.log('DOG BRAIN', index)} */}
                                   <TableCell padding="checkbox">
                                     <Tooltip title="Stage Details" placement="top">
                                       <DetailsIcon onClick={() => handleStagesSave(index)} className={classes.settingIcon} />
