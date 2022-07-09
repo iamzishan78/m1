@@ -213,7 +213,7 @@ function MapGridCard(props) {
                   </List>
                 </Grid>
 
-                <Grid item md={10} style={{ padding: "0px 10px", maxHeight: "49.25vh", overflow: "overlay" }}>
+                <Grid item md={10} style={{ padding: "0px 0px", maxHeight: "49.25vh", overflow: "overlay" }}>
                   <div style={{ position: "relative" }} classes={classes.gridTables}>
                     <Fragment>
                       {searchTapValue.value === "contactInformation" && (

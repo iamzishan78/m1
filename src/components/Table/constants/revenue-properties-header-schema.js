@@ -1,15 +1,45 @@
 import { history } from "store";
+import GlobalSettings from "..//..//..//GlobalSettings.js";
+
 const RevenuePropertiesHeadCells = [
   {
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
-
   {
+
+    /// this is the control column for properties 
+
     name: "number",
     label: "Property",
     esKey: "number.keyword",
     options: {
+
+      ...GlobalSettings.muiGridControlOptions,
+
+
+      // setCellProps: () => ({
+      //   style: {
+      //     minWidth: "150px",
+      //     whiteSpace: "nowrap",
+      //     position: "sticky",
+      //     left: "77px",
+      //     background: "white",
+      //     zIndex: 200,
+      //     boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+      //   }
+      // }),
+      // setCellHeaderProps: () => ({
+      //   style: {
+      //     position: "sticky",
+      //     minWidth: "150px",
+      //     left: "77px",
+      //     zIndex: 201,
+      //     // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+      //   }
+      // }),
+
+      
       customRender: (value, tableMeta) => {
         const splitNumber = value?.split("_");
         const styles = {
@@ -19,6 +49,9 @@ const RevenuePropertiesHeadCells = [
           cursor: "pointer",
         };
         return (
+          <div
+            // style={{borderRight: 'solid red'}}
+          >
           <p
             onClick={(e) => {
               e.stopPropagation();
@@ -30,25 +63,45 @@ const RevenuePropertiesHeadCells = [
             {splitNumber?.[0]
               ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
               : tableMeta?.rowData[2]}
-          </p>
+
+            </p>
+            {/* <Button/> */}
+            </div>
+            
+
+
         );
       },
-      sort: true,
-      filter: true,
+
+      // sort: true,
+      // filter: true,
+      // stickyColumn: true,
+      // viewColumns: false,
+      // display: true,
+
     },
   },
   {
     name: "name",
     label: "Property Name",
     esKey: "name.keyword",
-    options: { sort: true, filter: true, display: false },
+    options: { sort: true, filter: true, 
+      display: false },
+    // options: {
+    //   ...GlobalSettings.muiGridStandardOptions,
+    //   display: false,
+    // }
   },
 
   {
     name: "state",
     label: "State",
     esKey: "state.keyword",
-    options: { sort: true, filter: true },
+    options: { sort: true, 
+      filter: true },
+    // options: {
+    //   ...GlobalSettings.muiGridStandardOptions,
+    // }
   },
   {
     name: "county",

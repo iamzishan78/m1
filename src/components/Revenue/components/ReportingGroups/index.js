@@ -6,12 +6,13 @@ import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 // actions
 
 const useStyles = makeStyles((theme) => ({
-  root: { paddingTop: '100px' },
+  root: { paddingTop: '65px' },
   propertyTableContainer: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
-    paddingLeft: "38px",
-    paddingRight: "38px",
+    // paddingLeft: "38px",
+    // paddingRight: "38px",
+    marginLeft: "-8px",
     marginTop: theme.spacing(2),
     "& div": {
       "&>.MuiPaper-root": {
