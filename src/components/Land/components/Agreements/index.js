@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
         "flex-direction": "column",
         height: "calc(100vh - 65px)",
         position: "relative",
+        boxShadow: "none",
         "align-items": "stretch",
         "&>.MuiPaper-root": {
           display: "contents",
@@ -31,7 +32,8 @@ const useStyles = makeStyles((theme) => ({
 
     '& .MuiDrawer-paperAnchorRight': {
       overflow: "hidden",
-    }
+    },
+    marginLeft: '-10px'
   },
 }));
 
