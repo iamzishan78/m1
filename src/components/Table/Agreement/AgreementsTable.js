@@ -51,7 +51,7 @@ function AgreementsTable(props) {
 
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
-  const GridViewModule = userGridViewSettings[`Agreements`]
+  const GridViewModule = userGridViewSettings[`Agreements`];
 
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
