@@ -488,7 +488,7 @@ export default function MetadataDrawer(props) {
                   setFocusSate(false);
                   if (props.onUpdate)
                     props.onUpdate({
-                      [props.descriptionKey]: event.target.value,
+                      [props.descriptionKey]: target.value,
                     });
                 }}
               />
@@ -553,6 +553,7 @@ export default function MetadataDrawer(props) {
             targetLabel={targetLabel}
             targetSourceId={targetSourceId}
             commentsHeight={targetLabel === "Contact" ? "580px" : null}
+            activityLog={props.activityLog}
           />
         </div>
       </div>
