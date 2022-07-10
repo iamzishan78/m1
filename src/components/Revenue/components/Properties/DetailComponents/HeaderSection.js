@@ -530,7 +530,7 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Doc Date</div>
+                <div className={classes.label}>DO Date</div>
               </Grid>
               <Grid item xs={8} className={classes.datePicker}>
                 <Controller
