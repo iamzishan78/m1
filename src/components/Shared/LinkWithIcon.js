@@ -1,16 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import Dialog from "@material-ui/core/Dialog";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import debounce from "lodash/debounce";
+import _ from "lodash";
 import Tooltip from "@material-ui/core/Tooltip";
 import LinkIcon from "@material-ui/icons/Link";
-import { Grid, Container, Box, Typography, Badge, TextField, InputAdornment, Button } from "@material-ui/core";
+import {
+  Grid,
+  Container,
+  Box,
+  Typography,
+  Badge,
+  TextField,
+  InputAdornment,
+  Button,
+} from "@material-ui/core";
 import RightDialog from "../ContactDetailCard/components/RightDialog";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
-import SearchIcon from '@material-ui/icons/Search'; 
+import SearchIcon from "@material-ui/icons/Search";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import {
   LINKED_GLOBAL_OWNERS,
@@ -20,22 +29,27 @@ import {
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import PersonIcon from "@material-ui/icons/Person";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
+import { AppContext } from "AppContext";
 
 export default function LinkWithIcon(props) {
   const [openDialog, setOpenDialog] = useState(false);
   const [inputSearchValue, setSearchValue] = useState("");
-  const [isDeleteGlobalOwnerDialog, setGlobalOwnerDialog] = useState({ state: false, globalOwner: "" });
+  const [showAll, setShow] = useState(false);
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [isDeleteGlobalOwnerDialog, setGlobalOwnerDialog] = useState({
+    state: false,
+    globalOwner: "",
+  });
 
   const [getLinkedGlobalOwners, { data }] = useLazyQuery(LINKED_GLOBAL_OWNERS, {
     fetchPolicy: "cache-and-network",
   });
   const [unlinkGlobalOwners] = useMutation(UNLINK_GLOBAL_OWNER);
-  const [linkGlobalOwners] = useMutation(LINK_GLOBAL_OWNER);
+  const [linkTaxOwners] = useMutation(LINK_GLOBAL_OWNER);
   const [getESSimpleSearch, { data: esSearchData }] = useLazyQuery(
     GET_ES_SIMPLE_SEARCH,
     { fetchPolicy: "no-cache" }
   );
-
 
   useEffect(() => {
     if (props.objectId) {
@@ -49,8 +63,7 @@ export default function LinkWithIcon(props) {
 
   useEffect(() => {
     debouncedSearch();
-  }, [inputSearchValue]);
-
+  }, [inputSearchValue, showAll]);
 
   const useStyles = makeStyles((theme) => ({
     icons: {
@@ -58,7 +71,8 @@ export default function LinkWithIcon(props) {
       marginLeft: "auto",
       backgroundColor: "#f2f2f2",
       "&:hover": {
-        backgroundColor: props.targetLabel === "deal" ? "#dadbde88 !important" : "#eeeeee",
+        backgroundColor:
+          props.targetLabel === "deal" ? "#dadbde88 !important" : "#eeeeee",
       },
     },
     iconSelected: {
@@ -88,12 +102,19 @@ export default function LinkWithIcon(props) {
     ownerIdGrid: {
       paddingLeft: "5px !important",
     },
+    searchContainer: {
+      overflowY: "auto",
+      border: "1px solid lightgrey",
+      padding: "0.5rem",
+    },
   }));
 
   const classes = useStyles();
 
   const getGlobalOwners = () => {
-    return data && data.linkedGlobalOwners && data.linkedGlobalOwners.data ? data.linkedGlobalOwners.data : [];
+    return data && data.linkedGlobalOwners && data.linkedGlobalOwners.data
+      ? data.linkedGlobalOwners.data
+      : [];
   };
 
   const searchTaxOwners = () => {
@@ -101,17 +122,18 @@ export default function LinkWithIcon(props) {
       variables: {
         index: "platformData:globalowner",
         pagination: {
-          first: 25,
+          first: showAll ? 200 : 25,
           keep_alive: "1micros",
         },
         search: {
-          query: (request) => `${request.input}`,
+          query: inputSearchValue,
           fields: ["ownerName", "streetAddress", "city", "state", "zip"],
-        }
+        },
+        sort: [],
       },
     });
-  }
-  const debouncedSearch = debounce(searchTaxOwners, 1000)
+  };
+  const debouncedSearch = _.debounce(searchTaxOwners, 1000);
 
   const handleRemoveGlobalOwner = () => {
     unlinkGlobalOwners({
@@ -124,18 +146,53 @@ export default function LinkWithIcon(props) {
     });
   };
 
-  const handleAddGlobalOwner = (globalOwnerId) => {
-    linkGlobalOwners({
+  const handleLinkTaxOwners = (taxOwner) => {
+    const contact = {};
+    const acceptedFields = [
+      "name",
+      "address1",
+      "address2",
+      "city",
+      "state",
+      "zip",
+      "country",
+      "globalOwner",
+      "title",
+      "firstName",
+      "lastName",
+      "middleName",
+      "suffix",
+    ];
+
+    for (let i in props.contact) {
+      if (acceptedFields.includes(i)) {
+        contact[i] = props.contact[i];
+      }
+    }
+    contact.globalOwner = taxOwner.globalOwnerId;
+
+    linkTaxOwners({
       variables: {
         contactId: props.objectId,
-        globalOwnerId,
+        contact,
+        userId: stateApp.user.mongoId,
       },
       refetchQueries: ["getLinkedGlobalOwners"],
       awaitRefetchQueries: true,
     });
-  }
-  
-  console.log("-*-*-*esSearchData-*-*-*-", {esSearchData, data});
+  };
+
+  const isLinked = (taxOwner) => {
+    const globalOwners = getGlobalOwners();
+
+    return Boolean(
+      globalOwners.find(
+        (globalOwner) => globalOwner.globalOwner === taxOwner.globalOwnerId
+      )
+    );
+  };
+
+  console.log(" linkedOwners ", getGlobalOwners());
   return (
     <React.Fragment>
       <Tooltip title={"Linked Global Owner"} placement="top">
@@ -201,7 +258,7 @@ export default function LinkWithIcon(props) {
                   <TextField
                     fullWidth
                     variant="outlined"
-                    value={inputSearchValue}
+                    // value={inputSearchValue}
                     onChange={({ target }) => setSearchValue(target.value)}
                     InputProps={{
                       endAdornment: (
@@ -214,7 +271,13 @@ export default function LinkWithIcon(props) {
                 </Grid>
 
                 {inputSearchValue && (
-                  <Grid container style={{ maxHeight: 300, overflowY: "auto" }}>
+                  <Grid
+                    container
+                    className={classes.searchContainer}
+                    style={{
+                      maxHeight: showAll ? 500 : 300,
+                    }}
+                  >
                     <Grid
                       container
                       item
@@ -240,15 +303,24 @@ export default function LinkWithIcon(props) {
                           size="small"
                           className={classes.groupsButton}
                           onClick={() => {
-                            // setSearchTop(200);
+                            setShow(!showAll);
                           }}
                         >
-                          See All Results
+                          {showAll ? "See Less" : "See All"}
                         </Button>
                       </Grid>
                     </Grid>
-                    {esSearchData.getESSimpleSearch.hits.map((globalOwner) => (
-                        <ListGlobalOwners globalOwner={globalOwner} onClick={() => handleAddGlobalOwner()} key={"search_tax_owners" + globalOwner._id} />
+                    {esSearchData?.getESSimpleSearch?.hits?.map((taxOwner) => (
+                      <ListGlobalOwners
+                        taxOwner={taxOwner}
+                        onClick={() =>
+                          isLinked(taxOwner)
+                            ? handleRemoveGlobalOwner()
+                            : handleLinkTaxOwners(taxOwner)
+                        }
+                        key={"search_tax_owners" + taxOwner._id}
+                        isLinked={isLinked(taxOwner)}
+                      />
                     ))}
                   </Grid>
                 )}
@@ -368,49 +440,37 @@ export default function LinkWithIcon(props) {
   );
 }
 
-
-const ListGlobalOwners = ({globalOwner, onClick}) => {
+const ListGlobalOwners = ({ taxOwner, onClick, isLinked }) => {
   return (
-    <Grid container spacing={0}>
+    <Grid container spacing={0} style={{ cursor: "pointer" }}>
       <Grid
         container
         item
-        xs={10}
+        xs
         spacing={2}
         alignItems="center"
-        style={{marginBottom: 5}}
+        style={{ marginBottom: 5 }}
       >
         <Grid item>
-          <PersonIcon
-            color={"#757575"}
-          />
+          <PersonIcon color={"#757575"} />
         </Grid>
         <Grid item xs>
-          <span>{globalOwner.ownerName}</span>
+          <span>{taxOwner.ownerName}</span>
           <Typography variant="body2" color="textSecondary">
-            {globalOwner.streetAddress}, {globalOwner.city},{" "}
-            {globalOwner.state}, {globalOwner.zip}
+            {taxOwner.streetAddress}, {taxOwner.city}, {taxOwner.state},{" "}
+            {taxOwner.zip}
           </Typography>
         </Grid>
       </Grid>
       <Grid item>
-        {true ? (
-          <Button
-            onClick={() => onClick(globalOwner._id)}
-          >
-            <ControlPointIcon
-              className={classes.icon}
-              color={"#757575"}
-              onCL
-            />
-          </Button>
-        ) : (
-          <LinkIcon
-            className={classes.icon}
-            color={"#757575"}
-          />
-        )}
+        <Button onClick={onClick}>
+          {isLinked ? (
+            <LinkIcon color={"primary"} />
+          ) : (
+            <ControlPointIcon color={"#757575"} />
+          )}
+        </Button>
       </Grid>
     </Grid>
-  )
-}
+  );
+};

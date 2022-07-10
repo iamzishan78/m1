@@ -439,7 +439,7 @@ const ContactBreadcrumbs = () => {
           )}
         </Breadcrumbs>
       </div>
-      <LinkWithIcon objectId={contactId.toLowerCase()} iconZiseSmall={false} />
+      <LinkWithIcon objectId={contactId.toLowerCase()} contact={data?.contact} iconZiseSmall={false} />
     </div>
   );
 };
