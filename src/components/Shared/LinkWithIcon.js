@@ -25,7 +25,7 @@ import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import {
   LINKED_GLOBAL_OWNERS,
   UNLINK_GLOBAL_OWNER,
-  LINK_GLOBAL_OWNER,
+  LINK_PLATFORM_OWNER,
 } from "../../graphQL/useQueryLinkedGlobalOwners";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import PersonIcon from "@material-ui/icons/Person";
@@ -46,7 +46,7 @@ export default function LinkWithIcon(props) {
     fetchPolicy: "cache-and-network",
   });
   const [unlinkGlobalOwners] = useMutation(UNLINK_GLOBAL_OWNER);
-  const [linkTaxOwners] = useMutation(LINK_GLOBAL_OWNER);
+  const [linkTaxOwners] = useMutation(LINK_PLATFORM_OWNER);
   const [getESSimpleSearch, { data: esSearchData, loadng }] = useLazyQuery(
     GET_ES_SIMPLE_SEARCH,
     { fetchPolicy: "no-cache" }
@@ -481,10 +481,10 @@ const ListGlobalOwners = ({ taxOwner, onClick, isLinked }) => {
       </Grid>
       <Grid item>
         <IconButton
-          color={isLinked ? "secondary" : "#757575"}
+          color={isLinked ? "primary" : "#757575"}
           onClick={onClick}
         >
-          {isLinked ? <LinkIcon /> : <ControlPointIcon />}
+          {isLinked ? <LinkIcon color="primary" /> : <ControlPointIcon />}
         </IconButton>
       </Grid>
     </Grid>

@@ -12,13 +12,13 @@ export const UNLINK_GLOBAL_OWNER = gql`
   }
 `
 
-export const LINK_GLOBAL_OWNER = gql`
-  mutation linkTaxOwnersToContact(
+export const LINK_PLATFORM_OWNER = gql`
+  mutation linkPlatformOwnersToContact(
     $contactId: ID
     $contact: JSON
     $userId: ID
   ) {
-    linkTaxOwnersToContact(
+    linkPlatformOwnersToContact(
       contactId: $contactId
       contact: $contact
       userId: $userId
