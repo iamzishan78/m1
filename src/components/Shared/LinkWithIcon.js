@@ -15,6 +15,7 @@ import {
   TextField,
   InputAdornment,
   Button,
+  CircularProgress,
 } from "@material-ui/core";
 import RightDialog from "../ContactDetailCard/components/RightDialog";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
@@ -46,7 +47,7 @@ export default function LinkWithIcon(props) {
   });
   const [unlinkGlobalOwners] = useMutation(UNLINK_GLOBAL_OWNER);
   const [linkTaxOwners] = useMutation(LINK_GLOBAL_OWNER);
-  const [getESSimpleSearch, { data: esSearchData }] = useLazyQuery(
+  const [getESSimpleSearch, { data: esSearchData, loadng }] = useLazyQuery(
     GET_ES_SIMPLE_SEARCH,
     { fetchPolicy: "no-cache" }
   );
@@ -117,7 +118,8 @@ export default function LinkWithIcon(props) {
       : [];
   };
 
-  const searchTaxOwners = () => {
+  const debouncedSearch = _.debounce(function(){
+    const searchedText = document?.getElementById("searchPlatformOwners")?.value;
     getESSimpleSearch({
       variables: {
         index: "platformData:globalowner",
@@ -126,14 +128,14 @@ export default function LinkWithIcon(props) {
           keep_alive: "1micros",
         },
         search: {
-          query: inputSearchValue,
+          query: searchedText,
           fields: ["ownerName", "streetAddress", "city", "state", "zip"],
         },
         sort: [],
       },
     });
-  };
-  const debouncedSearch = _.debounce(searchTaxOwners, 1000);
+    setSearchValue(searchedText);
+  }, 1500);
 
   const handleRemoveGlobalOwner = () => {
     unlinkGlobalOwners({
@@ -192,7 +194,6 @@ export default function LinkWithIcon(props) {
     );
   };
 
-  console.log(" linkedOwners ", getGlobalOwners());
   return (
     <React.Fragment>
       <Tooltip title={"Linked Global Owner"} placement="top">
@@ -256,10 +257,11 @@ export default function LinkWithIcon(props) {
                     contact
                   </Typography>
                   <TextField
+                    id="searchPlatformOwners"
                     fullWidth
                     variant="outlined"
                     // value={inputSearchValue}
-                    onChange={({ target }) => setSearchValue(target.value)}
+                    onChange={({ target }) => debouncedSearch()}
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="start">
@@ -285,43 +287,58 @@ export default function LinkWithIcon(props) {
                       className={classes.groupsHeaders}
                     >
                       <Grid item xs={6}>
-                        <h3 className={classes.groupsHeadersText}>
+                        <Typography color={"primary"}>
                           PLATFORM OWNERS
-                        </h3>
+                        </Typography>
                       </Grid>
-                      <Grid
-                        item
-                        xs={6}
-                        style={{
-                          textAlign: "right",
-                          display: "flex",
-                          justifyContent: "flex-end",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Button
-                          size="small"
-                          className={classes.groupsButton}
-                          onClick={() => {
-                            setShow(!showAll);
+                      {!_.isEmpty(esSearchData?.getESSimpleSearch?.hits) && (
+                        <Grid
+                          item
+                          xs={6}
+                          style={{
+                            textAlign: "right",
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            alignItems: "center",
                           }}
                         >
-                          {showAll ? "See Less" : "See All"}
-                        </Button>
-                      </Grid>
+                          <Button
+                            size="small"
+                            className={classes.groupsButton}
+                            onClick={() => {
+                              setShow(!showAll);
+                            }}
+                          >
+                            {showAll ? "See Less" : "See All"}
+                          </Button>
+                        </Grid>
+                      )}
                     </Grid>
+                    {loadng && (
+                      <Grid container justifyContent="center">
+                        <CircularProgress color="secondary" />
+                      </Grid>
+                    )}
                     {esSearchData?.getESSimpleSearch?.hits?.map((taxOwner) => (
                       <ListGlobalOwners
                         taxOwner={taxOwner}
                         onClick={() =>
                           isLinked(taxOwner)
-                            ? handleRemoveGlobalOwner()
+                            ? setGlobalOwnerDialog({
+                                state: true,
+                                globalOwner: taxOwner.globalOwnerId,
+                              })
                             : handleLinkTaxOwners(taxOwner)
                         }
                         key={"search_tax_owners" + taxOwner._id}
                         isLinked={isLinked(taxOwner)}
                       />
                     ))}
+                    {_.isEmpty(esSearchData?.getESSimpleSearch?.hits) && (
+                      <Grid container justifyContent="center">
+                        <Typography>No platform owners found.</Typography>
+                      </Grid>
+                    )}
                   </Grid>
                 )}
                 {getGlobalOwners().length > 0 ? (
@@ -463,13 +480,12 @@ const ListGlobalOwners = ({ taxOwner, onClick, isLinked }) => {
         </Grid>
       </Grid>
       <Grid item>
-        <Button onClick={onClick}>
-          {isLinked ? (
-            <LinkIcon color={"primary"} />
-          ) : (
-            <ControlPointIcon color={"#757575"} />
-          )}
-        </Button>
+        <IconButton
+          color={isLinked ? "secondary" : "#757575"}
+          onClick={onClick}
+        >
+          {isLinked ? <LinkIcon /> : <ControlPointIcon />}
+        </IconButton>
       </Grid>
     </Grid>
   );
