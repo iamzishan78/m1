@@ -286,7 +286,7 @@ export default function MetadataDrawer(props) {
           style={{
             fontWeight: "bold",
             marginLeft: "5px",
-            fontSize: 19
+            fontSize: 19,
           }}
         >
           {props.title}
@@ -317,7 +317,10 @@ export default function MetadataDrawer(props) {
                     onChange={(e, user) => {
                       setOwnerId(user?.value);
                       if (props.onUpdate)
-                        props.onUpdate({ owner: user?.value, ownerName: user?.text });
+                        props.onUpdate({
+                          owner: user?.value,
+                          ownerName: user?.text,
+                        });
                     }}
                     value={
                       users.find((user) => user?.value === ownerId) || null
@@ -350,9 +353,20 @@ export default function MetadataDrawer(props) {
                               <InputAdornment position="start">
                                 <Avatar
                                   style={{
-                                    backgroundColor: users.find((user) => user?.value === ownerId) ? getRandomColor(users.find((user) => user?.value === ownerId).text.toString()) : ""
+                                    backgroundColor: users.find(
+                                      (user) => user?.value === ownerId
+                                    )
+                                      ? getRandomColor(
+                                          users
+                                            .find(
+                                              (user) => user?.value === ownerId
+                                            )
+                                            .text.toString()
+                                        )
+                                      : "",
                                   }}
-                                  className={classes.dealOwnerAvatar}>
+                                  className={classes.dealOwnerAvatar}
+                                >
                                   {users.find(
                                     (user) => user?.value === ownerId
                                   ) ? (
@@ -369,14 +383,13 @@ export default function MetadataDrawer(props) {
                                             (user) => user?.value === ownerId
                                           )
                                           .text.toString()
-                                          .toUpperCase()
-                                          .length > 1
+                                          .toUpperCase().length > 1
                                           ? users
-                                            .find(
-                                              (user) =>
-                                                user?.value === ownerId
-                                            )
-                                            .text.toString()
+                                              .find(
+                                                (user) =>
+                                                  user?.value === ownerId
+                                              )
+                                              .text.toString()
                                           : "Add Owner"
                                       }
                                     />
@@ -394,7 +407,7 @@ export default function MetadataDrawer(props) {
                   />
                 </Grid>
               </Grid>
-              {isApproval &&
+              {isApproval && (
                 <Grid container className={classes.gridStyle}>
                   <Grid item xs={3}>
                     <div>Approval Status</div>
@@ -408,10 +421,16 @@ export default function MetadataDrawer(props) {
                           {...params}
                           id="status-simple-select-outlined-label"
                           variant="outlined"
-                          value={data.approvalStatus ? data.approvalStatus : data.status ? data.status : ""}
+                          value={
+                            data.approvalStatus
+                              ? data.approvalStatus
+                              : data.status
+                              ? data.status
+                              : ""
+                          }
                           fullWidth
                           onChange={(e) => {
-                            props.onUpdate({ 'approvalStatus': e.target.value });
+                            props.onUpdate({ approvalStatus: e.target.value });
                           }}
                         >
                           <MenuItem value="Approved">Approved</MenuItem>
@@ -421,9 +440,36 @@ export default function MetadataDrawer(props) {
                     />
                   </Grid>
                 </Grid>
-              }
+              )}
+              <Grid container className={classes.gridStyle} style={{ marginTop: 10}}>
+                <Grid item xs={3}>
+                  <div>Source</div>
+                </Grid>
+                <Grid item xs={9}>
+                  <Controller
+                    control={control}
+                    name="status"
+                    render={(params) => (
+                      <Select
+                        {...params}
+                        id="source-simple-select-outlined-label"
+                        variant="outlined"
+                        value={data.source || ""}
+                        fullWidth
+                        onChange={(e) => {
+                          props.onUpdate({ source: e.target.value });
+                        }}
+                      >
+                        <MenuItem value="Manual Entry">Manual Entry</MenuItem>
+                        <MenuItem value="Imported">Imported</MenuItem>
+                      </Select>
+                    )}
+                  />
+                </Grid>
+              </Grid>
             </FormControl>
           </div>
+          
           {props.showDescription && (
             <Grid item className={classes.descriptionInput}>
               <TextField
@@ -438,12 +484,13 @@ export default function MetadataDrawer(props) {
                   setDescription(e.target.value);
                 }}
                 onFocus={() => setFocusSate(true)}
-                onBlur={({target}) => { 
-                  setFocusSate(false); 
+                onBlur={({ target }) => {
+                  setFocusSate(false);
                   if (props.onUpdate)
-                  props.onUpdate({
-                    [props.descriptionKey]: event.target.value,
-                  });}}
+                    props.onUpdate({
+                      [props.descriptionKey]: target.value,
+                    });
+                }}
               />
             </Grid>
           )}
@@ -477,13 +524,15 @@ export default function MetadataDrawer(props) {
             className="flex justifyBetween alignCenter"
             style={{ padding: "20px 16px", marginBottom: -56 }}
           >
-            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>{props.documentsTitle}</h4>
+            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
+              {props.documentsTitle}
+            </h4>
             {viewAllDocuments && (
               <h4
                 className={classes.viewAll}
                 onClick={() => {
                   history.push(`/contact/details/${targetSourceId}/documents`);
-                  setStateApp(stateApp => ({ ...stateApp, viewDoc: null }));
+                  setStateApp((stateApp) => ({ ...stateApp, viewDoc: null }));
                 }}
               >
                 View All
