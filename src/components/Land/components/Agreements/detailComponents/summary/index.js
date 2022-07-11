@@ -23,6 +23,7 @@ import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
 import FieldsSection from "./fieldsSection";
 import Acreage from "./Acreage";
+import AgreementIcon from "components/Shared/svgIcons/agreements";
 
 export default function Summary({
   agreementDetails,
@@ -81,6 +82,13 @@ export default function Summary({
                   justify="flex-start"
                   className={classes.summaryHeaderIcons}
                 >
+                  <Grid item>
+                    <div className={classes.summaryValue}>
+                      {" "}
+                      {agreementProvisions?.length || 0}{" "}
+                    </div>
+                    <AgreementIcon opacity="1.0" />
+                  </Grid>
                   <Grid item>
                     <div className={classes.summaryValue}>
                       {" "}
