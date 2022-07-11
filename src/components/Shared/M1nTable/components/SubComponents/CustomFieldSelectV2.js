@@ -106,8 +106,8 @@ const CustomFieldSelectV2 = ({ index, value, onCustomKeyChange, dropdownOptions,
   const [options, setOptions] = useState([]);
   const [, setStateApp] = useContext(AppContext);
   const defaultValue = {
-    label: "----",
-    value: "----",
+    label: "--",
+    value: "--",
   };
   const [showIcon, setShowIcon] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -154,10 +154,10 @@ const CustomFieldSelectV2 = ({ index, value, onCustomKeyChange, dropdownOptions,
           ).innerHTML = `<span class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}">${data}</span>`;
         }
       } else {
-        document.getElementById(`colorText_${index}_${column.name}`).innerHTML = `<span class='colorText'>----</span>`;
+        document.getElementById(`colorText_${index}_${column.name}`).innerHTML = `<span class='colorText'>--</span>`;
       }
     } else {
-      document.getElementById(`colorText_${index}_${column.name}`).innerHTML = `<span class='colorText'>----</span>`;
+      document.getElementById(`colorText_${index}_${column.name}`).innerHTML = `<span class='colorText'>--</span>`;
     }
   }, [index, value, dropdownOptions]);
 

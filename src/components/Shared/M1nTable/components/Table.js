@@ -127,6 +127,7 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
 import { getIndexofColumn } from "utils/helper";
 import ReactSelectField from "./SubComponents/ReactSelectField";
+import { Waypoint } from "react-waypoint";
 
 
 // suppress debug console logs
@@ -185,9 +186,9 @@ const useStyles = makeStyles((theme) => ({
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
       backgroundColor: "#fff",
     },
-    "& .MuiTableCell-paddingCheckbox": {
-      position: "relative",
-    },
+    // "& .MuiTableCell-paddingCheckbox": {
+    //   position: "relative",
+    // },
     "& .MuiToolbar-regular > div:nth-child(2) .MuiIconButton-root": {
       backgroundColor: "#D4E8F1",
       margin: "0 2px",
@@ -398,13 +399,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "-20px",
     position: "relative",
     justifyContent: "flex-end",
-    // minWidth: "100px",
-    // borderRadius: "7px",
-    // color: "#17aadd",
-    // "&:hover": {
-    //   textDecoration: "underline",
-    // },
-    // fontWeight: "bold",
   },
   tooltip: {
     position: "absolute",
@@ -414,20 +408,6 @@ const useStyles = makeStyles((theme) => ({
     width: 200,
     left: -150,
   },
-  // filenamediv: {
-  //   cursor: "pointer",
-  //   padding: "10px 30px 10px 10px",
-  //   position: "relative",
-  //   minWidth: "100px",
-  //   borderRadius: "7px",
-  //   color: "#17aadd",
-  //   "&:hover": {
-  //     // color: "#18aadd",
-  //     textDecoration: 'underline'
-  //   },
-  //   fontWeight: "bold",
-
-  // }
   activeBadge: {
     background: "#17c10d",
     height: 12,
@@ -488,8 +468,16 @@ const useStyles = makeStyles((theme) => ({
     "&  .MuiSvgIcon-root": {
       fill: "#5a5a5a"
     }
+  },
+  gridElementStyling: {
+    width: '250px',
+    padding: '0px 25px 0px 0px'
+  },
+  gridElementEmptyStyling: {
+    color: "#959595"
   }
 }));
+
 
 function SubTable(props) {
   const classes = useStyles({
@@ -508,7 +496,6 @@ function SubTable(props) {
 
   // function state
   const [trueTargetLabel, TrueTargetLabel] = useState(null);
-  // const [contactDataMissing, setContactDataMissing] = useState([]);
   const [rowsPerPage, RowsPerPage] = useState(props.startPaginationAt);
   const [firstMount, FirstMount] = useState(true);
   const [title, Title] = useState("");
@@ -613,6 +600,9 @@ function SubTable(props) {
     setStateIfDeepEqual(Rows, newState);
   };
   const [searchedRows, setSearchedRows] = useState([]);
+
+  const [gridColWidth, setGridColWidth] = useState('250px');
+
 
   // queries
   const [getWell] = useLazyQuery(WELLQUERY, {
@@ -760,6 +750,28 @@ function SubTable(props) {
   const registerSearchHandler = (handleSearch) => {
     setHandleSearch(() => handleSearch);
   };
+
+
+  // functions 
+  const gridElement = value => {
+    // wraps standard grid elements w/ consistent styling
+
+    return (
+      <>
+        <Typography
+          noWrap
+          variant='body2'
+          className={classes.gridElementStyling}
+        >
+          {value ? (value) : (<span className={classes.gridElementEmptyStyling}>--</span>)}
+        </Typography>
+      </>
+    )
+
+  }
+
+
+
 
   //// save contact data chosen by action menu
   useEffect(() => {
@@ -1201,13 +1213,40 @@ function SubTable(props) {
           return;
         }
 
+        if (column?.infiniteScroll) {
+          column.options = {
+            ...column.options,
+            customBodyRender: (value, tableMeta) => {
+              const rowIndex = tableMeta.rowIndex;
+              if (rowIndex === props.rows.length - 5) {
+                return (
+                  <Fragment>
+                    <Waypoint
+                      onEnter={() => {
+                        if (props.onInfiniteScroll) props.onInfiniteScroll()
+                      }}
+                    />
+
+                    <div id={`waypoint-${rowIndex}`}>
+                      {gridElement(value)}
+                    </div>
+
+                  </Fragment>
+                );
+              } else {
+                return (gridElement(value))
+              }
+            },
+          };
+          return
+        }
+
         switch (column.name) {
           case "detailCard":
             column.options = {
               ...column.options,
               customBodyRender: (value, tableMeta, updateValue) => {
                 let id = props.targetLabel + tableMeta.columnIndex;
-                console.log('table detail card', props.parent, props.targetLabel)
                 if (props.parent !== "search" && props.targetLabel !== "well") {
                   return (
                     <Tooltip title={"Detail Card"} placement="top">
@@ -1303,10 +1342,7 @@ function SubTable(props) {
                   if (row_line && row_line.dateTime) {
                     dateTime = row_line.dateTime;
                   }
-                  return (
-                    <span style={{ padding: 10 }}>
-                      {dateTime ? <span>{moment(dateTime).format("MM/DD/YYYY")}</span> : <span style={{ color: "#959595" }}>N/A</span>}
-                    </span>
+                  return (gridElement(convert_date(dateTime))
                   );
                 },
               };
@@ -1783,27 +1819,6 @@ function SubTable(props) {
                             setTitle("Contact Details");
                             setSubTitle(" ");
 
-                            // handleOpenExpandableCard();
-
-                            // setTargetLabelToExpand("contact");
-                            // setStateApp((stateApp) => ({
-                            //   ...stateApp,
-                            //   selectedContact: value,
-                            // }));
-                            // setSelectedRow({ _id: value });
-
-                            // setSubComponent(
-                            //   <ContactDetailCard
-                            //     selectRowOpenContact={selectRowOpenContact}
-                            //     handleCloseExpandableCard={
-                            //       handleCloseExpandableCard
-                            //     }
-                            //   />
-                            // );
-                            // setTitle("Contact Details");
-                            // setMultipleExpandableCard(true);
-                            // setSubTitle(" ");
-                            // handleOpenExpandableCard();
                           } else {
                             // Code is not used as we are opening different model from above
                             if (props.targetLabel === "owner") {
@@ -2063,107 +2078,130 @@ function SubTable(props) {
                   const uri = row_line?.fileUrl;
 
                   return (
-                    <div style={{ minWidth: 400 }}>
-                      <Grid container spacing={2} direction="row">
-                        <Grid
-                          item
-                          xs={2}
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          {/* {new RegExp(
-                          ["jpg", "jpeg", "png", "bmp"].join("|")
-                        ).test(fileExtension) ? (
-                          <img
-                            src={uri}
-                            alt={file}
-                          ></img>
-                        ) : ( */}
-                          <div
-                            onClick={() => {
-                              if (file.state !== "active") return;
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "flex-start",
+                      // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                      // paddingRight: '200px'
+                    }}>
 
-                              if (fileExtension === "pdf") {
-                                setStateApp({
-                                  ...stateApp,
-                                  viewDoc: { uri: uri, name: file },
-                                });
-                              }
-                            }}
-                          >
-                            {get_file_icon(fileExtension)}
-                          </div>
-                          {/* )
-                        } */}
-                          {/* </div> */}
-                        </Grid>
-
-                        <Grid xs={10} item>
-                          {/**
-                           * This is the document title showing in each row
-                           */}
-                          <div
+                      <div style={{
+                        minWidth: 400,
+                        maxWidth: 400,
+                        boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                        // paddingRight: '200px'
+                      }}>
+                        <Grid container spacing={0} direction="row" >
+                          {
+                            props.parent === 'Documents' && <div style={{ position: 'relative', zIndex: 100 }}>
+                              <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
+                                {tableMeta.rowIndex + 1}
+                              </div>
+                            </div>
+                          }
+                          <Grid
+                            item
+                            xs={1}
                             style={{
                               display: "flex",
+                              justifyContent: "flex-start",
                               alignItems: "center",
-                              justifyContent: "left",
-                            }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
-                              if (type === "pdf") {
-                                if (props.addAble.type === "document") {
-                                  window.history.pushState("", "", `/documents/${row_line._id}/view`);
-                                }
-                                // const selectedRow = rows.find((row) => row._id === row_line._id);
-                                setStateApp((state) => ({
-                                  ...state,
-                                  pdfView: row_line,
-                                  viewDoc: {
-                                    uri: row_line.viewToken,
-                                    name: row_line.fileName,
-                                  },
-                                }));
-                              } else {
-                                handleViewFile(row_line._id);
-                              }
                             }}
                           >
-                            <Grid container direction="column" alignItems="flex-start">
-                              <Grid item>
-                                <p
-                                  style={{
-                                    cursor: "pointer",
-                                    padding: "10px 10px 10px 10px",
-                                    position: "relative",
-                                    minWidth: "120px",
-                                    borderRadius: "7px",
-                                    color: "#17aadd",
-                                    wordBreak: "break-word",
-                                    "&:hover": {
-                                      textDecoration: "underline",
+                            <div
+                              style={{
+                                // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                              }}
+
+                              onClick={() => {
+                                if (file.state !== "active") return;
+
+                                if (fileExtension === "pdf") {
+                                  setStateApp({
+                                    ...stateApp,
+                                    viewDoc: { uri: uri, name: file },
+                                  });
+                                }
+                              }}
+                            >
+                              {get_file_icon(fileExtension)}
+                            </div>
+                            {/* )
+                        } */}
+                            {/* </div> */}
+                          </Grid>
+
+                          <Grid xs={11} item
+                          >
+                            {/**
+                           * This is the document title showing in each row
+                           */}
+                            <div
+                              style={{
+                                display: "flex",
+                                // alignItems: "center",
+                                justifyContent: "flex-start",
+
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
+                                if (type === "pdf") {
+                                  if (props.addAble.type === "document") {
+                                    window.history.pushState("", "", `/documents/${row_line._id}/view`);
+                                  }
+                                  // const selectedRow = rows.find((row) => row._id === row_line._id);
+                                  setStateApp((state) => ({
+                                    ...state,
+                                    pdfView: row_line,
+                                    viewDoc: {
+                                      uri: row_line.viewToken,
+                                      name: row_line.fileName,
                                     },
-                                    fontWeight: "bold",
-                                  }}>{value}</p>
-                              </Grid>
-                              <Grid item>
-                                {/* <p className={classes.docDateText}>{dateTime = moment.utc(row_line.dateTime).format("MM/DD/YYYY")}</p> */}
-                                {/* <p className={classes.docDateText}>{convert_date(dateTime)}</p> */}
-                                {/* <p className={classes.docDateText}>{dateTime.substring(0,8)}}</p> */}
-                                <p style={{
-                                  padding: "0px 30px 10px 10px",
-                                  marginTop: "-20px",
-                                  position: "relative",
-                                  justifyContent: "flex-end",
-                                }}>{convert_date(dateTime)}</p>
-                              </Grid>
-                            </Grid>
-                          </div>
+                                  }));
+                                } else {
+                                  handleViewFile(row_line._id);
+                                }
+                              }}
+                            >
+
+
+
+                                  <p
+                                    style={{
+                                      display: "flex",
+                                      cursor: "pointer",
+                                      minWidth: "120px",
+                                      borderRadius: "7px",
+                                      color: "#17aadd",
+                                      wordBreak: "break-word",
+                                      "&:hover": {
+                                        textDecoration: "underline",
+                                      },
+                                      fontWeight: "bold",
+                                      justifyContent: "flex-start",
+                                      paddingRight: '40px',
+                                    }}>
+
+                                      <Typography
+                                        noWrap
+                                        color="inherit"
+                                        >
+                                      {value}
+                                      </Typography>
+
+                                      </p>
+
+                            </div>
+                          </Grid>
                         </Grid>
-                      </Grid>
+                      </div>
+                      <div
+                        style={{
+                          paddingRight: '40px'
+                        }}
+                      ></div>
                     </div>
                   );
                 },
@@ -2491,22 +2529,15 @@ function SubTable(props) {
                       <span style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }} onClick={() => history.push(`/map/units/${row_line._id}`)}>{row_line.name}</span>
                     )
                   }
-                  if (column.isCustom && column.type === "dropdown") {
+                  if (column.isCustom && (column.type === "multiselect" || column.type === "dropdown")) {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
                     }
                     return (
-                      <div style={{ minWidth: "100px" }}>
-                        {/* <CustomFieldSelectV2
-                          dropdownOptions={column.dropdownOptions}
-                          index={tableMeta.rowIndex}
-                          column={column}
-                          value={value}
-                          onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)}
-                        /> */}
+                      <div className={classes.gridElementStyling}>
                         <ReactSelectField
-                          isSingleSelect={true}
+                          isSingleSelect={column.type !== "multiselect"}
                           dropdownOptions={column.dropdownOptions}
                           index={tableMeta.rowIndex}
                           column={column}
@@ -2516,23 +2547,7 @@ function SubTable(props) {
                       </div>
                     );
                   }
-                  if (column.isCustom && (column.type === "multiselect" || column.type === 'dropsdown')) {
-                    let value = null;
-                    if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
-                      value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
-                    }
-                    return (
-                      <div style={{ minWidth: "100px", maxWidth: "400px" }}>
-                        <ReactSelectField
-                          dropdownOptions={column.dropdownOptions}
-                          index={tableMeta.rowIndex}
-                          column={column}
-                          value={value}
-                          onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)}
-                        />
-                      </div>
-                    );
-                  }
+
                   if (column.isCustom && column.type === "text") {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
@@ -2627,15 +2642,13 @@ function SubTable(props) {
                           round
                         />
                       )}
-                      {props.targetLabel === "documents" && (
-                        <>
-                          {value ? (
-                            <p style={{ padding: "0px 5px", wordBreak: "break-word" }}>{value}</p>
-                          ) : (
-                            <p style={{ padding: "0px 5px", color: "#959595" }}>{value ? value : "N/A"}</p>
-                          )}
-                        </>
-                      )}
+
+
+                      {/* // standard document grid elements */}
+                      {props.targetLabel === "documents" && (gridElement(value))}
+
+
+
                       {props.targetLabel !== "contact" && props.targetLabel !== "documents" && (
                         <CellContentEdition
                           id={tableMeta.rowData[0]}
@@ -3301,7 +3314,6 @@ function SubTable(props) {
               const selectedRows = [];
               for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
                 rows[m1nSelectedRowsIndexes[i]]._id = rows[m1nSelectedRowsIndexes[i]].isContact;
-                console.log("rows m1Selected", rows[m1nSelectedRowsIndexes[i]]);
                 selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
               }
               return selectedRows;
@@ -4161,6 +4173,7 @@ function SubTable(props) {
           }`}
       >
         <MUIDataTable
+          id={props.parent}
           innerRef={props.tableRef}
           className={tableStyle}
           title={getHeaders()}
