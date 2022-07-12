@@ -299,7 +299,10 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     setRows(hits);
 
                 if (formatColumns)
+
                     TableHeader = formatColumns(TableHeader, hits)
+
+                    console.log('TESTPOINT1', TableHeader)
 
                 setColumnsData(copy(TableHeader));
                 setLoading(false);
@@ -320,7 +323,15 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             if (filters && filters.length > 0) {
                 appliedFilters = [...initialFilters, ...filters]
             }
+        
+            console.log("-----------=========")
+            console.log('TESTPOINT2',tableCols)
+
+
             tableCols.forEach((column, index) => {
+
+                console.log('FISHBRAIN3',column)
+
                 const waypointKey = props?.loadMore?.waypointKey
                 if (waypointKey && column.name === waypointKey) {
                     column.options = {
@@ -329,10 +340,24 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     };
                 }
 
-                if (column?.options?.filter) {
-                    const custom = column.custom;
+                /// apply global settings unless ignored
+                if (column?.options?.ignore) {
+                    column.options = {
+                        ...column.options,
+                    };
+                } else {
                     column.options = {
                         ...GlobalSettings.muiGridStandardOptions,
+                        ...column.options,
+                    };
+                }
+
+                if (column?.options?.filter) {
+                    const custom = column.custom;
+                    // console.log('FISHBRAIN',column)
+                    column.options = {
+
+                        // ...(column.options.ignore?  null : GlobalSettings.muiGridStandardOptions),
                         ...column.options,
                         sortThirdClickReset: column.options.sort === false ? false : true,
                         filter: true,
@@ -754,7 +779,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             serverSide: true,
             searchable: true,
             // rowsSelected: selectedRows.map((sR => sR.dataIndex)),
-            filter: true,
+            // filter: true,
             searchText: tableMeta.extendSearchQuery || undefined,
             searchFields: tableMeta.searchFields,
             customToolbar: (tableMeta.addBtnText || tableMeta.addableName) ? () => {

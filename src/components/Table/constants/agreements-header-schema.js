@@ -47,15 +47,13 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
               alignItems: 'center',
             }}
           >
-          <div
-            style={{}}
-          >
+
           {<span 
-            style={{color: GlobalStyles.colors.mutedGrey}}
-            >{tableMeta.rowIndex + 1}</span>}
-          </div>
+            style={{color: GlobalStyles.colors.mutedGrey, marginLeft: "-10px"}}
+            >{tableMeta.rowIndex + 1}
+            </span>}
 
-
+          {/* <div style={styles}>  */}
           <Typography 
             onClick={(e) => {
               e.stopPropagation();
@@ -86,6 +84,14 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
             </Typography>
 
 
+            {/* {value?.toLowerCase() === "approved" ? (
+              <CheckCircleIcon style={{ color: "forestgreen" }} />
+            ) : (
+              <WarningIcon style={{ color: "orange" }} />
+            )}
+
+          </div> */}
+          
           </div>
 
         );
@@ -125,8 +131,9 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     // },
 
     options: {
-      ...GlobalSettings.muiGridStandardOptions,
+      // ...GlobalSettings.muiGridStandardOptions,
       dbName: "shapeJson.properties.agreementName",
+      // filter: false
     }
 
   },
@@ -135,10 +142,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Type",
     esKey: "shapeJson.properties.agreementType.keyword",
     options: {
-      ...GlobalSettings.muiGridStandardOptions,
       dbName: "shapeJson.properties.agreementSubtype",
-      // sort: true,
-      // filter: true,
     },
   },
   {
@@ -146,11 +150,8 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Subtype",
     esKey: "shapeJson.properties.agreementSubtype.keyword",
     options: {
-      // setCellProps: () => ({ style: { minWidth: "170px" } }),
-      ...GlobalSettings.muiGridStandardOptions,
+      ignore: true,
       dbName: "shapeJson.properties.agreementSubtype",
-      // sort: true,
-      // filter: true,
     },
   },
   {
@@ -159,10 +160,9 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.rightsType.keyword",
     options: {
       // setCellProps: () => ({ style: { minWidth: "170px" } }),
-      ...GlobalSettings.muiGridStandardOptions,
+      // ...GlobalSettings.muiGridStandardOptions,
       dbName: "shapeJson.properties.rightsType",
-      // sort: true,
-      // filter: true,
+  
     },
   },
   {
@@ -171,7 +171,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.grantor.keyword",
     options: {
       // setCellProps: () => ({ style: { minWidth: "225px" } }),
-      ...GlobalSettings.muiGridStandardOptions,
+      // ...GlobalSettings.muiGridStandardOptions,
       dbName: "shapeJson.properties.grantor",
       // sort: true,
       // filter: true,
@@ -189,7 +189,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       //     <div>(Party 2)</div>
       //   </>
       // ),
-      ...GlobalSettings.muiGridStandardOptions,
+      // ...GlobalSettings.muiGridStandardOptions,
       dbName: "shapeJson.properties.grantee",
       // sort: true,
       // filter: true,
@@ -216,8 +216,8 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.effectiveDate.keyword",
     options: {
       dbName: "shapeJson.properties.effectiveDate.keyword",
-      sort: true,
-      filter: true,
+      // sort: true,
+      // filter: true,
     },
     custom: {
       isDate: true,
@@ -229,8 +229,8 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.expirationDate.keyword",
     options: {
       dbName: "shapeJson.properties.expirationDate",
-      sort: true,
-      filter: true,
+      // sort: true,
+      // filter: true,
     },
     custom: {
       isDate: true,
@@ -241,10 +241,10 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Ext Date",
     esKey: "shapeJson.properties.extensionDate.keyword",
     options: {
-      setCellProps: () => ({ style: { minWidth: "175px" } }),
+      // setCellProps: () => ({ style: { minWidth: "175px" } }),
       dbName: "shapeJson.properties.extensionDate",
-      sort: true,
-      filter: true,
+      // sort: true,
+      // filter: true,
     },
     custom: {
       isDate: true,
@@ -255,10 +255,10 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Status",
     esKey: "shapeJson.properties.agreementStatus.keyword",
     options: {
-      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      // setCellProps: () => ({ style: { minWidth: "200px" } }),
       dbName: "shapeJson.properties.agreementStatus",
-      sort: true,
-      filter: true,
+      // sort: true,
+      // filter: true,
     },
   },
   {
@@ -266,10 +266,10 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Report GRS",
     esKey: "shapeJson.properties.reportGrossAcres.keyword",
     options: {
-      setCellProps: () => ({ style: { minWidth: "175px" } }),
+      // setCellProps: () => ({ style: { minWidth: "175px" } }),
       dbName: "shapeJson.properties.reportGrossAcres",
-      sort: true,
-      filter: true,
+      // sort: true,
+      // filter: true,
     },
   },
   {
@@ -278,8 +278,8 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.grossAcres.keyword",
     options: {
       dbName: "shapeJson.properties.grossAcres",
-      sort: true,
-      filter: true,
+      // sort: true,
+      // filter: true,
     },
   },
   {
@@ -288,8 +288,8 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.netAcres.keyword",
     options: {
       dbName: "shapeJson.properties.netAcres",
-      sort: true,
-      filter: true,
+      // sort: true,
+      // filter: true,
     },
   },
 
@@ -298,10 +298,10 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "State",
     esKey: "shapeJson.properties.originalProperties.State.keyword",
     options: {
-      setCellProps: () => ({ style: { maxWidth: "50px" } }),
+      // setCellProps: () => ({ style: { maxWidth: "50px" } }),
       dbName: "shapeJson.properties.originalProperties.State",
-      sort: true,
-      filter: true,
+      // sort: true,
+      // filter: true,
     },
   },
   {
@@ -326,7 +326,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
-    options: { display: true, sort: true, filter: true },
+    options: { ignore: true, display: true, sort: true, filter: true },
   },
 
   {
@@ -335,9 +335,9 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     options: {
       dbName: "comments.comment",
       display: true,
-      filter: false,
+      // filter: false,
       searchable: false,
-      sort: true,
+      // sort: true,
       download: false,
       print: false,
       viewColumns: false,
@@ -348,7 +348,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: " ",
     options: {
       sort: true,
-      filter: true,
+      // filter: true,
       display: true,
       viewColumns: false,
       customRender: (value, tableMeta) => {
@@ -378,7 +378,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     options: {
       dbName: "shapeJson.properties.approvalStatus",
       sort: true,
-      filter: true,
+      // filter: true,
       display: true,
       viewColumns: false,
       customRender: (value, tableMeta, updateValue) => {
