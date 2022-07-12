@@ -78,18 +78,11 @@ const TractsHeadCells = (isSnapGrid = false) => [
       'shapeJson.properties.originalProperties.State.keyword',
       'shapeJson.properties.originalProperties.StateAbbreviation.keyword'
     ],
-    // options: {
-    //   dbName: "shapeJson.properties.originalProperties.0?.State?.StateAbbreviation?",
-    //   // sort: true,
-    //   // filter: true
-    // }
   },
   {
     name: "County", label: "County", esKey: 'shapeJson.properties.originalProperties.County.keyword',
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.County",
-      // sort: true,
-      // filter: true
     }
   },
   {
@@ -99,8 +92,6 @@ const TractsHeadCells = (isSnapGrid = false) => [
     ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
-      // sort: true,
-      // filter: true
     }
   },
   {
@@ -110,8 +101,6 @@ const TractsHeadCells = (isSnapGrid = false) => [
     ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Block?.Township?",
-      // sort: true,
-      // filter: true
     }
   },
   {
@@ -121,8 +110,6 @@ const TractsHeadCells = (isSnapGrid = false) => [
     ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
-      // sort: true,
-      // filter: true
     }
   },
   {
@@ -132,36 +119,33 @@ const TractsHeadCells = (isSnapGrid = false) => [
     ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
-      // sort: true,
-      // filter: true
     }
   },
   {
     name: "GrossAcres", label: "Gross Acres", esKey: 'shapeJson.properties.sdGrossAcres.keyword',
     options: {
       dbName: "shapeJson.properties.sdGrossAcres",
-      // sort: true,
-      // filter: true
     }
   },
   {
     name: "CalcAcres", label: "Calc Acres", esKey: 'shapeJson.properties.shapeArea.keyword',
     options: {
       dbName: "shapeJson.properties.shapeArea",
-      // sort: true,
-      // filter: true
     }
   },
   {
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
-    options: { sort: true, filter: true },
+    options: { 
+      ignoreGlobal: true,
+      sort: true, filter: true },
   },
   {
     name: "commentsCounter",
     label: " ",
     options: {
+      ignoreGlobal: true,
       dbName: "comments.comment",
       filter: false,
       searchable: false,
