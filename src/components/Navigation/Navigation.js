@@ -396,19 +396,19 @@ export default function Navigation(props) {
       {!checkIfIgnoreHeader() && (
         <AppBar
           position="fixed"
-          className={clsx(classes.appBar, {
+          className={clsx(location.pathname === '/' ? classes.appBar : classes.appBar2, { 
             [classes.appBarShift]: openDrawer,
           })}
           style={
             location.pathname === "/contacts/activityDashboard" ||
-            location.pathname.includes("revenue")
+              location.pathname.includes("revenue")
               ? { background: "white" }
               : null
           }
-          // style={{
-          //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
-          //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
-          // }}
+        // style={{
+        //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
+        //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
+        // }}
         >
           {stateApp.user && (
             <Toolbar>

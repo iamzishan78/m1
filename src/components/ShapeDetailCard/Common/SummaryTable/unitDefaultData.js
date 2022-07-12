@@ -53,8 +53,8 @@ const tableData = [
   },
   {
     label: "Net Royalty Acres (NRA)",
-    type: "number",
-    key: "uNetRoyalityAcres",
+    type: "calculation",
+    key: "netRoyalityAcres",
   },
   {
     label: "Unit Pricing (per NRA)",

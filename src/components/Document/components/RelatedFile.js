@@ -160,6 +160,9 @@ const useStyles = makeStyles({
 export default function RelatedFile(props) {
   const documentInitial = {
     documentName: "",
+    book: "",
+    page: "",
+    instrument: "",
     recordingInfo: "",
     dateTime: null,
     documentNumber: "",
@@ -251,7 +254,7 @@ export default function RelatedFile(props) {
         variables: { fileIds: ID },
       });
       if (stateApp.selectedDocument) {
-        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, recordingInfo } =
+        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, book, page, instrument, recordingInfo } =
           stateApp.selectedDocument;
         setSearch(documentName);
         setSelectedType("update");
@@ -265,6 +268,9 @@ export default function RelatedFile(props) {
         });
 
         setNewDocument({
+          book,
+          page,
+          instrument,
           recordingInfo,
           documentName,
           dateTime,
@@ -292,6 +298,9 @@ export default function RelatedFile(props) {
     updateDocument({
       variables: {
         document: {
+          book: newDocument.book,
+          page: newDocument.page,
+          instrument: newDocument.instrument,
           recordingInfo: newDocument.recordingInfo,
           documentName: newDocument.documentName,
           dateTime: newDocument.dateTime,
@@ -423,7 +432,7 @@ export default function RelatedFile(props) {
         variables: { fileIds: ID },
       });
       if (searchedDocument) {
-        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, recordingInfo, fileName } =
+        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, book, page, instrument, recordingInfo, fileName } =
           searchedDocument;
         setNameAutValueParty1({
           name: partyName1?.entityDetail?.name,
@@ -435,6 +444,9 @@ export default function RelatedFile(props) {
         });
 
         setNewDocument({
+          book,
+          page,
+          instrument,
           recordingInfo,
           documentName,
           dateTime,
@@ -520,7 +532,7 @@ export default function RelatedFile(props) {
               >
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <AutoCompleteDocumentList 
+                    <AutoCompleteDocumentList
                       search={search}
                       setSearch={setSearch}
                       onSelect={onSearcSelected}
@@ -614,7 +626,7 @@ export default function RelatedFile(props) {
             alignItems: "start",
           }}
         >
-          <h4>Document Number</h4>
+          <h4>File Number</h4>
           <TextField
             className={classes.maxWidth}
             multiline
@@ -635,7 +647,7 @@ export default function RelatedFile(props) {
             alignItems: "start",
           }}
         >
-          <h4>Document Name</h4>
+          <h4>File Name</h4>
           <TextField
             className={classes.maxWidth}
             multiline
@@ -656,7 +668,7 @@ export default function RelatedFile(props) {
             alignItems: "start",
           }}
         >
-          <h4>Document Type</h4>
+          <h4>File Type</h4>
           <DocumentType
             disabled={selectedType === "existing"}
             className={classes.maxWidth}
@@ -677,7 +689,7 @@ export default function RelatedFile(props) {
             alignItems: "start",
           }}
         >
-          <h4>Document Date</h4>
+          <h4>File Date</h4>
           <KeyboardDatePicker
             className={classes.maxWidth}
             disableToolbar
@@ -724,7 +736,64 @@ export default function RelatedFile(props) {
             setNameAutValue={setNameAutValueParty2}
           />
         </ListItem> */}
+
         <ListItem
+          style={{
+            flexDirection: "row",
+            justifyContent: "start",
+            alignItems: "start",
+          }}
+        >
+          <div style={{
+            marginRight: "15px",
+          }}>
+            <h4>Book</h4>
+            <TextField
+              className={classes.maxWidth}
+              multiline
+              value={newDocument?.book}
+              onChange={(e) => {
+                setNewDocument({
+                  ...newDocument,
+                  book: e.target.value,
+                });
+              }}
+            />
+          </div>
+
+          <div style={{
+            marginRight: "15px",
+          }}>
+            <h4>Page</h4>
+            <TextField
+              className={classes.maxWidth}
+              multiline
+              value={newDocument?.page}
+              onChange={(e) => {
+                setNewDocument({
+                  ...newDocument,
+                  page: e.target.value,
+                });
+              }}
+            />
+          </div>
+          <div>
+            <h4>Instrument #</h4>
+            <TextField
+              className={classes.maxWidth}
+              multiline
+              value={newDocument?.instrument}
+              onChange={(e) => {
+                setNewDocument({
+                  ...newDocument,
+                  instrument: e.target.value,
+                });
+              }}
+            />
+          </div>
+        </ListItem>
+
+        {/* <ListItem
           style={{
             flexDirection: "column",
             justifyContent: "start",
@@ -744,7 +813,7 @@ export default function RelatedFile(props) {
               });
             }}
           />
-        </ListItem>
+        </ListItem> */}
       </List>
 
       {newDocument?.fileId || fileData ? (

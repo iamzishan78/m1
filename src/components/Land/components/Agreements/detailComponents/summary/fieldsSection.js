@@ -20,9 +20,12 @@ import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubCom
 
 import { AppContext } from "AppContext";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+import NumberField from "../../../../../Shared/components/Fields/NumberField";
+
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { showInfoMessage } from "actions";
+import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
 
 export default function FieldsSection({ updateAgreement, control, agreementDetails }) {
   const classes = summaryStyles();
@@ -139,7 +142,11 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
             </Grid>
             <Grid item xs={8}>
               <Fragment key={index}>
-                {(field.type === "text" || field.type === "dropdown" || field.type === "multiselect" || field.type === "select") && (
+                {(field.type === "text"   ||
+                  field.type === "number" || 
+                  field.type === "dropdown" || 
+                  field.type === "multiselect" || 
+                  field.type === "select") && (
                   <Controller
                     control={control}
                     name={field.key}
@@ -190,8 +197,19 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               disabled={field.disabled}
                             />
                           )}
+                          {field.type === "number" && (
+                            <NumberField
+                              index={index}
+                              field={field}
+                              offClickHandler={(key, value) => {
+                                offClickHandler(key, value);
+                              }}
+                              {...params}
+                            />
+                          )}
                           {field.type === "dropdown" && (
-                            <CustomFieldSelect
+                            <ReactSelectField
+                              isSingleSelect={true}
                               fullWidth
                               variant="outlined"
                               index={`field-${index}`}
@@ -224,7 +242,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                             </Select>
                           )}
                           {field.type === "multiselect" && (
-                            <CustomFieldMultiSelect
+                            <ReactSelectField
                               id={`field-${index}`}
                               variant="outlined"
                               margin="dense"

@@ -3,6 +3,7 @@ import moment from "moment";
 import { getSession } from "utils/user";
 import { wellsKeys } from "utils/data";
 import { tenantsCredentials } from "components/Login/AADAuthConfig";
+import { addTrailingZeros } from "components/Shared/functions";
 
 const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
 const isDev = process.env.REACT_APP_NODE_ENV === "development";
@@ -10,6 +11,23 @@ const isDev = process.env.REACT_APP_NODE_ENV === "development";
 export const copy = (data) => {
   return data ? JSON.parse(JSON.stringify(data)) : null;
 };
+
+export const dateIsValid = (date) => {
+  try {
+    date = new Date(
+      new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(date)
+    )
+    return date instanceof Date && !isNaN(date);
+  } catch (e) {
+    return false
+  }
+}
 
 export const getURL = () => {
   let tenantName = window.sessionStorage.getItem("tenantName");
@@ -158,6 +176,11 @@ export const getRangeFilters = (filters, format) => {
   return customFilters;
 };
 
+export const getRoundedNra = (unitNra) => {
+  let nra = parseFloat(unitNra || 0);
+  return addTrailingZeros(nra.toFixed(8));
+}
+
 export const getShapeFilter = (polygon) => {
   const coordinates = [];
   if (polygon && typeof polygon === "string" && polygon.includes("POLYGON")) {
@@ -182,6 +205,19 @@ export const getContactsAddress = (contact) => {
     ...contact,
     fullContactAddress: address,
   };
+};
+
+export const getAddressUrl = (owner) => {
+  let address = "https://www.google.com/maps/search/";
+  if (owner.StreetAddress) address = `${address}${owner.StreetAddress.replace(/ /g, "+")}`;
+  if (owner.address1) address = `${address}${owner.address1.replace(/ /g, "+")}`;
+  if (owner.City) address = `${address},+${owner.City.replace(/ /g, "+")}`;
+  if (owner.city) address = `${address},+${owner.city.replace(/ /g, "+")}`;
+  if (owner.State) address = `${address},+${owner.State}`;
+  if (owner.state) address = `${address},+${owner.state}`;
+  if (owner.Zip) address = `${address}+${owner.Zip}`;
+  if (owner.zip) address = `${address},+${owner.zip}`;
+  return address;
 };
 
 export const getMapFilters = (stateNav, searchInput, gridPolygonString, format) => {
@@ -316,6 +352,7 @@ export const formattingGridView = (view) => {
   return view;
 }
 
+// This function will return the index of column 
 export const getIndexofColumn = (columns, columnName) => {
   return columns.indexOf(columns.find(c => c.name === columnName));
 }

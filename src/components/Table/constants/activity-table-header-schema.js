@@ -62,6 +62,7 @@ const ActivitiesHeadCells = [
         sort: true,
         filter: true,
       },
+      style: { minWidth: 200 }
     },
     {
       name: "contactName",
@@ -72,20 +73,12 @@ const ActivitiesHeadCells = [
         sort: true,
         filter: true,
       },
+      style: { minWidth: 250 }
     },
     {
       name: "ownerName",
       label: "Activity Owner",
       esKey: "ownerName.keyword",
-      options: {
-        display: true,
-        sort: true,
-        filter: true,
-      },
-    },
-    {
-      name: "isClosed",
-      label: "Completed?",
       options: {
         display: true,
         sort: true,
@@ -100,7 +93,18 @@ const ActivitiesHeadCells = [
         sort: true,
         filter: true,
       },
-    }
+      style: { minWidth: 300 }
+    },
+    {
+      name: "isClosed",
+      label: "Completed?",
+      options: {
+        display: true,
+        sort: true,
+        filter: true,
+      },
+    },
+
   ];
 
   export default ActivitiesHeadCells;

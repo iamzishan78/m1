@@ -12,13 +12,46 @@ const unitsColumnHeaders = [
       },
     },
     {
+      name: "_id",
+      options: {
+        display: false,
+        filter: false,
+        searchable: false,
+        sort: false,
+        download: false,
+        print: false,
+        viewColumns: false,
+      },
+    },
+    {
       name: "name",
       label: "Unit Name",
       esKey: "name.keyword",
       options: {
         sort: true,
         filter: true,
+        setCellProps: () => ({ style: { minWidth: "250px" } }),
+        // setCellProps: () => ({
+        //   style: {
+        //     minWidth: "150px",
+        //     whiteSpace: "nowrap",
+        //     position: "sticky",
+        //     left: "77px",
+        //     background: "white",
+        //     zIndex: 200,
+        //     boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+        //   }
+        // }),
+        // setCellHeaderProps: () => ({
+        //   style: {
+        //     position: "sticky",
+        //     minWidth: "150px",
+        //     left: "77px",
+        //     zIndex: 201
+        //   }
+        // }),
       },
+      style: { minWidth: 185 }
     },
     {
       name: "uNumber",
@@ -27,6 +60,7 @@ const unitsColumnHeaders = [
       options: {
         sort: true,
         filter: true,
+        setCellProps: () => ({ style: { minWidth: "125px" } }),
       },
     },
     {
@@ -129,7 +163,7 @@ const unitsColumnHeaders = [
     },
     {
       name: "ownersCount",
-      label: "Owners",
+      label: "Owner Count",
       esKey: "interestSummary.unitInterestCount",
       options: {
         sort: true,
@@ -139,9 +173,10 @@ const unitsColumnHeaders = [
     {
       name: "campaignName",
       label: "Campaign Name",
-      esKey: "shapeJson.properties.campaignName",
+      esKey: "shapeJson.properties.campaignName.keyword",
       options: {
         customRender: (value) => value?.map((v, index) => `${v}${index < value?.length - 1 ? ',' : ''}`),
+        setCellProps: () => ({ style: { minWidth: "200px" } }),
         sort: true,
         filter: true,
       },
@@ -153,6 +188,7 @@ const unitsColumnHeaders = [
       options: {
         sort: true,
         filter: true,
+        setCellProps: () => ({ style: { minWidth: "125px" } }),
       },
     },
     //hiding temporarily until we get the chart fixed -kc 20220327
@@ -170,28 +206,25 @@ const unitsColumnHeaders = [
       esKey: "_ts",
       options: {
         sort: true,
-        filter: false,
-      }
+        filter: true,
+      },
+      custom: {
+        key_as_string: true,
+        isDateTime: true,
+      },
     },
     {
       name: "tags",
       label: "Tags ",
+      esKey: 'tags.tag.keyword',
       options: {
-        sort: false,
-        filter: false,
+        dbName: "tags.tag",
+        sort: true,
         download: false,
         print: false,
+        filter: true,
         filterOptions: {
           names: [],
-          logic(rowVal, pickedTags) {
-            let containIts = true;
-            pickedTags.map((pickedTag) => {
-              if (rowVal[0].indexOf(pickedTag) === -1) {
-                containIts = false;
-              }
-            });
-            return !containIts;
-          },
         },
       },
     },

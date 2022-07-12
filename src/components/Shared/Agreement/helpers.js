@@ -6,19 +6,12 @@ export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
     const attachedMetaData = [];
     const nonAttachedMetaData = [];
 
-    if (agreementDetails?.custom_data) {
-        Object.keys(agreementDetails?.custom_data).forEach((key) => {
-            if (agreementDetails?.custom_data_arr) {
-                const meta = agreementDetails.custom_data_arr.find((m) => m.key === key);
-                if (meta) {
-                    customData.push({ ...meta, title: meta.key, label: meta.key, key: meta.key, value: meta.value });
-                }
-            }
-        });
-    }
+    agreementDetails.custom_data_arr?.forEach((data, index) => {
+        customData.push({ ...data, title: data.key, label: data.key, key: `custom_data_arr[${index}].value`, value: data.value });
+    });
 
     //? Meta data which is attached to this agreement
-    metaData.forEach(md => {
+    metaData.forEach((md) => {
         const { isCustom, ...meta } = md;
         // Checking if meta data key exists in agreement detail
         // then it should be ignored from meta data
@@ -31,7 +24,7 @@ export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
         }
     });
 
-    attachedMetaData.forEach(meta => {
+    attachedMetaData.forEach((meta) => {
         customData.push({
             ...meta,
             title: meta.label,
@@ -40,11 +33,11 @@ export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
                 ...op,
                 label: op.value,
             })),
-            isCustomData: true
+            isCustomData: true,
         });
     });
 
-    nonAttachedMetaData.forEach(meta => {
+    nonAttachedMetaData.forEach((meta) => {
         customData.push({
             ...meta,
             title: meta.label,
@@ -53,8 +46,8 @@ export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
                 ...op,
                 label: op.value,
             })),
-            isCustomData: true
+            isCustomData: true,
         });
     });
     return customData;
-}
+};

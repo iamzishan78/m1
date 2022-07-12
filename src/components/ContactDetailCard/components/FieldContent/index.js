@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import { useMutation } from "@apollo/client";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
+import { UPDATE_CONTACT_PURCHASE_DATA } from "graphQL/useMutationContactPurchaseData";
 import {
   UPDATEMELISSA,
   UPDATEMELISSAADDRESS,
@@ -71,11 +72,12 @@ export default function FieldContent({
   const [fieldsCount, setFieldsCount] = useState(0);
 
   const [updateContact, { loading }] = useMutation(UPDATECONTACT);
+  const [updateContactPurchaseData, { loading: loadingPurchaseData }] = useMutation(UPDATE_CONTACT_PURCHASE_DATA);
   const [updateMelissa] = useMutation(UPDATEMELISSA);
   const [updateMelissaAddress] = useMutation(
     UPDATEMELISSAADDRESS
   );
-  const classes = useStyles({ noMargin, loading, fieldsCount });
+  const classes = useStyles({ noMargin, loading: loading || loadingPurchaseData, fieldsCount });
 
   // contactOwnerId field used in autocomplete of contact owner
   const ignorableFieldsInCount = ['contactOwnerId'];
@@ -172,26 +174,38 @@ export default function FieldContent({
       }
 
       if (differences) {
-        updateContact({
-          variables: {
-            contact: trimmedEditContent,
-            ignoreResponse: true,
-          },
-          refetchQueries: [
-            "getPaginatedContacts",
-            "getContact",
-            "getparcelOwners",
-          ],
-          awaitRefetchQueries: false,
-        }).then((res) => {
-          let entries = Object.entries(editContent);
-          entries.forEach((entry) => {
-            content = { ...content, [entry[0]]: entry[1] }
+        if (isPurchased) {
+          updateContactPurchaseData({
+            variables: {
+              purchaseData: trimmedEditContent,
+            },
+            refetchQueries: [
+              "getContactPurchaseData",
+            ],
+            awaitRefetchQueries: false,
+          })
+        } else {
+          updateContact({
+            variables: {
+              contact: trimmedEditContent,
+              ignoreResponse: true,
+            },
+            refetchQueries: [
+              "getPaginatedContacts",
+              "getContact",
+              "getparcelOwners",
+            ],
+            awaitRefetchQueries: false,
+          }).then((res) => {
+            let entries = Object.entries(editContent);
+            entries.forEach((entry) => {
+              content = { ...content, [entry[0]]: entry[1] }
+            });
+            setShowContent({ ...content });
+            setEditContent({ ...content });
+            setStateApp({ ...stateApp, contactUpdated: id });
           });
-          setShowContent({ ...content });
-          setEditContent({ ...content });
-          setStateApp({ ...stateApp, contactUpdated: id });
-        });
+        }
       }
     } else if (fieldType === FieldTypes.MelissaRecord) {
       let entries = Object.entries(editContent)[0];
@@ -314,13 +328,13 @@ export default function FieldContent({
                   id={"fieldContentInput" + fieldName}
                   key={"fieldContentInput" + fieldName}
                   options={timeZoneOptions}
-                  getOptionLabel={(option) => option.title || editContent[fieldName]}
+                  getOptionLabel={(option) => option || editContent[fieldName]}
                   style={{ width: 300 }}
                   onChange={(e, data) => {
                     e.persist();
                     setEditContent((editContent) => ({
                       ...editContent,
-                      [fieldName]: data?.title || ""
+                      [fieldName]: data || ""
                     }));
                   }}
                   value={
@@ -535,7 +549,7 @@ export default function FieldContent({
           renderOutput
         )}
       </p>
-      {loading && (
+      {(loading || loadingPurchaseData) && (
         <div style={{ height: "0", width: "0" }}>
           <CircularProgress
             className={classes.loader}

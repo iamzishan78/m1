@@ -98,6 +98,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 
   const [loading, setLoading] = useState(false);
   const [isTractOwner, setIsTractOwner] = useState(false);
+  const [totalOwners, setTotalOwners] = useState(0);
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [tractValue, setTractValue] = useState({ name: "", _id: null });
   const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
@@ -482,9 +483,9 @@ function AddAgreementOwnerAndTractDialog(props) {
                       setIsTractOwner(true);
                     }}
                     className={isTractOwner ? classes.selectedType : classes.unSelectedType}
-                    style={{ marginLeft: "20px" }}
+                    style={{ marginLeft: "10px" }}
                   >
-                    Existing Tract Owners
+                    {` Existing Tract Owners (${totalOwners ? totalOwners : "0"})`}
                   </h4>
                 </ListItemText>
               </ListItem>
@@ -494,6 +495,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           {isTractOwner ? (
             <AutoCompleteParcelOwners
               variant="outlined"
+              setTotalOwners={setTotalOwners}
               parcel={tract}
               placeholder="Search existing tract owner by name"
               value={nameAutValue}

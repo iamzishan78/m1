@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
+import { set } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
@@ -232,7 +233,7 @@ export default function ParcelsDetailCard(props) {
   const dispatch = useDispatch();
   const [selectedTab, setSelectedTab] = useState(0);
   const [parcelObj, setParcelObj] = useState();
-  const [parcelProperties, setProperties] = useState();
+  const [properties, setProperties] = useState();
   const [originalProperties, setOriginalProperties] = useState(null);
   const [parcelName, setParcelName] = useState();
   const [grossAcres, setGrossAcres] = useState();
@@ -338,53 +339,48 @@ export default function ParcelsDetailCard(props) {
   }, [parcelObj]);
 
   const updateProperties = (e, field, value) => {
-    const data = copy(parcelObj)
-    if (e.keyCode === ENTER_KEY) {
+    if (e?.preventDefault) {
       e.preventDefault();
       e.stopPropagation();
-      const shape = data.shape;
-      shape.properties[field] = value;
-
-      const customLayer = {
-        shapeJson: shape,
-        shape: JSON.stringify(shape),
-      }
-
-      if (field === 'shapeLabel') {
-        setStateApp((state) => ({
-          ...state,
-          selectedParcel: { ...state.selectedParcel, shapeLabel: value },
-        }));
-        customLayer.name = value;
-      }
-
-      updateCustomLayer({
-        variables: {
-          customLayerId: data._id,
-          customLayer,
-        },
-      });
     }
-  };
-
-  const updateCustomProperties = (type, value, id) => {
     const data = copy(parcelObj)
     const shape = data.shape;
-    const customRow = parcelProperties.custom_data_arr.find((p) => p.id === id)
-    if (type === 'key') {
-      customRow.key = value
-    } else {
-      customRow.value = value
+    shape.properties[field] = value;
+
+    const customLayer = {
+      shapeJson: shape,
+      shape: JSON.stringify(shape),
     }
-    parcelProperties.custom_data = {}
-    parcelProperties.custom_data_arr.forEach((data) => { parcelProperties.custom_data[data.key] = data.value })
-    const customLayer = {}
-    shape.properties = parcelProperties
-    customLayer.shape = JSON.stringify(shape)
-    customLayer.shapeJson = shape
+
+    if (field === 'shapeLabel') {
+      setStateApp((state) => ({
+        ...state,
+        selectedParcel: { ...state.selectedParcel, shapeLabel: value },
+      }));
+      customLayer.name = value;
+    }
+
     updateCustomLayer({
       variables: {
         customLayerId: data._id,
+        customLayer,
+      },
+    });
+  };
+
+  const updateCustomProperties = (type, value, key, id) => {
+    const shape = parcelObj.shape;
+    set(properties, `${key}`, value);
+    properties.custom_data_arr?.forEach((data) => {
+      properties.custom_data[data.key] = data.value;
+    });
+    const customLayer = {};
+    shape.properties = properties;
+    customLayer.shape = JSON.stringify(shape);
+    customLayer.shapeJson = shape;
+    updateCustomLayer({
+      variables: {
+        customLayerId: parcelObj._id,
         customLayer,
       },
     });
@@ -413,7 +409,7 @@ export default function ParcelsDetailCard(props) {
   const RunsheetHeader = () => (
     <div className={classes.documentHeader}>
       <GavelIcon />
-      <span>LIMITED TITLE RUNSHEET</span>
+      <span>RUNSHEET INSTRUMENTS</span>
     </div>
   );
 
@@ -524,7 +520,7 @@ export default function ParcelsDetailCard(props) {
                 <TextField
                   disabled
                   size="small"
-                  value={parcelProperties.shapeArea}
+                  value={properties.shapeArea}
                   variant="outlined"
                   fullWidth
                   InputProps={{
@@ -583,7 +579,7 @@ export default function ParcelsDetailCard(props) {
               <ParcelSummary
                 id={props.id}
                 customLayer={copy(parcelObj)}
-                properties={parcelProperties}
+                properties={properties}
                 setProperties={setProperties}
                 updateProperties={updateProperties}
                 updateCustomProperties={updateCustomProperties}
