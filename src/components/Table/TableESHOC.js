@@ -330,7 +330,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
             tableCols.forEach((column, index) => {
 
-                console.log('FISHBRAIN3',column)
+                // console.log('FISHBRAIN3',column.options)
 
                 const waypointKey = props?.loadMore?.waypointKey
                 if (waypointKey && column.name === waypointKey) {
@@ -341,15 +341,22 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 }
 
                 /// apply global settings unless ignored
-                if (column?.options?.ignore) {
+                if (column?.options?.ignoreGlobal) {
                     column.options = {
                         ...column.options,
                     };
                 } else {
+
+                    if (column?.name === "agreementSubtype"){console.log('FISHBRAIN4',column.options)}
+                    
+
                     column.options = {
                         ...GlobalSettings.muiGridStandardOptions,
                         ...column.options,
                     };
+                    if (column?.name === "agreementSubtype"){console.log('FISHBRAIN5',column.options)}
+
+                    
                 }
 
                 if (column?.options?.filter) {
