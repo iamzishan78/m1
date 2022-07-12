@@ -394,12 +394,12 @@ export default function Navigation(props) {
       {!checkIfIgnoreHeader() && (
         <AppBar
           position="fixed"
-          className={clsx(classes.appBar, {
+          className={clsx(location.pathname === '/' ? classes.appBar : classes.appBar2, { 
             [classes.appBarShift]: openDrawer,
           })}
           style={
             location.pathname === "/contacts/activityDashboard" ||
-            location.pathname.includes("revenue")
+              location.pathname.includes("revenue")
               ? { background: "white" }
               : null
           }
