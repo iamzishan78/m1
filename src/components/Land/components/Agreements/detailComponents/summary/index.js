@@ -82,19 +82,20 @@ export default function Summary({
                   justify="flex-start"
                   className={classes.summaryHeaderIcons}
                 >
-                  <Grid item>
-                    <div className={classes.summaryValue}>
-                      {" "}
-                      {agreementProvisions?.length || 0}{" "}
-                    </div>
-                    <AgreementIcon opacity="1.0" />
-                  </Grid>
+                 
                   <Grid item>
                     <div className={classes.summaryValue}>
                       {" "}
                       {shapeSummaryDetails?.relatedParties || 0}{" "}
                     </div>
                     <PeopleAltIcon opacity="1.0" />
+                  </Grid>
+                  <Grid item>
+                    <div className={classes.summaryValue}>
+                      {" "}
+                      {agreementProvisions?.length || 0}{" "}
+                    </div>
+                    <AgreementIcon opacity="1.0" />
                   </Grid>
                   <Grid item>
                     <div className={classes.summaryValue}>
