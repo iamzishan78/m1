@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { get, debounce } from "lodash";
 import moment from "moment";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
@@ -35,6 +35,8 @@ import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { GET_AUTOCOMPLETE_PROPERTY_LIST } from "graphQL/useQueryGetProperty";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
+import { useDispatch } from "react-redux";
+import { setFreezeLocaton } from "store/actions/appActions";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -133,6 +135,8 @@ const useStyles = makeStyles((theme) => ({
 export default function HeaderSection(props) {
   const classes = useStyles();
   let history = useHistory();
+  const location = useLocation();
+  const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
   const { control, setValue, watch, register, reset } = useForm();
   const { propertyDetails, propertyOwnerContact, setEntityToConvert } = props;
@@ -159,6 +163,14 @@ export default function HeaderSection(props) {
   //   _id: campaign.key,
   //   name: campaign.key,
   // })))
+
+  useEffect(() => {
+    if(propertyDetails && !propertyDetails.number){
+      dispatch(setFreezeLocaton(location.pathname));
+    } else if(propertyDetails && propertyDetails.number){
+      dispatch(setFreezeLocaton(null));
+    }
+  }, [propertyDetails]);
 
   useEffect(() => {
     getOperatorList({
@@ -219,7 +231,6 @@ export default function HeaderSection(props) {
   };
 
   const updatePropertyData = (key, value) => {
-    console.log(key, value)
     updateProperty({
       variables: {
         property: {
