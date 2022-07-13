@@ -387,21 +387,18 @@ export default function Navigation(props) {
     return location.pathname === "/landmanagement/agreements";
   };
 
-  console.log("matchActivities", matchActivities);
-  console.log("stateApp", stateApp);
-
   return (
     <div className={classes.root}>
       <CssBaseline />
       {!checkIfIgnoreHeader() && (
         <AppBar
           position="fixed"
-          className={clsx(classes.appBar, {
+          className={clsx(location.pathname === '/' ? classes.appBar : classes.appBar2, { 
             [classes.appBarShift]: openDrawer,
           })}
           style={
             location.pathname === "/contacts/activityDashboard" ||
-            location.pathname.includes("revenue")
+              location.pathname.includes("revenue")
               ? { background: "white" }
               : null
           }
