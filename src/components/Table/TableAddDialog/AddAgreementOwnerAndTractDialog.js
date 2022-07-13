@@ -511,7 +511,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                 />
               </Grid>
             </Grid>
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.sdGrossAcres" label={"Gross. Acres"} InputLabelProps={{ shrink: true }} fullWidth disabled={!isNewTract} defaultValue={tract?.sdGrossAcres || ""} />
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.sdGrossAcres" label={"Gross. Acres"} InputLabelProps={{ shrink: true }} fullWidth defaultValue={tract?.sdGrossAcres || ""} />
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.shapeArea" label={"Calc. Acres"} InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.shapeArea || ""} />
             <Controller
               control={control}
