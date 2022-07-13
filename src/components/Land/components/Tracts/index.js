@@ -8,14 +8,11 @@ import { setStateIfDeepEqual } from "components/Shared/functions";
 import TabPanels from "components/Shared/TabPanels";
 import TabButtons from "components/Shared/TabPanels/TabButtons";
 import TractsFilters from "components/Land/components/Tracts/TractsFilters";
-import TractInterTable from "components/Table/Tract/TractInterTable";
-
 function Tracts(props) {
   const [stateApp] = useContext(AppContext);
   // const history = useHistory();
 
   const [esFilters, ESFilters] = useState([]);
-  const [greyBarFilters, setGreyBarFilters] = useState({});
   const setESFilters = (newState) => {
     setStateIfDeepEqual(ESFilters, newState);
   };
@@ -111,7 +108,7 @@ function Tracts(props) {
           padding: "20px 75px 0px 75px"
         }}
       >
-        <TractsFilters setGreyBarFilters={setGreyBarFilters} selectedTractTab={selectedTractTab} />
+        <TractsFilters selectedTractTab={selectedTractTab} />
         <AnalyticsCards
           parent={"Tracts"}
           esIndex={esIndex[selectedTractTab]}
@@ -144,7 +141,7 @@ function Tracts(props) {
               />
             </div>,
             <div>
-              <TractInterTable
+              <TractInterestsTable
                 esIndex={esIndex[selectedTractTab]}
                 header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
                 esFilters={esFilters}
@@ -154,18 +151,7 @@ function Tracts(props) {
                 onTractCount={onTractCount}
                 landSearchQuery={stateApp.landSearchQuery}
               />
-              {/* <TractInterestsTable
-                esIndex={esIndex[selectedTractTab]}
-                header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                esFilters={esFilters}
-                setGreyBarFilters={setGreyBarFilters}
-                greyBarFilters={greyBarFilters}
-                parent="TractInterestsTable"
-                targetLabel="parcel"
-                setESFilters={setESFilters}
-                onTractCount={onTractCount}
-                landSearchQuery={stateApp.landSearchQuery}
-              /> */}
+
             </div>
           ]}
         />

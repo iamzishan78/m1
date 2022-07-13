@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
+const TractsFilters = ({ selectedTractTab }) => {
     const classes = useStyles();
 
     const [stateApp] = useContext(AppContext);
@@ -168,7 +168,7 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
                                     appliedFilters.push(stateFilter)
                             }
                         }
-                        debugger
+
                         return (
                             <Grid item xs md style={{ minWidth: "205px", maxWidth: "305px" }}>
                                 <AutoCompleteFilter
