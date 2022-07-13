@@ -92,6 +92,18 @@ const tableData = [
         key: "shapeArea",
         nonEditable: true,
     },
+    {
+        label: "Tract Status",
+        type: "autocomplete",
+        key: "tractStatus",
+        edit: true,
+    },
+    {
+        label: "Map Status",
+        type: "autocomplete",
+        key: "mapStatus",
+        edit: true,
+    }
 ];
 
 export default tableData;
