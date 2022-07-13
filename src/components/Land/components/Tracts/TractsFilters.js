@@ -46,6 +46,7 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
     const [, setFilters] = useState([]);
     const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
     const TractGridViewModule = userGridViewSettings?.Tracts
+    const TractInterestGridViewModule = userGridViewSettings?.TractInterest
 
 
     const handleMultiFieldFilter = (esFilter) => {
@@ -77,50 +78,59 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
         return filters
     }
 
+
     const onChange = (filter, index, column, esKey) => {
+        let GridViewModule, moduleName, columnsHeader
+
         if (selectedTractTab === 0) {
-            if (TractGridViewModule) {
-                let { filters } = TractGridViewModule
-                if (filter.length) {
-                    filters.push({ field: esKey || tractFilterColumnsHeader[index].filterKey, value: filter[0] })
-                    filters = handleMultiFieldFilter(filters)
-                }
-                else {
-                    const { filterKey } = column
-                    if (Array.isArray(filterKey))
-                        filters = filters.filter(filter => !filterKey.includes(filter.field))
-                    else filters = filters.filter(filter => filter.field !== filterKey)
-                }
-                dispatch(updateUserGridViewSettingAction.STARTED({
-                    userGridViewSetting: {
-                        module: TractGridViewModule?.module,
-                        gridView: TractGridViewModule._id,
-                        gridViewPatch: {
-                            filters: filters,
-                            columns: TractGridViewModule?.columns,
-                        },
-                        user: stateApp.user?.mongoId,
-                    }
-                }));
-            }
-            else {
-                let filters = [{ field: tractFilterColumnsHeader[index].filterKey, value: filter[0] }]
-                dispatch(updateUserGridViewSettingAction.STARTED({
-                    userGridViewSetting: {
-                        module: "Tracts",
-                        gridView: undefined,
-                        gridViewPatch: {
-                            filters: filters,
-                            columns: [],
-                        },
-                        user: stateApp.user?.mongoId,
-                    }
-                }));
-            }
+            GridViewModule = TractGridViewModule
+            moduleName = "Tracts"
+            columnsHeader = tractFilterColumnsHeader
+        }
+        else {
+            GridViewModule = TractInterestGridViewModule
+            moduleName = "TractInterest"
+            columnsHeader = tractInterestFilterColumnsHeader
         }
 
+        if (GridViewModule) {
+            let { filters } = GridViewModule
+            if (filter.length) {
+                filters.push({ field: esKey || columnsHeader[index].filterKey, value: filter[0] })
+                filters = handleMultiFieldFilter(filters)
+            }
+            else {
+                const { filterKey } = column
+                if (Array.isArray(filterKey))
+                    filters = filters.filter(filter => !filterKey.includes(filter.field))
+                else filters = filters.filter(filter => filter.field !== filterKey)
+            }
+
+            dispatch(updateUserGridViewSettingAction.STARTED({
+                userGridViewSetting: {
+                    module: GridViewModule?.module,
+                    gridView: GridViewModule._id,
+                    gridViewPatch: {
+                        filters: filters,
+                        columns: GridViewModule?.columns,
+                    },
+                    user: stateApp.user?.mongoId,
+                }
+            }));
+        }
         else {
-            setGreyBarFilters({ name: tractInterestFilterColumnsHeader[index].name, value: filter[0] })
+            let filters = [{ field: columnsHeader[index].filterKey, value: filter[0] }]
+            dispatch(updateUserGridViewSettingAction.STARTED({
+                userGridViewSetting: {
+                    module: moduleName,
+                    gridView: undefined,
+                    gridViewPatch: {
+                        filters: filters,
+                        columns: [],
+                    },
+                    user: stateApp.user?.mongoId,
+                }
+            }));
         }
 
     }
@@ -135,24 +145,49 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
                 spacing={2}
             >
                 {selectedTractTab ? (
-                    tractInterestFilterColumnsHeader.map((filterColumn, index) => (
-                        <Grid item xs md style={{ minWidth: "205px", maxWidth: "305px" }}>
-                            <AutoCompleteFilter
-                                esIndex={"shapeowners_flat"}
-                                variant="outlined"
-                                setFilters={setFilters}
-                                filterList={[[''], [''], [''], ['']]}
-                                column={filterColumn}
-                                disabled={filterColumn?.disabled}
-                                index={index}
-                                onChange={onChange}
-                                query={GET_ES_FILTER_LIST}
-                                searchFields={["*"]}
-                                extendSearchQuery={""}
-                                custom={undefined}
-                            />
-                        </Grid>
-                    ))
+                    tractInterestFilterColumnsHeader.map((filterColumn, index) => {
+                        const custom = {
+                            multi_filter_keys: true,
+                        }
+                        const appliedFilters = [{
+                            field: "shape.layer.keyword",
+                            value: "parcel"
+                        }]
+                        let filterList = [[''], [''], [''], ['']]
+                        const gridViewFilters = TractGridViewModule?.filters
+
+                        if (gridViewFilters && typeof filterColumn?.filterKey === 'string') {
+                            const gridViewFilter = gridViewFilters.find(filter => filter.field === filterColumn?.filterKey)
+                            if (gridViewFilter)
+                                filterList[index] = [gridViewFilter?.value]
+
+                            if (filterColumn.name === 'County') {
+                                const stateFilter = gridViewFilters.find(filter => filter.field === 'shape.shapeJson.properties.originalProperties.State.keyword')
+
+                                if (stateFilter)
+                                    appliedFilters.push(stateFilter)
+                            }
+                        }
+                        debugger
+                        return (
+                            <Grid item xs md style={{ minWidth: "205px", maxWidth: "305px" }}>
+                                <AutoCompleteFilter
+                                    esIndex={"shapeowners_flat"}
+                                    variant="outlined"
+                                    setFilters={setFilters}
+                                    filterList={[[''], [''], [''], ['']]}
+                                    column={filterColumn}
+                                    disabled={filterColumn?.disabled}
+                                    index={index}
+                                    custom={Array.isArray(filterColumn.filterKey) ? custom : undefined}
+                                    onChange={onChange}
+                                    query={GET_ES_SIMPLE_FILTER}
+                                    searchFields={["*"]}
+                                    extendSearchQuery={""}
+                                />
+                            </Grid>
+                        )
+                    })
 
                 ) : (
 
@@ -166,19 +201,19 @@ const TractsFilters = ({ setGreyBarFilters, selectedTractTab }) => {
                         }]
                         let filterList = [[''], [''], [''], ['']]
                         const gridViewFilters = TractGridViewModule?.filters
-                        if (gridViewFilters)
-                            if (gridViewFilters && typeof filterColumn?.filterKey === 'string') {
-                                const gridViewFilter = gridViewFilters.find(filter => filter.field === filterColumn?.filterKey)
-                                if (gridViewFilter)
-                                    filterList[index] = [gridViewFilter?.value]
 
-                                if (filterColumn.name === 'County') {
-                                    const stateFilter = gridViewFilters.find(filter => filter.field === 'shapeJson.properties.originalProperties.State.keyword')
+                        if (gridViewFilters && typeof filterColumn?.filterKey === 'string') {
+                            const gridViewFilter = gridViewFilters.find(filter => filter.field === filterColumn?.filterKey)
+                            if (gridViewFilter)
+                                filterList[index] = [gridViewFilter?.value]
 
-                                    if (stateFilter)
-                                        appliedFilters.push(stateFilter)
-                                }
+                            if (filterColumn.name === 'County') {
+                                const stateFilter = gridViewFilters.find(filter => filter.field === 'shapeJson.properties.originalProperties.State.keyword')
+
+                                if (stateFilter)
+                                    appliedFilters.push(stateFilter)
                             }
+                        }
 
                         return (
                             <Grid item xs md style={{ minWidth: "205px", maxWidth: "305px" }}>

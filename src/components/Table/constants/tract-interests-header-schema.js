@@ -52,7 +52,10 @@ const TractInterestsHeadCells = [
             dbName: "shape.shapeJson.properties.originalProperties.0?.State?.StateAbbreviation?",
             sort: true,
             filter: true
-        }
+        },
+        custom: {
+            multi_filter_keys: true,
+        },
     },
     {
         name: "County", label: "County", esKey: 'shape.shapeJson.properties.originalProperties.County.keyword',
@@ -71,7 +74,10 @@ const TractInterestsHeadCells = [
             dbName: "shape.shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
             sort: true,
             filter: true
-        }
+        },
+        custom: {
+            multi_filter_keys: true,
+        },
     },
     // {
     //     name: "PrincipalMeridian", label: "PrincipalMeridian", esKey: 'shapeJson.properties.originalProperties.PrincipalMeridian.keyword', 
@@ -90,7 +96,10 @@ const TractInterestsHeadCells = [
             dbName: "shape.shapeJson.properties.originalProperties.0?.Block?.Township?",
             sort: true,
             filter: true
-        }
+        },
+        custom: {
+            multi_filter_keys: true,
+        },
     },
     // {
     //     name: "Township", label: "Township", esKey: 'shapeJson.properties.originalProperties.Township.keyword', 
@@ -109,7 +118,10 @@ const TractInterestsHeadCells = [
             dbName: "shape.shapeJson.properties.originalProperties.0?.Section?.Range?",
             sort: true,
             filter: true
-        }
+        },
+        custom: {
+            multi_filter_keys: true,
+        },
     },
     // {
     //     name: "Range", label: "Range", esKey: 'shapeJson.properties.originalProperties.Range.keyword', 
@@ -128,7 +140,10 @@ const TractInterestsHeadCells = [
             dbName: "shape.shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
             sort: true,
             filter: true
-        }
+        },
+        custom: {
+            multi_filter_keys: true,
+        },
     },
     {
         name: "QtrCalls", label: "QTR Calls", esKey: 'qtr.keyword',

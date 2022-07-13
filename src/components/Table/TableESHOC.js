@@ -551,7 +551,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
             const manageAppliedFilter = (value, index) => {
                 const gridViewfilters = selectedGridView.filters
-                const gridViewEsKey = gridViewfilters.find(filter => filter.value === value)?.field
+                const gridViewEsKey = gridViewfilters && gridViewfilters.find(filter => filter.value === value)?.field
 
                 const columnEsKey = columns[index].esKey
 
