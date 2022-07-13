@@ -330,7 +330,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
             tableCols.forEach((column, index) => {
 
-                // console.log('FISHBRAIN3',column.options)
 
                 const waypointKey = props?.loadMore?.waypointKey
                 if (waypointKey && column.name === waypointKey) {
@@ -347,21 +346,20 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     };
                 } else {
 
-                    if (column?.name === "agreementSubtype"){console.log('FISHBRAIN4',column.options)}
+                    if (column?.name === "agreementSubtype"){console.log('IDENTIFY4',column.options)}
                     
 
                     column.options = {
                         ...GlobalSettings.muiGridStandardOptions,
                         ...column.options,
                     };
-                    if (column?.name === "agreementSubtype"){console.log('FISHBRAIN5',column.options)}
+                    if (column?.name === "agreementSubtype"){console.log('IDENTIFY5',column.options)}
 
                     
                 }
 
                 if (column?.options?.filter) {
                     const custom = column.custom;
-                    // console.log('FISHBRAIN',column)
                     column.options = {
 
                         // ...(column.options.ignore?  null : GlobalSettings.muiGridStandardOptions),
