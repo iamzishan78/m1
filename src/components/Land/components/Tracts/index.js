@@ -52,7 +52,7 @@ function Tracts(props) {
   // const history = useHistory();
 
   // waypointKey should any key of tableHader which do not have customRender in schema file
-  const loadMore = { type: 'infiniteScroll', waypointKey: 'commentsCounter', height: "calc(100vh - 285px)" }
+  const loadMore = { type: 'infiniteScroll', waypointKey: 'commentsCounter', height: "calc(100vh - 287px)" }
 
 
 
