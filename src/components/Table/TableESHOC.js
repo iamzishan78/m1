@@ -39,7 +39,8 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const { loadMore } = props
         const [tableMeta, setTableMeta] = useState([]);
         const isFiniteScroll = props?.loadMore?.type === "infiniteScroll"
-        const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, isHideFooter: isFiniteScroll && true })
+        // const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, isHideFooter: isFiniteScroll && true })
+        const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, infScrollHeight: loadMore?.height })
 
 
         const [columns, Columns] = useState([]);
@@ -850,7 +851,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         }, []);
 
         return (
-            <span className={classes.container2}>
+            <span className={`${classes.ESHOCContainer} ${isFiniteScroll && classes.ESHOCInfScroll}`}>
                 <Component
                     {...props}
                     rows={rows}

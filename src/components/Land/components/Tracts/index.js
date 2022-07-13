@@ -51,9 +51,8 @@ function Tracts(props) {
   const classes = useStyles();
   // const history = useHistory();
 
-  // waypointKey should any key of tableHader which do not have customRender in schema file
-  const loadMore = { type: 'infiniteScroll', waypointKey: 'State' }
-
+ // waypointKey should any key of tableHader which do not have customRender in schema file
+ const loadMore = { type: 'infiniteScroll', waypointKey: 'State', height: "calc(100vh - 348px)" }
 
 
 
@@ -167,11 +166,11 @@ function Tracts(props) {
       </div>
 
       <div 
-          className={classes.gridRoot}
-        // style={{ 
-        //   marginTop: "40px",
-        //   marginLeft: "-10px", 
-        //   }}
+          // className={classes.gridRoot}
+        style={{ 
+          marginTop: "40px",
+          marginLeft: "-10px", 
+          }}
           >
         <TabPanels
           value={selectedTractTab}
