@@ -630,6 +630,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                 onChange={(e) => {
                   onChange(e.target.value);
                   setValue("net_acres", calculateNetAcres());
+                  setValue("nra", calculateRoyaltyNetAcres());
                 }}
               />
             )}
@@ -657,17 +658,24 @@ function AddAgreementOwnerAndTractDialog(props) {
           />
 
           <Controller
-            as={TextField}
             control={control}
-            variant="outlined"
-            margin="dense"
             name="orri"
-            inputRef={register()}
-            label={"Overriding Royalty Interest (ORRI)"}
-            InputLabelProps={{ shrink: true }}
-            type="number"
-            fullWidth
-            onWheel={(e) => e.target.blur()}
+            render={({ onChange, value }) => (
+              <TextField
+                variant="outlined"
+                InputLabelProps={{ shrink: true }}
+                margin="dense"
+                value={value}
+                type="number"
+                label={"Overriding Royalty Interest (ORRI)"}
+                fullWidth
+                onWheel={(e) => e.target.blur()}
+                onChange={(e) => {
+                  onChange(e.target.value);
+                  setValue("nra", calculateRoyaltyNetAcres());
+                }}
+              />
+            )}
           />
 
           <Controller
