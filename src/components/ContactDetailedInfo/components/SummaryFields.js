@@ -165,6 +165,8 @@ export default function SummaryFields({ contactData }) {
                           onChange={({ target }) => {
                             if (field.key.includes('nraSum') || field.key.includes('offerPriceSum')) {
                               params.onChange(getCommaValue(target.value));
+                            } else {
+                              params.onChange(target.value);
                             }
                           }}
                           disabled={field.disabled}
