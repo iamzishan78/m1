@@ -118,6 +118,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     operating_rights: null,
     nri: null,
     net_acres: null,
+    company_net_acres: null,
     depthFrom: "",
     depthTo: "",
     nra: null,
