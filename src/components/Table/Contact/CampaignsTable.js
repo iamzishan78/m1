@@ -89,7 +89,7 @@ function CampaignsTable(props) {
   useEffect(() => {
     props.setTableMeta({
       filters: getFilters(appliedFilters),
-      extendSearchQuery: stateApp.activitySearchQuery,
+      extendSearchQuery: stateApp.contactSearchQuery ? stateApp.contactSearchQuery : null,
       searchFields,
       TableHeader: CampaignsHeader,
       esIndex,
@@ -98,7 +98,7 @@ function CampaignsTable(props) {
       setAppliedFilters: props.filtersChange,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateApp.activitySearchQuery, props.filterToggle]);
+  }, [stateApp.contactSearchQuery, props.filterToggle]);
 
   useEffect(() => {
     if (clickedRow) {
