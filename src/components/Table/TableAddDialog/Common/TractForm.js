@@ -18,9 +18,6 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
     <>
       {!isNewTract && <AutoCompleteShapeLayer value={tractValue} shapeType='parcel' setSelectedShapeLayer={setSelectedShapeLayer} />}
 
-      {/* <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-        query={GET_ES_FILTER_LIST} esIndex={esIndex} /> */}
-
       <Controller
         control={control}
         name={`${prefix}state`}
@@ -38,11 +35,23 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
         )}
       />
 
-      {/* <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}state`} label={"State"}
-        InputLabelProps={{ shrink: true }} fullWidth defaultValue={tract?.state || ''} disabled />
+      <Controller
+        control={control}
+        name={`${prefix}county`}
+        defaultValue={tract?.county || ''}
+        render={(props) => (
+          <AutoCompleteLandgrid
+            value={props.value}
+            filterKey='level2Name.keyword'
+            filters={[{ "field": "level2Type.keyword", "value": "County" }, { "field": "level1Name.keyword", "value": US_STATES_CODES[state] }]}
 
-      <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}county`} label={"County"}
-        InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.county || ''} /> */}
+            label="County"
+            variant="outlined"
+            onChange={(value) => { props.onChange(value.key) }}
+            autoFocus={false}
+          />
+        )}
+      />
 
       {!['TX', 'Texas'].includes(state) && <>
         <Controller
@@ -112,21 +121,9 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             />
           )}
         />
-        {/* <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}meridian`} label={"Meridian"}
-          InputLabelProps={{ shrink: true }} fullWidth disabled />
-
-        <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}township`} label={"Township"}
-          InputLabelProps={{ shrink: true }} fullWidth disabled /> */}
-
-        {/* <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}range`} label={"Range"}
-          InputLabelProps={{ shrink: true }} fullWidth disabled /> */}
-        {/* 
-        <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}section`} label={"Section"}
-          InputLabelProps={{ shrink: true }} fullWidth disabled /> */}
       </>}
 
       {['TX', 'Texas'].includes(state) && <>
-
         <Controller
           control={control}
           name={`${prefix}survey`}
@@ -137,24 +134,6 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
               filterKey='level3Name.keyword'
               filters={{ "field": "level3Type.keyword", "value": "Survey" }}
               label="Survey"
-              variant="outlined"
-              onChange={(value) => { props.onChange(value.key) }}
-              autoFocus={false}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name={`${prefix}county`}
-          defaultValue={tract?.county || ''}
-          render={(props) => (
-            <AutoCompleteLandgrid
-              value={props.value}
-              filterKey='level2Name.keyword'
-              filters={[{ "field": "level2Type.keyword", "value": "County" }, { "field": "level1Name.keyword", "value": US_STATES_CODES[state] }]}
-
-              label="County"
               variant="outlined"
               onChange={(value) => { props.onChange(value.key) }}
               autoFocus={false}
@@ -212,21 +191,8 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             />
           )}
         />
-        {/* <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}survey`} label={"Survey"}
-          InputLabelProps={{ shrink: true }} fullWidth disabled />
-
-        <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}block`} label={"Block"}
-          InputLabelProps={{ shrink: true }} fullWidth disabled />
-
-        <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}section`} label={"Section"}
-          InputLabelProps={{ shrink: true }} fullWidth disabled />
-
-        <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}abstract`} label={"Abstract"}
-          InputLabelProps={{ shrink: true }} fullWidth disabled /> */}
-
-        {/* <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}altSurvey`} label={"Alternate Survey"}
-          InputLabelProps={{ shrink: true }} fullWidth disabled /> */}
-      </>}
+      </>
+      }
 
       <Controller as={TextField} control={control} variant="outlined" margin="dense" name={`${prefix}legalDescription`} label={"Tract Legal Description"}
         InputLabelProps={{ shrink: true }} multiline rows={4} fullWidth defaultValue={tract?.legalDescription || ''} />
