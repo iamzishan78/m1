@@ -303,7 +303,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
                     TableHeader = formatColumns(TableHeader, hits)
 
-                    console.log('TESTPOINT1', TableHeader)
+                console.log('TESTPOINT1', TableHeader)
 
                 setColumnsData(copy(TableHeader));
                 setLoading(false);
@@ -324,9 +324,9 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             if (filters && filters.length > 0) {
                 appliedFilters = [...initialFilters, ...filters]
             }
-        
+
             console.log("-----------=========")
-            console.log('TESTPOINT2',tableCols)
+            console.log('TESTPOINT2', tableCols)
 
 
             tableCols.forEach((column, index) => {
@@ -347,16 +347,16 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     };
                 } else {
 
-                    if (column?.name === "agreementSubtype"){console.log('IDENTIFY4',column.options)}
-                    
+                    if (column?.name === "agreementSubtype") { console.log('IDENTIFY4', column.options) }
+
 
                     column.options = {
                         ...GlobalSettings.muiGridStandardOptions,
                         ...column.options,
                     };
-                    if (column?.name === "agreementSubtype"){console.log('IDENTIFY5',column.options)}
+                    if (column?.name === "agreementSubtype") { console.log('IDENTIFY5', column.options) }
 
-                    
+
                 }
 
                 if (column?.options?.filter) {

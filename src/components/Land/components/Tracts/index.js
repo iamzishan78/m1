@@ -51,8 +51,8 @@ function Tracts(props) {
   const classes = useStyles();
   // const history = useHistory();
 
- // waypointKey should any key of tableHader which do not have customRender in schema file
- const loadMore = { type: 'infiniteScroll', waypointKey: 'State', height: "calc(100vh - 348px)" }
+  // waypointKey should any key of tableHader which do not have customRender in schema file
+  const loadMore = { type: 'infiniteScroll', waypointKey: 'commentsCounter', height: "calc(100vh - 348px)" }
 
 
 
@@ -147,31 +147,31 @@ function Tracts(props) {
   return (
     <div>
 
-    
-    <div 
-      style={{ 
-        marginTop: '65px', 
-        padding: "20px 75px 0px 75px" 
+
+      <div
+        style={{
+          marginTop: '65px',
+          padding: "20px 75px 0px 75px"
         }}
       >
-      <AnalyticsCards
-        parent={"Tracts"}
-        esIndex={esIndex[selectedTractTab]}
-        esFilters={esFilters}
-        totalCount={tractCount}
-        setESFilters={setESFilters}
-        cardsDefault={cardsDefault}
-        landSearchQuery={stateApp.landSearchQuery}
-      />
+        <AnalyticsCards
+          parent={"Tracts"}
+          esIndex={esIndex[selectedTractTab]}
+          esFilters={esFilters}
+          totalCount={tractCount}
+          setESFilters={setESFilters}
+          cardsDefault={cardsDefault}
+          landSearchQuery={stateApp.landSearchQuery}
+        />
       </div>
 
-      <div 
-          // className={classes.gridRoot}
-        style={{ 
+      <div
+        // className={classes.gridRoot}
+        style={{
           marginTop: "40px",
-          marginLeft: "-10px", 
-          }}
-          >
+          marginLeft: "-10px",
+        }}
+      >
         <TabPanels
           value={selectedTractTab}
           panels={[
