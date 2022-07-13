@@ -525,7 +525,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                   }}
                   label="Tract Status"
                   variant="outlined"
-                  onChange={(e, value) => { props.onChange(value.name) }}
+                  onChange={(e, value) => { props.onChange(value?.name || '') }}
                   autoFocus={false}
                 />
               )}
@@ -542,7 +542,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                   }}
                   label="Map Status"
                   variant="outlined"
-                  onChange={(e, value) => { props.onChange(value.name) }}
+                  onChange={(e, value) => { props.onChange(value?.name || '') }}
                   autoFocus={false}
                 />
               )}
