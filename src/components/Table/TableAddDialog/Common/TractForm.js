@@ -17,7 +17,9 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
   return (
     <>
       {!isNewTract && <AutoCompleteShapeLayer value={tractValue} shapeType='parcel' setSelectedShapeLayer={setSelectedShapeLayer} />}
-
+      {
+        isNewTract && <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.tractName" label={"Tract Name"} InputLabelProps={{ shrink: true }} fullWidth defaultValue={tract?.tractName || ""} />
+      }
       <Controller
         control={control}
         name={`${prefix}state`}

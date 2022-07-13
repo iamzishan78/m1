@@ -462,7 +462,6 @@ function AddAgreementOwnerAndTractDialog(props) {
               prefix={"tract."}
             />
 
-            <TextField id="tractName" name="tract.tractName" style={{ display: "none" }} inputRef={register()} />
             <TextField id="tractId" name="tract.tractId" style={{ display: "none" }} inputRef={register()} />
             <Grid container direction="row" spacing={1} className={classes.qtrCalls}>
               <Grid item xs={3}>
