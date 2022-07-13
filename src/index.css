@@ -253,3 +253,7 @@ body {
 .react-select__option:hover, .react-select__option--is-focused{
   background-color:rgba(0, 0, 0, 0.08) !important
 }
+
+.summary-div-small-map .mapboxgl-map {
+  height: auto !important;
+}
