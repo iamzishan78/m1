@@ -22,6 +22,7 @@ import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import { dateIsValid } from "utils/helper";
+import { CommonCommentText } from "components/Shared/CommentComponent";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -396,7 +397,7 @@ export default function DealComment(props) {
                         {!eachComment.isPinned && (
                           <>
                             {editCommentId !== eachComment._id ? (
-                              <CommentText users={users} eachComment={eachComment} />
+                              <CommonCommentText users={users} eachComment={eachComment} />
                             ) : (
                               <div className={classes.border}>
                                 <CommentField
@@ -463,30 +464,6 @@ export default function DealComment(props) {
     </div>
   );
 }
-
-export const CommentText = ({ eachComment, users }) => {
-  const classes = useStyles();
-  return (
-    <div id={eachComment._id} className={`${classes.whiteSpace}`}>
-      {eachComment.comment.split(" ").map((word) => {
-        if (word.includes("{{") && word.includes("}}")) {
-          const firstPart = word.split("{{")[0];
-          const secondPart = word.split("}}")[1];
-          let id = word.split("{{")[1];
-          id = id.split("}}")[0];
-          return (
-            <span className="blue">
-              {firstPart}@{users.find((user) => user._id === id)?.name}
-              {secondPart}{" "}
-            </span>
-          );
-        } else {
-          return <span>{word} </span>;
-        }
-      })}
-    </div>
-  );
-};
 
 const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment }) => {
   const [anchorEl, setAnchorEl] = useState(null);

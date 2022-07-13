@@ -97,6 +97,44 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+export const CommonCommentText = ({ eachComment, users }) => {
+  const classes = useStyles();
+  let formatComment = eachComment.comment.split(" ")
+
+  return (
+    <div id={eachComment._id} className={`${classes.whiteSpace}`}>
+      {formatComment.map((word, index) => {
+        if (word.includes("{{") && word.includes("}}")) {
+          const splittedWord = word.split(/\r?\n/);
+
+          // splitt word to manage new lines in the word
+          if (splittedWord.length) {
+            return (<>
+              {splittedWord.map(sWord => {
+                if (sWord.includes("{{") && sWord.includes("}}")) {
+                  const firstPart = sWord.split("{{")[0];
+                  const secondPart = sWord.split("}}")[1];
+                  let id = sWord.split("{{")[1];
+                  id = id.split("}}")[0];
+                  return <span className="blue">{firstPart}@{users.find(user => user._id === id)?.name}{secondPart} </span>
+                }
+                else if (sWord === "")
+                  return <br />
+                else return <span>{sWord} <br /> </span>;
+
+              })}
+            </>)
+          }
+
+          return <span>{splittedWord}</span>;
+        } else {
+          return <span>{word} </span>;
+        }
+      })}
+    </div >
+  );
+};
+
 export default function CommentComponent(props) {
   const { targetSourceId, commentsHeight } = props;
   const classes = useStyles({ commentsHeight });
@@ -452,7 +490,7 @@ export default function CommentComponent(props) {
 
                           }
                           {editCommentId !== eachComment._id ? (
-                            <CommentText users={users} eachComment={eachComment} />
+                            <CommonCommentText users={users} eachComment={eachComment} />
                           ) : (
                             <div className={classes.border}>
                               <CommentField
