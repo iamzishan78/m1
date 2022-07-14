@@ -762,7 +762,7 @@ function ContactDetailCard(props) {
             <>
               <div className={classes.summarySection}>
                 <Grid item xs={12} container spacing={0} style={{ padding: "5px 20px", height: "550px", textAlign: "center" }}>
-                  <SummaryFields contactData={contactData} userId={stateApp.user.mongoId} />
+                  <SummaryFields contactData={contactData} />
                 </Grid>
               </div>
 
