@@ -165,7 +165,7 @@ const categoryOptions = [
   },
   {
     label: "Tract",
-    value: "parcel"
+    value: "Parcel"
   },
   {
     label: "All (contacts, docs, flow, agreement, etc.)",
@@ -590,7 +590,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
                       <Controller
                         control={control}
                         name="category"
-                        defaultValue={category ?? categoryOptions[0].value}
+                        defaultValue={category ? categoryOptions.find(op => op.value === category)?.value : categoryOptions[0].value}
                         render={(params) => (
                           <Select
                             styles={{

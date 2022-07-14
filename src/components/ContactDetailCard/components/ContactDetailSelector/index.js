@@ -192,7 +192,7 @@ function MapGridCard(props) {
               <Grid container direction="row" style={{ height: "100%", marginBottom: "20px" }}>
                 <Grid item md={2} style={{ backgroundColor: "#F2F2F2" }}>
                   <Typography variant="h6" component="h1" style={{ fontWeight: "bold", padding: "10px 0px 0px 20px" }}>
-                    M1 Platform
+                    Associated Data
                   </Typography>
 
                   <List component="nav" aria-label="main mailbox folders">
