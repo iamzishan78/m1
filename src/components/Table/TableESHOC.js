@@ -48,6 +48,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const [changePage, isPageChanged] = useState(false);
         const [page, setPage] = useState(0)
         const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
+        const [, setTotalLength] = useState(0);
 
         const [addToTable, setAddToTable] = useState('')
         const [openDialog, setOpenDialog] = useState(null);
@@ -112,6 +113,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const history = useHistory();
 
         const tableData = elasticData?.getESSimpleSearch || {}
+
 
         useEffect(() => {
             if (tableMeta?.selectedGridView) {
@@ -283,6 +285,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
         useEffect(() => {
             if (tableData?.hits?.length > 0) {
+                setTotalLength(tableData?.total)
                 let { TableHeader, formatColumns, formatHits } = tableMeta
 
                 TableHeader = columns.length > 0 ? columns : TableHeader;
@@ -311,12 +314,10 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             else if (tableData?.hits?.length === 0) {
                 let { formatHits } = tableMeta;
 
-                if (!isFiniteScroll) {
-                    if (formatHits)
-                        formatHits([]);
-                    setRows([]);
-                    setColumnsData(copy(tableMeta.TableHeader));
-                }
+                if (formatHits)
+                    formatHits([]);
+                setRows([]);
+                setColumnsData(copy(tableMeta.TableHeader));
                 setLoading(false);
             }
         }, [tableData, dependencyUpdate]);
@@ -782,6 +783,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         };
 
         const count = tableData?.total || 0
+
         const options = {
             rowsPerPageOptions: [10, 25, 50, 100],
             count: count,
@@ -844,9 +846,19 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         options.page = page
 
         const onInfiniteScroll = () => {
+            let finalLength
 
-            console.log("next called")
-            document.getElementById('pagination-next').click()
+            setTotalLength(length => {
+                finalLength = length
+                return length
+            })
+
+            setRows(state => {
+                if (state.length < finalLength)
+                    document.getElementById('pagination-next').click()
+
+                return state
+            })
         }
 
         const esHocProps = React.useMemo(() => {
