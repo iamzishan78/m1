@@ -732,6 +732,7 @@ export default function HeaderSection(props) {
                     return (
                       <AutoCompleteTypeComponent
                         {...params}
+                        autoFocus={false}
                         shapeType={"Unit"}
                         typeKey={"internalCompany"}
                         variant="outlined"
