@@ -42,7 +42,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
       <TextField
         size="small"
         type={data.type === "calculation" ? 'number' : data.type}
-        value={data.type === "calculation" ? getRoundedNra(value.unitNra) : value}
+        value={data.type === "calculation" ? value.unitNra : value}
         variant="outlined"
 
         autoFocus
