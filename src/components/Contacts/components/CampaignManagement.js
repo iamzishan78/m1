@@ -48,7 +48,6 @@ const CampaignManagement = () => {
     toDate: null,
     fromDate: null,
   });
-  // console.log('appliedFilters===>', appliedFilters);
 
   const getCustomAppliedFilters = () => {
     if (activeModule?.filterValue) {
@@ -66,26 +65,26 @@ const CampaignManagement = () => {
   };
 
   return (
-      <div className={classes.root}>
-        <CustomDatesActivities
-          setToDate={(value) => setAppliedFilters({...appliedFilters, toDate: value})}
-          setFromDate={(value) => setAppliedFilters({...appliedFilters, fromDate: value})}
-          esIndex={esIndex}
-          searchFields={searchFields}
-          tableFilters={tableFilters}
-          appliedFilters={appliedFilters}
-        />
-        <CampaignAnalytics />
-        <CampaignsTable
-          esIndex={esIndex}
-          searchFields={searchFields}
-          filtersChange={filtersChange}
-          appliedFilters={appliedFilters}
-          filterToggle={filterToggle}
-          targetLabel="campaignManagement"
-          header="Campaigns"
-        />
-      </div>
+    <div className={classes.root}>
+      <CustomDatesActivities
+        setToDate={(value) => setAppliedFilters({ ...appliedFilters, toDate: value })}
+        setFromDate={(value) => setAppliedFilters({ ...appliedFilters, fromDate: value })}
+        esIndex={esIndex}
+        searchFields={searchFields}
+        tableFilters={tableFilters}
+        appliedFilters={appliedFilters}
+      />
+      <CampaignAnalytics />
+      <CampaignsTable
+        esIndex={esIndex}
+        searchFields={searchFields}
+        filtersChange={filtersChange}
+        appliedFilters={appliedFilters}
+        filterToggle={filterToggle}
+        targetLabel="campaignManagement"
+        header="Campaigns"
+      />
+    </div>
   );
 };
 
