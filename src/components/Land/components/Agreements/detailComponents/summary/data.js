@@ -99,14 +99,14 @@ const fieldsList = (activeUser) => {
       key: "acquisitionID",
     },
     {
-      label: "Internal Company",
-      type: "autocomplete",
-      key: "internalCompany",
-    },
-    {
       label: "Prospect ID",
       type: "autocomplete",
       key: "prospectID",
+    },
+    {
+      label: "Internal Company",
+      type: "autocomplete",
+      key: "internalCompany",
     },
   ];
 }
