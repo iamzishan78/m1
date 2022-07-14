@@ -55,7 +55,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function SummaryFields({ contactData }) {
+export default function SummaryFields({ contactData, userId }) {
   const classes = useStyles();
   const { control, reset } = useForm();
   const [activeLoadingField, setLoading] = useState();
@@ -95,7 +95,7 @@ export default function SummaryFields({ contactData }) {
   const updateFieldData = (key, value) => {
     if (contactData[key] === value) return;
 
-    let contact = { _id: contactData._id };
+    let contact = { _id: contactData._id, lastUpdateBy: userId };
     const _key = key.replace("evaluatedContactInterests", "contactInterests");
     set(contact, _key, value);
     if (contact.contactInterests) {
