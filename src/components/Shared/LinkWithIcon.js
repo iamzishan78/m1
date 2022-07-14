@@ -131,7 +131,6 @@ export default function LinkWithIcon(props) {
   const handleSearch = (value) => {
     setSearchValue(value);
   };
-
   
   const debouncedSearch = useMemo(() => {
     return _.debounce((search, showAll) => {
@@ -160,7 +159,7 @@ export default function LinkWithIcon(props) {
         contactId: props.objectId,
         globalOwner: isDeleteGlobalOwnerDialog.globalOwner,
       },
-      refetchQueries: ["getLinkedGlobalOwners"],
+      refetchQueries: ["getLinkedGlobalOwners", "getContactSummary"],
       awaitRefetchQueries: true,
       onCompleted: () => {
         handleProcessingOwners(isDeleteGlobalOwnerDialog.globalOwner, "delete");
@@ -217,7 +216,7 @@ export default function LinkWithIcon(props) {
         contact,
         userId: stateApp.user.mongoId,
       },
-      refetchQueries: ["getLinkedGlobalOwners"],
+      refetchQueries: ["getLinkedGlobalOwners", "getContactSummary"],
       awaitRefetchQueries: true,
       onCompleted: () => {
         handleProcessingOwners(taxOwner.globalOwnerId, "delete");
