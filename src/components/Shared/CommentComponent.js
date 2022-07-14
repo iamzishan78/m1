@@ -116,10 +116,8 @@ export const CommonCommentText = ({ eachComment, users }) => {
                   const secondPart = sWord.split("}}")[1];
                   let id = sWord.split("{{")[1];
                   id = id.split("}}")[0];
-                  return <span className="blue">{firstPart}@{users.find(user => user._id === id)?.name}{secondPart} </span>
+                  return <> <span className="blue">{firstPart}@{users.find(user => user._id === id)?.name}{secondPart} </span>{splittedWord.length > 1 && <br />} </>
                 }
-                else if (sWord === "")
-                  return <br />
                 else return <span>{sWord} <br /> </span>;
 
               })}
@@ -460,7 +458,8 @@ export default function CommentComponent(props) {
                                 (Edited)
                               </span>
                             )}
-                            {eachComment.user.email === stateApp.user.email &&
+                            {
+                              eachComment.user.email === stateApp.user.email &&
                               showCommentActionId === eachComment._id &&
                               editCommentId !== eachComment._id && (
                                 <div
