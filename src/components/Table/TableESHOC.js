@@ -310,10 +310,13 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             }
             else if (tableData?.hits?.length === 0) {
                 let { formatHits } = tableMeta;
-                if (formatHits)
-                    formatHits([]);
-                setRows([]);
-                setColumnsData(copy(tableMeta.TableHeader));
+
+                if (!isFiniteScroll) {
+                    if (formatHits)
+                        formatHits([]);
+                    setRows([]);
+                    setColumnsData(copy(tableMeta.TableHeader));
+                }
                 setLoading(false);
             }
         }, [tableData, dependencyUpdate]);
@@ -841,6 +844,8 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         options.page = page
 
         const onInfiniteScroll = () => {
+
+            console.log("next called")
             document.getElementById('pagination-next').click()
         }
 
