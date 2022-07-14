@@ -3,7 +3,10 @@ import { useDispatch } from "react-redux";
 import { set, get } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import moment from "moment";
-import { IconButton, Grid, Table, TableCell, TableBody, FormControl } from "@material-ui/core";
+import { IconButton, Grid, Table, TableCell, TableBody, FormControl, InputAdornment } from "@material-ui/core";
+import Typography from "@material-ui/core/Typography";
+
+import AutorenewIcon from "@material-ui/icons/Autorenew";
 import TableRow from "@material-ui/core/TableRow";
 import Tooltip from "@material-ui/core/Tooltip";
 import { showErrorMessage } from "actions";
@@ -16,6 +19,8 @@ import CampaignNameField from "components/ContactDetailCard/components/FieldCont
 import vf_currency from "components/Shared/valueformatters/vf_currency";
 import vf_number from "components/Shared/valueformatters/vf_number";
 import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
+import { copy } from "components/Shared/functions";
+import { getRoundedNra } from "utils/helper";
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
 import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
@@ -24,37 +29,63 @@ import NumberField from "components/Shared/components/Fields/NumberField";
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
+  // match unit nra value with system generated nra 
+  const getNraClass = () => {
+    if (value.unitNra === value.calculatedNra)
+      return ''
+    return classes.baseValueChanged
+  }
+
   return (
-    <TextField
-      size="small"
-      type={data.type}
-      value={value}
-      variant="outlined"
-      autoFocus
-      onChange={(e) => {
-        e.persist();
-        onChange(e, data, type);
-      }}
-      onKeyDown={(e) => {
-        if (e.keyCode === 13) {
-          e.stopPropagation();
-          onKeyDown(e, data, type);
-        }
-      }}
-      onWheel={onWheel ? onWheel : () => { }}
-      onBlur={() => {
-        onBlur(data, type);
-      }}
-      InputProps={{
-        ...InputProps,
-        endAdornment: showMessage && (
-          <p className={classes.foodText}>
-            <span>Return</span> to save
-          </p>
-        ),
-      }}
-      fullWidth
-    />
+
+    <div style={{ position: 'relative' }} >
+      <TextField
+        size="small"
+        type={data.type === "calculation" ? 'number' : data.type}
+        value={data.type === "calculation" ? getRoundedNra(value.unitNra) : value}
+        variant="outlined"
+
+        autoFocus
+        onChange={(e) => {
+          e.persist();
+          onChange(e, data, type);
+        }}
+        onKeyDown={(e) => {
+          if (e.keyCode === 13) {
+            e.stopPropagation();
+            onKeyDown(e, data, type);
+          }
+        }}
+        onWheel={onWheel ? onWheel : () => { }}
+        onBlur={() => {
+          onBlur(data, type);
+        }}
+        className={data.type === "calculation" ? getNraClass() : ''}
+        InputProps={{
+          ...InputProps,
+          startAdornment: showMessage && (
+            <p className={classes.foodText}>
+              <span>Return</span> to save
+            </p>
+          ),
+        }}
+        fullWidth
+      />
+
+      {
+        (data.type === "calculation") && (value.unitNra !== value.calculatedNra) && (
+          <IconButton
+            className={classes.positionRenewIcon}
+            aria-label="toggle royality-acres"
+            onMouseDown={e => e.preventDefault()}
+            onMouseUp={(e) => onKeyDown(e, data, 'calculation')}
+          >
+            <AutorenewIcon style={{ color: "dodgerblue" }} />
+          </IconButton>
+        )
+      }
+    </div>
+
   );
 }
 
@@ -110,10 +141,20 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
 
   const onChange = (e, data, type) => {
     const obj = { ...tableTempProperties };
-    const key = getKey(data, type, e);
-    set(obj, key, e.target.value);
-    setTableTempProperties(obj);
-    if (type === "key") setTableDataState({ [key]: true });
+
+    if (data.key === "netRoyalityAcres") {
+      let object = copy(tableTempProperties)
+      object = { ...object }
+      set(object, 'netRoyalityAcres.unitNra', e.target.value);
+      setTableTempProperties(object);
+    }
+    else {
+      const key = getKey(data, type, e);
+      set(obj, key, e.target.value);
+      setTableTempProperties(obj);
+      if (type === "key") setTableDataState({ [key]: true });
+    }
+
   };
 
   const onKeyDown = (e, data, type) => {
@@ -125,14 +166,25 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
         } else {
           updateCustomProperties(type, get(tableTempProperties, `${data.key}`), data.key, data.id);
         }
-      } else updateProperties(e, data.key, get(tableTempProperties, `${data.key}`), data.isCustom);
-    } else {
-      const exists = filteredTableData.find((row) => row.key === get(tableTempProperties, `${data.key}key`) && row.id !== data.id);
-      if (exists) {
-        dispatch(showErrorMessage("Key with this name already exists"));
-        return;
+      } else {
+        updateProperties(e, data.key, get(tableTempProperties, `${data.key}`), data.isCustom);
       }
-      updateCustomProperties(type, get(tableTempProperties, `${data.key}key`), data.key, data.id);
+    } else {
+      if (type === 'calculation') {
+        const nra = copy(get(tableTempProperties, `${data.key}`))
+        updateProperties(e, data.key, { ...nra, unitNra: null }, data.isCustom);
+
+        const updatedTableTempProperties = { ...tableTempProperties, netRoyalityAcres: { ...tableTempProperties.netRoyalityAcres, unitNra: tableTempProperties.netRoyalityAcres.calculatedNra } }
+        setTableTempProperties(updatedTableTempProperties);
+      }
+      else {
+        const exists = filteredTableData.find((row) => row.key === get(tableTempProperties, `${data.key}key`) && row.id !== data.id);
+        if (exists) {
+          dispatch(showErrorMessage("Key with this name already exists"));
+          return;
+        }
+        updateCustomProperties(type, get(tableTempProperties, `${data.key}key`), data.key, data.id);
+      }
     }
   };
 
@@ -144,8 +196,16 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
   };
 
   const checkFieldChange = (e, data, type, func) => {
+
     if (data.isCustomData) func(e, data, type);
     else func(e, data, type);
+  }
+
+  // match unit nra value with system generated nra 
+  const isNraMatched = () => {
+    if (properties?.netRoyalityAcres?.unitNra === properties?.netRoyalityAcres?.calculatedNra)
+      return true
+    return false
   }
 
   return (
@@ -187,7 +247,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                       <div style={{ minWidth: "30px", cursor: "pointer" }}>
                         <Grid container direction="row" justifyContent="space-between" alignItems="center">
                           <Grid item md={10}>
-                            {data.key || "-"}
+                            {data.label || "-"}
                           </Grid>
                           <Grid item md={2}>
                             {editIconState[`${data.key}key`] && (
@@ -254,6 +314,25 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           }}
                         />
                       </FormControl>
+                    )}
+                    {(data.type === "calculation") && (
+                      <TableTextField
+                        data={data}
+                        value={tableTempProperties?.netRoyalityAcres || 0}
+                        showMessage={tableDataState[data.key] === true}
+                        onChange={(e, data, type) => {
+                          checkFieldChange(e, data, type, onChange);
+                        }}
+                        onKeyDown={(e, data, type) => {
+                          checkFieldChange(e, data, type, onKeyDown);
+                        }}
+                        onBlur={(e, data, type) => {
+                          checkFieldChange(e, data, type, onBlur);
+                        }}
+                        onWheel={(e) => e.target.blur()}
+                        type="value"
+                        InputProps={data.InputProps}
+                      />
                     )}
                     {(data.type === "text" || data.type === "number" || data.type === "currency" || data.type === "comma-number") && (
                       <TableTextField
@@ -389,10 +468,17 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             data.type !== "currency" &&
                             data.type !== "comma-number" &&
                             data.type !== "multiselect" &&
+                            data.type !== 'calculation' &&
                             (data.value || get(properties, `${data.key}`, "-"))}
-                          {data.type === "multiselect" && get(properties, `${data.key}`, []).join(", ")}
+                          {data.type === "multiselect" && (get(properties, `${data.key}`) ?? []).join(", ")}
                           {data.type === "currency" && (vf_currency(data.value) || vf_currency(properties[data.key]) || "-")}
                           {data.type === "comma-number" && (vf_number(data.value) || vf_number(properties[data.key]) || "-")}
+                          {data.type === 'calculation' && (<>
+                            <Typography className={isNraMatched() ? classes.nraText : classes.nraHighLight}>
+                              {getRoundedNra(properties?.netRoyalityAcres?.unitNra)}
+                            </Typography>
+
+                          </> || 0)}
                         </Grid>
                       )}
                       {!data.nonEditable && (

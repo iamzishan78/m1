@@ -12,6 +12,30 @@ export default [
         actual_key: "property.name",
     },
     {
+        label: "Internal ID",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.internalID",
+    },
+    {
+        label: "Internal Company",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.internalCompany",
+    },
+    {
+        label: "Acquisition ID",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.acquisitionID",
+    },
+    {
+        label: "Prospect",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.prospectID",
+    },
+    {
         label: "Property State",
         mapped_key: "",
         required: false,

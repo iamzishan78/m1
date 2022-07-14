@@ -250,7 +250,9 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           <ContactAutoComplete
             value={contactOwner}
             onChange={(e, user) => {
-              setContactOwner(user.value);
+              const value = user && user.value ? user.value : '';
+              setFieldKey(value);
+              setContactOwner(value);
             }}
           />
         );

@@ -2167,24 +2167,12 @@ function SubTable(props) {
                             >
 
 
-                              <Grid container spacing={0} direction="row"
 
-                              // direction="column" alignItems="flex-start"
-                              >
-                                <Grid item
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "flex-start",
-                                    alignItems: "center",
-                                  }}>
                                   <p
                                     style={{
                                       display: "flex",
                                       cursor: "pointer",
-                                      // padding: "10px 10px 10px 10px",
-                                      // position: "relative",
                                       minWidth: "120px",
-                                      // marginLeft: "-10px",
                                       borderRadius: "7px",
                                       color: "#17aadd",
                                       wordBreak: "break-word",
@@ -2193,28 +2181,18 @@ function SubTable(props) {
                                       },
                                       fontWeight: "bold",
                                       justifyContent: "flex-start",
+                                      paddingRight: '40px',
                                     }}>
 
                                       <Typography
-                                        nowrap={true}
+                                        noWrap
                                         color="inherit"
                                         >
                                       {value}
                                       </Typography>
 
                                       </p>
-                                </Grid>
-                                {/* <Grid item>
-                                 <p style={{
-                                  padding: "0px 30px 10px 10px",
-                                  marginTop: "-20px",
-                                  position: "relative",
-                                  justifyContent: "flex-end",
-                                }}>
-                                  {convert_date(dateTime)}
-                                  </p>
-                              </Grid> */}
-                              </Grid>
+
                             </div>
                           </Grid>
                         </Grid>
@@ -4045,6 +4023,7 @@ function SubTable(props) {
   if (props.header === "Deals"
     || props.header === "Activities"
     || props.header === "Agreements"
+    || props.header === "Tracts"
     || props.parent === "TractTable"
     || props.parent === "TractInterestsTable"
   ) {
