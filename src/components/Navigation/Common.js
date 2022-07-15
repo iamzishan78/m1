@@ -24,7 +24,7 @@ export const useStyles = makeStyles((theme) => ({
       marginLeft: "52px",
     },
   },
-  appBar2: {
+  appBarWhite: {
     height: "64px",
     background: "#ffff",
     zIndex: 1000,
