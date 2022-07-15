@@ -7,45 +7,16 @@ import { setStateIfDeepEqual } from "components/Shared/functions";
 import { setMapGridCardState } from "actions";
 import { useDispatch } from "react-redux";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginTop: "65px",
-    "& div": {
-      "&>.MuiPaper-root": {
-        display: "flex",
-        "flex-direction": "column",
-        height: "calc(100vh - 65px)",
-        position: "relative",
-        boxShadow: "none",
-        "align-items": "stretch",
-        "&>.MuiPaper-root": {
-          display: "contents",
-        },
-        "&>:nth-child(3)": {
-          height: "inherit !important",
-        },
-        "&> table": {
-          bottom: 0,
-        },
-      },
-    },
 
-    '& .MuiDrawer-paperAnchorRight': {
-      overflow: "hidden",
-    },
-    marginLeft: '-10px'
-  },
-}));
 
 function Agreements(props) {
-  const classes = useStyles();
   const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch()
   const [agreementCount, setAgreementCount] = useState(0);
   const [esFilters, ESFilters] = useState([]);
 
   // waypointKey should any key of tableHader which do not have customRender in schema file
-  const loadMore = { type: 'infiniteScroll', waypointKey: '_id' }
+  const loadMore = { type: 'infiniteScroll', waypointKey: '_id', height: "calc(100vh - 66px)" }
 
   const setESFilters = (newState) => {
     setStateIfDeepEqual(ESFilters, newState);
@@ -80,7 +51,13 @@ function Agreements(props) {
   ];
 
   return (
-    <div className={classes.root}>
+    <div 
+    // className={classes.root}
+    style ={{
+      marginTop: "65px",
+      marginLeft: "-10px"
+    }}
+    >
       {/* <AnalyticsCards
         parent={"Agreements"}
         esIndex={esIndex}

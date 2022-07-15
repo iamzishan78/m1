@@ -108,7 +108,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
             </Typography>
             </Grid>
 
-            <Grid item
+            {/* <Grid item
             style={{
               display: "flex",
               justifyContent: "flex-start",
@@ -144,7 +144,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
             <MapFilledIcon />
           </IconButton>
           </Grid>
-          
+           */}
 
 
           </Grid>
@@ -364,32 +364,32 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       },
     },
   },
-  {
-    name: "approvalStatus",
-    label: " ",
-    esKey: "shapeJson.properties.approvalStatus.keyword",
-    options: {
-      dbName: "shapeJson.properties.approvalStatus",
-      sort: true,
-      // filter: true,
-      display: true,
-      viewColumns: false,
-      customRender: (value, tableMeta, updateValue) => {
-        return (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            {value?.toLowerCase() === "approved" ? (
-              <CheckCircleIcon style={{ color: "forestgreen" }} />
-            ) : (
-              <WarningIcon style={{ color: "orange" }} />
-            )}
-          </div>
-        );
-      },
-    },
-    custom: {
-      filterLabel: 'Approval Status'
-    }
-  },
+  // {
+  //   name: "approvalStatus",
+  //   label: " ",
+  //   esKey: "shapeJson.properties.approvalStatus.keyword",
+  //   options: {
+  //     dbName: "shapeJson.properties.approvalStatus",
+  //     sort: true,
+  //     // filter: true,
+  //     display: true,
+  //     viewColumns: false,
+  //     customRender: (value, tableMeta, updateValue) => {
+  //       return (
+  //         <div style={{ display: "flex", alignItems: "center" }}>
+  //           {value?.toLowerCase() === "approved" ? (
+  //             <CheckCircleIcon style={{ color: "forestgreen" }} />
+  //           ) : (
+  //             <WarningIcon style={{ color: "orange" }} />
+  //           )}
+  //         </div>
+  //       );
+  //     },
+  //   },
+  //   custom: {
+  //     filterLabel: 'Approval Status'
+  //   }
+  // },
 ];
 
 export default AgreementsHeadCells;

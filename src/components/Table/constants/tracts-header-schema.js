@@ -139,7 +139,8 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: "tags.tag.keyword",
     options: { 
       ignoreGlobal: true,
-      sort: true, filter: true },
+      sort: true, 
+      filter: true },
   },
   {
     name: "commentsCounter",

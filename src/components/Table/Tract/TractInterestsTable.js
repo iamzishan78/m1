@@ -79,31 +79,6 @@ function TractInterestsTable(props) {
     }
   );
 
-  // const [getESAggsGrossAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
-  //     onCompleted: (aggsData) => {
-  //         if(aggsData?.getESAggsList?.aggregations?.grossAcresSum) {
-  //             props.onGrossAcresSum(aggsData?.getESAggsList?.aggregations?.grossAcresSum?.value)
-  //         }
-  //     }
-  // });
-
-  // const [getESAggsNetAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
-  //     onCompleted: (aggsData) => {
-  //         if(aggsData?.getESAggsList?.aggregations?.netAcresSum) {
-  //             props.onNetAcresSum(aggsData?.getESAggsList?.aggregations?.netAcresSum?.value)
-  //         }
-  //     }
-  // });
-
-  // const [getESAggsNetRoyaltyAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
-  //     onCompleted: (aggsData) => {
-  //         if(aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum) {
-  //             props.onNetRoyaltyAcresSum(aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum?.value)
-  //         }
-  //     }
-  // });
-
-  // const [getPotentialIssues, { data: potentialIssues }] = useLazyQuery(GET_ES_POTENTIAL_ISSUES, { fetchPolicy: "no-cache" });
 
   const tableData = elasticData?.getESPaginatedList;
   // const issues = potentialIssues?.getPotentialIssuesSummary;
@@ -120,7 +95,7 @@ function TractInterestsTable(props) {
   const count = tableData?.total || 0;
   const options = {
     rowsPerPageOptions: [10, 25, 50, 100],
-    // rowsPerPage: 10,
+    rowsPerPage: 50,
     count: count,
     serverSide: true,
     search: false,

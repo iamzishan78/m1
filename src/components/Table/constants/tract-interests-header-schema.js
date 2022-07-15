@@ -330,6 +330,7 @@ const TractInterestsHeadCells = [
         name: "commentsCounter",
         label: " ",
         options: {
+            ignoreGlobal: true,
             dbName: "comments.comment",
             filter: false,
             searchable: false,
