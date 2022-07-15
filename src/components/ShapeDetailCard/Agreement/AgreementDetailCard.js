@@ -182,7 +182,6 @@ export default function AgreementDetailCard(props) {
     // } else {
     //   customRow.value = value;
     // }
-    debugger;
     set(properties, `${key}`, value);
     properties.custom_data_arr?.forEach((data) => {
       properties.custom_data[data.key] = data.value;

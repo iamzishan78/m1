@@ -19,13 +19,8 @@ import CampaignNameField from "components/ContactDetailCard/components/FieldCont
 import vf_currency from "components/Shared/valueformatters/vf_currency";
 import vf_number from "components/Shared/valueformatters/vf_number";
 import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
-import { addTrailingZeros, copy } from "components/Shared/functions";
 import { getRoundedNra } from "utils/helper";
-import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
-import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
-import NumberField from "components/Shared/components/Fields/NumberField";
-
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
@@ -144,7 +139,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
 
     if (data.key === "netRoyalityAcres") {
       set(tableTempProperties, 'netRoyalityAcres.unitNra', e.target.value);
-      setTableTempProperties(copy(tableTempProperties));
+      setTableTempProperties({ ...tableTempProperties });
     }
     else {
       const key = getKey(data, type, e);
@@ -156,12 +151,12 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
   };
 
   const onKeyDown = (e, data, type) => {
-    if (data.key === 'netRoyalityAcres') {
-      e.target.value = parseFloat(e.target.value).toFixed(8)
-      set(tableTempProperties, 'netRoyalityAcres.unitNra', e.target.value);
-      setTableTempProperties(tableTempProperties);
-    }
     if (type === "value") {
+      if (data.key === 'netRoyalityAcres') {
+        e.target.value = parseFloat(e.target.value).toFixed(8)
+        set(tableTempProperties, 'netRoyalityAcres.unitNra', e.target.value);
+        setTableTempProperties({ ...tableTempProperties });
+      }
       if (data.isCustom || data.isCustomData) {
         if (!get(tableTempProperties, `${data.key}key`) && !data.isCustomData) {
           dispatch(showErrorMessage("Please provide key value first"));
@@ -174,11 +169,11 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
       }
     } else {
       if (type === 'calculation') {
-        const nra = copy(get(tableTempProperties, `${data.key}`))
-        updateProperties(e, data.key, { ...nra, unitNra: null }, data.isCustom);
-
-        const updatedTableTempProperties = { ...tableTempProperties, netRoyalityAcres: { ...tableTempProperties.netRoyalityAcres, unitNra: tableTempProperties.netRoyalityAcres.calculatedNra } }
-        setTableTempProperties(updatedTableTempProperties);
+        if (tableTempProperties?.netRoyalityAcres?.calculatedNra) {
+          tableTempProperties.netRoyalityAcres.unitNra = tableTempProperties?.netRoyalityAcres?.calculatedNra
+          setTableTempProperties({ ...tableTempProperties });
+          updateProperties(e, data.key, { ...tableTempProperties.netRoyalityAcres }, data.isCustom);
+        }
       }
       else {
         const exists = filteredTableData.find((row) => row.key === get(tableTempProperties, `${data.key}key`) && row.id !== data.id);
@@ -321,7 +316,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                     {(data.type === "calculation") && (
                       <TableTextField
                         data={data}
-                        value={tableTempProperties?.netRoyalityAcres || 0}
+                        value={get(properties, data.key) || 0}
                         showMessage={tableDataState[data.key] === true}
                         onChange={(e, data, type) => {
                           checkFieldChange(e, data, type, onChange);
