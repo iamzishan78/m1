@@ -15,6 +15,7 @@ const RevenuePropertiesHeadCells = [
     esKey: "number.keyword",
     options: {
       ...GlobalSettings.muiGridControlOptions,
+        ignoreGlobal: true,
 
       customRender: (value, tableMeta) => {
         const splitNumber = value?.split("_");
@@ -145,11 +146,15 @@ const RevenuePropertiesHeadCells = [
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
+    options: {
+      ignoreGlobal: true,
+    }
   },
   {
     name: "commentsCounter",
     label: " ",
     options: {
+      ignoreGlobal: true,
       dbName: "comments.comment",
       filter: false,
       searchable: false,
@@ -164,6 +169,7 @@ const RevenuePropertiesHeadCells = [
     label: "Status",
     esKey: "approvalStatus.keyword",
     options: {
+      ignoreGlobal: true,
       customHeadLabelRender: () => (
         <>
           <div> </div>
