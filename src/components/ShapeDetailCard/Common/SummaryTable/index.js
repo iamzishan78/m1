@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { set, get } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import moment from "moment";
-import { IconButton, Grid, Table, TableCell, TableBody, FormControl, InputAdornment } from "@material-ui/core";
+import { IconButton, Grid, Table, TableCell, TableBody, FormControl } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 
 import AutorenewIcon from "@material-ui/icons/Autorenew";
@@ -21,11 +21,8 @@ import vf_number from "components/Shared/valueformatters/vf_number";
 import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
 import { copy } from "components/Shared/functions";
 import { getRoundedNra } from "utils/helper";
-import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
-import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
-import NumberField from "components/Shared/components/Fields/NumberField";
-
+import { AppContext } from "AppContext";
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
@@ -92,6 +89,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
 export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [] }) {
   const classes = summaryTableStyles();
   const dispatch = useDispatch();
+  const [, setStateApp] = useContext(AppContext);
   const [tableDataState, setTableDataState] = useState({});
   const [editIconState, setEditIconState] = useState({});
 
@@ -196,9 +194,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
   };
 
   const checkFieldChange = (e, data, type, func) => {
-
-    if (data.isCustomData) func(e, data, type);
-    else func(e, data, type);
+    func(e, data, type);
   }
 
   // match unit nra value with system generated nra 
@@ -224,7 +220,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                   setEditIconState({ [`${data.key}key`]: false });
                 }}
               >
-                {data.isCustom ? (
+                {(data.isCustom || data.isCustomData) ? (
                   <>
                     {" "}
                     {tableDataState[`${data.key}key`] ? (
@@ -255,7 +251,15 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                                 <IconButton
                                   size="small"
                                   onClick={() => {
-                                    setTableDataState({ [`${data.key}key`]: true });
+                                    if (data.isCustom) {
+                                      setTableDataState({ [`${data.key}key`]: true });
+                                    } else {
+                                      setStateApp((stateApp) => ({
+                                        ...stateApp,
+                                        selectedMeta: data,
+                                        showFieldModal: true,
+                                      }));
+                                    }
                                   }}
                                 >
                                   <CreateTwoToneIcon id="contPencilIcon" className={classes.pencilIcon} />
