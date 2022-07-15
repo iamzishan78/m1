@@ -19,7 +19,7 @@ import CampaignNameField from "components/ContactDetailCard/components/FieldCont
 import vf_currency from "components/Shared/valueformatters/vf_currency";
 import vf_number from "components/Shared/valueformatters/vf_number";
 import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
-import { copy } from "components/Shared/functions";
+import { addTrailingZeros, copy } from "components/Shared/functions";
 import { getRoundedNra } from "utils/helper";
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
 import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
@@ -143,10 +143,8 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
     const obj = { ...tableTempProperties };
 
     if (data.key === "netRoyalityAcres") {
-      let object = copy(tableTempProperties)
-      object = { ...object }
-      set(object, 'netRoyalityAcres.unitNra', e.target.value);
-      setTableTempProperties(object);
+      set(tableTempProperties, 'netRoyalityAcres.unitNra', e.target.value);
+      setTableTempProperties(copy(tableTempProperties));
     }
     else {
       const key = getKey(data, type, e);
@@ -158,6 +156,11 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
   };
 
   const onKeyDown = (e, data, type) => {
+    if (data.key === 'netRoyalityAcres') {
+      e.target.value = parseFloat(e.target.value).toFixed(8)
+      set(tableTempProperties, 'netRoyalityAcres.unitNra', e.target.value);
+      setTableTempProperties(tableTempProperties);
+    }
     if (type === "value") {
       if (data.isCustom || data.isCustomData) {
         if (!get(tableTempProperties, `${data.key}key`) && !data.isCustomData) {
