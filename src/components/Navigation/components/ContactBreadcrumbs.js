@@ -38,9 +38,9 @@ const ContactBreadcrumbs = () => {
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
   const contactId = history.location.pathname.split("/")[3];
-  const parcelId = history.location.pathname.split("/parcels")[history.location.pathname.split("/").length - 1];
 
   const unitId = history.location.pathname.includes("units") && history.location.pathname.split("/units/")[history.location.pathname.split("/units/").length - 1];
+  const parcelId = history.location.pathname.includes("parcels") && history.location.pathname.split("/parcels/")[history.location.pathname.split("/parcels/").length - 1];
 
   useEffect(() => {
     if (contactId) {
@@ -406,7 +406,7 @@ const ContactBreadcrumbs = () => {
           {(history.location.pathname.includes("/wells") ||
             history.location.pathname.includes("/parcels") ||
             history.location.pathname.includes("/units")) && (<>
-              {unitId ? (
+              {unitId || parcelId ? (
                 <Link
                   style={{
                     marginLeft: "5px",
