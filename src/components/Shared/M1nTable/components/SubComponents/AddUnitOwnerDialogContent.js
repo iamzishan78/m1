@@ -419,7 +419,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         const value = addTrailingZeros(e.target.value);
-                        setIsNRAOverridden(value !== getValues().nra)
+                        const nra = calculateNRA(getValues().royalty_interest, getValues().orri)
+                        setIsNRAOverridden(parseFloat(value) !== parseFloat(nra))
                         params.onChange(e.target.value);
                       }}
                       className={isNraOverridden ? classes.baseValueChanged : classes.maxWidth}
