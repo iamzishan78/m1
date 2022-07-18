@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 
 
 import CustomDates from "components/Revenue/components/Common/CustomDates";
-import DetailTabsSection from "components/Revenue/components/Portfolio/DetailTabsSection";
+import DetailTabsSection from "components/Analytics/components/Revenue/DetailTabsSection";
 import { useLazyQuery } from "@apollo/client";
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
 import moment from "moment";
