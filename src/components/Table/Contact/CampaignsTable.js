@@ -18,6 +18,9 @@ import { UPDATE_PROPERTY_INTEREST } from "graphQL/useMutationUpdatepropertyInter
 import { activityTypes } from "utils/data";
 import { getRangeFilters } from "utils/helper";
 
+// value formatters 
+import convert_date from "components/Shared/valueformatters/convert_date.js";
+
 export const getFilters = (appliedFilters) => {
   let filters = [];
   if (appliedFilters) {
@@ -75,20 +78,18 @@ function CampaignsTable(props) {
     setEvents(
       hits.map((hit) => ({ ...hit, start: new Date(hit.dateTime), end: new Date(hit.endDateTime ? hit.endDateTime : hit.dateTime) }))
     );
-    return hits.map((hit, i) => {
-      hit.type = get(
-        activityTypes.find((type) => type.value === hit.type),
-        "label",
-        ""
-      );
-      hit.status = i % 2 === 0 ? "Active" : "Inactive";
-      return hit;
-    });
+    return hits.map((hit, i) => ({
+      ...hit,
+      owner: hit.owner.displayName,
+      createdAt: hit.createdAt ? convert_date(hit.createdAt) : null,
+      tags: hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0],
+      commentsCounter: hit.comments ? hit.comments.length : 0
+    }));
   };
 
   useEffect(() => {
     props.setTableMeta({
-      filters: getFilters(appliedFilters),
+      filters: [],
       extendSearchQuery: stateApp.contactSearchQuery ? stateApp.contactSearchQuery : null,
       searchFields,
       TableHeader: CampaignsHeader,

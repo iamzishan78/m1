@@ -40,7 +40,7 @@ const CampaignManagement = () => {
   const classes = useStyles();
   const { activeModule } = useSelector(({ common }) => common);
 
-  const esIndex = "activities_flat";
+  const esIndex = "campaigns_flat";
   const searchFields = ["name", "_all"];
   const [filterToggle, setFilterToggle] = useState(false);
   const [tableFilters, setTableFilters] = useState([]);

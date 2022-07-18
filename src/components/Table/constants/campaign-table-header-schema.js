@@ -1,5 +1,6 @@
 import { history } from "store";
-import CampaignStatus from "components/Table/Contact/CampaignStatus";
+import moment from "moment";
+// import CampaignStatus from "components/Table/Contact/CampaignStatus";
 
 const CampaignsHeadCells = [
   {
@@ -27,7 +28,7 @@ const CampaignsHeadCells = [
           <p
             onClick={(e) => {
               e.stopPropagation();
-              
+
               history.push(
                 {
                   pathname: `/contacts/campaign/details/${tableMeta.rowData[0]}`,
@@ -46,66 +47,81 @@ const CampaignsHeadCells = [
     },
   },
   {
-    name: "type",
-    label: "Campaign Status",
-    esKey: "type.keyword",
-    options: {
-      display: true,
-      sort: true,
-      filter: true,
-    },
-  },
-  {
-    name: "entityType",
-    label: "Units",
-    esKey: "type.keyword",
-    options: {
-      display: true,
-      sort: true,
-      filter: true,
-    },
-  },
-  {
-    name: "currentEntities",
-    label: "Total NRA",
-    esKey: "type.keyword",
-    options: {
-      display: true,
-      sort: true,
-      filter: true,
-    },
-  },
-  {
-    name: "type",
-    label: "Created Date",
-    esKey: "type.keyword",
-    options: {
-      display: true,
-      sort: true,
-      filter: true,
-    },
-  },
-  {
     name: "status",
-    label: "SuperVisor",
-    esKey: "type.keyword",
+    label: "Campaign Status",
+    esKey: "status.keyword",
     options: {
       display: true,
       sort: true,
       filter: true,
+    },
+  },
+  {
+    name: "unitCount",
+    label: "Units",
+    esKey: "unitCount",
+    options: {
+      display: true,
+      sort: true,
+      filter: false,
       customRender: (value, tableMeta) => {
-        return <CampaignStatus status={value} />;
+        return <p>{value}</p>;
       },
     },
   },
   {
-    name: "type",
-    label: "Tags",
-    esKey: "type.keyword",
+    name: "totalNra",
+    label: "Total NRA",
+    esKey: "totalNra",
+    options: {
+      display: true,
+      sort: true,
+      filter: false,
+      customRender: (value, tableMeta) => {
+        return <p>{value}</p>;
+      },
+    },
+  },
+  {
+    name: "createdAt",
+    label: "Created Date",
+    esKey: "createdAt.keyword",
     options: {
       display: true,
       sort: true,
       filter: true,
+    },
+  },
+  {
+    name: "owner",
+    label: "SuperVisor",
+    esKey: "owner",
+    options: {
+      display: true,
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "tags",
+    label: "Tags",
+    esKey: "tags",
+    options: {
+      display: true,
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
 ];
