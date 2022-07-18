@@ -113,8 +113,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const history = useHistory();
 
         const tableData = elasticData?.getESSimpleSearch || {}
-
-
         useEffect(() => {
             if (tableMeta?.selectedGridView) {
                 const category = tableMeta?.typeKeyword?.metaModule
@@ -329,20 +327,8 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 appliedFilters = [...initialFilters, ...filters]
             }
 
-            console.log("-----------=========")
-            console.log('TESTPOINT2', tableCols)
-
-
             tableCols.forEach((column, index) => {
 
-
-                const waypointKey = props?.loadMore?.waypointKey
-                if (waypointKey && column.name === waypointKey) {
-                    column.options = {
-                        ...column.options,
-                        infiniteScroll: true
-                    };
-                }
 
                 /// apply global settings unless ignored
                 if (column?.options?.ignoreGlobal) {
@@ -350,16 +336,13 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                         ...column.options,
                     };
                 } else {
-
                     if (column?.name === "agreementSubtype") { console.log('IDENTIFY4', column.options) }
-
 
                     column.options = {
                         ...GlobalSettings.muiGridStandardOptions,
                         ...column.options,
                     };
                     if (column?.name === "agreementSubtype") { console.log('IDENTIFY5', column.options) }
-
 
                 }
 
@@ -443,6 +426,19 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             let stickyColumns = tableCols.filter(cD => cD.name === '_id' || cD?.options?.stickyColumn)
             tableCols = tableCols.filter(cD => cD.name !== "_id" && !cD.options?.stickyColumn);
             tableCols.unshift(...stickyColumns);
+
+            if (isFiniteScroll && tableCols[0].name === "_id") {
+                const idOptions = {
+                    display: true,
+                    isFiniteScroll: true,
+                    ignoreGlobal: true,
+                    filter: false,
+                    sort: false,
+                    viewColumns: false
+                }
+
+                tableCols[0].options = idOptions
+            }
             setColumns(tableCols);
         };
 

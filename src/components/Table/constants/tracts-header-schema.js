@@ -10,13 +10,14 @@ import Typography from "@material-ui/core/Typography";
 const TractsHeadCells = (isSnapGrid = false) => [
   {
     name: "_id",
+    label: " ",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
 
     /// this is the control column for tracts 
-    name: "name", 
-    label: "Tract Name", 
+    name: "name",
+    label: "Tract Name",
     esKey: 'name.keyword',
 
     options: {
@@ -40,17 +41,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
               display: 'flex',
               alignItems: 'center',
             }}
-          >
-          <div
-            style={{}}
-          >
-          {<span 
-            style={{color: GlobalStyles.colors.mutedGrey}}
-            >{tableMeta.rowIndex + 1}</span>}
-          </div>
-
-
-          <Typography 
+          >   <Typography
             onClick={(e) => {
               e.stopPropagation();
               history.push(`/map/parcels/${tableMeta.rowData[0]}`, { showTractsBreadcrumb: !isSnapGrid });
@@ -60,15 +51,12 @@ const TractsHeadCells = (isSnapGrid = false) => [
             style={styles}
           >
 
-            {splitNumber?.[0]
-              ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
-              : tableMeta?.rowData[2]}
+              {splitNumber?.[0]
+                ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
+                : tableMeta?.rowData[2]}
 
             </Typography>
-
-
-
-            </div>
+          </div>
         );
       },
     }
@@ -137,10 +125,11 @@ const TractsHeadCells = (isSnapGrid = false) => [
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
-    options: { 
+    options: {
       ignoreGlobal: true,
-      sort: true, 
-      filter: true },
+      sort: true,
+      filter: true
+    },
   },
   {
     name: "commentsCounter",

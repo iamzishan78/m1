@@ -132,6 +132,7 @@ import { Waypoint } from "react-waypoint";
 
 import Radio from '@material-ui/core/Radio';
 import Checkbox from '@material-ui/core/Checkbox';
+import GlobalStyles from "GlobalStyles";
 
 
 // suppress debug console logs
@@ -1246,6 +1247,49 @@ function SubTable(props) {
           };
           return
         }
+        if (column.name === "_id" && column.options.isFiniteScroll) {
+          column.options = {
+            ...column.options,
+
+            setCellProps: () => ({
+              style: {
+                maxWidth: "220px",
+                position: "sticky",
+                left: "77px",
+                zIndex: 201,
+              }
+            }),
+
+            setCellHeaderProps: () => ({
+              style: {
+                position: "sticky",
+                paddingLeft: '70px',
+                zIndex: 201,
+                left: "77px",
+              },
+            }),
+
+            customRender: (value, tableMeta) => {
+              const rowIndex = tableMeta.rowIndex;
+              return (
+                <>
+                  {rowIndex === props.rows.length - 5 && (<Waypoint
+                    onEnter={() => {
+                      if (props.onInfiniteScroll) props.onInfiniteScroll()
+                    }}
+                  />)}
+
+                  <div
+                    id={`${rowIndex === props.rows.length - 5 ? `waypoint-${rowIndex}` : ''}`} z>
+                    {<span
+                      style={{ color: GlobalStyles.colors.mutedGrey }}
+                    >{tableMeta.rowIndex + 1}</span>}
+                  </div>
+                </>
+              );
+            },
+          }
+        }
 
         switch (column.name) {
           case "detailCard":
@@ -2201,14 +2245,14 @@ function SubTable(props) {
                                       justifyContent: "flex-start",
                                     }}>
 
-                                      <Typography
-                                        nowrap={true}
-                                        color="inherit"
-                                        >
+                                    <Typography
+                                      nowrap={true}
+                                      color="inherit"
+                                    >
                                       {value}
-                                      </Typography>
+                                    </Typography>
 
-                                      </p>
+                                  </p>
                                 </Grid>
                                 {/* <Grid item>
                                  <p style={{
@@ -4185,7 +4229,7 @@ function SubTable(props) {
   const CustomCheckbox = (props) => {
     let newProps = Object.assign({}, props);
     newProps.color = props['data-description'] === 'row-select' ? 'secondary' : 'primary';
-  
+
     if (props['data-description'] === 'row-select') {
       return (<Checkbox {...newProps} />);
     } else {
@@ -4219,7 +4263,7 @@ function SubTable(props) {
           innerRef={props.tableRef}
           className={tableStyle}
           title={getHeaders()}
-          
+
           data={
             props.parent === "ownersPerParcel" || props.parent === 'boundary_grid_owners'
               ? searchedRows
@@ -4249,8 +4293,8 @@ function SubTable(props) {
             onSearchClose: () => openSearch(false),
 
             // selectableRows: "multiple",
-          // selectableRowsHideCheckboxes: true,
-          // selectableRowsOnClick: true,
+            // selectableRowsHideCheckboxes: true,
+            // selectableRowsOnClick: true,
             // resizableColumns: true,
 
             filter:
