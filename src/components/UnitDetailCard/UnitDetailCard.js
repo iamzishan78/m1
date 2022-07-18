@@ -209,7 +209,6 @@ export default function UnitDetailCard(props) {
     customLayer.shape = JSON.stringify(shape)
     customLayer.shapeJson = shape
 
-
     updateCustomLayer({
       variables: {
         customLayerId: uniObj._id,
