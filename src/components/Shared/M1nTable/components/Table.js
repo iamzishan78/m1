@@ -1212,41 +1212,6 @@ function SubTable(props) {
         // without using refs we HAVE to re-create customBodyRender callback functions every render
         // or component state is stale
 
-        if (column?.options?.customRender) {
-          column.options = {
-            ...column.options,
-            customBodyRender: column.options.customRender,
-          };
-          return;
-        }
-
-        if (column?.infiniteScroll || column?.options.infiniteScroll) {
-          column.options = {
-            ...column.options,
-            customBodyRender: (value, tableMeta) => {
-              const rowIndex = tableMeta.rowIndex;
-              if (rowIndex === props.rows.length - 5) {
-                return (
-                  <Fragment>
-                    <Waypoint
-                      onEnter={() => {
-                        if (props.onInfiniteScroll) props.onInfiniteScroll()
-                      }}
-                    />
-
-                    <div id={`waypoint-${rowIndex}`}>
-                      {gridElement(value)}
-                    </div>
-
-                  </Fragment>
-                );
-              } else {
-                return (gridElement(value))
-              }
-            },
-          };
-          return
-        }
         if (column.name === "_id" && column.options.isFiniteScroll) {
           column.options = {
             ...column.options,
@@ -1290,6 +1255,43 @@ function SubTable(props) {
             },
           }
         }
+
+        if (column?.options?.customRender) {
+          column.options = {
+            ...column.options,
+            customBodyRender: column.options.customRender,
+          };
+          return;
+        }
+
+        if (column?.infiniteScroll || column?.options.infiniteScroll) {
+          column.options = {
+            ...column.options,
+            customBodyRender: (value, tableMeta) => {
+              const rowIndex = tableMeta.rowIndex;
+              if (rowIndex === props.rows.length - 5) {
+                return (
+                  <Fragment>
+                    <Waypoint
+                      onEnter={() => {
+                        if (props.onInfiniteScroll) props.onInfiniteScroll()
+                      }}
+                    />
+
+                    <div id={`waypoint-${rowIndex}`}>
+                      {gridElement(value)}
+                    </div>
+
+                  </Fragment>
+                );
+              } else {
+                return (gridElement(value))
+              }
+            },
+          };
+          return
+        }
+
 
         switch (column.name) {
           case "detailCard":

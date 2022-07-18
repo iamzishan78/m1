@@ -14,6 +14,7 @@ import Box from "@material-ui/core/Box";
 const AgreementsHeadCells = (isSnapGrid = false) => [
   {
     name: "_id",
+    label: " ",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
@@ -25,7 +26,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.agreementNumber.keyword",
     options: {
       ...GlobalSettings.muiGridControlOptions,
-      ignoreGlobal: true, 
+      ignoreGlobal: true,
       dbName: "shapeJson.properties.agreementNumber",
 
       customRender: (value, tableMeta) => {
@@ -46,13 +47,10 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
             }}
           >
 
-          {<span 
-            style={{color: GlobalStyles.colors.mutedGrey, marginLeft: "-10px"}}
-            >{tableMeta.rowIndex + 1}
-            </span>}
 
-          {/* <div style={styles}>  */}
-          {/* <Grid container 
+
+            {/* <div style={styles}>  */}
+            {/* <Grid container 
           direction = 'column'
                       style={{
                         // display: 'flex',
@@ -61,54 +59,56 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
                       >
           <Grid item> */}
 
-          
-          <Grid container spacing={0} direction="row"
-                      style={{
-                        position: 'absolute',
-                        left: '55px',
-                      }}
 
-        // direction="column" alignItems="flex-start"
-        >
-          <Grid item
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
+            <Grid container spacing={0} direction="row"
+              style={{
+                position: 'absolute',
+                left: '55px',
+              }}
+
+            // direction="column" alignItems="flex-start"
             >
-          
-          <Typography 
-            onClick={(e) => {
-              e.stopPropagation();
-              if (isSnapGrid)
-                history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
-                  { showAgreementBreadcrumb: false }
-                );
-              else
-                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
-                  { showAgreementBreadcrumb: true }
-                );
-            }}
-            noWrap
-            variant='body2'
-            style={styles}
-            color="inherit"
-          >
-            <Box sx={{color: GlobalStyles.colors.lightBlue, 
-                          p: 2,                                     
-                                      "&:hover": {
-                                        textDecoration: "underline",
-                                        fontWeight: GlobalStyles.font.boldFontWeight,
-                                      }, }}>
-            {splitNumber?.[0]
-              ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
-              : tableMeta?.rowData[2]}
-              </Box>
-            </Typography>
-            </Grid>
+              <Grid item
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}
+              >
 
-            {/* <Grid item
+                <Typography
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (isSnapGrid)
+                      history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
+                        { showAgreementBreadcrumb: false }
+                      );
+                    else
+                      history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
+                        { showAgreementBreadcrumb: true }
+                      );
+                  }}
+                  noWrap
+                  variant='body2'
+                  style={styles}
+                  color="inherit"
+                >
+                  <Box sx={{
+                    color: GlobalStyles.colors.lightBlue,
+                    p: 2,
+                    "&:hover": {
+                      textDecoration: "underline",
+                      fontWeight: GlobalStyles.font.boldFontWeight,
+                    },
+                  }}>
+                    {splitNumber?.[0]
+                      ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
+                      : tableMeta?.rowData[2]}
+                  </Box>
+                </Typography>
+              </Grid>
+
+              {/* <Grid item
             style={{
               display: "flex",
               justifyContent: "flex-start",
@@ -147,8 +147,8 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
            */}
 
 
-          </Grid>
-          
+            </Grid>
+
           </div>
 
         );
@@ -177,7 +177,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Subtype",
     esKey: "shapeJson.properties.agreementSubtype.keyword",
     options: {
-      display: false, 
+      display: false,
       viewColumns: false,
       dbName: "shapeJson.properties.agreementSubtype",
     },
@@ -317,9 +317,10 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
-    options: { 
+    options: {
       ignoreGlobal: true,
-      display: true, sort: true, filter: true },
+      display: true, sort: true, filter: true
+    },
   },
 
   {
