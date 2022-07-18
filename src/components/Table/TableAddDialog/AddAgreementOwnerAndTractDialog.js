@@ -99,6 +99,8 @@ function AddAgreementOwnerAndTractDialog(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { control, reset, register, getValues, watch, setValue } = useForm();
+  const [isNraOverridden, setIsNRAOverridden] = useState(false);
+  const [isAcresOverridden, setIsAcresOverridden] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [isTractOwner, setIsTractOwner] = useState(false);
@@ -170,10 +172,20 @@ function AddAgreementOwnerAndTractDialog(props) {
       if (props.seletedOwner.depthTo === "All depths" && props.seletedOwner.depthFrom === "All depths")
         props.seletedOwner.parcelOwnersRadioBValue = "true";
       else props.seletedOwner.parcelOwnersRadioBValue = "false";
-
       reset(props.seletedOwner);
-      setIsNewTract(false)
 
+      setTimeout(() => {
+        const { royalty_interest, orri, net_acres, nra, mineral_interest } = props.seletedOwner
+        let calculatedNRA = calculateNRA(royalty_interest, orri, net_acres);
+        if (!isNaN(parseFloat(calculatedNRA)))
+          setIsNRAOverridden(parseFloat(calculatedNRA) !== parseFloat(nra) && !isNaN(parseFloat(nra)))
+
+        let calculatedAcres = calculateNetAcres(mineral_interest);
+        if (!isNaN(parseFloat(calculatedAcres)))
+          setIsAcresOverridden(parseFloat(calculatedAcres) !== parseFloat(net_acres) && !isNaN(parseFloat(net_acres)))
+      }, 0);
+
+      setIsNewTract(false)
       // reset(pick(props.seletedOwner, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'sdGrossAcres', 'uAcres', 'legalDescription']))
     }
   }, [props.seletedOwner]);
@@ -297,14 +309,6 @@ function AddAgreementOwnerAndTractDialog(props) {
     }
   };
 
-  const calculateNetAcres = () => {
-    if (!getValues().mineral_interest) return null;
-    const netAcres = addTrailingZeros(
-      getValues()?.tract?.sdGrossAcres ? (getValues()?.tract?.sdGrossAcres * getValues().mineral_interest).toFixed(8) : null
-    );
-    return netAcres;
-  };
-
   const calculateRoyaltyNetAcres = () => {
     const values = getValues()
     if (!values.royalty_interest && !values.orri) return null;
@@ -318,6 +322,22 @@ function AddAgreementOwnerAndTractDialog(props) {
     const acres = type === 'net_acres' ? calculateNetAcres() : calculateRoyaltyNetAcres();
     if (!value || !acres) return false;
     return value && Number(value) !== Number(acres);
+  };
+
+  const calculateNetAcres = (mineral_interest) => {
+    if (!mineral_interest) return null;
+    const netAcres = addTrailingZeros(
+      getValues()?.tract?.sdGrossAcres ? (getValues()?.tract?.sdGrossAcres * mineral_interest).toFixed(8) : null
+    );
+    return netAcres;
+  };
+
+  const calculateNRA = (interest1, interest2, net_acres = getValues().net_acres) => {
+    if (!interest1 && !interest2) return null;
+    let nra = parseFloat(net_acres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) * 8;
+    nra = addTrailingZeros(nra.toFixed(8));
+
+    return nra;
   };
 
   useEffect(() => {
@@ -628,8 +648,10 @@ function AddAgreementOwnerAndTractDialog(props) {
                 onWheel={(e) => e.target.blur()}
                 onChange={(e) => {
                   onChange(e.target.value);
-                  setValue("net_acres", calculateNetAcres());
-                  setValue("nra", calculateRoyaltyNetAcres());
+                  const net_acres = !isAcresOverridden ? calculateNetAcres(e.target.value) : getValues().net_acres
+                  const nra = !isNraOverridden ? calculateNRA(getValues().royalty_interest, getValues().orri, net_acres) : getValues().nra
+                  setValue("net_acres", net_acres);
+                  setValue("nra", nra);
                 }}
               />
             )}
@@ -650,7 +672,8 @@ function AddAgreementOwnerAndTractDialog(props) {
                 onWheel={(e) => e.target.blur()}
                 onChange={(e) => {
                   onChange(e.target.value);
-                  setValue("nra", calculateRoyaltyNetAcres());
+                  if (!isNraOverridden)
+                    setValue("nra", calculateNRA(e.target.value, getValues().orri));
                 }}
               />
             )}
@@ -671,7 +694,8 @@ function AddAgreementOwnerAndTractDialog(props) {
                 onWheel={(e) => e.target.blur()}
                 onChange={(e) => {
                   onChange(e.target.value);
-                  setValue("nra", calculateRoyaltyNetAcres());
+                  if (!isNraOverridden)
+                    setValue("nra", calculateNRA(e.target.value, getValues().orri));
                 }}
               />
             )}
@@ -702,23 +726,31 @@ function AddAgreementOwnerAndTractDialog(props) {
                 value={value}
                 type="number"
                 label={"Net Acres"}
-                className={checkIfNotEqual('net_acres', value) ? classes.netAcresOveridden : classes.netAcresNormal}
+                className={isAcresOverridden ? classes.netAcresOveridden : classes.netAcresNormal}
                 fullWidth
                 onWheel={(e) => e.target.blur()}
                 onChange={(e) => {
                   onChange(e.target.value);
+                  const value = addTrailingZeros(e.target.value);
+                  const netAcres = calculateNetAcres(getValues().mineral_interest);
+                  setIsAcresOverridden(parseFloat(netAcres) !== e.target.value);
+                  onChange(e.target.value);
+                  setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri, value));
                 }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      {checkIfNotEqual('net_acres', value) && (
+                      {isAcresOverridden && (
                         <IconButton
                           aria-label="toggle royality-acres"
                           onClick={() => {
                             setValue("net_acres", calculateNetAcres());
+                            const netAcres = calculateNetAcres(getValues().mineral_interest);
+                            setIsAcresOverridden(false)
+                            setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri, netAcres));
+                            setValue("net_acres", netAcres);
                           }}
                         >
-                          {checkIfNotEqual('net_acres', value)}
                           <AutorenewIcon />
                         </IconButton>
                       )}
@@ -754,23 +786,27 @@ function AddAgreementOwnerAndTractDialog(props) {
                 value={value}
                 type="number"
                 label="Net Royalty Acres (NRA)"
-                className={checkIfNotEqual('nra', value) ? classes.netAcresOveridden : classes.netAcresNormal}
+                className={isNraOverridden ? classes.netAcresOveridden : classes.netAcresNormal}
                 fullWidth
                 onWheel={(e) => e.target.blur()}
                 onChange={(e) => {
                   onChange(e.target.value);
+                  const nra = calculateNRA(getValues().royalty_interest, getValues().orri);
+                  setIsNRAOverridden(parseFloat(nra) !== parseFloat(e.target.value))
+                  setValue("nra", e.target.value);
                 }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      {checkIfNotEqual('nra', value) && (
+                      {isNraOverridden && (
                         <IconButton
                           aria-label="toggle royality-acres"
                           onClick={() => {
-                            setValue("nra", calculateRoyaltyNetAcres());
+                            const nra = calculateNRA(getValues().royalty_interest, getValues().orri);
+                            setValue("nra", nra);
+                            setIsNRAOverridden(false)
                           }}
                         >
-                          {checkIfNotEqual('nra', value)}
                           <AutorenewIcon />
                         </IconButton>
                       )}
