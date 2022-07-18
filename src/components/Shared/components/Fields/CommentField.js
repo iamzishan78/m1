@@ -9,6 +9,8 @@ import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/core/styles";
+import EditNoteIcon from "components/Shared/svgIcons/edit-note";
+import { useLocation, useParams } from "react-router-dom";
 
 const filter = createFilterOptions();
 
@@ -98,12 +100,14 @@ export default function DealComment({
   setEditCommentId,
   fieldWidth
 }) {
+  const params = useParams();
   const classes = useStyles({ fieldWidth });
 
   const [filterValue, setFilterValue] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const [nameAutValue, setNameAutValue] = useState({});
+  const [showCommentType, setShowCommentType] = useState(false);
 
   (function () {
     var target = $("#colorText");
@@ -161,6 +165,10 @@ export default function DealComment({
     }
     document.getElementById("colorText").innerHTML = value;
   }, [comment, users]);
+
+  useEffect(() => {
+    setShowCommentType(params && params.type && ['leases', 'parcels'].includes(params.type));
+  }, [params]);
 
   const replaceAllWith = (_string, replaceFrom, replaceWith) => {
     return _string.replace(/{{([^{{]+)}}/g, (match, key) => {
@@ -290,17 +298,35 @@ export default function DealComment({
       {!isEdit ? (
         <>
           {showActions && (
-            <Button
-              className={classes.commentBtn}
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                upsertComment(comment);
-                setNameAutValue({});
-              }}
-            >
-              Comment
-            </Button>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+              <div style={{
+                padding: '0px 10px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: '#949494',
+              }}>
+                {showCommentType && <>
+                  <EditNoteIcon />
+                  <span style={{ marginLeft: '1px' }}>General</span>
+                </>}
+              </div>
+              <Button
+                className={classes.commentBtn}
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  upsertComment(comment);
+                  setNameAutValue({});
+                }}
+              >
+                Comment
+              </Button>
+            </div>
           )}
         </>
       ) : (
