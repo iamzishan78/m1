@@ -14,7 +14,7 @@ import Box from "@material-ui/core/Box";
 const AgreementsHeadCells = (isSnapGrid = false) => [
   {
     name: "_id",
-    label: " ",
+    label: "",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
@@ -63,7 +63,6 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
             <Grid container spacing={0} direction="row"
               style={{
                 position: 'absolute',
-                left: '55px',
               }}
 
             // direction="column" alignItems="flex-start"
@@ -108,7 +107,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
                 </Typography>
               </Grid>
 
-              {/* <Grid item
+              <Grid item
             style={{
               display: "flex",
               justifyContent: "flex-start",
@@ -144,7 +143,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
             <MapFilledIcon />
           </IconButton>
           </Grid>
-           */}
+          
 
 
             </Grid>
