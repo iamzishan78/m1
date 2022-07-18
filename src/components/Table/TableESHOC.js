@@ -437,6 +437,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     viewColumns: false
                 }
 
+                tableCols[0].label = " "
                 tableCols[0].options = idOptions
             }
             setColumns(tableCols);

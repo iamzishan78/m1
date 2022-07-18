@@ -1218,7 +1218,7 @@ function SubTable(props) {
 
             setCellProps: () => ({
               style: {
-                maxWidth: "220px",
+                maxWidth: "80px",
                 position: "sticky",
                 left: "77px",
                 zIndex: 201,
