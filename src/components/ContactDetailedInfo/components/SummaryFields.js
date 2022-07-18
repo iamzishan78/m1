@@ -95,7 +95,7 @@ export default function SummaryFields({ contactData }) {
   const updateFieldData = (key, value) => {
     if (contactData[key] === value) return;
 
-    let contact = { _id: contactData._id };
+    let contact = { _id: contactData._id, lastUpdateBy: user._id };
     const _key = key.replace("evaluatedContactInterests", "contactInterests");
     set(contact, _key, value);
     if (contact.contactInterests) {
@@ -165,6 +165,8 @@ export default function SummaryFields({ contactData }) {
                           onChange={({ target }) => {
                             if (field.key.includes('nraSum') || field.key.includes('offerPriceSum')) {
                               params.onChange(getCommaValue(target.value));
+                            } else {
+                              params.onChange(target.value);
                             }
                           }}
                           disabled={field.disabled}

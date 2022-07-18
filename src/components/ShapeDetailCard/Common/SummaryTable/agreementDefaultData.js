@@ -85,14 +85,14 @@ const tableData = [
     },
   },
   {
-    label: "Approval Status",
-    type: "autocomplete",
-    key: "approvalStatus",
-  },
-  {
     label: "Acquisition ID",
     type: "autocomplete",
     key: "acquisitionID",
+  },
+  {
+    label: "Prospect",
+    type: "autocomplete",
+    key: "prospectID",
   },
   {
     label: "Internal Company",
@@ -100,9 +100,9 @@ const tableData = [
     key: "internalCompany",
   },
   {
-    label: "Prospect ID",
+    label: "Approval Status",
     type: "autocomplete",
-    key: "prospectID",
+    key: "approvalStatus",
   },
 ];
 export default tableData;
