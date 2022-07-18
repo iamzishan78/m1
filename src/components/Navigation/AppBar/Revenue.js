@@ -102,20 +102,6 @@ export default function RevenueAppBar(props) {
               <RevenueSearch activeModule={activeModule} />
             </Grid>
           )}
-          {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PORTFOLIO.title && (
-            <Grid item xs={7} style={{ marginLeft: "20px" }}>
-              <ReportGroupHeader
-                type="Properties"
-                esFilters={propertiesReportGroup || []}
-                setESFilters={(filters) => dispatch(setRevenueKey("propertiesReportGroup", filters))}
-                setFilterToggle={() => {}}
-                isBackground={false}
-                noUpdate={true}
-                fullWidth
-                isShrink
-              />
-            </Grid>
-          )}
         </Grid>
       </Grid>
       {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title && (

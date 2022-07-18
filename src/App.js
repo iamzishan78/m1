@@ -366,7 +366,7 @@ function App() {
                           component={ContactRecentActivitiesProvider}
                         />
 
-                        <PrivateRoute exact title="AnaLytics" path="/analytics" component={AnalyticsProvider} />
+                        <PrivateRoute title="Analytics" path="/analytics" component={AnalyticsProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/wells" component={ContactWellInterestProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/parcels" component={ContactParcelsInterestProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/parcels/:parcelId" component={ContactParcelsInterestDetailsProvider} />

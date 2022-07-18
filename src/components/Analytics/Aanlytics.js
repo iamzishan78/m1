@@ -8,10 +8,11 @@ import { setActiveModule, toggleQuickActionsPanel } from "store/actions/commonAc
 import { AppContext } from "AppContext";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
+import RevenueAnalytics from "components/Analytics/components/Revenue";
+import ActivitiesDashboard from "components/Activities/components/ActivitiesDashboard";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import ContactsTable from "components/Table/Contact/ContactsTable";
-import * as Components from "components/Contacts/components";
 
 import { analyticsManagementRoutes } from "utils/data";
 
@@ -39,6 +40,11 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+
+const Components = {
+  'Revenue': RevenueAnalytics,
+  'ActivitiesDashboard': ActivitiesDashboard,
+};
 
 export default function Analytics() {
   const classes = useStyles();
@@ -96,7 +102,7 @@ export default function Analytics() {
   return (
     <>
       <FeatureFlag feature={FEATURES.CONTACTSUBMENU}>
-      {/* <FeatureFlag feature={FEATURES.ANALYTICSSUBMENU}> */}
+        {/* <FeatureFlag feature={FEATURES.ANALYTICSSUBMENU}> */}
         <QuickActionPanel
           title="Analytics"
           handlePanelStateChange={handlePanelStateChange}
@@ -106,13 +112,17 @@ export default function Analytics() {
         >
           {Object.keys(allowedPaths).map((option) => (
             <Switch>
-              <Route exact path={allowedPaths[option].link} component={Components[allowedPaths[option].component]} />
+              <Route
+                exact
+                path={allowedPaths[option].link}
+                component={Components[allowedPaths[option].component]}
+              />
             </Switch>
           ))}
         </QuickActionPanel>
       </FeatureFlag>
       <FeatureFlag feature={FEATURES.CONTACTSUBMENU} noAccess>
-      {/* <FeatureFlag feature={FEATURES.ANALYTICSSUBMENU} noAccess> */}
+        {/* <FeatureFlag feature={FEATURES.ANALYTICSSUBMENU} noAccess> */}
         <div className={classes.root}>
           <ContactsTable
             parent="Analytics"

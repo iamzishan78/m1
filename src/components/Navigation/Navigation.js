@@ -78,6 +78,9 @@ export default function Navigation(props) {
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
   );
+   const { quickActionsPanelState } = useSelector(
+     ({ common }) => common
+   );
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -422,19 +425,22 @@ export default function Navigation(props) {
       {!checkIfIgnoreHeader() && (
         <AppBar
           position="fixed"
-          className={clsx(location.pathname === '/' ? classes.appBar : classes.appBar2, { 
-            [classes.appBarShift]: openDrawer,
-          })}
+          className={clsx(
+            location.pathname === "/" ? classes.appBar : classes.appBar2,
+            {
+              [classes.appBarShift]: openDrawer,
+            }
+          )}
           style={
             location.pathname === "/contacts/activityDashboard" ||
-              location.pathname.includes("revenue")
+            location.pathname.includes("revenue")
               ? { background: "white" }
               : null
           }
-        // style={{
-        //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
-        //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
-        // }}
+          // style={{
+          //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
+          //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
+          // }}
         >
           {stateApp.user && (
             <Toolbar>
@@ -464,12 +470,26 @@ export default function Navigation(props) {
                 )) && <ContactSearch />}
               {location.pathname.includes("/contact/details") && (
                 <ContactBreadcrumbs />
-              )}    
-          
-              {(location.pathname === "/analytics" || location.pathname === "/analytics/land" ||
+              )}
+
+              {(location.pathname === "/analytics" ||
+                location.pathname === "/analytics/land" ||
                 Object.values(analyticsManagementRoutes).find(
                   (item) => item.link === location.pathname && item.search
                 )) && <ContactSearch />}
+
+              {location.pathname === "/analytics/revenue" && (
+                <Typography
+                  variant="h4"
+                  style={{
+                    color: "black",
+                    fontWeight: "bold",
+                    marginLeft: quickActionsPanelState ? 433 : 15,
+                  }}
+                >
+                  Revenue Analytics
+                </Typography>
+              )}
 
               {location.pathname.startsWith("/flow") && <DealSearch />}
               {location.pathname === "/dashboard" && (

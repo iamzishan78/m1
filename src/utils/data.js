@@ -166,30 +166,30 @@ export const analyticsManagementRoutes = {
     title: "CRM",
     link: "/analytics",
     component: "ActivitiesDashboard",
-    value: 'Activities',
+    value: "Activities",
     search: true,
-    isDefault: true
+    isDefault: true,
   },
   LEADS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Land",
     link: "/analytics/land",
     component: "ActivitiesDashboard",
-    value: 'Activities',
+    value: "Activities",
     search: true,
-    isDefault: true
+    isDefault: true,
   },
   PROSPECTS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Revenue",
     link: "/analytics/revenue",
-    component: "ContactsTable",
+    component: "Revenue",
     filterValue: "Prospect",
     showAnalytics: true,
-    value: 'Prospects',
-    search: true,
-    isDefault: true
-  }
+    value: "Prospects",
+    search: false,
+    isDefault: true,
+  },
 };
 
 export const contactsAnalyticsCards = [
