@@ -21,6 +21,7 @@ const TractInterestsHeadCells = [
             viewColumns: false
         }
     },
+
     {
         name: "tractName", label: "Tract Name", esKey: 'shape.shapeJson.properties.shapeLabel.keyword', 
         options: { 
@@ -28,19 +29,20 @@ const TractInterestsHeadCells = [
             sort: true, 
             filter: true,
             setCellProps: () => ({ style: { minWidth: "250px" } }),
-            customRender: (value, tableMeta, updateValue) => {
-                return (
-                  <p
-                    onClick={(e) => {
-                      e.stopPropagation();
-                        history.push(`/map/parcels/${tableMeta.rowData[2]}`, { showTractsBreadcrumb: true });
-                    }}
-                    style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-                  >
-                    {value}
-                  </p>
-                );
-              },
+            //hide custom render of blue link for now as it is not consistent with unit interests
+            // customRender: (value, tableMeta, updateValue) => {
+            //     return (
+            //       <p
+            //         onClick={(e) => {
+            //           e.stopPropagation();
+            //             history.push(`/map/parcels/${tableMeta.rowData[2]}`, { showTractsBreadcrumb: true });
+            //         }}
+            //         style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+            //       >
+            //         {value}
+            //       </p>
+            //     );
+            //   },
         }
     },
     {
