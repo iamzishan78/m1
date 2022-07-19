@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import get from "lodash/get";
 // context
-import { Container, Dialog } from "@material-ui/core";
+import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import { useMutation } from "@apollo/client";
@@ -14,8 +14,6 @@ import DeleteConfirmationDialogContent from "components/Shared/M1nTable/componen
 
 // Utilities
 import { usetableStyles } from "../Styles";
-import { UPDATE_PROPERTY_INTEREST } from "graphQL/useMutationUpdatepropertyInterest";
-import { activityTypes } from "utils/data";
 import { getRangeFilters } from "utils/helper";
 
 // value formatters 
@@ -27,7 +25,7 @@ export const getFilters = (appliedFilters) => {
     let range = [];
     range = getRangeFilters(
       {
-        dateTime: {
+        createdAt: {
           from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
           to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
         },
@@ -35,26 +33,16 @@ export const getFilters = (appliedFilters) => {
       "simple"
     );
     if (range.length > 0) filters = [...filters, ...range];
-    range = getRangeFilters(
-      {
-        endDateTime: {
-          from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-          to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-        },
-      },
-      "simple"
-    );
-    if (range.length > 0) filters = [...filters, ...range];
-    if (appliedFilters.campaignName) {
+    if (appliedFilters.status) {
       filters.push({
-        field: "contact.campaignName.keyword",
-        value: appliedFilters.campaignName,
+        field: "status.keyword",
+        value: appliedFilters.status,
       });
     }
-    if (appliedFilters.qualifier) {
+    if (appliedFilters.owner) {
       filters.push({
-        field: "ownerName.keyword",
-        value: appliedFilters.qualifier,
+        field: "owner.name.keyword",
+        value: appliedFilters.owner,
       });
     }
   }
@@ -66,18 +54,7 @@ function CampaignsTable(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const { appliedFilters, esIndex, searchFields, clickedRow } = props;
 
-  const [selectedActivity, setSelectedActivity] = useState(null);
-  const [events, setEvents] = useState([]);
-
-  const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
-    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
-    awaitRefetchQueries: true,
-  });
-
   const formatHits = (hits) => {
-    setEvents(
-      hits.map((hit) => ({ ...hit, start: new Date(hit.dateTime), end: new Date(hit.endDateTime ? hit.endDateTime : hit.dateTime) }))
-    );
     return hits.map((hit, i) => ({
       ...hit,
       owner: hit.owner.displayName,
@@ -89,7 +66,7 @@ function CampaignsTable(props) {
 
   useEffect(() => {
     props.setTableMeta({
-      filters: [],
+      filters: getFilters(appliedFilters),
       extendSearchQuery: stateApp.contactSearchQuery ? stateApp.contactSearchQuery : null,
       searchFields,
       TableHeader: CampaignsHeader,
@@ -99,48 +76,11 @@ function CampaignsTable(props) {
       setAppliedFilters: props.filtersChange,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateApp.contactSearchQuery, props.filterToggle]);
-
-  useEffect(() => {
-    if (clickedRow) {
-      setSelectedActivity({
-        ...clickedRow,
-        type: get(
-          activityTypes.find((type) => type.label === clickedRow.type),
-          "value",
-          ""
-        ),
-      });
-      onModalOpen();
-    }
-  }, [clickedRow]);
-
-  const deleteFunc = (ids) => {
-    if (ids.length > 0) {
-      props.setLoading(true);
-      for (let i = 0; i < ids.length; i++) {
-        updatePropertyInterest({
-          variables: {
-            propertyInterest: {
-              _id: ids[i],
-              isDeleted: true,
-            },
-          },
-        });
-      }
-    }
-  };
-
-  const onModalOpen = () => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      activityDialog: true,
-    }));
-  };
+  }, [stateApp.contactSearchQuery, props.filterToggle, appliedFilters]);
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
-      <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
+      {/* <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
         {props.openDialog === "delete" && (
           <DeleteConfirmationDialogContent
             header={`Delete Interest(s)`}
@@ -153,7 +93,7 @@ function CampaignsTable(props) {
               }?`}
           </DeleteConfirmationDialogContent>
         )}
-      </Dialog>
+      </Dialog> */}
 
       <Table
         style={{ backgroundColor: "#fff" }}
