@@ -35,6 +35,7 @@ export default function AgreementDetailCard(props) {
   const [selectedWellTab, setWellSelectedTab] = useState(0);
   const [selectedTractTab, setTractSelectedTab] = useState(0);
   const [uniObj, setUniObj] = useState();
+  const [tractOwners, setTractOwners] = useState();
   const [infoMessage, setInfoMessage] = useState(false);
   const [properties, setProperties] = useState();
   const [_, setStateApp] = useContext(AppContext);
@@ -51,8 +52,7 @@ export default function AgreementDetailCard(props) {
   useEffect(() => {
     return history.listen((location) => {
       console.log(`You changed the page to: ${location.pathname}`);
-      if (!properties?.agreementNumber && !location
-        .includes(uniObj._id)) {
+      if (!properties?.agreementNumber && !location.includes(uniObj._id)) {
         setStateApp((state) => ({
           ...state,
           selectedShape: null,
@@ -136,9 +136,9 @@ export default function AgreementDetailCard(props) {
       history.location.pathname !== newPath && history.replace(newPath);
     }
 
-    
-    if (field ==='agreementTerm' || field ==='effectiveDate') {
-      if (field ==='agreementTerm') {
+
+    if (field === 'agreementTerm' || field === 'effectiveDate') {
+      if (field === 'agreementTerm') {
         shape.properties.expirationDate = moment(shape.properties.effectiveDate).add(parseInt(value), 'months').toDate();
       } else {
         shape.properties.expirationDate = moment(value).add(parseInt(shape.properties.agreementTerm), 'months').toDate();
@@ -170,7 +170,7 @@ export default function AgreementDetailCard(props) {
         customLayer,
       },
       refetchQueries: ["getMetaData"],
-      awaitRefetchQueries: true
+      awaitRefetchQueries: true,
     });
   };
 
@@ -258,7 +258,7 @@ export default function AgreementDetailCard(props) {
             />,
             <Grid container direction="column" alignItems="center" style={{ display: "block", padding: "20px 20px 0px 20px" }}>
               <Grid item xs={12} style={{ padding: "15px 5px 25px 0px" }}>
-                <AgreementLegalDescriptionFields agreementDetails={uniObj?.shape?.properties} updateAgreement={updateCustomProperties} />
+                <AgreementLegalDescriptionFields tractOwners={tractOwners} agreementDetails={uniObj?.shape?.properties} updateAgreement={updateCustomProperties} />
               </Grid>
               {uniObj && (
                 <Grid item xs={12}>
@@ -267,6 +267,7 @@ export default function AgreementDetailCard(props) {
                     panels={[
                       <div className={showSummary ? classes.subContent : classes.subContent2}>
                         <AgreementOwnersTractsTable
+                          setRecord={setTractOwners}
                           customLayer={uniObj}
                           shapeType="Agreement"
                           header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}

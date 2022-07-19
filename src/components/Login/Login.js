@@ -151,14 +151,14 @@ const Login = (props) => {
           const accountObj = tokenResponse
             ? tokenResponse.account
             : (() => {
-                const currentAccounts = stateApp.myMSALObj.getAllAccounts();
-                return currentAccounts && currentAccounts.length === 1
-                  ? currentAccounts[0]
-                  : (() => {
-                      // hoose account code here
-                      return;
-                    })();
-              })();
+              const currentAccounts = stateApp.myMSALObj.getAllAccounts();
+              return currentAccounts && currentAccounts.length === 1
+                ? currentAccounts[0]
+                : (() => {
+                  // hoose account code here
+                  return;
+                })();
+            })();
 
           if (accountObj) {
             // We need to reject id tokens that were not issued with the default sign-in policy.
@@ -277,13 +277,26 @@ const Login = (props) => {
         await finishAADAuth(loginResponse);
       } else if (signInType === "loginRedirect") {
         let request = loginRequest(tenant.graphqlScope);
-
-        if (queryString.parse(props.location.search).id_token_hint) {
-          request.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint };
+        const accounts = myMSALObj.getAllAccounts();
+        if (accounts.length > 0) {
+          myMSALObj.setActiveAccount(accounts[0]);
         }
-
-        history.replace(window.location.pathname);
-        myMSALObj.loginRedirect(request);
+        myMSALObj.addEventCallback((event) => {
+          if (event.eventType === msal.EventType.LOGIN_SUCCESS && event.payload.account) {
+            const account = event.payload.account;
+            myMSALObj.setActiveAccount(account);
+          }
+        }, error => {
+          console.log('error', error);
+        });
+        myMSALObj.handleRedirectPromise().then(authResult => {
+          const account = myMSALObj.getActiveAccount();
+          if (!account) {
+            myMSALObj.loginRedirect(request);
+          }
+        }).catch(err => {
+          console.log(err);
+        });
       }
     } else {
       updateTenantFlags("Not a valid workspace");
@@ -668,7 +681,7 @@ const Login = (props) => {
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
         }}
-        // style={{ overflowY: "scroll !important"}}
+      // style={{ overflowY: "scroll !important"}}
       >
         {renderBody}
       </div>

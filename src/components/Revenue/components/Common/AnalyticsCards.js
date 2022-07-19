@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 
+import _ from "lodash";
 import { makeStyles } from "@material-ui/styles";
 import { Grid, Card, CardContent, Typography } from "@material-ui/core";
 import { Warning as WarningIcon } from "@material-ui/icons";
@@ -79,6 +80,25 @@ export default function AnalyticsCards({
     return activeBucket && activeBucket?.length > 0 ? activeBucket[0]['doc_count'] : 0
   }
 
+  const getInPayCount = buckets => {
+    const activeBucket = buckets.filter(
+      (item) => ["in pay", "inpay"].includes(item.key.toLowerCase()) && item
+    );
+    return activeBucket && activeBucket?.length > 0
+      ?  _.sumBy(activeBucket, "doc_count")
+      : 0;
+  }
+
+  const getNotInPayCounts = buckets => {
+    const activeBucket = buckets.filter(
+      (item) => item.key.toLowerCase() === "notinpay" && item
+    );
+    return activeBucket && activeBucket?.length > 0
+      ? activeBucket[0]["doc_count"]
+      : 0;
+  }
+
+
   const [getESAggsApprovedCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
@@ -86,7 +106,17 @@ export default function AnalyticsCards({
       if (aggsData?.getESAggsList?.aggregations?.approvedCount?.buckets) {
         const buckets = aggsData?.getESAggsList?.aggregations?.approvedCount?.buckets;
         const count = buckets && buckets.length > 0 ? getApprovedCount(buckets) : 0;
+
         setCardPoint(totalCount - count, 3);
+        if (esIndex === "properties_flat") {
+          const inPayCounts =
+            buckets && buckets.length > 0 ? getInPayCount(buckets) : 0;
+          const notInPayCounts =
+            buckets && buckets.length > 0 ? getNotInPayCounts(buckets) : 0;
+          cards[1].points = inPayCounts;
+          cards[2].points = notInPayCounts;
+          setCards(cards);
+        }
       }
     },
   });

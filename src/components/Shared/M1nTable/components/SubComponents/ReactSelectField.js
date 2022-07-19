@@ -77,8 +77,8 @@ const ReactSelectField = ({
   const [, setStateApp] = useContext(AppContext);
 
   const defaultValue = {
-    label: "----",
-    value: "----",
+    label: "--",
+    value: "--",
   };
 
   const { colors } = defaultTheme;
@@ -317,7 +317,7 @@ const ReactSelectField = ({
   const selectStyles = {
     control: provided => ({ ...provided, minWidth: 240, margin: 8 }),
     menu: () => ({ boxShadow: 'inset 0 1px 0 rgba(0, 0, 0, 0.1)' }),
-    menuPortal: base => ({ ...base, zIndex: 9999, backgroundColor: "white" })
+    menuPortal: base => ({ ...base, zIndex: 9999, backgroundColor: "white", position: "fixed" })
   };
 
 
@@ -480,7 +480,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
 
 
             </span>
-          ) : (<span class="colorText">----</span>)}
+          ) : (<span class="colorText">--</span>)}
         </>
       )}
     </span>

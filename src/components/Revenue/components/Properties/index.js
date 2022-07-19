@@ -10,8 +10,9 @@ import LastCheckDateFilter from "../Common/LastCheckDateFilter";
 const useStyles = makeStyles((theme) => ({
   propertyTableContainer: {
     paddingTop: theme.spacing(1),
-    paddingLeft: "38px",
-    paddingRight: "38px",
+    // paddingLeft: "38px",
+    // paddingRight: "38px",
+    marginLeft: '-8px',
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
@@ -105,11 +106,11 @@ export default function Properties() {
       points: 0,
     },
     {
-      heading: "Active",
+      heading: "In Pay",
       points: 0,
     },
     {
-      heading: "Inactive",
+      heading: "Not In Pay",
       points: 0,
     },
     {
@@ -150,6 +151,7 @@ export default function Properties() {
           loading={false}
           filterToggle={filterToggle}
           setESFilters={setESFilters}
+          isCheckboxSticky={true}
           onPropertiesCount={onPropertiesCount}
           startPaginationAt={startPaginationAt}
           revenueSearchQuery={stateApp.revenueSearchQuery}

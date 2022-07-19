@@ -1,14 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import Toolbar from "@material-ui/core/Toolbar";
-import Link from "@material-ui/core/Link";
 import { useLazyQuery } from "@apollo/client";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import Typography from "@material-ui/core/Typography";
-
 import { CONTACT } from "graphQL/useQueryContact";
-import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 import { NavigationContext } from "components/Navigation/NavigationContext";
 import { ContactDetailsContextProvider } from "components/ContactDetailCard/ContactDetailsContext";
 import UnitDetailCard from "./UnitDetailCard";
@@ -17,10 +10,8 @@ export default function ContactUnitInterestProvider(props) {
   let history = useHistory();
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [contactData, setContactData] = useState(null);
-  const [unitObj, setUnitObj] = useState(null);
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
-  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
   const unitId =
     history.location.pathname.split("/")[
@@ -32,15 +23,6 @@ export default function ContactUnitInterestProvider(props) {
     history.location.pathname.split("/").length - 3
     ];
 
-  useEffect(() => {
-    if (unitId) {
-      getCustomLayer({
-        variables: {
-          id: unitId,
-        },
-      });
-    }
-  }, [getCustomLayer, unitId]);
 
   useEffect(() => {
     if (contactId) {
@@ -52,18 +34,7 @@ export default function ContactUnitInterestProvider(props) {
     }
   }, [contactId, getContact]);
 
-  useEffect(() => {
-    if (dataCustomLayer && dataCustomLayer.customLayer) {
-      let shape = dataCustomLayer.customLayer.shape;
-      if (typeof shape === "string") {
-        shape = JSON.parse(shape);
-      }
-      setUnitObj({
-        ...dataCustomLayer.customLayer,
-        shape: shape,
-      });
-    }
-  }, [dataCustomLayer]);
+
 
   useEffect(() => {
     if (data && data.contact) {
@@ -76,76 +47,9 @@ export default function ContactUnitInterestProvider(props) {
   };
 
   return (
-    <div style={{position: "absolute", top: "64px"}}>
+    <div style={{ position: "absolute", top: "64px" }}>
       <ContactDetailsContextProvider >
-        <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-          <Breadcrumbs
-            separator={<NavigateNextIcon fontSize="small" />}
-            aria-label="breadcrumb"
-          >
-            {checkModuleHistory() && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push("/");
-                  setStateNav((stateApp) => ({
-                    ...stateApp,
-                    contactFromMap: false,
-                  }));
-                }}
-              >
-                Map
-              </Link>
-            )}
-            <Link
-              style={{
-                marginLeft: "5px",
-                fontSize: "16px",
-                cursor: "pointer",
-              }}
-              color="inherit"
-              onClick={() => history.push("/contacts")}
-            >
-              Contacts
-            </Link>
-            <Link
-              style={{
-                marginLeft: "5px",
-                fontSize: "16px",
-                cursor: "pointer",
-              }}
-              color="inherit"
-              onClick={() => history.push(`/contact/details/${contactId}`)}
-            >
-              {contactData?.name}
-            </Link>
-            <Link
-              style={{
-                marginLeft: "5px",
-                fontSize: "16px",
-                cursor: "pointer",
-              }}
-              color="inherit"
-              onClick={() => history.push(`/contact/details/${contactId}/units`)}
-            >
-              Associated Interests
-            </Link>
-            <Typography
-              style={{
-                color: "#18AADD",
-                fontSize: "16px",
-                marginLeft: "5px",
-              }}
-            >
-              {unitObj?.name}
-            </Typography>
-          </Breadcrumbs>
-        </Toolbar>
+
 
         <UnitDetailCard id={unitId}>{props.children}</UnitDetailCard>
       </ContactDetailsContextProvider>

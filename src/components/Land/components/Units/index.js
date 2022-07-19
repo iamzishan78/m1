@@ -67,7 +67,14 @@ function Units(props) {
   ];
 
   return (
-    <div style={{ marginTop: 20, padding: "75px 20px" }}>
+    <div style={{ 
+      // marginTop: 20, 
+      // padding: "75px 20px" 
+      marginTop: "65px",
+      marginLeft: '-10px'
+
+      }}>
+
       {/* <AnalyticsCards
         parent={"Agreements"}
         esIndex={esIndex}
@@ -77,6 +84,7 @@ function Units(props) {
         setESFilters={setESFilters}
         landSearchQuery={stateApp.landSearchQuery}
       /> */}
+
       <div className={classes.custom} >
         <MapGridUnitTable
           dense
