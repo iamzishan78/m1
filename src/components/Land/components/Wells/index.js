@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import MapGridWellsTable from "components/Table/Wells/MapGridWellsTable";
+import MyGridWellsTable from "components/Table/Wells/MyGridWellsTable";
 import WellIcon from "components/Shared/svgIcons/well";
 import { Button } from "@material-ui/core";
 
@@ -59,7 +59,7 @@ function Units(props) {
       }}>
 
       <div className={classes.custom} >
-        <MapGridWellsTable
+        <MyGridWellsTable
           dense
           parent="WellsTable"
           targetLabel="wells"
