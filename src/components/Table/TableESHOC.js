@@ -677,6 +677,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
         const updateGridViewRedux = (tableState) => {
             setTableMeta((tableMeta) => {
+                tableState.columns[0].display = "false"
                 if (tableMeta?.selectedGridView)
                     dispatch(updateUserGridViewSettingAction.STARTED({
                         userGridViewSetting: {

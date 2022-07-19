@@ -14,7 +14,6 @@ import Box from "@material-ui/core/Box";
 const AgreementsHeadCells = (isSnapGrid = false) => [
   {
     name: "_id",
-    label: " ",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
@@ -46,7 +45,6 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
               alignItems: 'center',
             }}
           >
-
 
 
             {/* <div style={styles}>  */}
