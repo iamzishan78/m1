@@ -120,9 +120,9 @@ export default function CustomDatesActivities({
             className={classes.inputFieldDate}
             onChange={(event) => {
               if (event.target.value === "") {
-                setToDate(`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`);
+                setFromDate(`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`);
               } else {
-                setToDate(event.target.value);
+                setFromDate(event.target.value);
               }
             }}
             InputLabelProps={{
