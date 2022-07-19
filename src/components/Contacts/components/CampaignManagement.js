@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 // import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import CampaignsTable from "components/Table/Contact/CampaignsTable";
 import { makeStyles } from "@material-ui/core/styles";
 // import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
-// import { AppContext } from "AppContext";
+import { AppContext } from "AppContext";
 
 import CampaignAnalytics from "components/Contacts/components/CampaignAnalytics";
 import CustomCampaignFilters from "components/Contacts/components/CampaignFilter";
@@ -50,6 +50,7 @@ const CampaignManagement = () => {
     fromDate: null,
     toDate: null,
   });
+  const [stateApp] = useContext(AppContext);
 
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: "no-cache",
@@ -96,9 +97,13 @@ const CampaignManagement = () => {
         appliedFilters={appliedFilters}
         setAppliedFilters={setAppliedFilters}
         minDate={lastCampaignMinDate}
+        contactSearchQuery={stateApp.contactSearchQuery}
       />
       <div style={{ padding: "0px 30px" }}>
-        <CampaignAnalytics />
+        <CampaignAnalytics
+          appliedFilters={appliedFilters}
+          contactSearchQuery={stateApp.contactSearchQuery}
+        />
         <CampaignsTable
           esIndex={esIndex}
           searchFields={searchFields}

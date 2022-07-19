@@ -51,8 +51,7 @@ export const getFilters = (appliedFilters) => {
 
 function CampaignsTable(props) {
   const classes = usetableStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const { appliedFilters, esIndex, searchFields, clickedRow } = props;
+  const { appliedFilters, esIndex, searchFields, contactSearchQuery } = props;
 
   const formatHits = (hits) => {
     return hits.map((hit, i) => ({
@@ -67,7 +66,7 @@ function CampaignsTable(props) {
   useEffect(() => {
     props.setTableMeta({
       filters: getFilters(appliedFilters),
-      extendSearchQuery: stateApp.contactSearchQuery ? stateApp.contactSearchQuery : null,
+      extendSearchQuery: contactSearchQuery ? contactSearchQuery : null,
       searchFields,
       TableHeader: CampaignsHeader,
       esIndex,
@@ -76,7 +75,7 @@ function CampaignsTable(props) {
       setAppliedFilters: props.filtersChange,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateApp.contactSearchQuery, props.filterToggle, appliedFilters]);
+  }, [contactSearchQuery, props.filterToggle, appliedFilters]);
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
