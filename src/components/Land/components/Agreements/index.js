@@ -16,7 +16,7 @@ function Agreements(props) {
   const [esFilters, ESFilters] = useState([]);
 
   // waypointKey should any key of tableHader which do not have customRender in schema file
-  const loadMore = { type: 'infiniteScroll', waypointKey: '_id', height: "calc(100vh - 66px)" }
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 66px)" }
 
   const setESFilters = (newState) => {
     setStateIfDeepEqual(ESFilters, newState);
@@ -51,12 +51,12 @@ function Agreements(props) {
   ];
 
   return (
-    <div 
-    // className={classes.root}
-    style ={{
-      marginTop: "65px",
-      marginLeft: "-10px"
-    }}
+    <div
+      // className={classes.root}
+      style={{
+        marginTop: "65px",
+        marginLeft: "-10px"
+      }}
     >
       {/* <AnalyticsCards
         parent={"Agreements"}
