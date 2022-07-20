@@ -1739,7 +1739,6 @@ function SubTable(props) {
                   const targetSourceId = tableMeta.rowData[0];
                   const commentValue = tableMeta.rowData[21]
                   return (
-
                     <div
                       style={{
                         display: 'flex',
@@ -1879,7 +1878,6 @@ function SubTable(props) {
                   if (props.parent === "ownersPerUnit" && props.targetLabel === "Unit Ownership") {
                     targetSourceId = tableMeta.rowData[1];
                   }
-
                   return (
                     //add download and search icons here
                     <GridComments value={value} targetSourceId={targetSourceId} tableMeta={tableMeta} />
@@ -2023,7 +2021,6 @@ function SubTable(props) {
                             routeChange(`/contact/details/${value}`);
                             setTitle("Contact Details");
                             setSubTitle(" ");
-
                           } else {
                             // Code is not used as we are opening different model from above
                             if (props.targetLabel === "owner") {

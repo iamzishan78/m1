@@ -302,10 +302,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     setRows(hits);
 
                 if (formatColumns)
-
                     TableHeader = formatColumns(TableHeader, hits)
-
-                console.log('TESTPOINT1', TableHeader)
 
                 setColumnsData(copy(TableHeader));
                 setLoading(false);
@@ -334,7 +331,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 if (isFiniteScroll && setCellProps && findInFunction("sticky", setCellProps)) {
                     column.options.setCellProps = GlobalSettings.muiGridInfScrollOptions.setCellProps
                     column.options.setCellHeaderProps = GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps
-                    console.log(column.options)
                 }
 
                 /// apply global settings unless ignored
@@ -343,13 +339,10 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                         ...column.options,
                     };
                 } else {
-                    if (column?.name === "agreementSubtype") { console.log('IDENTIFY4', column.options) }
                     column.options = {
                         ...GlobalSettings.muiGridStandardOptions,
                         ...column.options,
-                    };
-                    if (column?.name === "agreementSubtype") { console.log('IDENTIFY5', column.options) }
-
+                    }
                 }
 
                 if (column?.options?.filter) {
@@ -446,6 +439,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 tableCols[0].label = " "
                 tableCols[0].options = idOptions
             }
+
             setColumns(tableCols);
         };
 
@@ -683,7 +677,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
         const updateGridViewRedux = (tableState) => {
             setTableMeta((tableMeta) => {
-                tableState.columns[0].display = "false"
                 if (tableMeta?.selectedGridView)
                     dispatch(updateUserGridViewSettingAction.STARTED({
                         userGridViewSetting: {
@@ -768,6 +761,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
         const viewColumnsChange = (tableColumns) => {
             for (let i = 0; i < tableColumns.length; i++) {
+
                 if (columns[i]) {
                     if ((tableColumns[i].display === "true" || tableColumns[i].display === true) && tableColumns[i].display !== false) {
                         columns[i].options.display = true;
@@ -783,6 +777,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     }
                 }
             }
+
             setColumnsData(columns);
         };
 

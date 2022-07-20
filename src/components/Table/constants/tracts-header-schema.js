@@ -10,7 +10,7 @@ import Typography from "@material-ui/core/Typography";
 const TractsHeadCells = (isSnapGrid = false) => [
   {
     name: "_id",
-    options: { filter: false, display: false, sort: false, viewColumns: false },
+    options: { filter: false, display: true, sort: false, viewColumns: false },
   },
   {
 
