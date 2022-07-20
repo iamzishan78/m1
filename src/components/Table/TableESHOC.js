@@ -26,7 +26,7 @@ import { updateUserGridViewSettingAction, updateUserGridViewFiltersAction } from
 import { handleSelectedGridChange, setColumnDisplayAndFilter } from "./helpers";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
-import { formattingGridView, sortColumns } from "utils/helper";
+import { findInFunction, formattingGridView, sortColumns } from "utils/helper";
 import moment from "moment";
 
 import GlobalSettings from "..//..//GlobalSettings.js";
@@ -328,8 +328,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             }
 
             tableCols.forEach((column, index) => {
-
-
                 /// apply global settings unless ignored
                 if (column?.options?.ignoreGlobal) {
                     column.options = {
@@ -337,6 +335,13 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     };
                 } else {
                     if (column?.name === "agreementSubtype") { console.log('IDENTIFY4', column.options) }
+
+                    const setCellProps = column.options?.setCellProps
+                    if (isFiniteScroll && setCellProps && findInFunction("sticky", setCellProps)) {
+                        column.options.setCellProps = GlobalSettings.muiGridInfScrollOptions.setCellProps
+                        column.options.setCellHeaderProps = GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps
+                        console.log(column.options)
+                    }
 
                     column.options = {
                         ...GlobalSettings.muiGridStandardOptions,
@@ -437,7 +442,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     viewColumns: false
                 }
 
-                // tableCols[0].name = "_idd"
                 tableCols[0].label = " "
                 tableCols[0].options = idOptions
             }
