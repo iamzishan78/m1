@@ -95,9 +95,9 @@ export const contactManagementRoutes = {
     title: "All Entities",
     link: "/contacts",
     component: "ContactsTable",
-    value: 'All',
+    value: "All",
     search: true,
-    isDefault: true
+    isDefault: true,
   },
   LEADS: {
     featureFlag: "CONTACTSUBMENU",
@@ -106,9 +106,9 @@ export const contactManagementRoutes = {
     component: "ContactsTable",
     filterValue: "Lead",
     showAnalytics: true,
-    value: 'Leads',
+    value: "Leads",
     search: true,
-    isDefault: true
+    isDefault: true,
   },
   PROSPECTS: {
     featureFlag: "CONTACTSUBMENU",
@@ -117,9 +117,9 @@ export const contactManagementRoutes = {
     component: "ContactsTable",
     filterValue: "Prospect",
     showAnalytics: true,
-    value: 'Prospects',
+    value: "Prospects",
     search: true,
-    isDefault: true
+    isDefault: true,
   },
   CONTACTS: {
     featureFlag: "CONTACTSUBMENU",
@@ -128,37 +128,39 @@ export const contactManagementRoutes = {
     component: "ContactsTable",
     filterValue: "Contact",
     showAnalytics: true,
-    value: 'Contacts',
+    value: "Contacts",
     search: true,
-    isDefault: true
+    isDefault: true,
   },
   ACTIVITY: {
     featureFlag: "CONTACTSUBMENU",
     title: "Activity Dashboard",
     link: "/contacts/activityDashboard",
     component: "ActivitiesDashboard",
-    value: 'Activities',
+    value: "Activities",
     search: false,
-    isDefault: true
+    isDefault: true,
   },
-  // temporarily hide until campaign management is built (removed isExcluded when we want to turn back on)
   CAMPAIGNS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Campaigns",
     link: "/contacts/campaign",
     component: "CampaignManagement",
-    value: 'Contacts',
+    value: "Contacts",
     search: true,
-    isDefault: true
+    isDefault: true,
   },
-  // CAMPAIGN_DETAIL: {
-  //   featureFlag: "CONTACTSUBMENU",
-  //   title: "Campaigns",
-  //   link: "/contacts/campaignManagement/:id",
-  //   component: "CampaignDetail",
-  //   search: true,
-  //   isExcluded: true,
-  // },
+  CAMPAIGN_DETAIL: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Campaigns",
+    link: "/contacts/campaign/details/:campaignId",
+    component: "CampaignDetail",
+    value: "Contacts",
+    search: true,
+    isDefault: true,
+    isExcluded: true,
+    parent: "CAMPAIGNS",
+  },
 };
 
 export const contactsAnalyticsCards = [
