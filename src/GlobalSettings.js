@@ -93,8 +93,8 @@ const GlobalSettings = {
     // styling props applied to the individual cells w/in a column
     setCellProps: () => ({
       style: {
-        minWidth: "450px",
-        maxWidth: "450px",
+        minWidth: "460px",
+        maxWidth: "492px",
         whiteSpace: "nowrap",
         position: "sticky",
         left: "163px",

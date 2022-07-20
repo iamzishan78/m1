@@ -119,6 +119,8 @@ import PostAddIcon from "@material-ui/icons/PostAdd";
 import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import MapFilledIcon from "components/Shared/svgIcons/MapFilled";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import Link from "@material-ui/core/Link";
@@ -1673,11 +1675,174 @@ function SubTable(props) {
               };
             }
             break;
+          case "agreementNumber":
+            {
+              column.options = {
+                ...column.options,
+                customRender: (value, tableMeta) => {
+                  const splitNumber = value?.split("_");
+
+                  const styles = {
+                    cursor: GlobalStyles.hyperlink.cursor,
+                    //minWidth: "1400px"
+                    // position: 'relative',
+                    // left: '55px',
+                  };
+                  const targetSourceId = tableMeta.rowData[0];
+                  const id = props.targetLabel + tableMeta.columnIndex;
+                  const commentValue = tableMeta.rowData[21]
+                  debugger
+                  return (
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        minWidth: '500px',
+                        maxWidth: '500px'
+                      }}
+                    >
+                      <Grid container spacing={0} direction="row"
+                        style={{
+                          position: 'absolute',
+                          justifyContent: 'space-between'
+                        }}
+                      >
+                        <Grid item
+                          style={{
+                            display: "flex",
+                            justifyContent: "flex-start",
+                            alignItems: "center",
+                            // paddingRight: "100px"
+                          }}
+                        >
+                          <Typography
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const isSnapGrid = false
+                              if (isSnapGrid)
+                                history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
+                                  { showAgreementBreadcrumb: false }
+                                );
+                              else
+                                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
+                                  { showAgreementBreadcrumb: true }
+                                );
+                            }}
+                            noWrap
+                            variant='body2'
+                            style={styles}
+                            color="inherit"
+                          >
+                            <Box sx={{
+                              color: GlobalStyles.colors.lightBlue,
+                              p: 2,
+                              "&:hover": {
+                                textDecoration: "underline",
+                                fontWeight: GlobalStyles.font.boldFontWeight,
+                              },
+                            }}>
+
+                              {splitNumber?.[0]
+                                ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
+                                : tableMeta?.rowData[2]}
+                            </Box>
+                          </Typography>
+                        </Grid>
+
+                        <Grid item
+                          style={{
+                            display: "flex",
+                            justifyContent: "flex-start",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Grid container spacing={0} direction="row"
+
+                          >
+
+                            <Grid item>
+                              <Tooltip title={!commentValue || commentValue === 0 ? "Add Comments" : "Comments"} placement="top" style={{ marginRight: "10px" }}>
+                                <Badge badgeContent={commentValue ? commentValue : null} color="secondary">
+                                  <IconButton
+                                    id={id + targetSourceId + tableMeta.rowIndex}
+                                    size={props.dense ? "small" : "medium"}
+                                    color="primary"
+                                    className={`${classes.icons} ${!commentValue || commentValue === 0 ? classes.noCommentsIcon : ""} ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex ? classes.iconSelected : ""
+                                      }`}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
+                                    }}
+                                    aria-label="show comments"
+                                    onMouseOver={() => {
+                                      if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                                        multiSelectMouseHoverColor(id, "#dadbde");
+                                    }}
+                                    onMouseOut={() => {
+                                      if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                                        multiSelectMouseHoverColor(id, "#efefef");
+                                    }}
+                                  >
+                                    <ChatIcon />
+                                  </IconButton>
+                                </Badge>
+                              </Tooltip>
+                            </Grid>
+                            <Grid item
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-start",
+                                alignItems: "center",
+                              }}
+                            >
+                              {value?.toLowerCase() === "approved" ? (
+                                <CheckCircleIcon style={{ color: "forestgreen" }} />
+                              ) : (
+                                <WarningIcon style={{ color: "orange" }} />
+                              )}
+                            </Grid>
+
+                            <Grid item
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-start",
+                                alignItems: "center",
+                              }}
+                            >
+                              <IconButton
+                                size="medium"
+                                color="primary"
+                                style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
+                                onClick={(e) => {
+                                  history.push(
+                                    `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
+                                    { showAgreementBreadcrumb: true }
+                                  );
+                                  e.stopPropagation();
+                                }}
+                              >
+                                <MapFilledIcon />
+                              </IconButton>
+                            </Grid>
+
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </div>
+
+                  );
+                },
+              };
+            }
+            break;
+
           case "commentsCounter":
             {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+
                   let id = props.targetLabel + tableMeta.columnIndex;
                   let targetSourceId =
                     props.parent === "OwnersPerWell"

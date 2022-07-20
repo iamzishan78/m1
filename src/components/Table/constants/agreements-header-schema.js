@@ -1,15 +1,7 @@
-import { Grid, IconButton } from "@material-ui/core";
-import WarningIcon from "@material-ui/icons/Warning";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import { IconButton } from "@material-ui/core";
 import MapFilledIcon from "components/Shared/svgIcons/MapFilled";
 import { history } from "store";
 import GlobalSettings from "..//..//..//GlobalSettings.js";
-import GlobalStyles from "..//..//..//GlobalStyles.js";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
-
-
-
 
 const AgreementsHeadCells = (isSnapGrid = false) => [
   {
@@ -27,129 +19,6 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       ...GlobalSettings.muiGridControlOptions,
       ignoreGlobal: true,
       dbName: "shapeJson.properties.agreementNumber",
-
-      customRender: (value, tableMeta) => {
-        const splitNumber = value?.split("_");
-
-        const styles = {
-          cursor: GlobalStyles.hyperlink.cursor,
-          // position: 'relative',
-          // left: '55px',
-        };
-
-        return (
-
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-
-
-            {/* <div style={styles}>  */}
-            {/* <Grid container 
-          direction = 'column'
-                      style={{
-                        // display: 'flex',
-                        // alignItems: 'center',
-                      }}
-                      >
-          <Grid item> */}
-
-
-            <Grid container spacing={0} direction="row"
-              style={{
-                position: 'absolute',
-              }}
-
-            // direction="column" alignItems="flex-start"
-            >
-              <Grid item
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                }}
-              >
-
-                <Typography
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (isSnapGrid)
-                      history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
-                        { showAgreementBreadcrumb: false }
-                      );
-                    else
-                      history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
-                        { showAgreementBreadcrumb: true }
-                      );
-                  }}
-                  noWrap
-                  variant='body2'
-                  style={styles}
-                  color="inherit"
-                >
-                  <Box sx={{
-                    color: GlobalStyles.colors.lightBlue,
-                    p: 2,
-                    "&:hover": {
-                      textDecoration: "underline",
-                      fontWeight: GlobalStyles.font.boldFontWeight,
-                    },
-                  }}>
-                    {splitNumber?.[0]
-                      ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
-                      : tableMeta?.rowData[2]}
-                  </Box>
-                </Typography>
-              </Grid>
-
-              <Grid item
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                }}
-              >
-                {value?.toLowerCase() === "approved" ? (
-                  <CheckCircleIcon style={{ color: "forestgreen" }} />
-                ) : (
-                  <WarningIcon style={{ color: "orange" }} />
-                )}
-              </Grid>
-
-              <Grid item
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                }}
-              >
-                <IconButton
-                  size="medium"
-                  color="primary"
-                  style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
-                  onClick={(e) => {
-                    history.push(
-                      `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
-                      { showAgreementBreadcrumb: true }
-                    );
-                    e.stopPropagation();
-                  }}
-                >
-                  <MapFilledIcon />
-                </IconButton>
-              </Grid>
-
-
-
-            </Grid>
-
-          </div>
-
-        );
-      },
 
     },
   },
