@@ -19,7 +19,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       ...GlobalSettings.muiGridControlOptions,
       ignoreGlobal: true,
       dbName: "shapeJson.properties.agreementNumber",
-
+      isSnapGrid: isSnapGrid
     },
   },
   // //temp hide until we decide how we want this to work

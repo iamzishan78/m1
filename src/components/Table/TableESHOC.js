@@ -328,7 +328,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             tableCols.forEach((column, index) => {
                 // Update global setting of sticky column in case of infinite scroll
                 const setCellProps = column.options?.setCellProps
-                if (isFiniteScroll && setCellProps && findInFunction("sticky", setCellProps)) {
+                if (isFiniteScroll && setCellProps && findInFunction("sticky", setCellProps) && column.name !== '_id') {
                     column.options.setCellProps = GlobalSettings.muiGridInfScrollOptions.setCellProps
                     column.options.setCellHeaderProps = GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps
                 }
@@ -437,7 +437,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 }
 
                 tableCols[0].label = " "
-                tableCols[0].options = idOptions
+                tableCols[0].options = { ...tableCols[0].options, ...idOptions }
             }
 
             setColumns(tableCols);

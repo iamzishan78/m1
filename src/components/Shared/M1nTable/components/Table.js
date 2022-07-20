@@ -1738,6 +1738,8 @@ function SubTable(props) {
                   };
                   const targetSourceId = tableMeta.rowData[0];
                   const commentValue = tableMeta.rowData[21]
+                  const isSnapGrid = column.options.isSnapGrid || false
+
                   return (
                     <div
                       style={{
@@ -1765,7 +1767,7 @@ function SubTable(props) {
                           <Typography
                             onClick={(e) => {
                               e.stopPropagation();
-                              const isSnapGrid = false
+
                               if (isSnapGrid)
                                 history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
                                   { showAgreementBreadcrumb: false }
