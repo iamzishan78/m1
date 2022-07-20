@@ -328,6 +328,14 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             }
 
             tableCols.forEach((column, index) => {
+                // Update global setting of sticky column in case of infinite scroll
+                const setCellProps = column.options?.setCellProps
+                if (isFiniteScroll && setCellProps && findInFunction("sticky", setCellProps)) {
+                    column.options.setCellProps = GlobalSettings.muiGridInfScrollOptions.setCellProps
+                    column.options.setCellHeaderProps = GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps
+                    console.log(column.options)
+                }
+
                 /// apply global settings unless ignored
                 if (column?.options?.ignoreGlobal) {
                     column.options = {
@@ -335,14 +343,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     };
                 } else {
                     if (column?.name === "agreementSubtype") { console.log('IDENTIFY4', column.options) }
-
-                    const setCellProps = column.options?.setCellProps
-                    if (isFiniteScroll && setCellProps && findInFunction("sticky", setCellProps)) {
-                        column.options.setCellProps = GlobalSettings.muiGridInfScrollOptions.setCellProps
-                        column.options.setCellHeaderProps = GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps
-                        console.log(column.options)
-                    }
-
                     column.options = {
                         ...GlobalSettings.muiGridStandardOptions,
                         ...column.options,
