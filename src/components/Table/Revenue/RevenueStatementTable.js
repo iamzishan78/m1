@@ -109,7 +109,7 @@ function RevenueStatementTable(props) {
           index: 'checks_flat',
           filters: [
             ...fixedFilters,
-            { field: "status.keyword", value: "APPROVED" },
+            { field: "approvalStatus.keyword", value: "Approved" },
             ...props.selectedFilters.current
           ],
           search: {

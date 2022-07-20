@@ -22,6 +22,13 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
 
     },
   },
+  // //temp hide until we decide how we want this to work
+  // {
+  //   name: "agreementId",
+  //   label: 'Agreement Id',
+  //   esKey: "_id",
+  //   options: { filter: false, display: true, sort: false, viewColumns: false },
+  // },
   {
     name: "agreementName",
     label: "Agreement Name",

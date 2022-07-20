@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Container } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import debounce from "lodash/debounce";
@@ -23,11 +23,21 @@ import TableHeader from "components/Table/constants/map-grid-unit-header-schema"
 import { usetableStyles } from "../Styles";
 
 function MapGridUnitTable(props) {
+  // const defaultView = {
+  //   name: `All Units`,
+  //   type: "Default",
+  // };
+
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
   );
+  // const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
+
+  // const GridViewModule = userGridViewSettings[`Agreements`];
+
+  // const [selectedGridView, setSelectedGridView] = useState(defaultView);
 
   const [getShapeOwnerDataById, { data: owners }] = useLazyQuery(
     GET_SHAPE_OWNERS_DATA_BY_ID,
@@ -69,13 +79,19 @@ function MapGridUnitTable(props) {
     return hits;
   };
 
+  // useEffect(() => {
+  //   setSelectedGridView(GridViewModule || defaultView);
+  // }, [GridViewModule]);
+
   useEffect(() => {
     setTableMeta({
       extendSearchQuery: searchInput || stateApp.landSearchQuery,
+      // selectedGridView: GridViewModule || defaultView,
       searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
       startPaginationAt: 25,
+      // typeKeyword: { gridViewCategory: "Units", metaModule: "Unit" },
       filters: [
         {
           field: "layer.keyword",
