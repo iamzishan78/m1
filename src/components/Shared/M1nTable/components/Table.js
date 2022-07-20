@@ -464,6 +464,21 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     fontSize: "smaller",
   },
+  actionButtonParent: {
+    "&:hover": {
+      "& .makeStyles-actionButtons-161": {
+        display: "flex",
+      },
+    },
+  },
+  actionButtons: {
+    display: "none",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    "&:hover": {
+      display: "flex",
+    },
+  },
   customWarning: {
     "& .MuiSvgIcon-root": {
       fill: "#ffa800"
@@ -764,7 +779,6 @@ function SubTable(props) {
   // functions 
   const gridElement = value => {
     // wraps standard grid elements w/ consistent styling
-
     return (
       <>
         <Typography
@@ -776,12 +790,43 @@ function SubTable(props) {
         </Typography>
       </>
     )
-
   }
 
+  // Shows comments
+  const GridComments = ({ value, targetSourceId, tableMeta }) => {
+    const id = props.targetLabel + tableMeta.columnIndex;
+    return (
+      <>
+        <Tooltip title={!value || value === 0 ? "Add Comments" : "value"} placement="top" style={{ marginRight: "10px" }}>
+          <Badge badgeContent={value ? value : null} color="secondary">
+            <IconButton
+              id={id + targetSourceId + tableMeta.rowIndex}
+              size={props.dense ? "small" : "medium"}
+              color="primary"
+              className={`${classes.icons} ${!value || value === 0 ? classes.noCommentsIcon : ""} ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex ? classes.iconSelected : ""
+                }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
+              }}
+              aria-label="show comments"
+              onMouseOver={() => {
+                if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                  multiSelectMouseHoverColor(id, "#dadbde");
+              }}
+              onMouseOut={() => {
+                if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                  multiSelectMouseHoverColor(id, "#efefef");
+              }}
+            >
+              <ChatIcon />
+            </IconButton>
+          </Badge>
+        </Tooltip>
+      </>
+    )
 
-
-
+  }
   //// save contact data chosen by action menu
   useEffect(() => {
     if (contactData && contactData.contact) {
@@ -1689,9 +1734,7 @@ function SubTable(props) {
                     // left: '55px',
                   };
                   const targetSourceId = tableMeta.rowData[0];
-                  const id = props.targetLabel + tableMeta.columnIndex;
                   const commentValue = tableMeta.rowData[21]
-                  debugger
                   return (
 
                     <div
@@ -1707,6 +1750,7 @@ function SubTable(props) {
                           position: 'absolute',
                           justifyContent: 'space-between'
                         }}
+                        className={classes.actionButtonParent}
                       >
                         <Grid item
                           style={{
@@ -1751,43 +1795,11 @@ function SubTable(props) {
                         </Grid>
 
                         <Grid item
-                          style={{
-                            display: "flex",
-                            justifyContent: "flex-start",
-                            alignItems: "center",
-                          }}
+                          className={classes.actionButtons}
                         >
-                          <Grid container spacing={0} direction="row"
-
-                          >
-
+                          <Grid container spacing={0} direction="row">
                             <Grid item>
-                              <Tooltip title={!commentValue || commentValue === 0 ? "Add Comments" : "Comments"} placement="top" style={{ marginRight: "10px" }}>
-                                <Badge badgeContent={commentValue ? commentValue : null} color="secondary">
-                                  <IconButton
-                                    id={id + targetSourceId + tableMeta.rowIndex}
-                                    size={props.dense ? "small" : "medium"}
-                                    color="primary"
-                                    className={`${classes.icons} ${!commentValue || commentValue === 0 ? classes.noCommentsIcon : ""} ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex ? classes.iconSelected : ""
-                                      }`}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
-                                    }}
-                                    aria-label="show comments"
-                                    onMouseOver={() => {
-                                      if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                                        multiSelectMouseHoverColor(id, "#dadbde");
-                                    }}
-                                    onMouseOut={() => {
-                                      if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                                        multiSelectMouseHoverColor(id, "#efefef");
-                                    }}
-                                  >
-                                    <ChatIcon />
-                                  </IconButton>
-                                </Badge>
-                              </Tooltip>
+                              <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
                             </Grid>
                             <Grid item
                               style={{
@@ -1842,8 +1854,6 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-
-                  let id = props.targetLabel + tableMeta.columnIndex;
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
@@ -1869,32 +1879,7 @@ function SubTable(props) {
 
                   return (
                     //add download and search icons here
-                    <Tooltip title={!value || value === 0 ? "Add Comments" : "Comments"} placement="top" style={{ marginRight: "10px" }}>
-                      <Badge badgeContent={value ? value : null} color="secondary">
-                        <IconButton
-                          id={id + targetSourceId + tableMeta.rowIndex}
-                          size={props.dense ? "small" : "medium"}
-                          color="primary"
-                          className={`${classes.icons} ${!value || value === 0 ? classes.noCommentsIcon : ""} ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex ? classes.iconSelected : ""
-                            }`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
-                          }}
-                          aria-label="show comments"
-                          onMouseOver={() => {
-                            if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                              multiSelectMouseHoverColor(id, "#dadbde");
-                          }}
-                          onMouseOut={() => {
-                            if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                              multiSelectMouseHoverColor(id, "#efefef");
-                          }}
-                        >
-                          <ChatIcon />
-                        </IconButton>
-                      </Badge>
-                    </Tooltip>
+                    <GridComments value={value} targetSourceId={targetSourceId} tableMeta={tableMeta} />
                   );
                 },
               };
