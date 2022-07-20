@@ -61,7 +61,6 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
             <Grid container spacing={0} direction="row"
               style={{
                 position: 'absolute',
-                left: '55px',
               }}
 
             // direction="column" alignItems="flex-start"
@@ -106,43 +105,43 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
                 </Typography>
               </Grid>
 
-              {/* <Grid item
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
-            >
-            {value?.toLowerCase() === "approved" ? (
-              <CheckCircleIcon style={{ color: "forestgreen" }} />
-            ) : (
-              <WarningIcon style={{ color: "orange" }} />
-            )}
-          </Grid>
+              <Grid item
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}
+              >
+                {value?.toLowerCase() === "approved" ? (
+                  <CheckCircleIcon style={{ color: "forestgreen" }} />
+                ) : (
+                  <WarningIcon style={{ color: "orange" }} />
+                )}
+              </Grid>
 
-          <Grid item
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
-            >
-          <IconButton
-            size="medium"
-            color="primary"
-            style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
-            onClick={(e) => {
-              history.push(
-                `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
-                { showAgreementBreadcrumb: true }
-              );
-              e.stopPropagation();
-            }}
-          >
-            <MapFilledIcon />
-          </IconButton>
-          </Grid>
-           */}
+              <Grid item
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}
+              >
+                <IconButton
+                  size="medium"
+                  color="primary"
+                  style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
+                  onClick={(e) => {
+                    history.push(
+                      `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
+                      { showAgreementBreadcrumb: true }
+                    );
+                    e.stopPropagation();
+                  }}
+                >
+                  <MapFilledIcon />
+                </IconButton>
+              </Grid>
+
 
 
             </Grid>

@@ -9,13 +9,6 @@ const GlobalSettings = {
 
   muiGridControlCodeInjection: {
     numerals: {
-      //  {             // props.parent === 'Documents' && 
-      //   <div style={{ position: 'relative', zIndex: 100 }}>
-      //     <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
-      //       {tableMeta.rowIndex + 1}
-      //     </div>
-      //   </div>
-      // }
       numerals: () => (
         <div style={{ position: 'relative', zIndex: 100 }}>
           <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
@@ -38,7 +31,7 @@ const GlobalSettings = {
         maxWidth: "450px",
         whiteSpace: "nowrap",
         position: "sticky",
-        left: "163px",
+        // left: "80px",
         zIndex: 200,
         boxShadow: 'inset -1px 0px 0px 0px lightgrey',
         padding: '0px 25px 0px 0px',
@@ -49,9 +42,9 @@ const GlobalSettings = {
     setCellHeaderProps: () => ({
       style: {
         position: "sticky",
-        paddingLeft: '70px',
+        // paddingLeft: '70px',
         zIndex: 201,
-        left: "163px",
+        left: "80px",
       }
     }),
 

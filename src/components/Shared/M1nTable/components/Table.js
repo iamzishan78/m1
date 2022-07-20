@@ -1213,6 +1213,7 @@ function SubTable(props) {
         // or component state is stale
 
         if (column.name === "_id" && column.options.isFiniteScroll) {
+          //  column.name = "_id"
           column.options = {
             ...column.options,
 
