@@ -11,6 +11,9 @@ import Autocomplete, {
 import { makeStyles } from "@material-ui/core/styles";
 import EditNoteIcon from "components/Shared/svgIcons/edit-note";
 import { useLocation, useParams } from "react-router-dom";
+import Dialog from "@material-ui/core/Dialog";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
 
 const filter = createFilterOptions();
 
@@ -87,6 +90,35 @@ const useStyles = makeStyles((theme) => ({
     float: "right",
     right: "15px",
   },
+  dialog: {
+    "&.MuiDialog-root": {
+      zIndex: "1300 !important",
+    },
+    "&.MuiDialog-root .MuiDialog-paper": {
+      overflowY: 'hidden !important',
+      padding: '15px',
+    },
+    "&.MuiDialog-root .MuiBackdrop-root": {
+      backgroundColor: 'none',
+    }
+  },
+  tab: {
+    padding: "3px 20px",
+    color: "#919191",
+    cursor: "pointer",
+  },
+  headerActions: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  selectedTab: {
+    borderBottom: "5px solid #01B0F0",
+  },
+  selectCommentType: {
+    width: '100%',
+    marginTop: '18px',
+    height: '40px',
+  }
 }));
 
 export default function DealComment({
@@ -98,7 +130,8 @@ export default function DealComment({
   users,
   profilesInfo,
   setEditCommentId,
-  fieldWidth
+  fieldWidth,
+  setShowActions,
 }) {
   const params = useParams();
   const classes = useStyles({ fieldWidth });
@@ -108,6 +141,9 @@ export default function DealComment({
   const [isSelected, setIsSelected] = useState(false);
   const [nameAutValue, setNameAutValue] = useState({});
   const [showCommentType, setShowCommentType] = useState(false);
+  const [showCommentTypeDialog, setShowCommentTypeDialog] = useState(false);
+  const [selectedTab, setSelectedTab] = useState('Existing');
+  const [selectedCommentType, setSelectedCommentType] = useState('General');
 
   (function () {
     var target = $("#colorText");
@@ -167,7 +203,7 @@ export default function DealComment({
   }, [comment, users]);
 
   useEffect(() => {
-    setShowCommentType(params && params.type && ['leases', 'parcels'].includes(params.type));
+    setShowCommentType(params && params.type && ['leases', 'parcels', 'deeds'].includes(params.type));
   }, [params]);
 
   const replaceAllWith = (_string, replaceFrom, replaceWith) => {
@@ -269,7 +305,6 @@ export default function DealComment({
         renderInput={(params) => (
           <>
             <TextField
-
               classes={{ root: classes.customTextField }}
               margin="dense"
               {...params}
@@ -297,24 +332,24 @@ export default function DealComment({
       />
       {!isEdit ? (
         <>
-          {showActions && (
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
             <div style={{
+              padding: '0px 10px',
               display: 'flex',
-              justifyContent: 'space-between',
+              justifyContent: 'center',
               alignItems: 'center',
-            }}>
-              <div style={{
-                padding: '0px 10px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                color: '#949494',
-              }}>
-                {showCommentType && <>
-                  <EditNoteIcon />
-                  <span style={{ marginLeft: '1px' }}>General</span>
-                </>}
-              </div>
+              color: '#949494',
+            }} onClick={() => setShowCommentTypeDialog(true)}>
+              {showCommentType && <>
+                <EditNoteIcon fill={showCommentTypeDialog ? 'black' : ''} />
+                <span style={{ marginLeft: '1px' }}>{selectedCommentType}</span>
+              </>}
+            </div>
+            {showActions && (
               <Button
                 className={classes.commentBtn}
                 variant="contained"
@@ -326,8 +361,8 @@ export default function DealComment({
               >
                 Comment
               </Button>
-            </div>
-          )}
+            )}
+          </div>
         </>
       ) : (
         <>
@@ -356,6 +391,49 @@ export default function DealComment({
           </Button>
         </>
       )}
+      <Dialog
+        className={classes.dialog}
+        // style={{
+        //   zIndex: '99999999999 !important',
+        //   backgroundColor: 'red',
+        // }}
+        open={showCommentTypeDialog}
+        onClose={() => {
+          // setOpenDialog(false);
+        }}
+
+        onBackdropClick={() => {
+          setShowCommentTypeDialog(false);
+        }}
+      >
+        <Grid item className={classes.headerActions}>
+          <div>
+            {/* {tabs.map((tab) => {
+              return (
+                <span className={`${classes.tab} ${selectedTab === tab ? classes.selectedTab : ""}`} onClick={() => {}}>
+                  {tab}
+                </span>
+              );
+            })} */}
+            <span className={`${classes.tab} ${selectedTab === 'Existing' ? classes.selectedTab : ''}`} onClick={() => setSelectedTab('Existing')}>
+              Existing
+            </span>
+            <span className={`${classes.tab} ${selectedTab === 'New Comment Type' ? classes.selectedTab : ''}`} onClick={() => setSelectedTab('New Comment Type')}>
+              New Comment Type
+            </span>
+          </div>
+          {/* className={classes.viewSwitcher}  */}
+        </Grid>
+        <Grid>
+          <Select className={classes.selectCommentType} variant="outlined" value={selectedCommentType} onChange={(e) => {
+            setSelectedCommentType(e.target.value)
+            setShowCommentTypeDialog(false);
+          }}>
+            <MenuItem value={'General'}>General</MenuItem>
+            <MenuItem value={'Correspondence'}>Correspondence</MenuItem>
+          </Select>
+        </Grid>
+      </Dialog>
     </>
   );
 }
