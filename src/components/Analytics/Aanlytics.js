@@ -9,6 +9,7 @@ import { AppContext } from "AppContext";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 import RevenueAnalytics from "components/Analytics/components/Revenue";
+import LandAnalytics from "components/Analytics/components/Land";
 import ActivitiesDashboard from "components/Activities/components/ActivitiesDashboard";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import QuickActionPanel from "components/Land/components/QuickActionPanel";
@@ -42,8 +43,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Components = {
-  'Revenue': RevenueAnalytics,
-  'ActivitiesDashboard': ActivitiesDashboard,
+  Land: LandAnalytics,
+  Revenue: RevenueAnalytics,
+  ActivitiesDashboard: ActivitiesDashboard,
 };
 
 export default function Analytics() {

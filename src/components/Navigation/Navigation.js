@@ -8,6 +8,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import clsx from "clsx";
 
 //3rd party packages
+import _ from "lodash";
 import PropTypes from "prop-types";
 
 //@material-ui components
@@ -425,9 +426,14 @@ export default function Navigation(props) {
       {!checkIfIgnoreHeader() && (
         <AppBar
           position="fixed"
-          className={clsx(!location.pathname.startsWith("/land") ? classes.appBar : classes.appBarWhite, {
-            [classes.appBarShift]: openDrawer,
-          })}
+          className={clsx(
+            !location.pathname.startsWith("/land")
+              ? classes.appBar
+              : classes.appBarWhite,
+            {
+              [classes.appBarShift]: openDrawer,
+            }
+          )}
           style={
             location.pathname === "/contacts/activityDashboard" ||
             location.pathname.includes("revenue")
@@ -470,12 +476,13 @@ export default function Navigation(props) {
               )}
 
               {(location.pathname === "/analytics" ||
-                location.pathname === "/analytics/land" ||
                 Object.values(analyticsManagementRoutes).find(
                   (item) => item.link === location.pathname && item.search
                 )) && <ContactSearch />}
 
-              {location.pathname === "/analytics/revenue" && (
+              {["/analytics/revenue", "/analytics/land"].includes(
+                location.pathname
+              ) && (
                 <Typography
                   variant="h4"
                   style={{
@@ -484,7 +491,7 @@ export default function Navigation(props) {
                     marginLeft: quickActionsPanelState ? 433 : 15,
                   }}
                 >
-                  Revenue Analytics
+                  {_.capitalize(location.pathname.split("/").pop())} Analytics
                 </Typography>
               )}
 

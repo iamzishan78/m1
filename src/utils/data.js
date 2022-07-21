@@ -174,9 +174,9 @@ export const analyticsManagementRoutes = {
     featureFlag: "CONTACTSUBMENU",
     title: "Land",
     link: "/analytics/land",
-    component: "ActivitiesDashboard",
+    component: "Land",
     value: "Activities",
-    search: true,
+    search: false,
     isDefault: true,
   },
   PROSPECTS: {

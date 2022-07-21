@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Button, Divider, Tab, Tabs } from "@material-ui/core";
-import { makeStyles, withStyles } from "@material-ui/styles";
+import moment from "moment";
 import { useSelector } from "react-redux";
+import { useLazyQuery } from "@apollo/client";
+import { makeStyles, withStyles } from "@material-ui/styles";
+import { Grid, Button, Divider, Tab, Tabs } from "@material-ui/core";
 
+import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
+import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
 
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import DetailTabsSection from "components/Analytics/components/Revenue/DetailTabsSection";
-import { useLazyQuery } from "@apollo/client";
-import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
-import moment from "moment";
-import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 
 const useStyles = makeStyles((theme) => ({
@@ -171,7 +171,7 @@ export default function RevenueAnalytics() {
           container
           direction="row"
           display="flex"
-          spacing={2}
+          spacing={4}
           style={{ padding: "0px 36px" }}
         >
           <Grid item xs={8} md={6} style={{ marginTop: "4px" }}>
