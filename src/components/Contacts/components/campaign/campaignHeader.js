@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { get } from "lodash";
+import { useMutation } from "@apollo/client";
 import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Button, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, FormControl, TextField } from "@material-ui/core";
 import { InfoOutlined as InfoOutlinedIcon, MoreHoriz as MoreHorizIcon, Delete as DeleteIcon } from "@material-ui/icons";
 
 import Tags from "components/Shared/Tagger";
+
+// Queries & Mutations
+import { UPDATE_CAMPAIGN } from "graphQL/useMutationCampaign";
 
 const getDealNameFieldHeight = (title) => {
   const lineLength = Math.ceil(title.length / 53);
@@ -127,6 +131,8 @@ const CampaignHeader = ({ campaign }) => {
   const [anchorEl, setAnchorEl] = useState();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
+  const [updateCampaign] = useMutation(UPDATE_CAMPAIGN);
+
   const { control, watch, reset } = useForm();
 
   const campaignName = watch("name", "");
@@ -135,6 +141,19 @@ const CampaignHeader = ({ campaign }) => {
   useEffect(() => {
     reset(campaign);
   }, [campaign, reset]);
+
+  const updateCampaignInformation = (key, value) => {
+    updateCampaign({
+      variables: {
+        campaign: {
+          _id: campaign._id,
+          [key]: value,
+        },
+      },
+      refetchQueries: ["getCampaign"],
+      awaitRefetchQueries: true,
+    });
+  };
 
   return (
     <>
@@ -150,7 +169,6 @@ const CampaignHeader = ({ campaign }) => {
                   <Controller
                     control={control}
                     name="name"
-                    defaultValue={get(campaign, "name")}
                     render={(params) => (
                       <FormControl
                         variant="outlined"
@@ -176,6 +194,7 @@ const CampaignHeader = ({ campaign }) => {
                               notchedOutline: classes.notchedOutline,
                             },
                           }}
+                          onBlur={({ target }) => updateCampaignInformation("name", target.value)}
                         />
                       </FormControl>
                     )}
