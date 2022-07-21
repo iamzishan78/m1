@@ -5,7 +5,7 @@ import { useLazyQuery } from "@apollo/client";
 
 // Components
 import NavHeader from "components/Land/components/Common/NavHeader";
-import CampaiignHeader from "components/Contacts/components/campaign/campaignHeader";
+import CampaignHeader from "components/Contacts/components/campaign/campaignHeader";
 
 import { GET_CAMPAIGN } from "graphQL/useQueryCampaign";
 
@@ -25,7 +25,7 @@ const CampaignDetail = () => {
 
   return (
     <NavHeader title={`${get(campaignData, "getCampaign.name")}`}>
-      <CampaiignHeader campaign={get(campaignData, "getCampaign")} />
+      <CampaignHeader campaign={get(campaignData, "getCampaign", {})} />
     </NavHeader>
   );
 };

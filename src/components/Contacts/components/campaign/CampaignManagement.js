@@ -65,11 +65,11 @@ const CampaignManagement = () => {
     getESMinValue({
       variables: {
         esIndex,
-        field: 'createdAt',
-        value_as_string: true
-      }
-    })
-  }, [getESMinValue])
+        field: "createdAt",
+        value_as_string: true,
+      },
+    });
+  }, [getESMinValue]);
 
   // const getCustomAppliedFilters = () => {
   //   if (activeModule?.filterValue) {
@@ -100,17 +100,14 @@ const CampaignManagement = () => {
         contactSearchQuery={stateApp.contactSearchQuery}
       />
       <div style={{ padding: "0px 30px" }}>
-        <CampaignAnalytics
-          appliedFilters={appliedFilters}
-          contactSearchQuery={stateApp.contactSearchQuery}
-        />
+        <CampaignAnalytics appliedFilters={appliedFilters} contactSearchQuery={stateApp.contactSearchQuery} />
         <CampaignsTable
           esIndex={esIndex}
           searchFields={searchFields}
           filtersChange={filtersChange}
           appliedFilters={appliedFilters}
           filterToggle={filterToggle}
-          targetLabel="campaignManagement"
+          targetLabel="Campaign"
           header="Campaigns"
         />
       </div>
