@@ -82,19 +82,17 @@ const useStyles = makeStyles(() => ({
       },
     },
   },
-  metaActions: ({ collapse }) => ({
-    marginTop: "2px",
+  metaActions: {
+    position: "absolute",
+    right: "15px",
     "& button": {
-      backgroundColor: !collapse ? "#eceded" : "#fff",
+      margin: "0px 5px",
       color: "grey",
       fontWeight: "bold",
       textTransform: "capitalize",
       padding: "6px 12px",
-      "&:hover": {
-        backgroundColor: !collapse ? "#eceded" : "#fff",
-      },
     },
-  }),
+  },
   inputFieldDealName: (props) => ({
     width: "542px",
     padding: "0px 30px 20px 30px",
