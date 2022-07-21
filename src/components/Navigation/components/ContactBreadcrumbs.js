@@ -38,8 +38,9 @@ const ContactBreadcrumbs = () => {
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
   const contactId = history.location.pathname.split("/")[3];
-  const parcelId = history.location.pathname.split("/parcels")[history.location.pathname.split("/").length - 1];
-  const unitId = history.location.pathname.split("/units")[history.location.pathname.split("/").length - 1];
+
+  const unitId = history.location.pathname.includes("units") && history.location.pathname.split("/units/")[history.location.pathname.split("/units/").length - 1];
+  const parcelId = history.location.pathname.includes("parcels") && history.location.pathname.split("/parcels/")[history.location.pathname.split("/parcels/").length - 1];
 
   useEffect(() => {
     if (contactId) {
@@ -52,6 +53,17 @@ const ContactBreadcrumbs = () => {
   }, [getContact, contactId]);
 
   useEffect(() => {
+    if (contactId) {
+      getContact({
+        variables: {
+          contactId,
+        },
+      });
+    }
+  }, [getContact, contactId]);
+
+  useEffect(() => {
+
     if (parcelId || unitId) {
       const layerId = parcelId ?? unitId;
       getCustomLayer({
@@ -60,7 +72,7 @@ const ContactBreadcrumbs = () => {
         },
       });
     }
-  }, [getCustomLayer, parcelId]);
+  }, [getCustomLayer, parcelId, unitId]);
 
   useEffect(() => {
     if (data && data.contact) {
@@ -393,17 +405,46 @@ const ContactBreadcrumbs = () => {
           )}
           {(history.location.pathname.includes("/wells") ||
             history.location.pathname.includes("/parcels") ||
-            history.location.pathname.includes("/units")) && (
-              <Typography
-                style={{
-                  color: "#18AADD",
-                  fontSize: "16px",
-                  marginLeft: "5px",
-                }}
-              >
-                Associated Interests
-              </Typography>
+            history.location.pathname.includes("/units")) && (<>
+              {unitId || parcelId ? (
+                <Link
+                  style={{
+                    marginLeft: "5px",
+                    fontSize: "16px",
+                    cursor: "pointer",
+                  }}
+                  color="inherit"
+                  onClick={() => history.goBack()}
+                >
+                  Associated Interests
+                </Link>
+              ) : (
+                <Typography
+                  style={{
+                    color: "#18AADD",
+                    fontSize: "16px",
+                    marginLeft: "5px",
+                  }}
+                >
+                  Associated Interests
+                </Typography>
+
+              )}
+            </>
             )}
+
+          {unitId && layerObj?.name && (
+            <Typography
+              style={{
+                color: "#18AADD",
+                fontSize: "16px",
+                marginLeft: "5px",
+              }}
+            >
+              {layerObj?.name}
+            </Typography>
+          )}
+
           {parcelId && (
             <Typography
               style={{
