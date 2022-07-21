@@ -1840,7 +1840,6 @@ function SubTable(props) {
                                   e.stopPropagation();
                                 }}
                               >
-                                {/* <MapFilledIcon /> */}
                                 <LocationOnIcon/>
                               </IconButton>
                             </Grid>
@@ -1851,7 +1850,6 @@ function SubTable(props) {
                                 justifyContent: "flex-start",
                                 alignItems: "center",
                               }}
-                              // className={classes.actionButtons}
                             >
                               {value?.toLowerCase() === "approved" ? (
                                 <CheckCircleIcon style={{ color: "forestgreen" }} />
@@ -1860,8 +1858,39 @@ function SubTable(props) {
                               )}
                             </Grid>
 
+                            <Grid item
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-start",
+                                alignItems: "center",
+                              }}
+                            >
+                                  <Button 
+                                      // id={id + targetSourceId + tableMeta.rowIndex}
+                                      // size='small' 
+                                      // startIcon={<ChatIcon />}
+                                      // onClick={(e) => {
+                                      //   e.stopPropagation();
+                                      //   handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
+                                      // }}
+                                      // aria-label="show comments"
+                                      // onMouseOver={() => {
+                                      //   if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                                      //     multiSelectMouseHoverColor(id, "#dadbde");
+                                      // }}
+                                      // onMouseOut={() => {
+                                      //   if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                                      //     multiSelectMouseHoverColor(id, "#efefef");
+                                      // }}
+                                      >
+                                        Details
+                                  </Button>
+                            </Grid>
+
+
 
                           </Grid>
+                          
                         </Grid>
                       </Grid>
                     </div>
