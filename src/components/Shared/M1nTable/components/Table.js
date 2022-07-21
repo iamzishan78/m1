@@ -800,7 +800,7 @@ function SubTable(props) {
     const id = props.targetLabel + tableMeta.columnIndex;
     return (
       <>
-        <Tooltip title={!value || value === 0 ? "Add Comments" : "value"} placement="top" style={{ marginRight: "10px" }}>
+        <Tooltip title={!value || value === 0 ? "Add Comments" : "Comments"} placement="top" style={{ marginRight: "10px" }}>
           <Badge badgeContent={value ? value : null} color="secondary">
             <IconButton
               id={id + targetSourceId + tableMeta.rowIndex}
