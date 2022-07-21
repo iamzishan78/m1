@@ -2,6 +2,7 @@ import React, { useState, Fragment } from "react";
 import { FormControl, InputLabel, ListItem, ListItemText, Menu, MenuItem, Select } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/styles";
+import AutoCompleteESShapeLayer from "components/Shared/Forms/Fields/AutoCompleteESShapeLayer";
 
 const useStyles = makeStyles({
   selectedType: {
@@ -25,9 +26,10 @@ const useStyles = makeStyles({
   }
 });
 
-const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpenShapeDetail, classes }) => {
+const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpenShapeDetail, updateAndOpenShapeDetail, classes }) => {
   const [selectedType, setSelectedType] = useState("new");
   const [selectedShapeType, setSelectedShapeType] = useState();
+  const [selectedAgreement, setSelectedAgreement] = useState();
   const shapeActionClasses = useStyles();
 
   return (
@@ -97,37 +99,40 @@ const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpe
                 <MenuItem value={"surface"} >Surface/Row</MenuItem>
               </Select>
             </FormControl>
-
-            <div className={shapeActionClasses.dialogFooter}>
-              <Button
-                variant="contained"
-                color="default"
-                size="medium"
-                className={classes.footerButton}
-                style={{ margin: "0px 15px 0px 0px" }}
-                onClick={() => {
-                  setAgreementAnchorEl(null)
-                }}
-              >
-                Cancel
-              </Button>
-
-              <Button
-                variant="contained"
-                color="primary"
-                size="medium"
-                disabled={!selectedShapeType}
-                disableElevation
-                onClick={() => {
-                  saveAndOpenShapeDetail("agreement", selectedShapeType)
-                }}
-                className={classes.footerButton}
-              >
-                Add Shape
-              </Button>
-            </div>
           </>
         }
+        {
+          selectedType === 'existing' && <>
+            <AutoCompleteESShapeLayer label='Agreement Search' filters={[{ "field": "shapeJson.properties.type", "value": 'agreement' }]} setSelectedShapeLayer={setSelectedAgreement} />
+          </>
+        }
+
+        <div className={shapeActionClasses.dialogFooter}>
+          <Button
+            variant="contained"
+            color="default"
+            size="medium"
+            className={classes.footerButton}
+            style={{ margin: "0px 15px 0px 0px" }}
+            onClick={() => { setAgreementAnchorEl(null) }}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            variant="contained"
+            color="primary"
+            size="medium"
+            disabled={selectedType === 'new' ? !selectedType : !selectedAgreement}
+            disableElevation
+            onClick={() => {
+              selectedType === 'new' ? saveAndOpenShapeDetail("agreement", selectedShapeType) : updateAndOpenShapeDetail(selectedAgreement)
+            }}
+            className={classes.footerButton}
+          >
+            Add Shape
+          </Button>
+        </div>
       </Menu>
     </Fragment>
   );

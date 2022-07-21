@@ -42,7 +42,7 @@ import { resetShapeOwnerAction } from "store/actions/ownerActions";
 
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
-import { getPolygonString } from "components/Shared/functions";
+import { copy, getPolygonString } from "components/Shared/functions";
 import { calculateLandArea } from "components/Shared/functions/shapeLayer";
 import ShapeEditActions from "components/MapControls/components/popup/ShapeEditActions";
 import AgreementTypeMenu from "./AgreementTypeMenu";
@@ -555,6 +555,52 @@ const ShapeActionsPopup = (props) => {
     popupCloseAction();
   };
 
+  const updateAndOpenShapeDetail = (layerData) => {
+    let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
+    layerData.shapeJson.geometry = abstractShape.geometry
+    layerData.shapeJson.properties = {
+      ...layerData.shapeJson.properties,
+      originalProperties: abstractShape.properties,
+      shapeArea: calculateLandArea(abstractShape),
+      shapeCenter: calculateShapeCenter(abstractShape.geometry.coordinates),
+    }
+    const customLayerData = {
+      shapeJson: layerData.shapeJson,
+      shape: JSON.stringify(layerData.shapeJson),
+      layer: layerData.layer,
+      name: layerData.shapeLabel,
+      user: layerData.user._id,
+    };
+
+    updateCustomLayer({
+      variables: {
+        customLayerId: layerData._id,
+        customLayer: customLayerData,
+      },
+    });
+    let layers = [...stateApp.customLayers];
+    const layerIndex = layers.findIndex((l) => l._id === layerData._id)
+    layers[layerIndex] = customLayerData
+    const jsonLayer = copy(customLayerData.shapeJson)
+    jsonLayer.layer = { id: customLayerData.layer };
+    jsonLayer.id = layerData._id;
+
+    findBoundsMap([jsonLayer], stateApp.map);
+    drawBoundary(stateApp.map, jsonLayer);
+    setStateApp((state) => ({
+      ...state,
+      selectedShape: {
+        ...jsonLayer.properties,
+        feature: jsonLayer,
+        id: layerData._id,
+      },
+      customLayers: layers,
+    }));
+
+    popupCloseAction();
+    updateSelectedLayerFeature(layerData)
+  }
+
   const deleteAOI = () => {
     // Turning off the confirmation modal
     setDeleteModal(false);
@@ -732,7 +778,8 @@ const ShapeActionsPopup = (props) => {
         </MenuItem>
       </Menu>
 
-      <AgreementTypeMenu classes={classes} agreementAnchorEl={agreementAnchorEl} saveAndOpenShapeDetail={saveAndOpenShapeDetail} setAgreementAnchorEl={setAgreementAnchorEl} />
+      <AgreementTypeMenu classes={classes} agreementAnchorEl={agreementAnchorEl}
+        saveAndOpenShapeDetail={saveAndOpenShapeDetail} updateAndOpenShapeDetail={updateAndOpenShapeDetail} setAgreementAnchorEl={setAgreementAnchorEl} />
 
       <Fragment>
         <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span>{" "}
