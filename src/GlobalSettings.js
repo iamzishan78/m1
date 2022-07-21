@@ -12,7 +12,7 @@ const GlobalSettings = {
       numerals: () => (
         <div style={{ position: 'relative', zIndex: 100 }}>
           <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
-            {tableMeta.rowIndex + 1}
+            {/* {tableMeta.rowIndex + 1} */}
           </div>
         </div>
       ),

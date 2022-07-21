@@ -1316,7 +1316,7 @@ function SubTable(props) {
           return;
         }
 
-        if (column?.infiniteScroll || column?.options.infiniteScroll) {
+        if (column?.infiniteScroll || column?.options?.infiniteScroll) {
           column.options = {
             ...column.options,
             customBodyRender: (value, tableMeta) => {
