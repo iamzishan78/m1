@@ -202,42 +202,42 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     options: {
       ignoreGlobal: true,
       dbName: "comments.comment",
-      display: true,
+      display: false,
       searchable: false,
       download: false,
       print: false,
       viewColumns: false,
     },
   },
-  {
-    name: "mapFlyTo",
-    label: " ",
-    options: {
-      sort: true,
-      // filter: true,
-      ignoreGlobal: true,
-      display: false,
-      viewColumns: false,
-      customRender: (value, tableMeta) => {
-        return (
-          <IconButton
-            size="medium"
-            color="primary"
-            style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
-            onClick={(e) => {
-              history.push(
-                `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
-                { showAgreementBreadcrumb: true }
-              );
-              e.stopPropagation();
-            }}
-          >
-            <MapFilledIcon />
-          </IconButton>
-        );
-      },
-    },
-  },
+  // {
+  //   name: "mapFlyTo",
+  //   label: " ",
+  //   options: {
+  //     sort: true,
+  //     // filter: true,
+  //     ignoreGlobal: true,
+  //     display: false,
+  //     viewColumns: false,
+  //     customRender: (value, tableMeta) => {
+  //       return (
+  //         <IconButton
+  //           size="medium"
+  //           color="primary"
+  //           style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
+  //           onClick={(e) => {
+  //             history.push(
+  //               `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
+  //               { showAgreementBreadcrumb: true }
+  //             );
+  //             e.stopPropagation();
+  //           }}
+  //         >
+  //           <MapFilledIcon />
+  //         </IconButton>
+  //       );
+  //     },
+  //   },
+  // },
   // {
   //   name: "approvalStatus",
   //   label: " ",

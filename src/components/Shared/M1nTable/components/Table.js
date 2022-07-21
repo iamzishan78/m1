@@ -110,6 +110,7 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 //icons
 import GetAppIcon from "@material-ui/icons/GetApp";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import LocationOnIcon from '@material-ui/icons/LocationOn';
 // import { ReactComponent as RequestPageIcon } from 'components/Shared/svgIcons/request_page_icon.svg';
 import RequestPageIcon from "components/Shared/svgIcons/request_page";
 // import RequestPageIcon from 'components/Shared/svgIcons/request_page_icon';
@@ -466,7 +467,8 @@ const useStyles = makeStyles((theme) => ({
   },
   agreementNumber: {
     position: 'absolute',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    // justifyContent: 'space-between',
 
     "&:hover": {
       "& $actionButtons": {
@@ -1754,7 +1756,7 @@ function SubTable(props) {
                       <Grid container spacing={0} direction="row"
                         style={{
                           position: 'absolute',
-                          justifyContent: 'space-between'
+                          // justifyContent: 'space-between'
                         }}
                         className={classes.agreementNumber}
                       >
@@ -1762,7 +1764,7 @@ function SubTable(props) {
                           style={{
                             display: "flex",
                             justifyContent: "flex-start",
-                            alignItems: "center",
+                            // alignItems: "center",
                             // paddingRight: "100px"
                           }}
                         >
@@ -1800,24 +1802,49 @@ function SubTable(props) {
                           </Typography>
                         </Grid>
 
+                        <Grid item>
+                              <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
+                        </Grid>
+
+{/* 
                         <Grid item
                           // className={classes.actionButtons}
                         >
                           <Grid container spacing={0} direction="row">
-                            <Grid item>
-                              <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
+
                             </Grid>
-                            </Grid>
-                        </Grid>
+                        </Grid> */}
 
 
                         <Grid item
                           className={classes.actionButtons}
                         >
                           <Grid container spacing={0} direction="row">
-                            {/* <Grid item>
-                              <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
-                            </Grid> */}
+
+                            <Grid item
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-start",
+                                alignItems: "center",
+                              }}
+                            >
+                              <IconButton
+                                size="small"
+                                // color="primary"
+                                // style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
+                                onClick={(e) => {
+                                  history.push(
+                                    `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
+                                    { showAgreementBreadcrumb: true }
+                                  );
+                                  e.stopPropagation();
+                                }}
+                              >
+                                {/* <MapFilledIcon /> */}
+                                <LocationOnIcon/>
+                              </IconButton>
+                            </Grid>
+
                             <Grid item
                               style={{
                                 display: "flex",
@@ -1833,28 +1860,6 @@ function SubTable(props) {
                               )}
                             </Grid>
 
-                            <Grid item
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-start",
-                                alignItems: "center",
-                              }}
-                            >
-                              <IconButton
-                                size="medium"
-                                color="primary"
-                                style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
-                                onClick={(e) => {
-                                  history.push(
-                                    `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
-                                    { showAgreementBreadcrumb: true }
-                                  );
-                                  e.stopPropagation();
-                                }}
-                              >
-                                <MapFilledIcon />
-                              </IconButton>
-                            </Grid>
 
                           </Grid>
                         </Grid>
