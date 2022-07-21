@@ -798,36 +798,38 @@ function SubTable(props) {
   // Shows comments
   const GridComments = ({ value, targetSourceId, tableMeta }) => {
     const id = props.targetLabel + tableMeta.columnIndex;
+    if(value && value > 0){
     return (
       <>
-        <Tooltip title={!value || value === 0 ? "Add Comments" : "value"} placement="top" style={{ marginRight: "10px" }}>
-          <Badge badgeContent={value ? value : null} color="secondary">
-            <IconButton
-              id={id + targetSourceId + tableMeta.rowIndex}
-              size={props.dense ? "small" : "medium"}
-              color="primary"
-              className={`${classes.icons} ${!value || value === 0 ? classes.noCommentsIcon : ""} ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex ? classes.iconSelected : ""
-                }`}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
-              }}
-              aria-label="show comments"
-              onMouseOver={() => {
-                if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                  multiSelectMouseHoverColor(id, "#dadbde");
-              }}
-              onMouseOut={() => {
-                if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                  multiSelectMouseHoverColor(id, "#efefef");
-              }}
+          <Tooltip title={!value || value === 0 ? "Add Comments" : "View Comments"} placement="top" style={{ marginRight: "10px" }}>
+          <Button 
+            id={id + targetSourceId + tableMeta.rowIndex}
+            size='small' 
+            startIcon={<ChatIcon />}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
+            }}
+            aria-label="show comments"
+            onMouseOver={() => {
+              if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                multiSelectMouseHoverColor(id, "#dadbde");
+            }}
+            onMouseOut={() => {
+              if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                multiSelectMouseHoverColor(id, "#efefef");
+            }}
             >
-              <ChatIcon />
-            </IconButton>
-          </Badge>
+              {value}
+          </Button>
         </Tooltip>
+          
       </>
     )
+    }
+    else {
+      return null
+    }
 
   }
   //// save contact data chosen by action menu
@@ -1799,18 +1801,30 @@ function SubTable(props) {
                         </Grid>
 
                         <Grid item
-                          className={classes.actionButtons}
+                          // className={classes.actionButtons}
                         >
                           <Grid container spacing={0} direction="row">
                             <Grid item>
                               <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
                             </Grid>
+                            </Grid>
+                        </Grid>
+
+
+                        <Grid item
+                          className={classes.actionButtons}
+                        >
+                          <Grid container spacing={0} direction="row">
+                            {/* <Grid item>
+                              <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
+                            </Grid> */}
                             <Grid item
                               style={{
                                 display: "flex",
                                 justifyContent: "flex-start",
                                 alignItems: "center",
                               }}
+                              // className={classes.actionButtons}
                             >
                               {value?.toLowerCase() === "approved" ? (
                                 <CheckCircleIcon style={{ color: "forestgreen" }} />
