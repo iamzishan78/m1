@@ -87,6 +87,9 @@ const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer
             getOptionSelected={(option, value) => {
                 return option?._id === value?._id;
             }}
+            filterOptions={(options) => {
+                return options
+            }}
             renderOption={(option) => {
 
                 return (

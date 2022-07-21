@@ -103,7 +103,9 @@ const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpe
         }
         {
           selectedType === 'existing' && <>
-            <AutoCompleteESShapeLayer label='Agreement Search' filters={[{ "field": "shapeJson.properties.type", "value": 'agreement' }]} setSelectedShapeLayer={setSelectedAgreement} />
+            <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
+              <AutoCompleteESShapeLayer label='Agreement Search' filters={[{ "field": "shapeJson.properties.type", "value": 'agreement' }]} setSelectedShapeLayer={setSelectedAgreement} />
+            </FormControl>
           </>
         }
 
