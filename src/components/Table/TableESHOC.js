@@ -345,7 +345,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     }
                 }
 
-
                 if (column?.options?.filter) {
                     const custom = column.custom;
                     column.options = {
