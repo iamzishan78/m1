@@ -118,8 +118,8 @@ export default function TransferDataManager(props) {
       </Grid>
       <Divider />
       <div className={classes.contentRoot}>
-        <Typography varient="h5" style={{ textAlign: "start", paddingBottom: "5px", fontWeight: "bolder", fontFamily: 'sans-serif' }} onClick={(e) => e.stopPropagation()}>
-          Step 1 of 2: Select Datasets
+        <Typography varient="h3" style={{ textAlign: "start", paddingBottom: "5px", fontWeight: "bolder", fontFamily: 'sans-serif' }} onClick={(e) => e.stopPropagation()}>
+          Select Datasource to Transfer
         </Typography>
         <Typography varient="h6" style={{ textAlign: "start", marginBottom: "10px" }} onClick={(e) => e.stopPropagation()}>
           Transfer row from one source category into a M1 platform dataset Result will represent a copy of the source at the time of point where the transfer occurs.
