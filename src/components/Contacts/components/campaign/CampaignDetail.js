@@ -21,7 +21,7 @@ import { InfoOutlined as InfoOutlinedIcon, MoreHoriz as MoreHorizIcon, Delete as
 
 // Components
 import NavHeader from "components/Land/components/Common/NavHeader";
-import CampaignHeader from "components/Contacts/components/campaign/campaignHeader";
+import CampaignHeader from "components/Contacts/components/campaign/CampaignHeader";
 import Tags from "components/Shared/Tagger";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
 

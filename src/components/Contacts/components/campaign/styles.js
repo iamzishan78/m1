@@ -158,4 +158,37 @@ export const headerStyles = makeStyles(() => ({
       backgroundColor: "#fff",
     },
   },
+  cardsWrapper: {
+    display: "flex",
+    marginLeft: "145px",
+  },
+  card: {
+    width: "25%",
+    height: "150px",
+    borderRadius: "0px",
+  },
+  leftCard: {
+    border: "2px solid #17aae0",
+    backgroundColor: "#cceefb",
+    "border-top-left-radius": "8px",
+    "border-bottom-left-radius": "8px",
+  },
+  cardContent: {
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    justifyContent: "space-between",
+    "& .MuiTypography-root": {
+      fontWeight: "bold",
+      fontSize: "1.75rem",
+    },
+  },
+  statusControl: {
+    justifyContent: "space-between",
+    margin: "16px 10px 16px 5px",
+    "& .MuiTypography-root": {
+      color: "#19a9dd",
+      fontSize: "1.50rem",
+    },
+  },
 }));
