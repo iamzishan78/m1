@@ -110,6 +110,7 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 //icons
 import GetAppIcon from "@material-ui/icons/GetApp";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import LocationOnIcon from '@material-ui/icons/LocationOn';
 // import { ReactComponent as RequestPageIcon } from 'components/Shared/svgIcons/request_page_icon.svg';
 import RequestPageIcon from "components/Shared/svgIcons/request_page";
 // import RequestPageIcon from 'components/Shared/svgIcons/request_page_icon';
@@ -466,7 +467,8 @@ const useStyles = makeStyles((theme) => ({
   },
   agreementNumber: {
     position: 'absolute',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    // justifyContent: 'space-between',
 
     "&:hover": {
       "& $actionButtons": {
@@ -798,36 +800,38 @@ function SubTable(props) {
   // Shows comments
   const GridComments = ({ value, targetSourceId, tableMeta }) => {
     const id = props.targetLabel + tableMeta.columnIndex;
+    if(value && value > 0){
     return (
       <>
-        <Tooltip title={!value || value === 0 ? "Add Comments" : "Comments"} placement="top" style={{ marginRight: "10px" }}>
-          <Badge badgeContent={value ? value : null} color="secondary">
-            <IconButton
-              id={id + targetSourceId + tableMeta.rowIndex}
-              size={props.dense ? "small" : "medium"}
-              color="primary"
-              className={`${classes.icons} ${!value || value === 0 ? classes.noCommentsIcon : ""} ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex ? classes.iconSelected : ""
-                }`}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
-              }}
-              aria-label="show comments"
-              onMouseOver={() => {
-                if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                  multiSelectMouseHoverColor(id, "#dadbde");
-              }}
-              onMouseOut={() => {
-                if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                  multiSelectMouseHoverColor(id, "#efefef");
-              }}
+          <Tooltip title={!value || value === 0 ? "Add Comments" : "View Comments"} placement="top" style={{ marginRight: "10px" }}>
+          <Button 
+            id={id + targetSourceId + tableMeta.rowIndex}
+            size='small' 
+            startIcon={<ChatIcon />}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
+            }}
+            aria-label="show comments"
+            onMouseOver={() => {
+              if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                multiSelectMouseHoverColor(id, "#dadbde");
+            }}
+            onMouseOut={() => {
+              if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                multiSelectMouseHoverColor(id, "#efefef");
+            }}
             >
-              <ChatIcon />
-            </IconButton>
-          </Badge>
+              {value}
+          </Button>
         </Tooltip>
+          
       </>
     )
+    }
+    else {
+      return null
+    }
 
   }
   //// save contact data chosen by action menu
@@ -1752,7 +1756,7 @@ function SubTable(props) {
                       <Grid container spacing={0} direction="row"
                         style={{
                           position: 'absolute',
-                          justifyContent: 'space-between'
+                          // justifyContent: 'space-between'
                         }}
                         className={classes.agreementNumber}
                       >
@@ -1760,7 +1764,7 @@ function SubTable(props) {
                           style={{
                             display: "flex",
                             justifyContent: "flex-start",
-                            alignItems: "center",
+                            // alignItems: "center",
                             // paddingRight: "100px"
                           }}
                         >
@@ -1798,26 +1802,24 @@ function SubTable(props) {
                           </Typography>
                         </Grid>
 
+                        <Grid item>
+                              <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
+                        </Grid>
+
+{/* 
+                        <Grid item
+                          // className={classes.actionButtons}
+                        >
+                          <Grid container spacing={0} direction="row">
+
+                            </Grid>
+                        </Grid> */}
+
+
                         <Grid item
                           className={classes.actionButtons}
                         >
                           <Grid container spacing={0} direction="row">
-                            <Grid item>
-                              <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
-                            </Grid>
-                            <Grid item
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-start",
-                                alignItems: "center",
-                              }}
-                            >
-                              {value?.toLowerCase() === "approved" ? (
-                                <CheckCircleIcon style={{ color: "forestgreen" }} />
-                              ) : (
-                                <WarningIcon style={{ color: "orange" }} />
-                              )}
-                            </Grid>
 
                             <Grid item
                               style={{
@@ -1827,9 +1829,9 @@ function SubTable(props) {
                               }}
                             >
                               <IconButton
-                                size="medium"
-                                color="primary"
-                                style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
+                                size="small"
+                                // color="primary"
+                                // style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
                                 onClick={(e) => {
                                   history.push(
                                     `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
@@ -1838,9 +1840,26 @@ function SubTable(props) {
                                   e.stopPropagation();
                                 }}
                               >
-                                <MapFilledIcon />
+                                {/* <MapFilledIcon /> */}
+                                <LocationOnIcon/>
                               </IconButton>
                             </Grid>
+
+                            <Grid item
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-start",
+                                alignItems: "center",
+                              }}
+                              // className={classes.actionButtons}
+                            >
+                              {value?.toLowerCase() === "approved" ? (
+                                <CheckCircleIcon style={{ color: "forestgreen" }} />
+                              ) : (
+                                <WarningIcon style={{ color: "orange" }} />
+                              )}
+                            </Grid>
+
 
                           </Grid>
                         </Grid>
