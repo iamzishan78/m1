@@ -7,7 +7,8 @@ import {
   withStyles,
 } from "@material-ui/core";
 
-import AcerageSummaryTabDeatils from "./AcerageSummary";
+import AcerageSummaryTabPanel from "./AcerageSummary";
+import AcerageDetailsTabPanel from "./AcerageDetails";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
@@ -85,7 +86,7 @@ const StyledTab = withStyles((theme) => ({
 export default function LandAnalytics(){
   const classes = useStyles();
 
-  const [tab, setTab] = useState(10);
+  const [tab, setTab] = useState(1);
 
   return (
     <>
@@ -104,7 +105,8 @@ export default function LandAnalytics(){
         </StyledTabs>
       </div>
       <div className={classes.actionBar}>
-        {tab === 10 && <AcerageSummaryTabDeatils />}
+        {tab === 0 && <AcerageSummaryTabPanel />}
+        {tab === 1 && <AcerageDetailsTabPanel />}
       </div>
       {/* <AnalyticsCards cards={cards} /> */}
       <Divider className={classes.divider} />

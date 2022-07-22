@@ -20,7 +20,7 @@ const useStyles = makeStyles({
   },
 });
 
-const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur, ...other }) => {
+const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur, createable,  ...other }) => {
   const [types, setTypes] = useState([]);
 
   const [typeListQuery, { data: dataTypes }] = useLazyQuery(SHAPE_AUTOCOMPLETE_LIST);
@@ -83,7 +83,7 @@ const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur
           return filter._id === inputValue;
         });
         // Suggest the creation of a new value
-        if (inputValue !== "" && (!isExist || isExist.length === 0)) {
+        if (inputValue !== "" && (!isExist || isExist.length === 0) && createable) {
           filtered.unshift({
             name: inputValue,
             _id: "newEntity",
@@ -115,6 +115,7 @@ const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur
 
 AutoCompleteTypeComponent.defaultProps = {
   autoFocus: true,
+  createable: true
 };
 
 export default AutoCompleteTypeComponent;
