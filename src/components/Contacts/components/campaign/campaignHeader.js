@@ -12,7 +12,7 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
 
   return (
     <Grid container display="flex" justifyContent="space-between" alignItems="center">
-      <Grid item md={3}>
+      <Grid item md={4}>
         <Grid container display="flex" justifyContent="space-between" alignItems="center">
           <Grid item xs="12" md="12">
             <UsersListWithIcon

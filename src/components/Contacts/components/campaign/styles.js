@@ -160,7 +160,7 @@ export const headerStyles = makeStyles(() => ({
   },
   cardsWrapper: {
     display: "flex",
-    marginLeft: "145px",
+    marginLeft: "15%",
   },
   card: {
     width: "25%",
