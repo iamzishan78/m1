@@ -38,8 +38,9 @@ const ContactBreadcrumbs = () => {
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
   const contactId = history.location.pathname.split("/")[3];
-  const parcelId = history.location.pathname.split("/parcels")[history.location.pathname.split("/").length - 1];
-  const unitId = history.location.pathname.split("/units")[history.location.pathname.split("/").length - 1];
+
+  const unitId = history.location.pathname.includes("units") && history.location.pathname.split("/units/")[history.location.pathname.split("/units/").length - 1];
+  const parcelId = history.location.pathname.includes("parcels") && history.location.pathname.split("/parcels/")[history.location.pathname.split("/parcels/").length - 1];
 
   useEffect(() => {
     if (contactId) {
@@ -52,6 +53,17 @@ const ContactBreadcrumbs = () => {
   }, [getContact, contactId]);
 
   useEffect(() => {
+    if (contactId) {
+      getContact({
+        variables: {
+          contactId,
+        },
+      });
+    }
+  }, [getContact, contactId]);
+
+  useEffect(() => {
+
     if (parcelId || unitId) {
       const layerId = parcelId ?? unitId;
       getCustomLayer({
@@ -60,7 +72,7 @@ const ContactBreadcrumbs = () => {
         },
       });
     }
-  }, [getCustomLayer, parcelId]);
+  }, [getCustomLayer, parcelId, unitId]);
 
   useEffect(() => {
     if (data && data.contact) {
@@ -146,301 +158,330 @@ const ContactBreadcrumbs = () => {
   }, [history.location]);
 
   return (
-  <div style={{ display: "flex", width: "100%", justifyContent: "space-between" }}>
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "left",
-        paddingLeft: "10px",
-      }}
-    >
-      <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-        {agreementBreadcrumbsParams.map((item, index) => (
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => history.push(item.url)}
-            key={index}
-          >
-            {item.text}
-          </Link>
-        ))}
-        {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => history.push("/contacts")}
-          >
+    <div style={{ display: "flex", width: "100%", justifyContent: "space-between" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "left",
+          paddingLeft: "10px",
+        }}
+      >
+        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+          {agreementBreadcrumbsParams.map((item, index) => (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => history.push(item.url)}
+              key={index}
+            >
+              {item.text}
+            </Link>
+          ))}
+          {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => history.push("/contacts")}
+            >
+              Contacts
+            </Link>
+          )}
+          {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => {
+                history.push(`/contact/details/${get(secondContact, "contact._id", "")}`);
+                setStateApp((stateApp) => ({
+                  ...stateApp,
+                  selectedContact: get(secondContact, "contact._id", ""),
+                }));
+              }}
+            >
+              {getName(secondContact.contact)}
+            </Link>
+          )}
+          {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => {
+                history.push(history.location.search.split("?return-url=")[1]);
+              }}
+            >
+              Deals
+            </Link>
+          )}
+          {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => history.push(history.location.search.split("?return-url=")[1])}
+            >
+              {truncate(stateApp.activeDeal.name, 30)}
+            </Link>
+          )}
+          {isPrevUrlFlowline && selectedPipe && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => history.push("/flow")}
+            >
+              Flow
+            </Link>
+          )}
+          {isPrevUrlFlowline && selectedPipe && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => history.push(`/flow/${selectedPipe?._id}`)}
+            >
+              {truncate(get(selectedPipe, "name", ""), 30)}
+            </Link>
+          )}
+          {isPrevUrlFlowline && selectedPipe && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => history.push(getFlowlineReturnUrl())}
+            >
+              {truncate(stateApp.activeDeal.name, 30)}
+            </Link>
+          )}
+          {checkModuleHistory() && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => {
+                history.push("/");
+                setStateNav((stateApp) => ({
+                  ...stateApp,
+                  contactFromMap: false,
+                }));
+              }}
+            >
+              Map
+            </Link>
+          )}
+
+          {checkRevenueStatement() && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => {
+                history.push("/revenue/statements");
+              }}
+            >
+              Revenue Statements
+            </Link>
+          )}
+          {checkRevenueStatement() && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => {
+                history.push(history.pathHistory[1]);
+              }}
+            >
+              {`${statements?.activeStatement?.checkNumber} - ${statements?.activeStatement?.payor?.["name"]}`}
+            </Link>
+          )}
+
+          {checkRevenueProperty() && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => {
+                history.push("/revenue/properties");
+              }}
+            >
+              Revenue Properties
+            </Link>
+          )}
+          {checkRevenueProperty() && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => {
+                history.push(history.pathHistory[1]);
+              }}
+            >
+              {get(stateApp.selectedRevenueProperty, "number", "")}-{get(stateApp.selectedRevenueProperty, "name", "")}
+            </Link>
+          )}
+
+          <Link style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer" }} color="inherit" onClick={() => history.push("/contacts")}>
             Contacts
           </Link>
-        )}
-        {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => {
-              history.push(`/contact/details/${get(secondContact, "contact._id", "")}`);
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                selectedContact: get(secondContact, "contact._id", ""),
-              }));
-            }}
-          >
-            {getName(secondContact.contact)}
-          </Link>
-        )}
-        {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => {
-              history.push(history.location.search.split("?return-url=")[1]);
-            }}
-          >
-            Deals
-          </Link>
-        )}
-        {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => history.push(history.location.search.split("?return-url=")[1])}
-          >
-            {truncate(stateApp.activeDeal.name, 30)}
-          </Link>
-        )}
-        {isPrevUrlFlowline && selectedPipe && (
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => history.push("/flow")}
-          >
-            Flow
-          </Link>
-        )}
-        {isPrevUrlFlowline && selectedPipe && (
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => history.push(`/flow/${selectedPipe?._id}`)}
-          >
-            {truncate(get(selectedPipe, "name", ""), 30)}
-          </Link>
-        )}
-        {isPrevUrlFlowline && selectedPipe && (
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => history.push(getFlowlineReturnUrl())}
-          >
-            {truncate(stateApp.activeDeal.name, 30)}
-          </Link>
-        )}
-        {checkModuleHistory() && (
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => {
-              history.push("/");
-              setStateNav((stateApp) => ({
-                ...stateApp,
-                contactFromMap: false,
-              }));
-            }}
-          >
-            Map
-          </Link>
-        )}
+          {isContactLink ? (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => history.push(`/contact/details/${contactId}`)}
+            >
+              {contactData?.name}
+            </Link>
+          ) : (
+            <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{getName(contactData)}</Typography>
+          )}
+          {history.location.pathname.includes("/detailedInformation") && (
+            <Typography
+              style={{
+                color: "#18AADD",
+                fontSize: "16px",
+                marginLeft: "5px",
+              }}
+            >
+              Detailed Information
+            </Typography>
+          )}
+          {history.location.pathname.includes("/documents") && (
+            <Typography
+              style={{
+                color: "#18AADD",
+                fontSize: "16px",
+                marginLeft: "5px",
+              }}
+            >
+              Documents
+            </Typography>
+          )}
+          {(history.location.pathname.includes("/wells") ||
+            history.location.pathname.includes("/parcels") ||
+            history.location.pathname.includes("/units")) && (<>
+              {unitId || parcelId ? (
+                <Link
+                  style={{
+                    marginLeft: "5px",
+                    fontSize: "16px",
+                    cursor: "pointer",
+                  }}
+                  color="inherit"
+                  onClick={() => history.goBack()}
+                >
+                  Associated Interests
+                </Link>
+              ) : (
+                <Typography
+                  style={{
+                    color: "#18AADD",
+                    fontSize: "16px",
+                    marginLeft: "5px",
+                  }}
+                >
+                  Associated Interests
+                </Typography>
 
-        {checkRevenueStatement() && (
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => {
-              history.push("/revenue/statements");
-            }}
-          >
-            Revenue Statements
-          </Link>
-        )}
-        {checkRevenueStatement() && (
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => {
-              history.push(history.pathHistory[1]);
-            }}
-          >
-            {`${statements?.activeStatement?.checkNumber} - ${statements?.activeStatement?.payor?.["name"]}`}
-          </Link>
-        )}
+              )}
+            </>
+            )}
 
-        {checkRevenueProperty() && (
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => {
-              history.push("/revenue/properties");
-            }}
-          >
-            Revenue Properties
-          </Link>
-        )}
-        {checkRevenueProperty() && (
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => {
-              history.push(history.pathHistory[1]);
-            }}
-          >
-            {get(stateApp.selectedRevenueProperty, "number", "")}-{get(stateApp.selectedRevenueProperty, "name", "")}
-          </Link>
-        )}
+          {unitId && layerObj?.name && (
+            <Typography
+              style={{
+                color: "#18AADD",
+                fontSize: "16px",
+                marginLeft: "5px",
+              }}
+            >
+              {layerObj?.name}
+            </Typography>
+          )}
 
-        <Link style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer" }} color="inherit" onClick={() => history.push("/contacts")}>
-          Contacts
-        </Link>
-        {isContactLink ? (
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => history.push(`/contact/details/${contactId}`)}
-          >
-            {contactData?.name}
-          </Link>
-        ) : (
-          <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{getName(contactData)}</Typography>
-        )}
-        {history.location.pathname.includes("/detailedInformation") && (
-          <Typography
-            style={{
-              color: "#18AADD",
-              fontSize: "16px",
-              marginLeft: "5px",
-            }}
-          >
-            Detailed Information
-          </Typography>
-        )}
-        {history.location.pathname.includes("/documents") && (
-          <Typography
-            style={{
-              color: "#18AADD",
-              fontSize: "16px",
-              marginLeft: "5px",
-            }}
-          >
-            Documents
-          </Typography>
-        )}
-        {(history.location.pathname.includes("/wells") ||
-          history.location.pathname.includes("/parcels") ||
-          history.location.pathname.includes("/units")) && (
-          <Typography
-            style={{
-              color: "#18AADD",
-              fontSize: "16px",
-              marginLeft: "5px",
-            }}
-          >
-            Associated Interests
-          </Typography>
-        )}
-        {parcelId && (
-          <Typography
-            style={{
-              color: "#18AADD",
-              fontSize: "16px",
-              marginLeft: "5px",
-            }}
-          >
-            {layerObj?.name}
-          </Typography>
-        )}
-        {history.location.pathname.includes("/deals") && (
-          <Typography
-            style={{
-              color: "#18AADD",
-              fontSize: "16px",
-              marginLeft: "5px",
-            }}
-          >
-            Deals
-          </Typography>
-        )}
-        {history.location.pathname.includes("recentActivites") && (
-          <Typography
-            style={{
-              color: "#18AADD",
-              fontSize: "16px",
-              marginLeft: "5px",
-            }}
-          >
-            Activities
-          </Typography>
-        )}
-      </Breadcrumbs>
-    </div>
-      <LinkWithIcon objectId={contactId.toLowerCase()} iconZiseSmall={false} />
+          {parcelId && (
+            <Typography
+              style={{
+                color: "#18AADD",
+                fontSize: "16px",
+                marginLeft: "5px",
+              }}
+            >
+              {layerObj?.name}
+            </Typography>
+          )}
+          {history.location.pathname.includes("/deals") && (
+            <Typography
+              style={{
+                color: "#18AADD",
+                fontSize: "16px",
+                marginLeft: "5px",
+              }}
+            >
+              Deals
+            </Typography>
+          )}
+          {history.location.pathname.includes("recentActivites") && (
+            <Typography
+              style={{
+                color: "#18AADD",
+                fontSize: "16px",
+                marginLeft: "5px",
+              }}
+            >
+              Activities
+            </Typography>
+          )}
+        </Breadcrumbs>
       </div>
+      <LinkWithIcon objectId={contactId.toLowerCase()} iconZiseSmall={false} />
+    </div >
   );
 };
 

@@ -394,7 +394,7 @@ export default function Navigation(props) {
       {!checkIfIgnoreHeader() && (
         <AppBar
           position="fixed"
-          className={clsx(classes.appBar, {
+          className={clsx(!location.pathname.startsWith("/land") ? classes.appBar : classes.appBarWhite, {
             [classes.appBarShift]: openDrawer,
           })}
           style={

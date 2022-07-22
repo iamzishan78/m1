@@ -710,7 +710,7 @@ function AddDealDialog(props) {
         variables: {
           deal: { _id: cardId, IsDeleted: true },
         },
-        refetchQueries: ["getPipeline", "getContactDeals"],
+        refetchQueries: ["getPipeline", "getContactDeals", "getContactSummary"],
         awaitRefetchQueries: true,
       }).then((result) => {
         const {
@@ -773,16 +773,14 @@ function AddDealDialog(props) {
               upsertDealDescriptor({
                 variables: {
                   dealId: cardId,
-                  relatedObject: [contactId], // HERE
+                  relatedObject: [contactId],
                   relatedObjectType: "Contact",
                   userId: stateApp.user.mongoId,
                 },
-                refetchQueries: ["getPipeline", "getContactDeals"],
+                refetchQueries: ["getPipeline", "getContactDeals", "getContactSummary"],
                 awaitRefetchQueries: true,
               }).then((result) => {
-                const {
-                  data: { upsertDealDescriptor },
-                } = result;
+                const { data: { upsertDealDescriptor } } = result;
                 if (upsertDealDescriptor?.success === false) success = false;
                 resolve();
               });
@@ -807,7 +805,7 @@ function AddDealDialog(props) {
                     relatedObjectType: "User",
                     userId: stateApp.user.mongoId,
                   },
-                  refetchQueries: ["getPipeline", "getContactDeals"],
+                  refetchQueries: ["getPipeline", "getContactDeals", "getContactSummary"],
 
                   awaitRefetchQueries: true,
                 }).then((result) => {
@@ -829,7 +827,7 @@ function AddDealDialog(props) {
                     id: stateApp.activeDeal?.owners[0]?._id,
                     relatedObjectType: "User",
                   },
-                  refetchQueries: ["getPipeline", "getContactDeals"],
+                  refetchQueries: ["getPipeline", "getContactDeals", "getContactSummary"],
 
                   awaitRefetchQueries: true,
                 }).then((result) => {
@@ -881,7 +879,7 @@ function AddDealDialog(props) {
                 variables: {
                   descriptor: movedCardDescriptor,
                 },
-                refetchQueries: ["getPipeline", "getContactDeals"],
+                refetchQueries: ["getPipeline", "getContactDeals", "getContactSummary"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
@@ -911,7 +909,7 @@ function AddDealDialog(props) {
                 variables: {
                   deal,
                 },
-                refetchQueries: ["getPipeline", "getContactDeals"],
+                refetchQueries: ["getPipeline", "getContactDeals", "getContactSummary"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
@@ -1059,8 +1057,12 @@ function AddDealDialog(props) {
         relatedObjectType: "Contact",
         userId: stateApp.user.mongoId,
       },
-      refetchQueries: ["getPipeline", "getContactDeals", "getDeal"],
+      refetchQueries: ["getPipeline", "getContactDeals"],
       awaitRefetchQueries: true,
+    }).then(result => {
+      getDeal({
+        variables: { id: stateApp.activeDeal._id }
+      });
     });
   };
 
@@ -1228,7 +1230,7 @@ function AddDealDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
@@ -1268,7 +1270,7 @@ function AddDealDialog(props) {
             <div className={classes.contentRoot}>
               <Drawer dealSettingsNumber={getSubtaskNumber()} mapSettings={mapSettings} />
               {!["Deal", "Map"].includes(stateApp.transactBarView) &&
-              (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
+                (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>
               ) : (
                 <div className={classes.inputFieldRoot}>

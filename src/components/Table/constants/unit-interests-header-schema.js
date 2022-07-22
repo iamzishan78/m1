@@ -28,19 +28,20 @@ const UnitInterestsHeadCells = [
             sort: true, 
             filter: true,
             setCellProps: () => ({ style: { minWidth: "250px" } }),
-            customRender: (value, tableMeta, updateValue) => {
-                return (
-                  <p
-                    onClick={(e) => {
-                      e.stopPropagation();
-                        history.push(`/map/units/${tableMeta.rowData[2]}`, { showUnitsBreadcrumb: true });
-                    }}
-                    style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-                  >
-                    {value}
-                  </p>
-                );
-              },
+            //hide custom render of blue link for now as it is not consistent with tract interests
+            // customRender: (value, tableMeta, updateValue) => {
+            //     return (
+            //       <p
+            //         onClick={(e) => {
+            //           e.stopPropagation();
+            //             history.push(`/map/units/${tableMeta.rowData[2]}`, { showUnitsBreadcrumb: true });
+            //         }}
+            //         style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+            //       >
+            //         {value}
+            //       </p>
+            //     );
+            //   },
         }
     },
     {
@@ -220,9 +221,18 @@ const UnitInterestsHeadCells = [
     //     }
     // },
     {
-        name: "nra", label: "Net Royalty Acres", esKey: 'nra', 
+        name: "nra", label: "NRA", esKey: 'nra', 
         options: { 
             dbName: "nra",
+            sort: true, 
+            filter: true 
+        }
+    },
+
+    {
+        name: "offer_price", label: "Offer Price", esKey: 'offer_price', 
+        options: { 
+            dbName: "offer_price",
             sort: true, 
             filter: true 
         }

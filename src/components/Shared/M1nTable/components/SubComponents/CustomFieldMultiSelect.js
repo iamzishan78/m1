@@ -59,8 +59,8 @@ const CustomFieldMultiSelect = ({
   const [search, setSearch] = useState("");
   const [, setStateApp] = useContext(AppContext);
   const defaultValue = {
-    label: "----",
-    value: "----",
+    label: "--",
+    value: "--",
   };
   const [showOptions, setShowOptions] = useState(false);
   const [showIcon, setShowIcon] = useState(false);
@@ -415,7 +415,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange }) => {
           );
         })
       ) : (
-        <span class="colorText">----</span>
+        <span class="colorText">--</span>
       )}
     </span>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Grid,
@@ -60,7 +60,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function HeaderFunction(props) {
+function HeaderFunction(props) {
   const classes = useStyles();
   // const [check, setCheck] = useState({});
   const { check, setCheck } = props
@@ -74,14 +74,24 @@ export default function HeaderFunction(props) {
   useEffect(() => {
     return () => {
       const watchCheckNumber = watch("checkNumber")
-      if (!watchCheckNumber || watchCheckNumber === '') {
-        dispatch(showInfoMessage("Check Number is required"));
+      const watchCheckDate = watch("checkDate");
+      if (((!watchCheckDate || watchCheckDate === '') || (watchCheckDate === 'Invalid date')) && (!watchCheckNumber || watchCheckNumber === '')) {
+        dispatch(showInfoMessage("Check Number and Check Date  is required"));
         history.goBack();
+      } else {
+        if (!watchCheckNumber || watchCheckNumber === '') {
+          dispatch(showInfoMessage("Check Number is required"));
+          history.goBack();
+        }
+        if ((!watchCheckDate || watchCheckDate === '') || (watchCheckDate === 'Invalid date')) {
+          dispatch(showInfoMessage("Check Date is required"));
+          history.goBack();
+        }
       }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history]);
+  }, []);
 
   useEffect(() => {
     if (check) {
@@ -459,3 +469,5 @@ export default function HeaderFunction(props) {
     </div>
   );
 }
+
+export default memo(HeaderFunction);

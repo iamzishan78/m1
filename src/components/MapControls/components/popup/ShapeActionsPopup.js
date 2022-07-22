@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import * as turf from "@turf/turf";
 import hat from "hat";
 import polylabel from "polylabel";
-import { Menu, MenuItem } from "@material-ui/core";
+import { FormControl, InputLabel, ListItem, ListItemText, Menu, MenuItem, Select } from "@material-ui/core";
 import { Grid } from "@material-ui/core";
 import Modal from "@material-ui/core/Modal";
 import Button from "@material-ui/core/Button";
@@ -21,6 +21,7 @@ import ConvertContact from "components/Shared/svgIcons/convert_contact";
 import LayerIcon from "@material-ui/icons/Layers";
 import FilterAltIcon from "../../../Shared/svgIcons/FilterAltIcon";
 import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/styles";
 
 import { AppContext } from "AppContext";
 import { NavigationContext, DRAWING_MODES } from "components/Navigation/NavigationContext";
@@ -28,7 +29,7 @@ import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
 import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
 import { ABSTRACTGEOCONTAINSQUERY } from "graphQL/useQueryAbstractGeoContains";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
-import { addCustomShapeProperties, drawBoundary, getDrawAdustedShape, getRotateAbleShapeFromSelectedQuarters } from "../../components/DrawShapes/drawShapesHelpers";
+import { addCustomShapeProperties, drawBoundary, getDrawAdustedShape, getRotateAbleShapeFromSelectedQuarters } from "../DrawShapes/drawShapesHelpers";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived } from "actions";
@@ -41,14 +42,45 @@ import { resetShapeOwnerAction } from "store/actions/ownerActions";
 
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
-import { getPolygonString } from "components/Shared/functions";
+import { copy, getPolygonString } from "components/Shared/functions";
 import { calculateLandArea } from "components/Shared/functions/shapeLayer";
 import ShapeEditActions from "components/MapControls/components/popup/ShapeEditActions";
+import AgreementTypeMenu from "./AgreementTypeMenu";
+
+
+const useStyles = makeStyles({
+  selectedType: {
+    borderBottom: "4px solid #01B0F0",
+    display: "inline",
+    cursor: "pointer",
+  },
+  unSelectedType: {
+    display: "inline",
+    color: "#827F7F",
+    cursor: "pointer",
+  },
+  inputField: {
+    marginTop: '10px',
+    padding: '10px',
+    '& .MuiInputLabel-outlined': {
+      // transform: 'translate(14px, 20px) scale(1)',
+    }
+  },
+  dialogFooter: {
+    padding: '10px',
+    justifyContent: 'end',
+    display: 'flex'
+  }
+});
+
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { classes, children, toggleSpatialDataCard, showSpatialDataCard, popupCloseAction } = props;
+  const [selectedType, setSelectedType] = useState("new");
+  const [selectedShapeType, setSelectedShapeType] = useState();
+  const shapeActionClasses = useStyles();
   const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateNav] = useContext(NavigationContext);
@@ -523,6 +555,52 @@ const ShapeActionsPopup = (props) => {
     popupCloseAction();
   };
 
+  const updateAndOpenShapeDetail = (layerData) => {
+    let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
+    layerData.shapeJson.geometry = abstractShape.geometry
+    layerData.shapeJson.properties = {
+      ...layerData.shapeJson.properties,
+      originalProperties: abstractShape.properties,
+      shapeArea: calculateLandArea(abstractShape),
+      shapeCenter: calculateShapeCenter(abstractShape.geometry.coordinates),
+    }
+    const customLayerData = {
+      shapeJson: layerData.shapeJson,
+      shape: JSON.stringify(layerData.shapeJson),
+      layer: layerData.layer,
+      name: layerData.shapeLabel,
+      user: layerData.user._id,
+    };
+
+    updateCustomLayer({
+      variables: {
+        customLayerId: layerData._id,
+        customLayer: customLayerData,
+      },
+    });
+    let layers = [...stateApp.customLayers];
+    const layerIndex = layers.findIndex((l) => l._id === layerData._id)
+    layers[layerIndex] = customLayerData
+    const jsonLayer = copy(customLayerData.shapeJson)
+    jsonLayer.layer = { id: customLayerData.layer };
+    jsonLayer.id = layerData._id;
+
+    findBoundsMap([jsonLayer], stateApp.map);
+    drawBoundary(stateApp.map, jsonLayer);
+    setStateApp((state) => ({
+      ...state,
+      selectedShape: {
+        ...jsonLayer.properties,
+        feature: jsonLayer,
+        id: layerData._id,
+      },
+      customLayers: layers,
+    }));
+
+    popupCloseAction();
+    updateSelectedLayerFeature(layerData)
+  }
+
   const deleteAOI = () => {
     // Turning off the confirmation modal
     setDeleteModal(false);
@@ -699,31 +777,9 @@ const ShapeActionsPopup = (props) => {
           </Grid>
         </MenuItem>
       </Menu>
-      <Menu
-        id="simple-menu"
-        elevation={0}
-        getContentAnchorEl={null}
-        anchorEl={agreementAnchorEl}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        PaperProps={{
-          style: {
-            left: "10%",
-            transform: "translateX(105%) translateY(-10%)",
-          },
-        }}
-        open={Boolean(agreementAnchorEl)}
-        onClose={() => setAgreementAnchorEl(null)}
-        className={classes.parcelPopover}
-      >
-        <MenuItem disabled>Agreement Type</MenuItem>
-        <MenuItem onClick={() => saveAndOpenShapeDetail("agreement", "contract")}>Contract</MenuItem>
-        <MenuItem onClick={() => saveAndOpenShapeDetail("agreement", "deed")}>Deed</MenuItem>
-        <MenuItem onClick={() => saveAndOpenShapeDetail("agreement", "lease")}>Lease</MenuItem>
-        <MenuItem onClick={() => saveAndOpenShapeDetail("agreement", "surface")}>Surface/Row</MenuItem>
-      </Menu>
+
+      <AgreementTypeMenu classes={classes} agreementAnchorEl={agreementAnchorEl}
+        saveAndOpenShapeDetail={saveAndOpenShapeDetail} updateAndOpenShapeDetail={updateAndOpenShapeDetail} setAgreementAnchorEl={setAgreementAnchorEl} />
 
       <Fragment>
         <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span>{" "}

@@ -306,6 +306,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     e.preventDefault();
     if (nameAutValue) {
       const ownerToAdd = { ...newOwner };
+      if (ownerToAdd.nra) {
+        ownerToAdd.nra = addTrailingZeros(parseFloat(ownerToAdd.nra).toFixed(8));
+      }
       if (parcelOwnersRadioBValue === "true") {
         ownerToAdd.depthFrom = "All depths";
         ownerToAdd.depthTo = "All depths";
@@ -359,7 +362,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const calculateNetAcres = (interest) => {
     if (!interest) return null;
     const netAcres = addTrailingZeros(
-      stateApp.selectedParcel.sdGrossAcres ? (stateApp.selectedParcel.sdGrossAcres * interest).toFixed(8) : null
+      !!get(stateApp, 'selectedParcel.sdGrossAcres') ? (stateApp.selectedParcel.sdGrossAcres * interest).toFixed(8) : null
     );
     return netAcres;
   };
@@ -388,7 +391,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   };
 
   const classes = useStyles();
-  const modalClass = Modals();
   return (
     <div className={classes.move}>
       <React.Fragment>

@@ -19,12 +19,12 @@ import DocumentProvider from "./components/Document/DocumentProvider";
 import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider";
 import ContactsProvider from "./components/Contacts/ContactsProvider";
 import ContactDetailsProvider from "./components/ContactDetailCard/ContactDetailsProvider";
-import ContactDealsProvider from "./components/DealsDetailCard/ContactDealsProvider";
+// import ContactDealsProvider from "./components/DealsDetailCard/ContactDealsProvider";
 import ContactParcelsInterestProvider from "./components/ParcelsDetailCard/ContactParcelsInterestProvider";
 import ContactParcelsInterestDetailsProvider from "./components/ParcelsDetailCard/ContactParcelsInterestDetailsProvider";
 import ContactUnitsInterestDetailsProvider from "./components/ShapeDetailCard/Unit/ContactUnitsInterestDetailsProvider";
 import ContactWellInterestProvider from "./components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/ContactWellInterestProvider";
-import ContactDocumentsProvider from "./components/ViewDocuments/ContactDocumentsProvider";
+// import ContactDocumentsProvider from "./components/ViewDocuments/ContactDocumentsProvider";
 import ContactDetailedInfoProvider from "./components/ContactDetailedInfo/ContactDetailedInfoProvider";
 import ContactRecentActivitiesProvider from "./components/RecentActivities/ContactRecentActivitiesProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
@@ -364,14 +364,14 @@ function App() {
                           path="/contact/details/:contactId/recentActivites"
                           component={ContactRecentActivitiesProvider}
                         />
-                        <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
+                        {/* <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} /> */}
                         <PrivateRoute exact path="/contact/details/:contactId/wells" component={ContactWellInterestProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/parcels" component={ContactParcelsInterestProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/parcels/:parcelId" component={ContactParcelsInterestDetailsProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/units" component={ContactParcelsInterestProvider} />
                         {/* <PrivateRoute exact path="/contact/details/:contactId/units/:unitId" component={ContactParcelsInterestProvider} /> */}
                         <PrivateRoute exact path="/contact/details/:contactId/units/:unitId" component={ContactUnitsInterestDetailsProvider} />
-                        <PrivateRoute exact path="/contact/details/:contactId/deals" component={ContactDealsProvider} />
+                        {/* <PrivateRoute exact path="/contact/details/:contactId/deals" component={ContactDealsProvider} /> */}
                         <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
                         <PrivateRoute exact path="/studio" component={StudioProvider} />
                         <PrivateRoute title="Bulk Upload" exact path={["/bulkupload", "/bulkupload/:type"]} component={BulkUpload} />
