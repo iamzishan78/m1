@@ -1,0 +1,161 @@
+import { makeStyles } from "@material-ui/styles";
+
+const getDealNameFieldHeight = (title) => {
+  const lineLength = Math.ceil(title.length / 53);
+  return `${24 * lineLength}px !important`;
+};
+
+export const useStyles = makeStyles(() => ({
+  header: {
+    borderBottom: "1px solid rgba(224, 224, 224, 1)",
+    backgroundColor: "#F2F2F2",
+    minHeight: "64px",
+    display: "flex",
+    position: "relative",
+    alignItems: "center",
+  },
+  heading: {
+    padding: "10px 20px 20px 30px",
+    fontWeight: "600",
+    fontSize: "20px",
+  },
+  detailHeader: {
+    backgroundColor: "#fff",
+    marginTop: "7px",
+  },
+  title: {
+    width: "100%",
+    display: "flex",
+  },
+  titleText: {
+    width: "100%",
+    padding: "0px 15px 0px 30px",
+  },
+  tagsContainer: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  highlighter: {
+    background: "#263451",
+    padding: "5px 16px",
+    borderRadius: 16,
+    width: "max-content",
+    transform: "translateX(5px) translateY(11px)",
+    height: "32px",
+  },
+  highlight: {
+    color: "#ffffff",
+    textTransform: "uppercase",
+    fontWeight: "bold",
+  },
+  menuIcon: {
+    background: "transparent",
+    align: "center",
+    "& svg": {
+      fill: "#808080 !important",
+    },
+  },
+  tags: {
+    "& fieldset": {
+      border: "none",
+    },
+    width: "74%",
+  },
+  menu: {
+    "& .MuiListItem-gutters": {
+      paddingLeft: "10px !important",
+      paddingRight: "10px !important",
+    },
+    "& .MuiListItem-root": {
+      "& .MuiListItemIcon-root": {
+        minWidth: "25px",
+        "& .MuiSvgIcon-root": {
+          fill: "red !important",
+        },
+      },
+    },
+  },
+  metaActions: {
+    position: "absolute",
+    right: "15px",
+    "& button": {
+      margin: "0px 5px",
+      color: "grey",
+      fontWeight: "bold",
+      textTransform: "capitalize",
+      padding: "6px 12px",
+    },
+  },
+  inputFieldDealName: (props) => ({
+    width: "542px",
+    padding: "0px 30px 20px 30px",
+    "& .MuiTextField-root": {
+      "& .MuiInputBase-multiline": {
+        "& .MuiInputBase-inputMultiline": {
+          height: props.name.length > 0 ? getDealNameFieldHeight(props.name) : "auto !important",
+        },
+      },
+    },
+  }),
+  dealNameRoot: {
+    fontWeight: "bold",
+    paddingLeft: 0,
+    textAlign: "left",
+    fontSize: "1.2rem",
+    "&.Mui-focused fieldset": {
+      border: "1px solid black",
+      backgroundColor: "transparent",
+    },
+    "&:hover": {
+      border: "1px solid black",
+    },
+  },
+  notchedOutline: {
+    border: 0,
+  },
+  metaButton: ({ metaCollapse }) => ({
+    backgroundColor: !metaCollapse ? "#eceded" : "#fff",
+    "&:hover": {
+      backgroundColor: !metaCollapse ? "#eceded" : "#fff",
+    },
+  }),
+  tabsDetailContainer: ({ metaCollapse }) => ({
+    padding: "5px 10px 0px 0px",
+    width: !metaCollapse ? "calc(100% - 627px)" : "100%",
+  }),
+  actionsContainer: {
+    display: "flex",
+    direction: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+  },
+  tabsHeader: {
+    background: "#ffffff",
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+  },
+  tabsSection: {},
+  tabDetailSection: {
+    padding: 20,
+    background: "#ffffff",
+  },
+}));
+
+export const headerStyles = makeStyles(() => ({
+  dateRoot: {
+    border: "1px solid #EBEBEB",
+    backgroundColor: "#fff",
+    "&.Mui-focused fieldset": {
+      border: "1px solid black",
+      backgroundColor: "transparent",
+    },
+    "&:hover": {
+      backgroundColor: "#EBEBEB",
+    },
+    "&:active": {
+      border: "1px solid black",
+      backgroundColor: "#fff",
+    },
+  },
+}));
