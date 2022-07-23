@@ -9,22 +9,12 @@ import {
 
 import AcerageSummaryTabPanel from "./AcerageSummary";
 import AcerageDetailsTabPanel from "./AcerageDetails";
+import ExhibitATabPanel from "./ExhibitA";
+import WellMasterTabPanel from "./WellMaster";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
     margin: "100px 0 10px",
-  },
-  actionBar: {
-    backgroundColor: "#f7f7f7",
-    width: "100%",
-    minHeight: "65px",
-
-    "& .MuiSelect-select:focus, & .MuiOutlinedInput-root": {
-      backgroundColor: "#ffff",
-    },
-    "& .MuiButtonGroup-groupedContainedSecondary:not(:last-child)": {
-      borderColor: "#ffff",
-    },
   },
   actionsGrid: {
     "& .MuiButtonBase-root": {
@@ -86,7 +76,7 @@ const StyledTab = withStyles((theme) => ({
 export default function LandAnalytics(){
   const classes = useStyles();
 
-  const [tab, setTab] = useState(1);
+  const [tab, setTab] = useState(3);
 
   return (
     <>
@@ -104,10 +94,10 @@ export default function LandAnalytics(){
           <StyledTab label="Well Master" />
         </StyledTabs>
       </div>
-      <div className={classes.actionBar}>
-        {tab === 0 && <AcerageSummaryTabPanel />}
-        {tab === 1 && <AcerageDetailsTabPanel />}
-      </div>
+      {tab === 0 && <AcerageSummaryTabPanel />}
+      {tab === 1 && <AcerageDetailsTabPanel />}
+      {tab === 2 && <ExhibitATabPanel />}
+      {tab === 3 && <WellMasterTabPanel />}
       {/* <AnalyticsCards cards={cards} /> */}
       <Divider className={classes.divider} />
     </>

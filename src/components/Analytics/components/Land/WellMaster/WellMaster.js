@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Container } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import Table from "components/Shared/M1nTable/components/Table";
-import TableHeader from "components/Table/constants/analytics-land-acerage-summary-schema";
+import TableHeader from "components/Table/constants/analytics-land-well-master-schema";
 
 // QUERIES
 import { deepEqualObjects, copy } from "components/Shared/functions";
@@ -45,7 +45,7 @@ function WellMasterTable(props) {
     props.setTableMeta({
       extendSearchQuery: props.landSearchQuery || "",
       searchFields: ["*"],
-      TableHeader: props.tableHeaders,
+      TableHeader: copy(TableHeader),
       esIndex: esIndex,
       filters: fixedFilters,
       selectedGridView: { filters: [] },

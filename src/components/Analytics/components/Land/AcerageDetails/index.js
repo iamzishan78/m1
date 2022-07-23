@@ -22,8 +22,21 @@ const useStyles = makeStyles((theme) => ({
     height: 40,
   },
   actionsGrid: {
-    width: '100%'
-  }
+    width: "100%",
+  },
+  actionBar: {
+    backgroundColor: "#f7f7f7",
+    width: "100%",
+    minHeight: "65px",
+    marginBottom: 30,
+
+    "& .MuiSelect-select:focus, & .MuiOutlinedInput-root": {
+      backgroundColor: "#ffff",
+    },
+    "& .MuiButtonGroup-groupedContainedSecondary:not(:last-child)": {
+      borderColor: "#ffff",
+    },
+  },
 }));
 
 export default function AcerageDetailTabPanel() {
@@ -65,9 +78,9 @@ export default function AcerageDetailTabPanel() {
     setExtFilters({ ...externalFilters, [field]: newValue || "All" });
   }
 
-  console.log("*-*-* externalFilters -*-*-*", {externalFilters, esFilters});
   return (
     <>
+    <div className={classes.actionBar}>
       <Grid
         container
         direction="row"
@@ -140,6 +153,7 @@ export default function AcerageDetailTabPanel() {
           </Grid>
         </Grid>
       </Grid>
+      </div>
       <AcerageDetail
         header="Acerage Detail"
         esFilters={esFilters}

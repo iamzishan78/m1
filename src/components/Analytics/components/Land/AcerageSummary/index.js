@@ -21,6 +21,19 @@ const useStyles = makeStyles((theme) => ({
   select: {
     height: 40,
   },
+  actionBar: {
+    backgroundColor: "#f7f7f7",
+    width: "100%",
+    minHeight: "65px",
+    marginBottom: 30,
+
+    "& .MuiSelect-select:focus, & .MuiOutlinedInput-root": {
+      backgroundColor: "#ffff",
+    },
+    "& .MuiButtonGroup-groupedContainedSecondary:not(:last-child)": {
+      borderColor: "#ffff",
+    },
+  },
 }));
 export default function AcerageSummaryTabDeatils() {
   const classes = useStyles();
@@ -54,6 +67,7 @@ export default function AcerageSummaryTabDeatils() {
 
   return (
     <>
+    <div className={classes.actionBar}>
       <Grid
         container
         direction="row"
@@ -105,6 +119,7 @@ export default function AcerageSummaryTabDeatils() {
           </Grid>
         </Grid>
       </Grid>
+      </div>
       <AcerageSummary
         header="Acerage Summary"
         esFilters={esFilters}
