@@ -4023,6 +4023,7 @@ function SubTable(props) {
   if (props.header === "Deals"
     || props.header === "Activities"
     || props.header === "Agreements"
+    || props.header === "Tracts"
     || props.parent === "TractTable"
     || props.parent === "TractInterestsTable"
   ) {

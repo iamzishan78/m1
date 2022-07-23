@@ -51,7 +51,7 @@ function AgreementsTable(props) {
 
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
-  const GridViewModule = userGridViewSettings[`Agreements`]
+  const GridViewModule = userGridViewSettings[`Agreements`];
 
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
@@ -70,6 +70,7 @@ function AgreementsTable(props) {
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
+      hit.agreementId = hit._id
       hit.agreementType = agreementTypes.find((type) => type.value === hit.agreementType || type.label === hit.agreementType)?.label;
       hit.agreementDate = hit.agreementDate ? convert_date(hit.agreementDate) : null;
       hit.effectiveDate = hit.effectiveDate ? convert_date(hit.effectiveDate) : null;

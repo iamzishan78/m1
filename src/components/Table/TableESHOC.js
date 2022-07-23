@@ -241,7 +241,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 if (tableMeta.modifySelectedGridView) {
                     tableMeta.modifySelectedGridView(tableMeta.selectedGridView)
                 }
-
+                setLoading(true);
                 getESSimpleSearch({
                     variables: {
                         index: tableMeta.esIndex,
