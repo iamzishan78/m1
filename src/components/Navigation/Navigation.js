@@ -446,7 +446,7 @@ export default function Navigation(props) {
                 </Typography>
               )}
               {location.pathname.startsWith("/land") && (
-                <LandAppBar classes={classes} />
+                <LandAppBar classes={classes} user={stateApp.user} />
               )}
               {location.pathname.startsWith("/revenue") && (
                 <RevenueAppBar classes={classes} />
