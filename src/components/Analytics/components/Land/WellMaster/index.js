@@ -81,7 +81,6 @@ export default function ExhibitATabPanel() {
     setExtFilters({ ...externalFilters, [field]: newValue || "All" });
   };
 
-  console.log("*-*-* externalFilters -*-*-*", { externalFilters, esFilters });
   return (
     <>
       <div className={classes.actionBar}>
