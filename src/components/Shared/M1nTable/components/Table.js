@@ -466,7 +466,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "smaller",
   },
   agreementNumber: {
-    position: 'absolute',
+    // position: 'absolute',
     alignItems: 'center',
     // justifyContent: 'space-between',
 
@@ -803,7 +803,11 @@ function SubTable(props) {
     if(value && value > 0){
     return (
       <>
-          <Tooltip title={!value || value === 0 ? "Add Comments" : "View Comments"} placement="top" style={{ marginRight: "10px" }}>
+          <Tooltip 
+            title={!value || value === 0 ? "Add Comments" : "View Comments"} 
+            placement="top" 
+            // style={{ marginRight: "10px" }}
+            >
           <Button 
             id={id + targetSourceId + tableMeta.rowIndex}
             size='small' 
