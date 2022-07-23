@@ -674,8 +674,12 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         }
 
         const updateGridViewRedux = (tableState) => {
+            debugger
             setTableMeta((tableMeta) => {
-                if (tableMeta?.selectedGridView)
+                if (tableMeta?.selectedGridView) {
+                    if (isFiniteScroll)
+                        tableState.columns[0].display = false
+
                     dispatch(updateUserGridViewSettingAction.STARTED({
                         userGridViewSetting: {
                             module: tableMeta?.typeKeyword?.gridViewCategory,
@@ -687,6 +691,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                             user: stateApp.user?.mongoId,
                         }
                     }));
+                }
                 let filters = activeFiltersRef.current;
                 if (props.targetLabel === "well") {
                     filters = filters.filter(f => f.type !== "geo_intersects");
