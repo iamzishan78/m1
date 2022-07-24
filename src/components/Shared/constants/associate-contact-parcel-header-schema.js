@@ -25,7 +25,9 @@ const AssociateContactWellHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "parcelName", label: "Tract Name", options:{setCellProps: () => ({ style: { minWidth: "200px", maxWidth: "200px", fontWeight: 600, color: "#17aadd", } }),}},
+  // hide custom render of blue link for now as it is not consistent with unit interests
+  //{ name: "parcelName", label: "Tract Name", options:{setCellProps: () => ({ style: { minWidth: "200px", maxWidth: "200px", fontWeight: 600, color: "#17aadd", } }),}},
+  { name: "parcelName", label: "Tract Name", options:{setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }),}},
   { name: "state", label: "State" },
   { name: "county", label: "County" },
   { name: "survey", label: "Survey/ Meridian" },
@@ -109,27 +111,27 @@ const AssociateContactWellHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "isTracked",
-    label: "Track",
-    options: {
-      sort: false,
-      filter: false,
-      searchable: false,
-      download: false,
-      print: false,
-      filterOptions: {
-        names: ["Tracked", "Untracked"],
-        logic(tracked, filterVal) {
-          return !(
-            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
-            (filterVal.indexOf("Untracked") >= 0 && !tracked)
-          );
-        },
-      },
-      filterType: "dropdown",
-    },
-  },
+  // {
+  //   name: "isTracked",
+  //   label: "Track",
+  //   options: {
+  //     sort: false,
+  //     filter: false,
+  //     searchable: false,
+  //     download: false,
+  //     print: false,
+  //     filterOptions: {
+  //       names: ["Tracked", "Untracked"],
+  //       logic(tracked, filterVal) {
+  //         return !(
+  //           (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+  //           (filterVal.indexOf("Untracked") >= 0 && !tracked)
+  //         );
+  //       },
+  //     },
+  //     filterType: "dropdown",
+  //   },
+  // },
   {
     name: "detailCard",
     label: " ",
