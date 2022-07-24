@@ -1361,8 +1361,229 @@ function SubTable(props) {
           console.log('FISHBRAIN 1',column)
 
             if (column.label === 'Unit Name'){
-              console.log('FISHBRAIN',)
-              return null
+              {
+                column.options = {
+                  ...column.options,
+                  customRender: (value, tableMeta) => {
+                    const splitNumber = value?.split("_");
+  
+                    const styles = {
+                      cursor: GlobalStyles.hyperlink.cursor,
+                      //minWidth: "1400px"
+                      // position: 'relative',
+                      // left: '55px',
+                      minWidth: '300px',
+                      maxWidth: '300px'
+                    };
+                    const targetSourceId = tableMeta.rowData[1];
+                    const commentValue = tableMeta.rowData[21]
+                    // const isSnapGrid = column.options.isSnapGrid || false
+  
+                    return (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          // minWidth: '300px',
+                          // maxWidth: '300px'
+                        }}
+                      >
+                        <Grid container spacing={0} direction="row"
+                          style={{
+                            position: 'absolute',
+                            // justifyContent: 'space-between'
+                          }}
+                          className={classes.agreementNumber}
+                        >
+                          <Grid item
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-start",
+                              // alignItems: "center",
+                              // paddingRight: "100px"
+                            }}
+                          >
+
+{/* if (column.name === 'name' && props.parent === 'UnitsTable') {
+                    const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item, })));
+                    return (
+                      <span style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+                       onClick={() => history.push(`/map/units/${row_line._id}`)}>{row_line.name}</span>
+                    )
+                  } */}
+
+                              {/* <div
+                                style={{
+                                  display: "flex",
+                                  cursor: "pointer",
+                                  minWidth: "120px",
+                                  maxWidth: "120px",
+                                  borderRadius: "7px",
+                                  color: "#17aadd",
+                                  wordBreak: "break-word",
+                                  "&:hover": {
+                                    textDecoration: "underline",
+                                  },
+                                  fontWeight: "bold",
+                                  justifyContent: "flex-start",
+                                  paddingRight: '40px',
+                                }}>
+
+                                <Typography
+                                  noWrap
+                                  color="inherit"
+                                >
+                                  {tableMeta?.rowData[2]}
+                                </Typography>
+
+                              </div> */}
+
+                            {/* <div
+                                                          style={{
+                                                            display: "flex",
+                                                            cursor: "pointer",
+                                                            minWidth: "120px",
+                                                            maxWidth: "120px",
+                                                            borderRadius: "7px",
+                                                            color: "#17aadd",
+                                                            wordBreak: "break-word",
+                                                            "&:hover": {
+                                                              textDecoration: "underline",
+                                                            },
+                                                            fontWeight: "bold",
+                                                            justifyContent: "flex-start",
+                                                            paddingRight: '40px',}}
+                            > */}
+
+                                                       <div
+                                                          style={{
+                                                            color: "red",
+                                                            cursor: "pointer",
+
+                                                          }}
+                            > 
+
+                            <Box sx={{
+                                // color: GlobalStyles.colors.lightBlue,
+                                color: 'inherit',
+                                width: '300px',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                p: 2,
+                                "&:hover": {
+                                  textDecoration: "underline",
+                                  fontWeight: GlobalStyles.font.boldFontWeight,
+                                },
+                                
+                              }}
+                              // style={styles}
+
+                              >
+                            {/* <Typography
+                              onClick={(e) => {
+                                e.stopPropagation();
+                               history.push(`/map/units/${tableMeta.rowData[0]}`);
+                              }}
+                              noWrap
+                              variant='body2'
+                              style={styles}
+                              // color="inherit"
+                              // color= GlobalStyles.colors.lightBlue,
+                            > */}
+
+                                {tableMeta?.rowData[2]}
+                            {/* </Typography> */}
+                            </Box>
+                            </div>
+
+                            {/* </div> */}
+
+
+                          </Grid>
+  
+                          <Grid item>
+                                <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
+                          </Grid>
+  
+  {/* 
+                          <Grid item
+                            // className={classes.actionButtons}
+                          >
+                            <Grid container spacing={0} direction="row">
+  
+                              </Grid>
+                          </Grid> */}
+  
+  
+                          {/* <Grid item
+                            className={classes.actionButtons}
+                          >
+                            <Grid container spacing={0} direction="row">
+  
+                              <Grid item
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "flex-start",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <IconButton
+                                  size="small"
+                                  // color="primary"
+                                  // style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
+                                  onClick={(e) => {
+                                    history.push(
+                                      `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
+                                      { showAgreementBreadcrumb: true }
+                                    );
+                                    e.stopPropagation();
+                                  }}
+                                >
+                                  <LocationOnIcon/>
+                                </IconButton>
+                              </Grid>
+  
+                              <Grid item
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "flex-start",
+                                  alignItems: "center",
+                                }}
+                              >
+                                {value?.toLowerCase() === "approved" ? (
+                                  <CheckCircleIcon style={{ color: "forestgreen" }} />
+                                ) : (
+                                  <WarningIcon style={{ color: "orange" }} />
+                                )}
+                              </Grid>
+  
+                              <Grid item
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "flex-start",
+                                  alignItems: "center",
+                                }}
+                              >
+                                    <Button 
+                                        >
+                                          Details
+                                    </Button>
+                              </Grid>
+  
+  
+  
+                            </Grid>
+                            
+                          </Grid> */}
+                        </Grid>
+                      </div>
+  
+                    );
+                  },
+                };
+              }
+              break;
+  
             }
 
 
@@ -2794,12 +3015,14 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  if (column.name === 'name' && props.parent === 'UnitsTable') {
-                    const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item, })));
-                    return (
-                      <span style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }} onClick={() => history.push(`/map/units/${row_line._id}`)}>{row_line.name}</span>
-                    )
-                  }
+
+                  // if (column.name === 'name' && props.parent === 'UnitsTable') {
+                  //   const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item, })));
+                  //   return (
+                  //     <span style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }} onClick={() => history.push(`/map/units/${row_line._id}`)}>{row_line.name}</span>
+                  //   )
+                  // }
+
                   if (column.isCustom && (column.type === "multiselect" || column.type === "dropdown")) {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
