@@ -16,7 +16,6 @@ import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
 export default function QuickActionsPanel({ children, handlePanelStateChange, expandedPanel, activeModule }) {
   const classes = useStyles();
   const history = useHistory();
-  const freezNavigationOn = useSelector(({ app }) => app.freezNavigationOn);
 
   const handleMenuItemClick = (path) => {
     history.push(path);
@@ -56,7 +55,7 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
             .filter((key) => !SIDE_PANEL_MENU_ITEMS_LIST[key].isExcluded)
             .map((key, index) => (
               <StyledMenuItem
-                onClick={() => !freezNavigationOn && handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)}
+                onClick={() => handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)}
                 key={index}
                 style={{ backgroundColor: activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST[key].title ? "#4B618F" : "" }}
               >

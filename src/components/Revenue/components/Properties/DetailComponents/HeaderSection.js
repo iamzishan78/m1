@@ -36,7 +36,7 @@ import { GET_AUTOCOMPLETE_PROPERTY_LIST } from "graphQL/useQueryGetProperty";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import { useDispatch } from "react-redux";
-import { setFreezeLocaton } from "store/actions/appActions";
+import { showInfoMessage } from "actions";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -163,14 +163,20 @@ export default function HeaderSection(props) {
   //   _id: campaign.key,
   //   name: campaign.key,
   // })))
-
   useEffect(() => {
-    if(propertyDetails && !propertyDetails.number){
-      dispatch(setFreezeLocaton(location.pathname));
-    } else if(propertyDetails && propertyDetails.number){
-      dispatch(setFreezeLocaton(null));
+    return () => {
+      const number = watch("number");
+      const name = watch("name");
+
+      if (!number){
+        dispatch(showInfoMessage("Property Number is required"));
+        history.goBack();
+      } else if (!name){
+        dispatch(showInfoMessage("Property Name is required"));
+        history.goBack();
+      }
     }
-  }, [propertyDetails]);
+  }, [])
 
   useEffect(() => {
     getOperatorList({

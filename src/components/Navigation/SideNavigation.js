@@ -40,13 +40,9 @@ const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   padding-right: 15px;
 `;
 
-// !!! NOTE !!!: Whenever New route is added please handle redirection with 
-// freezNavigationOn variable. When it has value at that time redirection should be blocked
-
 const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handleListItemClick, handleDrawerClose, handleDrawerOpen }) => {
   const [stateApp] = useContext(AppContext);
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
-  const freezNavigationOn = useSelector(({ app }) => app.freezNavigationOn);
   const [notifications, setNotifications] = useState([]);
   const [showWorkspaceModal, setWorkspaceModal] = useState(false);
   const [logoSrc, setLogoSrc] = useState(`${process.env.PUBLIC_URL}/icons/logo-192x192.png`);
@@ -172,7 +168,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             button
             selected={stateNav.selectedMenuIndexDashboard === 1}
             onClick={(event) =>
-              !freezNavigationOn && handleListItemClick("/dashboard")
+              handleListItemClick("/dashboard")
             }
             key="dashboard"
           >
@@ -203,7 +199,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             }}
             button
             selected={stateNav.selectedMenuIndexFind === 1}
-            onClick={(event) => !freezNavigationOn && handleListItemClick("/")}
+            onClick={(event) =>  handleListItemClick("/")}
             key="home"
           >
             <div className={classes.tabContent}>
@@ -231,7 +227,6 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             button
             selected={stateNav.selectedMenuIndexContacts === 1}
             onClick={(event) => {
-              if (!freezNavigationOn) {
                 setStateApp((stateApp) => ({
                   ...stateApp,
                   selectedContact: null,
@@ -242,7 +237,6 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                   contactFromMap: false,
                 }));
                 handleListItemClick("/contacts");
-              }
             }}
             key="contacts"
           >
@@ -271,7 +265,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             button
             selected={stateNav.selectedMenuIndexTransact === 1}
             onClick={(event) =>
-              !freezNavigationOn && handleListItemClick("/flow")
+              handleListItemClick("/flow")
             }
             key="flow"
           >
@@ -306,7 +300,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               button
               selected={stateNav.selectedMenuIndexLand === 1}
               onClick={(event) => {
-                !freezNavigationOn && handleListItemClick("/land/agreements");
+                handleListItemClick("/land/agreements");
               }}
               key="land"
             >
@@ -342,8 +336,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               button
               selected={stateNav.selectedMenuIndexRevenue === 1}
               onClick={(event) => {
-                !freezNavigationOn &&
-                  handleListItemClick("/revenue/statements");
+                handleListItemClick("/revenue/statements");
               }}
               key="Revenue"
             >
@@ -378,13 +371,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             button
             selected={stateNav.selectedMenuIndexDocuments === 1}
             onClick={(event) => {
-              if (!freezNavigationOn) {
                 setStateApp((stateApp) => ({
                   ...stateApp,
                   selectedContact: null,
                 }));
                 handleListItemClick("/documents");
-              }
             }}
             key="documents"
           >
@@ -421,7 +412,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             }}
             button
             selected={stateNav.selectedMenuIndexCalendar === 1}
-            onClick={(event) => !freezNavigationOn && handleListItemClick("/calendar/activities")}
+            onClick={(event) => handleListItemClick("/calendar/activities")}
             key="calendar"
           >
             <div className={classes.tabContent}>
