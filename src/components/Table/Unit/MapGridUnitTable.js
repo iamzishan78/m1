@@ -150,6 +150,8 @@ function MapGridUnitTable(props) {
     });
   }, []);
 
+  // console.log('FISHBRAIN -1', props)
+
   return (
     <Container
       maxWidth={false}

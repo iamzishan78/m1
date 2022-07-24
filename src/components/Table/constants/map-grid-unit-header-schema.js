@@ -1,3 +1,6 @@
+import GlobalSettings from "..//..//..//GlobalSettings.js";
+
+
 const unitsColumnHeaders = [
   {
     name: "id",
@@ -28,9 +31,12 @@ const unitsColumnHeaders = [
     label: "Unit Name",
     esKey: "name.keyword",
     options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "250px" } }),
+      ...GlobalSettings.muiGridControlOptions,
+      ignoreGlobal: true,
+
+      // sort: true,
+      // filter: true,
+      // setCellProps: () => ({ style: { minWidth: "250px" } }),
       // setCellProps: () => ({
       //   style: {
       //     minWidth: "150px",
@@ -51,7 +57,7 @@ const unitsColumnHeaders = [
       //   }
       // }),
     },
-    style: { minWidth: 185 }
+    // style: { minWidth: 185 }
   },
   {
     name: "uNumber",

@@ -31,7 +31,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
           color: GlobalStyles.colors.lightBlue,
           cursor: GlobalStyles.hyperlink.cursor,
           position: 'absolute',
-          left: '70px',
+          // left: '70px',
         };
 
         return (

@@ -1270,6 +1270,8 @@ function SubTable(props) {
         // without using refs we HAVE to re-create customBodyRender callback functions every render
         // or component state is stale
 
+        console.log('FISHBRAIN-2',column)
+
         if (column.name === "_id" && column.options.isFiniteScroll) {
           column.options = {
             ...column.options,
@@ -1350,8 +1352,21 @@ function SubTable(props) {
           return
         }
 
+        console.log('FISHBRAIN 0',column)
 
         switch (column.name) {
+
+
+          case "name": 
+          console.log('FISHBRAIN 1',column)
+
+            if (column.label === 'Unit Name'){
+              console.log('FISHBRAIN',)
+              return null
+            }
+
+
+
           case "detailCard":
             column.options = {
               ...column.options,
