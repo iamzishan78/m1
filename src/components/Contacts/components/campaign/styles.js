@@ -29,7 +29,6 @@ export const useStyles = makeStyles(() => ({
   },
   titleText: {
     width: "100%",
-    padding: "0px 15px 0px 30px",
   },
   tagsContainer: {
     display: "flex",
@@ -88,7 +87,6 @@ export const useStyles = makeStyles(() => ({
   },
   inputFieldDealName: (props) => ({
     width: "542px",
-    padding: "0px 30px 20px 30px",
     "& .MuiTextField-root": {
       "& .MuiInputBase-multiline": {
         "& .MuiInputBase-inputMultiline": {

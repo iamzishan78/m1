@@ -1,28 +1,12 @@
-import React, { Fragment, useState, useContext, useEffect } from "react";
-import { get } from "lodash";
+import React, { Fragment, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { AppContext } from "AppContext";
-import { useLazyQuery } from "@apollo/client";
+
 import Card from "@material-ui/core/Card";
-import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { setMapGridCardState } from "actions";
-import OwnersSummaryCard from "components/OwnersSummaryCard/OwnersSummaryCard";
-import { TabPanel } from "components/Shared/TabPanels";
-import ContactDetailedInfo from "components/ContactDetailedInfo/ContactDetailedInfo";
-import ActivitiesTable from "components/Table/Activities/ActivitiesTable";
-import ContactWellInterestTable from "components/Table/Contact/ContactWellInterestTable";
-import ContactParcelInterestTable from "components/Table/Contact/ContactParcelInterestTable";
-import ContactTaxRollInterestTable from "components/Table/Contact/ContactTaxRollInterestTable";
-import UnitInterestsTable from "components/Table/Unit/UnitInterestsTable";
-import ContactDealsProvider from "components/DealsDetailCard/ContactDealsProvider";
-import ContactDocumentsProvider from "components/ViewDocuments/ContactDocumentsProvider";
 import CampaignUnitsTable from "components/Table//Unit/CampaignUnitsTable";
 import CampaignContactsTable from "components/Table/Contact/CampaignContactsTable";
 
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
 import { campaignInitialData } from "./data";
-
-import { CONTACT_SUMMARY } from "graphQL/useQueryContactSummary";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -171,8 +155,8 @@ const CamapignRelatedGrids = ({ campaign }) => {
 
             <Grid item md={10} style={{ padding: "0px 0px", maxHeight: "49.25vh", overflow: "overlay" }}>
               <div style={{ position: "relative" }} classes={classes.gridTables}>
-                {searchTapValue.value === "contacts" && <CampaignContactsTable />}
-                {searchTapValue.value === "units" && <></>}
+                {searchTapValue.value === "contacts" && <CampaignContactsTable campaign={campaign} />}
+                {searchTapValue.value === "units" && <CampaignUnitsTable campaign={campaign} />}
               </div>
             </Grid>
           </Grid>

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Container } from "@material-ui/core";
-import debounce from "lodash/debounce";
+import { debounce, get } from "lodash";
 
 // context
 import TableESHOC from "components/Table/TableESHOC";
@@ -16,13 +16,7 @@ import TableHeader from "components/Table/constants/map-grid-unit-header-schema"
 import { usetableStyles } from "components/Table/Styles";
 
 function MapGridUnitTable(props) {
-  // const defaultView = {
-  //   name: `All Units`,
-  //   type: "Default",
-  // };
-
   const classes = usetableStyles();
-  const [searchInput, setSearchInput] = useState(null);
 
   const setTableMeta = React.useMemo(
     () =>
@@ -36,13 +30,9 @@ function MapGridUnitTable(props) {
     return hits;
   };
 
-  // useEffect(() => {
-  //   setSelectedGridView(GridViewModule || defaultView);
-  // }, [GridViewModule]);
-
   useEffect(() => {
     setTableMeta({
-      extendSearchQuery: searchInput,
+      extendSearchQuery: null,
       // selectedGridView: GridViewModule || defaultView,
       searchFields: ["*"],
       TableHeader: copy(TableHeader),
@@ -55,14 +45,15 @@ function MapGridUnitTable(props) {
           value: "unit",
         },
         {
-          field: "shapeJson.properties.",
+          field: "shapeJson.properties.campaignName.keyword",
+          value: get(props, "campaign.name"),
         },
       ],
       defaultSort: { field: "_ts", order: "desc" },
       formatHits,
     });
     // eslint-disable-next-line
-  }, [searchInput]);
+  }, [props.campaign]);
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>

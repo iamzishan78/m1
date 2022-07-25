@@ -171,7 +171,7 @@ const CampaignDetail = () => {
        * Detail title section
        */}
       <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
-        <div className="flex column alignStart justifyStart w-100">
+        <div className="flex column alignStart justifyStart w-100" style={{ padding: "0px 20px" }}>
           <div className={classes.title}>
             <div className={classes.titleText}>
               <div className={classes.userName}>
@@ -182,7 +182,6 @@ const CampaignDetail = () => {
                     <FormControl
                       variant="outlined"
                       className={classes.inputFieldDealName}
-                      style={{ marginLeft: "-15px" }}
                       fullWidth
                       size="small"
                     >
