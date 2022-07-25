@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 import Card from "@material-ui/core/Card";
@@ -15,42 +15,8 @@ const useStyles = makeStyles((theme) => ({
       width: "96%",
     },
   },
-  rootList: {
-    width: ({ mapGridCardActivated }) => (mapGridCardActivated === "min" ? "57vw" : mapGridCardActivated === "exp" ? "96vw" : "57vw"),
-    height: ({ mapGridCardActivated }) => (mapGridCardActivated === "min" ? "60vh" : mapGridCardActivated === "exp" ? "91vh" : "60vh"),
-    left: ({ mapGridCardActivated, expandGrid }) => (mapGridCardActivated === "exp" ? "2vw" : "2vw"),
-    top: ({ mapGridCardActivated }) => (mapGridCardActivated === "exp" ? "5vh" : "12vh"),
-    zIndex: "1300",
-    position: "fixed",
-  },
   dockMenu: {
     width: "100%",
-    height: "50vh",
-  },
-  tapsRoot: {
-    // flexGrow: 1,
-    "& .MuiTab-root": {
-      textTransform: "none",
-    },
-  },
-  appBar: {
-    backgroundColor: "#F2F2F2",
-    borderBottom: "1px solid rgba(224, 224, 224, 1)",
-    boxShadow: "none",
-    color: "#757575",
-    cursor: "context-menu",
-    "& .MuiIconButton-root:hover": {
-      backgroundColor: "rgba(255, 255, 255, 0.08)",
-    },
-    "& button": {
-      cursor: "pointer",
-    },
-  },
-  tapsPanels: {
-    "& .MuiBox-root": { padding: "0" },
-  },
-  tapsPanelsPadding: {
-    "& .MuiBox-root": { padding: "0", height: "100%" },
   },
   mainPanelsDiv: {
     height: "100%",
@@ -67,51 +33,13 @@ const useStyles = makeStyles((theme) => ({
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
-          height: "calc(50vh - 128px) !important",
+          height: "calc(50vh + 96px) !important",
         },
       },
     },
   },
-  tapsLabelsButtons: {
-    boxShadow: "none",
-    backgroundColor: "#fff",
-    color: "#757575",
-    "&:hover": { boxShadow: "none !important" },
-  },
-  tapsLabelsButtonsSelected: {
-    boxShadow: "none",
-    color: "#fff",
-    backgroundColor: theme.palette.secondary.main,
-    "&:hover": { color: "#757575", boxShadow: "none !important" },
-  },
-  viewportWells: {
-    textAlign: ({ viewportWells }) => (viewportWells ? "inherit" : "center"),
-    "& #minimumZoomRequired": {
-      margin: "30px",
-      fontSize: "1.25rem",
-      fontFamily: "Poppins",
-      fontWeight: "500",
-      lineHeight: "1.6",
-      display: ({ viewportWells }) => (viewportWells ? "none" : "block"),
-    },
-    "& #viewportWellsTable": {
-      display: ({ viewportWells }) => (viewportWells ? "block" : "none"),
-    },
-  },
-  selectBoundary: {
-    background: "white",
-    width: "180px",
-    height: "35px",
-    marginTop: "6px",
-    marginBottom: "6px",
-    marginLeft: "10px",
-    "& .MuiSelect-select.MuiSelect-select": {
-      paddingLeft: "10px",
-    },
-  },
   selectorOptions: {
     backgroundColor: "#F2F2F2",
-    maxHeight: "49.25vh",
     overflow: "overlay",
   },
 }));
@@ -131,7 +59,6 @@ const CamapignRelatedGrids = ({ campaign }) => {
       <Card className={classes.dockMenu}>
         <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: "relative" }}>
           {/* //// search panel //// */}
-          {/* <TabPanel value={""} index={0} className={classes.tapsPanelsPadding} style={{ width: "100%", height: "100%" }}> */}
           <Grid container direction="row" style={{ height: "100%", marginBottom: "20px" }}>
             <Grid item md={2} className={classes.selectorOptions}>
               <Typography variant="h6" component="h1" style={{ fontWeight: "bold", padding: "10px 0px 0px 20px" }}>
@@ -153,14 +80,13 @@ const CamapignRelatedGrids = ({ campaign }) => {
               </List>
             </Grid>
 
-            <Grid item md={10} style={{ padding: "0px 0px", maxHeight: "49.25vh", overflow: "overlay" }}>
+            <Grid item md={10} style={{ padding: "0px 0px", overflow: "overlay" }}>
               <div style={{ position: "relative" }} classes={classes.gridTables}>
                 {searchTapValue.value === "contacts" && <CampaignContactsTable campaign={campaign} />}
-                {searchTapValue.value === "units" && <CampaignUnitsTable campaign={campaign} />}
+                {searchTapValue.value === "units" && <CampaignUnitsTable campaign={campaign} header="Units" />}
               </div>
             </Grid>
           </Grid>
-          {/* </TabPanel> */}
         </div>
       </Card>
     </div>

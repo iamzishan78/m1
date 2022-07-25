@@ -118,7 +118,7 @@ export const useStyles = makeStyles(() => ({
     },
   }),
   tabsDetailContainer: ({ metaCollapse }) => ({
-    padding: "5px 10px 0px 0px",
+    paddingTop: "5px",
     width: !metaCollapse ? "calc(100% - 627px)" : "100%",
   }),
   actionsContainer: {

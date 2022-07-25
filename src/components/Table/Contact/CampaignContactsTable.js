@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "react-redux";
 import { Container } from "@material-ui/core";
 import get from "lodash/get";
@@ -15,72 +14,10 @@ import { getContactsAddress, copy } from "utils/helper";
 
 import { deepEqualObjects } from "components/Shared/functions";
 import { featureFlagChanges } from "components/ContactDetailedInfo/helper";
-
-const useStyles = makeStyles((theme) => ({
-  // container: {
-  //     padding: "0 !important",
-  //     height: "100%",
-  //     "& .MuiToolbar-regular > div:nth-child(2)": {
-  //         overflow: "hidden",
-  //         display: "flex",
-  //         flexDirection: "row-reverse",
-  //     },
-  //     "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(1)": {
-  //         marginRight: "52px",
-  //     },
-  //     "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(2)": {
-  //         marginRight: "-104px",
-  //     },
-  //     "& .MuiToolbar-regular > div:nth-child(1)": {
-  //         minWidth: "400px",
-  //     },
-  //     "&>div>div": {
-  //         height: "100%",
-  //     },
-  //     "& .MuiPaper-root": {
-  //         display: "flex",
-  //         "flex-direction": "column",
-  //         height: "100%",
-  //         position: "relative",
-  //         "align-items": "stretch",
-  //         "&>:nth-child(1)": {
-  //             "min-height": "fit-content",
-  //         },
-  //         "&>:nth-child(3)": {
-  //             height: "inherit !important",
-  //             "&::-webkit-scrollbar": {
-  //                 height: "0.8em",
-  //                 width: "0.6em",
-  //             },
-  //             "&:hover::-webkit-scrollbar": {
-  //                 height: "0.8em",
-  //                 width: "0.6em",
-  //             },
-  //         },
-  //         "&>:nth-child(4)": {
-  //             bottom: 0,
-  //         },
-  //     },
-  // },
-  // details: {
-  //     display: "block",
-  //     "& div": {
-  //         padding: "5px !important",
-  //     },
-  // },
-  // searchField: {
-  //     margin: "0 !important",
-  //     padding: "10px !important",
-  // },
-  // summary: {
-  //     backgroundColor: "#F2F2F2",
-  //     height: "40px !important",
-  //     minHeight: "40px !important",
-  // },
-}));
+import { usetableStyles } from "components/Table/Styles";
 
 function ContactsTable(props) {
-  const classes = useStyles();
+  const classes = usetableStyles();
 
   // function states
   const tableRef = useRef();

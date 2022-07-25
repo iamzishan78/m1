@@ -16,7 +16,7 @@ import {
   TextField,
   Tabs,
   Tab,
-  Dialog
+  Dialog,
 } from "@material-ui/core";
 import { InfoOutlined as InfoOutlinedIcon, MoreHoriz as MoreHorizIcon, Delete as DeleteIcon } from "@material-ui/icons";
 
@@ -179,12 +179,7 @@ const CampaignDetail = () => {
                   control={control}
                   name="name"
                   render={(params) => (
-                    <FormControl
-                      variant="outlined"
-                      className={classes.inputFieldDealName}
-                      fullWidth
-                      size="small"
-                    >
+                    <FormControl variant="outlined" className={classes.inputFieldDealName} fullWidth size="small">
                       <TextField
                         {...params}
                         margin="dense"
@@ -255,13 +250,18 @@ const CampaignDetail = () => {
 
           <div
             className={classes.tabsSection}
-          // style={{ display: stateApp.viewDoc ? "none" : "" }}
+            // style={{ display: stateApp.viewDoc ? "none" : "" }}
           >
             <div id="parent-div" className={classes.tabsSectionDetails} onScroll={handleScroll}>
               <div id="header-div" className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null}>
                 <CampaignHeader campaign={campaign} updateCampaignInformation={updateCampaignInformation} />
               </div>
-              <div id="detail-div" className={classes.tabDetailSection} ref={tab === 1 ? selectedTabRef : null}>
+              <div
+                id="detail-div"
+                className={classes.tabDetailSection}
+                style={{ height: "calc(100vh - 453px)" }}
+                ref={tab === 1 ? selectedTabRef : null}
+              >
                 <CampaignRelatedGrids campaign={campaign} />
               </div>
             </div>
@@ -324,7 +324,7 @@ const CampaignDetail = () => {
           onClose={() => setOpenDeleteDialog(false)}
           deleteFunc={() => updateCampaignInformation("isDeleted", true)}
           m1nSelectedRowsIds={[campaign?._id]}
-          setM1nSelectedRowsIndexes={() => { }}
+          setM1nSelectedRowsIndexes={() => {}}
         >
           {`Do you want to delete this campaign?`}
         </DeleteConfirmationDialogContent>

@@ -6,22 +6,15 @@ export const usetableStyles = makeStyles(() => ({
     "& .MuiTableRow-hover": {
       "&:hover": {
         "& .MuiTableCell-root": {
-          backgroundColor: "#dfdfdf"
-        }
-      }
+          backgroundColor: "#dfdfdf",
+        },
+      },
     },
-    // "& ::-webkit-scrollbar": {
-    //   height: "0.7em !important",
-    // },
-    // '& .MuiTableRow-footer': {
-    //   visibility: 'hidden',
-    //   display: 'none'
-    // }
   },
 
   subComponentsClasses: {
     "& .MuiTableHead-root": {
-      zIndex: (p) => p.isRevenueTable ? 995 : 0,
+      zIndex: (p) => (p.isRevenueTable ? 995 : 0),
     },
     "& div": {
       "&>.MuiPaper-root": {
@@ -42,7 +35,7 @@ export const usetableStyles = makeStyles(() => ({
           },
           "@media (max-height:1200px)": {
             maxHeight: "58vh",
-            minHeight: (p) => p.isFullHeight ? '75vh' : '58vh',
+            minHeight: (p) => (p.isFullHeight ? "75vh" : "58vh"),
           },
           "@media (max-height:1100px)": {
             maxHeight: "51vh",
@@ -75,9 +68,8 @@ export const usetableStyles = makeStyles(() => ({
   container2: {
     width: "100%",
     "& .MuiTableCell-paddingCheckbox": {
-      position: (p) => p.isCheckboxSticky ? 'sticky !important' : '',
+      position: (p) => (p.isCheckboxSticky ? "sticky !important" : ""),
     },
-
   },
   multiSelectionTopBarButtons: {
     margin: "0px 5px",
