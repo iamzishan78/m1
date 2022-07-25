@@ -126,6 +126,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             <AutoCompleteLandgrid
               value={props.value}
               filterKey='level5Name.keyword'
+              compoundValue={tract.township}
               filters={[
                 { "field": "level5Type.keyword", "value": "TownshipRange" },
                 ...getDependencies(['state', 'county', 'meridian'])

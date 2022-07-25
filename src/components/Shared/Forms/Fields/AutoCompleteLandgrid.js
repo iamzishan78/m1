@@ -6,8 +6,9 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { US_STATES } from "utils/data";
+import { uniqBy } from "lodash";
 
-export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ onChange, filterKey, type, extendSearchQuery, esIndex = 'platformData:landgrid', filters, label, value, variant }) {
+export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ onChange, filterKey, type, extendSearchQuery, esIndex = 'platformData:landgrid', filters, label, value, variant, compoundValue }) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [search, setSearch] = useState(value);
@@ -20,7 +21,7 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
 
   useEffect(() => {
     getFiltersAction("")
-  }, [filters]);
+  }, [filters, compoundValue]);
 
   useEffect(() => {
     if (filtersData) {
@@ -33,13 +34,18 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
         hits = hits.map((hit) => ({ ...hit, key: hit.key, label: hit.key.toUpperCase() }))
 
         if (label === 'Township')
-          hits = hits.map((hit) => ({ ...hit, key: hit.key.split(" ")[0] }))
-        if (label === 'Range')
-          hits = hits.map((hit) => ({ ...hit, key: hit.key.split(" ")[1] }))
+          hits = uniqBy(hits.map((hit) => ({ ...hit, key: hit.key.split(" ")[0] })), 'key')
+        if (label === 'Range') {
+          if (compoundValue)
+            hits = hits.filter((hit) => hit.key.includes(compoundValue))
+          console.log(compoundValue)
+          hits = uniqBy(hits.map((hit) => ({ ...hit, key: hit.key.split(" ")[1] })), 'key')
+        }
+
         setOptions(hits)
       }
     }
-  }, [filtersData]);
+  }, [filtersData, compoundValue]);
 
 
   const handleChange = (search) => {
