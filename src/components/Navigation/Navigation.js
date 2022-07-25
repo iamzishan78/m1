@@ -398,10 +398,10 @@ export default function Navigation(props) {
           style={
             location.pathname === "/contacts/activityDashboard" || location.pathname.includes("revenue") ? { background: "white" } : null
           }
-          // style={{
-          //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
-          //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
-          // }}
+        // style={{
+        //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
+        //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
+        // }}
         >
           {stateApp.user && (
             <Toolbar>
@@ -430,9 +430,15 @@ export default function Navigation(props) {
                   Dashboard
                 </Typography>
               )}
-              {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
-              {location.pathname.startsWith("/revenue") && <RevenueAppBar classes={classes} />}
-              {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
+              {location.pathname.startsWith("/land") && (
+                <LandAppBar classes={classes} user={stateApp.user} />
+              )}
+              {location.pathname.startsWith("/revenue") && (
+                <RevenueAppBar classes={classes} />
+              )}
+              {matchTrack ? (
+                <CardHeader className={classes.trackHeader} />
+              ) : null}
               {(matchFind || matchDocument) && (
                 <div className={classes.search} id="searchBarDivParent">
                   <SearchBarWithToggleButton />
