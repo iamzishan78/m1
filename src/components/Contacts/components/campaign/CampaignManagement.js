@@ -71,17 +71,6 @@ const CampaignManagement = () => {
     });
   }, [getESMinValue]);
 
-  // const getCustomAppliedFilters = () => {
-  //   if (activeModule?.filterValue) {
-  //     return [
-  //       {
-  //         field: "status.keyword",
-  //         value: activeModule.filterValue,
-  //       },
-  //     ];
-  //   }
-  // };
-
   const filtersChange = (filters) => {
     setTableFilters(filters);
   };
