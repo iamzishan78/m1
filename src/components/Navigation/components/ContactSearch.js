@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { useHistory } from "react-router-dom";
 import {
   InputAdornment,
   TextField,
@@ -67,6 +68,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ContactSearch = () => {
   const classes = useStyles();
+  const history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [search, setSearch] = useState(stateApp.contactSearchQuery);
   const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
@@ -169,6 +171,7 @@ const ContactSearch = () => {
               variant="contained"
               startIcon={<Add />}
               onClick={() => {
+                history.push("/contacts/campaign/details/new");
               }} >
               Add CAMPAIGN
             </Button>

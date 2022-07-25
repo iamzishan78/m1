@@ -2168,30 +2168,30 @@ function SubTable(props) {
 
 
 
-                                  <p
-                                    style={{
-                                      display: "flex",
-                                      cursor: "pointer",
-                                      minWidth: "120px",
-                                      borderRadius: "7px",
-                                      color: "#17aadd",
-                                      wordBreak: "break-word",
-                                      "&:hover": {
-                                        textDecoration: "underline",
-                                      },
-                                      fontWeight: "bold",
-                                      justifyContent: "flex-start",
-                                      paddingRight: '40px',
-                                    }}>
+                              <p
+                                style={{
+                                  display: "flex",
+                                  cursor: "pointer",
+                                  minWidth: "120px",
+                                  borderRadius: "7px",
+                                  color: "#17aadd",
+                                  wordBreak: "break-word",
+                                  "&:hover": {
+                                    textDecoration: "underline",
+                                  },
+                                  fontWeight: "bold",
+                                  justifyContent: "flex-start",
+                                  paddingRight: '40px',
+                                }}>
 
-                                      <Typography
-                                        noWrap
-                                        color="inherit"
-                                        >
-                                      {value}
-                                      </Typography>
+                                <Typography
+                                  noWrap
+                                  color="inherit"
+                                >
+                                  {value}
+                                </Typography>
 
-                                      </p>
+                              </p>
 
                             </div>
                           </Grid>
@@ -4092,7 +4092,7 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    if (props.header === "Contacts" || props.header === "Documents" || props.header === "Agreements") {
+    if ((props.header === "Contacts" && props.addAble.type === "contact") || props.header === "Documents" || props.header === "Agreements") {
       const HeaderComponent = props.headerComponent;
       return <HeaderComponent {...props.headerProps} />;
     }

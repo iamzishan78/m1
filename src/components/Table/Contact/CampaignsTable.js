@@ -56,7 +56,7 @@ function CampaignsTable(props) {
   const formatHits = (hits) => {
     return hits.map((hit, i) => ({
       ...hit,
-      owner: hit.owner.displayName,
+      owner: hit.owner?.displayName,
       createdAt: hit.createdAt ? convert_date(hit.createdAt) : null,
       tags: hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0],
       commentsCounter: hit.comments ? hit.comments.length : 0

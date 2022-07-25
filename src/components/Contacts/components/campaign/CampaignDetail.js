@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import { debounce, get } from "lodash";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { useForm, Controller } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { withStyles } from "@material-ui/styles";
 import {
   Typography,
@@ -16,14 +16,17 @@ import {
   TextField,
   Tabs,
   Tab,
+  Dialog
 } from "@material-ui/core";
 import { InfoOutlined as InfoOutlinedIcon, MoreHoriz as MoreHorizIcon, Delete as DeleteIcon } from "@material-ui/icons";
 
 // Components
 import NavHeader from "components/Land/components/Common/NavHeader";
 import CampaignHeader from "components/Contacts/components/campaign/CampaignHeader";
+import CampaignRelatedGrids from "components/Contacts/components/campaign/CampaignRelatedGrids";
 import Tags from "components/Shared/Tagger";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 // Queries & Mutations
 import { UPDATE_CAMPAIGN } from "graphQL/useMutationCampaign";
@@ -76,6 +79,7 @@ const StyledTab = withStyles((theme) => ({
 
 const CampaignDetail = () => {
   const { campaignId } = useParams();
+  const history = useHistory();
   const [metaCollapse, setMetaCollapse] = useState(true);
   const [anchorEl, setAnchorEl] = useState();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -83,7 +87,7 @@ const CampaignDetail = () => {
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
 
-  const [updateCampaign] = useMutation(UPDATE_CAMPAIGN);
+  const [upsertCampaign] = useMutation(UPDATE_CAMPAIGN);
 
   const { control, watch, reset } = useForm();
 
@@ -118,15 +122,21 @@ const CampaignDetail = () => {
   }, [tab, isButtonScroll]);
 
   const updateCampaignInformation = (key, value) => {
-    updateCampaign({
+    const _id = campaignId !== "new" ? campaign._id : null;
+    upsertCampaign({
       variables: {
         campaign: {
-          _id: campaign._id,
+          _id,
           [key]: value,
         },
       },
       refetchQueries: ["getCampaign"],
-      awaitRefetchQueries: true,
+    }).then(({ data }) => {
+      if (campaignId === "new" && get(data, "upsertCampaign.success")) {
+        history.push(`/contacts/campaign/details/${get(data, "upsertCampaign.campaign._id")}`);
+      } else if (get(data, "upsertCampaign.campaign.isDeleted")) {
+        history.push("/contacts/campaign");
+      }
     });
   };
 
@@ -180,11 +190,11 @@ const CampaignDetail = () => {
                         {...params}
                         margin="dense"
                         variant="outlined"
-                        placeholder="Click to enter deal name"
+                        placeholder="Click to enter campaign name"
                         required
                         multiline
-                        error={!get(campaign, "name")}
-                        helperText={!get(campaign, "name") ? "Enter a deal name to get started" : ""}
+                        error={!campaignName}
+                        helperText={!campaignName ? "Enter campaign name to get started" : ""}
                         // onChange={({ target }) => setTitle(target.value)}
                         InputProps={{
                           classes: {
@@ -246,11 +256,14 @@ const CampaignDetail = () => {
 
           <div
             className={classes.tabsSection}
-            // style={{ display: stateApp.viewDoc ? "none" : "" }}
+          // style={{ display: stateApp.viewDoc ? "none" : "" }}
           >
             <div id="parent-div" className={classes.tabsSectionDetails} onScroll={handleScroll}>
               <div id="header-div" className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null}>
                 <CampaignHeader campaign={campaign} updateCampaignInformation={updateCampaignInformation} />
+              </div>
+              <div id="detail-div" className={classes.tabDetailSection} ref={tab === 1 ? selectedTabRef : null}>
+                <CampaignRelatedGrids campaign={campaign} />
               </div>
             </div>
           </div>
@@ -306,6 +319,17 @@ const CampaignDetail = () => {
           <ListItemText>Delete</ListItemText>
         </MenuItem>
       </Menu>
+      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)} fullWidth={true} maxWidth={"sm"}>
+        <DeleteConfirmationDialogContent
+          header={`Delete Property`}
+          onClose={() => setOpenDeleteDialog(false)}
+          deleteFunc={() => updateCampaignInformation("isDeleted", true)}
+          m1nSelectedRowsIds={[campaign?._id]}
+          setM1nSelectedRowsIndexes={() => { }}
+        >
+          {`Do you want to delete this campaign?`}
+        </DeleteConfirmationDialogContent>
+      </Dialog>
     </NavHeader>
   );
 };
