@@ -201,7 +201,6 @@ function AddAgreementOwnerAndTractDialog(props) {
       const sdGrossAcres = selectedShapeLayer?.shapeJson?.properties?.sdGrossAcres || "";
       const shapeArea = selectedShapeLayer?.shapeJson?.properties?.shapeArea || "";
       const legalDescription = selectedShapeLayer?.shapeJson?.properties?.legalDescription || "";
-      const tractStatus = selectedShapeLayer?.shapeJson?.properties?.tractStatus || "";
       const mapStatus = selectedShapeLayer?.shapeJson?.properties?.mapStatus || "";
       selectedShapeLayer.parcelId = selectedShapeLayer._id;
 
@@ -216,7 +215,6 @@ function AddAgreementOwnerAndTractDialog(props) {
           sdGrossAcres,
           shapeArea,
           legalDescription,
-          tractStatus,
           mapStatus,
           ...originalProperties,
           qtrQtrSelection: selectedShapeLayer.qtrQtrSelection,
@@ -534,7 +532,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             </Grid>
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.sdGrossAcres" label={"Gross. Acres"} InputLabelProps={{ shrink: true }} fullWidth defaultValue={tract?.sdGrossAcres || ""} />
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.shapeArea" label={"Calc. Acres"} InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.shapeArea || ""} />
-            <Controller
+            {/* <Controller
               control={control}
               name={`tract.tractStatus`}
               defaultValue={tract?.tractStatus || ''}
@@ -550,7 +548,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                   autoFocus={false}
                 />
               )}
-            />
+            /> */}
             <Controller
               control={control}
               name={`tract.mapStatus`}
@@ -869,7 +867,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           </Grid>
 
           <Grid container direction="row" spacing={2}>
-            {/* <Grid item xs={6}>
+            <Grid item xs={6}>
               <Controller
                 control={control}
                 name={`tractStatus`}
@@ -887,8 +885,8 @@ function AddAgreementOwnerAndTractDialog(props) {
                   />
                 )}
               />
-            </Grid> */}
-            <Grid item xs={12}>
+            </Grid>
+            <Grid item xs={6}>
               <FormControl variant="outlined" fullWidth margin="dense" inputRef={register()} name="countAcres">
                 <InputLabel id="countAcres">Count Acres</InputLabel>
                 <Controller

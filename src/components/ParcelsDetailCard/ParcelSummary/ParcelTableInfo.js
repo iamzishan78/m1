@@ -107,12 +107,12 @@ const tableData = [
     key: "shapeArea",
     edit: false,
   },
-  {
-    label: "Tract Status",
-    type: "autocomplete",
-    key: "tractStatus",
-    edit: true,
-  },
+  // {
+  //   label: "Tract Status",
+  //   type: "autocomplete",
+  //   key: "tractStatus",
+  //   edit: true,
+  // },
   {
     label: "Map Status",
     type: "autocomplete",
