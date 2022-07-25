@@ -28,7 +28,7 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
       if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits) {
         let hits = filtersData[keys[0]].hits
         if (label === 'State') {
-          hits = hits.map((hit) => ({ ...hit, key: US_STATES[hit.key] || hit.key }))
+          hits = hits.map((hit) => ({ ...hit, key: US_STATES[hit.key] || null })).filter((hit) => hit.key)
         }
         hits = hits.map((hit) => ({ ...hit, key: hit.key, label: hit.key.toUpperCase() }))
 
