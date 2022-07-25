@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
@@ -12,6 +12,7 @@ import { AppContext } from "../../../AppContext";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 // queries
 import { useApolloClient } from "@apollo/client";
+import { InputLabel, MenuItem, Select } from "@material-ui/core";
 // import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 // import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
@@ -57,6 +58,11 @@ const big_text = {
   fontWeight: "bold",
   color: "#101010",
 };
+const medium_text = {
+  fontSize: "20px",
+  fontWeight: "bold",
+  color: "#101010",
+};
 const padding_div_top = {
   paddingTop: "1.3vh",
 };
@@ -98,6 +104,7 @@ const StyledTableCell = withStyles((theme) => ({
 export default function M1neralHeaders(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
+  const [selectedShapeLayerOption, selectShapeLayerOption] = useState('')
   const client = useApolloClient();
 
   let columns = [
@@ -169,12 +176,12 @@ export default function M1neralHeaders(props) {
           return_obj[header.actual_key] = obj.data[header.mapped_key];
         }
       }
-      if(['PROPERTIES'].includes(stateApp.jobType)) {
+      if (['PROPERTIES'].includes(stateApp.jobType)) {
         Object.keys(return_obj).forEach(key => {
-          if(return_obj[key] instanceof Date ){
+          if (return_obj[key] instanceof Date) {
             return_obj[key] = return_obj[key].toISOString()
           }
-          if(key === 'wellsApiNumbers' && typeof return_obj[key] === 'number' ){
+          if (key === 'wellsApiNumbers' && typeof return_obj[key] === 'number') {
             return_obj[key] = return_obj[key].toString()
           }
         })
@@ -377,6 +384,8 @@ export default function M1neralHeaders(props) {
     changeDataToSendState();
   }, []);
 
+  const shapeTransferOptions = ['Create new and update existing', 'Only create new', 'Only crate existing']
+
   return (
     <div style={main_div}>
       <div style={{ ...big_text, ...padding_div_top }}>
@@ -461,10 +470,37 @@ export default function M1neralHeaders(props) {
             </Table>
           </TableContainer>
         </Paper>
-        <div style={{ ...text_grey }}>
-          *First Name or Last Name is required to be mapped <br /> before
-          uploading contacts.
-        </div>
+
+        {stateApp.jobType === 'SHAPE_TO_M1_LAYER' ?
+          <>
+            <div style={{ ...medium_text, ...padding_div_top }}>
+              Select an import option for your data
+            </div>
+            <div >
+              <Select
+                variant='outlined'
+                style={{ width: '400px', marginTop: '10px', marginBottom: '10px', height: 40 }}
+                labelId="agreement-outlined-label"
+                id="agreement-outlined"
+                value={selectedShapeLayerOption}
+                dense
+                fullWidth
+                onChange={(e) => { selectShapeLayerOption(e.target.value) }}
+              >
+                {shapeTransferOptions.map((option) => <MenuItem style={{ display: selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option} >{option}</MenuItem>
+                )}
+              </Select>
+            </div>
+
+            <div style={{ ...text_grey }}>
+              *Note: Existing agreements will be matched on M1neral ID or Agreement Number
+            </div>
+          </>
+          : <div style={{ ...text_grey }}>
+            *First Name or Last Name is required to be mapped <br /> before
+            uploading contacts.
+          </div>
+        }
       </div>
     </div>
   );

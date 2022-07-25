@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, Fragment } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
-import { Grid, Typography, Divider } from "@material-ui/core";
+import { Grid, Typography, Divider, Button } from "@material-ui/core";
 import { Close as CloseButton } from "@material-ui/icons";
 import Checkbox from "@material-ui/core/Checkbox";
 import { Collapse } from "@material-ui/core";
@@ -16,6 +16,7 @@ import { IconButton } from "@material-ui/core";
 import { truncate } from "components/Shared/functions";
 
 import { snapGridSideBarData } from "components/MapGridCard/components/data";
+import { history } from "store";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -29,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
     height: "calc(100% - 65px)",
     position: "absolute",
     overflow: "overlay",
+  },
+  dialogFooter: {
+    padding: '10px',
+    justifyContent: 'end',
+    display: 'flex'
   }
 }));
 
@@ -197,6 +203,30 @@ export default function TransferDataManager(props) {
                 </Collapse></>
             }
           </Fragment>
+
+          <div className={classes.dialogFooter}>
+            <Button
+              variant="contained"
+              color="default"
+              size="medium"
+              className={classes.footerButton}
+              style={{ margin: "0px 15px 0px 0px" }}
+              onClick={() => { handleClose(); }}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              variant="contained"
+              color="primary"
+              size="medium"
+              disableElevation
+              onClick={() => { history.push(`/bulkupload/shape_to_m1_layer`) }}
+              className={classes.footerButton}
+            >
+              Continue
+            </Button>
+          </div>
         </div>
       </div>
     </div>

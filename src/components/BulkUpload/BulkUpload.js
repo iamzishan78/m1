@@ -41,7 +41,8 @@ export const rawJobs = [
   { name: 'Import Tracts', type: 'TRACTS', featureFlag: "TRACTIMPORT" },
   { name: 'Import Units', type: 'UNITS', featureFlag: "UNITIMPORT" },
   { name: 'Check Detail Upload', type: 'CHECKDETAILS' },
-  { name: 'Property Upload', type: 'PROPERTIES' }
+  { name: 'Property Upload', type: 'PROPERTIES' },
+  { name: 'Transfer Shape to M1 Layer', type: 'SHAPE_TO_M1_LAYER', initialActiveStepNumber: 1 }
 ]
 
 export default function BulkUpload(props) {
@@ -51,7 +52,7 @@ export default function BulkUpload(props) {
   const history = useHistory();
   let previousRoute = matchRoutes(props.routes, typeof history.pathHistory[1] === "string" ? history.pathHistory[1] : history?.pathHistory[1]?.pathname ?? "");
 
-  if(!isEmpty(history.location.state)){
+  if (!isEmpty(history.location.state)) {
     previousRoute[0].match = { url: history.location.state.previousRoute }
     previousRoute[0].route = { title: history.location.state.title }
   }
@@ -78,7 +79,7 @@ export default function BulkUpload(props) {
   });
   let initialJob = jobs[0];
   if (props?.match?.params?.type) {
-    initialJob = jobs.find((job) => job.type.toLowerCase().includes(props.match.params.type)) || jobs[0];
+    initialJob = jobs.find((job) => job.type.toLowerCase().includes(props.match.params.type.toLowerCase())) || jobs[0];
   }
 
   const [selectedJob, setSelectedJob] = useState(initialJob);
@@ -111,10 +112,10 @@ export default function BulkUpload(props) {
     setStateApp((state) => ({
       ...state,
       csvContactsListToSend: [],
-      activeStepNumber: 0,
+      activeStepNumber: selectedJob.initialActiveStepNumber || 0,
       csvContactsList: [],
       jobType: selectedJob.type,
-      m1neralHeaders: M1neral_headers[selectedJob.type],
+      m1neralHeaders: M1neral_headers[selectedJob.type] || [],
       mappedHeadersFromCSV: [],
     }));
   };
