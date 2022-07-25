@@ -98,6 +98,7 @@ const CampaignManagement = () => {
           filterToggle={filterToggle}
           targetLabel="Campaign"
           header="Campaigns"
+          contactSearchQuery={stateApp.contactSearchQuery}
         />
       </div>
     </div>
