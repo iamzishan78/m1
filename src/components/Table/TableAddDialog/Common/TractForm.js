@@ -17,9 +17,10 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
   }, [tract.state])
 
   const getDependencies = useCallback((deps) => {
+    const county = tract.county?.toLowerCase().split(' ').reduce((county, current) => county + ' ' + upperFirst(current), '')
     const dependency = {
       state: { "field": "level1Name.keyword", "value": US_STATES_CODES[state] },
-      county: { "field": "level2Name.keyword", "value": upperFirst(tract.county?.toLowerCase()) },
+      county: { "field": "level2Name.keyword", "value": county?.trim() },
       survey: { "field": "level3Name.keyword", "value": tract.survey },
       meridian: { "field": "level3Name.keyword", "value": tract.meridian },
       block: { "field": "level4Name.keyword", "value": tract.block },
