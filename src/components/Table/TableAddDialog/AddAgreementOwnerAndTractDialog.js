@@ -199,6 +199,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     if (selectedShapeLayer?.shapeJson) {
       const originalProperties = getParcelOriginalProperties(selectedShapeLayer?.shapeJson?.properties);
       const sdGrossAcres = selectedShapeLayer?.shapeJson?.properties?.sdGrossAcres || "";
+      const shapeArea = selectedShapeLayer?.shapeJson?.properties?.shapeArea || "";
       const legalDescription = selectedShapeLayer?.shapeJson?.properties?.legalDescription || "";
       const tractStatus = selectedShapeLayer?.shapeJson?.properties?.tractStatus || "";
       const mapStatus = selectedShapeLayer?.shapeJson?.properties?.mapStatus || "";
@@ -213,6 +214,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           tractId: selectedShapeLayer._id,
           tractName: selectedShapeLayer.name,
           sdGrossAcres,
+          shapeArea,
           legalDescription,
           tractStatus,
           mapStatus,
