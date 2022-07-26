@@ -383,6 +383,7 @@ function AddActivityDialog(props) {
           isClosed: closed,
         },
       },
+      refetchQueries: ["getContact"],
     });
 
     onModalClose();

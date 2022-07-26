@@ -6,13 +6,14 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_JOBS_STATUS } from "graphQL/useQueryGetJobStatus";
-import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import Loader from "components/Loaders/serverLoader";
 import { setReduxKey } from "store/actions/commonActions";
+import useRefetchHelper from "components/Shared/Hooks/useRefetchHelper";
 
 const ContactBulkProgress = () => {
   const [stateApp] = useContext(AppContext);
   const bulkUpload = useSelector((state) => state.common.bulkUpload);
+  const refetchHelper = useRefetchHelper()
 
   const dispatch = useDispatch();
 
@@ -120,10 +121,14 @@ const ContactBulkProgress = () => {
         const type = dataJobs.getJobsStatus.jobs[i].type;
         if (type === 'contacts') {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Contacts creation completed" : "Contacts creation failed";
+        } else if (type === 'PROPERTIES') {
+          message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Import successfully completed" : "Import Failed";
         } else {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Export successfully completed" : "Export Failed";
+          if (status === "Completed")
+            refetchHelper(['getCustomLayer'])
         }
-        if(status === 'Completed with errors') message = status
+        if (status === 'Completed with errors') message = status
       }
 
       if (state === "create") {
