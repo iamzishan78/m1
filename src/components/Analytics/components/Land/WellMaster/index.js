@@ -166,7 +166,7 @@ export default function ExhibitATabPanel() {
         </Grid>
       </div>
       <WellMaster
-        header="Acerage Detail"
+        header="Acreage Detail"
         esFilters={esFilters}
         targetLabel="acerage"
         parent="AcerageDetail"

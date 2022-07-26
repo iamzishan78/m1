@@ -121,7 +121,7 @@ export default function AcerageSummaryTabDeatils() {
       </Grid>
       </div>
       <AcerageSummary
-        header="Acerage Summary"
+        header="Acreage Summary"
         esFilters={esFilters}
         targetLabel="acerage"
         parent="AcerageSummary"
