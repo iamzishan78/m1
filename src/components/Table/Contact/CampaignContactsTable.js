@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Container } from "@material-ui/core";
 import get from "lodash/get";
 
-import TableHeader from "components/Table/constants/contacts-header-schema.js";
+import TableHeader from "components/Table/constants/campaign-contacts-header-schema.js";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "../TableESHOC";
 
@@ -62,7 +62,7 @@ function ContactsTable(props) {
     props.setInitialFilters([
       {
         field: "campaignName.keyword",
-        value: get(props, "campaign.name"),
+        value: "Martin",
       },
     ]);
     props.setTableMeta({

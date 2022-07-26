@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
-// import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import CampaignsTable from "components/Table/Contact/CampaignsTable";
 import { makeStyles } from "@material-ui/core/styles";
-// import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 import { AppContext } from "AppContext";
 
