@@ -86,7 +86,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
   );
 }
 
-export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [] }) {
+export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [], id }) {
   const classes = summaryTableStyles();
   const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
@@ -447,6 +447,8 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             }}
                             value={properties[data.key] ? properties[data.key] : []}
                             fullWidth
+                            targetLabel="Unit"
+                            targetLabelId={id}
                           />
                         )}
                       </>

@@ -383,6 +383,8 @@ export default function FieldContent({
               }}
               value={editContent["campaignName"] === null ? "" : editContent["campaignName"]}
               fullWidth
+              targetLabel="Contact"
+              targetLabelId={id}
             />
           ) : (
             <TextField
