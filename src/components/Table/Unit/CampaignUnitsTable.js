@@ -10,7 +10,7 @@ import Table from "components/Shared/M1nTable/components/Table";
 import { deepEqualObjects, copy } from "components/Shared/functions";
 
 // Header Schemas
-import TableHeader from "components/Table/constants/map-grid-unit-header-schema";
+import TableHeader from "components/Table/constants/campaign-units-header-schema.js";
 
 // Utilities
 import { usetableStyles } from "components/Table/Styles";
@@ -34,7 +34,7 @@ function MapGridUnitTable(props) {
     setTableMeta({
       extendSearchQuery: null,
       // selectedGridView: GridViewModule || defaultView,
-      searchFields: ["*"],
+      searchFields: ["name^4", "_all"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
       startPaginationAt: 25,
@@ -46,7 +46,7 @@ function MapGridUnitTable(props) {
         },
         {
           field: "shapeJson.properties.campaignName.keyword",
-          value: get(props, "campaign.name"),
+          value: "Martin",
         },
       ],
       defaultSort: { field: "_ts", order: "desc" },

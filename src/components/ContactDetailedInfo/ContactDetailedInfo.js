@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import FieldContent from "../ContactDetailCard/components/FieldContent";
 import Select from "@material-ui/core/Select";
@@ -15,7 +15,7 @@ import {
   getBasicInfoExpContent,
   getBasicPurchaseInfoContent,
   getBasicPurchaseInfoExpContent,
-  featureFlagChanges
+  featureFlagChanges,
 } from "components/ContactDetailedInfo/helper";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     paddingRight: "20px",
-    paddingLeft: "15px"
+    paddingLeft: "15px",
   },
   avatar: {
     marginRight: "20px",
@@ -206,10 +206,10 @@ export default function DetailInfo(props) {
   let history = useHistory();
   const [loading, setLoading] = useState(false);
 
-  const { user } = useSelector(state => state.app);
+  const { user } = useSelector((state) => state.app);
 
   const showGenericPhones = React.useMemo(() => {
-    return user.features?.find(f => f.name === "showGenericPhones")
+    return user.features?.find((f) => f.name === "showGenericPhones");
   }, [user]);
 
   useEffect(() => {
@@ -234,8 +234,9 @@ export default function DetailInfo(props) {
     return (
       <FormGroup style={{ display: "block" }}>
         <FormControlLabel
-          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""} ${!showEmpty ? classes.switchTextDeselected : ""
-            }`}
+          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""} ${
+            !showEmpty ? classes.switchTextDeselected : ""
+          }`}
           control={
             <React.Fragment>
               <AntSwitch
@@ -280,9 +281,7 @@ export default function DetailInfo(props) {
             >
               {props.purchaseData.map((purchaseData) => {
                 return (
-                  <MenuItem value={purchaseData._id}>
-                    M1 Data - {moment(purchaseData.sysDateTime).format("MM/DD/YYYY hh:mm:ss a")}
-                  </MenuItem>
+                  <MenuItem value={purchaseData._id}>M1 Data - {moment(purchaseData.sysDateTime).format("MM/DD/YYYY hh:mm:ss a")}</MenuItem>
                 );
               })}
             </Select>
@@ -374,7 +373,6 @@ export default function DetailInfo(props) {
                             isMerged={!!props.contactData.mergedContacts}
                             content={row.data}
                             linkType={row.linkType}
-                            noMargin={key === "Campaign Name"}
                           >
                             {row.inner}
                           </FieldContent>
