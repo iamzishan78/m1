@@ -439,13 +439,23 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             }}
                           />
                         )}
+                        {data.key === "campaignName" && (
+                          <CampaignNameField
+                            className={classes.maxWidth}
+                            onChange={(value) => {
+                              updateProperties(null, data.key, value);
+                            }}
+                            value={properties[data.key] ? properties[data.key] : []}
+                            fullWidth
+                          />
+                        )}
                       </>
                     )}
                   </>
                 ) : (
                   <div style={{ minWidth: "30px", cursor: "pointer" }}>
                     <Grid
-                      style={data.key === "campaignName" ? { display: "block" } : { display: "flex" }}
+                      style={{ display: "flex" }}
                       container
                       direction="row"
                       justifyContent="space-between"
@@ -460,16 +470,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           {data.type === "custom" && (
                             <>
                               {data.key === "qualifier" && (properties[data.key]?.name || "-")}
-                              {data.key === "campaignName" && (
-                                <CampaignNameField
-                                  className={classes.maxWidth}
-                                  onChange={(value) => {
-                                    updateProperties(null, data.key, value);
-                                  }}
-                                  value={properties[data.key] ? properties[data.key] : []}
-                                  fullWidth
-                                />
-                              )}
+                              {data.key === "campaignName" && (properties[data.key] || "-")}
                             </>
                           )}
                           {data.type !== "date" &&
