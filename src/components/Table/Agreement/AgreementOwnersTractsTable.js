@@ -85,6 +85,7 @@ function AgreementOwnersTractsTable(props) {
           shapeId={props.customLayer._id}
           shapeType={props.shapeType}
           seletedOwner={props.clickedRow}
+          deleteFunc={deleteFunc}
           onClose={() => props.setAddToTable(false)}
         />
       )}
