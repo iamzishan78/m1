@@ -202,7 +202,7 @@ export default function DealComment({
   const [showOptions, setShowOptions] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const [nameAutValue, setNameAutValue] = useState({});
-  const [showCommentType, setShowCommentType] = useState(false);
+  const [showCommentType, setShowCommentType] = useState(true);
   const [showCommentTypeDialog, setShowCommentTypeDialog] = useState(false);
   const [selectedTab, setSelectedTab] = useState('Existing');
   const [selectedCommentType, setSelectedCommentType] = useState('General');
@@ -277,9 +277,9 @@ export default function DealComment({
     document.getElementById("colorText").innerHTML = value;
   }, [comment, users]);
 
-  useEffect(() => {
-    setShowCommentType(params && params.type && ['leases', 'parcels', 'deeds'].includes(params.type));
-  }, [params]);
+  // useEffect(() => {
+  //   setShowCommentType(params && params.type && ['leases', 'parcels', 'deeds'].includes(params.type));
+  // }, [params]);
 
   const replaceAllWith = (_string, replaceFrom, replaceWith) => {
     return _string.replace(/{{([^{{]+)}}/g, (match, key) => {
