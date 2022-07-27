@@ -36,20 +36,14 @@ function AgreementOwnersTractsTable(props) {
   const formatHits = (hits) => {
     return hits.map((hit) => {
       if (hit?.tract?.tractName) hit.tractName = hit?.tract?.tractName;
+      hit.SurveyMeridian = hit.survey || hit.meridian
+      hit.BlockTownship = hit.block || hit.township
+      hit.SectionRange = hit.section || hit.range
+      hit.AbstractSection = hit.abstract || hit.section
       return hit;
     });
   };
 
-  const formatColumns = (headers, hits) => {
-    const isStateTx = !!hits.find((hit) => hit.state === "TX");
-    if (isStateTx) {
-      headers[4] = { ...headers[4], name: "survey", label: "Survey", esKey: "tract.survey.keyword" };
-      headers[5] = { ...headers[5], name: "block", label: "Block", esKey: "tract.block.keyword" };
-      headers[6] = { ...headers[6], name: "abstract", label: "Abstract", esKey: "tract.abstract.keyword" };
-      headers[7] = { ...headers[7], name: "section", label: "Section", esKey: "tract.section.keyword" };
-    }
-    return headers;
-  };
 
   const deleteFunc = (ids) => {
     if (ids.length > 0) {
@@ -72,8 +66,7 @@ function AgreementOwnersTractsTable(props) {
         TableHeader: TableHeader,
         esIndex: "shapeowners_flat",
         startPaginationAt: 25,
-        formatHits,
-        formatColumns,
+        formatHits
       });
   }, [props.customLayer]);
 

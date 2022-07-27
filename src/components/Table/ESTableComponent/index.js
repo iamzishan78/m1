@@ -32,6 +32,16 @@ function ESTableComponent(props) {
     refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
 
+  const formatHits = (hits) => {
+    return hits.map((hit) => {
+      hit.SurveyMeridian = hit.survey || hit.meridian
+      hit.BlockTownship = hit.block || hit.township
+      hit.SectionRange = hit.section || hit.range
+      hit.AbstractSection = hit.abstract || hit.section
+      return hit;
+    });
+  };
+
   useEffect(() => {
     props.setTableMeta({
       shapeType: props.shapeType,
@@ -40,21 +50,21 @@ function ESTableComponent(props) {
       TableHeader: copy(TableHeader),
       esIndex: 'shapeowners_flat',
       startPaginationAt: 25,
-
-      formatColumns,
+      formatHits,
+      // formatColumns,
     })
   }, []);
 
   const formatColumns = (headers, hits) => {
-    const isStateTx = !!hits.find((hit) => hit.state === 'TX')
-    if (isStateTx) {
-      headers.forEach((header) => {
-        if (header.name === 'meridian') { header.name = 'survey'; header.label = 'Survey'; header.esKey = 'tract.survey.keyword' }
-        else if (header.name === 'township') { header.name = 'block'; header.label = 'Block'; header.esKey = 'tract.block.keyword' }
-        else if (header.name === 'section') { header.name = 'abstract'; header.label = 'Abstract'; header.esKey = 'tract.abstract.keyword' }
-        else if (header.name === 'range') { header.name = 'section'; header.label = 'Section'; header.esKey = 'tract.section.keyword' }
-      })
-    }
+    // const isStateTx = !!hits.find((hit) => hit.state === 'TX')
+    // if (isStateTx) {
+    //   headers.forEach((header) => {
+    //     if (header.name === 'meridian') { header.name = 'survey'; header.label = 'Survey'; header.esKey = 'tract.survey.keyword' }
+    //     else if (header.name === 'township') { header.name = 'block'; header.label = 'Block'; header.esKey = 'tract.block.keyword' }
+    //     else if (header.name === 'section') { header.name = 'abstract'; header.label = 'Abstract'; header.esKey = 'tract.abstract.keyword' }
+    //     else if (header.name === 'range') { header.name = 'section'; header.label = 'Section'; header.esKey = 'tract.section.keyword' }
+    //   })
+    // }
     return headers
   }
 
