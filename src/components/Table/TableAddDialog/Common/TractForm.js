@@ -25,8 +25,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
       meridian: { "field": "level3Name.keyword", "value": tract.meridian },
       block: { "field": "level4Name.keyword", "value": tract.block },
       section: { "field": "level5Name.keyword", "value": tract.section },
-      township: { "field": "level5Name.keyword", "value": tract.township },
-      range: { "field": "level5Name.keyword", "value": tract.range },
+      townshipRange: { "field": "level5Name.keyword", "value": tract.township && tract.range ? `${tract.township} ${tract.range}` : '' },
       abstract: { "field": "level6Name.keyword", "value": tract.abstract },
       sectionNTX: { "field": "level6Name.keyword", "value": tract.section },
     }
@@ -150,7 +149,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
               filterKey='level6Name.keyword'
               filters={[
                 { "field": "level6Type.keyword", "value": "Section" },
-                ...getDependencies(['state', 'county', 'meridian', 'township', 'range'])
+                ...getDependencies(['state', 'county', 'meridian', 'townshipRange'])
               ]}
               label="Section"
               variant="outlined"
