@@ -197,6 +197,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   useEffect(() => {
     // if launched from grid row set initializing based on selectedWell state
     if (selectedShapeLayer?.shapeJson) {
+
       const originalProperties = getParcelOriginalProperties(selectedShapeLayer?.shapeJson?.properties);
       const sdGrossAcres = selectedShapeLayer?.shapeJson?.properties?.sdGrossAcres || "";
       const shapeArea = selectedShapeLayer?.shapeJson?.properties?.shapeArea || "";
@@ -222,6 +223,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       };
       reset({ ...form });
     } else {
+      debugger
       if (selectedShapeLayer?.clear) {
         setTractValue({ name: "", _id: null });
         reset({ ...getValues(), tract: {} });
