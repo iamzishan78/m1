@@ -1407,7 +1407,7 @@ function SubTable(props) {
                             <Box sx={{
                                 color: GlobalStyles.colors.lightBlue,
                                 cursor: 'pointer',
-                                width: '300px',
+                                maxWidth: '300px',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 p: 2,
@@ -1969,7 +1969,7 @@ function SubTable(props) {
                           <Box sx={{
                                 color: GlobalStyles.colors.lightBlue,
                                 cursor: 'pointer',
-                                width: '300px',
+                                maxWidth: '300px',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 p: 2,
