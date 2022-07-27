@@ -3230,6 +3230,7 @@ function SubTable(props) {
                       {/* 
                       // this is for the contact name section.
                       // it is not in the case statement b/c multipe datapoints have the name: called "name" 
+                      // we will need to somehow eventually refactor this as it is annoying 
                       */}
                       {props.targetLabel === "contact" && column.name === "name" && (
                         <div
@@ -3279,11 +3280,7 @@ function SubTable(props) {
                           ? `${tableMeta.rowData[8] ? tableMeta.rowData[8] : ""}`
                           : `${tableMeta.rowData[10] ? tableMeta.rowData[10] : ""} ${tableMeta.rowData[12] ? tableMeta.rowData[12] : ""}`}
                         
-                        
-                        {/* <div className={classes.companyName}>{tableMeta.rowData[14]}</div> */}
                         {
-                              // props.targetLabel === "contact" &&
-                              // column.name === "name" &&
                               tableMeta.rowData[
                               props.columns.findIndex(
                                 (val) => val.name === "isPurchased"
@@ -3297,25 +3294,22 @@ function SubTable(props) {
                                 </FeatureFlag>
                               )}
                       </p>
-
-                            {/* {
-                              // props.targetLabel === "contact" &&
-                              // column.name === "name" &&
-                              tableMeta.rowData[
-                              props.columns.findIndex(
-                                (val) => val.name === "isPurchased"
-                              )
-                              ] && (
-                                <FeatureFlag feature={FEATURES.IDICORE}>
-                                  <MonetizationOnIcon
-                                    className={classes.monetizationIcon}
-
-                                  />
-                                </FeatureFlag>
-                              )} */}
-
                       </div>
                       )}
+
+
+                      {/* 
+                      // this is for the UNIT name section.
+                      // it is not in the case statement b/c multipe datapoints have the name: called "name"
+                      // we will need to somehow eventually refactor this as it is annoying 
+                      */}
+
+                      {/* {props.targetLabel === "unit" && column.name === "name" && (
+                        <div>
+                          console.log('FISHBRAIN 11')
+                        </div>
+                      )} */}
+
 
 
                       {/* // standard document grid elements */}
@@ -4659,16 +4653,6 @@ function SubTable(props) {
     options.count = props.wellInterestsPageProps.wellInterestsCount;
     options.serverSide = true;
   }
-
-  // if (props.header === "Contacts") {
-  //   options.rowsPerPageOptions =
-  //     props.contactsPageProps.contactsCount > 25 ? [10, 25, 50] : props.contactsPageProps.contactsCount > 10 ? [10, 25] : [10];
-  //   options.count = props.contactsPageProps.contactsCount;
-  //   options.serverSide = true;
-  //   //options.print = true;
-  //   //options.export = true;
-  // }
-
 
   if (props.header === "Deals"
     || props.header === "Activities"
