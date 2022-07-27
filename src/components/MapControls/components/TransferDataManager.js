@@ -17,6 +17,9 @@ import { truncate } from "components/Shared/functions";
 
 import { snapGridSideBarData } from "components/MapGridCard/components/data";
 import { history } from "store";
+import { useApolloClient } from "@apollo/client";
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
+import M1neral_headers from "components/BulkUpload/jobHeaders";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -78,7 +81,8 @@ export default function TransferDataManager(props) {
   const classes = useStyles();
 
   const [, setStateMapControls] = useContext(MapControlsContext);
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const client = useApolloClient();
   const [openSourcePanel, setOpenSourcePanel] = useState(true);
   const [openPlatformPanel, setOpenPlatformPanel] = useState(true);
 
@@ -101,6 +105,77 @@ export default function TransferDataManager(props) {
       manageLayer: false,
     }));
   };
+
+  const handleContinue = async () => {
+
+    const sourceData = await client.query({
+      query: GET_ES_SIMPLE_SEARCH,
+      variables: {
+        index: "shapefile_flat",
+        search: {
+          query: "",
+          fields: ['*'],
+          advanceSearch: selectedSourceCategory.layerGeometry === 'Polygon' ? [{
+            "bool": {
+              "should": [
+                {
+                  "term": { "properties.layerGeometry.keyword": "Polygon" }
+                },
+                {
+                  "term": { "properties.layerGeometry.keyword": "MultiPolygon" }
+                }
+              ]
+            }
+          }] : [{
+            "bool": {
+              "should": [
+                {
+                  "term": { "properties.layerGeometry.keyword": selectedSourceCategory.layerGeometry }
+                }
+              ]
+            }
+          }],
+        },
+        filters: [{ field: "file._id", value: selectedSourceCategory?.file }],
+        pagination: {
+          first: 5,
+          after: null,
+        },
+      },
+    });
+    let columns = []
+    sourceData.data.getESSimpleSearch.hits.forEach((hit) => {
+      const currentColumns = Object.keys(hit.properties)
+      if (currentColumns.length > columns.length) columns = currentColumns
+    })
+    selectedSourceCategory.columns = columns
+
+    const m1neralHeaders = M1neral_headers[selectedPlatformCategory.value.toUpperCase() + '_SHAPE'];
+    let matchedKeys = [...m1neralHeaders]
+    for (let index in columns) {
+      const matchedKey = matchedKeys.find(el => el?.label === columns[index])
+
+      columns[index] = {
+        mapped_key: columns[index],
+        required: !!matchedKey?.actual_key,
+        actual_key: matchedKey?.actual_key || "",
+        label: matchedKey?.label || "",
+      };
+
+      if (columns[index]?.actual_key === matchedKey?.actual_key) {
+        matchedKey.mapped_key = columns[index].mapped_key;
+        matchedKey.required = columns[index].required;
+      }
+    }
+    selectedSourceCategory.m1neralHeaders = matchedKeys
+    selectedSourceCategory.mappedHeadersFromCSV = columns
+
+    setStateApp({
+      ...stateApp,
+      transferData: { selectedSourceCategory, selectedPlatformCategory }
+    })
+    history.push(`/bulkupload/shape_to_m1_layer`)
+  }
 
   const dataset = stateApp?.selectedDataset
   return (
@@ -211,7 +286,7 @@ export default function TransferDataManager(props) {
               size="medium"
               className={classes.footerButton}
               style={{ margin: "0px 15px 0px 0px" }}
-              onClick={() => { handleClose(); }}
+              onClick={handleClose}
             >
               Cancel
             </Button>
@@ -221,7 +296,7 @@ export default function TransferDataManager(props) {
               color="primary"
               size="medium"
               disableElevation
-              onClick={() => { history.push(`/bulkupload/shape_to_m1_layer`) }}
+              onClick={handleContinue}
               className={classes.footerButton}
             >
               Continue

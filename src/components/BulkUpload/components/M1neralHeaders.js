@@ -11,8 +11,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { AppContext } from "../../../AppContext";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 // queries
-import { useApolloClient } from "@apollo/client";
-import { InputLabel, MenuItem, Select } from "@material-ui/core";
+import { MenuItem, Select } from "@material-ui/core";
 // import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 // import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
@@ -105,7 +104,6 @@ export default function M1neralHeaders(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [selectedShapeLayerOption, selectShapeLayerOption] = useState('')
-  const client = useApolloClient();
 
   let columns = [
     { label: "Import" },
@@ -384,7 +382,11 @@ export default function M1neralHeaders(props) {
     changeDataToSendState();
   }, []);
 
-  const shapeTransferOptions = ['Create new and update existing', 'Only create new', 'Only crate existing']
+  const shapeTransferOptions = [
+    { key: 'Both', label: 'Create new and update existing' },
+    { key: 'New', label: 'Only create new' },
+    { key: 'Existing', label: 'Only crate existing' }
+  ]
 
   return (
     <div style={main_div}>
@@ -482,13 +484,12 @@ export default function M1neralHeaders(props) {
                 style={{ width: '400px', marginTop: '10px', marginBottom: '10px', height: 40 }}
                 labelId="agreement-outlined-label"
                 id="agreement-outlined"
-                value={selectedShapeLayerOption}
+                value={stateApp.selectedShapeLayerOption}
                 dense
                 fullWidth
-                onChange={(e) => { selectShapeLayerOption(e.target.value) }}
+                onChange={(e) => { setStateApp((state) => ({ ...state, selectedShapeLayerOption: e.target.value })); }}
               >
-                {shapeTransferOptions.map((option) => <MenuItem style={{ display: selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option} >{option}</MenuItem>
-                )}
+                {shapeTransferOptions.map((option) => <MenuItem style={{ display: stateApp.selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option.key} >{option.label}</MenuItem>)}
               </Select>
             </div>
 

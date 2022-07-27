@@ -226,7 +226,10 @@ function Datasets({ layerMap, headerButton }) {
                                         </Grid>
                                         <Grid item className='actionIcons'>
                                             <GridOnIcon className='actionIcon' />
-                                            <DatasetMenu handleRemove={handleRemove} handleTransfer={handleTransfer} dataset={{ sourceName, Icon, categories, ...rest }} />
+                                            {
+                                                sourceName !== 'M1 Platform' &&
+                                                <DatasetMenu handleRemove={handleRemove} handleTransfer={handleTransfer} dataset={{ sourceName, Icon, categories, ...rest }} />
+                                            }
                                         </Grid>
                                     </Grid>
                                 </Grid>

@@ -16,6 +16,7 @@ import M1neral_headers from "./jobHeaders";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import isEmpty from 'lodash/isEmpty'
+import { copy } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,12 +43,11 @@ export const rawJobs = [
   { name: 'Import Units', type: 'UNITS', featureFlag: "UNITIMPORT" },
   { name: 'Check Detail Upload', type: 'CHECKDETAILS' },
   { name: 'Property Upload', type: 'PROPERTIES' },
-  { name: 'Transfer Shape to M1 Layer', type: 'SHAPE_TO_M1_LAYER', initialActiveStepNumber: 1 }
+  { name: 'Transfer Shape to M1 Layer', type: 'SHAPE_TO_M1_LAYER', initialActiveStepNumber: 1, skipReview: true }
 ]
 
 export default function BulkUpload(props) {
-  console.log(props);
-  const [, setStateApp] = React.useContext(AppContext);
+  const [stateApp, setStateApp] = React.useContext(AppContext);
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
   const history = useHistory();
   let previousRoute = matchRoutes(props.routes, typeof history.pathHistory[1] === "string" ? history.pathHistory[1] : history?.pathHistory[1]?.pathname ?? "");
@@ -82,6 +82,11 @@ export default function BulkUpload(props) {
     initialJob = jobs.find((job) => job.type.toLowerCase().includes(props.match.params.type.toLowerCase())) || jobs[0];
   }
 
+  if (initialJob.type === 'SHAPE_TO_M1_LAYER' && stateApp.transferData) {
+    initialJob.m1neralHeaders = stateApp.transferData.selectedSourceCategory.m1neralHeaders
+    initialJob.mappedHeadersFromCSV = stateApp.transferData.selectedSourceCategory.mappedHeadersFromCSV
+  }
+
   const [selectedJob, setSelectedJob] = useState(initialJob);
   const [showIcon, setShowIcon] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -114,9 +119,10 @@ export default function BulkUpload(props) {
       csvContactsListToSend: [],
       activeStepNumber: selectedJob.initialActiveStepNumber || 0,
       csvContactsList: [],
+      job: selectedJob,
       jobType: selectedJob.type,
-      m1neralHeaders: M1neral_headers[selectedJob.type] || [],
-      mappedHeadersFromCSV: [],
+      m1neralHeaders: selectedJob.m1neralHeaders || M1neral_headers[selectedJob.type] || [],
+      mappedHeadersFromCSV: selectedJob.mappedHeadersFromCSV || [],
     }));
   };
   const classes = useStyles();
