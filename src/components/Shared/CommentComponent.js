@@ -178,7 +178,6 @@ export default function CommentComponent(props) {
           })
         });
         let tempArray = dataComments.commentsByObjectId.concat(activittyData);
-
         setCommentsArray(
           sortArrayBasedOnTs([...tempArray])
         );
@@ -238,7 +237,7 @@ export default function CommentComponent(props) {
       setProfileImage(profileImage);
     }
   }, [profiledata]);
-
+  
   const sortArrayBasedOnTs = (array) => {
     const compare = (a, b) => {
       if (a.ts < b.ts) return -1;
@@ -275,7 +274,8 @@ export default function CommentComponent(props) {
     upsertComment({
       variables: {
         comment: {
-          comment: newCommentCleaner(value),
+          comment: typeof value === 'object' ? newCommentCleaner(value.comment) : newCommentCleaner(value),
+          commentType: typeof value === 'object' ? (value.commentType || 'General') : 'General',
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           _id: editCommentId,
@@ -320,7 +320,8 @@ export default function CommentComponent(props) {
     upsertComment({
       variables: {
         comment: {
-          comment: newCommentCleaner(value),
+          comment: typeof value === 'object' ? newCommentCleaner(value.comment) : newCommentCleaner(value),
+          commentType: typeof value === 'object' ? (value.commentType || 'General') : 'General',
           public: true,
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,

@@ -7,6 +7,7 @@ export const UPSERTCOMMENT = gql`
       message
       comment {
         _id
+        commentType
         comment
         ts
         public
