@@ -223,7 +223,6 @@ function AddAgreementOwnerAndTractDialog(props) {
       };
       reset({ ...form });
     } else {
-      debugger
       if (selectedShapeLayer?.clear) {
         setTractValue({ name: "", _id: null });
         reset({ ...getValues(), tract: {} });
