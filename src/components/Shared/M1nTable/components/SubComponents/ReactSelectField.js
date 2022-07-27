@@ -317,7 +317,7 @@ const ReactSelectField = ({
   const selectStyles = {
     control: provided => ({ ...provided, minWidth: 240, margin: 8 }),
     menu: () => ({ boxShadow: 'inset 0 1px 0 rgba(0, 0, 0, 0.1)' }),
-    menuPortal: base => ({ ...base, zIndex: 9999, backgroundColor: "white" })
+    menuPortal: base => ({ ...base, zIndex: 9999, backgroundColor: "white", position: "fixed" })
   };
 
 

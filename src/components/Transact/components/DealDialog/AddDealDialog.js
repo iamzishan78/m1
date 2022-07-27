@@ -773,16 +773,14 @@ function AddDealDialog(props) {
               upsertDealDescriptor({
                 variables: {
                   dealId: cardId,
-                  relatedObject: [contactId], // HERE
+                  relatedObject: [contactId],
                   relatedObjectType: "Contact",
                   userId: stateApp.user.mongoId,
                 },
-                refetchQueries: ["getPipeline", "getContactDeals", "getContactSummary", "getContactSummary"],
+                refetchQueries: ["getPipeline", "getContactDeals", "getContactSummary"],
                 awaitRefetchQueries: true,
               }).then((result) => {
-                const {
-                  data: { upsertDealDescriptor },
-                } = result;
+                const { data: { upsertDealDescriptor } } = result;
                 if (upsertDealDescriptor?.success === false) success = false;
                 resolve();
               });
@@ -1059,8 +1057,12 @@ function AddDealDialog(props) {
         relatedObjectType: "Contact",
         userId: stateApp.user.mongoId,
       },
-      refetchQueries: ["getPipeline", "getContactDeals", "getDeal"],
+      refetchQueries: ["getPipeline", "getContactDeals"],
       awaitRefetchQueries: true,
+    }).then(result => {
+      getDeal({
+        variables: { id: stateApp.activeDeal._id }
+      });
     });
   };
 
