@@ -48,6 +48,8 @@ const CampaignManagement = () => {
     fromDate: null,
     toDate: null,
   });
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
   const [stateApp] = useContext(AppContext);
 
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
@@ -69,6 +71,14 @@ const CampaignManagement = () => {
     });
   }, [getESMinValue]);
 
+  useEffect(() => {
+    setAppliedFilters({
+      ...appliedFilters,
+      fromDate,
+      toDate
+    })
+  }, [fromDate, toDate, setAppliedFilters]);
+
   const filtersChange = (filters) => {
     setTableFilters(filters);
   };
@@ -76,12 +86,12 @@ const CampaignManagement = () => {
   return (
     <div className={classes.root}>
       <CustomCampaignFilters
-        setFromDate={(value) => setAppliedFilters({ ...appliedFilters, fromDate: value })}
-        setToDate={(value) => setAppliedFilters({ ...appliedFilters, toDate: value })}
+        setFromDate={setFromDate}
+        setToDate={setToDate}
         esIndex={esIndex}
         searchFields={searchFields}
         tableFilters={tableFilters}
-        appliedFilters={appliedFilters}
+        appliedFilters={{ ...appliedFilters, fromDate, toDate }}
         setAppliedFilters={setAppliedFilters}
         minDate={lastCampaignMinDate}
         contactSearchQuery={stateApp.contactSearchQuery}
