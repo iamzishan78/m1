@@ -1270,7 +1270,7 @@ function SubTable(props) {
         // without using refs we HAVE to re-create customBodyRender callback functions every render
         // or component state is stale
 
-        console.log('FISHBRAIN-2',column)
+        console.log('FISHBRAIN 6', props)
 
         if (column.name === "_id" && column.options.isFiniteScroll) {
           column.options = {
@@ -1352,13 +1352,14 @@ function SubTable(props) {
           return
         }
 
-        console.log('FISHBRAIN 0',column)
+        console.log('FISHBRAIN 5')
 
         switch (column.name) {
 
 
-          case "name": 
-          console.log('FISHBRAIN 1',column)
+          case "unit-name": 
+
+            console.log('FISHBRAIN 4')
 
             if (column.label === 'Unit Name'){
               {
@@ -1510,6 +1511,156 @@ function SubTable(props) {
   
             }
 
+            if(props.targetLabel === 'AAAcontact'){
+              {
+                console.log('FISHBRAIN 3')
+                column.options = {
+                  ...column.options,
+                  customRender: (value, tableMeta) => {
+                    const splitNumber = value?.split("_");
+  
+                    const styles = {
+                      cursor: GlobalStyles.hyperlink.cursor,
+                      //minWidth: "1400px"
+                      // position: 'relative',
+                      // left: '55px',
+                      minWidth: '300px',
+                      maxWidth: '300px'
+                    };
+                    const targetSourceId = tableMeta.rowData[1];
+                    const commentValue = tableMeta.rowData[21]
+                    // const isSnapGrid = column.options.isSnapGrid || false
+  
+                    return (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          // minWidth: '300px',
+                          // maxWidth: '300px'
+                        }}
+                      >
+                        <Grid container spacing={0} direction="row"
+                          style={{
+                            position: 'absolute',
+                            // justifyContent: 'space-between'
+                          }}
+                          className={classes.agreementNumber}
+                        >
+                          <Grid item
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-start",
+                              // alignItems: "center",
+                              // paddingRight: "100px"
+                            }}
+                          >
+
+                            <Box sx={{
+                                color: GlobalStyles.colors.lightBlue,
+                                cursor: 'pointer',
+                                maxWidth: '300px',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                p: 2,
+                                "&:hover": {
+                                  textDecoration: "underline",
+                                  fontWeight: GlobalStyles.font.boldFontWeight,
+                                },
+                                
+                              }}
+
+                              >
+
+
+                                {tableMeta?.rowData[2]}
+                            </Box>
+                          </Grid>
+  
+                          <Grid item>
+                                <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
+                          </Grid>
+  
+  {/* 
+                          <Grid item
+                            // className={classes.actionButtons}
+                          >
+                            <Grid container spacing={0} direction="row">
+  
+                              </Grid>
+                          </Grid> */}
+  
+  
+                          {/* <Grid item
+                            className={classes.actionButtons}
+                          >
+                            <Grid container spacing={0} direction="row">
+  
+                              <Grid item
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "flex-start",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <IconButton
+                                  size="small"
+                                  // color="primary"
+                                  // style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
+                                  onClick={(e) => {
+                                    history.push(
+                                      `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
+                                      { showAgreementBreadcrumb: true }
+                                    );
+                                    e.stopPropagation();
+                                  }}
+                                >
+                                  <LocationOnIcon/>
+                                </IconButton>
+                              </Grid>
+  
+                              <Grid item
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "flex-start",
+                                  alignItems: "center",
+                                }}
+                              >
+                                {value?.toLowerCase() === "approved" ? (
+                                  <CheckCircleIcon style={{ color: "forestgreen" }} />
+                                ) : (
+                                  <WarningIcon style={{ color: "orange" }} />
+                                )}
+                              </Grid>
+  
+                              <Grid item
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "flex-start",
+                                  alignItems: "center",
+                                }}
+                              >
+                                    <Button 
+                                        >
+                                          Details
+                                    </Button>
+                              </Grid>
+  
+  
+  
+                            </Grid>
+                            
+                          </Grid> */}
+                        </Grid>
+                      </div>
+  
+                    );
+                  },
+                };
+              }
+              break;
+  
+            }
 
 
           case "detailCard":
@@ -3055,7 +3206,11 @@ function SubTable(props) {
 
                   return (
                     <div
-                      style={{ display: "flex", alignItems: "center", justifyContent: "left", ...column.style }}
+                      style={{ 
+                        // display: "flex", 
+                        // alignItems: "center", 
+                        // justifyContent: "left", 
+                        ...column.style }}
                       className={`${props.parent === "assocTaxRollInterests" &&
                         props.addAble.type === "wellInterest" &&
                         (!tableMeta.rowData[15] || tableMeta.rowData[20])
@@ -3063,7 +3218,15 @@ function SubTable(props) {
                         : []
                         }`}
                     >
+
+
+
+                      {/* 
+                      // this is for the contact name section.
+                      // it is not in the case statement b/c multipe datapoints have the name: called "name" 
+                      */}
                       {props.targetLabel === "contact" && column.name === "name" && (
+                        <div>
                         <Avatar
                           color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                           fgColor="#000"
@@ -3082,6 +3245,24 @@ function SubTable(props) {
                           size="35"
                           round
                         />
+                        <p
+                        className={classes.clickableCell}
+                        onClick={() => {
+                          setStateApp((stateApp) => ({
+                            ...stateApp,
+                            selectedContact: tableMeta.rowData[0],
+                          }));
+                          setTitle("Contact Details");
+                          setSubTitle(" ");
+                          handleOpenExpandableCard();
+                        }}
+                      >
+                        {tableMeta.rowData[8] || (!tableMeta.rowData[10] && !tableMeta.rowData[12])
+                          ? `${tableMeta.rowData[8] ? tableMeta.rowData[8] : ""}`
+                          : `${tableMeta.rowData[10] ? tableMeta.rowData[10] : ""} ${tableMeta.rowData[12] ? tableMeta.rowData[12] : ""}`}
+                        <div className={classes.companyName}>{tableMeta.rowData[14]}</div>
+                      </p>
+                      </div>
                       )}
 
 
@@ -3107,7 +3288,7 @@ function SubTable(props) {
                           nonEditable={!column.editable}
                         />
                       )}
-                      {props.targetLabel === "contact" && column.name !== "name" && (
+                      {/* {props.targetLabel === "contact" && column.name !== "name" && (
                         <CellContentEdition
                           id={tableMeta.rowData[0]}
                           content={{ [column.name]: valueFormatter(column, value) }}
@@ -3122,30 +3303,6 @@ function SubTable(props) {
                           }
                           nonEditable={!column.editable}
                         />
-                      )}
-                      {props.targetLabel === "contact" && column.name === "name" && (
-                        <p
-                          className={classes.clickableCell}
-                          onClick={() => {
-                            setStateApp((stateApp) => ({
-                              ...stateApp,
-                              selectedContact: tableMeta.rowData[0],
-                            }));
-                            setTitle("Contact Details");
-                            setSubTitle(" ");
-                            handleOpenExpandableCard();
-                          }}
-                        >
-                          {tableMeta.rowData[8] || (!tableMeta.rowData[10] && !tableMeta.rowData[12])
-                            ? `${tableMeta.rowData[8] ? tableMeta.rowData[8] : ""}`
-                            : `${tableMeta.rowData[10] ? tableMeta.rowData[10] : ""} ${tableMeta.rowData[12] ? tableMeta.rowData[12] : ""}`}
-                          <div className={classes.companyName}>{tableMeta.rowData[14]}</div>
-                        </p>
-                      )}
-                      {/* {props.targetLabel !== "contact" && column.name === "name" && (
-                        <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span>{tableMeta.rowData[getIndexofColumn(columns, "isPurchased")] && <RequestPageIcon color="grey" fontSize="8px" />} </span>
-                        </FeatureFlag>
                       )} */}
 
                       {props.targetLabel === "Unit Ownership" && column.name === "name" && (

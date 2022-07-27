@@ -50,6 +50,10 @@ export default function Contacts() {
   const [allowedPaths, setAllowablePaths] = useState({});
   const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
+  // waypointKey should any key of tableHader which do not have customRender in schema file
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 66px)" }
+
+
   useEffect(() => {
     const option = Object.values(contactManagementRoutes).find((item) => item.link === location.pathname);
     if (option) {
@@ -116,6 +120,7 @@ export default function Contacts() {
             headerLabel="Contacts"
             contactSearchQuery={stateApp.contactSearchQuery}
             userId={stateApp.user.mongoId}
+            loadMore={loadMore}
           />
         </div>
       </FeatureFlag>
