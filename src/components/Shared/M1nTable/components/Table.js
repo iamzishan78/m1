@@ -3226,7 +3226,13 @@ function SubTable(props) {
                       // it is not in the case statement b/c multipe datapoints have the name: called "name" 
                       */}
                       {props.targetLabel === "contact" && column.name === "name" && (
-                        <div>
+                        <div
+                        style={{ 
+                          display: "flex", 
+                          flexDirection: 'row',
+                          alignItems: "center", 
+                          }}
+                        >
                         <Avatar
                           color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                           fgColor="#000"
@@ -3247,6 +3253,12 @@ function SubTable(props) {
                         />
                         <p
                         className={classes.clickableCell}
+                        style={{ 
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          minWidth: "300px", 
+                          }}
                         onClick={() => {
                           setStateApp((stateApp) => ({
                             ...stateApp,
@@ -3260,8 +3272,42 @@ function SubTable(props) {
                         {tableMeta.rowData[8] || (!tableMeta.rowData[10] && !tableMeta.rowData[12])
                           ? `${tableMeta.rowData[8] ? tableMeta.rowData[8] : ""}`
                           : `${tableMeta.rowData[10] ? tableMeta.rowData[10] : ""} ${tableMeta.rowData[12] ? tableMeta.rowData[12] : ""}`}
-                        <div className={classes.companyName}>{tableMeta.rowData[14]}</div>
+                        
+                        
+                        {/* <div className={classes.companyName}>{tableMeta.rowData[14]}</div> */}
+                        {
+                              // props.targetLabel === "contact" &&
+                              // column.name === "name" &&
+                              tableMeta.rowData[
+                              props.columns.findIndex(
+                                (val) => val.name === "isPurchased"
+                              )
+                              ] && (
+                                <FeatureFlag feature={FEATURES.IDICORE}>
+                                  <MonetizationOnIcon
+                                    className={classes.monetizationIcon}
+
+                                  />
+                                </FeatureFlag>
+                              )}
                       </p>
+
+                            {/* {
+                              // props.targetLabel === "contact" &&
+                              // column.name === "name" &&
+                              tableMeta.rowData[
+                              props.columns.findIndex(
+                                (val) => val.name === "isPurchased"
+                              )
+                              ] && (
+                                <FeatureFlag feature={FEATURES.IDICORE}>
+                                  <MonetizationOnIcon
+                                    className={classes.monetizationIcon}
+
+                                  />
+                                </FeatureFlag>
+                              )} */}
+
                       </div>
                       )}
 
@@ -3317,7 +3363,7 @@ function SubTable(props) {
                         </FeatureFlag>
                       )}
 
-                      {props.targetLabel === "contact" &&
+                      {/* {props.targetLabel === "contact" &&
                         column.name === "name" &&
                         tableMeta.rowData[
                         props.columns.findIndex(
@@ -3330,7 +3376,7 @@ function SubTable(props) {
 
                             />
                           </FeatureFlag>
-                        )}
+                        )} */}
                     </div>
                   );
                 },
