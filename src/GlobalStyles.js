@@ -7,7 +7,7 @@ const GlobalStyles = {
         mutedGrey: "#959595",
     },
     font: {
-        boldFontWeight: 600,
+        boldFontWeight: 700,
     },
     hyperlink: {
         cursor: 'pointer',

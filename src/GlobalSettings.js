@@ -21,7 +21,7 @@ const GlobalSettings = {
   },
 
 
-  // this is custom options settings for control grid elements (frist column w/ row level indicators and controls)
+  // // this is custom options settings for control grid elements (frist column w/ row level indicators and controls)
   muiGridControlOptions: {
 
     // styling props applied to the individual cells w/in a column

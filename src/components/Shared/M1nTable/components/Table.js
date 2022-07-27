@@ -1404,68 +1404,9 @@ function SubTable(props) {
                             }}
                           >
 
-{/* if (column.name === 'name' && props.parent === 'UnitsTable') {
-                    const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item, })));
-                    return (
-                      <span style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-                       onClick={() => history.push(`/map/units/${row_line._id}`)}>{row_line.name}</span>
-                    )
-                  } */}
-
-                              {/* <div
-                                style={{
-                                  display: "flex",
-                                  cursor: "pointer",
-                                  minWidth: "120px",
-                                  maxWidth: "120px",
-                                  borderRadius: "7px",
-                                  color: "#17aadd",
-                                  wordBreak: "break-word",
-                                  "&:hover": {
-                                    textDecoration: "underline",
-                                  },
-                                  fontWeight: "bold",
-                                  justifyContent: "flex-start",
-                                  paddingRight: '40px',
-                                }}>
-
-                                <Typography
-                                  noWrap
-                                  color="inherit"
-                                >
-                                  {tableMeta?.rowData[2]}
-                                </Typography>
-
-                              </div> */}
-
-                            {/* <div
-                                                          style={{
-                                                            display: "flex",
-                                                            cursor: "pointer",
-                                                            minWidth: "120px",
-                                                            maxWidth: "120px",
-                                                            borderRadius: "7px",
-                                                            color: "#17aadd",
-                                                            wordBreak: "break-word",
-                                                            "&:hover": {
-                                                              textDecoration: "underline",
-                                                            },
-                                                            fontWeight: "bold",
-                                                            justifyContent: "flex-start",
-                                                            paddingRight: '40px',}}
-                            > */}
-
-                                                       <div
-                                                          style={{
-                                                            color: "red",
-                                                            cursor: "pointer",
-
-                                                          }}
-                            > 
-
                             <Box sx={{
-                                // color: GlobalStyles.colors.lightBlue,
-                                color: 'inherit',
+                                color: GlobalStyles.colors.lightBlue,
+                                cursor: 'pointer',
                                 width: '300px',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
@@ -1476,29 +1417,12 @@ function SubTable(props) {
                                 },
                                 
                               }}
-                              // style={styles}
 
                               >
-                            {/* <Typography
-                              onClick={(e) => {
-                                e.stopPropagation();
-                               history.push(`/map/units/${tableMeta.rowData[0]}`);
-                              }}
-                              noWrap
-                              variant='body2'
-                              style={styles}
-                              // color="inherit"
-                              // color= GlobalStyles.colors.lightBlue,
-                            > */}
+
 
                                 {tableMeta?.rowData[2]}
-                            {/* </Typography> */}
                             </Box>
-                            </div>
-
-                            {/* </div> */}
-
-
                           </Grid>
   
                           <Grid item>
@@ -2008,7 +1932,7 @@ function SubTable(props) {
                             // paddingRight: "100px"
                           }}
                         >
-                          <Typography
+                          {/* <Typography
                             onClick={(e) => {
                               e.stopPropagation();
 
@@ -2039,7 +1963,30 @@ function SubTable(props) {
                                 ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
                                 : tableMeta?.rowData[2]}
                             </Box>
-                          </Typography>
+                          </Typography> */}
+
+
+                          <Box sx={{
+                                color: GlobalStyles.colors.lightBlue,
+                                cursor: 'pointer',
+                                width: '300px',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                p: 2,
+                                "&:hover": {
+                                  textDecoration: "underline",
+                                  fontWeight: GlobalStyles.font.boldFontWeight,
+                                },
+                                
+                              }}
+
+                              >
+                                
+                                {splitNumber?.[0]
+                                ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
+                                : tableMeta?.rowData[2]}
+                            </Box>
+
                         </Grid>
 
                         <Grid item>
