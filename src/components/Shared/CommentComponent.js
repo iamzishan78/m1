@@ -237,7 +237,7 @@ export default function CommentComponent(props) {
       setProfileImage(profileImage);
     }
   }, [profiledata]);
-  
+
   const sortArrayBasedOnTs = (array) => {
     const compare = (a, b) => {
       if (a.ts < b.ts) return -1;
@@ -438,6 +438,13 @@ export default function CommentComponent(props) {
                                 </div>
                               )}
                           </div>
+                          {eachComment?.commentType &&
+                            <div style={{
+                              color: 'rgb(90 90 90)',
+                              fontSize: '15px',
+                              marginBottom: '15px',
+                            }}>{eachComment?.commentType}</div>
+                          }
                           {eachComment.isActivity === true &&
                             <>
                               <div className={`${classes.whiteSpace}`}>
@@ -470,7 +477,8 @@ export default function CommentComponent(props) {
                           )}
                         </Grid>
                       </Grid>
-                    )}
+                    )
+                    }
                   </Fragment>
                 );
               })}
@@ -527,7 +535,7 @@ export default function CommentComponent(props) {
           </div>
         )}
       </div>
-    }</SizeMe>
+    }</SizeMe >
   );
 }
 
