@@ -62,16 +62,15 @@ function ContactsTable(props) {
     props.setInitialFilters([
       {
         field: "campaignName.keyword",
-        value: "Martin",
+        value: get(props.campaign, "name", ""),
       },
     ]);
     props.setTableMeta({
       addableName: "Contact",
       extendSearchQuery: null,
       searchFields: ["name^4", "_all"],
-      TableHeader: copy(tableheader),
+      TableHeader: tableheader,
       esIndex,
-      // filters: Contacts?.filters ? getFilters() : [],
       typeKeyword: { gridViewCategory: "Contacts" },
       startPaginationAt: 25,
       defaultSort: { field: "lastUpdateAt", order: "desc", unmapped_type: "date" },

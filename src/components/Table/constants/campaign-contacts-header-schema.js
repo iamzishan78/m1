@@ -1,6 +1,7 @@
 /* props is just a style object*/
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import GlobalSettings from "GlobalSettings";
+import { history } from "store";
 
 const ContactsHeadCells = [
   {
@@ -114,6 +115,19 @@ const ContactsHeadCells = [
       ...GlobalSettings.muiGridControlOptions,
       sort: true,
       filter: true,
+      customRender: (value, tableMeta) => {
+        return (
+          <p
+            onClick={(e) => {
+              e.stopPropagation();
+              history.push(`/contact/details/${tableMeta.rowData[0]}`);
+            }}
+            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+          >
+            {value}
+          </p>
+        )
+      },
     },
   },
   {
@@ -709,38 +723,7 @@ const ContactsHeadCells = [
         },
       ],
     },
-  },
-  {
-    name: "actionMenu",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: true,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-  // {
-  //   name: "isTracked",
-  //   label: "Track",
-  //   options: {
-  //     searchable: false,
-  //     download: false,
-  //     print: false,
-  //     filterOptions: {
-  //       names: ["Tracked", "Untracked"],
-  //       logic(tracked, filterVal) {
-  //         return !(
-  //           (filterVal.indexOf("Tracked") >= 0 && tracked) ||
-  //           (filterVal.indexOf("Untracked") >= 0 && !tracked)
-  //         );
-  //       },
-  //     },
-  //     filterType: "dropdown",
-  //   },
-  // },
+  }
 ];
 
 export default ContactsHeadCells;

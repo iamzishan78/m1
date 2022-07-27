@@ -1,3 +1,6 @@
+import { history } from "store";
+import GlobalSettings from "GlobalSettings";
+
 const unitsColumnHeaders = [
   {
     name: "id",
@@ -28,26 +31,22 @@ const unitsColumnHeaders = [
     label: "Unit Name",
     esKey: "name.keyword",
     options: {
+      ...GlobalSettings.muiGridControlOptions,
       sort: true,
       filter: true,
-      setCellProps: () => ({
-        style: {
-          minWidth: "250px",
-          whiteSpace: "nowrap",
-          position: "sticky",
-          left: "77px",
-          zIndex: 200,
-        },
-      }),
-      setCellHeaderProps: () => ({
-        style: {
-          position: "sticky",
-          minWidth: "150px",
-          left: "77px",
-          zIndex: 201,
-        },
-      }),
-      stickyColumn: true,
+      customRender: (value, tableMeta) => {
+        return (
+          <p
+            onClick={(e) => {
+              e.stopPropagation();
+              history.push(`/map/units/${tableMeta.rowData[0]}`);
+            }}
+            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+          >
+            {value}
+          </p>
+        )
+      },
     },
     style: { minWidth: 185 },
   },
@@ -169,7 +168,11 @@ const unitsColumnHeaders = [
     label: "Campaign Name",
     esKey: "shapeJson.properties.campaignName.keyword",
     options: {
-      customRender: (value) => value?.map((v, index) => `${v}${index < value?.length - 1 ? "," : ""}`),
+      customRender: (value) => {
+        if (typeof value !== "string")
+          value?.map((v, index) => `${v}${index < value?.length - 1 ? "," : ""}`);
+        else return value;
+      },
       setCellProps: () => ({ style: { minWidth: "200px" } }),
       sort: true,
       filter: true,
@@ -233,19 +236,7 @@ const unitsColumnHeaders = [
       print: false,
       viewColumns: false,
     },
-  },
-  {
-    name: "coordinates",
-    label: " ",
-    options: {
-      filter: false,
-      sort: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  }
 ];
 
 export default unitsColumnHeaders;

@@ -46,7 +46,7 @@ function MapGridUnitTable(props) {
         },
         {
           field: "shapeJson.properties.campaignName.keyword",
-          value: "Martin",
+          value: get(props.campaign, "name", ""),
         },
       ],
       defaultSort: { field: "_ts", order: "desc" },
