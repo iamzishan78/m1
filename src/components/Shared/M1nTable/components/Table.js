@@ -2805,6 +2805,11 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   return (
+
+                    <div 
+                    style={{
+                      width: '300px'
+                    }}>
                     <CellContentEdition
                       id={tableMeta.rowData[0]}
                       entityId={tableMeta.rowData[1]}
@@ -2821,6 +2826,7 @@ function SubTable(props) {
                       isLinked
                       toLink={value}
                     />
+                    </div>
                   );
                 },
               };
