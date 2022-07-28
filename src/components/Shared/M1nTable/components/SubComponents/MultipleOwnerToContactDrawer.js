@@ -187,7 +187,7 @@ const MultipleOwnerToContactDrawer = ({
     if (entitiesIds.length === 0) {
       convertMultipleOwnerToContactAction({ ...values, rows, existingContactId, actionType: action, userId: userId, tags: newTagsIds, jobType, jobName });
     } else {
-      convertMultipleOwnerToContactAction({ ...values, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds, jobType, jobName  });
+      convertMultipleOwnerToContactAction({ ...values, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds, jobType, jobName });
     }
     onClose();
     setLoading(false);
@@ -233,12 +233,6 @@ const MultipleOwnerToContactDrawer = ({
               </FormControl>
             </Box>
             }
-
-            {/* <Box mt={2}>
-              <Typography>
-                Selected interest owners will be combined into a single contact.
-            </Typography>
-            </Box> */}
             {
               tab === TAB.EXISTING &&
               <Box mt={2}>
