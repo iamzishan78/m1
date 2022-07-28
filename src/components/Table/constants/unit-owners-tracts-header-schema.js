@@ -4,19 +4,6 @@ const UnitOwnersTractHeadCells = [
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-    name: "tractName",
-    label: "Tract Name",
-    esKey: "tract.tractName.keyword",
-    options: {
-      sort: true,
-      filter: true,
-    },
-    style: {
-      minWidth: 200,
-      maxWidth: 300,
-    },
-  },
-  {
     name: "state",
     label: "State",
     esKey: "tract.state.keyword",
@@ -29,7 +16,19 @@ const UnitOwnersTractHeadCells = [
     esKey: "tract.county.keyword",
     options: { sort: true, filter: true },
   },
-
+  {
+    name: "tractName",
+    label: "Tract Name",
+    esKey: "tract.tractName.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+    style: {
+      minWidth: 200,
+      maxWidth: 300,
+    },
+  },
   {
     name: "meridian",
     label: "Meridian",
@@ -85,7 +84,6 @@ const UnitOwnersTractHeadCells = [
     esKey: "orri",
     options: { sort: true, filter: true },
   },
-  { name: "working_interest", esKey: "working_interest", type: "number", label: "WI", options: { filter: true } },
   {
     name: "sdGrossAcres",
     label: "Gross Acres",
@@ -93,8 +91,6 @@ const UnitOwnersTractHeadCells = [
     options: { sort: true, filter: true },
   },
   { name: "net_acres", esKey: "net_acres", label: "Net Acres", type: "number", options: { filter: true } },
-  { name: "company_net_acres", esKey: "company_net_acres", label: "Co Net Acres", type: "number", options: { filter: true } },
-  { name: "nra", esKey: "nra", label: "NRA", type: "number", options: { filter: true } },
   {
     name: "depthFrom",
     label: "Depth From",
@@ -108,8 +104,21 @@ const UnitOwnersTractHeadCells = [
     options: { sort: true, filter: true },
   },
   { name: "tractStatus", esKey: "tractStatus.keyword", label: "Tract Status", editable: true, options: { filter: true } },
-  { name: "mapStatus", esKey: "mapStatus.keyword", label: "Map Staus", editable: true, options: { filter: true } },
   { name: "countAcres", esKey: "countAcres.keyword", label: "Count Acres", options: { filter: true } },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      dbName: "comments.comment",
+      display: true,
+      filter: false,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 ];
 
 export default UnitOwnersTractHeadCells;

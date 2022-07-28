@@ -607,9 +607,16 @@ export default function Comments(props) {
                     <ListItemText
                       className={classes.listItemText}
                       primary={
-                        <React.Fragment>
+                        <div style={{ marginBottom: '8px' }}>
+                          <div style={{
+                            marginTop: '2px',
+                            marginBottom: '5px',
+                            fontWeight: 'bolder',
+                            color: '#3e3e3e',
+                            fontSize: '15px',
+                          }}>{comment?.commentType || 'General'}</div>
                           <CommentText users={userLists?.allMongoUsers} eachComment={comment} />
-                        </React.Fragment>
+                        </div>
                       }
                       secondary={
                         `${comment.user.name}` +
@@ -637,7 +644,7 @@ export default function Comments(props) {
           <CircularProgress color="secondary"></CircularProgress>
         )}
       </CardContent>
-    </Card>
+    </Card >
   );
 }
 
