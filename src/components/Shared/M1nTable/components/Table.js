@@ -1357,311 +1357,179 @@ function SubTable(props) {
         switch (column.name) {
 
 
-          case "unit-name": 
 
-            console.log('FISHBRAIN 4')
+          case "name": 
 
-            if (column.label === 'Unit Name'){
+
               {
                 column.options = {
                   ...column.options,
                   customRender: (value, tableMeta) => {
-                    const splitNumber = value?.split("_");
-  
-                    const styles = {
-                      cursor: GlobalStyles.hyperlink.cursor,
-                      //minWidth: "1400px"
-                      // position: 'relative',
-                      // left: '55px',
-                      minWidth: '300px',
-                      maxWidth: '300px'
-                    };
-                    const targetSourceId = tableMeta.rowData[1];
-                    const commentValue = tableMeta.rowData[21]
-                    // const isSnapGrid = column.options.isSnapGrid || false
-  
+
+
+                    if(props.targetLabel === "unit" && column.name === "name"){
+
+                            const splitNumber = value?.split("_");
+          
+                            const styles = {
+                              cursor: GlobalStyles.hyperlink.cursor,
+                              //minWidth: "1400px"
+                              // position: 'relative',
+                              // left: '55px',
+                              minWidth: '300px',
+                              maxWidth: '300px'
+                            };
+                            const targetSourceId = tableMeta.rowData[1];
+                            const commentValue = tableMeta.rowData[21]
+                            // const isSnapGrid = column.options.isSnapGrid || false
+
+                            // tableMeta.rowData[
+                            //   props.columns.findIndex(
+                            //     (val) => val.name === "isPurchased"
+                            //   )
+                            //   ]
+          
+                            return (
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  // minWidth: '300px',
+                                  // maxWidth: '300px'
+                                }}
+                              >
+                                <Grid container spacing={0} direction="row"
+                                  style={{
+                                    position: 'absolute',
+                                    // justifyContent: 'space-between'
+                                  }}
+                                  className={classes.agreementNumber}
+                                >
+                                  <Grid item
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "flex-start",
+                                      // alignItems: "center",
+                                      // paddingRight: "100px"
+                                    }}
+                                  >
+
+                                    <Box 
+
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                          history.push(`/map/units/${tableMeta.rowData[0]}`);
+                                      }}
+                                    
+                                    
+                                      sx={{
+                                        color: GlobalStyles.colors.lightBlue,
+                                        cursor: 'pointer',
+                                        maxWidth: '300px',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        p: 2,
+                                        "&:hover": {
+                                          textDecoration: "underline",
+                                          fontWeight: GlobalStyles.font.boldFontWeight,
+                                        },
+                                        
+                                      }}
+
+                                      >
+
+
+                                        {tableMeta?.rowData[2]}
+                                    </Box>
+                                  </Grid>
+          
+                                  <Grid item>
+                                        <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
+                                  </Grid>
+
+                                </Grid>
+                              </div>
+          
+                            );
+                  };
+
+                  if(props.targetLabel === "contact" && column.name === "name"){
                     return (
-                      <div
-                        style={{
+                        <div
+                        style={{ 
+                          display: "flex", 
+                          flexDirection: 'row',
+                          alignItems: "center", 
+                          }}
+                        >
+                        <Avatar
+                          color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
+                          fgColor="#000"
+                          name={
+                            valueFormatter(column, tableMeta.rowData[8]) ||
+                            valueFormatter(column,
+                              `${tableMeta.rowData[10]
+                                ? tableMeta.rowData[10]
+                                : tableMeta.rowData[8]
+                                  ? tableMeta.rowData[8].split(" ")[0]
+                                  : ""
+                              }`
+                            )
+                          }
+                          // name={valueFormatter(column, `${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
+                          size="35"
+                          round
+                        />
+                        <p
+                        className={classes.clickableCell}
+                        style={{ 
                           display: 'flex',
+                          flexDirection: 'row',
                           alignItems: 'center',
-                          // minWidth: '300px',
-                          // maxWidth: '300px'
+                          minWidth: "300px", 
+                          }}
+                        onClick={() => {
+                          setStateApp((stateApp) => ({
+                            ...stateApp,
+                            selectedContact: tableMeta.rowData[0],
+                          }));
+                          setTitle("Contact Details");
+                          setSubTitle(" ");
+                          handleOpenExpandableCard();
                         }}
                       >
-                        <Grid container spacing={0} direction="row"
-                          style={{
-                            position: 'absolute',
-                            // justifyContent: 'space-between'
-                          }}
-                          className={classes.agreementNumber}
-                        >
-                          <Grid item
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-start",
-                              // alignItems: "center",
-                              // paddingRight: "100px"
-                            }}
-                          >
+                        {tableMeta.rowData[8] || (!tableMeta.rowData[10] && !tableMeta.rowData[12])
+                          ? `${tableMeta.rowData[8] ? tableMeta.rowData[8] : ""}`
+                          : `${tableMeta.rowData[10] ? tableMeta.rowData[10] : ""} ${tableMeta.rowData[12] ? tableMeta.rowData[12] : ""}`}
+                        
+                        {
+                              tableMeta.rowData[
+                              props.columns.findIndex(
+                                (val) => val.name === "isPurchased"
+                              )
+                              ] && (
+                                <FeatureFlag feature={FEATURES.IDICORE}>
+                                  <MonetizationOnIcon
+                                    className={classes.monetizationIcon}
 
-                            <Box sx={{
-                                color: GlobalStyles.colors.lightBlue,
-                                cursor: 'pointer',
-                                maxWidth: '300px',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                p: 2,
-                                "&:hover": {
-                                  textDecoration: "underline",
-                                  fontWeight: GlobalStyles.font.boldFontWeight,
-                                },
-                                
-                              }}
-
-                              >
-
-
-                                {tableMeta?.rowData[2]}
-                            </Box>
-                          </Grid>
-  
-                          <Grid item>
-                                <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
-                          </Grid>
-  
-  {/* 
-                          <Grid item
-                            // className={classes.actionButtons}
-                          >
-                            <Grid container spacing={0} direction="row">
-  
-                              </Grid>
-                          </Grid> */}
-  
-  
-                          {/* <Grid item
-                            className={classes.actionButtons}
-                          >
-                            <Grid container spacing={0} direction="row">
-  
-                              <Grid item
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-start",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <IconButton
-                                  size="small"
-                                  // color="primary"
-                                  // style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
-                                  onClick={(e) => {
-                                    history.push(
-                                      `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
-                                      { showAgreementBreadcrumb: true }
-                                    );
-                                    e.stopPropagation();
-                                  }}
-                                >
-                                  <LocationOnIcon/>
-                                </IconButton>
-                              </Grid>
-  
-                              <Grid item
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-start",
-                                  alignItems: "center",
-                                }}
-                              >
-                                {value?.toLowerCase() === "approved" ? (
-                                  <CheckCircleIcon style={{ color: "forestgreen" }} />
-                                ) : (
-                                  <WarningIcon style={{ color: "orange" }} />
-                                )}
-                              </Grid>
-  
-                              <Grid item
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-start",
-                                  alignItems: "center",
-                                }}
-                              >
-                                    <Button 
-                                        >
-                                          Details
-                                    </Button>
-                              </Grid>
-  
-  
-  
-                            </Grid>
-                            
-                          </Grid> */}
-                        </Grid>
+                                  />
+                                </FeatureFlag>
+                              )}
+                      </p>
                       </div>
-  
                     );
+                  }
+
+
+
                   },
-                };
+                
+
+
               }
               break;
   
             }
-
-            if(props.targetLabel === 'AAAcontact'){
-              {
-                console.log('FISHBRAIN 3')
-                column.options = {
-                  ...column.options,
-                  customRender: (value, tableMeta) => {
-                    const splitNumber = value?.split("_");
-  
-                    const styles = {
-                      cursor: GlobalStyles.hyperlink.cursor,
-                      //minWidth: "1400px"
-                      // position: 'relative',
-                      // left: '55px',
-                      minWidth: '300px',
-                      maxWidth: '300px'
-                    };
-                    const targetSourceId = tableMeta.rowData[1];
-                    const commentValue = tableMeta.rowData[21]
-                    // const isSnapGrid = column.options.isSnapGrid || false
-  
-                    return (
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          // minWidth: '300px',
-                          // maxWidth: '300px'
-                        }}
-                      >
-                        <Grid container spacing={0} direction="row"
-                          style={{
-                            position: 'absolute',
-                            // justifyContent: 'space-between'
-                          }}
-                          className={classes.agreementNumber}
-                        >
-                          <Grid item
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-start",
-                              // alignItems: "center",
-                              // paddingRight: "100px"
-                            }}
-                          >
-
-                            <Box sx={{
-                                color: GlobalStyles.colors.lightBlue,
-                                cursor: 'pointer',
-                                maxWidth: '300px',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                p: 2,
-                                "&:hover": {
-                                  textDecoration: "underline",
-                                  fontWeight: GlobalStyles.font.boldFontWeight,
-                                },
-                                
-                              }}
-
-                              >
-
-
-                                {tableMeta?.rowData[2]}
-                            </Box>
-                          </Grid>
-  
-                          <Grid item>
-                                <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
-                          </Grid>
-  
-  {/* 
-                          <Grid item
-                            // className={classes.actionButtons}
-                          >
-                            <Grid container spacing={0} direction="row">
-  
-                              </Grid>
-                          </Grid> */}
-  
-  
-                          {/* <Grid item
-                            className={classes.actionButtons}
-                          >
-                            <Grid container spacing={0} direction="row">
-  
-                              <Grid item
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-start",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <IconButton
-                                  size="small"
-                                  // color="primary"
-                                  // style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
-                                  onClick={(e) => {
-                                    history.push(
-                                      `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
-                                      { showAgreementBreadcrumb: true }
-                                    );
-                                    e.stopPropagation();
-                                  }}
-                                >
-                                  <LocationOnIcon/>
-                                </IconButton>
-                              </Grid>
-  
-                              <Grid item
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-start",
-                                  alignItems: "center",
-                                }}
-                              >
-                                {value?.toLowerCase() === "approved" ? (
-                                  <CheckCircleIcon style={{ color: "forestgreen" }} />
-                                ) : (
-                                  <WarningIcon style={{ color: "orange" }} />
-                                )}
-                              </Grid>
-  
-                              <Grid item
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-start",
-                                  alignItems: "center",
-                                }}
-                              >
-                                    <Button 
-                                        >
-                                          Details
-                                    </Button>
-                              </Grid>
-  
-  
-  
-                            </Grid>
-                            
-                          </Grid> */}
-                        </Grid>
-                      </div>
-  
-                    );
-                  },
-                };
-              }
-              break;
-  
-            }
-
 
           case "detailCard":
             column.options = {
@@ -2117,19 +1985,33 @@ function SubTable(props) {
                           </Typography> */}
 
 
-                          <Box sx={{
-                                color: GlobalStyles.colors.lightBlue,
-                                cursor: 'pointer',
-                                maxWidth: '300px',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                p: 2,
-                                "&:hover": {
-                                  textDecoration: "underline",
-                                  fontWeight: GlobalStyles.font.boldFontWeight,
-                                },
-                                
-                              }}
+                          <Box 
+                            onClick={(e) => {
+                              e.stopPropagation();
+
+                              if (isSnapGrid)
+                                history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
+                                  { showAgreementBreadcrumb: false }
+                                );
+                              else
+                                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
+                                  { showAgreementBreadcrumb: true }
+                                );
+                            }}
+                          
+                            sx={{
+                                  color: GlobalStyles.colors.lightBlue,
+                                  cursor: 'pointer',
+                                  maxWidth: '300px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  p: 2,
+                                  "&:hover": {
+                                    textDecoration: "underline",
+                                    fontWeight: GlobalStyles.font.boldFontWeight,
+                                  },
+                                  
+                                }}
 
                               >
                                 
@@ -3225,79 +3107,6 @@ function SubTable(props) {
                         }`}
                     >
 
-
-
-                      {/* 
-                      // this is for the contact name section.
-                      // it is not in the case statement b/c multipe datapoints have the name: called "name" 
-                      // we will need to somehow eventually refactor this as it is annoying 
-                      */}
-                      {props.targetLabel === "contact" && column.name === "name" && (
-                        <div
-                        style={{ 
-                          display: "flex", 
-                          flexDirection: 'row',
-                          alignItems: "center", 
-                          }}
-                        >
-                        <Avatar
-                          color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
-                          fgColor="#000"
-                          name={
-                            valueFormatter(column, tableMeta.rowData[8]) ||
-                            valueFormatter(column,
-                              `${tableMeta.rowData[10]
-                                ? tableMeta.rowData[10]
-                                : tableMeta.rowData[8]
-                                  ? tableMeta.rowData[8].split(" ")[0]
-                                  : ""
-                              }`
-                            )
-                          }
-                          // name={valueFormatter(column, `${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
-                          size="35"
-                          round
-                        />
-                        <p
-                        className={classes.clickableCell}
-                        style={{ 
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          minWidth: "300px", 
-                          }}
-                        onClick={() => {
-                          setStateApp((stateApp) => ({
-                            ...stateApp,
-                            selectedContact: tableMeta.rowData[0],
-                          }));
-                          setTitle("Contact Details");
-                          setSubTitle(" ");
-                          handleOpenExpandableCard();
-                        }}
-                      >
-                        {tableMeta.rowData[8] || (!tableMeta.rowData[10] && !tableMeta.rowData[12])
-                          ? `${tableMeta.rowData[8] ? tableMeta.rowData[8] : ""}`
-                          : `${tableMeta.rowData[10] ? tableMeta.rowData[10] : ""} ${tableMeta.rowData[12] ? tableMeta.rowData[12] : ""}`}
-                        
-                        {
-                              tableMeta.rowData[
-                              props.columns.findIndex(
-                                (val) => val.name === "isPurchased"
-                              )
-                              ] && (
-                                <FeatureFlag feature={FEATURES.IDICORE}>
-                                  <MonetizationOnIcon
-                                    className={classes.monetizationIcon}
-
-                                  />
-                                </FeatureFlag>
-                              )}
-                      </p>
-                      </div>
-                      )}
-
-
                       {/* 
                       // this is for the UNIT name section.
                       // it is not in the case statement b/c multipe datapoints have the name: called "name"
@@ -3305,9 +3114,48 @@ function SubTable(props) {
                       */}
 
                       {/* {props.targetLabel === "unit" && column.name === "name" && (
-                        <div>
-                          console.log('FISHBRAIN 11')
-                        </div>
+                      
+                          <div>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <Grid container spacing={0} direction="row"
+                              style={{
+                                position: 'absolute',
+                              }}
+                              className={classes.agreementNumber}
+                            >
+                              <Grid item
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "flex-start",
+                                }}
+                              >
+
+                                <Box sx={{
+                                    color: GlobalStyles.colors.lightBlue,
+                                    cursor: 'pointer',
+                                    maxWidth: '300px',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    p: 2,
+                                    "&:hover": {
+                                      textDecoration: "underline",
+                                      fontWeight: GlobalStyles.font.boldFontWeight,
+                                    },
+                                    
+                                  }}
+                                  >
+                                    {tableMeta?.rowData[2]}
+                                </Box>
+                              </Grid>
+    
+                            </Grid>
+                          </div>
+                          </div>
                       )} */}
 
 
@@ -3334,22 +3182,7 @@ function SubTable(props) {
                           nonEditable={!column.editable}
                         />
                       )}
-                      {/* {props.targetLabel === "contact" && column.name !== "name" && (
-                        <CellContentEdition
-                          id={tableMeta.rowData[0]}
-                          content={{ [column.name]: valueFormatter(column, value) }}
-                          targetLabel={props.targetLabel}
-                          dropDownOptions={column.dropDownOptions ? column.dropDownOptions : null}
-                          entityId={
-                            props.targetLabel === "Parcel Interest" ||
-                              props.targetLabel === "Parcel Ownershipship" ||
-                              props.targetLabel === "contact"
-                              ? tableMeta.rowData[1]
-                              : null
-                          }
-                          nonEditable={!column.editable}
-                        />
-                      )} */}
+
 
                       {props.targetLabel === "Unit Ownership" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
@@ -3363,20 +3196,7 @@ function SubTable(props) {
                         </FeatureFlag>
                       )}
 
-                      {/* {props.targetLabel === "contact" &&
-                        column.name === "name" &&
-                        tableMeta.rowData[
-                        props.columns.findIndex(
-                          (val) => val.name === "isPurchased"
-                        )
-                        ] && (
-                          <FeatureFlag feature={FEATURES.IDICORE}>
-                            <MonetizationOnIcon
-                              className={classes.monetizationIcon}
 
-                            />
-                          </FeatureFlag>
-                        )} */}
                     </div>
                   );
                 },
