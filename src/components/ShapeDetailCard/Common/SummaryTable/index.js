@@ -447,7 +447,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             }}
                             value={properties[data.key] ? properties[data.key] : []}
                             fullWidth
-                            targetLabel="Unit"
+                            targetLabel="Shape"
                             targetLabelId={id}
                           />
                         )}
