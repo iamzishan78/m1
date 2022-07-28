@@ -51,7 +51,12 @@ export default function Contacts() {
   const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
   useEffect(() => {
-    const option = Object.values(contactManagementRoutes).find((item) => item.link === location.pathname);
+    let option = {};
+    Object.values(contactManagementRoutes).forEach((item) => {
+      if (location.pathname.startsWith(item.linkPrefix)) {
+        option = item;
+      }
+    });
     if (option) {
       dispatch(setActiveModule(option));
     }
