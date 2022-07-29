@@ -11,7 +11,7 @@ export default function CampaignNameField(props) {
   const [options, setOptions] = useState([]);
   const [inputValue, setInputValue] = useState("");
 
-  const [getCampaignFilters, { data: campaignfiltersData, loading }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
   const [upsertCampaignDescriptor] = useMutation(UPSERT_CAMPAIGN_DESCRIPTOR);
 
   useEffect(() => {
