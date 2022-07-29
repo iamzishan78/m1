@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { CircularProgress } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -61,33 +60,27 @@ export default function CampaignNameField(props) {
   };
 
   return (
-    <>
-      {!loading ? (
-        <Autocomplete
-          id="tags-outlined"
-          onChange={(e, newValue) => {
-            handleChange(newValue);
+    <Autocomplete
+      id="tags-outlined"
+      onChange={(e, newValue) => {
+        handleChange(newValue);
+      }}
+      options={options}
+      value={inputValue}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          variant={"standard"}
+          fullWidth
+          onChange={(e) => {
+            setInputValue(e.target.value)
           }}
-          options={options}
-          value={inputValue}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant={"standard"}
-              fullWidth
-              onChange={(e) => {
-                setInputValue(e.target.value)
-              }}
-              InputProps={{
-                ...params.InputProps,
-              }}
-            />
-          )}
+          InputProps={{
+            ...params.InputProps,
+          }}
         />
-      ) : (
-        <CircularProgress color="secondary" />
       )}
-    </>
+    />
   );
 }
 
