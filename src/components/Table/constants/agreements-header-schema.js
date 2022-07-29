@@ -13,7 +13,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     // this column is considered the grid "control"
 
     name: "agreementNumber",
-    label: "Agreement #",
+    label: "Agreement",
     esKey: "shapeJson.properties.agreementNumber.keyword",
     options: {
       ...GlobalSettings.muiGridControlOptions,
