@@ -35,6 +35,9 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.agreementName.keyword",
     options: {
       dbName: "shapeJson.properties.agreementName",
+      ignoreGlobal: true,
+      display: false,
+      viewColumns: true,
     },
   },
   {
