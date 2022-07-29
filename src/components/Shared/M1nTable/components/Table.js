@@ -1270,8 +1270,6 @@ function SubTable(props) {
         // without using refs we HAVE to re-create customBodyRender callback functions every render
         // or component state is stale
 
-        console.log('FISHBRAIN 6', props)
-
         if (column.name === "_id" && column.options.isFiniteScroll) {
           column.options = {
             ...column.options,
@@ -1352,7 +1350,7 @@ function SubTable(props) {
           return
         }
 
-        console.log('FISHBRAIN 5')
+        console.log('FISHBRAIN 5',column)
 
         switch (column.name) {
 
@@ -2064,7 +2062,7 @@ function SubTable(props) {
                               </IconButton>
                             </Grid>
 
-                            <Grid item
+                            {/* <Grid item
                               style={{
                                 display: "flex",
                                 justifyContent: "flex-start",
@@ -2076,9 +2074,9 @@ function SubTable(props) {
                               ) : (
                                 <WarningIcon style={{ color: "orange" }} />
                               )}
-                            </Grid>
+                            </Grid> */}
 
-                            <Grid item
+                            {/* <Grid item
                               style={{
                                 display: "flex",
                                 justifyContent: "flex-start",
@@ -2105,7 +2103,7 @@ function SubTable(props) {
                                       >
                                         Details
                                   </Button>
-                            </Grid>
+                            </Grid> */}
 
 
 
@@ -3002,12 +3000,7 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
 
-                  // if (column.name === 'name' && props.parent === 'UnitsTable') {
-                  //   const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item, })));
-                  //   return (
-                  //     <span style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }} onClick={() => history.push(`/map/units/${row_line._id}`)}>{row_line.name}</span>
-                  //   )
-                  // }
+                  console.log('FISHBRAIN 6',column)
 
                   if (column.isCustom && (column.type === "multiselect" || column.type === "dropdown")) {
                     let value = null;
