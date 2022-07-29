@@ -1,8 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import MyGridWellsTable from "components/Table/Wells/MyGridWellsTable";
 import WellIcon from "components/Shared/svgIcons/well";
-import { Button } from "@material-ui/core";
+import MyWellsGridTable from "components/Table/Wells/MyWellsGridTable";
 
 const useStyles = makeStyles((theme) => ({
   custom: {
@@ -29,49 +28,44 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Header = () => {
-  return (
-    <div style={{
-      width: "fit-content",
-      display: "flex",
-      alignItems: "center"
-    }}>
-      <WellIcon opacity={1} />
-      <span style={{
-        marginLeft: '10px',
-        fontSize: "16px",
-        fontWeight: "bold"
-      }}>
-        Wells
-      </span>
-    </div>
-  )
-}
-
-function Units(props) {
+function Wells(props) {
   const classes = useStyles();
+
+  const Header = () => {
+    return (
+      <div style={{
+        width: "fit-content",
+        display: "flex",
+        alignItems: "center"
+      }}>
+        <WellIcon opacity={1} />
+        <span style={{
+          marginLeft: '10px',
+          fontSize: "16px",
+          fontWeight: "bold"
+        }}>
+          Wells
+        </span>
+      </div>
+    )
+  }
 
   return (
     <div style={{ 
       marginTop: "65px",
       marginLeft: '-10px'
-
       }}>
 
       <div className={classes.custom} >
-        <MyGridWellsTable
+        <MyWellsGridTable
           dense
+          header={<Header />}
           parent="WellsTable"
           targetLabel="wells"
-          header={<Header />}
-          uploadIcon
-          showTags
-          showComments
-          showTracks
         />
       </div>
     </div>
   );
 }
 
-export default Units;
+export default Wells;
