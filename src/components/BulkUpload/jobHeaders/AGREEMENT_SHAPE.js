@@ -1,20 +1,26 @@
 const Agreement = [
     {
+        label: "M1neral ID",
+        mapped_key: "",
+        required: true,
+        actual_key: "_id",
+    },
+    {
         label: "Agreement Number",
         mapped_key: "",
-        required: false,
+        required: true,
         actual_key: "agreementNumber",
     },
     {
         label: "Agreement Name",
         mapped_key: "",
-        required: false,
+        required: true,
         actual_key: "agreementName",
     },
     {
         label: "Agreement Type",
         mapped_key: "",
-        required: false,
+        required: true,
         actual_key: "agreementType",
     },
     {
@@ -100,6 +106,18 @@ const Agreement = [
         mapped_key: "",
         required: true,
         actual_key: "internalCompany",
+    },
+    {
+        label: "State",
+        mapped_key: "",
+        required: true,
+        actual_key: "state",
+    },
+    {
+        label: "County",
+        mapped_key: "",
+        required: true,
+        actual_key: "county",
     }
 ];
 export default Agreement;

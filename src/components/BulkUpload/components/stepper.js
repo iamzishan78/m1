@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Checkbox } from "@material-ui/core";
@@ -347,6 +347,14 @@ export default function CustomizedSteppers(props) {
     history.push(route || '/');
   };
 
+  const isDisabled = useMemo(() => {
+    if (stateApp.jobType === 'SHAPE_TO_M1_LAYER') {
+      return !(stateApp.selectedShapeLayerOption && stateApp.transferData)
+    } else {
+      return (stateApp.activeStepNumber === 1 && !stateApp.csvContactsListToSend) || stateApp.csvContactsListToSend.length === 0
+    }
+  }, [stateApp.selectedShapeLayerOption, stateApp.activeStepNumber, stateApp.csvContactsListToSend, stateApp.transferData, stateApp.jobType])
+
   return (
     <div className={classes.root}>
       <Stepper
@@ -379,11 +387,7 @@ export default function CustomizedSteppers(props) {
             ) : null}
             {steps[stateApp.activeStepNumber] !== 'Select' ? (
               <Button
-                disabled={
-                  ((stateApp.activeStepNumber === 1 &&
-                    !stateApp.csvContactsListToSend) ||
-                    stateApp.csvContactsListToSend.length === 0) && !stateApp.job.skipReview
-                }
+                disabled={isDisabled}
                 variant="contained"
                 color="primary"
                 onClick={handleNext}

@@ -178,6 +178,8 @@ export default function TransferDataManager(props) {
   }
 
   const dataset = stateApp?.selectedDataset
+
+  console.log(dataset)
   return (
     <div style={{ width: '100%' }}>
       <Grid
@@ -227,10 +229,10 @@ export default function TransferDataManager(props) {
                       return (
                         <StyledListItem key={index} ContainerComponent="li">
                           <Checkbox
-                            checked={selectedSourceCategory?._id === layer._id}
+                            checked={selectedSourceCategory?.layerName === layer.layerName}
                             color="dark gray"
                             onClick={(e) => e.stopPropagation()}
-                            onChange={() => { setSelectedSourceCategory(selectedSourceCategory?._id !== layer._id ? layer : null) }}
+                            onChange={() => { setSelectedSourceCategory(selectedSourceCategory?.layerName !== layer.layerName ? layer : null) }}
                             inputProps={{ "aria-label": "primary checkbox" }}
                           />
                           <ListItemText style={{ padding: '5px 0px 5px 0px' }} id={labelId} primary={truncate(layer.layerName || layer.name, 30)} />
@@ -264,6 +266,7 @@ export default function TransferDataManager(props) {
                       return (
                         <StyledListItem key={index} ContainerComponent="li">
                           <Checkbox
+                            disabled={row?.label !== 'Agreements'}
                             checked={selectedPlatformCategory?.label === row.label}
                             color="dark gray"
                             onClick={(e) => e.stopPropagation()}

@@ -103,7 +103,6 @@ const StyledTableCell = withStyles((theme) => ({
 export default function M1neralHeaders(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
-  const [selectedShapeLayerOption, selectShapeLayerOption] = useState('')
 
   let columns = [
     { label: "Import" },
@@ -385,7 +384,7 @@ export default function M1neralHeaders(props) {
   const shapeTransferOptions = [
     { key: 'Both', label: 'Create new and update existing' },
     { key: 'New', label: 'Only create new' },
-    { key: 'Existing', label: 'Only crate existing' }
+    { key: 'Existing', label: 'Only update existing' }
   ]
 
   return (
