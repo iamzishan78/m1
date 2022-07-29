@@ -18,7 +18,7 @@ import { getMapFilters } from "utils/helper";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { NavigationContext } from "components/Navigation/NavigationContext";
-import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 
@@ -212,19 +212,19 @@ const ConvertTaxOwnerToContact = ({
           <Controller
             control={control}
             name="campaign"
-            render={(props) => (
-              <AutoCompleteWithAddNew
-                value={searchCampaign}
-                onSearch={(value) => {
-                  setSearchCampaign(value);
+            render={(params) => (
+              <CampaignNameField
+                {...params}
+                value={params.value?.name}
+                className={classes.maxWidth}
+                onChange={(value, campaignId) => {
+                  params.onChange({
+                    _id: campaignId,
+                    name: value
+                  });
                 }}
-                setValue={(value) => {
-                  props.onChange(value);
-                }}
-                options={campaignList.map((campaign) => ({
-                  _id: campaign,
-                  name: campaign,
-                }))}
+                fullWidth
+                targetLabel="Shape"
               />
             )}
           />

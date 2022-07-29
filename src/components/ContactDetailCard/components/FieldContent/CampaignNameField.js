@@ -23,7 +23,7 @@ export default function CampaignNameField(props) {
   }, [campaignfiltersData]);
 
   useEffect(() => {
-    const campaignName = typeof props.value === "string" ? props.value : props.value[0];
+    const campaignName = props.value ? typeof props.value === "string" ? props.value : props.value[0] : "";
     setInputValue(campaignName);
   }, [props.value]);
 
@@ -38,7 +38,7 @@ export default function CampaignNameField(props) {
   }, [getCampaignFilters]);
 
   const handleChange = (value) => {
-    let campaign, obj = {
+    let campaign, payload = {
       relatedObjectType: props.targetLabel,
       relatedObject: props.targetLabelId,
       isDeleted: false
@@ -46,17 +46,18 @@ export default function CampaignNameField(props) {
     if (value) {
       campaign = campaignfiltersData.getESFilterList.hits.find(hit => hit.key === value);
       if (campaign) {
-        obj.descriptorObject = campaign.original.hits.hits[0]._id;
+        payload.descriptorObject = campaign.original.hits.hits[0]._id;
       }
     } else {
-      obj.isDeleted = true;
+      payload.isDeleted = true;
     }
-    props.onChange(value);
-    upsertCampaignDescriptor({
-      variables: {
-        descriptor: obj
-      }
-    });
+    props.onChange(value, payload.descriptorObject);
+    if (payload.relatedObject)
+      upsertCampaignDescriptor({
+        variables: {
+          descriptor: payload
+        }
+      });
   };
 
   return (

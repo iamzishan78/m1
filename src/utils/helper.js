@@ -110,6 +110,7 @@ export const formatTaxOwners = (owners, formData) => {
       status: formData.contactStatus,
       contactOwner: formData.contactOwner,
       campaignName: formData.campaign?.name,
+      campaign: formData.campaign,
       tags: formData.tags,
 
       // default

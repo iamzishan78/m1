@@ -22,10 +22,10 @@ import RemoveSharpIcon from "@material-ui/icons/RemoveSharp";
 import Tags from "components/Shared/Tagger";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
-import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 
 import AutocompEntityNamesVirtualizeList from "./AutocompEntityNamesVirtualizeList";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 import { setStateIfDeepEqual } from "../../../functions";
 
@@ -349,19 +349,19 @@ const MultipleOwnerToContactDrawer = ({
                 <Controller
                   control={control}
                   name="campaign"
-                  render={(props) => (
-                    <AutoCompleteWithAddNew
-                      value={searchCampaign}
-                      onSearch={(value) => {
-                        setSearchCampaign(value);
+                  render={(params) => (
+                    <CampaignNameField
+                      {...params}
+                      value={params.value?.name}
+                      className={classes.maxWidth}
+                      onChange={(value, campaignId) => {
+                        params.onChange({
+                          _id: campaignId,
+                          name: value
+                        });
                       }}
-                      setValue={(value) => {
-                        props.onChange(value);
-                      }}
-                      options={campaignList.map((campaign) => ({
-                        _id: campaign,
-                        name: campaign,
-                      }))}
+                      fullWidth
+                      targetLabel="Shape"
                     />
                   )}
                 />
