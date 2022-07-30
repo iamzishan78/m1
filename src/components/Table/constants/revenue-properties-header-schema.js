@@ -209,12 +209,12 @@ const RevenuePropertiesHeadCells = [
 
   {
     name: "internalID",
-    label: "Internal ID #",
+    label: "Internal Prop #",
     esKey: "internalID.keyword",
     options: {
       customHeadLabelRender: () => (
         <>
-          <div style={{ minWidth: 100 }}>Internal ID #</div>
+          <div style={{ minWidth: 100 }}>Internal Prop #</div>
         </>
       ),
       sort: true,
