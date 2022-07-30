@@ -22,7 +22,7 @@ import { InfoOutlined as InfoOutlinedIcon, MoreHoriz as MoreHorizIcon, Delete as
 
 // Components
 import NavHeader from "components/Land/components/Common/NavHeader";
-import CampaignHeader from "components/Contacts/components/campaign/CampaignHeader";
+import CampaignHeader from "components/Contacts/components/campaign/CampaignHeaderSection";
 import CampaignRelatedGrids from "components/Contacts/components/campaign/CampaignRelatedGrids";
 import Tags from "components/Shared/Tagger";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
@@ -250,7 +250,7 @@ const CampaignDetail = () => {
 
           <div
             className={classes.tabsSection}
-          // style={{ display: stateApp.viewDoc ? "none" : "" }}
+            // style={{ display: stateApp.viewDoc ? "none" : "" }}
           >
             <div id="parent-div" className={classes.tabsSectionDetails} onScroll={handleScroll}>
               <div id="header-div" className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null}>
@@ -324,7 +324,7 @@ const CampaignDetail = () => {
           onClose={() => setOpenDeleteDialog(false)}
           deleteFunc={() => updateCampaignInformation("isDeleted", true)}
           m1nSelectedRowsIds={[campaign?._id]}
-          setM1nSelectedRowsIndexes={() => { }}
+          setM1nSelectedRowsIndexes={() => {}}
         >
           {`Do you want to delete this campaign?`}
         </DeleteConfirmationDialogContent>
