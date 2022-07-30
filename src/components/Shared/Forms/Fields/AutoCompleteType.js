@@ -20,13 +20,13 @@ const useStyles = makeStyles({
   },
 });
 
-const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur, ...other }) => {
+const AutoCompleteTypeComponent = ({ onChange, value, shapeType, path, meta, label, typeKey, onBlur, ...other }) => {
   const [types, setTypes] = useState([]);
 
   const [typeListQuery, { data: dataTypes }] = useLazyQuery(SHAPE_AUTOCOMPLETE_LIST);
 
   useEffect(() => {
-    typeListQuery({ variables: { shapeType, key: typeKey } });
+    typeListQuery({ variables: { shapeType, key: typeKey, meta } });
   }, []);
 
   useEffect(() => {
@@ -107,6 +107,7 @@ const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur
         <TextField
           variant={other.variant ?? "standard"}
           margin="dense"
+          label={label}
           {...params}
           InputProps={{
             ...params.InputProps,

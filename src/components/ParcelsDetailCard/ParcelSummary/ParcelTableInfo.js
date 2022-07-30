@@ -114,6 +114,18 @@ const tableData = [
     showStateTX: true,
     edit: true,
   },
+  // {
+  //   label: "Tract Status",
+  //   type: "autocomplete",
+  //   key: "tractStatus",
+  //   edit: true,
+  // },
+  {
+    label: "Map Status",
+    type: "autocomplete",
+    key: "mapStatus",
+    edit: true,
+  }
 ];
 
 const manualOptions = [

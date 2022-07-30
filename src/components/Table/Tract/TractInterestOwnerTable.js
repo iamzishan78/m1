@@ -38,6 +38,7 @@ const interestKeys = [
   "operating_rights",
   "nri",
   "net_acres",
+  "company_net_acres",
   "unknown_interest",
 ];
 const startPaginationAt = 25;

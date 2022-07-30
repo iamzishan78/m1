@@ -35,6 +35,7 @@ export default function AgreementDetailCard(props) {
   const [selectedWellTab, setWellSelectedTab] = useState(0);
   const [selectedTractTab, setTractSelectedTab] = useState(0);
   const [uniObj, setUniObj] = useState();
+  const [tractOwners, setTractOwners] = useState();
   const [infoMessage, setInfoMessage] = useState(false);
   const [properties, setProperties] = useState();
   const [_, setStateApp] = useContext(AppContext);
@@ -175,6 +176,12 @@ export default function AgreementDetailCard(props) {
 
   const updateCustomProperties = (type, value, key) => {
     const shape = uniObj.shape;
+    // const customRow = properties.custom_data_arr.find((p) => p.id === id);
+    // if (type === "key") {
+    //   customRow.key = value;
+    // } else {
+    //   customRow.value = value;
+    // }
     set(properties, `${key}`, value);
     properties.custom_data_arr?.forEach((data) => {
       properties.custom_data[data.key] = data.value;
@@ -251,7 +258,7 @@ export default function AgreementDetailCard(props) {
             />,
             <Grid container direction="column" alignItems="center" style={{ display: "block", padding: "20px 20px 0px 20px" }}>
               <Grid item xs={12} style={{ padding: "15px 5px 25px 0px" }}>
-                <AgreementLegalDescriptionFields agreementDetails={uniObj?.shape?.properties} updateAgreement={updateCustomProperties} />
+                <AgreementLegalDescriptionFields tractOwners={tractOwners} agreementDetails={uniObj?.shape?.properties} updateAgreement={updateCustomProperties} />
               </Grid>
               {uniObj && (
                 <Grid item xs={12}>
@@ -260,6 +267,7 @@ export default function AgreementDetailCard(props) {
                     panels={[
                       <div className={showSummary ? classes.subContent : classes.subContent2}>
                         <AgreementOwnersTractsTable
+                          setRecord={setTractOwners}
                           customLayer={uniObj}
                           shapeType="Agreement"
                           header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}

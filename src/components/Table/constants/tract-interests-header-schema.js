@@ -21,6 +21,7 @@ const TractInterestsHeadCells = [
             viewColumns: false
         }
     },
+
     {
         name: "tractName", label: "Tract Name", esKey: 'shape.shapeJson.properties.shapeLabel.keyword',
         options: {
