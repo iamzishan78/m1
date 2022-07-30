@@ -79,7 +79,7 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
                 Units
               </Typography>
               <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
-                {get(campaign, "units", 0)}
+                {get(campaign, "unitCount", 0)}
               </Typography>
             </CardContent>
           </Card>
