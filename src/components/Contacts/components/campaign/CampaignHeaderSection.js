@@ -65,7 +65,7 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
                 control={
                   <Switch
                     checked={get(campaign, "status") === "Open"}
-                    onChange={({ target }) => updateCampaignInformation("status", target.checked ? "Open" : "Close")}
+                    onChange={({ target }) => updateCampaignInformation("status", target.checked ? "Open" : "Closed")}
                     size="small"
                   />
                 }

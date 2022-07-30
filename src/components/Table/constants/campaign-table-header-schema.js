@@ -83,6 +83,16 @@ const CampaignsHeadCells = [
     },
   },
   {
+    name: "owner",
+    label: "Supervisor",
+    esKey: "owner",
+    options: {
+      display: true,
+      sort: true,
+      filter: true,
+    },
+  },
+  {
     name: "createdAt",
     label: "Created Date",
     esKey: "createdAt.keyword",
@@ -92,16 +102,7 @@ const CampaignsHeadCells = [
       filter: true,
     },
   },
-  {
-    name: "owner",
-    label: "SuperVisor",
-    esKey: "owner",
-    options: {
-      display: true,
-      sort: true,
-      filter: true,
-    },
-  },
+
   {
     name: "tags",
     label: "Tags",
