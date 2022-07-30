@@ -31,7 +31,7 @@ const unitsColumnHeaders = [
     label: "Unit Name",
     esKey: "name.keyword",
     options: {
-      ...GlobalSettings.muiGridControlOptions,
+      ...GlobalSettings.muiGridInfScrollOptions,
       ignoreGlobal: true,
     },
   },
@@ -42,7 +42,7 @@ const unitsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      setCellProps: () => ({ style: { minWidth: "125px" } }),
+      // setCellProps: () => ({ style: { minWidth: "125px" } }),
     },
   },
   {

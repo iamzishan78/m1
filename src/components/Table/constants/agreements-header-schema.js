@@ -16,7 +16,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Agreement",
     esKey: "shapeJson.properties.agreementNumber.keyword",
     options: {
-      ...GlobalSettings.muiGridControlOptions,
+      ...GlobalSettings.muiGridInfScrollOptions,
       ignoreGlobal: true,
       dbName: "shapeJson.properties.agreementNumber",
       isSnapGrid: isSnapGrid
@@ -35,7 +35,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.agreementName.keyword",
     options: {
       dbName: "shapeJson.properties.agreementName",
-      ignoreGlobal: true,
+      // ignoreGlobal: true,
       display: false,
       viewColumns: true,
     },

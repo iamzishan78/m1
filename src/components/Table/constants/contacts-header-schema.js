@@ -111,7 +111,7 @@ const ContactsHeadCells = [
     esKey: 'name.keyword',
     // editable: true,
     options: {
-      // ...GlobalSettings.muiGridControlOptions,
+      // ...GlobalSettings.muiGridInfScrollOptions,
       ignoreGlobal: true,
       // sort: true,
       // filter: true,

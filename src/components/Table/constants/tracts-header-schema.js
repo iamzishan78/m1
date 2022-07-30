@@ -20,7 +20,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: 'name.keyword',
 
     options: {
-      ...GlobalSettings.muiGridControlOptions,
+      ...GlobalSettings.muiGridInfScrollOptions,
       dbName: "name",
 
       customRender: (value, tableMeta) => {
