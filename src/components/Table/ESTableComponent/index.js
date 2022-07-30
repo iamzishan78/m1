@@ -34,10 +34,11 @@ function ESTableComponent(props) {
 
   const formatHits = (hits) => {
     return hits.map((hit) => {
-      hit.SurveyMeridian = hit.survey || hit.meridian
-      hit.BlockTownship = hit.block || hit.township
-      hit.SectionRange = hit.section || hit.range
-      hit.AbstractSection = hit.abstract || hit.section
+      const isTX = hit.state === "TX"
+      hit.SurveyMeridian = isTX ? hit.survey : hit.meridian
+      hit.BlockTownship = isTX ? hit.block : hit.township
+      hit.SectionRange = isTX ? hit.section : hit.range
+      hit.AbstractSection = isTX ? hit.abstract : hit.section
       return hit;
     });
   };
