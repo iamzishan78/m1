@@ -135,7 +135,7 @@ const CampaignDetail = () => {
       if (campaignId === "new" && get(data, "upsertCampaign.success")) {
         history.push(`/contacts/campaign/details/${get(data, "upsertCampaign.campaign._id")}`);
       } else if (get(data, "upsertCampaign.campaign.isDeleted")) {
-        history.push("/contacts/campaign");
+        history.push("/contacts/campaigns");
       }
     });
   };
@@ -320,7 +320,7 @@ const CampaignDetail = () => {
       </Menu>
       <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)} fullWidth={true} maxWidth={"sm"}>
         <DeleteConfirmationDialogContent
-          header={`Delete Property`}
+          header={`Delete Campaign`}
           onClose={() => setOpenDeleteDialog(false)}
           deleteFunc={() => updateCampaignInformation("isDeleted", true)}
           m1nSelectedRowsIds={[campaign?._id]}
