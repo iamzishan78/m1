@@ -29,31 +29,80 @@ const UnitOwnersTractHeadCells = [
     esKey: "tract.county.keyword",
     options: { sort: true, filter: true },
   },
+  {
+    name: "SurveyMeridian", label: "Survey/ Meridian", esKey: [
+      'tract.rurvey.keyword',
+      'tract.meridian.keyword'
+    ],
+    options: {
+      dbName: "shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
+      sort: true,
+      filter: true
+    }
+  },
+  // {
+  //   name: "meridian",
+  //   label: "Meridian",
+  //   esKey: "tract.meridian.keyword",
+  //   options: { sort: true, filter: true },
+  // },
 
   {
-    name: "meridian",
-    label: "Meridian",
-    esKey: "tract.meridian.keyword",
-    options: { sort: true, filter: true },
+    name: "BlockTownship", label: "Block/ Township", esKey: [
+      'tract.block.keyword',
+      'tract.township.keyword'
+    ],
+    options: {
+      dbName: "shapeJson.properties.originalProperties.0?.Block?.Township?",
+      sort: true,
+      filter: true
+    }
   },
+
+  // {
+  //   name: "township",
+  //   label: "Township",
+  //   esKey: "tract.township.keyword",
+  //   options: { sort: true, filter: true },
+  // },
+
   {
-    name: "township",
-    label: "Township",
-    esKey: "tract.township.keyword",
-    options: { sort: true, filter: true },
+    name: "SectionRange", label: "Section/ Range", esKey: [
+      'tract.section.keyword',
+      'tract.range.keyword'
+    ],
+    options: {
+      dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
+      sort: true,
+      filter: true
+    }
   },
+
+  // {
+  //   name: "section",
+  //   label: "Section",
+  //   esKey: "tract.section.keyword",
+  //   options: { sort: true, filter: true },
+  // },
+
   {
-    name: "section",
-    label: "Section",
-    esKey: "tract.section.keyword",
-    options: { sort: true, filter: true },
+    name: "AbstractSection", label: "Abstract/ Section", esKey: [
+      'tract.abstract.keyword',
+      'tract.section.keyword'
+    ],
+    options: {
+      dbName: "shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
+      sort: true,
+      filter: true
+    }
   },
-  {
-    name: "range",
-    label: "Range",
-    esKey: "tract.range.keyword",
-    options: { sort: true, filter: true },
-  },
+
+  // {
+  //   name: "range",
+  //   label: "Range",
+  //   esKey: "tract.range.keyword",
+  //   options: { sort: true, filter: true },
+  // },
   {
     name: "qtrQtrSelection",
     label: "QTR Calls",
