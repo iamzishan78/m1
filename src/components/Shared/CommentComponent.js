@@ -353,18 +353,15 @@ export default function CommentComponent(props) {
   };
 
   const addNewComment = (value) => {
-    // setLoadingComments(true);
-
-    debugger
-
+    const userDetails = stateApp.user
     setCommentsArray(state => {
       const newComment = {
         comment: value,
-        commentedOn: "61f6ee4cb0e2a34f59ed52d8",
+        commentedOn: targetSourceId,
         isEdited: false,
         public: true,
         ts: "1659340832869",
-        user: { name: 'Ishfaq', email: 'ishfaq.ahmed@mergestack.com', __typename: 'User' },
+        user: { name: userDetails.name, email: userDetails.email, __typename: 'User' },
         __typename: "Comment",
         _id: "62e78820b4f930ae6002a7f2"
 
@@ -372,8 +369,7 @@ export default function CommentComponent(props) {
       state.push(newComment)
       return state
     })
-    const check = commentsArray
-    console.log(check)
+
     upsertComment({
       variables: {
         comment: {
