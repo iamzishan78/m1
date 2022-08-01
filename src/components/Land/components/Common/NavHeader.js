@@ -1,6 +1,5 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { get } from "lodash";
 import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Grid, Breadcrumbs } from "@material-ui/core";

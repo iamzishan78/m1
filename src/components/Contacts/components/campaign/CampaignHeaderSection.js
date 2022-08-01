@@ -60,11 +60,11 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
                 Status
               </Typography>
               <FormControlLabel
-                label={get(campaign, "status")}
+                label={get(campaign, "status", "Open")}
                 labelPlacement="start"
                 control={
                   <Switch
-                    checked={get(campaign, "status") === "Open"}
+                    checked={get(campaign, "status", "Open") === "Open"}
                     onChange={({ target }) => updateCampaignInformation("status", target.checked ? "Open" : "Closed")}
                     size="small"
                   />
