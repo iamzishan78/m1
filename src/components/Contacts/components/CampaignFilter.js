@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useContext } from "react";
-import { Grid, TextField, Button } from "@material-ui/core";
+import React, { useEffect, useContext } from "react";
+import { Grid, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { useLazyQuery } from "@apollo/client";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -7,7 +7,7 @@ import moment from "moment";
 import get from "lodash/get";
 
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
-import { getFilters } from "components/Table/Activities/ActivitiesTable";
+import { getFilters } from "components/Table/Contact/CampaignsTable";
 import { AppContext } from "AppContext";
 import { CUSTOM_DATES } from "utils/data";
 import { handleCustomDateTypeChange } from "utils/helper";
@@ -63,11 +63,11 @@ export default function CustomDatesActivities({
   searchFields,
   tableFilters,
   appliedFilters,
-  setAppliedFilters
+  setAppliedFilters,
 }) {
   const classes = useStyles();
   useEffect(() => {
-    handleDateTypeChange(CUSTOM_DATES.THIS_MONTH);
+    if (minDate) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [minDate]);
 
@@ -102,7 +102,7 @@ export default function CustomDatesActivities({
             renderInput={(params) => (
               <TextField {...params} variant="outlined" label="Date Range" placeholder="" style={{ backgroundColor: "white" }} />
             )}
-            defaultValue={CUSTOM_DATES.THIS_MONTH}
+            defaultValue={CUSTOM_DATES.ALL_DATES}
             disableListWrap
             id="custom-date-dropdown"
           />
@@ -198,19 +198,6 @@ const CampaignStatusFilter = ({ esIndex, tableFilters, appliedFilters, searchFie
 
   const [getCampaign, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: "no-cache" });
 
-  const getAllFilters = () => {
-    let rangeFilters = [];
-    if (!tableFilters.find((filter) => filter.type === "range")) {
-      rangeFilters = getFilters(appliedFilters);
-    }
-    const filters = [...rangeFilters, ...tableFilters];
-    const index = filters.findIndex((f) => f.field === "status.keyword");
-    if (index > -1) {
-      filters.splice(index, 1);
-    }
-    return filters;
-  };
-
   useEffect(() => {
     const filterKey = "status.keyword";
     getCampaign({
@@ -228,7 +215,21 @@ const CampaignStatusFilter = ({ esIndex, tableFilters, appliedFilters, searchFie
         },
       },
     });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appliedFilters, searchFields, stateApp.contactSearchQuery]);
+
+  const getAllFilters = () => {
+    let rangeFilters = [];
+    if (!tableFilters.find((filter) => filter.type === "range")) {
+      rangeFilters = getFilters(appliedFilters);
+    }
+    const filters = [...rangeFilters, ...tableFilters];
+    const index = filters.findIndex((f) => f.field === "status.keyword");
+    if (index > -1) {
+      filters.splice(index, 1);
+    }
+    return filters;
+  };
 
   return (
     <Autocomplete
@@ -269,19 +270,6 @@ const SupervisorFilter = ({ esIndex, tableFilters, appliedFilters, searchFields,
 
   const [getQualifiers, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: "no-cache" });
 
-  const getAllFilters = () => {
-    let rangeFilters = [];
-    if (!tableFilters.find((filter) => filter.type === "range")) {
-      rangeFilters = getFilters(appliedFilters);
-    }
-    const filters = [...rangeFilters, ...tableFilters];
-    const index = filters.findIndex((f) => f.field === "owner.name.keyword");
-    if (index > -1) {
-      filters.splice(index, 1);
-    }
-    return filters;
-  };
-
   useEffect(() => {
     const filterKey = "owner.name.keyword";
     getQualifiers({
@@ -299,7 +287,21 @@ const SupervisorFilter = ({ esIndex, tableFilters, appliedFilters, searchFields,
         },
       },
     });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appliedFilters, searchFields, stateApp.contactSearchQuery]);
+
+  const getAllFilters = () => {
+    let rangeFilters = [];
+    if (!tableFilters.find((filter) => filter.type === "range")) {
+      rangeFilters = getFilters(appliedFilters);
+    }
+    const filters = [...rangeFilters, ...tableFilters];
+    const index = filters.findIndex((f) => f.field === "owner.name.keyword");
+    if (index > -1) {
+      filters.splice(index, 1);
+    }
+    return filters;
+  };
 
   return (
     <Autocomplete

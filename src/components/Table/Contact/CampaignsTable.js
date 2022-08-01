@@ -1,22 +1,18 @@
-import React, { useContext, useEffect, useState } from "react";
-import get from "lodash/get";
+import React, { useEffect } from "react";
 // context
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
-import { useMutation } from "@apollo/client";
 
-import { AppContext } from "AppContext";
 import { deepEqualObjects } from "components/Shared/functions";
 // Header Schemas
 import CampaignsHeader from "components/Table/constants/campaign-table-header-schema";
-import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 // Utilities
 import { usetableStyles } from "../Styles";
 import { getRangeFilters } from "utils/helper";
 
-// value formatters 
+// value formatters
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 
 export const getFilters = (appliedFilters) => {
@@ -59,7 +55,7 @@ function CampaignsTable(props) {
       owner: hit.owner?.displayName,
       createdAt: hit.createdAt ? convert_date(hit.createdAt) : null,
       tags: hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0],
-      commentsCounter: hit.comments ? hit.comments.length : 0
+      commentsCounter: hit.comments ? hit.comments.length : 0,
     }));
   };
 
@@ -79,21 +75,6 @@ function CampaignsTable(props) {
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
-      {/* <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
-        {props.openDialog === "delete" && (
-          <DeleteConfirmationDialogContent
-            header={`Delete Interest(s)`}
-            onClose={() => props.setOpenDialog(null)}
-            deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
-            setM1nSelectedRowsIndexes={props.setSelectedRows}
-          >
-            {`Do you want to delete the selected interest${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
-              }?`}
-          </DeleteConfirmationDialogContent>
-        )}
-      </Dialog> */}
-
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
