@@ -16,7 +16,6 @@ import M1neral_headers from "./jobHeaders";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import isEmpty from 'lodash/isEmpty'
-import { copy } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,6 +42,7 @@ export const rawJobs = [
   { name: 'Import Units', type: 'UNITS', featureFlag: "UNITIMPORT" },
   { name: 'Check Detail Upload', type: 'CHECKDETAILS' },
   { name: 'Property Upload', type: 'PROPERTIES' },
+  { name: 'Agreement Upload (Header)', type: 'AGREEMENT_HEADER' },
   { name: 'Transfer Shape to M1 Layer', type: 'SHAPE_TO_M1_LAYER', initialActiveStepNumber: 1, skipReview: true }
 ]
 

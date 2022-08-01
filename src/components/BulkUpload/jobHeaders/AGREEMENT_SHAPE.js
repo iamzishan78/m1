@@ -1,6 +1,6 @@
 const Agreement = [
     {
-        label: "M1neral ID",
+        label: "Agreement System ID",
         mapped_key: "",
         required: true,
         actual_key: "_id",

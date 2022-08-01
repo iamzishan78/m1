@@ -291,7 +291,10 @@ export default function CustomizedSteppers(props) {
 
         getJobUploadUri({
           variables: {
-            requestPayload: { sampleCsv: jobHeaders[props.selectedJob.type] },
+            requestPayload: {
+              sampleCsv: jobHeaders[props.selectedJob.type],
+              uploadType: stateApp.selectedShapeLayerOption
+            },
             jobName: props.selectedJob.name,
             jobType: props.selectedJob.type,
             userId: userID,
