@@ -136,7 +136,8 @@ export default function MetadataDrawer(props) {
   const [, setStateApp] = useContext(AppContext);
 
   // Props
-  const { setCollapse, targetSourceId, targetLabel, viewAllDocuments, ownerTitle, ownerPlaceHolder, isApproval, data } = props;
+  const { setCollapse, targetSourceId, targetLabel, viewAllDocuments, ownerTitle, ownerPlaceHolder, isApproval, isOwner, isSource, data } =
+    props;
 
   // Queries and Mutations
   const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
@@ -267,77 +268,83 @@ export default function MetadataDrawer(props) {
 
       <div className={classes.contentRoot}>
         <div>
-          <div style={{ marginTop: 10, marginLeft: 4 }}>
-            <FormControl variant="outlined" fullWidth size="small">
-              <UsersListWithIcon
-                label={ownerTitle}
-                placeholder={ownerPlaceHolder}
-                selectedUserId={ownerId}
-                onChangeUser={(user) => {
-                  setOwnerId(user?.value);
-                  if (props.onUpdate)
-                    props.onUpdate({
-                      owner: user?.value,
-                      ownerName: user?.text,
-                    });
-                }}
-              />
-              {isApproval && (
-                <Grid container className={classes.gridStyle}>
-                  <Grid item xs={3}>
-                    <div>Approval Status</div>
-                  </Grid>
-                  <Grid item xs={9}>
-                    <Controller
-                      control={control}
-                      name="status"
-                      render={(params) => (
-                        <Select
-                          {...params}
-                          id="status-simple-select-outlined-label"
-                          variant="outlined"
-                          value={data.approvalStatus ? data.approvalStatus : data.status ? data.status : ""}
-                          fullWidth
-                          onChange={(e) => {
-                            props.onUpdate({ approvalStatus: e.target.value });
-                          }}
-                        >
-                          <MenuItem value="Approved">Approved</MenuItem>
-                          <MenuItem value="Unapproved">Unapproved</MenuItem>
-                        </Select>
-                      )}
-                    />
-                  </Grid>
-                </Grid>
-              )}
-              <Grid container className={classes.gridStyle} style={{ marginTop: 10 }}>
-                <Grid item xs={3}>
-                  <div>Source</div>
-                </Grid>
-                <Grid item xs={9}>
-                  <Controller
-                    control={control}
-                    name="status"
-                    render={(params) => (
-                      <Select
-                        {...params}
-                        id="source-simple-select-outlined-label"
-                        variant="outlined"
-                        value={data.source || ""}
-                        fullWidth
-                        onChange={(e) => {
-                          props.onUpdate({ source: e.target.value });
-                        }}
-                      >
-                        <MenuItem value="Manual Entry">Manual Entry</MenuItem>
-                        <MenuItem value="Imported">Imported</MenuItem>
-                      </Select>
-                    )}
+          {(isOwner || isApproval || isSource) && (
+            <div style={{ marginTop: 10, marginLeft: 4 }}>
+              <FormControl variant="outlined" fullWidth size="small">
+                {isOwner && (
+                  <UsersListWithIcon
+                    label={ownerTitle}
+                    placeholder={ownerPlaceHolder}
+                    selectedUserId={ownerId}
+                    onChangeUser={(user) => {
+                      setOwnerId(user?.value);
+                      if (props.onUpdate)
+                        props.onUpdate({
+                          owner: user?.value,
+                          ownerName: user?.text,
+                        });
+                    }}
                   />
-                </Grid>
-              </Grid>
-            </FormControl>
-          </div>
+                )}
+                {isApproval && (
+                  <Grid container className={classes.gridStyle}>
+                    <Grid item xs={3}>
+                      <div>Approval Status</div>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Controller
+                        control={control}
+                        name="status"
+                        render={(params) => (
+                          <Select
+                            {...params}
+                            id="status-simple-select-outlined-label"
+                            variant="outlined"
+                            value={data.approvalStatus ? data.approvalStatus : data.status ? data.status : ""}
+                            fullWidth
+                            onChange={(e) => {
+                              props.onUpdate({ approvalStatus: e.target.value });
+                            }}
+                          >
+                            <MenuItem value="Approved">Approved</MenuItem>
+                            <MenuItem value="Unapproved">Unapproved</MenuItem>
+                          </Select>
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+                )}
+                {isSource && (
+                  <Grid container className={classes.gridStyle} style={{ marginTop: 10 }}>
+                    <Grid item xs={3}>
+                      <div>Source</div>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Controller
+                        control={control}
+                        name="status"
+                        render={(params) => (
+                          <Select
+                            {...params}
+                            id="source-simple-select-outlined-label"
+                            variant="outlined"
+                            value={data.source || ""}
+                            fullWidth
+                            onChange={(e) => {
+                              props.onUpdate({ source: e.target.value });
+                            }}
+                          >
+                            <MenuItem value="Manual Entry">Manual Entry</MenuItem>
+                            <MenuItem value="Imported">Imported</MenuItem>
+                          </Select>
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+                )}
+              </FormControl>
+            </div>
+          )}
 
           {props.showDescription && (
             <Grid item className={classes.descriptionInput}>
@@ -435,5 +442,7 @@ MetadataDrawer.defaultProps = {
   ownerPlaceHolder: "Assign Approver",
   descriptionKey: "metaDescription",
   isApproval: false,
+  isOwner: true,
+  isSource: true,
   data: {},
 };

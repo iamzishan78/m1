@@ -292,6 +292,8 @@ const CampaignDetail = () => {
               targetLabel="Campaign"
               descriptionKey="description"
               onUpdate={(data) => updateCampaignInformation("description", data.description)}
+              isOwner={false}
+              isSource={false}
             />
           </div>
         )}
