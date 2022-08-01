@@ -4,6 +4,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
+import DeleteIcon from "@material-ui/icons/Delete";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import CloseIcon2 from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import SearchIcon from "@material-ui/icons/Search";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
@@ -24,6 +26,8 @@ import {
   Select,
   Typography,
   InputAdornment,
+  Menu,
+  ListItemIcon,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import RightDialog from "../../ContactDetailCard/components/RightDialog";
@@ -100,6 +104,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   const dispatch = useDispatch();
   const { control, reset, register, getValues, watch, setValue } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
+  const [anchorEl, setAnchorEl] = useState();
   const [isAcresOverridden, setIsAcresOverridden] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -190,6 +195,14 @@ function AddAgreementOwnerAndTractDialog(props) {
     }
   }, [props.seletedOwner]);
 
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   useEffect(() => {
     getautoCompleteList({ variables: { type: "AgreementShapeOwner", data: { key: "tractStatus" } } });
   }, []);
@@ -197,6 +210,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   useEffect(() => {
     // if launched from grid row set initializing based on selectedWell state
     if (selectedShapeLayer?.shapeJson) {
+
       const originalProperties = getParcelOriginalProperties(selectedShapeLayer?.shapeJson?.properties);
       const sdGrossAcres = selectedShapeLayer?.shapeJson?.properties?.sdGrossAcres || "";
       const shapeArea = selectedShapeLayer?.shapeJson?.properties?.shapeArea || "";
@@ -414,20 +428,49 @@ function AddAgreementOwnerAndTractDialog(props) {
               {props.seletedTract ? `Update ${props.shapeType} Tract` : `Associate Tract to ${props.shapeType}`}
             </h4>
             <div style={{ float: "right" }}>
-              {props.seletedTract && (
+              {selectedShapeLayer?.tract && (
                 <>
-                  <IconButton disabled={loading} onClick={openConfirmationDialog} size="small" style={{ margin: "0 8px" }}>
-                    {loading ? (
-                      <CircularProgress size={20} color="secondary" />
-                    ) : (
-                      <CloseIcon2 className={classes.closeIcon} fontSize="small" />
-                    )}
+                  <IconButton
+                    size="small"
+                    component="span"
+                    style={{
+                      background: "transparent",
+                      paddingLeft: "10px",
+                      align: "center",
+                    }}
+                    onClick={handleMenuClick}
+                  >
+                    <MoreHorizIcon size="medium" />
                   </IconButton>
                 </>
               )}
               <IconButton onClick={handleClose} size="small">
                 <CloseIcon2 fontSize="small" />
               </IconButton>
+              <Menu
+                id="dealMenu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                className={classes.menu}
+                getContentAnchorEl={null}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                transformOrigin={{ vertical: "top", horizontal: "center" }}
+              >
+                <MenuItem
+                  onClick={() => {
+                    props.deleteFunc([selectedShapeLayer._id])
+                    handleMenuClose();
+                    handleClose();
+                  }}
+                >
+                  <ListItemIcon style={{ minWidth: '30px' }}>
+                    <DeleteIcon size="medium" />
+                  </ListItemIcon>
+                  <ListItemText>Delete</ListItemText>
+                </MenuItem>
+              </Menu>
             </div>
           </Grid>
 

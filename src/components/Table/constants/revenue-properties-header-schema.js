@@ -15,7 +15,7 @@ const RevenuePropertiesHeadCells = [
     esKey: "number.keyword",
     options: {
       ...GlobalSettings.muiGridInfScrollOptions,
-        ignoreGlobal: true,
+      ignoreGlobal: true,
 
       customRender: (value, tableMeta) => {
         const splitNumber = value?.split("_");
@@ -36,31 +36,31 @@ const RevenuePropertiesHeadCells = [
               justifyContent: 'start'
             }}
           >
-          <div
-            style={{
-            }}
-          >
-          {<span 
-            style={{color: GlobalStyles.colors.mutedGrey}}
-            >{tableMeta.rowIndex + 1}</span>}
-          </div>
+            <div
+              style={{
+              }}
+            >
+              {<span
+                style={{ color: GlobalStyles.colors.mutedGrey }}
+              >{tableMeta.rowIndex + 1}</span>}
+            </div>
 
 
-          <Typography 
-            onClick={(e) => {
-              e.stopPropagation();
-              history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
-            }}
-            noWrap
-            variant='body2'
-            style={styles}
-          >
-            {splitNumber?.[0]
-              ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
-              : tableMeta?.rowData[2]}
+            <Typography
+              onClick={(e) => {
+                e.stopPropagation();
+                history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
+              }}
+              noWrap
+              variant='body2'
+              style={styles}
+            >
+              {splitNumber?.[0]
+                ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
+                : tableMeta?.rowData[2]}
             </Typography>
 
-            </div>
+          </div>
         );
       },
     },
@@ -129,8 +129,18 @@ const RevenuePropertiesHeadCells = [
   },
   {
     name: "internalID",
-    label: "Internal ID #",
+    label: "Internal Prop #",
     esKey: "internalID.keyword",
+    options: {
+      customHeadLabelRender: () => (
+        <>
+          <div style={{ minWidth: 100 }}>Internal Prop #</div>
+        </>
+      ),
+      sort: true,
+      filter: true,
+    },
+    style: { minWidth: 100 },
   },
   {
     name: "internalCompany",
