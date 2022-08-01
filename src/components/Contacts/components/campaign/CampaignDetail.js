@@ -27,6 +27,7 @@ import CampaignRelatedGrids from "components/Contacts/components/campaign/Campai
 import Tags from "components/Shared/Tagger";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import DocViewer from "components/Shared/DocViewer";
 
 // Queries & Mutations
 import { UPDATE_CAMPAIGN } from "graphQL/useMutationCampaign";
@@ -77,7 +78,7 @@ const StyledTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-const CampaignDetail = () => {
+const CampaignDetail = ({ viewDoc }) => {
   const { campaignId } = useParams();
   const history = useHistory();
   const [metaCollapse, setMetaCollapse] = useState(true);
@@ -166,7 +167,7 @@ const CampaignDetail = () => {
   };
 
   return (
-    <NavHeader title={`${get(campaignData, "getCampaign.name")}`}>
+    <NavHeader title={campaignName}>
       {/**
        * Detail title section
        */}
@@ -248,32 +249,28 @@ const CampaignDetail = () => {
            * Detail tabs section
            */}
 
-          <div
-            className={classes.tabsSection}
-            // style={{ display: stateApp.viewDoc ? "none" : "" }}
-          >
-            <div id="parent-div" className={classes.tabsSectionDetails} onScroll={handleScroll}>
-              <div id="header-div" className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null}>
-                <CampaignHeader campaign={campaign} updateCampaignInformation={updateCampaignInformation} />
-              </div>
-              <div
-                id="detail-div"
-                className={classes.tabDetailSection}
-                style={{ height: "calc(100vh - 453px)" }}
-                ref={tab === 1 ? selectedTabRef : null}
-              >
-                <CampaignRelatedGrids campaign={campaign} />
+          {!viewDoc ? (
+            <div
+              className={classes.tabsSection}
+              // style={{ display: stateApp.viewDoc ? "none" : "" }}
+            >
+              <div id="parent-div" className={classes.tabsSectionDetails} onScroll={handleScroll}>
+                <div id="header-div" className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null}>
+                  <CampaignHeader campaign={campaign} updateCampaignInformation={updateCampaignInformation} />
+                </div>
+                <div
+                  id="detail-div"
+                  className={classes.tabDetailSection}
+                  style={{ height: "calc(100vh - 453px)" }}
+                  ref={tab === 1 ? selectedTabRef : null}
+                >
+                  <CampaignRelatedGrids campaign={campaign} />
+                </div>
               </div>
             </div>
-          </div>
-
-          {/*** Component for viewing selected pdf file*/}
-          {/* {stateApp.viewDoc && (
-            <DocViewer
-              divCondition={true}
-              DocStyle={{ height: "calc(100vh - 280px)" }}
-            />
-          )} */}
+          ) : (
+            <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 270px)" }} />
+          )}
         </div>
 
         {!metaCollapse && (

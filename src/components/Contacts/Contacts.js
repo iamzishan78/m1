@@ -109,7 +109,14 @@ export default function Contacts() {
         >
           <Switch>
             {Object.keys(allowedPaths).map((option) => (
-              <Route exact path={allowedPaths[option].link} component={Components[allowedPaths[option].component]} />
+              <Route
+                exact
+                path={allowedPaths[option].link}
+                render={() => {
+                  const RouteComponent = Components[allowedPaths[option].component];
+                  return <RouteComponent viewDoc={stateApp.viewDoc} />;
+                }}
+              />
             ))}
           </Switch>
         </QuickActionPanel>
