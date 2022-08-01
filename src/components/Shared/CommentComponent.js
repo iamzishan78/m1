@@ -308,6 +308,7 @@ export default function CommentComponent(props) {
 
   const updateComment = (value) => {
     setLoadingComments(true);
+
     upsertComment({
       variables: {
         comment: {
@@ -352,7 +353,27 @@ export default function CommentComponent(props) {
   };
 
   const addNewComment = (value) => {
-    setLoadingComments(true);
+    // setLoadingComments(true);
+
+    debugger
+
+    setCommentsArray(state => {
+      const newComment = {
+        comment: value,
+        commentedOn: "61f6ee4cb0e2a34f59ed52d8",
+        isEdited: false,
+        public: true,
+        ts: "1659340832869",
+        user: { name: 'Ishfaq', email: 'ishfaq.ahmed@mergestack.com', __typename: 'User' },
+        __typename: "Comment",
+        _id: "62e78820b4f930ae6002a7f2"
+
+      }
+      state.push(newComment)
+      return state
+    })
+    const check = commentsArray
+    console.log(check)
     upsertComment({
       variables: {
         comment: {
@@ -414,7 +435,7 @@ export default function CommentComponent(props) {
                         container
                         className={classes.gridStyle}
                         onMouseOver={() =>
-                          setShowCommentActionId(eachComment._id)
+                          setShowCommentActionId(eachComment?._id)
                         }
                         onMouseLeave={() => setShowCommentActionId(null)}
                       >
