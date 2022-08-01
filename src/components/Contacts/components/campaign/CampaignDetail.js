@@ -279,8 +279,8 @@ const CampaignDetail = () => {
         {!metaCollapse && (
           <div
             style={{
-              marginTop: 20,
-              marginRight: 24,
+              marginTop: 5,
+              marginRight: 3,
               height: "calc(100vh - 270px)",
               width: 620,
             }}

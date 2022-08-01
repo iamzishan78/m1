@@ -59,7 +59,7 @@ const CamapignRelatedGrids = ({ campaign }) => {
       <Card className={classes.dockMenu}>
         <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: "relative" }}>
           {/* //// search panel //// */}
-          <Grid container direction="row" style={{ height: "100%", marginBottom: "20px" }}>
+          <Grid container direction="row" style={{ height: "100%" }}>
             <Grid item md={2} className={classes.selectorOptions}>
               <Typography variant="h6" component="h1" style={{ fontWeight: "bold", padding: "10px 0px 0px 20px" }}>
                 Campaign Details

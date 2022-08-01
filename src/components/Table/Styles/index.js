@@ -11,7 +11,6 @@ export const usetableStyles = makeStyles(() => ({
       },
     },
   },
-
   subComponentsClasses: {
     "& .MuiTableHead-root": {
       zIndex: (p) => (p.isRevenueTable ? 995 : 0),
