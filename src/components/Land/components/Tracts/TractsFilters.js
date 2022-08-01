@@ -183,6 +183,7 @@ const TractsFilters = ({ selectedTractTab }) => {
                                     onChange={onChange}
                                     query={GET_ES_SIMPLE_FILTER}
                                     searchFields={["*"]}
+                                    filters={appliedFilters}
                                     extendSearchQuery={""}
                                 />
                             </Grid>
