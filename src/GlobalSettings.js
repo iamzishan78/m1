@@ -4,7 +4,6 @@
 import Typography from "@material-ui/core/Typography";
 import GlobalStyles from "GlobalStyles.js";
 
-
 const GlobalSettings = {
 
   muiGridControlCodeInjection: {
@@ -16,7 +15,6 @@ const GlobalSettings = {
           </div>
         </div>
       ),
-
     }
   },
 
@@ -58,8 +56,6 @@ const GlobalSettings = {
 
     // display indicates if the default is set to show the column in the grid 
     display: true,
-
-
   },
 
   // this is custom options settings for control grid elements (frist column w/ row level indicators and controls)
@@ -72,7 +68,7 @@ const GlobalSettings = {
         maxWidth: "492px",
         whiteSpace: "nowrap",
         position: "sticky",
-        left: "163px",
+        left: "167px",
         zIndex: 200,
         boxShadow: 'inset -1px 0px 0px 0px lightgrey',
         padding: '0px 25px 0px 0px',
@@ -85,7 +81,7 @@ const GlobalSettings = {
         position: "sticky",
         paddingLeft: '70px',
         zIndex: 201,
-        left: "163px",
+        left: "167px",
       }
     }),
 

@@ -14,7 +14,7 @@ const RevenuePropertiesHeadCells = [
     label: "Property",
     esKey: "number.keyword",
     options: {
-      ...GlobalSettings.muiGridInfScrollOptions,
+      ...GlobalSettings.muiGridControlOptions,
       ignoreGlobal: true,
 
       customRender: (value, tableMeta) => {

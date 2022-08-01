@@ -1276,7 +1276,8 @@ function SubTable(props) {
 
             setCellProps: () => ({
               style: {
-                maxWidth: "80px",
+                minWidth: "90px",
+                maxWidth: "90px",
                 position: "sticky",
                 left: "77px",
                 zIndex: 201,
@@ -1285,6 +1286,8 @@ function SubTable(props) {
 
             setCellHeaderProps: () => ({
               style: {
+                minWidth: "90px",
+                maxWidth: "90px",
                 position: "sticky",
                 paddingLeft: '70px',
                 zIndex: 201,
@@ -1350,7 +1353,7 @@ function SubTable(props) {
           return
         }
 
-        console.log('FISHBRAIN 5',column)
+        console.log('FISHBRAIN 5', column)
 
         switch (column.name) {
 
@@ -3000,7 +3003,7 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
 
-                  console.log('FISHBRAIN 6',column)
+                  console.log('FISHBRAIN 6', column)
 
                   if (column.isCustom && (column.type === "multiselect" || column.type === "dropdown")) {
                     let value = null;

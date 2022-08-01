@@ -31,7 +31,7 @@ const unitsColumnHeaders = [
     label: "Unit Name",
     esKey: "name.keyword",
     options: {
-      ...GlobalSettings.muiGridInfScrollOptions,
+      ...GlobalSettings.muiGridControlOptions,
       ignoreGlobal: true,
     },
   },
