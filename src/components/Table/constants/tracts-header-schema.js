@@ -10,7 +10,7 @@ import Typography from "@material-ui/core/Typography";
 const TractsHeadCells = (isSnapGrid = false) => [
   {
     name: "_id",
-    options: { filter: false, display: true, sort: false, viewColumns: false },
+    options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
 
@@ -20,7 +20,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: 'name.keyword',
 
     options: {
-      ...GlobalSettings.muiGridInfScrollOptions,
+      ...GlobalSettings.muiGridControlOptions,
       dbName: "name",
 
       customRender: (value, tableMeta) => {
