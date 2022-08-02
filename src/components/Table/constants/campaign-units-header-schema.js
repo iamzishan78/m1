@@ -45,7 +45,7 @@ const unitsColumnHeaders = [
           >
             {value}
           </p>
-        )
+        );
       },
     },
     style: { minWidth: 185 },
@@ -169,8 +169,7 @@ const unitsColumnHeaders = [
     esKey: "shapeJson.properties.campaignName.keyword",
     options: {
       customRender: (value) => {
-        if (typeof value !== "string")
-          value?.map((v, index) => `${v}${index < value?.length - 1 ? "," : ""}`);
+        if (typeof value !== "string") value?.map((v, index) => `${v}${index < value?.length - 1 ? "," : ""}`);
         else return value;
       },
       setCellProps: () => ({ style: { minWidth: "200px" } }),
@@ -186,6 +185,7 @@ const unitsColumnHeaders = [
       sort: true,
       filter: true,
       setCellProps: () => ({ style: { minWidth: "125px" } }),
+      customRender: (value) => <p>{value?.name}</p>,
     },
   },
   //hiding temporarily until we get the chart fixed -kc 20220327
@@ -236,7 +236,7 @@ const unitsColumnHeaders = [
       print: false,
       viewColumns: false,
     },
-  }
+  },
 ];
 
 export default unitsColumnHeaders;
