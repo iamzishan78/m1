@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { debounce, get } from "lodash";
+import { isEmpty } from "underscore";
+import { useDispatch } from "react-redux";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { useForm, Controller } from "react-hook-form";
 import { useParams, useHistory } from "react-router-dom";
@@ -34,6 +36,7 @@ import { UPDATE_CAMPAIGN } from "graphQL/useMutationCampaign";
 
 import { GET_CAMPAIGN } from "graphQL/useQueryCampaign";
 import { useStyles } from "./styles";
+import { showInfoMessage } from "actions";
 
 const StyledTabs = withStyles({
   root: {
@@ -81,12 +84,14 @@ const StyledTab = withStyles((theme) => ({
 const CampaignDetail = ({ viewDoc }) => {
   const { campaignId } = useParams();
   const history = useHistory();
+  const dispatch = useDispatch();
   const [metaCollapse, setMetaCollapse] = useState(true);
   const [anchorEl, setAnchorEl] = useState();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [isButtonScroll, setButtonScroll] = useState(false);
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
+  const campaign = useRef(null);
 
   const [upsertCampaign] = useMutation(UPDATE_CAMPAIGN);
 
@@ -97,7 +102,7 @@ const CampaignDetail = ({ viewDoc }) => {
 
   const [getCampaign, { data: campaignData }] = useLazyQuery(GET_CAMPAIGN);
 
-  const campaign = useMemo(() => get(campaignData, "getCampaign", {}), [campaignData]);
+  // const campaign = useMemo(() => get(campaignData, "getCampaign", {}), [campaignData]);
 
   useEffect(() => {
     if (campaignId)
@@ -109,7 +114,12 @@ const CampaignDetail = ({ viewDoc }) => {
   }, [campaignId, getCampaign]);
 
   useEffect(() => {
-    reset(campaign);
+    const camp = get(campaignData, "getCampaign", {});
+    if (camp) campaign.current = camp;
+  }, [campaignData]);
+
+  useEffect(() => {
+    reset(campaign.current);
   }, [campaign, reset]);
 
   useEffect(() => {
@@ -122,8 +132,19 @@ const CampaignDetail = ({ viewDoc }) => {
     }
   }, [tab, isButtonScroll]);
 
+  useEffect(() => {
+    return () => {
+      if (!campaignName && isEmpty(campaign.current)) {
+        dispatch(showInfoMessage("Campaign Name is required"));
+        history.goBack();
+      }
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const updateCampaignInformation = (key, value) => {
-    const _id = campaignId !== "new" ? campaign._id : null;
+    const _id = campaignId !== "new" ? campaign.current?._id : null;
     upsertCampaign({
       variables: {
         campaign: {
@@ -211,7 +232,7 @@ const CampaignDetail = ({ viewDoc }) => {
                   </Typography>
                 </div>
                 <div className={classes.tags}>
-                  <Tags width="100%" targetSourceId={`${get(campaign, "_id")}`} targetLabel="campaign" publicLeftBottom onlyTags />
+                  <Tags width="100%" targetSourceId={`${get(campaign, "current._id")}`} targetLabel="campaign" publicLeftBottom onlyTags />
                 </div>
               </div>
             </div>
@@ -256,7 +277,7 @@ const CampaignDetail = ({ viewDoc }) => {
             >
               <div id="parent-div" className={classes.tabsSectionDetails} onScroll={handleScroll}>
                 <div id="header-div" className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null}>
-                  <CampaignHeader campaign={campaign} updateCampaignInformation={updateCampaignInformation} />
+                  <CampaignHeader campaign={campaign.current} updateCampaignInformation={updateCampaignInformation} />
                 </div>
                 <div
                   id="detail-div"
@@ -264,7 +285,7 @@ const CampaignDetail = ({ viewDoc }) => {
                   style={{ height: "calc(100vh - 453px)" }}
                   ref={tab === 1 ? selectedTabRef : null}
                 >
-                  <CampaignRelatedGrids campaign={campaign} />
+                  <CampaignRelatedGrids campaign={campaign.current} />
                 </div>
               </div>
             </div>
@@ -284,8 +305,8 @@ const CampaignDetail = ({ viewDoc }) => {
           >
             <MetadataDrawer
               setCollapse={setMetaCollapse}
-              targetSourceId={campaign._id}
-              data={campaign}
+              targetSourceId={campaign.current._id}
+              data={campaign.current}
               targetLabel="Campaign"
               descriptionKey="description"
               onUpdate={(data) => updateCampaignInformation("description", data.description)}
@@ -322,7 +343,7 @@ const CampaignDetail = ({ viewDoc }) => {
           header={`Delete Campaign`}
           onClose={() => setOpenDeleteDialog(false)}
           deleteFunc={() => updateCampaignInformation("isDeleted", true)}
-          m1nSelectedRowsIds={[campaign?._id]}
+          m1nSelectedRowsIds={[campaign.current?._id]}
           setM1nSelectedRowsIndexes={() => {}}
         >
           {`Do you want to delete this campaign?`}
