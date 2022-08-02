@@ -1,7 +1,5 @@
-/* props is just a style object*/
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import GlobalSettings from "GlobalSettings";
-import { history } from "store";
 
 const ContactsHeadCells = [
   {
@@ -188,7 +186,6 @@ const ContactsHeadCells = [
     label: "Company Name",
     esKey: "companyName.keyword",
     options: {
-      // display: true,
       display: false,
       filter: false,
       searchable: false,
@@ -201,7 +198,7 @@ const ContactsHeadCells = [
     esKey: "ownerType.keyword",
     options: {
       display: true,
-      filter: true, // i guess we cant dynamically remove the filter when hiding a column enabled by default
+      filter: true,
       searchable: false,
       sort: true,
     },
@@ -209,15 +206,18 @@ const ContactsHeadCells = [
   {
     name: "fullContactAddress",
     label: "Primary Address",
-    // editable: true,
     esKey: ["address1.keyword", "city.keyword", "state.keyword", "zip.keyword"],
     options: {
       dbName: "address1",
       sort: true,
       filter: true,
+      setCellProps: () => ({
+        style: {
+          minWidth: "300px"
+        }
+      }),
     },
   },
-
   {
     name: "melissaRowsCount",
     options: {
@@ -235,7 +235,6 @@ const ContactsHeadCells = [
     label: "Primary Home Phone",
     esKey: "homePhone.keyword",
     options: {
-      // display: true,
       filter: true,
       searchable: false,
       sort: true,
@@ -246,7 +245,6 @@ const ContactsHeadCells = [
     label: "Primary Mobile Phone",
     esKey: "mobilePhone.keyword",
     options: {
-      // display: true,
       filter: true,
       searchable: false,
       sort: true,
@@ -334,7 +332,6 @@ const ContactsHeadCells = [
     label: "Primary Email",
     esKey: "primaryEmail.keyword",
     options: {
-      // display: true,
       filter: true,
       searchable: false,
       sort: true,
@@ -346,7 +343,6 @@ const ContactsHeadCells = [
     esKey: "contactOwners.name.keyword",
     options: {
       dbName: "contactOwners.name",
-      // display: true,
       filter: true,
       filterOptions: {
         names: [],
@@ -477,6 +473,11 @@ const ContactsHeadCells = [
       filter: true,
       searchable: true,
       sort: true,
+      setCellProps: () => ({
+        style: {
+          minWidth: "180px"
+        }
+      }),
     },
   },
   {
