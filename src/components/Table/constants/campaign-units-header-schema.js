@@ -185,7 +185,6 @@ const unitsColumnHeaders = [
       sort: true,
       filter: true,
       setCellProps: () => ({ style: { minWidth: "125px" } }),
-      customRender: (value) => <p>{value?.name}</p>,
     },
   },
   //hiding temporarily until we get the chart fixed -kc 20220327

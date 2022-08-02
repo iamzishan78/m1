@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Container } from "@material-ui/core";
 import { debounce, get } from "lodash";
+import moment from "moment";
 
 // context
 import TableESHOC from "components/Table/TableESHOC";
@@ -27,6 +28,22 @@ function MapGridUnitTable(props) {
   );
 
   const formatHits = (hits) => {
+    hits = hits.map((hit) => {
+      hit.coordinates = {
+        objToPopulateSearchLayer: {
+          objectType: props.targetLabel,
+          objectId: hit.Id,
+          objectName: hit.Operator,
+        },
+      };
+      hit.ownersCount = get(hit, "interestSummary.unitInterestCount", "");
+      hit.qualifier = get(hit, "qualifier.name", "");
+      hit.lastUpdated = moment(hit._ts).format("MM/DD/YYYY");
+      hit = props.setGenricData(hit, hit._id, [], []);
+      hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
+      hit.commentsCounter = hit.comments ? hit.comments.length : 0;
+      return hit;
+    });
     return hits;
   };
 
