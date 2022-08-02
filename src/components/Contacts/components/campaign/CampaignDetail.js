@@ -115,12 +115,11 @@ const CampaignDetail = ({ viewDoc }) => {
 
   useEffect(() => {
     const camp = get(campaignData, "getCampaign", {});
-    if (camp) campaign.current = camp;
-  }, [campaignData]);
-
-  useEffect(() => {
-    reset(campaign.current);
-  }, [campaign, reset]);
+    if (camp) {
+      campaign.current = camp;
+      reset(camp);
+    }
+  }, [campaignData, reset]);
 
   useEffect(() => {
     if (selectedTabRef?.current && isButtonScroll) {
