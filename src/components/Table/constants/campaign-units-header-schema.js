@@ -1,5 +1,6 @@
 import { history } from "store";
 import GlobalSettings from "GlobalSettings";
+import vf_number from "components/Shared/valueformatters/vf_number";
 
 const unitsColumnHeaders = [
   {
@@ -152,6 +153,9 @@ const unitsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
+      customRender: value => (
+        <p>{value ? `$${vf_number(value)}` : ""}</p>
+      )
     },
   },
   {
