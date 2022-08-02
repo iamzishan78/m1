@@ -37,15 +37,13 @@ const unitsColumnHeaders = [
       filter: true,
       customRender: (value, tableMeta) => {
         return (
-          <p
-            onClick={(e) => {
-              e.stopPropagation();
-              history.push(`/map/units/${tableMeta.rowData[0]}`);
-            }}
-            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+          <a
+            href={`/map/units/${tableMeta.rowData[0]}`}
+            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer", textDecoration: "initial" }}
+            rel="noreferrer"
           >
             {value}
-          </p>
+          </a>
         );
       },
     },

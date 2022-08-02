@@ -10,7 +10,7 @@ import TableESHOC from "../TableESHOC";
 import { useLazyQuery } from "@apollo/client";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 
-import { getContactsAddress, copy } from "utils/helper";
+import { getContactsAddress } from "utils/helper";
 
 import { deepEqualObjects } from "components/Shared/functions";
 import { featureFlagChanges } from "components/ContactDetailedInfo/helper";
