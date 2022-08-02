@@ -70,6 +70,7 @@ function MapGridUnitTable(props) {
       formatHits,
     });
     // eslint-disable-next-line
+
   }, [props.campaign]);
 
   return (

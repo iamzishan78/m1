@@ -30,7 +30,6 @@ function ContactsTable(props) {
   const targetLabel = "campaignContacts";
   const uploadIcon = true;
   const header = "Contacts";
-  const dense = true;
   const total = false;
   const orderByTracks = false;
   const startPaginationAt = 25;
@@ -122,7 +121,7 @@ function ContactsTable(props) {
           addAble={addAble}
           targetLabel={targetLabel}
           uploadIcon={uploadIcon}
-          dense={dense}
+          dense={props.dense ? props.dense : undefined}
           orderByTracks={orderByTracks}
           startPaginationAt={startPaginationAt}
           contactId={props.contactId}
