@@ -1,4 +1,3 @@
-import { history } from "store";
 import GlobalSettings from "GlobalSettings";
 import vf_number from "components/Shared/valueformatters/vf_number";
 
