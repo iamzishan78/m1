@@ -6,9 +6,19 @@ import { removeByLabel } from "./helper";
 let agreementsColumns = copy(Agreement)
 agreementsColumns = removeByLabel(agreementsColumns, 'State')
 agreementsColumns = removeByLabel(agreementsColumns, 'County')
+agreementsColumns.forEach((column) => {
+    column.actual_key = `shape.${column.actual_key}`
+})
 
 const AgreementHeader = [
+    ...copy(landColumns),
     ...agreementsColumns,
-    ...copy(landColumns)
+    {
+        label: "Tags",
+        mapped_key: "",
+        required: false,
+        actual_key: "landgrid.tags"
+    }
+
 ];
 export default AgreementHeader;

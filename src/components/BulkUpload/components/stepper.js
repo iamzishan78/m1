@@ -286,6 +286,9 @@ export default function CustomizedSteppers(props) {
           if (props.selectedJob.type === "UNITS") {
             element['shape.shapeType'] = "Unit";
           }
+          if (props.selectedJob.type === "AGREEMENT_HEADER") {
+            element['shape.shapeType'] = "Agreement";
+          }
           delete element.tableData;
         });
 
