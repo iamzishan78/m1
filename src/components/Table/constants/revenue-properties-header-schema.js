@@ -1,5 +1,7 @@
 import { history } from "store";
 import GlobalSettings from "..//..//..//GlobalSettings.js";
+import WellIcon from '../../../components/Shared/svgIcons/well.js';
+import { ErrorOutline } from "@material-ui/icons";
 
 const RevenuePropertiesHeadCells = [
   {
@@ -39,37 +41,48 @@ const RevenuePropertiesHeadCells = [
       //   }
       // }),
 
-      
+
       customRender: (value, tableMeta) => {
         const splitNumber = value?.split("_");
         const styles = {
-          minWidth: 225,
+          width: "fit-content",
           fontWeight: 600,
           color: "#17aadd",
           cursor: "pointer",
         };
         return (
           <div
-            // style={{borderRight: 'solid red'}}
-          >
-          <p
-            onClick={(e) => {
-              e.stopPropagation();
-              history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
+            style={{
+              display: 'flex',
+              alignItems: 'center',
             }}
-            style={styles}
+          // style={{borderRight: 'solid red'}}
           >
-            {/* {splitNumber?.[0]} */}
-            {splitNumber?.[0]
-              ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
-              : tableMeta?.rowData[2]}
+            <p
+              onClick={(e) => {
+                e.stopPropagation();
+                history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
+              }}
+              style={styles}
+            >
+              {/* {splitNumber?.[0]} */}
+              {splitNumber?.[0]
+                ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
+                : tableMeta?.rowData[2]}
 
             </p>
             {/* <Button/> */}
-            </div>
-            
-
-
+            {
+              !(tableMeta?.rowData[5] && tableMeta?.rowData[6]) &&
+              <div style={{ marginLeft: "15px" }}>
+                <WellIcon size={"18"} opacity={"1"} />
+                <ErrorOutline style={{
+                  width: "17px",
+                  height: "17px",
+                }} />
+              </div>
+            }
+          </div>
         );
       },
 
@@ -85,8 +98,10 @@ const RevenuePropertiesHeadCells = [
     name: "name",
     label: "Property Name",
     esKey: "name.keyword",
-    options: { sort: true, filter: true, 
-      display: false },
+    options: {
+      sort: true, filter: true,
+      display: false
+    },
     // options: {
     //   ...GlobalSettings.muiGridStandardOptions,
     //   display: false,
@@ -97,8 +112,10 @@ const RevenuePropertiesHeadCells = [
     name: "state",
     label: "State",
     esKey: "state.keyword",
-    options: { sort: true, 
-      filter: true },
+    options: {
+      sort: true,
+      filter: true
+    },
     // options: {
     //   ...GlobalSettings.muiGridStandardOptions,
     // }
