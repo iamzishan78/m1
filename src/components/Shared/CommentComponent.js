@@ -360,7 +360,7 @@ export default function CommentComponent(props) {
         commentedOn: targetSourceId,
         isEdited: false,
         public: true,
-        ts: "1659340832869",
+        ts: Date.now(),
         user: { name: userDetails.name, email: userDetails.email, __typename: 'User' },
         __typename: "Comment",
         _id: "62e78820b4f930ae6002a7f2"
