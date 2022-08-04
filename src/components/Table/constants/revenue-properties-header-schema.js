@@ -1,7 +1,62 @@
-import { history } from "store";
 import GlobalSettings from "..//..//..//GlobalSettings.js";
 import WellIcon from '../../../components/Shared/svgIcons/well.js';
 import { ErrorOutline } from "@material-ui/icons";
+import React from 'react';
+import { useHistory } from "react-router-dom";
+
+const styles = {
+  width: "fit-content",
+  fontWeight: 600,
+  color: "#17aadd",
+  cursor: "pointer",
+};
+
+const ComponentPropertyName = ({ value, tableMeta }) => {
+  const history = useHistory();
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    // style={{borderRight: 'solid red'}}
+    >
+      <p
+        onClick={(e) => {
+          e.stopPropagation();
+          history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
+        }}
+        style={styles}
+      >
+        {/* {splitNumber?.[0]} */}
+        {value?.split("_")?.[0]
+          ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[2]}`
+          : tableMeta?.rowData[2]}
+
+      </p>
+      {/* <Button/> */}
+      {
+        !(tableMeta?.rowData[5] && tableMeta?.rowData[6]) &&
+        <div style={{ marginLeft: "15px", cursor: 'pointer' }} onClick={(e) => {
+          e.stopPropagation();
+          history.push(`/revenue/property/details/${tableMeta.rowData[0]}`, { focusOnWellSearch: true });
+        }}>
+          <WellIcon size={"18"} opacity={"1"} />
+          <ErrorOutline style={{
+            width: "17px",
+            height: "17px",
+          }} />
+        </div>
+      }
+    </div>
+  );
+}
+
+// sort: true,
+// filter: true,
+// stickyColumn: true,
+// viewColumns: false,
+// display: true,
 
 const RevenuePropertiesHeadCells = [
   {
@@ -42,56 +97,7 @@ const RevenuePropertiesHeadCells = [
       // }),
 
 
-      customRender: (value, tableMeta) => {
-        const splitNumber = value?.split("_");
-        const styles = {
-          width: "fit-content",
-          fontWeight: 600,
-          color: "#17aadd",
-          cursor: "pointer",
-        };
-        return (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          // style={{borderRight: 'solid red'}}
-          >
-            <p
-              onClick={(e) => {
-                e.stopPropagation();
-                history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
-              }}
-              style={styles}
-            >
-              {/* {splitNumber?.[0]} */}
-              {splitNumber?.[0]
-                ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
-                : tableMeta?.rowData[2]}
-
-            </p>
-            {/* <Button/> */}
-            {
-              !(tableMeta?.rowData[5] && tableMeta?.rowData[6]) &&
-              <div style={{ marginLeft: "15px" }}>
-                <WellIcon size={"18"} opacity={"1"} />
-                <ErrorOutline style={{
-                  width: "17px",
-                  height: "17px",
-                }} />
-              </div>
-            }
-          </div>
-        );
-      },
-
-      // sort: true,
-      // filter: true,
-      // stickyColumn: true,
-      // viewColumns: false,
-      // display: true,
-
+      customRender: (value, tableMeta) => <ComponentPropertyName value={value} tableMeta={tableMeta} />,
     },
   },
   {
