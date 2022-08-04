@@ -116,7 +116,7 @@ const ContactsHeadCells = [
       customRender: (value, tableMeta) => {
         return (
           <a
-            href={`/contact/details/${tableMeta.rowData[0]}`}
+            href={`/contact/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
             style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer", textDecoration: "initial" }}
             rel="noreferrer"
           >
