@@ -227,18 +227,20 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerToAdd.name = nameAutValue.name;
       }
 
-      updateContact({
-        variables: {
-          contact: {
-            _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
-            contactStatus: ownerToAdd.contactStatus,
-            lastUpdateBy: stateApp.user.mongoId,
-            ownerType: ownerToAdd.ownerType
+      if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
+        (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType)) {
+        updateContact({
+          variables: {
+            contact: {
+              _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
+              contactStatus: ownerToAdd.contactStatus,
+              lastUpdateBy: stateApp.user.mongoId,
+              ownerType: ownerToAdd.ownerType
+            }
           }
-        }
-      }).then(res => {
-        handleAddUpdate(ownerToAdd)
-      });
+        })
+      }
+      handleAddUpdate(ownerToAdd)
     }
   };
 
