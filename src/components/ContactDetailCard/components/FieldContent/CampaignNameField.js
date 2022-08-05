@@ -9,7 +9,7 @@ import "components/Shared/Tagger.css";
 
 export default function CampaignNameField(props) {
   const [options, setOptions] = useState([]);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState([]);
 
   const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
   const [upsertCampaignDescriptor] = useMutation(UPSERT_CAMPAIGN_DESCRIPTOR);
@@ -22,7 +22,7 @@ export default function CampaignNameField(props) {
   }, [campaignfiltersData]);
 
   useEffect(() => {
-    const campaignName = props.value ? typeof props.value === "string" ? props.value : props.value[0] : "";
+    const campaignName = props.value ? typeof props.value === "string" ? [props.value] : props.value : [];
     setInputValue(campaignName);
   }, [props.value]);
 
@@ -36,45 +36,46 @@ export default function CampaignNameField(props) {
     });
   }, [getCampaignFilters]);
 
-  const handleChange = (value) => {
+  const handleChange = (values, reason) => {
     let campaign, payload = {
       relatedObjectType: props.targetLabel,
       relatedObject: props.targetLabelId,
       isDeleted: false
     };
-    if (value) {
-      campaign = campaignfiltersData.getESFilterList.hits.find(hit => hit.key === value);
+    if (reason === 'select-option') {
+      campaign = campaignfiltersData.getESFilterList.hits.find(hit => hit.key === values[values.length - 1]);
       if (campaign) {
         payload.descriptorObject = campaign.original.hits.hits[0]._id;
       }
     } else {
+      const deletedCampaign = campaignfiltersData.getESFilterList.hits.find(hit => hit.key === inputValue.find(v => !values.includes(v)));
+      if (deletedCampaign) {
+        payload.descriptorObject = deletedCampaign.original.hits.hits[0]._id;
+      }
       payload.isDeleted = true;
     }
-    props.onChange(value, payload.descriptorObject);
+    props.onChange(values, payload.descriptorObject);
     if (payload.relatedObject)
       upsertCampaignDescriptor({
         variables: {
           descriptor: payload
         }
       });
+    setInputValue(values);
   };
 
   return (
     <Autocomplete
       id="tags-outlined"
-      onChange={(e, newValue) => {
-        handleChange(newValue);
-      }}
+      onChange={(e, newValue, reason) => handleChange(newValue, reason)}
       options={options}
       value={inputValue}
+      multiple
       renderInput={(params) => (
         <TextField
           {...params}
           variant={"standard"}
           fullWidth
-          onChange={(e) => {
-            setInputValue(e.target.value)
-          }}
           InputProps={{
             ...params.InputProps,
           }}

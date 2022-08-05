@@ -37,7 +37,7 @@ const unitsColumnHeaders = [
       customRender: (value, tableMeta) => {
         return (
           <a
-            href={`/map/units/${tableMeta.rowData[0]}`}
+            href={`/map/units/${tableMeta.rowData[0]}?tenant=${window.sessionStorage.getItem("tenantName")}`}
             style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer", textDecoration: "initial" }}
             rel="noreferrer"
           >
@@ -170,8 +170,7 @@ const unitsColumnHeaders = [
     esKey: "shapeJson.properties.campaignName.keyword",
     options: {
       customRender: (value) => {
-        if (typeof value !== "string") value?.map((v, index) => `${v}${index < value?.length - 1 ? "," : ""}`);
-        else return value;
+        return typeof value !== "string" ? value.join(", ") : value;
       },
       setCellProps: () => ({ style: { minWidth: "200px" } }),
       sort: true,
