@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { get, debounce } from "lodash";
 import moment from "moment";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
@@ -35,6 +35,8 @@ import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { GET_AUTOCOMPLETE_PROPERTY_LIST } from "graphQL/useQueryGetProperty";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
+import { useDispatch } from "react-redux";
+import { showInfoMessage } from "actions";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -133,6 +135,8 @@ const useStyles = makeStyles((theme) => ({
 export default function HeaderSection(props) {
   const classes = useStyles();
   let history = useHistory();
+  const location = useLocation();
+  const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
   const { control, setValue, watch, register, reset } = useForm();
   const { propertyDetails, propertyOwnerContact, setEntityToConvert } = props;
@@ -159,6 +163,20 @@ export default function HeaderSection(props) {
   //   _id: campaign.key,
   //   name: campaign.key,
   // })))
+  useEffect(() => {
+    return () => {
+      const number = watch("number");
+      const name = watch("name");
+
+      if (!number){
+        dispatch(showInfoMessage("Property Number is required"));
+        history.goBack();
+      } else if (!name){
+        dispatch(showInfoMessage("Property Name is required"));
+        history.goBack();
+      }
+    }
+  }, [])
 
   useEffect(() => {
     getOperatorList({
@@ -219,7 +237,6 @@ export default function HeaderSection(props) {
   };
 
   const updatePropertyData = (key, value) => {
-    console.log(key, value)
     updateProperty({
       variables: {
         property: {
@@ -250,27 +267,29 @@ export default function HeaderSection(props) {
           spacing={1}
           className={classes.fieldsSection}
         >
+
+
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Property #</div>
+                <div className={classes.label}>Internal Prop #</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
                   control={control}
-                  name="number"
+                  name="internalID"
                   render={(params) => (
                     <TextField
                       {...params}
                       className={classes.textField}
                       variant="outlined"
                       margin="dense"
-                      type="text"
+                      placeholder=""
                       fullWidth
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      onBlur={(e) => handleUpdate("number", e.target.value)}
+                      onBlur={(e) => handleUpdate("internalID", e.target.value)}
                     />
                   )}
                 />
@@ -309,24 +328,24 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Internal ID #</div>
+                <div className={classes.label}>Operator Prop #</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
                   control={control}
-                  name="internalID"
+                  name="number"
                   render={(params) => (
                     <TextField
                       {...params}
                       className={classes.textField}
                       variant="outlined"
                       margin="dense"
-                      placeholder=""
+                      type="text"
                       fullWidth
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      onBlur={(e) => handleUpdate("internalID", e.target.value)}
+                      onBlur={(e) => handleUpdate("number", e.target.value)}
                     />
                   )}
                 />
