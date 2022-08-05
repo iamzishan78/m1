@@ -25,6 +25,7 @@ import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 import { timeZoneOptions } from "components/ContactDetailCard/components/FieldContent/timeZoneList";
 import { PUBLICTAGSQUERY } from "graphQL/useQueryPublicTags";
 import { BULKUPSERTTAG } from "graphQL/useMutationBulkUpsertTagOnContacts";
+import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 
 const styles = () => ({
   topHeading: { fontWeight: "bold" },
@@ -277,8 +278,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       case "Status":
         filterKey = "contactStatus.keyword";
         break;
-      case "Entity Type":
-        filterKey = "ownerType.keyword";
       case "Industry Type":
       case "Lead Source":
       case "Territory":
@@ -335,6 +334,16 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           />
         );
       // .. etc
+      case "Entity Type":
+        filterKey = "ownerType.keyword";
+        return (
+          <EntityType
+            setDocumentType={(value) => {
+              setFieldKey(value._id)
+            }}
+            value={fieldKey}
+          />
+        );
       default:
     }
 
