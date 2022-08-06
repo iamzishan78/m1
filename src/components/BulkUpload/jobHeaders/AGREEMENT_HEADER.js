@@ -14,11 +14,17 @@ const AgreementHeader = [
     ...copy(landColumns),
     ...agreementsColumns,
     {
+        label: "Comments",
+        mapped_key: "",
+        required: false,
+        actual_key: "comment"
+    },
+    {
         label: "Tags",
         mapped_key: "",
         required: false,
         actual_key: "landgrid.tags"
-    }
+    },
 
 ];
 export default AgreementHeader;

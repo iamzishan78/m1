@@ -42,13 +42,13 @@ const Agreement = [
         actual_key: "agreementStatus",
     },
     {
-        label: "Lessor (Grantor)",
+        label: "Lessor(Grantor)",
         mapped_key: "",
         required: false,
         actual_key: "grantor",
     },
     {
-        label: "Lessee (Grantee)",
+        label: "Lessee(Grantee)",
         mapped_key: "",
         required: false,
         actual_key: "grantee",
@@ -66,7 +66,7 @@ const Agreement = [
         actual_key: "effectiveDate",
     },
     {
-        label: "Term (months)",
+        label: "Term(months)",
         mapped_key: "",
         required: false,
         actual_key: "agreementTerm",
@@ -88,6 +88,18 @@ const Agreement = [
         mapped_key: "",
         required: true,
         actual_key: "approvalStatus",
+    },
+    {
+        label: "Extension Date",
+        mapped_key: "",
+        required: true,
+        actual_key: "extensionDate",
+    },
+    {
+        label: "Description",
+        mapped_key: "",
+        required: true,
+        actual_key: "description",
     },
     {
         label: "Acquisition ID",
