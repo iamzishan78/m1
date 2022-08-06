@@ -125,8 +125,9 @@ const ContactBulkProgress = () => {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Import successfully completed" : "Import Failed";
         } else {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Export successfully completed" : "Export Failed";
-          if (status === "Completed")
+          if (type === 'SHAPEOWNER' && status === "Completed")
             refetchHelper(['getCustomLayer'])
+
         }
         if (status === 'Completed with errors') message = status
       }

@@ -226,6 +226,57 @@ export const CUSTOM_DATES = {
   CUSTOM: "Custom",
 };
 
+export const tractFilterColumnsHeader = [
+  {
+    label: "Department",
+    filterKey: "shapeJson.properties.department.keyword",
+    name: "department"
+  },
+  {
+    label: "State",
+    filterKey: [
+      'shapeJson.properties.originalProperties.State.keyword',
+      'shapeJson.properties.originalProperties.StateAbbreviation.keyword'
+    ],
+
+    name: "state"
+  },
+  {
+    label: "County",
+    filterKey: "shapeJson.properties.originalProperties.County.keyword",
+    name: "County"
+  },
+  {
+    label: "Owner Name",
+    filterKey: "shapeJson.properties.department.keyword",
+    name: "department",
+    disabled: true
+  }]
+
+export const tractInterestFilterColumnsHeader = [
+  {
+    label: "Department",
+    filterKey: "shape.shapeJson.properties.department.keyword",
+    name: "department",
+
+  },
+  {
+    label: "State",
+    filterKey: ["shape.shapeJson.properties.originalProperties.State.keyword",
+      "shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword"],
+    name: "State"
+  },
+  {
+    label: "County",
+    filterKey: "shape.shapeJson.properties.originalProperties.County.keyword",
+    name: "County"
+  },
+  {
+    label: "Owner Name",
+    filterKey: "contact.entityDetail.name.keyword",
+    name: "name"
+  }
+]
 export const US_STATES = {
   "Alabama": "AL",
   "Alaska": "AK",
