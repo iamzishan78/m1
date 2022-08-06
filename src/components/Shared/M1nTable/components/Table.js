@@ -4025,6 +4025,7 @@ function SubTable(props) {
     || props.header === "Agreements"
     || props.header === "Tracts"
     || props.parent === "TractTable"
+    || props.parent === "WellsTable"
     || props.parent === "TractInterestsTable"
   ) {
     // adds the print and export options in the Flow grid and the Activities grid
@@ -4230,6 +4231,7 @@ function SubTable(props) {
                 // props.header === 'Contacts'
                 // || 
                 props.header === 'Deals'
+                || props.parent === 'WellsTable'
                 || props.header === 'Activities'
                 || props.header === 'Monthly Production'
                 // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 

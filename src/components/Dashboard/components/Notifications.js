@@ -25,7 +25,6 @@ import FlowIcon from "@material-ui/icons/Repeat";
 import { LocalAtm } from "@material-ui/icons";
 import { DescriptionOutlined } from "@material-ui/icons";
 
-import { CommentText } from "components/Transact/components/DealComments";
 import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
 import { UPDATE_NOTIFICATION_STATUS } from "graphQL/useMutationUpdateNotificationStatus";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
@@ -34,6 +33,7 @@ import { AppContext } from "AppContext";
 
 import ReactTimeAgo from "react-time-ago";
 import { dateIsValid } from "utils/helper";
+import { CommonCommentText } from "components/Shared/CommentComponent";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -390,7 +390,7 @@ const Notifications = () => {
                               />
                             }
                           </div>
-                          <CommentText users={users} eachComment={source} />
+                          <CommonCommentText users={users} eachComment={source} />
                         </Grid>
                       </Grid>
                     )}

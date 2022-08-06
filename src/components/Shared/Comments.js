@@ -29,7 +29,7 @@ import CloseIcon from "@material-ui/icons/Close";
 
 // import value formatters
 import capitalizeFirstLetter from "../Shared/valueformatters/capitalize-first-letter.js";
-import { CommentText } from "components/Transact/components/DealComments";
+import { CommonCommentText } from "components/Shared/CommentComponent";
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -608,7 +608,7 @@ export default function Comments(props) {
                       className={classes.listItemText}
                       primary={
                         <React.Fragment>
-                          <CommentText users={userLists?.allMongoUsers} eachComment={comment} />
+                          <CommonCommentText users={userLists?.allMongoUsers} eachComment={comment} />
                         </React.Fragment>
                       }
                       secondary={
