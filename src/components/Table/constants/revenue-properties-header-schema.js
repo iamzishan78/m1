@@ -41,11 +41,13 @@ const ComponentPropertyName = ({ value, tableMeta }) => {
           e.stopPropagation();
           history.push(`/revenue/property/details/${tableMeta.rowData[0]}`, { focusOnWellSearch: true });
         }}>
-          <WellIcon size={"18"} opacity={"1"} />
+          <WellIcon size={"18"} opacity={"1"} color="gray" />
           <ErrorOutline style={{
             width: "17px",
             height: "17px",
-          }} />
+            color:"gray"
+          }} 
+          />
         </div>
       }
     </div>
