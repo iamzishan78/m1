@@ -110,6 +110,14 @@ const TractInterestOwnerHeadCells = [
     },
   },
   {
+    name: "company_net_acres",
+    label: "Co Net Acres",
+    esKey: "company_net_acres",
+    options: {
+      display: true,
+    },
+  },
+  {
     name: "nra",
     label: "NRA",
     esKey: "nra",

@@ -150,7 +150,9 @@ function UnitInterestOwnerTable(props) {
         variables: {
           shapeType: props.shapeType,
           shapeOwners: ids.map((_id) => ({ _id, isDeleted: true })),
-        }
+        },
+        refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
+        awaitRefetchQueries: true,
       });
     }
     setResetSelectedRow(!resetSelectedRow)

@@ -36,6 +36,8 @@ export default function DetailComponents(props) {
 
   const { activeModule } = useSelector(({ common }) => common);
   const { statements } = useSelector(({ Revenue }) => Revenue);
+  const freezNavigationOn = useSelector(({ app }) => app.freezNavigationOn);
+
   const search = queryString.parse(window.location.search);
 
 
@@ -45,19 +47,33 @@ export default function DetailComponents(props) {
        * Detail Header
        */}
       <div className={classes.navSection}>
-        <Grid container alignItems="center" direction="row" display="flex" justify="space-between">
+        <Grid
+          container
+          alignItems="center"
+          direction="row"
+          display="flex"
+          justify="space-between"
+        >
           <Grid item>
-            <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-              {search.from === 'revenue' &&
+            <Breadcrumbs
+              separator={<NavigateNextIcon fontSize="small" />}
+              aria-label="breadcrumb"
+            >
+              {search.from === "revenue" && (
                 <Link
-                  style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer", fontWeight: "bold" }}
+                  style={{
+                    marginLeft: "5px",
+                    fontSize: "16px",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
                   color="inherit"
-                  onClick={() => history.push('/revenue/statements')}
+                  onClick={() => history.push("/revenue/statements")}
                 >
                   Revenue Statements
                 </Link>
-              }
-              {search.from === 'revenue' &&
+              )}
+              {search.from === "revenue" && (
                 <Link
                   style={{
                     marginLeft: "5px",
@@ -66,16 +82,23 @@ export default function DetailComponents(props) {
                   }}
                   color="inherit"
                   onClick={() => {
-                    history.push(history.pathHistory[1]);
+                    !freezNavigationOn && history.push(history.pathHistory[1]);
                   }}
                 >
                   {`${statements?.activeStatement?.checkNumber} - ${statements?.activeStatement?.payor?.["name"]}`}
                 </Link>
-              }
+              )}
               <Link
-                style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer", fontWeight: "bold" }}
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
                 color="inherit"
-                onClick={() => history.push(activeModule.link)}
+                onClick={() =>
+                  !freezNavigationOn && history.push(activeModule.link)
+                }
               >
                 {activeModule.title}
               </Link>
