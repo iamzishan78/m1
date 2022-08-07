@@ -19,6 +19,7 @@ import { useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
+import { get } from "lodash";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import EntityType from "./EntityType";
 import CampaignNameField from "./CampaignNameField";
@@ -381,7 +382,7 @@ export default function FieldContent({
                 }));
                 handleUpdating(value);
               }}
-              value={editContent["campaignName"] === null ? "" : editContent["campaignName"]}
+              value={get(editContent, "campaignName", [])}
               fullWidth
               targetLabel="Contact"
               targetLabelId={id}

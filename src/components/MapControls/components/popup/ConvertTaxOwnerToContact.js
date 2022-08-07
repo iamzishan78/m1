@@ -70,6 +70,7 @@ const ConvertTaxOwnerToContact = ({
   const [newTagsIds, setNewTagsIds] = useState([]);
   const [searchCampaign, setSearchCampaign] = useState("");
   const [includeFilter, setIncludeFilter] = useState(true);
+  const [campaigns, setCampaigns] = useState([]);
   const { control, getValues, watch } = useForm();
 
   const contactStatus = watch("contactStatus", contactStatusOptions[0].value);
@@ -139,7 +140,7 @@ const ConvertTaxOwnerToContact = ({
 
   const onConvert = () => {
     const values = getValues();
-    convertTaxOwnerToContactAction({ ...values, tags: newTagsIds, userId });
+    convertTaxOwnerToContactAction({ ...values, campaigns, tags: newTagsIds, userId });
     onClose();
   };
 
@@ -208,20 +209,19 @@ const ConvertTaxOwnerToContact = ({
           />
         </div>
         <div className={classes.field}>
-          <label className={classes.bold}>Campaign Name</label>
+          <label className={classes.bold}>Campaign Names</label>
           <Controller
             control={control}
-            name="campaign"
+            name="campaignNames"
             render={(params) => (
               <CampaignNameField
                 {...params}
-                value={params.value?.name}
+                value={params.value}
                 className={classes.maxWidth}
-                onChange={(value, campaignId) => {
-                  params.onChange({
-                    _id: campaignId,
-                    name: value
-                  });
+                onChange={(values, id) => {
+                  const _campaigns = [...campaigns, { id, name: values[values.length - 1] }];
+                  params.onChange(values);
+                  setCampaigns(_campaigns);
                 }}
                 fullWidth
                 targetLabel="Shape"

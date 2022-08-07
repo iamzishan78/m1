@@ -106,6 +106,7 @@ const MultipleOwnerToContactDrawer = ({
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   const [newTagsIds, setNewTagsIds] = useState([]);
+  const [campaigns, setCampaigns] = useState([]);
 
   const { control, getValues, watch } = useForm();
 
@@ -185,9 +186,9 @@ const MultipleOwnerToContactDrawer = ({
     const values = getValues();
 
     if (entitiesIds.length === 0) {
-      convertMultipleOwnerToContactAction({ ...values, rows, existingContactId, actionType: action, userId: userId, tags: newTagsIds, jobType, jobName });
+      convertMultipleOwnerToContactAction({ ...values, campaigns, rows, existingContactId, actionType: action, userId: userId, tags: newTagsIds, jobType, jobName });
     } else {
-      convertMultipleOwnerToContactAction({ ...values, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds, jobType, jobName });
+      convertMultipleOwnerToContactAction({ ...values, campaigns, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds, jobType, jobName });
     }
     onClose();
     setLoading(false);
@@ -345,20 +346,19 @@ const MultipleOwnerToContactDrawer = ({
                 />
               </div>
               <div className={classes.field}>
-                <label className={classes.bold}>Campaign Name</label>
+                <label className={classes.bold}>Campaign Names</label>
                 <Controller
                   control={control}
-                  name="campaign"
+                  name="campaignNames"
                   render={(params) => (
                     <CampaignNameField
                       {...params}
-                      value={params.value?.name}
+                      value={params.value}
                       className={classes.maxWidth}
-                      onChange={(value, campaignId) => {
-                        params.onChange({
-                          _id: campaignId,
-                          name: value
-                        });
+                      onChange={(values, id) => {
+                        const _campaigns = [...campaigns, { id, name: values[values.length - 1] }];
+                        params.onChange(values);
+                        setCampaigns(_campaigns);
                       }}
                       fullWidth
                       targetLabel="Shape"

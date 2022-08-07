@@ -1,6 +1,4 @@
 import { history } from "store";
-import moment from "moment";
-// import CampaignStatus from "components/Table/Contact/CampaignStatus";
 
 const CampaignsHeadCells = [
   {
