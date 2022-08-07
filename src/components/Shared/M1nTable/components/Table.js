@@ -2440,31 +2440,6 @@ function SubTable(props) {
               },
             };
             break;
-          case "wellApiNumber":
-            column.options = {
-              ...column.options,
-              customBodyRender: (value, tableMeta) => {
-                const row = props.rows[tableMeta.rowIndex];
-                return (
-                  <>
-                    {row.wellApiNumber || row.wellName ? (
-                      <div>{value}</div>
-                    ) : (
-                      <SearchWells
-                        setRefetchData={props.setRefetchData}
-                        refetchData={props.refetchData}
-                        // contactId={"props.contactData._id"}
-                        relatedObject={row._id}
-                        relatedObjectType="Property"
-                      // rowData={tableMeta.rowData}
-                      // rowIndex={tableMeta.rowIndex}
-                      />
-                    )}
-                  </>
-                );
-              },
-            };
-            break;
           case "propertyCode":
             column.options = {
               ...column.options,
