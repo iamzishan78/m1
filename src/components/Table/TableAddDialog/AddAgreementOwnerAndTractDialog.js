@@ -278,7 +278,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           ],
           shapeType: props.shapeType,
         },
-        refetchQueries: ["getESSimpleSearch"],
+        refetchQueries: ["getESSimpleSearch", 'getCustomLayer'],
         awaitRefetchQueries: true,
       });
     } else {
