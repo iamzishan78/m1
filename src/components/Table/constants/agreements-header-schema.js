@@ -302,6 +302,56 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     },
   },
   {
+    name: "acquisitionID",
+    label: "Acquisition ID",
+    esKey: "shapeJson.properties.acquisitionID.keyword",
+    options: {
+      dbName: "shapeJson.properties.acquisitionID",
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "internalCompany",
+    label: "Internal Company ",
+    esKey: "shapeJson.properties.internalCompany.keyword",
+    options: {
+      dbName: "shapeJson.properties.internalCompany ",
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "legaldescription",
+    label: "Legal Description ",
+    esKey: "shapeJson.properties.legalDesctiption.keyword",
+    options: {
+      dbName: "shapeJson.properties.legalDesctiption",
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "prospectID",
+    label: "Prospect",
+    esKey: "shapeJson.properties.prospectID.keyword",
+    options: {
+      dbName: "shapeJson.properties.prospectID",
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "agreementTerm",
+    label: "Term",
+    esKey: "shapeJson.properties.agreementTerm.keyword",
+    options: {
+      dbName: " shapeJson.properties.agreementTerm",
+      sort: true,
+      filter: true,
+    },
+  },
+  {
     name: "County",
     label: "County",
     esKey: "shapeJson.properties.originalProperties.County.keyword",
