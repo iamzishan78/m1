@@ -62,7 +62,7 @@ import debounce from "lodash/debounce";
 import isEmpty from "lodash/isEmpty";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { WELLQUERY } from "graphQL/useQueryWell";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import WellTableStyles from "../customStyles/WellTableStyle";
 import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
 import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
@@ -129,6 +129,7 @@ import { CONTACT } from "graphQL/useQueryContact";
 import { getIndexofColumn } from "utils/helper";
 import ReactSelectField from "./SubComponents/ReactSelectField";
 import { Waypoint } from "react-waypoint";
+import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOfferPrice";
 
 
 // suppress debug console logs
@@ -617,7 +618,14 @@ function SubTable(props) {
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContact, { data: contactData }] = useLazyQuery(CONTACT);
-
+  const [autoCalculateOfferPrice, { data: autoCalculateOfferPriceData,  }] = useMutation(
+    AUTO_CALCULATE_OFFER_PRICE,
+    {
+      refetchQueries: [
+        "getESSimpleSearch",
+      ],
+    }
+  );
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
@@ -724,6 +732,14 @@ function SubTable(props) {
       },
     });
   };
+
+  const handleAutoCalculateClick = (shapeOwnerId) => {
+    autoCalculateOfferPrice({
+      variables: {
+        shapeOwnerId,
+      },
+    });
+  }
 
   const handleClickFlyToIcon = (entityType, searchTarget) => {
     if (!searchTarget) return;
@@ -2311,21 +2327,23 @@ function SubTable(props) {
           //   };
           //   break;
           case "offer_price": 
-            console.log("???????");
             if(props.targetLabel === "Unit Ownership" || props.parent === "ownersPerUnit"){
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta) => {
                   const { columnIndex, rowData, rowIndex } = tableMeta;
-                  const isManual = !!props?.rows?.[rowIndex]?.maualOverrides?.offer_price;
-                  console.log("-*-*  *-*-", {rowIndex, rowData, manualOverrides: props?.rows[rowIndex]});
+                  const row = props?.rows?.[rowIndex];
+                  const isManual = !!row?.maualOverrides?.offer_price;
                   return (
                     <>
                       <span style={{ padding: 10 }}>{vf_currency(value)}</span>
                       {isManual && (
                         <IconButton
                           aria-label="cached"
-                          onClick={() => console.log("clicked")}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleAutoCalculateClick(row._id);
+                          }}
                         >
                           <CachedIcon />
                         </IconButton>
