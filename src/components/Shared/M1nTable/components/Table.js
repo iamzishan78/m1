@@ -4310,11 +4310,6 @@ function SubTable(props) {
         {openDialog === "addContact" && props.targetLabel === "contact" && (
           <AddContactDialogContent onClose={handleCloseDialog} parent={props.addAble.parent} />
         )}
-
-        {/* moved component in buyContactsInfoData and handled its operations there */}
-        {/* {openDialog === "contactDataMissing" && (
-          <ContactDataMissingDialog openDialog={openDialog} onClose={handleCloseDialog} contacts={contactDataMissing} />
-        )} */}
         {openDialog === "multipleOwnerToContact" && (
           <MultipleOwnerToContactDrawerContainer
             onClose={handleCloseDialog}
