@@ -6,6 +6,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import _ from "lodash";
 import Tooltip from "@material-ui/core/Tooltip";
 import LinkIcon from "@material-ui/icons/Link";
+import CloseIcon from '@material-ui/icons/Close';
 import {
   Grid,
   Container,
@@ -117,6 +118,9 @@ export default function LinkWithIcon(props) {
       overflowY: "auto",
       border: "1px solid lightgrey",
       padding: "0.5rem",
+      position: 'absolute',
+      zIndex: 1,
+      backgroundColor: '#FFF',
     },
   }));
 
@@ -266,7 +270,7 @@ export default function LinkWithIcon(props) {
         <RightDialog open={true}>
           <Container maxWidth="sm" className={classes.gridWidthScroll}>
             <div className={classes.dealContainer}>
-              <Box pb={3} pt={1}>
+              <Box pb={3} pt={1} style={{position: 'relative'}}>
                 <Grid
                   container
                   direction="row"
@@ -302,15 +306,24 @@ export default function LinkWithIcon(props) {
                   <TextField
                     fullWidth
                     variant="outlined"
-                    type="search"
+                    type="text"
                     autoFocus
                     onFocus={() => setShowOptions(true)}
                     value={inputSearchValue}
                     onChange={({ target }) => handleSearch(target.value)}
                     InputProps={{
-                      endAdornment: (
+                      startAdornment: (
                         <InputAdornment position="start">
                           <SearchIcon />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => handleSearch("")}
+                          >
+                            <CloseIcon />
+                          </IconButton>
                         </InputAdornment>
                       ),
                     }}
