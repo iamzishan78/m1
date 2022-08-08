@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useMemo } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { get, isEmpty } from "lodash";
 import { Grid, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
@@ -119,6 +119,7 @@ const AssociatedWellsList = ({
 }) => {
   // Initials
   let history = useHistory();
+  const location = useLocation();
   const classes = useStyles();
 
   const moduleName = useMemo(() => {
@@ -158,6 +159,12 @@ const AssociatedWellsList = ({
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (location.state?.focusOnWellSearch) {
+      setAddWell(true);
+    }
+  }, [location.state]);
 
   // delete well from File Descriptor
   const deleteWell = async (well) => {

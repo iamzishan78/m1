@@ -13,6 +13,14 @@ const genericDataActions = ['tags', 'comments', 'tracks']
 function TractsTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
+
+  const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
+  const GridViewModule = userGridViewSettings?.Tracts
+  const defaultView = {
+    name: `All Tracts`,
+    type: "Default",
+  };
+
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
   );
@@ -45,13 +53,16 @@ function TractsTable(props) {
       searchFields: ["*"],
       TableHeader: copy(TableHeader(props.isSnapGrid)),
       esIndex: "shapes_flat",
-      startPaginationAt: 50,
+      selectedGridView: GridViewModule || defaultView,
+      typeKeyword: { gridViewCategory: "Tracts" },
+      startPaginationAt: 10,
       filters: [
         {
           field: "layer.keyword",
           value: "parcel",
         },
       ],
+
       defaultSort: { field: '_ts', order: 'desc' },
       polygon: stateApp?.currentFeature?.geometry && {
         type: "geo_intersects",
@@ -61,7 +72,7 @@ function TractsTable(props) {
       formatHits,
     });
     // eslint-disable-next-line
-  }, [searchInput, props.landSearchQuery]);
+  }, [searchInput, props.landSearchQuery, userGridViewSettings]);
 
   useEffect(() => {
     props?.onTractCount && props?.onTractCount(props?.options?.count || 0);

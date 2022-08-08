@@ -1,7 +1,66 @@
-import { history } from "store";
 import GlobalSettings from "..//..//..//GlobalSettings.js";
 import GlobalStyles from "..//..//..//GlobalStyles.js";
 import Typography from "@material-ui/core/Typography";
+import WellIcon from '../../../components/Shared/svgIcons/well.js';
+import { ErrorOutline } from "@material-ui/icons";
+import React from 'react';
+import { useHistory } from "react-router-dom";
+
+const styles = {
+  width: "fit-content",
+  fontWeight: 600,
+  color: "#17aadd",
+  cursor: "pointer",
+};
+
+const ComponentPropertyName = ({ value, tableMeta }) => {
+  const history = useHistory();
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    // style={{borderRight: 'solid red'}}
+    >
+      <p
+        onClick={(e) => {
+          e.stopPropagation();
+          history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
+        }}
+        style={styles}
+      >
+        {/* {splitNumber?.[0]} */}
+        {value?.split("_")?.[0]
+          ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[2]}`
+          : tableMeta?.rowData[2]}
+
+      </p>
+      {/* <Button/> */}
+      {
+        !(tableMeta?.rowData[5] && tableMeta?.rowData[6]) &&
+        <div style={{ marginLeft: "15px", cursor: 'pointer' }} onClick={(e) => {
+          e.stopPropagation();
+          history.push(`/revenue/property/details/${tableMeta.rowData[0]}`, { focusOnWellSearch: true });
+        }}>
+          <WellIcon size={"18"} opacity={"1"} color="gray" />
+          <ErrorOutline style={{
+            width: "17px",
+            height: "17px",
+            color: "gray"
+          }}
+          />
+        </div>
+      }
+    </div>
+  );
+}
+
+// sort: true,
+// filter: true,
+// stickyColumn: true,
+// viewColumns: false,
+// display: true,
 
 const RevenuePropertiesHeadCells = [
   {
@@ -17,52 +76,30 @@ const RevenuePropertiesHeadCells = [
       ...GlobalSettings.muiGridControlOptions,
       ignoreGlobal: true,
 
-      customRender: (value, tableMeta) => {
-        const splitNumber = value?.split("_");
 
-        const styles = {
-          fontWeight: GlobalStyles.font.boldFontWeight,
-          color: GlobalStyles.colors.lightBlue,
-          cursor: GlobalStyles.hyperlink.cursor,
-          position: 'absolute',
-          left: '70px',
-        };
-
-        return (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'start'
-            }}
-          >
-            <div
-              style={{
-              }}
-            >
-              {<span
-                style={{ color: GlobalStyles.colors.mutedGrey }}
-              >{tableMeta.rowIndex + 1}</span>}
-            </div>
+      // setCellProps: () => ({
+      //   style: {
+      //     minWidth: "150px",
+      //     whiteSpace: "nowrap",
+      //     position: "sticky",
+      //     left: "77px",
+      //     background: "white",
+      //     zIndex: 200,
+      //     boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+      //   }
+      // }),
+      // setCellHeaderProps: () => ({
+      //   style: {
+      //     position: "sticky",
+      //     minWidth: "150px",
+      //     left: "77px",
+      //     zIndex: 201,
+      //     // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+      //   }
+      // }),
 
 
-            <Typography
-              onClick={(e) => {
-                e.stopPropagation();
-                history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
-              }}
-              noWrap
-              variant='body2'
-              style={styles}
-            >
-              {splitNumber?.[0]
-                ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
-                : tableMeta?.rowData[2]}
-            </Typography>
-
-          </div>
-        );
-      },
+      customRender: (value, tableMeta) => <ComponentPropertyName value={value} tableMeta={tableMeta} />,
     },
   },
   {
@@ -70,13 +107,25 @@ const RevenuePropertiesHeadCells = [
     label: "Property Name",
     esKey: "name.keyword",
     options: {
-      display: false,
-    }
+      sort: true, filter: true,
+      display: false
+    },
+    // options: {
+    //   ...GlobalSettings.muiGridStandardOptions,
+    //   display: false,
+    // }
   },
   {
     name: "state",
     label: "State",
     esKey: "state.keyword",
+    options: {
+      sort: true,
+      filter: true
+    },
+    // options: {
+    //   ...GlobalSettings.muiGridStandardOptions,
+    // }
   },
   {
     name: "county",

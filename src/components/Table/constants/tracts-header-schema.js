@@ -65,6 +65,14 @@ const TractsHeadCells = (isSnapGrid = false) => [
       'shapeJson.properties.originalProperties.State.keyword',
       'shapeJson.properties.originalProperties.StateAbbreviation.keyword'
     ],
+    options: {
+      dbName: "shapeJson.properties.originalProperties.0?.State?.StateAbbreviation?",
+      sort: true,
+      filter: true
+    },
+    custom: {
+      multi_filter_keys: true,
+    },
   },
   {
     name: "County", label: "County", esKey: 'shapeJson.properties.originalProperties.County.keyword',
@@ -79,7 +87,12 @@ const TractsHeadCells = (isSnapGrid = false) => [
     ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
-    }
+      sort: true,
+      filter: true
+    },
+    custom: {
+      multi_filter_keys: true,
+    },
   },
   {
     name: "BlockTownship", label: "Block/ Township", esKey: [
@@ -88,7 +101,12 @@ const TractsHeadCells = (isSnapGrid = false) => [
     ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Block?.Township?",
-    }
+      sort: true,
+      filter: true
+    },
+    custom: {
+      multi_filter_keys: true,
+    },
   },
   {
     name: "SectionRange", label: "Section/ Range", esKey: [
@@ -97,7 +115,12 @@ const TractsHeadCells = (isSnapGrid = false) => [
     ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
-    }
+      sort: true,
+      filter: true
+    },
+    custom: {
+      multi_filter_keys: true,
+    },
   },
   {
     name: "AbstractSection", label: "Abstract/ Section", esKey: [
@@ -106,7 +129,12 @@ const TractsHeadCells = (isSnapGrid = false) => [
     ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
-    }
+      sort: true,
+      filter: true
+    },
+    custom: {
+      multi_filter_keys: true,
+    },
   },
   {
     name: "GrossAcres", label: "Gross Acres", esKey: 'shapeJson.properties.sdGrossAcres.keyword',
@@ -118,6 +146,14 @@ const TractsHeadCells = (isSnapGrid = false) => [
     name: "CalcAcres", label: "Calc Acres", esKey: 'shapeJson.properties.shapeArea.keyword',
     options: {
       dbName: "shapeJson.properties.shapeArea",
+    }
+  },
+  {
+    name: "department", label: "Department", esKey: 'shapeJson.properties.department.keyword',
+    options: {
+      dbName: "shapeJson.properties.department",
+      sort: true,
+      filter: true
     }
   },
   {
