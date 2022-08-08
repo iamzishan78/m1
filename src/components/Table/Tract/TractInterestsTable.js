@@ -18,9 +18,6 @@ import TableHeader from "components/Table/constants/tract-interests-header-schem
 // Utilities
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-// import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
-// import { GET_ES_POTENTIAL_ISSUES } from "graphQL/useQueryPotentialIssue";
-// import { AutoCompleteFilter } from "../AutoCompleteFilter";
 import { setColumnsData } from "components/Table/helpers";
 
 const useStyles = makeStyles((theme) => ({
@@ -68,7 +65,6 @@ function TractInterestsTable(props) {
   };
 
   // queries
-
   const [getESPaginatedList, { data: elasticData }] = useLazyQuery(
     GET_ES_PAGINATED_LIST,
     {
@@ -79,12 +75,9 @@ function TractInterestsTable(props) {
     }
   );
 
-
   const tableData = elasticData?.getESPaginatedList;
-  // const issues = potentialIssues?.getPotentialIssuesSummary;
-
   const startPaginationAt = 10;
-  // const esIndex = 'shapeowners_flat';
+
   const esStaticFilters = [
     {
       field: "shape.layer",
