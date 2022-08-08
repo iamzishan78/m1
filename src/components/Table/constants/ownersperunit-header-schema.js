@@ -109,6 +109,23 @@ const OwnersPerUnitHeadCells = [
     },
   },
   {
+    name: "campaignName",
+    label: "Campaign Name",
+    esKey: "campaignName.keyword",
+    options: {
+      customRender: (value) => {
+        if (typeof value === "string") {
+          return value;
+        } else {
+          return value?.map((v, index) => `${v}${index < value?.length - 1 ? ", " : ""}`);
+        }
+      },
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      sort: true,
+      filter: true,
+    },
+  },
+  {
     name: "tags",
     label: "Tags ",
     esKey: "tags.tag.keyword",
