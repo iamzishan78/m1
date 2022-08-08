@@ -205,7 +205,7 @@ export default function CSVFileReader(props) {
             ...(stateNav.bulkUploadShape?.shapeType) && { 'Shape Type': stateNav.bulkUploadShape?.shapeType }
           })
         })
-        ["TRACTS", 'UNITS', 'AGREEMENT_HEADER'].includes(stateApp.jobType) === "TRACTS" && data.forEach((data) => {
+        ["TRACTS", 'UNITS'].includes(stateApp.jobType) === "TRACTS" && data.forEach((data) => {
           Object.assign(data.data, {
             ...(data.data["PLSS Township"] || data.data["PLSS Range"]) && { "PLSS Township/Range": [data.data["PLSS Township"], data.data["PLSS Range"]].join(" ") }
           })
@@ -213,7 +213,7 @@ export default function CSVFileReader(props) {
         mapped_headers_from_CSV(data);
         setStateApp((state) => ({
           ...state,
-          csvContactsList: data,
+          csvDataList: data,
           activeStepNumber: stateApp.activeStepNumber + 1,
         }));
       } else {

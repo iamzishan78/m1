@@ -116,9 +116,9 @@ export default function BulkUpload(props) {
   const reset_state = () => {
     setStateApp((state) => ({
       ...state,
-      csvContactsListToSend: [],
+      csvDataToSend: [],
       activeStepNumber: selectedJob.initialActiveStepNumber || 0,
-      csvContactsList: [],
+      csvDataList: [],
       job: selectedJob,
       jobType: selectedJob.type,
       m1neralHeaders: selectedJob.m1neralHeaders || M1neral_headers[selectedJob.type] || [],

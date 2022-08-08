@@ -159,7 +159,7 @@ export default function M1neralHeaders(props) {
 
   const changeDataToSendState = async () => {
     let headers = stateApp.mappedHeadersFromCSV;
-    let arr_data = stateApp.csvContactsList;
+    let arr_data = stateApp.csvDataList;
     // let filtered_data_to_send = arr_data.map((obj) => {
     let filtered_data_to_send = [];
     for await (const obj of arr_data) {
@@ -243,7 +243,7 @@ export default function M1neralHeaders(props) {
 
     setStateApp((state) => ({
       ...state,
-      csvContactsListToSend: filtered_data_to_send,
+      csvDataToSend: filtered_data_to_send,
     }));
   };
 

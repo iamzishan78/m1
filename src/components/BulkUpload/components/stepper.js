@@ -191,7 +191,7 @@ export default function CustomizedSteppers(props) {
   const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB);
 
   const userID = stateApp.user.mongoId;
-  let data_to_send = stateApp.csvContactsListToSend;
+  let data_to_send = stateApp.csvDataToSend;
 
   useEffect(() => {
     if (createJobData?.createJob && jobId) {
@@ -287,7 +287,7 @@ export default function CustomizedSteppers(props) {
             element['shape.shapeType'] = "Unit";
           }
           if (props.selectedJob.type === "AGREEMENT_HEADER") {
-            element['shape.shapeType'] = "Agreement";
+            element['shapeType'] = "Agreement";
           }
           delete element.tableData;
         });
@@ -343,8 +343,8 @@ export default function CustomizedSteppers(props) {
     setStateApp((state) => ({
       ...state,
       activeStepNumber: 0,
-      csvContactsList: [],
-      csvContactsListToSend: [],
+      csvDataList: [],
+      csvDataToSend: [],
       mappedHeadersFromCSV: [],
     }));
   };
@@ -356,10 +356,13 @@ export default function CustomizedSteppers(props) {
   const isDisabled = useMemo(() => {
     if (stateApp.jobType === 'SHAPE_TO_M1_LAYER') {
       return !(stateApp.selectedShapeLayerOption && stateApp.transferData)
-    } else {
-      return (stateApp.activeStepNumber === 1 && !stateApp.csvContactsListToSend) || stateApp.csvContactsListToSend.length === 0
+    } else if (stateApp.jobType === 'AGREEMENT_HEADER') {
+      return ((stateApp.activeStepNumber === 1 && !stateApp.csvDataToSend) || stateApp.csvDataToSend.length === 0 || !stateApp.selectedShapeLayerOption)
     }
-  }, [stateApp.selectedShapeLayerOption, stateApp.activeStepNumber, stateApp.csvContactsListToSend, stateApp.transferData, stateApp.jobType])
+    else {
+      return (stateApp.activeStepNumber === 1 && !stateApp.csvDataToSend) || stateApp.csvDataToSend.length === 0
+    }
+  }, [stateApp.selectedShapeLayerOption, stateApp.activeStepNumber, stateApp.csvDataToSend, stateApp.transferData, stateApp.jobType])
 
   return (
     <div className={classes.root}>
