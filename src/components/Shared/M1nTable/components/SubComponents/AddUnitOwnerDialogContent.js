@@ -245,6 +245,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       Object.keys(ownerToAdd).forEach((key) => {
         if (["working_interest", "royalty_interest", "orri", "nri", "nra"].includes(key))
           ownerToAdd[key] = addTrailingZeros(ownerToAdd[key]);
+        if(key === "offer_price"){
+          ownerToAdd.offer_price = ownerToAdd[key];
+          ownerToAdd.maualOverrides = { offer_price: true };
+        }
       });
       if (nameAutValue._id && nameAutValue.name) {
         // now that we are using descriptors we ONLY want the contact _id

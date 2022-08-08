@@ -97,7 +97,7 @@ const OwnersPerUnitHeadCells = [
     type: "number",
     options: {
       filter: true,
-      customRender: (value) => vf_currency(value),
+      // customRender: (value) => vf_currency(value),
     },
   },
   {

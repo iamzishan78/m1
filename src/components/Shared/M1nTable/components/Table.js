@@ -16,6 +16,7 @@ import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
 import ChatIcon from "@material-ui/icons/Chat";
+import CachedIcon from '@material-ui/icons/Cached';
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
 
 import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
@@ -2309,6 +2310,32 @@ function SubTable(props) {
           //     },
           //   };
           //   break;
+          case "offer_price": 
+            console.log("???????");
+            if(props.targetLabel === "Unit Ownership" || props.parent === "ownersPerUnit"){
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta) => {
+                  const { columnIndex, rowData, rowIndex } = tableMeta;
+                  const isManual = !!props?.rows?.[rowIndex]?.maualOverrides?.offer_price;
+                  console.log("-*-*  *-*-", {rowIndex, rowData, manualOverrides: props?.rows[rowIndex]});
+                  return (
+                    <>
+                      <span style={{ padding: 10 }}>{vf_currency(value)}</span>
+                      {isManual && (
+                        <IconButton
+                          aria-label="cached"
+                          onClick={() => console.log("clicked")}
+                        >
+                          <CachedIcon />
+                        </IconButton>
+                      )}
+                    </>
+                  );
+                },
+              };
+            }
+            break;
           case "checkAmount":
             column.options = {
               ...column.options,
