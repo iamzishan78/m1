@@ -88,7 +88,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerEntity,
         contactStatus,
         ownerType,
-        campaignName
+        contact: { campaignName }
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
@@ -231,14 +231,17 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       }
 
       if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
-        (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType)) {
+        (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
+        (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
+      ) {
         updateContact({
           variables: {
             contact: {
               _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
               contactStatus: ownerToAdd.contactStatus,
               lastUpdateBy: stateApp.user.mongoId,
-              ownerType: ownerToAdd.ownerType
+              ownerType: ownerToAdd.ownerType,
+              campaignName: ownerToAdd.campaignName
             }
           }
         })

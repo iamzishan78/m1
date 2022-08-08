@@ -109,15 +109,15 @@ const OwnersPerUnitHeadCells = [
     },
   },
   {
-    name: "campaignName",
+    name: "contact",
     label: "Campaign Name",
-    esKey: "campaignName.keyword",
+    esKey: "contact.campaignName.keyword",
     options: {
       customRender: (value) => {
-        if (typeof value === "string") {
-          return value;
+        if (typeof value.campaignName === "string") {
+          return value.campaignName;
         } else {
-          return value?.map((v, index) => `${v}${index < value?.length - 1 ? ", " : ""}`);
+          return value.campaignName?.map((v, index) => `${v}${index < value?.length - 1 ? ", " : ""}`);
         }
       },
       setCellProps: () => ({ style: { minWidth: "200px" } }),
