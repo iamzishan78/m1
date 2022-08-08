@@ -70,13 +70,13 @@ function Units(props) {
   ];
 
   return (
-    <div style={{ 
+    <div style={{
       // marginTop: 20, 
       // padding: "75px 20px" 
       marginTop: "65px",
       marginLeft: '-10px'
 
-      }}>
+    }}>
 
       {/* <AnalyticsCards
         parent={"Agreements"}
@@ -88,11 +88,10 @@ function Units(props) {
         landSearchQuery={stateApp.landSearchQuery}
       /> */}
 
-      <div 
+      <div
       // className={classes.custom} 
       >
         <MapGridUnitTable
-          dense
           parent="UnitsTable"
           targetLabel="unit"
           header="Units"
