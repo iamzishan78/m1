@@ -8,7 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, searchFields, esIndex, filters, custom, setFilters }) {
+export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, searchFields, esIndex, filters, custom, setFilters, ...others }) {
     const [open, setOpen] = useState(false);
     const [stateApp, setStateApp] = useContext(AppContext);
     const [options, setOptions] = useState([]);
@@ -44,7 +44,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
                     setStateApp((state, props) => {
                         return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
                     });
-                }else if (custom?.isDateTime) {
+                } else if (custom?.isDateTime) {
                     filtersData[keys[0]].hits = filtersData[keys[0]]?.hits.filter((hit) => hit.key)
                     const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key: moment(new Date(hit.key)).format("MM/DD/YYYY HH:mm:ss.SSS"), key_as_string: hit.key_as_string || hit.key }))
                     setOptions(hits)
@@ -90,6 +90,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
                 extendSearchQuery,
                 size: 50,
                 key_as_string: custom?.key_as_string,
+                multi_filter_keys: custom?.multi_filter_keys,
                 filterAggs: {
                     query: rawSearch,
                     field: typeof filterKey === 'string' ? filterKey : undefined,
@@ -110,6 +111,8 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
             onClose={() => {
                 setOpen(false);
             }}
+
+            disabled={others.disabled || false}
             value={value}
             inputValue={search?.toString()}
             getOptionSelected={(option, value) => option.key === value.key}
@@ -123,15 +126,19 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
                     filterList[index][0] = typeof value2.key === 'string' ? value2.key.replace(/^\,|\,$/gm, "") : value2.key
                     setSearch(value2.key)
                     setValue(value2)
+                    if (value2?.esKey) column.activeFilterKey = value2?.esKey
+
                 }
                 if (setFilters) setFilters(filterList)
-                onChange(filterList[index], index, column);
+                onChange(filterList[index], index, column, value2?.esKey || '');
             }}
             options={options}
             loading={loading}
             renderInput={(params) => (
                 <TextField
                     {...params}
+                    variant={others?.variant ? others?.variant : "standard"}
+                    style={{ background: "white" }}
                     label={custom?.filterLabel || label}
                     onChange={(e) => {
                         handleChange(e.target.value);

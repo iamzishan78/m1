@@ -163,7 +163,6 @@ export const setColumnsData = (
     }
   });
 
-
   setColumns(columns);
 };
 

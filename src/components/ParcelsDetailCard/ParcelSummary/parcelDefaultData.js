@@ -99,6 +99,12 @@ const tableData = [
     //     edit: true,
     // },
     {
+        label: "Department",
+        type: "autocomplete",
+        key: "department",
+        nonEditable: false,
+    },
+    {
         label: "Map Status",
         type: "autocomplete",
         key: "mapStatus",
