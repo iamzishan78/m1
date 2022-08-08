@@ -4,7 +4,7 @@ import TextField from "@material-ui/core/TextField";
 import { useLazyQuery, useMutation } from "@apollo/client";
 
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-import { UPSERT_CAMPAIGN_DESCRIPTOR } from "graphQL/useMutationCampaign";
+import { UPSERT_CAMPAIGN_DESCRIPTORS } from "graphQL/useMutationCampaign";
 import "components/Shared/Tagger.css";
 
 export default function CampaignNameField(props) {
@@ -12,7 +12,7 @@ export default function CampaignNameField(props) {
   const [inputValue, setInputValue] = useState([]);
 
   const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
-  const [upsertCampaignDescriptor] = useMutation(UPSERT_CAMPAIGN_DESCRIPTOR);
+  const [upsertCampaignDescriptors] = useMutation(UPSERT_CAMPAIGN_DESCRIPTORS);
 
   useEffect(() => {
     if (campaignfiltersData?.getESFilterList?.hits) {
@@ -56,9 +56,9 @@ export default function CampaignNameField(props) {
     }
     props.onChange(values, payload.descriptorObject);
     if (payload.relatedObject)
-      upsertCampaignDescriptor({
+      upsertCampaignDescriptors({
         variables: {
-          descriptor: payload
+          descriptors: [payload]
         }
       });
     setInputValue(values);

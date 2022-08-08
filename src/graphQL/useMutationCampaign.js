@@ -6,8 +6,8 @@ export const UPDATE_CAMPAIGN = gql`
   }
 `;
 
-export const UPSERT_CAMPAIGN_DESCRIPTOR = gql`
-  mutation upsertCampaignDescriptor($descriptor: JSON) {
-    upsertCampaignDescriptor(descriptor: $descriptor)
+export const UPSERT_CAMPAIGN_DESCRIPTORS = gql`
+  mutation upsertCampaignDescriptors($descriptors: [JSON]) {
+    upsertCampaignDescriptors(descriptors: $descriptors)
   }
 `;
