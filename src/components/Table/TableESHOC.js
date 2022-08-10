@@ -693,7 +693,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         }
 
         const updateGridViewRedux = (tableState) => {
-            debugger
             setTableMeta((tableMeta) => {
                 if (tableMeta?.selectedGridView) {
                     if (isFiniteScroll)
