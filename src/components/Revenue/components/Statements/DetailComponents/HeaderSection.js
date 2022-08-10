@@ -7,19 +7,21 @@ import {
   Select,
   MenuItem,
   IconButton,
+  Tooltip,
 } from "@material-ui/core";
-import { Clear } from "@material-ui/icons";
+import { Clear, ErrorOutline } from "@material-ui/icons";
 import moment from "moment";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import debounce from "lodash/debounce";
 
 import { Controller, useForm } from "react-hook-form";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { UPDATE_CHECK_DATA } from "graphQL/useMutationUpdateCheck";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import { showInfoMessage } from "actions";
+import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -65,6 +67,22 @@ function HeaderFunction(props) {
   // const [check, setCheck] = useState({});
   const { check, setCheck } = props
   const [updateCheck] = useMutation(UPDATE_CHECK_DATA);
+  const { data: elasticData } = useQuery(GET_ES_AGGS_LIST, {
+    variables: {
+      esIndex: "checkdetails_flat",
+      filters: [
+        {
+          field: "check._id.keyword",
+          value: "6283b27b8ff6f3f1f27b506f",
+        },
+      ],
+      search: "",
+      aggs: {
+        totalNetOwnerValue: { sum: { field: "netOwnerValue" } },
+      },
+    },
+    fetchPolicy: "cache-first",
+  });
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -399,6 +417,14 @@ function HeaderFunction(props) {
                       startAdornment: (
                         <InputAdornment position="start"> $</InputAdornment>
                       ),
+                      endAdornment:
+                        elasticData?.getESAggList?.aggregations
+                          ?.totalNetOwnerValue?.value !== params.value? (
+                          <Tooltip title="Sum of line items not equal to check amount">
+                            <ErrorOutline style={{ color: "red" }} />
+                          </Tooltip >
+                        ) :
+                        null,
                     }}
                     value={params.value || ""}
                     onBlur={() => handleCheckAmount()}
