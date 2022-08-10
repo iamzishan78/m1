@@ -117,8 +117,6 @@ function AgreementsTable(props) {
         value: stateApp?.currentFeature?.geometry
       },
       formatHits,
-
-      modifySelectedGridView: modifySelectedGridView
     });
     // eslint-disable-next-line
   }, [searchInput, props.landSearchQuery, props.filterToggle]);
@@ -168,12 +166,6 @@ function AgreementsTable(props) {
   const handleDefaultView = (view, user) => {
     return view;
   };
-
-  const modifySelectedGridView = (selectedGridView) => {
-    if (selectedGridView?.name === 'My Agreements' && selectedGridView?.filters?.length)
-      selectedGridView.filters[0].value = stateApp.user._id;
-  };
-
 
   const headerProps = {
     columns: props.columns,
