@@ -386,7 +386,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   return (
     <div className={classes.move}>
       <React.Fragment>
-        <RightDialog open={true} handleClickDialogClose={props.onClose} width={"450px"}>
+        <RightDialog open={true} handleClickDialogClose={props.onClose} width={"700px"}>
           <Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
             <Grid item md={10} xs={10}>
               <DialogTitle id="customized-dialog-title" style={{ fontWeight: "bold" }}>
