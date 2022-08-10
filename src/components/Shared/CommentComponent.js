@@ -22,7 +22,6 @@ import ReactTimeAgo from "react-time-ago";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
-import { dateIsValid } from "utils/helper";
 import moment from "moment";
 
 TimeAgo.addDefaultLocale(en);
@@ -437,13 +436,13 @@ export default function CommentComponent(props) {
                       >
                         <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
                           <IconButton>
-                            {profilesInfo[eachComment.user.email]?.profileImage ||
+                            {profilesInfo[eachComment.user?.email]?.profileImage ||
                               eachComment.isNew ? (
                               <Avatar
                                 src={
                                   eachComment.isNew
                                     ? profileImage
-                                    : profilesInfo[eachComment.user.email]
+                                    : profilesInfo[eachComment.user?.email]
                                       .profileImage
                                 }
                                 size="38"
@@ -451,7 +450,7 @@ export default function CommentComponent(props) {
                               />
                             ) : (
                               <Avatar
-                                name={eachComment.user.name}
+                                name={eachComment.user?.name}
                                 size="38"
                                 round
                               />
@@ -461,7 +460,7 @@ export default function CommentComponent(props) {
                         <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
                           <div>
                             <span className={classes.bold}>
-                              {eachComment.user.name}
+                              {eachComment.user?.name}
                             </span>
                             {
                               <ReactTimeAgo
@@ -476,7 +475,7 @@ export default function CommentComponent(props) {
                               </span>
                             )}
                             {
-                              eachComment.user.email === stateApp.user.email &&
+                              eachComment.user?.email === stateApp.user.email &&
                               showCommentActionId === eachComment._id &&
                               editCommentId !== eachComment._id && (
                                 <div
