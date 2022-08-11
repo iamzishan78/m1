@@ -11,7 +11,7 @@ import { components } from "react-select";
 import { defaultTheme } from 'react-select';
 import { copy } from "components/Shared/functions";
 import { AppContext } from "AppContext";
-import { Grid } from "@material-ui/core";
+import { Grid, Tooltip, Typography } from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox";
 
 const useStyles = makeStyles((theme) => ({
@@ -67,7 +67,8 @@ const ReactSelectField = ({
   fullWidth,
   showUnderline,
   showChevron,
-  variant
+  variant,
+  tooltipView
 }) => {
   const classes = useStyles({ showUnderline, showChevron });
   const [isOpen, setIsOpen] = useState(false);
@@ -360,6 +361,7 @@ const ReactSelectField = ({
             >
               <span class="colorText">
                 <MultSelectValues
+                  tooltipView={tooltipView}
                   value={value}
                   dropdownOptions={dropdownOptions}
                   onCustomKeyChange={onCustomKeyChange}
@@ -415,10 +417,77 @@ const ReactSelectField = ({
 
 export default ReactSelectField;
 
-const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleSelect }) => {
-  const palleteForSingleSelect = isSingleSelect ? colorPallete.find(
-    (pallete) => pallete.id === dropdownOptions.find(opt => opt.value === value)?.palleteId
-  ) : ''
+const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleSelect, tooltipView }) => {
+  let tooltipValues = value?.slice(1) || [];
+
+  const getCss = (value) => {
+    const opt = dropdownOptions.find((opt) => opt.value === value);
+    const pallete = colorPallete.find(
+      (pallete) => pallete.id === opt?.palleteId
+    );
+    return {
+      whiteSpace: "nowrap",
+      backgroundColor: pallete?.color,
+      color: pallete?.textColor,
+      display: "flex",
+      margin: '0px 2px'
+    }
+  }
+
+  const Badge = ({ badgeValue, index }) => <span
+    class="colorText"
+    style={getCss(badgeValue)}
+  >
+    <span>{badgeValue}</span>
+    {isSingleSelect || (
+      <CloseIcon
+        style={{ fontSize: 13, marginLeft: 10 }}
+        onClick={(e) => {
+          e.stopPropagation();
+          const newValue = copy(value)
+          newValue.splice(index, 1);
+          onCustomKeyChange(newValue);
+        }}
+      />
+    )}
+  </span>
+
+  const ToolTipView = () => <>
+    <Badge badgeValue={value[0]} index={0} />
+    {
+      value?.slice(1).length > 0 && <Tooltip
+        title={
+          <React.Fragment>
+            {tooltipValues.map((v) => <Typography color="inherit">{v}</Typography>)}
+          </React.Fragment>
+        }
+      >
+        <span
+          class="colorText"
+          style={{
+            borderRadius: '20px',
+            whiteSpace: "nowrap",
+            backgroundColor: '#c5c2c2',
+            color: 'black',
+            display: "flex",
+            padding: '5px 10px 5px 5px'
+          }}
+        >
+          +{tooltipValues.length}
+        </span>
+      </Tooltip>
+    }
+  </>
+
+  const MultiSelectView = () => <>
+    {
+      value.map((v, index) => {
+        return (
+          <Badge badgeValue={v} index={index} />
+        );
+      })
+    }
+  </>
   return (
     <span
       style={{
@@ -430,55 +499,17 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
     >
 
       {value && value.length > 0 && Array.isArray(value) ? (
-        value.map((v, index) => {
-          const opt = dropdownOptions.find((opt) => opt.value === v);
-          const pallete = colorPallete.find(
-            (pallete) => pallete.id === opt?.palleteId
-          );
-          return (
-            <span
-              class="colorText"
-              style={{
-                whiteSpace: "nowrap",
-                backgroundColor: pallete?.color,
-                color: pallete?.textColor,
-                display: "flex",
-                margin: '0px 2px'
-              }}
-            >
-              <span>{v}</span>
-              {isSingleSelect || (
-                <CloseIcon
-                  style={{ fontSize: 13, marginLeft: 10 }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const newValue = copy(value)
-                    newValue.splice(index, 1);
-
-                    onCustomKeyChange(newValue);
-                  }}
-                />
-              )}
-
-            </span>
-          );
-        })
+        <>
+          {tooltipView ? <ToolTipView /> : <MultiSelectView />}
+        </>
       ) : (
         <>
           {value && typeof value === 'string' ? (
             <span
               class="colorText"
-              style={{
-                whiteSpace: "nowrap",
-                backgroundColor: palleteForSingleSelect?.color,
-                color: palleteForSingleSelect?.textColor,
-                display: "flex",
-                margin: '0px 2px'
-              }}
+              style={getCss(value)}
             >
               <span>{value}</span>
-
-
             </span>
           ) : (<span class="colorText">--</span>)}
         </>
