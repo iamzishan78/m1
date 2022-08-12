@@ -2168,30 +2168,30 @@ function SubTable(props) {
 
 
 
-                                  <p
-                                    style={{
-                                      display: "flex",
-                                      cursor: "pointer",
-                                      minWidth: "120px",
-                                      borderRadius: "7px",
-                                      color: "#17aadd",
-                                      wordBreak: "break-word",
-                                      "&:hover": {
-                                        textDecoration: "underline",
-                                      },
-                                      fontWeight: "bold",
-                                      justifyContent: "flex-start",
-                                      paddingRight: '40px',
-                                    }}>
+                              <p
+                                style={{
+                                  display: "flex",
+                                  cursor: "pointer",
+                                  minWidth: "120px",
+                                  borderRadius: "7px",
+                                  color: "#17aadd",
+                                  wordBreak: "break-word",
+                                  "&:hover": {
+                                    textDecoration: "underline",
+                                  },
+                                  fontWeight: "bold",
+                                  justifyContent: "flex-start",
+                                  paddingRight: '40px',
+                                }}>
 
-                                      <Typography
-                                        noWrap
-                                        color="inherit"
-                                        >
-                                      {value}
-                                      </Typography>
+                                <Typography
+                                  noWrap
+                                  color="inherit"
+                                >
+                                  {value}
+                                </Typography>
 
-                                      </p>
+                              </p>
 
                             </div>
                           </Grid>
@@ -2512,6 +2512,7 @@ function SubTable(props) {
                     return (
                       <div className={classes.gridElementStyling}>
                         <ReactSelectField
+                          tooltipView={true}
                           isSingleSelect={column.type !== "multiselect"}
                           dropdownOptions={column.dropdownOptions}
                           index={tableMeta.rowIndex}
