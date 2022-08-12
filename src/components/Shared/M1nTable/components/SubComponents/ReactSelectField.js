@@ -327,7 +327,7 @@ const ReactSelectField = ({
     if (candidate.value === "editOption") {
       return true;
     }
-    return candidate.value.toLowerCase().includes(input)
+    return candidate.value.toLowerCase().includes(input?.toLowerCase())
   };
   return (
     <>
