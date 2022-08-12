@@ -172,7 +172,7 @@ function Datasets({ layerMap, headerButton }) {
                     </Grid>
                     <Grid item className='actionIcons'>
                       <GridOnIcon className='actionIcon' />
-                      <MoreVertIcon className='actionIcon' />
+                      {/* <MoreVertIcon className='actionIcon' /> */}
                     </Grid>
                   </Grid>
                 </Grid>
