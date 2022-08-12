@@ -72,6 +72,7 @@ const ReactSelectField = ({
 }) => {
   const classes = useStyles({ showUnderline, showChevron });
   const [isOpen, setIsOpen] = useState(false);
+  const [_, setMenuEnter] = useState(false);
   const [showIcon, setShowIcon] = useState(showChevron);
 
   const [options, setOptions] = useState([]);
@@ -260,7 +261,7 @@ const ReactSelectField = ({
   const Dropdown = ({ children, isOpen, target, onClose }) => (
     <div css={{ position: 'relative' }}>
       {target}
-      {isOpen ? <Menu>{children}</Menu> : null}
+      {isOpen ? <Menu onMouseEnter={(e) => { setMenuEnter(true) }} onMouseLeave={(e) => { setTimeout(() => { setMenuEnter(false) }, 300) }}>{children}</Menu> : null}
       {isOpen ? <Blanket onClick={onClose} /> : null}
     </div>
   );
@@ -340,7 +341,10 @@ const ReactSelectField = ({
           border: variant === 'outlined' ? "1px solid rgba(0, 0, 0, 0.42)" : "none",
           borderBottom: fullWidth ? "1px solid rgba(0, 0, 0, 0.42)" : "none",
         }}
-        onMouseLeave={(e) => { setIsOpen(false); setShowIcon(showChevron || false) }}
+        onMouseLeave={(e) => {
+          setMenuEnter((menuEnter) => { if (!menuEnter) setIsOpen(false); return menuEnter })
+          setShowIcon(showChevron || false)
+        }}
         onMouseEnter={(e) => { setShowIcon(true) }}
         onClick={(e) => e.stopPropagation()}
       >
