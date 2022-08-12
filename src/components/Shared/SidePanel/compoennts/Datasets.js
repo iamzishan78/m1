@@ -177,7 +177,7 @@ function Datasets({ layerMap, headerButton }) {
                   </Grid>
                 </Grid>
                 <Grid item md={12}>
-                  <Typography variant="body2" gutterBottom style={{ color: '#3b4663', paddingLeft: '10px' }}>{rest.categoryCount} categories</Typography>
+                  <Typography variant="body2" gutterBottom style={{ color: 'lightgray', paddingLeft: '25px' }}>{rest.categoryCount} categories</Typography>
                 </Grid>
               </Grid>
             </Box>
