@@ -10,6 +10,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import FileDatasetIcon from "../../svgIcons/FileDatasetIcon";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
+import AddData from "@material-ui/icons/NoteAddOutlined";
 
 import { copy, deepEqualObjects } from "../../functions";
 
@@ -145,7 +146,7 @@ function Datasets({ layerMap, headerButton }) {
   return (
     <>
       <StyledMenuSecondaryHeaderItem>
-        <ListItemText primary={'Datasets'} />
+        <ListItemText primary={'Data Sources'} />
         {headerButton && (
           <StyledListItemSecondaryAction>
             <Button onClick={() => headerButton.fn('manageSource')} color="secondary" variant="outlined" startIcon={headerButton.icon}>
