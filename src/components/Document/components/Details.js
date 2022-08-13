@@ -429,7 +429,17 @@ export default function DocumentDetails(props) {
               fullWidth
               value={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
               onChange={(event) => {
-                setNewDocument({ ...newDocument, dateTime: event ? String(event?.target?.value) : null })
+                const splittedDate = event?.target?.value.split("-")
+                if (splittedDate.length === 3) {
+                  const newDate = new Date()
+                  newDate.setYear(splittedDate[0])
+                  newDate.setMonth(Number(splittedDate[1]) - 1)
+                  newDate.setDate(splittedDate[2])
+                  setNewDocument({ ...newDocument, dateTime: newDate })
+                } else {
+                  setNewDocument({ ...newDocument, dateTime: null })
+                }
+
               }}
 
               InputLabelProps={{
