@@ -388,6 +388,9 @@ export default function Navigation(props) {
     return location.pathname === "/landmanagement/agreements";
   };
 
+  // console.log("matchActivities", matchActivities);
+  // console.log("stateApp", stateApp);
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -447,7 +450,7 @@ export default function Navigation(props) {
                 </Typography>
               )}
               {location.pathname.startsWith("/land") && (
-                <LandAppBar classes={classes} />
+                <LandAppBar classes={classes} user={stateApp.user} />
               )}
               {location.pathname.startsWith("/revenue") && (
                 <RevenueAppBar classes={classes} />

@@ -1,5 +1,64 @@
-import { history } from "store";
 import GlobalSettings from "..//..//..//GlobalSettings.js";
+import WellIcon from '../../../components/Shared/svgIcons/well.js';
+import { ErrorOutline } from "@material-ui/icons";
+import React from 'react';
+import { useHistory } from "react-router-dom";
+
+const styles = {
+  width: "fit-content",
+  fontWeight: 600,
+  color: "#17aadd",
+  cursor: "pointer",
+};
+
+const ComponentPropertyName = ({ value, tableMeta }) => {
+  const history = useHistory();
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    // style={{borderRight: 'solid red'}}
+    >
+      <p
+        onClick={(e) => {
+          e.stopPropagation();
+          history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
+        }}
+        style={styles}
+      >
+        {/* {splitNumber?.[0]} */}
+        {value?.split("_")?.[0]
+          ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[2]}`
+          : tableMeta?.rowData[2]}
+
+      </p>
+      {/* <Button/> */}
+      {
+        !(tableMeta?.rowData[5] && tableMeta?.rowData[6]) &&
+        <div style={{ marginLeft: "15px", cursor: 'pointer' }} onClick={(e) => {
+          e.stopPropagation();
+          history.push(`/revenue/property/details/${tableMeta.rowData[0]}`, { focusOnWellSearch: true });
+        }}>
+          <WellIcon size={"18"} opacity={"1"} color="gray" />
+          <ErrorOutline style={{
+            width: "17px",
+            height: "17px",
+            color:"gray"
+          }} 
+          />
+        </div>
+      }
+    </div>
+  );
+}
+
+// sort: true,
+// filter: true,
+// stickyColumn: true,
+// viewColumns: false,
+// display: true,
 
 const RevenuePropertiesHeadCells = [
   {
@@ -39,54 +98,18 @@ const RevenuePropertiesHeadCells = [
       //   }
       // }),
 
-      
-      customRender: (value, tableMeta) => {
-        const splitNumber = value?.split("_");
-        const styles = {
-          minWidth: 225,
-          fontWeight: 600,
-          color: "#17aadd",
-          cursor: "pointer",
-        };
-        return (
-          <div
-            // style={{borderRight: 'solid red'}}
-          >
-          <p
-            onClick={(e) => {
-              e.stopPropagation();
-              history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
-            }}
-            style={styles}
-          >
-            {/* {splitNumber?.[0]} */}
-            {splitNumber?.[0]
-              ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
-              : tableMeta?.rowData[2]}
 
-            </p>
-            {/* <Button/> */}
-            </div>
-            
-
-
-        );
-      },
-
-      // sort: true,
-      // filter: true,
-      // stickyColumn: true,
-      // viewColumns: false,
-      // display: true,
-
+      customRender: (value, tableMeta) => <ComponentPropertyName value={value} tableMeta={tableMeta} />,
     },
   },
   {
     name: "name",
     label: "Property Name",
     esKey: "name.keyword",
-    options: { sort: true, filter: true, 
-      display: false },
+    options: {
+      sort: true, filter: true,
+      display: false
+    },
     // options: {
     //   ...GlobalSettings.muiGridStandardOptions,
     //   display: false,
@@ -97,8 +120,10 @@ const RevenuePropertiesHeadCells = [
     name: "state",
     label: "State",
     esKey: "state.keyword",
-    options: { sort: true, 
-      filter: true },
+    options: {
+      sort: true,
+      filter: true
+    },
     // options: {
     //   ...GlobalSettings.muiGridStandardOptions,
     // }
@@ -209,12 +234,12 @@ const RevenuePropertiesHeadCells = [
 
   {
     name: "internalID",
-    label: "Internal ID #",
+    label: "Internal Prop #",
     esKey: "internalID.keyword",
     options: {
       customHeadLabelRender: () => (
         <>
-          <div style={{ minWidth: 100 }}>Internal ID #</div>
+          <div style={{ minWidth: 100 }}>Internal Prop #</div>
         </>
       ),
       sort: true,

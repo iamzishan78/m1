@@ -240,7 +240,7 @@ function MapGridCard(props) {
   const [dockMenu, SetDockMenu] = useState("bottom");
   const [trackedTapValue, TrackedTapValue] = useState(0);
 
-  // selectorsW
+  // selectors
   const { mapGridCardActivated, mapGridCardActiveTap, selectedOwner } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
   const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
   const userGridViewFilters = useSelector(({ session }) => session.userGridViewSettings?.filters);

@@ -1,0 +1,82 @@
+import React, { useEffect, useContext } from "react";
+import { Container } from "@material-ui/core";
+import debounce from "lodash/debounce";
+
+// context
+import { AppContext } from "AppContext";
+import TableESHOC from "components/Table/TableESHOC";
+import Table from "components/Shared/M1nTable/components/Table";
+
+// QUERIES
+import { deepEqualObjects, copy } from "components/Shared/functions";
+
+// Header Schemas
+import TableHeader from "components/Table/constants/my-wells-grid-header-schema";
+
+// Utilities
+import { usetableStyles } from "../Styles";
+
+function MyWellsGridTable(props) {
+  const classes = usetableStyles();
+  const [stateApp] = useContext(AppContext);
+
+  const setTableMeta = React.useMemo(
+    () =>
+      debounce((request, top, callback) => {
+        props.setTableMeta(request);
+      }, 500),
+    []
+  );
+
+  const formatHits = (hits) => {
+    hits = hits.map((hit) => {
+      hit = { ...hit.wellData }
+      return hit;
+    });
+    return hits;
+  };
+
+  useEffect(() => {
+    setTableMeta({
+      extendSearchQuery: stateApp.landSearchQuery,
+      searchFields: ["*"],
+      TableHeader: copy(TableHeader),
+      esIndex: "mywells_flat",
+      startPaginationAt: 25,
+      defaultSort: { field: 'lastUpdateAt', order: 'desc' },
+      formatHits,
+    });
+    // eslint-disable-next-line
+  }, [stateApp.landSearchQuery]);
+
+  return (
+    <Container
+      maxWidth={false}
+      className={classes.container}
+      id={props.id ? props.id : props.parent}
+    >
+      <Table
+        style={{ backgroundColor: "#fff" }}
+        header={props.header}
+        columns={props.columns}
+        rows={props.rows}
+        total={false}
+        loading={props.loading}
+        targetLabel={props.targetLabel}
+        uploadIcon={null}
+        dense={props.dense ? props.dense : undefined}
+        orderByTracks={false}
+        startPaginationAt={null}
+        onTableChange={props.onTableChange}
+        options={{
+          ...props.options,
+          ...props.customOptions,
+        }}
+        parent={props.parent}
+        setColumnsBase={[]}
+      />
+    </Container>
+  );
+}
+
+export default React.memo(TableESHOC(MyWellsGridTable), deepEqualObjects);
