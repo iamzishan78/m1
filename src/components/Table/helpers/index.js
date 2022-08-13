@@ -115,14 +115,15 @@ export const setColumnsData = (
     const tableCol = TableHeader.find((el) => el.name === column.name)
     if (column?.options?.filter) {
       const custom = column.custom;
+      const multiple = column.type === 'multiselect' ? true : !!column?.options?.multiple
       column.options = {
         ...tableCol.options,
         ...column.options,
         filter: true,
         filterType: "custom",
-        filterList: filters[index],
+        filterList: undefined,
         customFilterListOptions: {
-          render: v => v.map(l => l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l),
+          render: v => v?.map(l => l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l),
         },
         filterOptions: {
           display: (filterList, onChange, index, column) => {
@@ -131,6 +132,7 @@ export const setColumnsData = (
             )?.esKey;
             return (
               <AutoCompleteFilter
+                multiple={multiple}
                 esIndex={esIndex}
                 setFilters={setFilters}
                 filterList={filterList}
@@ -176,16 +178,13 @@ export const handleSelectedGridChange = (
     columns.forEach((column, index) => {
       setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
       if (isGridChanged) {
-        const value = get(
-          selectedGridView?.filters?.find((filter) => {
-            return JSON.stringify(filter.field) === JSON.stringify(column.esKey);
-          }),
-          "value",
-          ""
-        );
+        const value = selectedGridView?.filters?.filter((filter) => {
+          return JSON.stringify(filter.field) === JSON.stringify(column.esKey);
+        })?.map(filter => filter.value) || [];
+
         let filterList = Array.isArray(column.esKey) ? undefined : [];
-        if (value && typeof value !== "object") {
-          filterList = [value];
+        if (value) {
+          filterList = value;
         }
         if (column?.options?.filter) {
           column.options.filterList = filterList;
