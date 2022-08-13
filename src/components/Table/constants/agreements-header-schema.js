@@ -221,6 +221,16 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     },
   },
   {
+    name: "agreementTerm",
+    label: "Term",
+    esKey: "shapeJson.properties.agreementTerm.keyword",
+    options: {
+      dbName: " shapeJson.properties.agreementTerm",
+      sort: true,
+      filter: true,
+    },
+  },
+  {
     name: "expirationDate",
     label: "Exp Date",
     esKey: "shapeJson.properties.expirationDate.keyword",
@@ -260,7 +270,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
   },
   {
     name: "reportGrossAcres",
-    label: "Report GRS",
+    label: "Report Gross",
     esKey: "shapeJson.properties.reportGrossAcres.keyword",
     options: {
       setCellProps: () => ({ style: { minWidth: "175px" } }),
@@ -271,7 +281,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
   },
   {
     name: "grossAcres",
-    label: "GRS",
+    label: "Gross",
     esKey: "shapeJson.properties.grossAcres.keyword",
     options: {
       dbName: "shapeJson.properties.grossAcres",
@@ -281,7 +291,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
   },
   {
     name: "netAcres",
-    label: "NET",
+    label: "Net",
     esKey: "shapeJson.properties.netAcres.keyword",
     options: {
       dbName: "shapeJson.properties.netAcres",
@@ -289,14 +299,22 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       filter: true,
     },
   },
-
   {
-    name: "State",
-    label: "State",
-    esKey: "shapeJson.properties.originalProperties.State.keyword",
+    name: "companyNetAcres",
+    label: "Company Net",
+    esKey: "shapeJson.properties.companyNetAcres.keyword",
     options: {
-      setCellProps: () => ({ style: { maxWidth: "50px" } }),
-      dbName: "shapeJson.properties.originalProperties.State",
+      dbName: "shapeJson.properties.companyNetAcres",
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "netRoyalty",
+    label: "NRA",
+    esKey: "shapeJson.properties.netRoyalty.keyword",
+    options: {
+      dbName: "shapeJson.properties.netRoyalty",
       sort: true,
       filter: true,
     },
@@ -311,26 +329,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       filter: true,
     },
   },
-  {
-    name: "internalCompany",
-    label: "Internal Company ",
-    esKey: "shapeJson.properties.internalCompany.keyword",
-    options: {
-      dbName: "shapeJson.properties.internalCompany ",
-      sort: true,
-      filter: true,
-    },
-  },
-  {
-    name: "legaldescription",
-    label: "Legal Description ",
-    esKey: "shapeJson.properties.legalDesctiption.keyword",
-    options: {
-      dbName: "shapeJson.properties.legalDesctiption",
-      sort: true,
-      filter: true,
-    },
-  },
+
   {
     name: "prospectID",
     label: "Prospect",
@@ -342,25 +341,48 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     },
   },
   {
-    name: "agreementTerm",
-    label: "Term",
-    esKey: "shapeJson.properties.agreementTerm.keyword",
+    name: "internalCompany",
+    label: "Internal Company ",
+    esKey: "shapeJson.properties.internalCompany.keyword",
     options: {
-      dbName: " shapeJson.properties.agreementTerm",
+      dbName: "shapeJson.properties.internalCompany ",
       sort: true,
       filter: true,
     },
   },
-  {
-    name: "County",
-    label: "County",
-    esKey: "shapeJson.properties.originalProperties.County.keyword",
-    options: {
-      dbName: "shapeJson.properties.originalProperties.County",
-      sort: true,
-      filter: true,
-    },
-  },
+
+  //hide for now until we determine if this is the best way to derive it kc 20220813
+  // {
+  //   name: "State",
+  //   label: "State",
+  //   esKey: "shapeJson.properties.originalProperties.State.keyword",
+  //   options: {
+  //     setCellProps: () => ({ style: { maxWidth: "50px" } }),
+  //     dbName: "shapeJson.properties.originalProperties.State",
+  //     sort: true,
+  //     filter: true,
+  //   },
+  // },
+  // {
+  //   name: "County",
+  //   label: "County",
+  //   esKey: "shapeJson.properties.originalProperties.County.keyword",
+  //   options: {
+  //     dbName: "shapeJson.properties.originalProperties.County",
+  //     sort: true,
+  //     filter: true,
+  //   },
+  // },
+  // {
+  //   name: "legaldescription",
+  //   label: "Legal Description ",
+  //   esKey: "shapeJson.properties.legalDesctiption.keyword",
+  //   options: {
+  //     dbName: "shapeJson.properties.legalDesctiption",
+  //     sort: true,
+  //     filter: true,
+  //   },
+  // },
   {
     name: "layer",
     label: "Layer",
