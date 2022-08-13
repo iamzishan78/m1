@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { useHistory } from "react-router-dom";
 import {
   InputAdornment,
   TextField,
@@ -6,6 +7,7 @@ import {
   Tooltip,
   Grid,
   Typography,
+  Button
 } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
@@ -14,6 +16,7 @@ import { useSelector } from "react-redux";
 
 import { AppContext } from "AppContext";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
+import { Add } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   search: {
@@ -65,6 +68,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ContactSearch = () => {
   const classes = useStyles();
+  const history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [search, setSearch] = useState(stateApp.contactSearchQuery);
   const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
@@ -122,7 +126,7 @@ const ContactSearch = () => {
               className={classes.contactSearchField}
               margin="dense"
               variant="outlined"
-              placeholder={`Search for ${activeModule.title ? 'lead, contact or prospect' : 'contact'}`}
+              placeholder={activeModule.title === 'Campaigns' ? 'Search by campaign name or attribute' : `Search for ${activeModule.title ? 'lead, contact or prospect' : 'contact'}`}
               InputProps={{
                 startAdornment: (
                   <InputAdornment>
@@ -159,12 +163,21 @@ const ContactSearch = () => {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item>
-        <div
-          className={classes.filterTabs}
-          style={{ paddingRight: "10px" }}
-        ></div>
-      </Grid>
+      {activeModule.title === 'Campaigns' && (
+        <Grid item md={4}>
+          <div className={classes.filterTabs} style={{ float: 'right' }}>
+            <Button
+              color="primary"
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => {
+                history.push("/contacts/campaign/details/new");
+              }} >
+              Add CAMPAIGN
+            </Button>
+          </div>
+        </Grid>)
+      }
     </Grid>
   );
 };

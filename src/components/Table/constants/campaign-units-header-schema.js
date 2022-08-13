@@ -1,3 +1,6 @@
+import GlobalSettings from "GlobalSettings";
+import vf_number from "components/Shared/valueformatters/vf_number";
+
 const unitsColumnHeaders = [
   {
     name: "id",
@@ -28,28 +31,20 @@ const unitsColumnHeaders = [
     label: "Unit Name",
     esKey: "name.keyword",
     options: {
+      ...GlobalSettings.muiGridControlOptions,
       sort: true,
       filter: true,
-      setCellProps: () => ({ style: { minWidth: "250px" } }),
-      // setCellProps: () => ({
-      //   style: {
-      //     minWidth: "150px",
-      //     whiteSpace: "nowrap",
-      //     position: "sticky",
-      //     left: "77px",
-      //     background: "white",
-      //     zIndex: 200,
-      //     boxShadow: 'inset -1px 0px 0px 0px lightgrey',
-      //   }
-      // }),
-      // setCellHeaderProps: () => ({
-      //   style: {
-      //     position: "sticky",
-      //     minWidth: "150px",
-      //     left: "77px",
-      //     zIndex: 201
-      //   }
-      // }),
+      customRender: (value, tableMeta) => {
+        return (
+          <a
+            href={`/map/units/${tableMeta.rowData[0]}?tenant=${window.sessionStorage.getItem("tenantName")}`}
+            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer", textDecoration: "initial" }}
+            rel="noreferrer"
+          >
+            {value}
+          </a>
+        );
+      },
     },
     style: { minWidth: 185 },
   },
@@ -155,6 +150,9 @@ const unitsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
+      customRender: value => (
+        <p>{value ? `$${vf_number(value)}` : ""}</p>
+      )
     },
   },
   {
@@ -172,11 +170,7 @@ const unitsColumnHeaders = [
     esKey: "shapeJson.properties.campaignName.keyword",
     options: {
       customRender: (value) => {
-        if (typeof value === "string") {
-          return value;
-        } else {
-          return value?.map((v, index) => `${v}${index < value?.length - 1 ? "," : ""}`);
-        }
+        return typeof value !== "string" ? value.join(", ") : value;
       },
       setCellProps: () => ({ style: { minWidth: "200px" } }),
       sort: true,
@@ -237,18 +231,6 @@ const unitsColumnHeaders = [
       filter: false,
       searchable: false,
       sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-  {
-    name: "coordinates",
-    label: " ",
-    options: {
-      filter: false,
-      sort: false,
-      searchable: false,
       download: false,
       print: false,
       viewColumns: false,

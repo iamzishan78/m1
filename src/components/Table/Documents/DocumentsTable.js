@@ -30,7 +30,6 @@ import { AppContext } from "AppContext";
 import { sortColumns, formattingGridView, getAppliedFilters, getFilterList } from "utils/helper";
 
 import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
-import { groupBy } from "lodash";
 
 const useStyles = makeStyles((theme) => ({
   container: {

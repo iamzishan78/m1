@@ -3,9 +3,7 @@ import WarningIcon from "@material-ui/icons/Warning";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import MapFilledIcon from "components/Shared/svgIcons/MapFilled";
 import { history } from "store";
-import GlobalSettings from "..//..//..//GlobalSettings.js";
-
-
+import GlobalSettings from "GlobalSettings";
 
 const AgreementsHeadCells = (isSnapGrid = false) => [
   {
@@ -37,7 +35,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
   //     }),
   //   },
   //   dbName: "shapeJson.properties.agreementNumber",
-  //   stickyColumn: true,    
+  //   stickyColumn: true,
   //   sort: true,
   //   filter: true,
   //   viewColumns: false,
@@ -45,7 +43,6 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
   //   // sortThirdClickReset: true,
   // },
   {
-
     // this column is considered the grid "control"
 
     name: "agreementNumber",
@@ -76,14 +73,8 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
           <p
             onClick={(e) => {
               e.stopPropagation();
-              if (isSnapGrid)
-                history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
-                  { showAgreementBreadcrumb: false }
-                );
-              else
-                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
-                  { showAgreementBreadcrumb: true }
-                );
+              if (isSnapGrid) history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`, { showAgreementBreadcrumb: false });
+              else history.push(`/land/agreement/details/${tableMeta.rowData[0]}`, { showAgreementBreadcrumb: true });
             }}
             style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
           >
@@ -91,7 +82,6 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
           </p>
         );
       },
-
     },
   },
   // //temp hide until we decide how we want this to work
@@ -425,12 +415,9 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
           <IconButton
             size="medium"
             color="primary"
-            style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
+            style={{ backgroundColor: "#efefef", width: "45px", height: "45px" }}
             onClick={(e) => {
-              history.push(
-                `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
-                { showAgreementBreadcrumb: true }
-              );
+              history.push(`/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`, { showAgreementBreadcrumb: true });
               e.stopPropagation();
             }}
           >
@@ -463,8 +450,8 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       },
     },
     custom: {
-      filterLabel: 'Approval Status'
-    }
+      filterLabel: "Approval Status",
+    },
   },
 ];
 
