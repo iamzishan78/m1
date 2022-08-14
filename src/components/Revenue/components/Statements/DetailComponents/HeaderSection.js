@@ -147,6 +147,9 @@ function HeaderFunction(props) {
   };
 
   const isEqualCheckAmount = (checkAmount) => {
+    if(isNaN(elasticData?.getESAggsList?.aggregations?.totalNetOwnerValue?.value) || isNaN(checkAmount))
+      return true
+
     const totalSum = formatter.format(
       elasticData?.getESAggsList?.aggregations?.totalNetOwnerValue?.value || 0
     );
