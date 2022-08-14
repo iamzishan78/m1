@@ -23,6 +23,7 @@ import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import moment from "moment";
+import DOMPurify from "dompurify";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -96,6 +97,14 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+function urlify(text) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+  return text.replace(urlRegex, function(url) {
+    return '<a href="' + url + '">' + url + '</a>';
+  })
+}
+
 export const CommonCommentText = ({ eachComment, users }) => {
   const classes = useStyles();
   let formatComment = eachComment.comment.split(" ")
@@ -125,7 +134,13 @@ export const CommonCommentText = ({ eachComment, users }) => {
 
           return <span>{splittedWord}</span>;
         } else {
-          return <span>{word} </span>;
+          const sanitizedData = () => ({
+            __html: DOMPurify.sanitize(urlify(word)),
+          });
+          return (
+            <span dangerouslySetInnerHTML={sanitizedData()}>
+            </span>
+          );
         }
       })}
     </div >
