@@ -11,7 +11,6 @@ import {
 } from "@material-ui/core";
 import { Clear, ErrorOutline } from "@material-ui/icons";
 import moment from "moment";
-import { KeyboardDatePicker } from "@material-ui/pickers";
 import debounce from "lodash/debounce";
 
 import { Controller, useForm } from "react-hook-form";
@@ -22,6 +21,12 @@ import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import { showInfoMessage } from "actions";
 import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
+
+const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+});
+
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -140,6 +145,16 @@ function HeaderFunction(props) {
       setCheck(check);
     }
   };
+
+  const isEqualCheckAmount = (checkAmount) => {
+    const totalSum = formatter.format(
+      elasticData?.getESAggsList?.aggregations?.totalNetOwnerValue?.value || 0
+    );
+    const fCheckAmount = formatter.format(checkAmount || 0);
+
+    return totalSum === fCheckAmount
+  }
+
 
   return (
     <div className={classes.root}>
@@ -418,13 +433,11 @@ function HeaderFunction(props) {
                         <InputAdornment position="start"> $</InputAdornment>
                       ),
                       endAdornment:
-                        elasticData?.getESAggList?.aggregations
-                          ?.totalNetOwnerValue?.value !== params.value? (
+                        !isEqualCheckAmount(params.value) ? (
                           <Tooltip title="Sum of line items not equal to check amount">
                             <ErrorOutline style={{ color: "red" }} />
-                          </Tooltip >
-                        ) :
-                        null,
+                          </Tooltip>
+                        ) : null,
                     }}
                     value={params.value || ""}
                     onBlur={() => handleCheckAmount()}
