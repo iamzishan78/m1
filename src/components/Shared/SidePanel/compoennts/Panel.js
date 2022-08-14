@@ -60,7 +60,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   const [totalFilterCount, setTotalFilterCount] = useState(null);
   const [totalHitMapCount, setTotalHitMapCount] = useState(null);
   const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
-  
+
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -72,11 +72,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   const [tab, setTab] = useState(0);
 
   useEffect(() => {
-    setTotalFilterCount(stateNav.totalFilterCount)
+    setTotalFilterCount(stateNav.totalFilterCount);
   }, [stateNav]);
 
-  useEffect(()=> {
-    setTotalHitMapCount(stateApp.checkedHeats.length)
+  useEffect(() => {
+    setTotalHitMapCount(stateApp.checkedHeats.length);
   }, [stateApp]);
 
   useEffect(() => {
@@ -360,10 +360,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
                         onClick={() => setStateMapControls((stateMapControls) => ({ ...stateMapControls, selectedControl: action.action }))}
                       />
                     ))}
-                    {totalHitMapCount != 0 && <Chip color="info" label={totalHitMapCount} className={classes.totalHitMap} />}
-                    {totalFilterCount != 0 &&
-                      <Chip color="info" label={totalFilterCount} className={classes.totalFilter}/>
-                    }
+                    {totalHitMapCount !== 0 && <Chip color="info" label={totalHitMapCount} className={classes.totalHitMap} />}
+                    {totalFilterCount !== 0 && <Chip color="info" label={totalFilterCount} className={classes.totalFilter} />}
                   </Tabs>
                 </Grid>
               )}
