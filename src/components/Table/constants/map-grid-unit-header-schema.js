@@ -1,3 +1,5 @@
+import vf_currency from "components/Shared/valueformatters/vf_currency";
+
 const unitsColumnHeaders = [
   {
     name: "id",
@@ -155,6 +157,12 @@ const unitsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
+      customRender: (value, tableMeta) => {
+        return (<>
+          {vf_currency(value)}
+        </>
+        );
+      },
     },
   },
   {

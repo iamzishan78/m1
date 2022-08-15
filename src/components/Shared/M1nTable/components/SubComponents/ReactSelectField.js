@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { colorPallete } from "components/Table/helpers";
 import CloseIcon from "@material-ui/icons/Close";
 import ArrowDropDownIcon from "@material-ui/lab/es/internal/svg-icons/ArrowDropDown";
@@ -72,6 +72,7 @@ const ReactSelectField = ({
 }) => {
   const classes = useStyles({ showUnderline, showChevron });
   const [isOpen, setIsOpen] = useState(false);
+  const wrapperRef = useRef(null);
   const [showIcon, setShowIcon] = useState(showChevron);
 
   const [options, setOptions] = useState([]);
@@ -83,6 +84,18 @@ const ReactSelectField = ({
   };
 
   const { colors } = defaultTheme;
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [wrapperRef]);
 
   useEffect(() => {
     onFilterChange("");
@@ -260,7 +273,7 @@ const ReactSelectField = ({
   const Dropdown = ({ children, isOpen, target, onClose }) => (
     <div css={{ position: 'relative' }}>
       {target}
-      {isOpen ? <Menu>{children}</Menu> : null}
+      {isOpen ? <Menu >{children}</Menu> : null}
       {isOpen ? <Blanket onClick={onClose} /> : null}
     </div>
   );
@@ -327,11 +340,12 @@ const ReactSelectField = ({
     if (candidate.value === "editOption") {
       return true;
     }
-    return candidate.value.toLowerCase().includes(input)
+    return candidate.value.toLowerCase().includes(input?.toLowerCase())
   };
   return (
     <>
       <div
+        ref={wrapperRef}
         className={classes.root}
         style={{
           padding: "0px",
@@ -340,7 +354,10 @@ const ReactSelectField = ({
           border: variant === 'outlined' ? "1px solid rgba(0, 0, 0, 0.42)" : "none",
           borderBottom: fullWidth ? "1px solid rgba(0, 0, 0, 0.42)" : "none",
         }}
-        onMouseLeave={(e) => { setIsOpen(false); setShowIcon(showChevron || false) }}
+        onMouseLeave={(e) => {
+          // setIsOpen(false);
+          setShowIcon(showChevron || false)
+        }}
         onMouseEnter={(e) => { setShowIcon(true) }}
         onClick={(e) => e.stopPropagation()}
       >

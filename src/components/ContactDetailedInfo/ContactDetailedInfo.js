@@ -131,9 +131,10 @@ const useStyles = makeStyles((theme) => ({
   },
   dataSect: {
     borderTop: "2px solid #C9C9C9",
-    // margin: "23px 28px",
     color: "#757575",
     width: "100%",
+    overflow: "overlay",
+    maxHeight: "45.25vh",
     "& p": {
       wordWrap: "break-word",
     },
