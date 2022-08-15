@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Container } from "@material-ui/core";
 import { useSelector } from "react-redux";
 
@@ -20,6 +20,8 @@ import { usetableStyles } from "../Styles";
 function MapGridLayersTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
+
+  const [tableHeaders, setTableHeaders] = useState([])
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
   );
@@ -49,11 +51,20 @@ function MapGridLayersTable(props) {
       ...predefinedCols,
       ...Object.keys(hits[0]).map((column) => ({
         name: column.replace(/ /g, '_').replace(/\(/g, '').trim(), label: column,
-        options: { customRender: (value) => { return <div>{value}</div>; } }
+        esKey: isNaN(hits[0][column]) ? `properties.${column}.keyword` : `properties.${column}`,
+        options: { filter: true, customRender: (value) => { return <div>{value}</div>; } }
       }))
     ]
 
     headers = uniqBy(headers, 'name');
+    setTableHeaders((tableHeaders) => {
+      if (tableHeaders.length === 0)
+        props.setTableMeta((tableMeta) => {
+          tableMeta.TableHeader = headers;
+          return { ...tableMeta }
+        })
+      return tableHeaders.length === 0 ? headers : tableHeaders
+    })
     return headers
   };
 
