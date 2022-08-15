@@ -5,6 +5,7 @@ import { Typography } from "@material-ui/core";
 import ListItemText from "@material-ui/core/ListItemText";
 import Button from "@material-ui/core/Button";
 import DatabaseIcon from "components/Shared/svgIcons/DatabaseIcon";
+import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import GridOnIcon from "@material-ui/icons/GridOn";
 import FileDatasetIcon from "components/Shared/svgIcons/FileDatasetIcon";
 import Box from "@material-ui/core/Box";
@@ -199,10 +200,10 @@ function Datasets({ layerMap, headerButton }) {
     return (
         <>
             <StyledMenuSecondaryHeaderItem>
-                <ListItemText primary={'Datasets'} />
+                <ListItemText primary={'Data Sources'} />
                 {headerButton && (
                     <StyledListItemSecondaryAction>
-                        <Button onClick={() => headerButton.fn('manageSource')} color="secondary" variant="outlined" startIcon={headerButton.icon}>
+                        <Button onClick={() => headerButton.fn('manageSource')} color="secondary" variant="outlined" startIcon={<NoteAddIcon />}>
                             Add Data
                         </Button>
                     </StyledListItemSecondaryAction>
@@ -234,7 +235,7 @@ function Datasets({ layerMap, headerButton }) {
                                     </Grid>
                                 </Grid>
                                 <Grid item md={12}>
-                                    <Typography variant="body2" gutterBottom style={{ color: '#3b4663', paddingLeft: '10px' }}>{rest.categoryCount} categories</Typography>
+                                    <Typography variant="body2" gutterBottom style={{ color: 'lightgray', paddingLeft: '25px' }}>{rest.categoryCount} categories</Typography>
                                 </Grid>
                             </Grid>
                         </Box>

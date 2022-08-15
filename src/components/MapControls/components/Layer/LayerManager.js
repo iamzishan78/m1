@@ -94,7 +94,7 @@ function LayerManager(props) {
       <div style={{ width: '100%' }}>
         <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "15px" }}>
           <Grid item>
-            <Typography variant="h5">Layer Manager</Typography>
+            <Typography variant="h5">Create New Map Layer</Typography>
           </Grid>
           <Grid item>
             <IconButton size="small" onClick={handleClose}>
@@ -108,7 +108,7 @@ function LayerManager(props) {
             <Grid item xs={12}>
               <FormControl fullWidth>
                 <InputLabel className={classes.label}>
-                  Select Source
+                  Select Data Source
                 </InputLabel>
                 <Select onChange={(evt) => setSource(evt.target.value)}>
                   {datasets.map((dataset) => <MenuItem value={dataset.name}>{dataset.name}</MenuItem>)}
@@ -126,7 +126,7 @@ function LayerManager(props) {
               </FormControl>
             </Grid>
             <Grid item xs={12}>
-              <TextField margin="dense" id="layerName" label="Layer Name" fullWidth onChange={(e) => setLayerName(e.target.value)} />
+              <TextField margin="dense" id="layerName" label="Enter Layer Name" fullWidth onChange={(e) => setLayerName(e.target.value)} />
             </Grid>
           </Grid>
 
