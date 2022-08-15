@@ -356,7 +356,10 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             const allFilters = (tableMeta.selectedGridView?.filters || []).concat(initialFilters)
             if (allFilters) {
                 tableCols.forEach((column, index) => {
-                    setColumnDisplayAndFilter(TableHeader, tableMeta.selectedGridView, column);
+
+                    // only required if table have selectedGridView
+                    if (tableMeta.selectedGridView)
+                        setColumnDisplayAndFilter(TableHeader, tableMeta.selectedGridView, column);
                     let value
                     if (Array.isArray(column.esKey)) value = get(allFilters.find((filter) => { return column.esKey.includes(filter.field) }), "value", "");
                     else value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
@@ -705,7 +708,8 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     tableActions.changeESPage();
                     break;
                 case "viewColumnsChange":
-                    updateGridViewRedux(tableState)
+                    debugger
+                    // updateGridViewRedux(tableState)
                     viewColumnsChange(tableState.columns);
                     break;
                 default:
