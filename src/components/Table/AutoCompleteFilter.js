@@ -7,6 +7,7 @@ import { useLazyQuery } from "@apollo/client";
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { capitalizeFirstLetter } from "components/Shared/functions";
 
 export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, searchFields, esIndex, filters, custom, setFilters, multiple, ...others }) {
     const filterValue = multiple ? filterList[index].map((key) => ({ key })) : { key: filterList[index][0] }
@@ -118,7 +119,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
             value={multiple && !value ? [] : value}
             inputValue={search?.toString()}
             getOptionSelected={(option, value) => option.key === value.key}
-            getOptionLabel={(option) => option?.key?.toString().replace(/^\,|\,$/gm, "")}
+            getOptionLabel={(option) => capitalizeFirstLetter(option?.key?.toString().replace(/^\,|\,$/gm, ""))}
             onChange={(e, value2, reason) => {
                 if (reason === 'clear' || (multiple && value2.length === 0) || (!multiple && !value2?.key)) {
                     filterList[index].pop()
