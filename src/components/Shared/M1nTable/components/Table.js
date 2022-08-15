@@ -184,7 +184,7 @@ const useStyles = makeStyles((theme) => ({
     // }),
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
-      backgroundColor: "#fff",
+      // backgroundColor: "#fff",
     },
     // "& .MuiTableCell-paddingCheckbox": {
     //   position: "relative",
@@ -2692,8 +2692,8 @@ function SubTable(props) {
                       {props.parent === "ownersPerParcel" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
                           <span> {tableMeta.rowData[props.columns.findIndex(
-                          (val) => val.name === "isPurchased"
-                        )] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                            (val) => val.name === "isPurchased"
+                          )] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 
