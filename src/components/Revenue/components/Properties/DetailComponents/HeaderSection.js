@@ -487,24 +487,6 @@ export default function HeaderSection(props) {
               <Grid item xs={9}>
                 <Controller
                   control={control}
-                  name="internalCompany"
-                  render={(params) => {
-                    return (
-                      <AutoCompleteTypeComponent
-                        {...params}
-                        autoFocus={false}
-                        shapeType={"Unit"}
-                        typeKey={"internalCompany"}
-                        variant="outlined"
-                        onChange={(e, value) => {
-                          params.onChange(value?.name || "");
-                        }}
-                        onBlur={(e) => {
-                          handleUpdate("internalCompany", e.target.value || "");
-                        }}
-                      />
-                    );
-                  }}
                   name="owner"
                   render={(params) => (
                     <ContactPaginatedAutocomplete
