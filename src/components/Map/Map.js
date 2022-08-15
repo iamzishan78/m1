@@ -442,9 +442,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       if (currentFeature?.Id) currentFeature.id = currentFeature.Id;
       setStateApp({ ...stateApp, selectedWell: currentFeature, selectedWellId: paramId.toLowerCase(), popupOpen: false, expandedCard: true });
       setShowExpandableCard(true);
-      if (map) {
+      if (map && currentFeature) {
         findBoundsMap([currentFeature.geoJSON], map);
-        drawWellBoundary(map, [currentFeature.Longitude, currentFeature.Latitude]);
+        if (currentFeature.Longitude)
+          drawWellBoundary(map, [currentFeature.Longitude, currentFeature.Latitude]);
       }
       return;
     }
