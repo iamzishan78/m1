@@ -278,7 +278,9 @@ export const TableHOC = (Component) => {
                         const data = filterData.find(f => f.label === value)
                         pageESVariables.variables.filters.push({ field: columns[index]?.esKey, value: data.key_as_string })
                     } else {
-                        pageESVariables.variables.filters.push({ field: columns[index]?.esKey, value: val[0] })
+                        val.forEach((v) => {
+                            pageESVariables.variables.filters.push({ field: columns[index]?.esKey, value: v })
+                        })
                     }
 
                 }

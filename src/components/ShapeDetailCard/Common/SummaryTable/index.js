@@ -86,7 +86,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
   );
 }
 
-export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [] }) {
+export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [], id }) {
   const classes = summaryTableStyles();
   const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
@@ -439,13 +439,25 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             }}
                           />
                         )}
+                        {data.key === "campaignName" && (
+                          <CampaignNameField
+                            className={classes.maxWidth}
+                            onChange={(value) => {
+                              updateProperties(null, data.key, value);
+                            }}
+                            value={properties[data.key] ? properties[data.key] : []}
+                            fullWidth
+                            targetLabel="Shape"
+                            targetLabelId={id}
+                          />
+                        )}
                       </>
                     )}
                   </>
                 ) : (
                   <div style={{ minWidth: "30px", cursor: "pointer" }}>
                     <Grid
-                      style={data.key === "campaignName" ? { display: "block" } : { display: "flex" }}
+                      style={{ display: "flex" }}
                       container
                       direction="row"
                       justifyContent="space-between"
@@ -460,16 +472,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           {data.type === "custom" && (
                             <>
                               {data.key === "qualifier" && (properties[data.key]?.name || "-")}
-                              {data.key === "campaignName" && (
-                                <CampaignNameField
-                                  className={classes.maxWidth}
-                                  onChange={(value) => {
-                                    updateProperties(null, data.key, value);
-                                  }}
-                                  value={properties[data.key] ? properties[data.key] : []}
-                                  fullWidth
-                                />
-                              )}
+                              {data.key === "campaignName" && (properties[data.key] || "-")}
                             </>
                           )}
                           {data.type !== "date" &&

@@ -107,7 +107,31 @@ const tableData = [
     key: "shapeArea",
     edit: false,
   },
+  {
+    label: "Department",
+    type: "autocomplete",
+    key: "department",
+    showStateTX: true,
+    edit: true,
+  },
+  // {
+  //   label: "Tract Status",
+  //   type: "autocomplete",
+  //   key: "tractStatus",
+  //   edit: true,
+  // },
+  {
+    label: "Map Status",
+    type: "autocomplete",
+    key: "mapStatus",
+    edit: true,
+  }
 ];
+
+const manualOptions = [
+  'Land',
+  "Business Development"
+]
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -403,6 +427,7 @@ export default function ParcelTableInfo({ properties, updateProperties, updateCu
                         <AutoCompleteTypeComponent
                           data={data}
                           value={properties[data.key]}
+                          manualOptions={manualOptions}
                           shapeType={"Parcel"}
                           typeKey={data.key}
                           onBlur={() => {

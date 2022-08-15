@@ -2,7 +2,6 @@ import React, { useEffect, useContext, useState } from "react";
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
-import moment from "moment";
 import Agreements from "components/Shared/svgIcons/agreements";
 
 import { deepEqualObjects, copy } from "components/Shared/functions";
