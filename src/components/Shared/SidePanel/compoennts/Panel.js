@@ -401,7 +401,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           </StyledMenuHActionHeader>
 
           {type === "layer" &&
-            <Datasets layerMap={layerMap} headerButton={headerButton} />
+            <Datasets search={search} layerMap={layerMap} headerButton={headerButton} />
           }
 
           <div className={classes.panelContent}>

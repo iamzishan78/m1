@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function Datasets({ layerMap, headerButton }) {
+function Datasets({ layerMap, headerButton, search }) {
 
     const classes = useStyles();
     const [stateApp, setStateApp] = useContext(AppContext);
@@ -108,7 +108,7 @@ function Datasets({ layerMap, headerButton }) {
 
     const datasets = useMemo(() => {
         if (_datasets?.getDatasets?.length && layerMap.length && mapSettings?.userMapSettings?.message) {
-            const datasets = copy(_datasets.getDatasets)
+            let datasets = copy(_datasets.getDatasets)
             const settings = mapSettings?.userMapSettings?.settings?.settings || {}
 
             datasets.forEach((dataset) => {
@@ -129,10 +129,13 @@ function Datasets({ layerMap, headerButton }) {
                 }
             })
             setStateApp((state) => ({ ...state, datasets }));
-            return datasets.filter((dataset) => dataset.visibility)
+            datasets = datasets.filter((dataset) => dataset.visibility)
+            if (search)
+                datasets = datasets.filter((dataset) => dataset.name.toLowerCase().includes(search.toLowerCase()))
+            return datasets
         } else
             return []
-    }, [_datasets, layerMap, mapSettings])
+    }, [_datasets, layerMap, mapSettings, search])
 
     const getBorderColor = useCallback((name) => (stateApp?.selectedDataset?.sourceName === name ? '#05aff0' : '#263451'), [stateApp.selectedDataset])
 
