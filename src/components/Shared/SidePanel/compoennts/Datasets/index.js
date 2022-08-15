@@ -230,10 +230,8 @@ function Datasets({ layerMap, headerButton, search }) {
                                         </Grid>
                                         <Grid item className='actionIcons'>
                                             <GridOnIcon className='actionIcon' />
-                                            {
-                                                sourceName !== 'M1 Platform' &&
-                                                <DatasetMenu handleRemove={handleRemove} handleTransfer={handleTransfer} dataset={{ sourceName, Icon, categories, ...rest }} />
-                                            }
+                                            {sourceName === 'M1 Platform' && <Box paddingRight='24px' />}
+                                            {sourceName !== 'M1 Platform' && <DatasetMenu handleRemove={handleRemove} handleTransfer={handleTransfer} dataset={{ sourceName, Icon, categories, ...rest }} />}
                                         </Grid>
                                     </Grid>
                                 </Grid>
