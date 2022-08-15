@@ -156,7 +156,7 @@ const useStyles = makeStyles((theme) => {
             },
             "@media (max-height:1600px)": {
               maxHeight: ({ dockMenu, userGridViewFilters }) => {
-                if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 640px)";
+                if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 135px)";
                 else if (dockMenu === "left" || dockMenu === "right")
                   return userGridViewFilters?.length > 0 ? "calc(100vh - 235px)" : "calc(100vh - 200px)";
                 else if (dockMenu === "full") return userGridViewFilters?.length ? "calc(100vh - 275px)" : "calc(100vh - 183px)";
