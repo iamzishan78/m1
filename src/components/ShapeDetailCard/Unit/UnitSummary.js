@@ -122,6 +122,7 @@ export default function UnitSummary(props) {
                                 updateCustomProperties={props.updateCustomProperties}
                                 search={search}
                                 metaData={metaDataRes}
+                                id={props.id}
                             />
                         </Grid>
                         <Grid item>
