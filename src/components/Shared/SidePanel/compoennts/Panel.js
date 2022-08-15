@@ -435,7 +435,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
                 </Box>
               ))}
             {type === "base" && (
-              <>
+              <Box height="calc((100vh - 50px) - 631px)" overflow='hidden scroll' >
                 <Collapse in={true} timeout="auto" unmountOnExit>
                   {displayList}
                 </Collapse>
@@ -444,7 +444,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
                   defaultMapVars={stateApp.defaultMapVars}
                   mapVars={stateApp.mapVars}
                 />
-              </>
+              </Box>
             )}
             {type === "heatMaps" && displayList}
             {type === "filter" && <LayerFilters />}

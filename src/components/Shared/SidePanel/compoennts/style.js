@@ -104,6 +104,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   panelContent: {
     // height: "calc(100vh - 446px)",
+    height: "100vh",
     overflow: "hidden",
     backgroundColor: "#0e111a",
   },
