@@ -26,6 +26,7 @@ import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/Currenc
 import ContactStatus from 'components/ContactDetailCard/components/ContactStatus';
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -86,7 +87,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         name,
         ownerEntity,
         contactStatus,
-        ownerType
+        ownerType,
+        contact: { campaignName }
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
@@ -101,6 +103,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         contactStatus: contactStatus || null,
         ownerType,
         customLayer,
+        campaignName
       }
       let calculatedNRA = calculateNRA(royalty_interest, orri);
       if (!isNaN(parseFloat(calculatedNRA)))
@@ -227,18 +230,23 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerToAdd.name = nameAutValue.name;
       }
 
-      updateContact({
-        variables: {
-          contact: {
-            _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
-            contactStatus: ownerToAdd.contactStatus,
-            lastUpdateBy: stateApp.user.mongoId,
-            ownerType: ownerToAdd.ownerType
+      if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
+        (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
+        (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
+      ) {
+        updateContact({
+          variables: {
+            contact: {
+              _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
+              contactStatus: ownerToAdd.contactStatus,
+              lastUpdateBy: stateApp.user.mongoId,
+              ownerType: ownerToAdd.ownerType,
+              campaignName: ownerToAdd.campaignName
+            }
           }
-        }
-      }).then(res => {
-        handleAddUpdate(ownerToAdd)
-      });
+        })
+      }
+      handleAddUpdate(ownerToAdd);
     }
   };
 
@@ -419,7 +427,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         const value = addTrailingZeros(e.target.value);
-                        setIsNRAOverridden(value !== getValues().nra)
+                        const nra = calculateNRA(getValues().royalty_interest, getValues().orri)
+                        setIsNRAOverridden(parseFloat(value) !== parseFloat(nra))
                         params.onChange(e.target.value);
                       }}
                       className={isNraOverridden ? classes.baseValueChanged : classes.maxWidth}
@@ -534,6 +543,26 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         props.onChange(val);
                       }}
                       value={props.value ? props.value : ""}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Campaign Names</h3>
+
+                <Controller
+                  control={control}
+                  defaultValue={''}
+                  name="campaignName"
+                  render={(params) => (
+                    <CampaignNameField
+                      {...params}
+                      className={classes.maxWidth}
+                      onChange={(values, id) => {
+                        params.onChange(values);
+                      }}
+                      fullWidth
+                      targetLabel="Contact"
                     />
                   )}
                 />

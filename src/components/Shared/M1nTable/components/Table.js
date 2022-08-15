@@ -2168,30 +2168,30 @@ function SubTable(props) {
 
 
 
-                                  <p
-                                    style={{
-                                      display: "flex",
-                                      cursor: "pointer",
-                                      minWidth: "120px",
-                                      borderRadius: "7px",
-                                      color: "#17aadd",
-                                      wordBreak: "break-word",
-                                      "&:hover": {
-                                        textDecoration: "underline",
-                                      },
-                                      fontWeight: "bold",
-                                      justifyContent: "flex-start",
-                                      paddingRight: '40px',
-                                    }}>
+                              <p
+                                style={{
+                                  display: "flex",
+                                  cursor: "pointer",
+                                  minWidth: "120px",
+                                  borderRadius: "7px",
+                                  color: "#17aadd",
+                                  wordBreak: "break-word",
+                                  "&:hover": {
+                                    textDecoration: "underline",
+                                  },
+                                  fontWeight: "bold",
+                                  justifyContent: "flex-start",
+                                  paddingRight: '40px',
+                                }}>
 
-                                      <Typography
-                                        noWrap
-                                        color="inherit"
-                                        >
-                                      {value}
-                                      </Typography>
+                                <Typography
+                                  noWrap
+                                  color="inherit"
+                                >
+                                  {value}
+                                </Typography>
 
-                                      </p>
+                              </p>
 
                             </div>
                           </Grid>
@@ -2440,31 +2440,6 @@ function SubTable(props) {
               },
             };
             break;
-          case "wellApiNumber":
-            column.options = {
-              ...column.options,
-              customBodyRender: (value, tableMeta) => {
-                const row = props.rows[tableMeta.rowIndex];
-                return (
-                  <>
-                    {row.wellApiNumber || row.wellName ? (
-                      <div>{value}</div>
-                    ) : (
-                      <SearchWells
-                        setRefetchData={props.setRefetchData}
-                        refetchData={props.refetchData}
-                        // contactId={"props.contactData._id"}
-                        relatedObject={row._id}
-                        relatedObjectType="Property"
-                      // rowData={tableMeta.rowData}
-                      // rowIndex={tableMeta.rowIndex}
-                      />
-                    )}
-                  </>
-                );
-              },
-            };
-            break;
           case "propertyCode":
             column.options = {
               ...column.options,
@@ -2537,6 +2512,7 @@ function SubTable(props) {
                     return (
                       <div className={classes.gridElementStyling}>
                         <ReactSelectField
+                          tooltipView={true}
                           isSingleSelect={column.type !== "multiselect"}
                           dropdownOptions={column.dropdownOptions}
                           index={tableMeta.rowIndex}
@@ -2715,7 +2691,9 @@ function SubTable(props) {
 
                       {props.parent === "ownersPerParcel" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span> {tableMeta.rowData[22] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                          <span> {tableMeta.rowData[props.columns.findIndex(
+                          (val) => val.name === "isPurchased"
+                        )] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 
@@ -4025,6 +4003,7 @@ function SubTable(props) {
     || props.header === "Agreements"
     || props.header === "Tracts"
     || props.parent === "TractTable"
+    || props.parent === "WellsTable"
     || props.parent === "TractInterestsTable"
   ) {
     // adds the print and export options in the Flow grid and the Activities grid
@@ -4092,7 +4071,7 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    if (props.header === "Contacts" || props.header === "Documents" || props.header === "Agreements") {
+    if ((props.header === "Contacts" && props.addAble.type === "contact") || props.header === "Documents" || props.header === "Agreements") {
       const HeaderComponent = props.headerComponent;
       return <HeaderComponent {...props.headerProps} />;
     }
@@ -4230,6 +4209,7 @@ function SubTable(props) {
                 // props.header === 'Contacts'
                 // || 
                 props.header === 'Deals'
+                || props.parent === 'WellsTable'
                 || props.header === 'Activities'
                 || props.header === 'Monthly Production'
                 // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
@@ -4333,11 +4313,6 @@ function SubTable(props) {
         {openDialog === "addContact" && props.targetLabel === "contact" && (
           <AddContactDialogContent onClose={handleCloseDialog} parent={props.addAble.parent} />
         )}
-
-        {/* moved component in buyContactsInfoData and handled its operations there */}
-        {/* {openDialog === "contactDataMissing" && (
-          <ContactDataMissingDialog openDialog={openDialog} onClose={handleCloseDialog} contacts={contactDataMissing} />
-        )} */}
         {openDialog === "multipleOwnerToContact" && (
           <MultipleOwnerToContactDrawerContainer
             onClose={handleCloseDialog}

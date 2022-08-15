@@ -198,9 +198,9 @@ export const getBasicInfoExpContent = (contactData) => {
     }
   }
 
-  let campaignName = [];
+  let campaignName;
   if (typeof contactData?.campaignName === "string") {
-    campaignName = [contactData?.campaignName];
+    campaignName = contactData?.campaignName;
   } else if (Array.isArray(contactData?.campaignName)) {
     campaignName = contactData.campaignName;
   }

@@ -94,69 +94,79 @@ export const contactManagementRoutes = {
     featureFlag: "CONTACTSUBMENU",
     title: "All Entities",
     link: "/contacts",
+    linkPrefix: "/contacts",
     component: "ContactsTable",
-    value: 'All',
+    value: "All",
     search: true,
-    isDefault: true
+    isDefault: true,
   },
   LEADS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Leads",
     link: "/contacts/leads",
+    linkPrefix: "/contacts/leads",
     component: "ContactsTable",
     filterValue: "Lead",
     showAnalytics: true,
-    value: 'Leads',
+    value: "Leads",
     search: true,
-    isDefault: true
+    isDefault: true,
   },
   PROSPECTS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Prospects",
     link: "/contacts/prospects",
+    linkPrefix: "/contacts/proppects",
     component: "ContactsTable",
     filterValue: "Prospect",
     showAnalytics: true,
-    value: 'Prospects',
+    value: "Prospects",
     search: true,
-    isDefault: true
+    isDefault: true,
   },
   CONTACTS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Contacts",
     link: "/contacts/contact",
+    linkPrefix: "/contacts/contact",
     component: "ContactsTable",
     filterValue: "Contact",
     showAnalytics: true,
-    value: 'Contacts',
+    value: "Contacts",
     search: true,
-    isDefault: true
+    isDefault: true,
   },
   ACTIVITY: {
     featureFlag: "CONTACTSUBMENU",
     title: "Activity Dashboard",
     link: "/contacts/activityDashboard",
+    linkPrefix: "/contacts/activityDashboard",
     component: "ActivitiesDashboard",
-    value: 'Activities',
+    value: "Activities",
     search: false,
-    isDefault: true
+    isDefault: true,
   },
-  // temporarily hide until campaign management is built (removed isExcluded when we want to turn back on)
   CAMPAIGNS: {
     featureFlag: "CONTACTSUBMENU",
-    title: "Campaign Management",
-    link: "/contacts/campaignManagement",
+    title: "Campaigns",
+    link: "/contacts/campaigns",
+    linkPrefix: "/contacts/campaigns",
     component: "CampaignManagement",
+    value: "Campaigns",
     search: true,
-    isExcluded: true,
+    isDefault: true,
   },
   CAMPAIGN_DETAIL: {
     featureFlag: "CONTACTSUBMENU",
     title: "Campaigns",
-    link: "/contacts/campaignManagement/:id",
+    link: "/contacts/campaign/details/:campaignId",
+    linkPrefix: "/contacts/campaign/details",
     component: "CampaignDetail",
+    value: "Campaigns",
     search: true,
+    isDefault: true,
     isExcluded: true,
+    parent: "CAMPAIGNS",
   },
 };
 
@@ -226,6 +236,57 @@ export const CUSTOM_DATES = {
   CUSTOM: "Custom",
 };
 
+export const tractFilterColumnsHeader = [
+  {
+    label: "Department",
+    filterKey: "shapeJson.properties.department.keyword",
+    name: "department"
+  },
+  {
+    label: "State",
+    filterKey: [
+      'shapeJson.properties.originalProperties.State.keyword',
+      'shapeJson.properties.originalProperties.StateAbbreviation.keyword'
+    ],
+
+    name: "state"
+  },
+  {
+    label: "County",
+    filterKey: "shapeJson.properties.originalProperties.County.keyword",
+    name: "County"
+  },
+  {
+    label: "Owner Name",
+    filterKey: "shapeJson.properties.department.keyword",
+    name: "department",
+    disabled: true
+  }]
+
+export const tractInterestFilterColumnsHeader = [
+  {
+    label: "Department",
+    filterKey: "shape.shapeJson.properties.department.keyword",
+    name: "department",
+
+  },
+  {
+    label: "State",
+    filterKey: ["shape.shapeJson.properties.originalProperties.State.keyword",
+      "shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword"],
+    name: "State"
+  },
+  {
+    label: "County",
+    filterKey: "shape.shapeJson.properties.originalProperties.County.keyword",
+    name: "County"
+  },
+  {
+    label: "Owner Name",
+    filterKey: "contact.entityDetail.name.keyword",
+    name: "name"
+  }
+]
 export const US_STATES = {
   "Alabama": "AL",
   "Alaska": "AK",
