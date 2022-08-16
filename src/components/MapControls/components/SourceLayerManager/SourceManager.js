@@ -3,8 +3,7 @@ import update from "immutability-helper";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
-import { Grid, Typography, Divider, MenuItem, Menu } from "@material-ui/core";
-import { Close as CloseButton } from "@material-ui/icons";
+import { Typography, Divider, MenuItem, Menu } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
 import Checkbox from "@material-ui/core/Checkbox";
 import { Collapse } from "@material-ui/core";
@@ -32,7 +31,6 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import UploadIcon from "components/Shared/svgIcons/uploadIcon";
 import EditableTextField from "components/Shared/components/Fields/EditableTextField";
 import { truncate } from "components/Shared/functions";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 
 import proj4 from "proj4";
 // cra webpack hack to call this a png to get included in bundle
@@ -73,6 +71,7 @@ const useStyles = makeStyles((theme) => ({
   dropzoneClass: {
     "& .MuiDropzoneArea-text": {
       marginTop: 0,
+      marginBottom: 0
     },
     "& .MuiDropzoneArea-icon": {
       display: "none",
@@ -97,7 +96,7 @@ const useStyles = makeStyles((theme) => ({
   },
   contentRoot: {
     padding: "15px",
-    height: "calc(100% - 65px)",
+    height: "calc(100% - 111px)",
     position: "absolute",
     overflow: "overlay",
   },
@@ -138,6 +137,7 @@ const StyledListItem2 = withStyles((theme) => ({
     },
 
     "&:hover, &.isOpen": {
+      backgroundColor: "#00000014",
       color: "#263451",
       border: "2px solid #263451",
       "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
@@ -177,13 +177,11 @@ const StyledListItem = withStyles((theme) => ({
 export default function SourceManager(props) {
   const classes = useStyles();
   let history = useHistory();
-  const [selectedType, setSelectedType] = useState('source');
 
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [openM1, setOpenM1] = React.useState(true);
   const [openDataSets, setOpenDataSets] = React.useState({});
-  const [openUD, setOpenUD] = React.useState(true);
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openUDLayers, setUDLayersStates] = useState([]);
@@ -202,24 +200,13 @@ export default function SourceManager(props) {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       addLayer: false,
-      manageSource: false,
+      manageSourceLayer: false,
       manageLayer: false,
-    }));
-  };
-
-  const windowClose = () => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      addLayer: false,
     }));
   };
 
   const handleClickM1List = () => {
     setOpenM1(!openM1);
-  };
-
-  const handleClickUDList = () => {
-    setOpenUD(!openUD);
   };
 
   const changeShowAble = (layer) => {
@@ -500,280 +487,229 @@ export default function SourceManager(props) {
   };
 
   return (
-    <ClickAwayListener onClickAway={handleApplyChange}>
-      <div style={{ height: "100%", display: "flex", width: "100%" }}>
-        <DropzoneAreaBase
-          onAdd={handleFileInput}
-          onDelete={(fileObj) => { }}
-          onAlert={(message, variant) => { }}
-          filesLimit={1}
-          maxFileSize={10000000}
-          dropzoneClass={classes.dropzoneClass}
-          // acceptedFiles={[".geojson", ".zip", ".shp",]}
-          dropzoneText={
-            <>
-              <div>
-                <Grid
-                  container
-                  direction="row"
-                  justify="space-between"
-                  alignItems="center"
-                  style={{ padding: "15px" }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Grid item>
-                    <Typography variant="h5">Source & Layer Manager</Typography>
-                  </Grid>
-                  <Grid item>
-                    <IconButton size="small" onClick={handleApplyChange}>
-                      <CloseButton />
-                    </IconButton>
-                  </Grid>
-                </Grid>
-                <Divider />
-                <div className={classes.contentRoot}>
+    <div style={{ height: "100%", display: "flex", width: "100%" }}>
+      <DropzoneAreaBase
+        onAdd={handleFileInput}
+        onDelete={(fileObj) => { }}
+        onAlert={(message, variant) => { }}
+        filesLimit={1}
+        maxFileSize={10000000}
+        dropzoneClass={classes.dropzoneClass}
+        // acceptedFiles={[".geojson", ".zip", ".shp",]}
+        dropzoneText={
+          <>
+            <div>
+              <div className={classes.contentRoot}>
+                <Typography varient="h5" style={{ textAlign: "start", paddingBottom: "20px", fontWeight: "bolder", fontFamily: 'sans-serif' }} onClick={(e) => e.stopPropagation()}>
+                  Add New Sources
+                </Typography>
+                <div className={classes.uploaderText}>
+                  <span>
+                    To add a new user-defined shape layer, drag and drop a GeoJSON or Shapefile anywhere on this screen or click here to select file from your local drive
+                  </span>
+                </div>
+                <Divider style={{ height: '2px', marginTop: "15px" }} />
+                <Typography varient="h5" style={{ textAlign: "start", marginTop: "5px", fontWeight: "bolder", fontFamily: 'sans-serif' }} onClick={(e) => e.stopPropagation()}>
+                  Add Sources to Map View
+                </Typography>
+                <Typography varient="h6" style={{ textAlign: "start", marginBottom: "10px" }} onClick={(e) => e.stopPropagation()}>
+                  Select one or more of the available sources below to add them to your current map view
+                </Typography>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <StyledListItem2 button onClick={handleClickM1List} className={openM1 ? 'isOpen' : ''}>
+                    <ListItemText primary="M1neral Platform Sources" />
+                    {openM1 ? <ExpandLess /> : <ExpandMore />}
+                  </StyledListItem2>
+                  <Collapse in={openM1} timeout="auto" unmountOnExit>
+                    <List className={classes.list}>
+                      {M1Layers.map((layer, index) => {
+                        const labelId = `m1layer-list-label-${index}`;
 
-                  <ListItem
-                    style={{
-                      flexDirection: "column",
-                      justifyContent: "start",
-                      alignItems: "start",
-                    }}
-                  >
-                    <ListItemText>
-                      <h4
-                        onClick={(e) => {
-                          setSelectedType("source");
-                          e.stopPropagation()
-                        }}
-                        className={selectedType === "source" ? classes.selectedType : classes.unSelectedType}
-                      >
-                        SOURCES
-                      </h4>
-                      <h4
-                        onClick={(e) => {
-                          setSelectedType("layer");
-                          e.stopPropagation()
-                        }}
-                        className={selectedType === "layer" ? classes.selectedType : classes.unSelectedType}
-                        style={{ marginLeft: "30px" }}
-                      >
-                        LAYERS
-                      </h4>
-                    </ListItemText>
-                  </ListItem>
-
-                  <Typography varient="h5" style={{ textAlign: "start", paddingBottom: "20px", fontWeight: "bolder", fontFamily: 'sans-serif' }} onClick={(e) => e.stopPropagation()}>
-                    Add New Sources
-                  </Typography>
-                  <div className={classes.uploaderText}>
-                    <span>
-                      To add a new user-defined shape layer, drag and drop a GeoJSON or Shapefile anywhere on this screen or click here to select file from your local drive
-                    </span>
-                  </div>
-                  <Divider style={{ height: '2px', marginTop: "15px" }} />
-                  <Typography varient="h5" style={{ textAlign: "start", marginTop: "5px", fontWeight: "bolder", fontFamily: 'sans-serif' }} onClick={(e) => e.stopPropagation()}>
-                    Add Sources to Map View
-                  </Typography>
-                  <Typography varient="h6" style={{ textAlign: "start", marginBottom: "10px" }} onClick={(e) => e.stopPropagation()}>
-                    Select one or more of the available sources below to add them to your current map view
-                  </Typography>
-                  <div onClick={(e) => e.stopPropagation()}>
-                    <StyledListItem2 button onClick={handleClickM1List}>
-                      <ListItemText primary="M1neral Platform Sources" />
-                      {openM1 ? <ExpandLess /> : <ExpandMore />}
-                    </StyledListItem2>
-                    <Collapse in={openM1} timeout="auto" unmountOnExit>
-                      <List className={classes.list}>
-                        {M1Layers.map((layer, index) => {
-                          const labelId = `m1layer-list-label-${index}`;
-
-                          if (layer.type === "group") {
-                            return (
-                              <Accordion>
-                                <AccordionSummary
-                                  // expandIcon={<ExpandMoreIcon />}
-                                  aria-controls="panel1a-content"
-                                  id="panel1a-header"
-                                  style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
-                                  onClick={() => {
-                                    const _index = openUDLayers.findIndex(l => l === index);
-                                    if (_index === -1) setUDLayersStates([...openUDLayers, index]);
-                                    else setUDLayersStates(openUDLayers.filter(l => l !== index));
-                                  }}
-                                >
-                                  <Checkbox
-                                    checked={!!layer.layers.find((l) => l.layerSettings?.showable)}
-                                    color="dark gray"
-                                    onClick={(event) => event.stopPropagation()}
-                                    onChange={(e) => changeShowAble(layer)}
-                                    inputProps={{ "aria-label": "primary checkbox" }}
-                                  />
-                                  <EditableTextField
-                                    onChange={changeLayerName}
-                                    item={layer}
-                                    name={layer.name}
-                                    isEditable={checkIfDeleteAllow(layer)}
-                                    showExpandIcon
-                                    openUd={openUDLayers.includes(index)}
-                                  />
-                                  {checkIfDeleteAllow(layer) && (
-                                    <ListItemSecondaryAction onClick={(e) => e.stopPropagation()}>
-                                      <Tooltip title="Delete" placement="top">
-                                        <IconButton
-                                          edge="end"
-                                          size="small"
-                                          onClick={() => {
-                                            setOpenDeleteDialog(layer);
-                                          }}
-                                        >
-                                          <DeleteIcon />
-                                        </IconButton>
-                                      </Tooltip>
-                                    </ListItemSecondaryAction>
-                                  )}
-                                </AccordionSummary>
-                                <Box paddingLeft={2} paddingRight={2}>
-                                  <List className={classes.list}>
-                                    {layer.layers.map((groupLayer, index) => (
-                                      <StyledListItem key={index} ContainerComponent="li">
-                                        <Checkbox
-                                          checked={groupLayer?.layerSettings?.showable}
-                                          color="dark gray"
-                                          onChange={() => changeShowAble(groupLayer)}
-                                          inputProps={{ "aria-label": "primary checkbox" }}
-                                        />
-                                        <EditableTextField onChange={changeLayerName} item={groupLayer} name={groupLayer.layerName} isEditable={checkIfDeleteAllow(layer)} />
-                                        <ListItemSecondaryAction>
-                                          {
-                                            checkIfDeleteAllow(layer) && <Tooltip title="Delete" placement="top">
-                                              <IconButton
-                                                edge="end"
-                                                size="small"
-                                                onClick={() => {
-                                                  setOpenDeleteDialog(groupLayer);
-                                                }}
-                                              >
-                                                <DeleteIcon />
-                                              </IconButton>
-                                            </Tooltip>
-                                          }
-                                        </ListItemSecondaryAction>
-                                      </StyledListItem>
-                                    ))}
-                                  </List>
-                                </Box>
-                              </Accordion>
-                            );
-                          }
-
+                        if (layer.type === "group") {
                           return (
-                            <StyledListItem key={index} ContainerComponent="li">
-                              <Checkbox
-                                checked={layer.layerSettings.showable}
-                                color="dark gray"
-                                onChange={() => changeShowAble(layer)}
-                                inputProps={{ "aria-label": "primary checkbox" }}
-                              />
-
-                              <ListItemText id={labelId} primary={layer.layerName === "Parcels" ? "Tracts" : truncate(layer.layerName, 30)} />
-
-                              {
-                                (layer.layerName === 'Units') &&
-                                <FeatureFlag feature={FEATURES.UNITIMPORT} >
-                                  <ListItemSecondaryAction>
-                                    <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/units`); }}>
-                                      <UploadIcon opacity="1.0" small />
-                                    </IconButton>
+                            <Accordion>
+                              <AccordionSummary
+                                // expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                                style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
+                                onClick={() => {
+                                  const _index = openUDLayers.findIndex(l => l === index);
+                                  if (_index === -1) setUDLayersStates([...openUDLayers, index]);
+                                  else setUDLayersStates(openUDLayers.filter(l => l !== index));
+                                }}
+                              >
+                                <Checkbox
+                                  checked={!!layer.layers.find((l) => l.layerSettings?.showable)}
+                                  color="dark gray"
+                                  onClick={(event) => event.stopPropagation()}
+                                  onChange={(e) => changeShowAble(layer)}
+                                  inputProps={{ "aria-label": "primary checkbox" }}
+                                />
+                                <EditableTextField
+                                  onChange={changeLayerName}
+                                  item={layer}
+                                  name={layer.name}
+                                  isEditable={checkIfDeleteAllow(layer)}
+                                  showExpandIcon
+                                  openUd={openUDLayers.includes(index)}
+                                />
+                                {checkIfDeleteAllow(layer) && (
+                                  <ListItemSecondaryAction onClick={(e) => e.stopPropagation()}>
+                                    <Tooltip title="Delete" placement="top">
+                                      <IconButton
+                                        edge="end"
+                                        size="small"
+                                        onClick={() => {
+                                          setOpenDeleteDialog(layer);
+                                        }}
+                                      >
+                                        <DeleteIcon />
+                                      </IconButton>
+                                    </Tooltip>
                                   </ListItemSecondaryAction>
-                                </FeatureFlag>
-                              }
-
-                              {
-                                (layer.layerName === 'Parcels') &&
-                                <FeatureFlag feature={FEATURES.TRACTIMPORT} >
-                                  <ListItemSecondaryAction>
-                                    <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/tracts`); }}>
-                                      <UploadIcon opacity="1.0" small />
-                                    </IconButton>
-                                  </ListItemSecondaryAction>
-                                </FeatureFlag>
-                              }
-                            </StyledListItem>
-                          );
-                        })}
-                      </List>
-                    </Collapse>
-
-                    {
-                      stateApp.datasets.map((dataset) => (
-                        <Fragment key={dataset.sourceName}>
-                          {
-                            dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 className={openDataSets[dataset.sourceName] ? 'isOpen' : ''} style={{ paddingLeft: '0px' }} button onClick={() => setOpenDataSets({ ...openDataSets, [dataset.sourceName]: !openDataSets[dataset.sourceName] })}>
-                              <Checkbox
-                                checked={dataset.visibility}
-                                color="darkgray"
-                                onClick={(e) => e.stopPropagation()}
-                                onChange={() => { handleDatasetChange(dataset, !dataset.visibility); }}
-                                inputProps={{ "aria-label": "primary checkbox" }}
-                              />
-                              <ListItemText primary={dataset.sourceName} />
-                              {openDataSets[dataset.sourceName] ? <ExpandLess /> : <ExpandMore />}
-                            </StyledListItem2>
-                              <Collapse in={openDataSets[dataset.sourceName]} timeout="auto" unmountOnExit>
+                                )}
+                              </AccordionSummary>
+                              <Box paddingLeft={2} paddingRight={2}>
                                 <List className={classes.list}>
-                                  {dataset.categories.map((layer, index) => {
-                                    const labelId = `m1layer-list-label-${index}`;
-                                    return (
-                                      <StyledListItem key={index} ContainerComponent="li">
-
-                                        <ListItemText style={{ padding: '5px 0px 5px 40px' }} id={labelId} primary={truncate(layer.layerName || layer.name, 30)} />
-                                        <MoreHorizIcon className={"moreIcon " + classes.moreIcon} aria-controls="more-menu" aria-haspopup="true" onClick={handleClick} />
-
-                                        <Menu
-                                          id="more-menu"
-                                          anchorEl={anchorEl}
-                                          keepMounted
-                                          open={Boolean(anchorEl)}
-                                          onClose={handleMenuClose}
-                                        >
-                                          <MenuItem onClick={handleMenuClose}><EditIcon /> Edit Name</MenuItem>
-                                          <MenuItem onClick={handleMenuClose}><DeleteIcon /> Delete</MenuItem>
-                                        </Menu>
-                                      </StyledListItem>
-                                    );
-                                  })}
+                                  {layer.layers.map((groupLayer, index) => (
+                                    <StyledListItem key={index} ContainerComponent="li">
+                                      <Checkbox
+                                        checked={groupLayer?.layerSettings?.showable}
+                                        color="dark gray"
+                                        onChange={() => changeShowAble(groupLayer)}
+                                        inputProps={{ "aria-label": "primary checkbox" }}
+                                      />
+                                      <EditableTextField onChange={changeLayerName} item={groupLayer} name={groupLayer.layerName} isEditable={checkIfDeleteAllow(layer)} />
+                                      <ListItemSecondaryAction>
+                                        {
+                                          checkIfDeleteAllow(layer) && <Tooltip title="Delete" placement="top">
+                                            <IconButton
+                                              edge="end"
+                                              size="small"
+                                              onClick={() => {
+                                                setOpenDeleteDialog(groupLayer);
+                                              }}
+                                            >
+                                              <DeleteIcon />
+                                            </IconButton>
+                                          </Tooltip>
+                                        }
+                                      </ListItemSecondaryAction>
+                                    </StyledListItem>
+                                  ))}
                                 </List>
-                              </Collapse></> : <></>
-                          }
+                              </Box>
+                            </Accordion>
+                          );
+                        }
 
-                        </Fragment>))
-                    }
-                  </div>
+                        return (
+                          <StyledListItem key={index} ContainerComponent="li">
+                            <Checkbox
+                              checked={layer.layerSettings.showable}
+                              color="dark gray"
+                              onChange={() => changeShowAble(layer)}
+                              inputProps={{ "aria-label": "primary checkbox" }}
+                            />
+
+                            <ListItemText id={labelId} primary={layer.layerName === "Parcels" ? "Tracts" : truncate(layer.layerName, 30)} />
+
+                            {
+                              (layer.layerName === 'Units') &&
+                              <FeatureFlag feature={FEATURES.UNITIMPORT} >
+                                <ListItemSecondaryAction>
+                                  <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/units`); }}>
+                                    <UploadIcon opacity="1.0" small />
+                                  </IconButton>
+                                </ListItemSecondaryAction>
+                              </FeatureFlag>
+                            }
+
+                            {
+                              (layer.layerName === 'Parcels') &&
+                              <FeatureFlag feature={FEATURES.TRACTIMPORT} >
+                                <ListItemSecondaryAction>
+                                  <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/tracts`); }}>
+                                    <UploadIcon opacity="1.0" small />
+                                  </IconButton>
+                                </ListItemSecondaryAction>
+                              </FeatureFlag>
+                            }
+                          </StyledListItem>
+                        );
+                      })}
+                    </List>
+                  </Collapse>
+
+                  {
+                    stateApp.datasets.map((dataset) => (
+                      <Fragment key={dataset.sourceName}>
+                        {
+                          dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 className={openDataSets[dataset.sourceName] ? 'isOpen' : ''} style={{ paddingLeft: '0px' }} button onClick={() => setOpenDataSets({ ...openDataSets, [dataset.sourceName]: !openDataSets[dataset.sourceName] })}>
+                            <Checkbox
+                              checked={dataset.visibility}
+                              color="darkgray"
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={() => { handleDatasetChange(dataset, !dataset.visibility); }}
+                              inputProps={{ "aria-label": "primary checkbox" }}
+                            />
+                            <ListItemText primary={dataset.sourceName} />
+                            {openDataSets[dataset.sourceName] ? <ExpandLess /> : <ExpandMore />}
+                          </StyledListItem2>
+                            <Collapse in={openDataSets[dataset.sourceName]} timeout="auto" unmountOnExit>
+                              <List className={classes.list}>
+                                {dataset.categories.map((layer, index) => {
+                                  const labelId = `m1layer-list-label-${index}`;
+                                  return (
+                                    <StyledListItem key={index} ContainerComponent="li">
+
+                                      <ListItemText style={{ padding: '5px 0px 5px 40px' }} id={labelId} primary={truncate(layer.layerName || layer.name, 30)} />
+                                      <MoreHorizIcon className={"moreIcon " + classes.moreIcon} aria-controls="more-menu" aria-haspopup="true" onClick={handleClick} />
+
+                                      <Menu
+                                        id="more-menu"
+                                        anchorEl={anchorEl}
+                                        keepMounted
+                                        open={Boolean(anchorEl)}
+                                        onClose={handleMenuClose}
+                                      >
+                                        <MenuItem onClick={handleMenuClose}><EditIcon /> Edit Name</MenuItem>
+                                        <MenuItem onClick={handleMenuClose}><DeleteIcon /> Delete</MenuItem>
+                                      </Menu>
+                                    </StyledListItem>
+                                  );
+                                })}
+                              </List>
+                            </Collapse></> : <></>
+                        }
+
+                      </Fragment>))
+                  }
                 </div>
               </div>
-            </>
-          }
-        />
-        {/* //// delete confirmation dialog */}
-        {openDeleteDialog && (
-          <Dialog
-            className={classes.dialog}
-            open={openDeleteDialog ? true : false}
-            onClose={() => {
-              setOpenDeleteDialog(false);
-            }}
-            fullWidth={true}
-            maxWidth={"sm"}
-          >
-            <DeleteConfirmationDialog
-              openDialog={openDeleteDialog ? true : false}
-              handleDialogClose={setOpenDeleteDialog}
-              layer={openDeleteDialog}
-            />
-          </Dialog>
-        )}
-      </div>
-    </ClickAwayListener>
+            </div>
+          </>
+        }
+      />
+      {/* //// delete confirmation dialog */}
+      {openDeleteDialog && (
+        <Dialog
+          className={classes.dialog}
+          open={openDeleteDialog ? true : false}
+          onClose={() => {
+            setOpenDeleteDialog(false);
+          }}
+          fullWidth={true}
+          maxWidth={"sm"}
+        >
+          <DeleteConfirmationDialog
+            openDialog={openDeleteDialog ? true : false}
+            handleDialogClose={setOpenDeleteDialog}
+            layer={openDeleteDialog}
+          />
+        </Dialog>
+      )}
+    </div>
   );
 }

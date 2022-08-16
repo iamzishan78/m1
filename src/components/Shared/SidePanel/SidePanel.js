@@ -88,8 +88,8 @@ export default function SidePanel() {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       manageTransferData: false,
-      [`${type === 'manageLayer' ? 'manageLayer' : 'manageSource'}`]: true,
-      [`${type === 'manageLayer' ? 'manageSource' : 'manageLayer'}`]: null,
+      [`${type === 'manageLayer' ? 'manageLayer' : 'manageSourceLayer'}`]: true,
+      [`${type === 'manageLayer' ? 'manageSourceLayer' : 'manageLayer'}`]: null,
       selectedLayer: null,
     }));
     setStateApp((stateApp) => ({

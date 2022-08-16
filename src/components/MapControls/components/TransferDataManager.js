@@ -101,7 +101,7 @@ export default function TransferDataManager(props) {
       ...stateMapControls,
       addLayer: false,
       manageTransferData: false,
-      manageSource: false,
+      manageSourceLayer: false,
       manageLayer: false,
     }));
   };

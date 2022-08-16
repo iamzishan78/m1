@@ -193,7 +193,7 @@ function Datasets({ layerMap, headerButton, search }) {
 
         setStateMapControls((stateMapControls) => ({
             ...stateMapControls,
-            manageSource: false,
+            manageSourceLayer: false,
             manageLayer: false,
             manageTransferData: true,
             selectedLayer: null,
@@ -206,7 +206,7 @@ function Datasets({ layerMap, headerButton, search }) {
                 <ListItemText primary={'Data Sources'} />
                 {headerButton && (
                     <StyledListItemSecondaryAction>
-                        <Button onClick={() => headerButton.fn('manageSource')} color="secondary" variant="outlined" startIcon={<LayersIcon fontSize="medium" />}>
+                        <Button onClick={() => headerButton.fn('manageSourceLayer')} color="secondary" variant="outlined" startIcon={<LayersIcon fontSize="medium" />}>
                             Manager
                         </Button>
                     </StyledListItemSecondaryAction>

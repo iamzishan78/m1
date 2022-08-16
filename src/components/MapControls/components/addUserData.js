@@ -99,7 +99,7 @@ export default function AddUserData(props) {
       fileUploadedOriginalContent: null,
       // selectedControl: 'layer',
       addLayer: false,
-      manageSource: false,
+      manageSourceLayer: false,
       manageLayer: false,
     }));
     setNotReturn(false);
@@ -282,7 +282,7 @@ export default function AddUserData(props) {
         setStateMapControls((stateMapControls) => ({
           ...stateMapControls,
           addLayer: false,
-          manageSource: false,
+          manageSourceLayer: false,
           manageLayer: false,
         }));
         handleClose();

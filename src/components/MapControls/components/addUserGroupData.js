@@ -121,7 +121,7 @@ export default function AddUserGroupData(props) {
       fileUploadedOriginalContent: null,
       // selectedControl: 'layer',
       addLayer: false,
-      manageSource: false,
+      manageSourceLayer: false,
       manageLayer: false,
     }));
     setNotReturn(false);

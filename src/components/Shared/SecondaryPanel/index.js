@@ -5,6 +5,7 @@ import { get } from "lodash";
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import AddALayer from "components/MapControls/components/addALayer";
 import SourceManager from "components/MapControls/components/SourceManager";
+import SourceLayerManager from "components/MapControls/components/SourceLayerManager";
 import LayerStyling from "components/MapControls/components/Layer/LayerStyling";
 import LayerManager from "components/MapControls/components/Layer/LayerManager";
 import { AppContext } from "AppContext";
@@ -36,7 +37,8 @@ const Secondarypanel = () => {
   return (
     <div className={classes.root}>
       {stateMapControls.manageLayer && <LayerManager />}
-      {stateMapControls.manageSource && <SourceManager />}
+      {stateMapControls.manageSourceLayer && <SourceLayerManager />}
+      {/* {stateMapControls.manageSourceLayer && <SourceManager />} */}
       {stateMapControls.manageTransferData && <TransferDataManager />}
       {stateMapControls.addLayer && <AddALayer />}
       {stateMapControls.selectedLayer && <LayerStyling layer={stateApp.selectedLayer} fileName={stateApp.selectedLayer.fileName} />}
