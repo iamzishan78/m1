@@ -383,9 +383,6 @@ export default function Navigation(props) {
     return location.pathname === "/landmanagement/agreements";
   };
 
-  // console.log("matchActivities", matchActivities);
-  // console.log("stateApp", stateApp);
-
   return (
     <div className={classes.root}>
       <CssBaseline />
