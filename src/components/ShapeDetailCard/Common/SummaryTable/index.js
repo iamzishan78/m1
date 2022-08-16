@@ -12,7 +12,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { showErrorMessage } from "actions";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
-import { KeyboardDatePicker } from "@material-ui/pickers";
 import { summaryTableStyles } from "components/ShapeDetailCard/style";
 import UserList from "components/Shared/UserList";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
