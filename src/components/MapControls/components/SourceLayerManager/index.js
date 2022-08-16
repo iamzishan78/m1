@@ -1,13 +1,13 @@
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { MapControlsContext } from "../MapControlsContext";
-import { AppContext } from "../../../AppContext";
+import { MapControlsContext } from "../../MapControlsContext";
+import { AppContext } from "AppContext";
 import { Grid, Typography, Divider } from "@material-ui/core";
 import { Close as CloseButton } from "@material-ui/icons";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import { deepEqual, deepEqualObjects } from "../../Shared/functions";
-import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyLayerSettings";
+import { deepEqual, deepEqualObjects } from "components/Shared/functions";
+import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { useMutation } from "@apollo/client";
 import { IconButton } from "@material-ui/core";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
