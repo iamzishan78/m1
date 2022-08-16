@@ -19,7 +19,6 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
     const { label, filterKey, type } = column
     const [getFilters, { data: filtersData, loading }] = useLazyQuery(query, { fetchPolicy: "no-cache" });
     const getFiltersType = query?.definitions?.[0]?.name?.value
-
     useEffect(() => {
         setSearch(filterList[index][0])
         if (!filterList[index][0]) {
