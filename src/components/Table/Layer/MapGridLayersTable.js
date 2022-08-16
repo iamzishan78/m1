@@ -21,7 +21,7 @@ function MapGridLayersTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
 
-  const [tableHeaders, setTableHeaders] = useState([])
+  const [_, setTableHeaders] = useState([])
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
   );

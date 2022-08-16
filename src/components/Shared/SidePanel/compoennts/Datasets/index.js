@@ -5,7 +5,7 @@ import { Typography } from "@material-ui/core";
 import ListItemText from "@material-ui/core/ListItemText";
 import Button from "@material-ui/core/Button";
 import DatabaseIcon from "components/Shared/svgIcons/DatabaseIcon";
-import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import LayersIcon from "@material-ui/icons/Layers";
 import GridOnIcon from "@material-ui/icons/GridOn";
 import FileDatasetIcon from "components/Shared/svgIcons/FileDatasetIcon";
 import Box from "@material-ui/core/Box";
@@ -206,8 +206,8 @@ function Datasets({ layerMap, headerButton, search }) {
                 <ListItemText primary={'Data Sources'} />
                 {headerButton && (
                     <StyledListItemSecondaryAction>
-                        <Button onClick={() => headerButton.fn('manageSource')} color="secondary" variant="outlined" startIcon={<NoteAddIcon />}>
-                            Add Data
+                        <Button onClick={() => headerButton.fn('manageSource')} color="secondary" variant="outlined" startIcon={<LayersIcon fontSize="medium" />}>
+                            Manager
                         </Button>
                     </StyledListItemSecondaryAction>
                 )}

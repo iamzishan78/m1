@@ -3,7 +3,7 @@ import update from "immutability-helper";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
-import { Grid, Typography, Divider } from "@material-ui/core";
+import { Grid, Typography, Divider, MenuItem, Menu } from "@material-ui/core";
 import { Close as CloseButton } from "@material-ui/icons";
 import Dialog from "@material-ui/core/Dialog";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -22,6 +22,8 @@ import geojsonMerge from "@mapbox/geojson-merge";
 import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from '@material-ui/icons/Edit';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 import Box from "@material-ui/core/Box";
@@ -105,20 +107,43 @@ const useStyles = makeStyles((theme) => ({
     bottom: "0px",
     padding: "15px",
   },
+  selectedType: {
+    borderBottom: "4px solid #01B0F0",
+    display: "inline",
+    cursor: "pointer",
+  },
+  unSelectedType: {
+    display: "inline",
+    color: "#827F7F",
+    cursor: "pointer",
+  },
+  moreIcon: {
+    color: "#0000008a",
+    marginRight: '15px',
+    display: "none",
+  }
 }));
 
 const StyledListItem2 = withStyles((theme) => ({
   root: {
     fontFamily: "Poppins",
     backgroundColor: theme.palette.common.white,
-    color: "#263451",
-    border: "2px solid #263451",
+    color: "#827F7F",
+    border: "2px solid #827F7F",
     borderRadius: "5px",
     marginTop: "15px",
     marginBottom: "5px",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: "#263451",
+      color: "#827F7F"
     },
+
+    "&:hover, &.isOpen": {
+      color: "#263451",
+      border: "2px solid #263451",
+      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+        color: "#263451",
+      }
+    }
   },
 }))(ListItem);
 
@@ -140,12 +165,19 @@ const StyledListItem = withStyles((theme) => ({
       borderBottomRightRadius: "5px",
       borderBottom: "0px",
     },
+
+    "&:hover": {
+      "& .moreIcon": {
+        display: "block",
+      }
+    }
   },
 }))(ListItem);
 
 export default function SourceManager(props) {
   const classes = useStyles();
   let history = useHistory();
+  const [selectedType, setSelectedType] = useState('source');
 
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -456,6 +488,17 @@ export default function SourceManager(props) {
     return layers.filter((UdLayer) => !((UdLayer.layerCategory === "M1 Layer" || UdLayer.groupName === "Agreements") && UdLayer.groupId));
   }, [currentLayers]);
 
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <ClickAwayListener onClickAway={handleApplyChange}>
       <div style={{ height: "100%", display: "flex", width: "100%" }}>
@@ -479,7 +522,7 @@ export default function SourceManager(props) {
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Grid item>
-                    <Typography variant="h5">Source Manager</Typography>
+                    <Typography variant="h5">Source & Layer Manager</Typography>
                   </Grid>
                   <Grid item>
                     <IconButton size="small" onClick={handleApplyChange}>
@@ -489,6 +532,37 @@ export default function SourceManager(props) {
                 </Grid>
                 <Divider />
                 <div className={classes.contentRoot}>
+
+                  <ListItem
+                    style={{
+                      flexDirection: "column",
+                      justifyContent: "start",
+                      alignItems: "start",
+                    }}
+                  >
+                    <ListItemText>
+                      <h4
+                        onClick={(e) => {
+                          setSelectedType("source");
+                          e.stopPropagation()
+                        }}
+                        className={selectedType === "source" ? classes.selectedType : classes.unSelectedType}
+                      >
+                        SOURCES
+                      </h4>
+                      <h4
+                        onClick={(e) => {
+                          setSelectedType("layer");
+                          e.stopPropagation()
+                        }}
+                        className={selectedType === "layer" ? classes.selectedType : classes.unSelectedType}
+                        style={{ marginLeft: "30px" }}
+                      >
+                        LAYERS
+                      </h4>
+                    </ListItemText>
+                  </ListItem>
+
                   <Typography varient="h5" style={{ textAlign: "start", paddingBottom: "20px", fontWeight: "bolder", fontFamily: 'sans-serif' }} onClick={(e) => e.stopPropagation()}>
                     Add New Sources
                   </Typography>
@@ -499,10 +573,10 @@ export default function SourceManager(props) {
                   </div>
                   <Divider style={{ height: '2px', marginTop: "15px" }} />
                   <Typography varient="h5" style={{ textAlign: "start", marginTop: "5px", fontWeight: "bolder", fontFamily: 'sans-serif' }} onClick={(e) => e.stopPropagation()}>
-                    Add Sources to Map
+                    Add Sources to Map View
                   </Typography>
                   <Typography varient="h6" style={{ textAlign: "start", marginBottom: "10px" }} onClick={(e) => e.stopPropagation()}>
-                    Select one or more of the available layers below to add them to your current map view.
+                    Select one or more of the available sources below to add them to your current map view
                   </Typography>
                   <div onClick={(e) => e.stopPropagation()}>
                     <StyledListItem2 button onClick={handleClickM1List}>
@@ -635,10 +709,10 @@ export default function SourceManager(props) {
                       stateApp.datasets.map((dataset) => (
                         <Fragment key={dataset.sourceName}>
                           {
-                            dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 style={{ paddingLeft: '0px' }} button onClick={() => setOpenDataSets({ ...openDataSets, [dataset.sourceName]: !openDataSets[dataset.sourceName] })}>
+                            dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 className={openDataSets[dataset.sourceName] ? 'isOpen' : ''} style={{ paddingLeft: '0px' }} button onClick={() => setOpenDataSets({ ...openDataSets, [dataset.sourceName]: !openDataSets[dataset.sourceName] })}>
                               <Checkbox
                                 checked={dataset.visibility}
-                                color="dark gray"
+                                color="darkgray"
                                 onClick={(e) => e.stopPropagation()}
                                 onChange={() => { handleDatasetChange(dataset, !dataset.visibility); }}
                                 inputProps={{ "aria-label": "primary checkbox" }}
@@ -654,6 +728,18 @@ export default function SourceManager(props) {
                                       <StyledListItem key={index} ContainerComponent="li">
 
                                         <ListItemText style={{ padding: '5px 0px 5px 40px' }} id={labelId} primary={truncate(layer.layerName || layer.name, 30)} />
+                                        <MoreHorizIcon className={"moreIcon " + classes.moreIcon} aria-controls="more-menu" aria-haspopup="true" onClick={handleClick} />
+
+                                        <Menu
+                                          id="more-menu"
+                                          anchorEl={anchorEl}
+                                          keepMounted
+                                          open={Boolean(anchorEl)}
+                                          onClose={handleMenuClose}
+                                        >
+                                          <MenuItem onClick={handleMenuClose}><EditIcon /> Edit Name</MenuItem>
+                                          <MenuItem onClick={handleMenuClose}><DeleteIcon /> Delete</MenuItem>
+                                        </Menu>
                                       </StyledListItem>
                                     );
                                   })}
