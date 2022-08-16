@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { get } from "lodash";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -88,7 +89,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerEntity,
         contactStatus,
         ownerType,
-        contact: { campaignName }
+        contact
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
@@ -100,10 +101,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         seller_asking_price: seller_asking_price || null,
         competitor_offer_price: competitor_offer_price || null,
         offer_price: offer_price || null,
-        contactStatus: contactStatus || null,
+        contactStatus: contactStatus || contact.contactStatus,
         ownerType,
         customLayer,
-        campaignName
+        campaignName: contact.campaignName
       }
       let calculatedNRA = calculateNRA(royalty_interest, orri);
       if (!isNaN(parseFloat(calculatedNRA)))
@@ -182,7 +183,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           shapeType: props.shapeType,
           shapeOwners: [
             {
-              shapeId: props.shapeId,
+              shapeId: props.shapeId ?? get(selectedRow, "customLayer._id"),
               relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
               ...ownerToAdd,
               createBy: stateApp.user.mongoId,
@@ -198,7 +199,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         variables: {
           shapeType: props.shapeType,
           shapeOwner: {
-            shapeId: props.shapeId,
+            shapeId: props.shapeId ?? get(selectedRow, "customLayer._id"),
             relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
             ...ownerToAdd,
             createBy: stateApp.user.mongoId,

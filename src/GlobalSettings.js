@@ -13,9 +13,12 @@ const GlobalSettings = {
         whiteSpace: "nowrap",
         position: "sticky",
         left: "77px",
-        // background: "white",
+        backgroundColor: "white",
         zIndex: 200,
         boxShadow: "inset -1px 0px 0px 0px lightgrey",
+        // "&:hover": {
+        //   backgroundColor: "#dfdfdf"
+        // }
       },
     }),
 
@@ -111,7 +114,7 @@ const GlobalSettings = {
         <Typography
           noWrap
           variant="body2"
-          // className={classes.gridElementStyling}
+        // className={classes.gridElementStyling}
         >
           {value ? value : <span style={{ color: "#959595" }}>--</span>}
         </Typography>
