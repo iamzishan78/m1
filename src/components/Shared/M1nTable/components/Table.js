@@ -145,6 +145,7 @@ const useStyles = makeStyles((theme) => ({
       "& .MuiTableCell-paddingCheckbox": {
         zIndex: (props) => (typeof props.headerZIndex !== 'undefined' ? props.headerZIndex : 100),
         paddingRight: (props) => props.dense ? '32px !important' : 'inherit',
+        backgroundColor: "white"
       },
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
@@ -3619,7 +3620,7 @@ function SubTable(props) {
         }
       }
 
-      if (props.targetLabel === "Unit Ownership") {
+      if (props.targetLabel === "Unit Ownership" || props.targetLabel === "contactUnits") {
         if (rows[dataIndex]?._id) {
           setOpenDialog("addOwnerToUnit");
           setSelectedRow(rows[dataIndex]);
