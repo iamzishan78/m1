@@ -413,53 +413,6 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           },
                         }}
                       />
-                      // <KeyboardDatePicker
-                      //   autoFocus
-                      //   className={classes.select}
-                      //   disableToolbar
-                      //   variant="inline"
-                      //   fullWidth
-                      //   inputVariant="outlined"
-                      //   format="MM/DD/YYYY"
-                      //   margin="normal"
-                      //   id="date-picker-inline"
-                      //   value={tableTempProperties[data.key] || null}
-                      //   onOpen={() => {
-                      //     tableDataState[`${data.key}date`] = true;
-                      //   }}
-                      //   onClose={() => {
-                      //     tableDataState[`${data.key}date`] = false;
-                      //     setTableDataState({});
-                      //     setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] });
-                      //   }}
-                      //   onKeyDown={(e) => {
-                      //     if (e.keyCode === 13) {
-                      //       e.stopPropagation();
-                      //       onKeyDown(e, data, "value");
-                      //     }
-                      //   }}
-                      //   onBlur={() => {
-                      //     setTimeout(() => {
-                      //       if (!tableDataState[`${data.key}date`]) {
-                      //         setTableDataState({});
-                      //         setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] });
-                      //       }
-                      //     }, 100);
-                      //   }}
-                      //   onChange={(date) => {
-                      //     if (date === null) {
-                      //       setTableTempProperties({ ...tableTempProperties, [`${data.key}`]: date });
-                      //     }
-                      //     if (date && date?._d?.toString() !== "Invalid Date") {
-                      //       tableTempProperties[`${data.key}`] = date ? String(date["_d"]) : null;
-                      //       setTableTempProperties({ ...tableTempProperties });
-                      //       if (date?._pf?.overflow === -2 || !date?._strict) {
-                      //         onKeyDown(null, data, "value");
-                      //       }
-                      //     }
-                      //   }}
-                      //   KeyboardButtonProps={{ "aria-label": "change date" }}
-                      // />
                     )}
                     {data.type === "autocomplete" && (
                       <>
